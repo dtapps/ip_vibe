@@ -8,6 +8,7 @@ import (
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/provider/dns"
+	"vibe_ip/internal/provider/tun"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -112,15 +113,18 @@ func GetDnsRecordSchema(c *gin.Context) {
 	}
 
 	// 准备字段组
-	var fieldGroup any
+	fields := make([]any, 0)
 
-	var dnsProviderOpts = make([]dns.DnsOption, 0, 1)
+	var dnsProviderOpts = make([]dns.Option, 0, 1)
 	if global.GvaHttpLog != nil {
 		dnsProviderOpts = append(dnsProviderOpts, dns.WithHttpTransport(global.GvaHttpLog))
 	}
 
 	switch firstConfig.Platform {
 	case platformconfig.PlatformTencentDNS:
+		var multipleFields any
+		var singleField any
+
 		dnsProviderCfg := dns.NewDefaultTencentDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
 		if err != nil {
@@ -142,23 +146,23 @@ func GetDnsRecordSchema(c *gin.Context) {
 			errorResponse(c, http.StatusNotFound, "未查询到线路")
 			return
 		}
-		// 准备 options
-		options := make([]types.SCHEMAFieldOption, 0, len(lines))
-		for i, line := range lines {
-			options[i] = types.SCHEMAFieldOption{
+		// 准备 线路 选项
+		recordLineOptions := make([]types.SCHEMAFieldOption, 0, len(lines))
+		for _, line := range lines {
+			recordLineOptions = append(recordLineOptions, types.SCHEMAFieldOption{
 				Value: line.LineID,
 				Label: line.LineName,
-			}
+			})
 		}
-		// 构造字段组（内层数组）
-		fieldGroup = []types.SCHEMAField{
+		// 构造字段
+		multipleFields = []types.SCHEMAField{
 			{
 				ID:          "record_line",
 				Label:       "线路",
 				Type:        "select",
 				Placeholder: "请选择线路",
 				Required:    true,
-				Options:     options,
+				Options:     recordLineOptions,
 			},
 			{
 				ID:          "remark",
@@ -168,7 +172,16 @@ func GetDnsRecordSchema(c *gin.Context) {
 				Required:    false,
 			},
 		}
+		if multipleFields != nil {
+			fields = append(fields, multipleFields)
+		}
+		if singleField != nil {
+			fields = append(fields, singleField)
+		}
 	case platformconfig.PlatformAliyunDNS:
+		var multipleFields any
+		var singleField any
+
 		dnsProviderCfg := dns.NewDefaultAliyunDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
 		if err != nil {
@@ -190,24 +203,33 @@ func GetDnsRecordSchema(c *gin.Context) {
 			errorResponse(c, http.StatusNotFound, "未查询到线路")
 			return
 		}
-		// 准备 options
-		options := make([]types.SCHEMAFieldOption, 0, len(lines))
-		for i, line := range lines {
-			options[i] = types.SCHEMAFieldOption{
+		// 准备 线路 选项
+		lineOptions := make([]types.SCHEMAFieldOption, 0, len(lines))
+		for _, line := range lines {
+			lineOptions = append(lineOptions, types.SCHEMAFieldOption{
 				Value: line.LineID,
 				Label: line.LineName,
-			}
+			})
 		}
 		// 构造字段组
-		fieldGroup = types.SCHEMAField{
+		multipleFields = types.SCHEMAField{
 			ID:          "line",
 			Label:       "线路",
 			Type:        "select",
 			Placeholder: "请选择线路",
 			Required:    true,
-			Options:     options,
+			Options:     lineOptions,
+		}
+		if multipleFields != nil {
+			fields = append(fields, multipleFields)
+		}
+		if singleField != nil {
+			fields = append(fields, singleField)
 		}
 	case platformconfig.PlatformVolcengineDNS:
+		var multipleFields any
+		var singleField any
+
 		dnsProviderCfg := dns.NewDefaultVolcengineDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
 		if err != nil {
@@ -229,23 +251,23 @@ func GetDnsRecordSchema(c *gin.Context) {
 			errorResponse(c, http.StatusNotFound, "未查询到线路")
 			return
 		}
-		// 准备 options
-		options := make([]types.SCHEMAFieldOption, 0, len(lines))
-		for i, line := range lines {
-			options[i] = types.SCHEMAFieldOption{
+		// 准备 线路 选项
+		lineOptions := make([]types.SCHEMAFieldOption, 0, len(lines))
+		for _, line := range lines {
+			lineOptions = append(lineOptions, types.SCHEMAFieldOption{
 				Value: line.LineID,
 				Label: line.LineName,
-			}
+			})
 		}
-		// 构造字段组（内层数组）
-		fieldGroup = []types.SCHEMAField{
+		// 构造字段
+		multipleFields = []types.SCHEMAField{
 			{
 				ID:          "line",
 				Label:       "线路",
 				Type:        "select",
 				Placeholder: "请选择线路",
 				Required:    true,
-				Options:     options,
+				Options:     lineOptions,
 			},
 			{
 				ID:          "remark",
@@ -255,13 +277,170 @@ func GetDnsRecordSchema(c *gin.Context) {
 				Required:    false,
 			},
 		}
+		if multipleFields != nil {
+			fields = append(fields, multipleFields)
+		}
+		if singleField != nil {
+			fields = append(fields, singleField)
+		}
 	default:
 		errorResponse(c, http.StatusBadRequest, "未知的平台类型")
 		return
 	}
 
-	// 把 fieldGroup（[]SCHEMAField）整体 marshal 成一个 JSON 数组
-	rawFields, err := json.Marshal(fieldGroup)
+	// 把 multipleFields + singleField 整体 marshal 成一个 JSON 数组
+	rawFields, err := json.Marshal(fields)
+	if err != nil {
+		errorResponse(c, http.StatusInternalServerError, "序列化字段失败: "+err.Error())
+		return
+	}
+
+	// 然后放进 []json.RawMessage
+	response.Fields = []json.RawMessage{rawFields}
+
+	successResponse(c, response)
+}
+
+// 获取TUN记录Schema
+//
+//	@Description	获取TUN记录Schema
+//	@Summary		获取TUN记录Schema
+//	@Tags			Schema
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			config_type	path		string												true	"平台类型"
+//	@Param			config_id	path		int64												true	"平台配置ID"
+//	@Success		200			{object}	APIResponse{data=types.GetTunRecordSchemaResponse}	"成功响应"
+//	@Failure		400			{object}	APIResponse{}										"参数错误"
+//	@Failure		404			{object}	APIResponse{}										"错误响应"
+//	@Router			/schemas/{config_type}/tun-record/{config_id} [get]
+func GetTunRecordSchema(c *gin.Context) {
+	// 请求参数
+	var requestParams types.GetTunRecordSchemaRequest
+	requestParams.ConfigType = c.Param("config_type")
+	requestParams.ConfigID = cast.ToInt64(c.Param("config_id"))
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 准备响应
+	response := &types.GetTunRecordSchemaResponse{}
+
+	// 查询平台配置
+	firstConfig, err := global.GvaEntDb.PlatformConfig.Query().
+		Where(platformconfig.IDEQ(requestParams.ConfigID)).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "配置不存在")
+		return
+	}
+
+	// 判断平台类型是否匹配
+	if !strings.EqualFold(requestParams.ConfigType, firstConfig.Platform.String()) {
+		errorResponse(c, http.StatusBadRequest, "平台类型与配置类型不匹配")
+		return
+	}
+
+	// 准备字段组
+	fields := make([]any, 0)
+
+	var tunProviderOpts = make([]tun.Option, 0, 1)
+	if global.GvaHttpLog != nil {
+		tunProviderOpts = append(tunProviderOpts, tun.WithHttpTransport(global.GvaHttpLog))
+	}
+
+	switch firstConfig.Platform {
+	case platformconfig.PlatformCloudflare:
+		var multipleFields any
+		var singleField any
+
+		tunProviderCfg := tun.NewDefaultCloudfareTUNConfig()
+		err = tunProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		tunProvider, err := tun.NewCloudfareTUNProviderRaw(c, global.GvaGocronSlog.With(), tunProviderCfg, tunProviderOpts...)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		// 查询隧道列表
+		connectors, err := tunProvider.Connectors(c)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		if len(connectors) == 0 {
+			errorResponse(c, http.StatusNotFound, "未查询到隧道")
+			return
+		}
+		// 准备隧道选项
+		tunnelOptions := make([]types.SCHEMAFieldOption, 0, len(connectors))
+		for _, connector := range connectors {
+			tunnelOptions = append(tunnelOptions, types.SCHEMAFieldOption{
+				Value: connector.ID,
+				Label: connector.Name,
+			})
+		}
+		// 查询域名列表
+		zones, err := tunProvider.Zones(c)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		if len(zones) == 0 {
+			errorResponse(c, http.StatusNotFound, "未查询到域名")
+			return
+		}
+		// 准备域名选项
+		zoneOptions := make([]types.SCHEMAFieldOption, 0, len(zones))
+		for _, zone := range zones {
+			zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
+				Value: zone.ID,
+				Label: zone.Name,
+			})
+		}
+		// 构造字段
+		multipleFields = []types.SCHEMAField{
+			{
+				ID:          "tunnel_id",
+				Label:       "隧道",
+				Type:        "select",
+				Placeholder: "请选择隧道",
+				Required:    true,
+				Options:     tunnelOptions,
+			},
+			{
+				ID:          "zone_id",
+				Label:       "域名",
+				Type:        "select",
+				Placeholder: "请选择域名",
+				Required:    true,
+				Options:     zoneOptions,
+			},
+		}
+		singleField = types.SCHEMAField{
+			ID:          "remark",
+			Label:       "备注",
+			Type:        "text",
+			Placeholder: "请输入备注",
+			Required:    false,
+		}
+		if multipleFields != nil {
+			fields = append(fields, multipleFields)
+		}
+		if singleField != nil {
+			fields = append(fields, singleField)
+		}
+	default:
+		errorResponse(c, http.StatusBadRequest, "未知的平台类型")
+		return
+	}
+
+	// 把 multipleFields + singleField 整体 marshal 成一个 JSON 数组
+	rawFields, err := json.Marshal(fields)
 	if err != nil {
 		errorResponse(c, http.StatusInternalServerError, "序列化字段失败: "+err.Error())
 		return

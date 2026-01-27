@@ -36,6 +36,8 @@ const (
 	EdgeCdnRecords = "cdn_records"
 	// EdgeSslRecords holds the string denoting the ssl_records edge name in mutations.
 	EdgeSslRecords = "ssl_records"
+	// EdgeTunRecords holds the string denoting the tun_records edge name in mutations.
+	EdgeTunRecords = "tun_records"
 	// Table holds the table name of the platformconfig in the database.
 	Table = "platform_config"
 	// DNSRecordsTable is the table that holds the dns_records relation/edge.
@@ -59,6 +61,13 @@ const (
 	SslRecordsInverseTable = "ssl_record"
 	// SslRecordsColumn is the table column denoting the ssl_records relation/edge.
 	SslRecordsColumn = "config_id"
+	// TunRecordsTable is the table that holds the tun_records relation/edge.
+	TunRecordsTable = "tun_record"
+	// TunRecordsInverseTable is the table name for the TUNRecord entity.
+	// It exists in this package in order to avoid circular dependency with the "tunrecord" package.
+	TunRecordsInverseTable = "tun_record"
+	// TunRecordsColumn is the table column denoting the tun_records relation/edge.
+	TunRecordsColumn = "config_id"
 )
 
 // Columns holds all SQL columns for platformconfig fields.
@@ -245,6 +254,20 @@ func BySslRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newSslRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTunRecordsCount orders the results by tun_records count.
+func ByTunRecordsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTunRecordsStep(), opts...)
+	}
+}
+
+// ByTunRecords orders the results by tun_records terms.
+func ByTunRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTunRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newDNSRecordsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -264,5 +287,12 @@ func newSslRecordsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SslRecordsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SslRecordsTable, SslRecordsColumn),
+	)
+}
+func newTunRecordsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TunRecordsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TunRecordsTable, TunRecordsColumn),
 	)
 }

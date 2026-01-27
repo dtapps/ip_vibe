@@ -18,6 +18,7 @@ import (
 	"vibe_ip/internal/ent/schema"
 	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
+	"vibe_ip/internal/ent/tunrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
 )
@@ -358,6 +359,35 @@ func init() {
 	sslrecordDescID := sslrecordFields[0].Descriptor()
 	// sslrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	sslrecord.IDValidator = sslrecordDescID.Validators[0].(func(int64) error)
+	tunrecordMixin := schema.TUNRecord{}.Mixin()
+	tunrecordHooks := schema.TUNRecord{}.Hooks()
+	tunrecord.Hooks[0] = tunrecordHooks[0]
+	tunrecordMixinFields0 := tunrecordMixin[0].Fields()
+	_ = tunrecordMixinFields0
+	tunrecordFields := schema.TUNRecord{}.Fields()
+	_ = tunrecordFields
+	// tunrecordDescCreatedAt is the schema descriptor for created_at field.
+	tunrecordDescCreatedAt := tunrecordMixinFields0[0].Descriptor()
+	// tunrecord.DefaultCreatedAt holds the default value on creation for the created_at field.
+	tunrecord.DefaultCreatedAt = tunrecordDescCreatedAt.Default.(func() time.Time)
+	// tunrecordDescUpdatedAt is the schema descriptor for updated_at field.
+	tunrecordDescUpdatedAt := tunrecordMixinFields0[1].Descriptor()
+	// tunrecord.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	tunrecord.DefaultUpdatedAt = tunrecordDescUpdatedAt.Default.(func() time.Time)
+	// tunrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	tunrecord.UpdateDefaultUpdatedAt = tunrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// tunrecordDescConfigID is the schema descriptor for config_id field.
+	tunrecordDescConfigID := tunrecordFields[1].Descriptor()
+	// tunrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
+	tunrecord.ConfigIDValidator = tunrecordDescConfigID.Validators[0].(func(int64) error)
+	// tunrecordDescIsActive is the schema descriptor for is_active field.
+	tunrecordDescIsActive := tunrecordFields[8].Descriptor()
+	// tunrecord.DefaultIsActive holds the default value on creation for the is_active field.
+	tunrecord.DefaultIsActive = tunrecordDescIsActive.Default.(bool)
+	// tunrecordDescID is the schema descriptor for id field.
+	tunrecordDescID := tunrecordFields[0].Descriptor()
+	// tunrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	tunrecord.IDValidator = tunrecordDescID.Validators[0].(func(int64) error)
 	webhookMixin := schema.Webhook{}.Mixin()
 	webhookHooks := schema.Webhook{}.Hooks()
 	webhook.Hooks[0] = webhookHooks[0]

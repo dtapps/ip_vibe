@@ -3838,6 +3838,70 @@
                 }
             }
         },
+        "/schemas/{config_type}/tun-record/{config_id}": {
+            "get": {
+                "description": "获取TUN记录Schema",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schema"
+                ],
+                "summary": "获取TUN记录Schema",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "平台类型",
+                        "name": "config_type",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "平台配置ID",
+                        "name": "config_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetTunRecordSchemaResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/settings": {
             "get": {
                 "description": "获取设置",
@@ -5005,6 +5069,406 @@
                 }
             }
         },
+        "/tun-records": {
+            "get": {
+                "description": "获取全部TUN记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TUN记录"
+                ],
+                "summary": "获取全部TUN记录",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "是否活跃",
+                        "name": "is_active",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/vibe_ip_internal_types.GetTunRecordResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "创建TUN记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TUN记录"
+                ],
+                "summary": "创建TUN记录",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.CreateTunRecordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tun-records/batch": {
+            "delete": {
+                "description": "批量删除TUN记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TUN记录"
+                ],
+                "summary": "批量删除TUN记录",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.BatchDeleteTunRecordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tun-records/batch/active": {
+            "patch": {
+                "description": "批量更新TUN记录启用状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TUN记录"
+                ],
+                "summary": "批量更新TUN记录启用状态",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.BatchUpdateTunRecordActiveRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tun-records/{id}": {
+            "get": {
+                "description": "获取TUN记录详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TUN记录"
+                ],
+                "summary": "获取TUN记录详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "TUN记录序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetTunRecordResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "删除TUN记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TUN记录"
+                ],
+                "summary": "删除TUN记录",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "TUN记录序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "更新TUN记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TUN记录"
+                ],
+                "summary": "更新TUN记录",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "TUN记录序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.UpdateTunRecordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tun-records/{id}/active": {
+            "patch": {
+                "description": "更新TUN记录启用状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TUN记录"
+                ],
+                "summary": "更新TUN记录启用状态",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "TUN记录序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.UpdateTunRecordActiveRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/webhook-subs": {
             "get": {
                 "description": "获取全部通知订阅",
@@ -5872,6 +6336,21 @@
                 }
             }
         },
+        "vibe_ip_internal_types.BatchDeleteTunRecordRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "TUN记录序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
         "vibe_ip_internal_types.BatchDeleteWebhookRequest": {
             "type": "object",
             "required": [
@@ -5986,6 +6465,25 @@
             "properties": {
                 "ids": {
                     "description": "SSL记录序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "is_active": {
+                    "description": "是否活跃",
+                    "type": "boolean"
+                }
+            }
+        },
+        "vibe_ip_internal_types.BatchUpdateTunRecordActiveRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "TUN记录序号列表",
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -6371,6 +6869,48 @@
                 "renewal_days": {
                     "description": "过期前多少天开始续期",
                     "type": "integer"
+                },
+                "webhook_ids": {
+                    "description": "关联的 Webhook 列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.CreateTunRecordRequest": {
+            "type": "object",
+            "required": [
+                "config_id",
+                "serve_type",
+                "serve_uri",
+                "sub_domain"
+            ],
+            "properties": {
+                "config_id": {
+                    "description": "平台配置序号",
+                    "type": "integer"
+                },
+                "config_json": {
+                    "description": "TUN记录配置（JSON）",
+                    "type": "string"
+                },
+                "domain_path": {
+                    "description": "域名路径（如 /api/v1）",
+                    "type": "string"
+                },
+                "serve_type": {
+                    "description": "服务类型（如 HTTP、HTTPS）",
+                    "type": "string"
+                },
+                "serve_uri": {
+                    "description": "服务URI（如 127.0.0.1:8080）",
+                    "type": "string"
+                },
+                "sub_domain": {
+                    "description": "子域名（如 www, blog, api）",
+                    "type": "string"
                 },
                 "webhook_ids": {
                     "description": "关联的 Webhook 列表",
@@ -7341,6 +7881,87 @@
                 }
             }
         },
+        "vibe_ip_internal_types.GetTunRecordResponse": {
+            "type": "object",
+            "properties": {
+                "config_id": {
+                    "description": "平台配置序号",
+                    "type": "integer"
+                },
+                "config_json": {
+                    "description": "TUN记录配置（JSON）",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "config_name": {
+                    "description": "平台配置名称",
+                    "type": "string"
+                },
+                "domain_name": {
+                    "description": "域名（如 www.example.com）",
+                    "type": "string"
+                },
+                "domain_path": {
+                    "description": "域名路径（如 /api/v1）",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "TUN记录序号",
+                    "type": "integer"
+                },
+                "is_active": {
+                    "description": "是否活跃",
+                    "type": "boolean"
+                },
+                "last_refresh_at": {
+                    "description": "最后一次刷新成功时间",
+                    "type": "string"
+                },
+                "platform": {
+                    "description": "平台平台名称",
+                    "type": "string"
+                },
+                "record_id": {
+                    "description": "平台侧记录ID"
+                },
+                "serve_type": {
+                    "description": "服务类型（如 HTTP、HTTPS）",
+                    "type": "string"
+                },
+                "serve_uri": {
+                    "description": "服务URI（如 127.0.0.1:8080）",
+                    "type": "string"
+                },
+                "sub_domain": {
+                    "description": "子域名（如 www, blog, api）",
+                    "type": "string"
+                },
+                "webhooks": {
+                    "description": "关联的 Webhook 列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetTunRecordSchemaResponse": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "description": "字段列表",
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
         "vibe_ip_internal_types.GetWebhookResponse": {
             "type": "object",
             "properties": {
@@ -7987,6 +8608,59 @@
                 "statistic_data_retain_time": {
                     "description": "统计数据保留时间（天，默认 365 天）",
                     "type": "integer"
+                }
+            }
+        },
+        "vibe_ip_internal_types.UpdateTunRecordActiveRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "description": "TUN记录序号",
+                    "type": "integer"
+                },
+                "is_active": {
+                    "description": "是否活跃",
+                    "type": "boolean"
+                }
+            }
+        },
+        "vibe_ip_internal_types.UpdateTunRecordRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "serve_type",
+                "serve_uri"
+            ],
+            "properties": {
+                "config_json": {
+                    "description": "TUN记录配置（JSON）",
+                    "type": "string"
+                },
+                "domain_path": {
+                    "description": "域名路径（如 /api/v1）",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "TUN记录序号",
+                    "type": "integer"
+                },
+                "serve_type": {
+                    "description": "服务类型（如 HTTP、HTTPS）",
+                    "type": "string"
+                },
+                "serve_uri": {
+                    "description": "服务URI（如 127.0.0.1:8080）",
+                    "type": "string"
+                },
+                "webhook_ids": {
+                    "description": "关联的 Webhook 列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },

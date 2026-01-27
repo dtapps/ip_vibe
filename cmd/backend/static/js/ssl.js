@@ -43,6 +43,7 @@ async function openFormModal(id, action = "") {
           opt.dataset.platform = d.platform;
           opt.dataset.domain_name = d.config_json?.domain_name ?? "";
           opt.dataset.email = d.config_json?.email ?? "";
+          opt.dataset.account_id = d.config_json?.account_id ?? "";
           opt.value = d.id;
           opt.text = `${d.name}（${opt.dataset.email}）`;
           configSelect.appendChild(opt);

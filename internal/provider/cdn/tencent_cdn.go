@@ -64,7 +64,7 @@ type TencentCDNProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
 	cfg    *TencentCDNConfig
-	opts   *cdnOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *TencentCDNCustomConfig
@@ -82,12 +82,12 @@ type TencentCDNProvider struct {
 }
 
 // NewTencentCDNProvider 创建腾讯云 CDN 提供程序
-func NewTencentCDNProvider(ctx context.Context, logger *slog.Logger, cfg *TencentCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+func NewTencentCDNProvider(ctx context.Context, logger *slog.Logger, cfg *TencentCDNConfig, opts ...Option) (provider.CDNProvider, error) {
 	return NewTencentCDNProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewTencentCDNProviderRaw 创建腾讯云 CDN 提供程序
-func NewTencentCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *TencentCDNConfig, opts ...CdnOption) (*TencentCDNProvider, error) {
+func NewTencentCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *TencentCDNConfig, opts ...Option) (*TencentCDNProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -101,7 +101,7 @@ func NewTencentCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Ten
 	var err error
 	p := &TencentCDNProvider{
 		cfg:          cfg,
-		opts:         &cdnOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &TencentCDNCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},

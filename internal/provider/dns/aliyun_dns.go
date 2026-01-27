@@ -65,7 +65,7 @@ type AliyunDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
 	cfg    *AliyunDNSConfig
-	opts   *dnsOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *AliyunDNSCustomConfig
@@ -84,12 +84,12 @@ type AliyunDNSProvider struct {
 }
 
 // NewAliyunDNSProvider 创建阿里云 DNS 提供程序
-func NewAliyunDNSProvider(ctx context.Context, logger *slog.Logger, cfg *AliyunDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+func NewAliyunDNSProvider(ctx context.Context, logger *slog.Logger, cfg *AliyunDNSConfig, opts ...Option) (provider.DNSProvider, error) {
 	return NewAliyunDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewAliyunDNSProviderRaw 创建阿里云 DNS 提供程序
-func NewAliyunDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *AliyunDNSConfig, opts ...DnsOption) (*AliyunDNSProvider, error) {
+func NewAliyunDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *AliyunDNSConfig, opts ...Option) (*AliyunDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -103,7 +103,7 @@ func NewAliyunDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 	var err error
 	p := &AliyunDNSProvider{
 		cfg:          cfg,
-		opts:         &dnsOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &AliyunDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},

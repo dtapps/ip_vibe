@@ -10,7 +10,6 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/ipgroup"
-	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
@@ -18,6 +17,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/spf13/cast"
+	"github.com/tidwall/gjson"
 )
 
 // WebhookSubService 通知订阅服务接口
@@ -87,12 +87,7 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 			).
 			First(ctx)
 		if err == nil {
-			configJSON, err := schematype.ParsePCJODomainName(firstCDNRecord.Edges.Config.ConfigJSON)
-			if err == nil {
-				resp.ObjName = firstCDNRecord.SubDomain + "." + configJSON.DomainName
-			} else {
-				resp.ObjName = firstCDNRecord.SubDomain
-			}
+			resp.ObjName = firstCDNRecord.SubDomain + "." + gjson.GetBytes(firstCDNRecord.Edges.Config.ConfigJSON, "domain_name").String()
 		}
 	case webhooksubscription.ObjTypeDNSRecord:
 		firstDNSRecord, err := s.db.DNSRecord.Query().
@@ -103,12 +98,7 @@ func (s *WebhookSubServiceImpl) BuildResponse(ctx context.Context, item *ent.Web
 			).
 			First(ctx)
 		if err == nil {
-			configJSON, err := schematype.ParsePCJODomainName(firstDNSRecord.Edges.Config.ConfigJSON)
-			if err == nil {
-				resp.ObjName = firstDNSRecord.SubDomain + "." + configJSON.DomainName
-			} else {
-				resp.ObjName = firstDNSRecord.SubDomain
-			}
+			resp.ObjName = firstDNSRecord.SubDomain + "." + gjson.GetBytes(firstDNSRecord.Edges.Config.ConfigJSON, "domain_name").String()
 		}
 	case webhooksubscription.ObjTypeDevice:
 		firstDevice, err := s.db.Device.Query().

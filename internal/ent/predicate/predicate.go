@@ -45,6 +45,9 @@ type SSLImport func(*sql.Selector)
 // SSLRecord is the predicate function for sslrecord builders.
 type SSLRecord func(*sql.Selector)
 
+// TUNRecord is the predicate function for tunrecord builders.
+type TUNRecord func(*sql.Selector)
+
 // Webhook is the predicate function for webhook builders.
 type Webhook func(*sql.Selector)
 

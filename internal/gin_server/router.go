@@ -47,6 +47,9 @@ func (m *GinServerManager) setupWebRouter() {
 	r.GET("/ssl-import", handlers.SslImport)
 	r.GET("/ssl-import/:id/detail", handlers.SslImportDetail)
 
+	// TUN页面 - 提供HTML页面并渲染数据
+	r.GET("/tun", handlers.Tun)
+
 	// 域名监控页面 - 提供HTML页面并渲染数据
 	r.GET("/domain-monitor", handlers.DomainMonitor)
 	r.GET("/domain-monitor/:id/detail", handlers.DomainMonitorDetail)
@@ -128,6 +131,7 @@ func (m *GinServerManager) setupApiRouter() {
 			schemas.GET("/:config_type/platform-config", handlers.GetPlatformConfigSchema)  // 获取平台配置Schema
 			schemas.GET("/:config_type/cdn-record/:config_id", handlers.GetCdnRecordSchema) // 获取CDN记录Schema
 			schemas.GET("/:config_type/dns-record/:config_id", handlers.GetDnsRecordSchema) // 获取DNS记录Schema
+			schemas.GET("/:config_type/tun-record/:config_id", handlers.GetTunRecordSchema) // 获取TUN记录Schema
 		}
 
 		// 平台配置相关API
@@ -193,6 +197,19 @@ func (m *GinServerManager) setupApiRouter() {
 			sslImports.POST("", handlers.CreateSSLImport)              // 创建SSL导入记录
 			sslImports.DELETE("/:id", handlers.DeleteSSLImport)        // 删除SSL导入记录
 			sslImports.DELETE("/batch", handlers.BatchDeleteSSLImport) // 批量删除SSL导入记录
+		}
+
+		// TUN记录管理相关API
+		tunRecords := api.Group("/tun-records")
+		{
+			tunRecords.GET("", handlers.GetTunRecords)                             // 获取全部TUN记录
+			tunRecords.GET("/:id", handlers.GetTunRecordDetail)                    // 获取TUN记录详情
+			tunRecords.POST("", handlers.CreateTunRecord)                          // 创建TUN记录
+			tunRecords.PATCH("/:id", handlers.UpdateTunRecord)                     // 更新TUN记录
+			tunRecords.PATCH("/:id/active", handlers.UpdateTunRecordActive)        // 更新TUN记录启用状态
+			tunRecords.PATCH("/batch/active", handlers.BatchUpdateTunRecordActive) // 批量更新TUN记录启用状态
+			tunRecords.DELETE("/:id", handlers.DeleteTunRecord)                    // 删除TUN记录
+			tunRecords.DELETE("/batch", handlers.BatchDeleteTunRecord)             // 批量删除TUN记录
 		}
 
 		// 域名监控相关API

@@ -63,7 +63,7 @@ type QiniuCDNProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
 	cfg    *QiniuCDNConfig
-	opts   *cdnOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *QiniuCDNCustomConfig
@@ -79,12 +79,12 @@ type QiniuCDNProvider struct {
 }
 
 // NewQiniuCDNProvider 创建七牛云 CDN 提供程序
-func NewQiniuCDNProvider(ctx context.Context, logger *slog.Logger, cfg *QiniuCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+func NewQiniuCDNProvider(ctx context.Context, logger *slog.Logger, cfg *QiniuCDNConfig, opts ...Option) (provider.CDNProvider, error) {
 	return NewQiniuCDNProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewQiniuCDNProviderRaw 创建七牛云 CDN 提供程序
-func NewQiniuCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *QiniuCDNConfig, opts ...CdnOption) (*QiniuCDNProvider, error) {
+func NewQiniuCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *QiniuCDNConfig, opts ...Option) (*QiniuCDNProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -97,7 +97,7 @@ func NewQiniuCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Qiniu
 
 	p := &QiniuCDNProvider{
 		cfg:          cfg,
-		opts:         &cdnOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &QiniuCDNCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},

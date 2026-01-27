@@ -648,6 +648,68 @@ var (
 			},
 		},
 	}
+	// TunRecordColumns holds the columns for the "tun_record" table.
+	TunRecordColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "TUN记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录ID"},
+		{Name: "sub_domain", Type: field.TypeString, Comment: "子域名（如 www, blog, api）"},
+		{Name: "domain_path", Type: field.TypeString, Nullable: true, Comment: "域名路径（如 /api/v1）"},
+		{Name: "serve_type", Type: field.TypeEnum, Comment: "服务类型", Enums: []string{"http", "https", "unix", "tcp", "ssh", "rdp", "unix_tls", "smb", "http_status", "bastion"}},
+		{Name: "serve_uri", Type: field.TypeString, Nullable: true, Comment: "服务URI（如 127.0.0.1:8080）"},
+		{Name: "config_json", Type: field.TypeJSON, Nullable: true, Comment: "TUN记录配置（JSON）"},
+		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
+		{Name: "last_refresh_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次刷新成功时间"},
+		{Name: "last_api_response", Type: field.TypeString, Nullable: true, Comment: "最近一次接口的反馈"},
+		{Name: "last_api_response_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次接口的反馈时间"},
+		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
+	}
+	// TunRecordTable holds the schema information for the "tun_record" table.
+	TunRecordTable = &schema.Table{
+		Name:       "tun_record",
+		Comment:    "TUN记录",
+		Columns:    TunRecordColumns,
+		PrimaryKey: []*schema.Column{TunRecordColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tun_record_platform_config_tun_records",
+				Columns:    []*schema.Column{TunRecordColumns[13]},
+				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "tunrecord_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{TunRecordColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "tunrecord_config_id",
+				Unique:  false,
+				Columns: []*schema.Column{TunRecordColumns[13]},
+			},
+			{
+				Name:    "tunrecord_sub_domain",
+				Unique:  false,
+				Columns: []*schema.Column{TunRecordColumns[4]},
+			},
+			{
+				Name:    "tunrecord_serve_type",
+				Unique:  false,
+				Columns: []*schema.Column{TunRecordColumns[6]},
+			},
+			{
+				Name:    "tunrecord_is_active",
+				Unique:  false,
+				Columns: []*schema.Column{TunRecordColumns[9]},
+			},
+		},
+	}
 	// WebhookColumns holds the columns for the "webhook" table.
 	WebhookColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "通知序号"},
@@ -696,7 +758,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "name", Type: field.TypeString, Comment: "通知订阅名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "通知订阅描述"},
-		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"cdn_record", "dns_record", "device", "device_group", "ip_group", "domain_monitor", "ssl_record"}},
+		{Name: "obj_type", Type: field.TypeEnum, Comment: "对象类型", Enums: []string{"cdn_record", "dns_record", "device", "device_group", "ip_group", "domain_monitor", "ssl_record", "tun_record"}},
 		{Name: "obj_id", Type: field.TypeInt64, Comment: "对象主键"},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
 		{Name: "webhook_subscriptions", Type: field.TypeInt64, Nullable: true},
@@ -786,6 +848,7 @@ var (
 		PlatformConfigTable,
 		SslImportTable,
 		SslRecordTable,
+		TunRecordTable,
 		WebhookTable,
 		WebhookSubscriptionTable,
 	}
@@ -843,6 +906,10 @@ func init() {
 	SslRecordTable.ForeignKeys[0].RefTable = PlatformConfigTable
 	SslRecordTable.Annotation = &entsql.Annotation{
 		Table: "ssl_record",
+	}
+	TunRecordTable.ForeignKeys[0].RefTable = PlatformConfigTable
+	TunRecordTable.Annotation = &entsql.Annotation{
+		Table: "tun_record",
 	}
 	WebhookTable.Annotation = &entsql.Annotation{
 		Table: "webhook",

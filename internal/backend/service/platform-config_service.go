@@ -55,6 +55,7 @@ func (s *PlatformConfigServiceImpl) BuildResponse(ctx context.Context, item *ent
 	var configJson struct {
 		DomainName string `json:"domain_name,omitempty"` // 域名
 		Email      string `json:"email,omitempty"`       // 邮箱
+		AccountID  string `json:"account_id,omitempty"`  // 账号ID
 	}
 	_ = json.Unmarshal(item.ConfigJSON, &configJson)
 	resp := &types.GetPlatformConfigResponse{
@@ -66,6 +67,7 @@ func (s *PlatformConfigServiceImpl) BuildResponse(ctx context.Context, item *ent
 		ConfigJSON:           item.ConfigJSON,
 		ConfigJSONDomainName: configJson.DomainName,
 		ConfigJSONEmail:      configJson.Email,
+		ConfigJSONAccountID:  configJson.AccountID,
 
 		CreatedAt: item.CreatedAt,
 		UpdatedAt: item.UpdatedAt,

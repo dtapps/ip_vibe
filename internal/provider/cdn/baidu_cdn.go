@@ -62,7 +62,7 @@ type BaiduCDNProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
 	cfg    *BaiduCDNConfig
-	opts   *cdnOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *BaiduCDNCustomConfig
@@ -78,12 +78,12 @@ type BaiduCDNProvider struct {
 }
 
 // NewBaiduCDNProvider 创建百度云 CDN 提供程序
-func NewBaiduCDNProvider(ctx context.Context, logger *slog.Logger, cfg *BaiduCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+func NewBaiduCDNProvider(ctx context.Context, logger *slog.Logger, cfg *BaiduCDNConfig, opts ...Option) (provider.CDNProvider, error) {
 	return NewBaiduCDNProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewBaiduCDNProviderRaw 创建百度云 CDN 提供程序
-func NewBaiduCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *BaiduCDNConfig, opts ...CdnOption) (*BaiduCDNProvider, error) {
+func NewBaiduCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *BaiduCDNConfig, opts ...Option) (*BaiduCDNProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -97,7 +97,7 @@ func NewBaiduCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Baidu
 	var err error
 	p := &BaiduCDNProvider{
 		cfg:          cfg,
-		opts:         &cdnOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &BaiduCDNCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},

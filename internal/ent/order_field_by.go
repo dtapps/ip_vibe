@@ -16,6 +16,7 @@ import (
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
+	"vibe_ip/internal/ent/tunrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
 )
@@ -2868,6 +2869,331 @@ func (q *SSLRecordQuery) OrderByLastAPIResponseAtDesc() *SSLRecordQuery {
 //	    All(ctx)
 func (q *SSLRecordQuery) OrderByLastAPIResponseAtAsc() *SSLRecordQuery {
 	return q.Order(Asc(sslrecord.FieldLastAPIResponseAt))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByIDDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByIDAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldID))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByCreatedAtDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByCreatedAtAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldCreatedAt))
+}
+
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByUpdatedAtDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByUpdatedAtAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldUpdatedAt))
+}
+
+// OrderByRecordIDDesc 按字段 record_id 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByRecordIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByRecordIDDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldRecordID))
+}
+
+// OrderByRecordIDAsc 按字段 record_id 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByRecordIDAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByRecordIDAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldRecordID))
+}
+
+// OrderBySubDomainDesc 按字段 sub_domain 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderBySubDomainDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderBySubDomainDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldSubDomain))
+}
+
+// OrderBySubDomainAsc 按字段 sub_domain 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderBySubDomainAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderBySubDomainAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldSubDomain))
+}
+
+// OrderByDomainPathDesc 按字段 domain_path 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByDomainPathDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByDomainPathDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldDomainPath))
+}
+
+// OrderByDomainPathAsc 按字段 domain_path 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByDomainPathAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByDomainPathAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldDomainPath))
+}
+
+// OrderByServeTypeDesc 按字段 serve_type 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByServeTypeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByServeTypeDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldServeType))
+}
+
+// OrderByServeTypeAsc 按字段 serve_type 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByServeTypeAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByServeTypeAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldServeType))
+}
+
+// OrderByServeURIDesc 按字段 serve_uri 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByServeURIDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByServeURIDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldServeURI))
+}
+
+// OrderByServeURIAsc 按字段 serve_uri 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByServeURIAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByServeURIAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldServeURI))
+}
+
+// OrderByConfigJSONDesc 按字段 config_json 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByConfigJSONDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByConfigJSONDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldConfigJSON))
+}
+
+// OrderByConfigJSONAsc 按字段 config_json 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByConfigJSONAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByConfigJSONAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldConfigJSON))
+}
+
+// OrderByIsActiveDesc 按字段 is_active 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByIsActiveDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByIsActiveDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldIsActive))
+}
+
+// OrderByIsActiveAsc 按字段 is_active 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByIsActiveAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByIsActiveAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldIsActive))
+}
+
+// OrderByLastRefreshAtDesc 按字段 last_refresh_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByLastRefreshAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByLastRefreshAtDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldLastRefreshAt))
+}
+
+// OrderByLastRefreshAtAsc 按字段 last_refresh_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByLastRefreshAtAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByLastRefreshAtAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldLastRefreshAt))
+}
+
+// OrderByLastAPIResponseDesc 按字段 last_api_response 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByLastAPIResponseDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByLastAPIResponseDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldLastAPIResponse))
+}
+
+// OrderByLastAPIResponseAsc 按字段 last_api_response 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByLastAPIResponseAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByLastAPIResponseAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldLastAPIResponse))
+}
+
+// OrderByLastAPIResponseAtDesc 按字段 last_api_response_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByLastAPIResponseAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByLastAPIResponseAtDesc() *TUNRecordQuery {
+	return q.Order(Desc(tunrecord.FieldLastAPIResponseAt))
+}
+
+// OrderByLastAPIResponseAtAsc 按字段 last_api_response_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *TUNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.TUNRecord.Query().
+//	    OrderByLastAPIResponseAtAsc().
+//	    All(ctx)
+func (q *TUNRecordQuery) OrderByLastAPIResponseAtAsc() *TUNRecordQuery {
+	return q.Order(Asc(tunrecord.FieldLastAPIResponseAt))
 }
 
 // OrderByIDDesc 按主键 ID 降序排列查询结果。

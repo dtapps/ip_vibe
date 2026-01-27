@@ -57,7 +57,7 @@ type CloudfareDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
 	cfg    *CloudfareDNSConfig
-	opts   *dnsOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *CloudfareDNSCustomConfig
@@ -74,12 +74,12 @@ type CloudfareDNSProvider struct {
 }
 
 // NewCloudfareDNSProvider 创建Cloudfare DNS 提供程序
-func NewCloudfareDNSProvider(ctx context.Context, logger *slog.Logger, cfg *CloudfareDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+func NewCloudfareDNSProvider(ctx context.Context, logger *slog.Logger, cfg *CloudfareDNSConfig, opts ...Option) (provider.DNSProvider, error) {
 	return NewCloudfareDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewCloudfareDNSProviderRaw 创建Cloudfare DNS 提供程序
-func NewCloudfareDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *CloudfareDNSConfig, opts ...DnsOption) (*CloudfareDNSProvider, error) {
+func NewCloudfareDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *CloudfareDNSConfig, opts ...Option) (*CloudfareDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -92,7 +92,7 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *C
 
 	p := &CloudfareDNSProvider{
 		cfg:          cfg,
-		opts:         &dnsOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &CloudfareDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},

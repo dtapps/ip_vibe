@@ -172,7 +172,7 @@ async function fetchAndReplaceDnsSchema(platform, configId) {
     }
 
     // 只替换 fields，保留 label 等静态信息
-    DNS_SCHEMA[platform].fields = resp.fields;
+    DNS_SCHEMA[platform].fields = resp.fields[0];
   } catch (error) {
     console.error("加载动态 Schema 失败:", error);
   }
@@ -234,7 +234,7 @@ function renderDnsFields(platform, initialData = {}) {
  * @returns {string} - 生成的 HTML 字符串
  */
 function generateDnsFieldHtml(field, data) {
-  // 1. 自动属性映射 (根据 ID 直接映射，不写死)
+  // 1. 自动属性映射 (根据 ID 直接映射)
   let specialClass = "";
   let dataTypeAttr = "";
   let isHidden = false;
@@ -307,7 +307,8 @@ function buildConfigFromDnsFields(platform = "") {
     const fieldSchema = flatFields.find((f) => f.id === key);
     let val = el.value.trim();
 
-    if (fieldSchema?.type === "number" && val !== "") {
+    // if (fieldSchema?.type === "number" && val !== "") {
+    if (fieldSchema?.type === "number") {
       val = Number(val);
     }
     config[key] = val;

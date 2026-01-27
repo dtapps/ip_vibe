@@ -62,7 +62,7 @@ type BaiduDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
 	cfg    *BaiduDNSConfig
-	opts   *dnsOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *BaiduDNSCustomConfig
@@ -78,12 +78,12 @@ type BaiduDNSProvider struct {
 }
 
 // NewBaiduDNSProvider 创建百度云 DNS 提供程序
-func NewBaiduDNSProvider(ctx context.Context, logger *slog.Logger, cfg *BaiduDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+func NewBaiduDNSProvider(ctx context.Context, logger *slog.Logger, cfg *BaiduDNSConfig, opts ...Option) (provider.DNSProvider, error) {
 	return NewBaiduDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewBaiduDNSProviderRaw 创建百度云 DNS 提供程序
-func NewBaiduDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *BaiduDNSConfig, opts ...DnsOption) (*BaiduDNSProvider, error) {
+func NewBaiduDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *BaiduDNSConfig, opts ...Option) (*BaiduDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -97,7 +97,7 @@ func NewBaiduDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Baidu
 	var err error
 	p := &BaiduDNSProvider{
 		cfg:          cfg,
-		opts:         &dnsOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &BaiduDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},

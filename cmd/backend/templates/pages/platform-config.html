@@ -89,6 +89,10 @@
                 <span class="tooltip tooltip-primary" data-tip="邮箱">
                   {{.ConfigJSONEmail}}
                 </span>
+                {{else if eq .Capability "tun"}}
+                <span class="tooltip tooltip-primary" data-tip="账号ID">
+                  {{.ConfigJSONAccountID}}
+                </span>
                 {{else}}
                 <span class="italic text-error/70">未配置详细信息</span>
                 {{end}}
@@ -112,6 +116,8 @@
             <span class="text-accent {{ $capabilityCss }}" data-tip="{{ .Capability }}">仅 DNS</span>
             {{else if eq .Capability "ssl"}}
             <span class="text-info {{ $capabilityCss }}" data-tip="{{ .Capability }}">仅 SSL</span>
+            {{else if eq .Capability "tun"}}
+            <span class="text-success {{ $capabilityCss }}" data-tip="{{ .Capability }}">仅 TUN</span>
             {{else}}
             <span class="text-warning {{ $capabilityCss }}">{{.Capability}}</span>
             {{end}}

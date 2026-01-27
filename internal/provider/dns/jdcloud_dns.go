@@ -67,7 +67,7 @@ type JdcloudDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
 	cfg    *JdcloudDNSConfig
-	opts   *dnsOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *JdcloudDNSCustomConfig
@@ -84,12 +84,12 @@ type JdcloudDNSProvider struct {
 }
 
 // NewJdcloudDNSProvider 创建京东云 DNS 提供程序
-func NewJdcloudDNSProvider(ctx context.Context, logger *slog.Logger, cfg *JdcloudDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+func NewJdcloudDNSProvider(ctx context.Context, logger *slog.Logger, cfg *JdcloudDNSConfig, opts ...Option) (provider.DNSProvider, error) {
 	return NewJdcloudDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewJdcloudDNSProviderRaw 创建京东云 DNS 提供程序
-func NewJdcloudDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *JdcloudDNSConfig, opts ...DnsOption) (*JdcloudDNSProvider, error) {
+func NewJdcloudDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *JdcloudDNSConfig, opts ...Option) (*JdcloudDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -102,7 +102,7 @@ func NewJdcloudDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Jdc
 
 	p := &JdcloudDNSProvider{
 		cfg:          cfg,
-		opts:         &dnsOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &JdcloudDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},

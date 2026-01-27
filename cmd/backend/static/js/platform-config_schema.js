@@ -34,6 +34,13 @@ const PLATFORM_SCHEMA = {
           placeholder: "your@email.com",
           required: true,
         },
+        {
+          id: "account_id",
+          label: "账号ID",
+          type: "text",
+          placeholder: "your-account-id",
+          required: true,
+        },
       ],
     ],
   },
@@ -617,7 +624,7 @@ function renderPlatformFields(platform, capability, initialData = {}) {
  * @returns {string} - 生成的 HTML 字符串
  */
 function generatePlatformFieldHtml(field, data, capability) {
-  // 1. 自动属性映射 (根据 ID 直接映射，不写死)
+  // 1. 自动属性映射 (根据 ID 直接映射)
   let specialClass = "";
   let dataTypeAttr = "";
   let isHidden = false;

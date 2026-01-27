@@ -66,7 +66,7 @@ type HuaweiCDNProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
 	cfg    *HuaweiCDNConfig
-	opts   *cdnOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *HuaweiCDNCustomConfig
@@ -86,12 +86,12 @@ type HuaweiCDNProvider struct {
 }
 
 // NewHuaweiCDNProvider 创建华为云 CDN 提供程序
-func NewHuaweiCDNProvider(ctx context.Context, logger *slog.Logger, cfg *HuaweiCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+func NewHuaweiCDNProvider(ctx context.Context, logger *slog.Logger, cfg *HuaweiCDNConfig, opts ...Option) (provider.CDNProvider, error) {
 	return NewHuaweiCDNProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewHuaweiCDNProviderRaw 创建华为云 CDN 提供程序
-func NewHuaweiCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *HuaweiCDNConfig, opts ...CdnOption) (*HuaweiCDNProvider, error) {
+func NewHuaweiCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *HuaweiCDNConfig, opts ...Option) (*HuaweiCDNProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -105,7 +105,7 @@ func NewHuaweiCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Huaw
 	var err error
 	p := &HuaweiCDNProvider{
 		cfg:          cfg,
-		opts:         &cdnOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &HuaweiCDNCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},

@@ -24,6 +24,7 @@ import (
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
+	"vibe_ip/internal/ent/tunrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
 
@@ -66,6 +67,8 @@ type Client struct {
 	SSLImport *SSLImportClient
 	// SSLRecord is the client for interacting with the SSLRecord builders.
 	SSLRecord *SSLRecordClient
+	// TUNRecord is the client for interacting with the TUNRecord builders.
+	TUNRecord *TUNRecordClient
 	// Webhook is the client for interacting with the Webhook builders.
 	Webhook *WebhookClient
 	// WebhookSubscription is the client for interacting with the WebhookSubscription builders.
@@ -94,6 +97,7 @@ func (c *Client) init() {
 	c.PlatformConfig = NewPlatformConfigClient(c.config)
 	c.SSLImport = NewSSLImportClient(c.config)
 	c.SSLRecord = NewSSLRecordClient(c.config)
+	c.TUNRecord = NewTUNRecordClient(c.config)
 	c.Webhook = NewWebhookClient(c.config)
 	c.WebhookSubscription = NewWebhookSubscriptionClient(c.config)
 }
@@ -201,6 +205,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PlatformConfig:      NewPlatformConfigClient(cfg),
 		SSLImport:           NewSSLImportClient(cfg),
 		SSLRecord:           NewSSLRecordClient(cfg),
+		TUNRecord:           NewTUNRecordClient(cfg),
 		Webhook:             NewWebhookClient(cfg),
 		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
 	}, nil
@@ -235,6 +240,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PlatformConfig:      NewPlatformConfigClient(cfg),
 		SSLImport:           NewSSLImportClient(cfg),
 		SSLRecord:           NewSSLRecordClient(cfg),
+		TUNRecord:           NewTUNRecordClient(cfg),
 		Webhook:             NewWebhookClient(cfg),
 		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
 	}, nil
@@ -268,7 +274,8 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CDNRecord, c.Cache, c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice,
 		c.DevicePortForward, c.DomainMonitor, c.IpGroup, c.IpGroupDevice,
-		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.Webhook, c.WebhookSubscription,
+		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord, c.Webhook,
+		c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -280,7 +287,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CDNRecord, c.Cache, c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice,
 		c.DevicePortForward, c.DomainMonitor, c.IpGroup, c.IpGroupDevice,
-		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.Webhook, c.WebhookSubscription,
+		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord, c.Webhook,
+		c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -315,6 +323,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.SSLImport.mutate(ctx, m)
 	case *SSLRecordMutation:
 		return c.SSLRecord.mutate(ctx, m)
+	case *TUNRecordMutation:
+		return c.TUNRecord.mutate(ctx, m)
 	case *WebhookMutation:
 		return c.Webhook.mutate(ctx, m)
 	case *WebhookSubscriptionMutation:
@@ -2136,6 +2146,22 @@ func (c *PlatformConfigClient) QuerySslRecords(_m *PlatformConfig) *SSLRecordQue
 	return query
 }
 
+// QueryTunRecords queries the tun_records edge of a PlatformConfig.
+func (c *PlatformConfigClient) QueryTunRecords(_m *PlatformConfig) *TUNRecordQuery {
+	query := (&TUNRecordClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, id),
+			sqlgraph.To(tunrecord.Table, tunrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.TunRecordsTable, platformconfig.TunRecordsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlatformConfigClient) Hooks() []Hook {
 	hooks := c.hooks.PlatformConfig
@@ -2446,6 +2472,156 @@ func (c *SSLRecordClient) mutate(ctx context.Context, m *SSLRecordMutation) (Val
 	}
 }
 
+// TUNRecordClient is a client for the TUNRecord schema.
+type TUNRecordClient struct {
+	config
+}
+
+// NewTUNRecordClient returns a client for the TUNRecord from the given config.
+func NewTUNRecordClient(c config) *TUNRecordClient {
+	return &TUNRecordClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tunrecord.Hooks(f(g(h())))`.
+func (c *TUNRecordClient) Use(hooks ...Hook) {
+	c.hooks.TUNRecord = append(c.hooks.TUNRecord, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `tunrecord.Intercept(f(g(h())))`.
+func (c *TUNRecordClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TUNRecord = append(c.inters.TUNRecord, interceptors...)
+}
+
+// Create returns a builder for creating a TUNRecord entity.
+func (c *TUNRecordClient) Create() *TUNRecordCreate {
+	mutation := newTUNRecordMutation(c.config, OpCreate)
+	return &TUNRecordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TUNRecord entities.
+func (c *TUNRecordClient) CreateBulk(builders ...*TUNRecordCreate) *TUNRecordCreateBulk {
+	return &TUNRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TUNRecordClient) MapCreateBulk(slice any, setFunc func(*TUNRecordCreate, int)) *TUNRecordCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TUNRecordCreateBulk{err: fmt.Errorf("calling to TUNRecordClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TUNRecordCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TUNRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TUNRecord.
+func (c *TUNRecordClient) Update() *TUNRecordUpdate {
+	mutation := newTUNRecordMutation(c.config, OpUpdate)
+	return &TUNRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TUNRecordClient) UpdateOne(_m *TUNRecord) *TUNRecordUpdateOne {
+	mutation := newTUNRecordMutation(c.config, OpUpdateOne, withTUNRecord(_m))
+	return &TUNRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TUNRecordClient) UpdateOneID(id int64) *TUNRecordUpdateOne {
+	mutation := newTUNRecordMutation(c.config, OpUpdateOne, withTUNRecordID(id))
+	return &TUNRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TUNRecord.
+func (c *TUNRecordClient) Delete() *TUNRecordDelete {
+	mutation := newTUNRecordMutation(c.config, OpDelete)
+	return &TUNRecordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TUNRecordClient) DeleteOne(_m *TUNRecord) *TUNRecordDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TUNRecordClient) DeleteOneID(id int64) *TUNRecordDeleteOne {
+	builder := c.Delete().Where(tunrecord.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TUNRecordDeleteOne{builder}
+}
+
+// Query returns a query builder for TUNRecord.
+func (c *TUNRecordClient) Query() *TUNRecordQuery {
+	return &TUNRecordQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTUNRecord},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TUNRecord entity by its id.
+func (c *TUNRecordClient) Get(ctx context.Context, id int64) (*TUNRecord, error) {
+	return c.Query().Where(tunrecord.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TUNRecordClient) GetX(ctx context.Context, id int64) *TUNRecord {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryConfig queries the config edge of a TUNRecord.
+func (c *TUNRecordClient) QueryConfig(_m *TUNRecord) *PlatformConfigQuery {
+	query := (&PlatformConfigClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tunrecord.Table, tunrecord.FieldID, id),
+			sqlgraph.To(platformconfig.Table, platformconfig.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tunrecord.ConfigTable, tunrecord.ConfigColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TUNRecordClient) Hooks() []Hook {
+	hooks := c.hooks.TUNRecord
+	return append(hooks[:len(hooks):len(hooks)], tunrecord.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *TUNRecordClient) Interceptors() []Interceptor {
+	return c.inters.TUNRecord
+}
+
+func (c *TUNRecordClient) mutate(ctx context.Context, m *TUNRecordMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TUNRecordCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TUNRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TUNRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TUNRecordDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TUNRecord mutation op: %q", m.Op())
+	}
+}
+
 // WebhookClient is a client for the Webhook schema.
 type WebhookClient struct {
 	config
@@ -2751,12 +2927,12 @@ type (
 	hooks struct {
 		CDNRecord, Cache, DNSRecord, Device, DeviceGroup, DeviceGroupDevice,
 		DevicePortForward, DomainMonitor, IpGroup, IpGroupDevice, PlatformConfig,
-		SSLImport, SSLRecord, Webhook, WebhookSubscription []ent.Hook
+		SSLImport, SSLRecord, TUNRecord, Webhook, WebhookSubscription []ent.Hook
 	}
 	inters struct {
 		CDNRecord, Cache, DNSRecord, Device, DeviceGroup, DeviceGroupDevice,
 		DevicePortForward, DomainMonitor, IpGroup, IpGroupDevice, PlatformConfig,
-		SSLImport, SSLRecord, Webhook, WebhookSubscription []ent.Interceptor
+		SSLImport, SSLRecord, TUNRecord, Webhook, WebhookSubscription []ent.Interceptor
 	}
 )
 

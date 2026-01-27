@@ -393,6 +393,7 @@ func (s *DeviceGroupServiceImpl) GetDeviceGroupDevices(ctx context.Context, id i
 
 // HealthcheckDeviceGroup 检查设备组健康状态
 func (s *DeviceGroupServiceImpl) HealthcheckDeviceGroup(ctx context.Context, id int64) ([][]ToPairsStruct, error) {
+
 	// 查询设备组
 	firstDeviceGroup, err := s.db.DeviceGroup.Query().
 		Where(devicegroup.IDEQ(id)).
@@ -410,7 +411,7 @@ func (s *DeviceGroupServiceImpl) HealthcheckDeviceGroup(ctx context.Context, id 
 
 	// 并发检查
 	eg, egCtx := errgroup.WithContext(ctx)
-	eg.SetLimit(10) // 最多 10 个并发 (保持原始限制)
+	eg.SetLimit(10) // 最多 10 个并发
 
 	for _, item := range firstDeviceGroup.Edges.Devices {
 		item := item // 创建副本以避免闭包问题

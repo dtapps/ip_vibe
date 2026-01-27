@@ -4,17 +4,17 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 )
 
-// CdnOption 定义CDN配置选项函数类型
-type CdnOption func(*cdnOptions)
+// Option 定义CDN配置选项函数类型
+type Option func(*Options)
 
 // cdnOptions 内部CDN配置选项
-type cdnOptions struct {
+type Options struct {
 	httpTransport *http_log.LoggingRoundTripper
 }
 
 // WithHttpTransport 设置HTTP日志传输器
-func WithHttpTransport(transport *http_log.LoggingRoundTripper) CdnOption {
-	return func(o *cdnOptions) {
+func WithHttpTransport(transport *http_log.LoggingRoundTripper) Option {
+	return func(o *Options) {
 		o.httpTransport = transport
 	}
 }

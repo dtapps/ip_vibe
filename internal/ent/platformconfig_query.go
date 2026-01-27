@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/sslrecord"
+	"vibe_ip/internal/ent/tunrecord"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -29,10 +30,12 @@ type PlatformConfigQuery struct {
 	withDNSRecords      *DNSRecordQuery
 	withCdnRecords      *CDNRecordQuery
 	withSslRecords      *SSLRecordQuery
+	withTunRecords      *TUNRecordQuery
 	modifiers           []func(*sql.Selector)
 	withNamedDNSRecords map[string]*DNSRecordQuery
 	withNamedCdnRecords map[string]*CDNRecordQuery
 	withNamedSslRecords map[string]*SSLRecordQuery
+	withNamedTunRecords map[string]*TUNRecordQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -128,6 +131,28 @@ func (_q *PlatformConfigQuery) QuerySslRecords() *SSLRecordQuery {
 			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, selector),
 			sqlgraph.To(sslrecord.Table, sslrecord.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.SslRecordsTable, platformconfig.SslRecordsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTunRecords chains the current query on the "tun_records" edge.
+func (_q *PlatformConfigQuery) QueryTunRecords() *TUNRecordQuery {
+	query := (&TUNRecordClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, selector),
+			sqlgraph.To(tunrecord.Table, tunrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.TunRecordsTable, platformconfig.TunRecordsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -330,6 +355,7 @@ func (_q *PlatformConfigQuery) Clone() *PlatformConfigQuery {
 		withDNSRecords: _q.withDNSRecords.Clone(),
 		withCdnRecords: _q.withCdnRecords.Clone(),
 		withSslRecords: _q.withSslRecords.Clone(),
+		withTunRecords: _q.withTunRecords.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -367,6 +393,17 @@ func (_q *PlatformConfigQuery) WithSslRecords(opts ...func(*SSLRecordQuery)) *Pl
 		opt(query)
 	}
 	_q.withSslRecords = query
+	return _q
+}
+
+// WithTunRecords tells the query-builder to eager-load the nodes that are connected to
+// the "tun_records" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *PlatformConfigQuery) WithTunRecords(opts ...func(*TUNRecordQuery)) *PlatformConfigQuery {
+	query := (&TUNRecordClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withTunRecords = query
 	return _q
 }
 
@@ -448,10 +485,11 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	var (
 		nodes       = []*PlatformConfig{}
 		_spec       = _q.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			_q.withDNSRecords != nil,
 			_q.withCdnRecords != nil,
 			_q.withSslRecords != nil,
+			_q.withTunRecords != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -511,6 +549,18 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			return nil, err
 		}
 	}
+	if query := _q.withTunRecords; query != nil {
+		if err := _q.loadTunRecords(ctx, query, nodes,
+			func(n *PlatformConfig) { n.Edges.TunRecords = []*TUNRecord{} },
+			func(n *PlatformConfig, e *TUNRecord) {
+				n.Edges.TunRecords = append(n.Edges.TunRecords, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Config = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range _q.withNamedDNSRecords {
 		if err := _q.loadDNSRecords(ctx, query, nodes,
 			func(n *PlatformConfig) { n.appendNamedDNSRecords(name) },
@@ -540,6 +590,18 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			func(n *PlatformConfig) { n.appendNamedSslRecords(name) },
 			func(n *PlatformConfig, e *SSLRecord) {
 				n.appendNamedSslRecords(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Config = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedTunRecords {
+		if err := _q.loadTunRecords(ctx, query, nodes,
+			func(n *PlatformConfig) { n.appendNamedTunRecords(name) },
+			func(n *PlatformConfig, e *TUNRecord) {
+				n.appendNamedTunRecords(name, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.Config = n
 				}
@@ -625,6 +687,36 @@ func (_q *PlatformConfigQuery) loadSslRecords(ctx context.Context, query *SSLRec
 	}
 	query.Where(predicate.SSLRecord(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(platformconfig.SslRecordsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ConfigID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "config_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *PlatformConfigQuery) loadTunRecords(ctx context.Context, query *TUNRecordQuery, nodes []*PlatformConfig, init func(*PlatformConfig), assign func(*PlatformConfig, *TUNRecord)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*PlatformConfig)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(tunrecord.FieldConfigID)
+	}
+	query.Where(predicate.TUNRecord(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(platformconfig.TunRecordsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -773,6 +865,20 @@ func (_q *PlatformConfigQuery) WithNamedSslRecords(name string, opts ...func(*SS
 		_q.withNamedSslRecords = make(map[string]*SSLRecordQuery)
 	}
 	_q.withNamedSslRecords[name] = query
+	return _q
+}
+
+// WithNamedTunRecords tells the query-builder to eager-load the nodes that are connected to the "tun_records"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *PlatformConfigQuery) WithNamedTunRecords(name string, opts ...func(*TUNRecordQuery)) *PlatformConfigQuery {
+	query := (&TUNRecordClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedTunRecords == nil {
+		_q.withNamedTunRecords = make(map[string]*TUNRecordQuery)
+	}
+	_q.withNamedTunRecords[name] = query
 	return _q
 }
 

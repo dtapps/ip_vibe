@@ -393,6 +393,7 @@ func (s *IPGroupServiceImpl) GetIPGroupDevices(ctx context.Context, id int64) ([
 
 // HealthcheckIPGroup 检查IP组健康状态
 func (s *IPGroupServiceImpl) HealthcheckIPGroup(ctx context.Context, id int64) ([][]ToPairsStruct, error) {
+
 	// 查询IP组
 	firstIpGroup, err := s.db.IpGroup.Query().
 		Where(ipgroup.IDEQ(id)).
@@ -410,7 +411,7 @@ func (s *IPGroupServiceImpl) HealthcheckIPGroup(ctx context.Context, id int64) (
 
 	// 并发检查
 	eg, egCtx := errgroup.WithContext(ctx)
-	eg.SetLimit(10) // 最多 10 个并发 (保持原始限制)
+	eg.SetLimit(10) // 最多 10 个并发
 
 	for _, item := range firstIpGroup.Edges.Devices {
 		item := item // 创建副本以避免闭包问题

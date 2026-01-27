@@ -114,6 +114,16 @@ definitions:
     required:
     - ids
     type: object
+  vibe_ip_internal_types.BatchDeleteTunRecordRequest:
+    properties:
+      ids:
+        description: TUN记录序号列表
+        items:
+          type: integer
+        type: array
+    required:
+    - ids
+    type: object
   vibe_ip_internal_types.BatchDeleteWebhookRequest:
     properties:
       ids:
@@ -190,6 +200,19 @@ definitions:
     properties:
       ids:
         description: SSL记录序号列表
+        items:
+          type: integer
+        type: array
+      is_active:
+        description: 是否活跃
+        type: boolean
+    required:
+    - ids
+    type: object
+  vibe_ip_internal_types.BatchUpdateTunRecordActiveRequest:
+    properties:
+      ids:
+        description: TUN记录序号列表
         items:
           type: integer
         type: array
@@ -476,6 +499,37 @@ definitions:
     - config_id
     - domain
     - provider
+    type: object
+  vibe_ip_internal_types.CreateTunRecordRequest:
+    properties:
+      config_id:
+        description: 平台配置序号
+        type: integer
+      config_json:
+        description: TUN记录配置（JSON）
+        type: string
+      domain_path:
+        description: 域名路径（如 /api/v1）
+        type: string
+      serve_type:
+        description: 服务类型（如 HTTP、HTTPS）
+        type: string
+      serve_uri:
+        description: 服务URI（如 127.0.0.1:8080）
+        type: string
+      sub_domain:
+        description: 子域名（如 www, blog, api）
+        type: string
+      webhook_ids:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    required:
+    - config_id
+    - serve_type
+    - serve_uri
+    - sub_domain
     type: object
   vibe_ip_internal_types.CreateWebhookRequest:
     properties:
@@ -1163,6 +1217,64 @@ definitions:
         description: 统计数据保留时间（天，默认 365 天）
         type: integer
     type: object
+  vibe_ip_internal_types.GetTunRecordResponse:
+    properties:
+      config_id:
+        description: 平台配置序号
+        type: integer
+      config_json:
+        description: TUN记录配置（JSON）
+        items:
+          type: integer
+        type: array
+      config_name:
+        description: 平台配置名称
+        type: string
+      domain_name:
+        description: 域名（如 www.example.com）
+        type: string
+      domain_path:
+        description: 域名路径（如 /api/v1）
+        type: string
+      id:
+        description: TUN记录序号
+        type: integer
+      is_active:
+        description: 是否活跃
+        type: boolean
+      last_refresh_at:
+        description: 最后一次刷新成功时间
+        type: string
+      platform:
+        description: 平台平台名称
+        type: string
+      record_id:
+        description: 平台侧记录ID
+      serve_type:
+        description: 服务类型（如 HTTP、HTTPS）
+        type: string
+      serve_uri:
+        description: 服务URI（如 127.0.0.1:8080）
+        type: string
+      sub_domain:
+        description: 子域名（如 www, blog, api）
+        type: string
+      webhooks:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    type: object
+  vibe_ip_internal_types.GetTunRecordSchemaResponse:
+    properties:
+      fields:
+        description: 字段列表
+        items:
+          items:
+            type: integer
+          type: array
+        type: array
+    type: object
   vibe_ip_internal_types.GetWebhookResponse:
     properties:
       description:
@@ -1630,6 +1742,44 @@ definitions:
       statistic_data_retain_time:
         description: 统计数据保留时间（天，默认 365 天）
         type: integer
+    type: object
+  vibe_ip_internal_types.UpdateTunRecordActiveRequest:
+    properties:
+      id:
+        description: TUN记录序号
+        type: integer
+      is_active:
+        description: 是否活跃
+        type: boolean
+    required:
+    - id
+    type: object
+  vibe_ip_internal_types.UpdateTunRecordRequest:
+    properties:
+      config_json:
+        description: TUN记录配置（JSON）
+        type: string
+      domain_path:
+        description: 域名路径（如 /api/v1）
+        type: string
+      id:
+        description: TUN记录序号
+        type: integer
+      serve_type:
+        description: 服务类型（如 HTTP、HTTPS）
+        type: string
+      serve_uri:
+        description: 服务URI（如 127.0.0.1:8080）
+        type: string
+      webhook_ids:
+        description: 关联的 Webhook 列表
+        items:
+          type: integer
+        type: array
+    required:
+    - id
+    - serve_type
+    - serve_uri
     type: object
   vibe_ip_internal_types.UpdateWebhookActiveRequest:
     properties:
@@ -4136,6 +4286,46 @@ paths:
       summary: 获取平台配置Schema
       tags:
       - Schema
+  /schemas/{config_type}/tun-record/{config_id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取TUN记录Schema
+      parameters:
+      - description: 平台类型
+        in: path
+        name: config_type
+        required: true
+        type: string
+      - description: 平台配置ID
+        format: int64
+        in: path
+        name: config_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetTunRecordSchemaResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取TUN记录Schema
+      tags:
+      - Schema
   /settings:
     get:
       consumes:
@@ -4887,6 +5077,265 @@ paths:
       summary: 停止调度器
       tags:
       - 任务
+  /tun-records:
+    get:
+      consumes:
+      - application/json
+      description: 获取全部TUN记录
+      parameters:
+      - description: 是否活跃
+        in: query
+        name: is_active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetTunRecordResponse'
+                  type: array
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取全部TUN记录
+      tags:
+      - TUN记录
+    post:
+      consumes:
+      - application/json
+      description: 创建TUN记录
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.CreateTunRecordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 创建TUN记录
+      tags:
+      - TUN记录
+  /tun-records/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除TUN记录
+      parameters:
+      - description: TUN记录序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 删除TUN记录
+      tags:
+      - TUN记录
+    get:
+      consumes:
+      - application/json
+      description: 获取TUN记录详情
+      parameters:
+      - description: TUN记录序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetTunRecordResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取TUN记录详情
+      tags:
+      - TUN记录
+    patch:
+      consumes:
+      - application/json
+      description: 更新TUN记录
+      parameters:
+      - description: TUN记录序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.UpdateTunRecordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 更新TUN记录
+      tags:
+      - TUN记录
+  /tun-records/{id}/active:
+    patch:
+      consumes:
+      - application/json
+      description: 更新TUN记录启用状态
+      parameters:
+      - description: TUN记录序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.UpdateTunRecordActiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 更新TUN记录启用状态
+      tags:
+      - TUN记录
+  /tun-records/batch:
+    delete:
+      consumes:
+      - application/json
+      description: 批量删除TUN记录
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchDeleteTunRecordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 批量删除TUN记录
+      tags:
+      - TUN记录
+  /tun-records/batch/active:
+    patch:
+      consumes:
+      - application/json
+      description: 批量更新TUN记录启用状态
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchUpdateTunRecordActiveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 批量更新TUN记录启用状态
+      tags:
+      - TUN记录
   /webhook-subs:
     get:
       consumes:

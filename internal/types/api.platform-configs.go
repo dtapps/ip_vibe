@@ -20,6 +20,7 @@ type GetPlatformConfigResponse struct {
 
 	ConfigJSONDomainName string `json:"-"` // 配置平台域名
 	ConfigJSONEmail      string `json:"-"` // 配置平台邮箱
+	ConfigJSONAccountID  string `json:"-"` // 配置平台账号ID
 
 	CreatedAt time.Time `json:"-"` // 创建时间
 	UpdatedAt time.Time `json:"-"` // 更新时间

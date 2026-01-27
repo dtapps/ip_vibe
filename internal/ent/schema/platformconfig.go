@@ -100,6 +100,14 @@ func (PlatformConfig) Edges() []ent.Edge {
 				// 级联删除：删除 PlatformConfig 时，其所有 SSLRecord 记录也应删除
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
+
+		// 一对多 PlatformConfig -> TUNRecord
+		edge.To("tun_records", TUNRecord.Type).
+			Comment("关联的TUN记录").
+			Annotations(entsql.Annotation{
+				// 级联删除：删除 PlatformConfig 时，其所有 TUNRecord 记录也应删除
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
 	}
 }
 

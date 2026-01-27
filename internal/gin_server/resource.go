@@ -115,6 +115,11 @@ var EnumRegistry = map[string]EnumDefinition{
 		Values:       schematype.GetSSLImportStatuss,
 		Descriptions: schematype.GetSSLImportStatusDescriptions,
 	},
+	// TUN记录 服务类型
+	"tun_serve_type": {
+		Values:       schematype.GetTUNRecordServeTypes,
+		Descriptions: schematype.GetTUNRecordServeTypeDescriptions,
+	},
 }
 
 // 将原 main.go 的 funcMap 逻辑移入此处

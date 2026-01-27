@@ -71,7 +71,7 @@ type HuaweiDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
 	cfg    *HuaweiDNSConfig
-	opts   *dnsOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *HuaweiDNSCustomConfig
@@ -91,12 +91,12 @@ type HuaweiDNSProvider struct {
 }
 
 // NewHuaweiDNSProvider 创建华为云 DNS 提供程序
-func NewHuaweiDNSProvider(ctx context.Context, logger *slog.Logger, cfg *HuaweiDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+func NewHuaweiDNSProvider(ctx context.Context, logger *slog.Logger, cfg *HuaweiDNSConfig, opts ...Option) (provider.DNSProvider, error) {
 	return NewHuaweiDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewHuaweiDNSProviderRaw 创建华为云 DNS 提供程序
-func NewHuaweiDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *HuaweiDNSConfig, opts ...DnsOption) (*HuaweiDNSProvider, error) {
+func NewHuaweiDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *HuaweiDNSConfig, opts ...Option) (*HuaweiDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -110,7 +110,7 @@ func NewHuaweiDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Huaw
 	var err error
 	p := &HuaweiDNSProvider{
 		cfg:          cfg,
-		opts:         &dnsOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &HuaweiDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},

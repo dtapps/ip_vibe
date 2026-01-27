@@ -14,6 +14,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/spf13/cast"
+	"github.com/tidwall/gjson"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -83,10 +84,7 @@ func (s *DNSRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.DNSR
 		resp.Platform = config.Platform.String()
 		// 从平台配置中获取 ConfigJSON 里的 Domain
 		if len(config.ConfigJSON) > 0 {
-			configJSON, err := schematype.ParsePCJODomainName(config.ConfigJSON)
-			if err == nil {
-				resp.DomainName = configJSON.DomainName
-			}
+			resp.DomainName = gjson.GetBytes(config.ConfigJSON, "domain_name").String()
 		}
 	}
 
@@ -167,7 +165,7 @@ func (s *DNSRecordServiceImpl) GetDnsRecord(ctx context.Context, id int64) (*typ
 
 // CreateDnsRecord 创建DNS记录
 func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *types.CreateDnsRecordRequest) error {
-	// 创建DNS记录 (保持原始的链式设置逻辑)
+	// 创建DNS记录
 	createDnsRecord := s.db.DNSRecord.Create().
 		SetConfigID(request.ConfigID).
 		SetSubDomain(request.SubDomain).
@@ -209,7 +207,7 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 		return fmt.Errorf("查询DNS记录失败: %w", err)
 	}
 
-	// 更新DNS记录 (保持原始的链式设置逻辑)
+	// 更新DNS记录
 	updateDnsRecord := s.db.DNSRecord.UpdateOne(firstDnsRecord).
 		SetType(dnsrecord.Type(request.Type)).
 		SetConfigJSON([]byte(request.ConfigJSON))
@@ -378,6 +376,7 @@ func (s *DNSRecordServiceImpl) BatchDeleteDnsRecord(ctx context.Context, ids []i
 
 // HealthcheckDnsRecord 检查DNS记录健康状态
 func (s *DNSRecordServiceImpl) HealthcheckDnsRecord(ctx context.Context, id int64) ([][]ToPairsStruct, error) {
+
 	// 查询DNS记录
 	firstDnsRecord, err := s.db.DNSRecord.Query().
 		Where(dnsrecord.IDEQ(id)).
@@ -395,7 +394,7 @@ func (s *DNSRecordServiceImpl) HealthcheckDnsRecord(ctx context.Context, id int6
 
 	// 并发检查
 	eg, egCtx := errgroup.WithContext(ctx)
-	eg.SetLimit(10) // 最多 10 个并发 (保持原始限制)
+	eg.SetLimit(10) // 最多 10 个并发
 
 	if firstDnsRecord.SubDomain != "" {
 		// 将实体转换为响应

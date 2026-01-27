@@ -15,6 +15,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/spf13/cast"
+	"github.com/tidwall/gjson"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -84,10 +85,7 @@ func (s *CDNRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.CDNR
 		resp.Platform = config.Platform.String()
 		// 从平台配置中获取 ConfigJSON 里的 Domain
 		if len(config.ConfigJSON) > 0 {
-			configJSON, err := schematype.ParsePCJODomainName(config.ConfigJSON)
-			if err == nil {
-				resp.DomainName = configJSON.DomainName
-			}
+			resp.DomainName = gjson.GetBytes(config.ConfigJSON, "domain_name").String()
 		}
 	}
 
@@ -355,6 +353,7 @@ func (s *CDNRecordServiceImpl) BatchDeleteCdnRecord(ctx context.Context, ids []i
 
 // HealthcheckCdnRecord 检查 CDN 记录健康状态
 func (s *CDNRecordServiceImpl) HealthcheckCdnRecord(ctx context.Context, id int64) ([][]ToPairsStruct, error) {
+
 	// 查询CDN记录
 	firstCdnRecord, err := s.db.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(id)).

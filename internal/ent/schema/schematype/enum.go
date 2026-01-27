@@ -188,6 +188,7 @@ const (
 	WebhookSubscriptionObjTypeIPGroup       string = "ip_group"       // IP组
 	WebhookSubscriptionObjTypeDomainMonitor string = "domain_monitor" // 域名监控
 	WebhookSubscriptionObjTypeSSLRecord     string = "ssl_record"     // SSL记录
+	WebhookSubscriptionObjTypeTUNRecord     string = "tun_record"     // TUN记录
 )
 
 // GetWebhookSubscriptionObjTypeDescriptions Webhook 订阅对象类型说明映射
@@ -199,6 +200,7 @@ var GetWebhookSubscriptionObjTypeDescriptions = map[string]string{
 	WebhookSubscriptionObjTypeIPGroup:       "IP组",
 	WebhookSubscriptionObjTypeDomainMonitor: "域名监控",
 	WebhookSubscriptionObjTypeSSLRecord:     "SSL记录",
+	WebhookSubscriptionObjTypeTUNRecord:     "TUN记录",
 }
 
 // GetWebhookSubscriptionObjTypes 返回所有 Webhook 订阅对象类型
@@ -210,6 +212,7 @@ var GetWebhookSubscriptionObjTypes = []string{
 	WebhookSubscriptionObjTypeIPGroup,
 	WebhookSubscriptionObjTypeDomainMonitor,
 	WebhookSubscriptionObjTypeSSLRecord,
+	WebhookSubscriptionObjTypeTUNRecord,
 }
 
 // --------
@@ -366,6 +369,7 @@ const (
 	LogObjTypePlatformConfig      string = "PlatformConfig"      // 平台配置
 	LogObjTypeSSLImport           string = "SSLImport"           // SSL导入
 	LogObjTypeSSLRecord           string = "SSLRecord"           // SSL记录
+	LogObjTypeTUNRecord           string = "TUNRecord"           // TUN记录
 	LogObjTypeWebhook             string = "Webhook"             // 通知
 	LogObjTypeWebhookSubscription string = "WebhookSubscription" // 通知订阅
 
@@ -399,6 +403,7 @@ var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypePlatformConfig:      "平台配置",
 	LogObjTypeSSLImport:           "SSL导入",
 	LogObjTypeSSLRecord:           "SSL记录",
+	LogObjTypeTUNRecord:           "TUN记录",
 	LogObjTypeWebhook:             "通知",
 	LogObjTypeWebhookSubscription: "通知订阅",
 
@@ -429,6 +434,7 @@ var GetLogObjTypes = []string{
 	LogObjTypePlatformConfig,
 	LogObjTypeSSLImport,
 	LogObjTypeSSLRecord,
+	LogObjTypeTUNRecord,
 	LogObjTypeWebhook,
 	LogObjTypeWebhookSubscription,
 
@@ -618,4 +624,47 @@ var GetSSLImportStatuss = []string{
 	SSLImportStatusExpired,
 	SSLImportStatusRevoked,
 	SSLImportStatusPending,
+}
+
+// --------
+
+const (
+	TUNRecordServeTypeHTTP        string = "http"        // HTTP
+	TUNRecordServeTypeHTTPS       string = "https"       // HTTPS
+	TUNRecordServeTypeUNIX        string = "unix"        // UNIX
+	TUNRecordServeTypeTCP         string = "tcp"         // TCP
+	TUNRecordServeTypeSSH         string = "ssh"         // SSH
+	TUNRecordServeTypeRDP         string = "rdp"         // RDP
+	TUNRecordServeTypeUNIX_TLS    string = "unix_tls"    // UNIX+TLS
+	TUNRecordServeTypeSMB         string = "smb"         // SMB
+	TUNRecordServeTypeHTTP_STATUS string = "http_status" // HTTP状态
+	TUNRecordServeTypeBASTION     string = "bastion"     // Bastion 主机
+)
+
+// GetTUNRecordServeTypeDescriptions 服务类型说明映射
+var GetTUNRecordServeTypeDescriptions = map[string]string{
+	TUNRecordServeTypeHTTP:        "HTTP",
+	TUNRecordServeTypeHTTPS:       "HTTPS",
+	TUNRecordServeTypeUNIX:        "UNIX",
+	TUNRecordServeTypeTCP:         "TCP",
+	TUNRecordServeTypeSSH:         "SSH",
+	TUNRecordServeTypeRDP:         "RDP",
+	TUNRecordServeTypeUNIX_TLS:    "UNIX+TLS",
+	TUNRecordServeTypeSMB:         "SMB",
+	TUNRecordServeTypeHTTP_STATUS: "HTTP状态",
+	TUNRecordServeTypeBASTION:     "Bastion主机",
+}
+
+// GetTUNRecordServeTypes 返回所有服务类型
+var GetTUNRecordServeTypes = []string{
+	TUNRecordServeTypeHTTP,
+	TUNRecordServeTypeHTTPS,
+	TUNRecordServeTypeUNIX,
+	TUNRecordServeTypeTCP,
+	TUNRecordServeTypeSSH,
+	TUNRecordServeTypeRDP,
+	TUNRecordServeTypeUNIX_TLS,
+	TUNRecordServeTypeSMB,
+	TUNRecordServeTypeHTTP_STATUS,
+	TUNRecordServeTypeBASTION,
 }

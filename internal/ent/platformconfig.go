@@ -47,12 +47,15 @@ type PlatformConfigEdges struct {
 	CdnRecords []*CDNRecord `json:"cdn_records,omitempty"`
 	// 关联的SSL记录
 	SslRecords []*SSLRecord `json:"ssl_records,omitempty"`
+	// 关联的TUN记录
+	TunRecords []*TUNRecord `json:"tun_records,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes     [3]bool
+	loadedTypes     [4]bool
 	namedDNSRecords map[string][]*DNSRecord
 	namedCdnRecords map[string][]*CDNRecord
 	namedSslRecords map[string][]*SSLRecord
+	namedTunRecords map[string][]*TUNRecord
 }
 
 // DNSRecordsOrErr returns the DNSRecords value or an error if the edge
@@ -80,6 +83,15 @@ func (e PlatformConfigEdges) SslRecordsOrErr() ([]*SSLRecord, error) {
 		return e.SslRecords, nil
 	}
 	return nil, &NotLoadedError{edge: "ssl_records"}
+}
+
+// TunRecordsOrErr returns the TunRecords value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlatformConfigEdges) TunRecordsOrErr() ([]*TUNRecord, error) {
+	if e.loadedTypes[3] {
+		return e.TunRecords, nil
+	}
+	return nil, &NotLoadedError{edge: "tun_records"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -186,6 +198,11 @@ func (_m *PlatformConfig) QueryCdnRecords() *CDNRecordQuery {
 // QuerySslRecords queries the "ssl_records" edge of the PlatformConfig entity.
 func (_m *PlatformConfig) QuerySslRecords() *SSLRecordQuery {
 	return NewPlatformConfigClient(_m.config).QuerySslRecords(_m)
+}
+
+// QueryTunRecords queries the "tun_records" edge of the PlatformConfig entity.
+func (_m *PlatformConfig) QueryTunRecords() *TUNRecordQuery {
+	return NewPlatformConfigClient(_m.config).QueryTunRecords(_m)
 }
 
 // Update returns a builder for updating this PlatformConfig.
@@ -303,6 +320,30 @@ func (_m *PlatformConfig) appendNamedSslRecords(name string, edges ...*SSLRecord
 		_m.Edges.namedSslRecords[name] = []*SSLRecord{}
 	} else {
 		_m.Edges.namedSslRecords[name] = append(_m.Edges.namedSslRecords[name], edges...)
+	}
+}
+
+// NamedTunRecords returns the TunRecords named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *PlatformConfig) NamedTunRecords(name string) ([]*TUNRecord, error) {
+	if _m.Edges.namedTunRecords == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedTunRecords[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *PlatformConfig) appendNamedTunRecords(name string, edges ...*TUNRecord) {
+	if _m.Edges.namedTunRecords == nil {
+		_m.Edges.namedTunRecords = make(map[string][]*TUNRecord)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedTunRecords[name] = []*TUNRecord{}
+	} else {
+		_m.Edges.namedTunRecords[name] = append(_m.Edges.namedTunRecords[name], edges...)
 	}
 }
 

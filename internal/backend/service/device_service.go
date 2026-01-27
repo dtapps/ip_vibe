@@ -339,6 +339,7 @@ func (s *DeviceServiceImpl) GetDeviceIpHistory(ctx context.Context, id int64) ([
 
 // HealthcheckDevice 检查设备健康状态
 func (s *DeviceServiceImpl) HealthcheckDevice(ctx context.Context, id int64) ([][]ToPairsStruct, error) {
+
 	// 查询设备
 	firstDevice, err := s.db.Device.Query().
 		Where(device.IDEQ(id)).
@@ -355,7 +356,7 @@ func (s *DeviceServiceImpl) HealthcheckDevice(ctx context.Context, id int64) ([]
 
 	// 并发检查
 	eg, egCtx := errgroup.WithContext(ctx)
-	eg.SetLimit(10) // 最多 10 个并发 (保持原始限制)
+	eg.SetLimit(10) // 最多 10 个并发
 
 	if firstDevice.IPV4 != "" {
 		// 检测 IP 是否可通过 HTTP/HTTPS 访问

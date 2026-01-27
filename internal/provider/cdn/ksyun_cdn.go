@@ -60,7 +60,7 @@ type KsyunCDNProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
 	cfg    *KsyunCDNConfig
-	opts   *cdnOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *KsyunCDNCustomConfig
@@ -78,12 +78,12 @@ type KsyunCDNProvider struct {
 }
 
 // NewKsyunCDNProvider 创建金山云 CDN 提供程序
-func NewKsyunCDNProvider(ctx context.Context, logger *slog.Logger, cfg *KsyunCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+func NewKsyunCDNProvider(ctx context.Context, logger *slog.Logger, cfg *KsyunCDNConfig, opts ...Option) (provider.CDNProvider, error) {
 	return NewKsyunCDNProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewKsyunCDNProviderRaw 创建金山云 CDN 提供程序
-func NewKsyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *KsyunCDNConfig, opts ...CdnOption) (*KsyunCDNProvider, error) {
+func NewKsyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *KsyunCDNConfig, opts ...Option) (*KsyunCDNProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -97,7 +97,7 @@ func NewKsyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Ksyun
 	var err error
 	p := &KsyunCDNProvider{
 		cfg:          cfg,
-		opts:         &cdnOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &KsyunCDNCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},

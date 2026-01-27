@@ -23,6 +23,7 @@ import (
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
+	"vibe_ip/internal/ent/tunrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
 
@@ -52,6 +53,7 @@ const (
 	TypePlatformConfig      = "PlatformConfig"
 	TypeSSLImport           = "SSLImport"
 	TypeSSLRecord           = "SSLRecord"
+	TypeTUNRecord           = "TUNRecord"
 	TypeWebhook             = "Webhook"
 	TypeWebhookSubscription = "WebhookSubscription"
 )
@@ -8992,6 +8994,9 @@ type PlatformConfigMutation struct {
 	ssl_records        map[int64]struct{}
 	removedssl_records map[int64]struct{}
 	clearedssl_records bool
+	tun_records        map[int64]struct{}
+	removedtun_records map[int64]struct{}
+	clearedtun_records bool
 	done               bool
 	oldValue           func(context.Context) (*PlatformConfig, error)
 	predicates         []predicate.PlatformConfig
@@ -9557,6 +9562,60 @@ func (m *PlatformConfigMutation) ResetSslRecords() {
 	m.removedssl_records = nil
 }
 
+// AddTunRecordIDs adds the "tun_records" edge to the TUNRecord entity by ids.
+func (m *PlatformConfigMutation) AddTunRecordIDs(ids ...int64) {
+	if m.tun_records == nil {
+		m.tun_records = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.tun_records[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTunRecords clears the "tun_records" edge to the TUNRecord entity.
+func (m *PlatformConfigMutation) ClearTunRecords() {
+	m.clearedtun_records = true
+}
+
+// TunRecordsCleared reports if the "tun_records" edge to the TUNRecord entity was cleared.
+func (m *PlatformConfigMutation) TunRecordsCleared() bool {
+	return m.clearedtun_records
+}
+
+// RemoveTunRecordIDs removes the "tun_records" edge to the TUNRecord entity by IDs.
+func (m *PlatformConfigMutation) RemoveTunRecordIDs(ids ...int64) {
+	if m.removedtun_records == nil {
+		m.removedtun_records = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.tun_records, ids[i])
+		m.removedtun_records[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTunRecords returns the removed IDs of the "tun_records" edge to the TUNRecord entity.
+func (m *PlatformConfigMutation) RemovedTunRecordsIDs() (ids []int64) {
+	for id := range m.removedtun_records {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TunRecordsIDs returns the "tun_records" edge IDs in the mutation.
+func (m *PlatformConfigMutation) TunRecordsIDs() (ids []int64) {
+	for id := range m.tun_records {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTunRecords resets all changes to the "tun_records" edge.
+func (m *PlatformConfigMutation) ResetTunRecords() {
+	m.tun_records = nil
+	m.clearedtun_records = false
+	m.removedtun_records = nil
+}
+
 // Where appends a list predicates to the PlatformConfigMutation builder.
 func (m *PlatformConfigMutation) Where(ps ...predicate.PlatformConfig) {
 	m.predicates = append(m.predicates, ps...)
@@ -9807,7 +9866,7 @@ func (m *PlatformConfigMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlatformConfigMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.dns_records != nil {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
@@ -9816,6 +9875,9 @@ func (m *PlatformConfigMutation) AddedEdges() []string {
 	}
 	if m.ssl_records != nil {
 		edges = append(edges, platformconfig.EdgeSslRecords)
+	}
+	if m.tun_records != nil {
+		edges = append(edges, platformconfig.EdgeTunRecords)
 	}
 	return edges
 }
@@ -9842,13 +9904,19 @@ func (m *PlatformConfigMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case platformconfig.EdgeTunRecords:
+		ids := make([]ent.Value, 0, len(m.tun_records))
+		for id := range m.tun_records {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlatformConfigMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removeddns_records != nil {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
@@ -9857,6 +9925,9 @@ func (m *PlatformConfigMutation) RemovedEdges() []string {
 	}
 	if m.removedssl_records != nil {
 		edges = append(edges, platformconfig.EdgeSslRecords)
+	}
+	if m.removedtun_records != nil {
+		edges = append(edges, platformconfig.EdgeTunRecords)
 	}
 	return edges
 }
@@ -9883,13 +9954,19 @@ func (m *PlatformConfigMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case platformconfig.EdgeTunRecords:
+		ids := make([]ent.Value, 0, len(m.removedtun_records))
+		for id := range m.removedtun_records {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlatformConfigMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.cleareddns_records {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
@@ -9898,6 +9975,9 @@ func (m *PlatformConfigMutation) ClearedEdges() []string {
 	}
 	if m.clearedssl_records {
 		edges = append(edges, platformconfig.EdgeSslRecords)
+	}
+	if m.clearedtun_records {
+		edges = append(edges, platformconfig.EdgeTunRecords)
 	}
 	return edges
 }
@@ -9912,6 +9992,8 @@ func (m *PlatformConfigMutation) EdgeCleared(name string) bool {
 		return m.clearedcdn_records
 	case platformconfig.EdgeSslRecords:
 		return m.clearedssl_records
+	case platformconfig.EdgeTunRecords:
+		return m.clearedtun_records
 	}
 	return false
 }
@@ -9936,6 +10018,9 @@ func (m *PlatformConfigMutation) ResetEdge(name string) error {
 		return nil
 	case platformconfig.EdgeSslRecords:
 		m.ResetSslRecords()
+		return nil
+	case platformconfig.EdgeTunRecords:
+		m.ResetTunRecords()
 		return nil
 	}
 	return fmt.Errorf("unknown PlatformConfig edge %s", name)
@@ -12529,6 +12614,1196 @@ func (m *SSLRecordMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown SSLRecord edge %s", name)
+}
+
+// TUNRecordMutation represents an operation that mutates the TUNRecord nodes in the graph.
+type TUNRecordMutation struct {
+	config
+	op                   Op
+	typ                  string
+	id                   *int64
+	created_at           *time.Time
+	updated_at           *time.Time
+	record_id            *string
+	sub_domain           *string
+	domain_path          *string
+	serve_type           *tunrecord.ServeType
+	serve_uri            *string
+	config_json          *json.RawMessage
+	appendconfig_json    json.RawMessage
+	is_active            *bool
+	last_refresh_at      *time.Time
+	last_api_response    *string
+	last_api_response_at *time.Time
+	clearedFields        map[string]struct{}
+	_config              *int64
+	cleared_config       bool
+	done                 bool
+	oldValue             func(context.Context) (*TUNRecord, error)
+	predicates           []predicate.TUNRecord
+}
+
+var _ ent.Mutation = (*TUNRecordMutation)(nil)
+
+// tunrecordOption allows management of the mutation configuration using functional options.
+type tunrecordOption func(*TUNRecordMutation)
+
+// newTUNRecordMutation creates new mutation for the TUNRecord entity.
+func newTUNRecordMutation(c config, op Op, opts ...tunrecordOption) *TUNRecordMutation {
+	m := &TUNRecordMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTUNRecord,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTUNRecordID sets the ID field of the mutation.
+func withTUNRecordID(id int64) tunrecordOption {
+	return func(m *TUNRecordMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TUNRecord
+		)
+		m.oldValue = func(ctx context.Context) (*TUNRecord, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TUNRecord.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTUNRecord sets the old TUNRecord of the mutation.
+func withTUNRecord(node *TUNRecord) tunrecordOption {
+	return func(m *TUNRecordMutation) {
+		m.oldValue = func(context.Context) (*TUNRecord, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TUNRecordMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TUNRecordMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TUNRecord entities.
+func (m *TUNRecordMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TUNRecordMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *TUNRecordMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().TUNRecord.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TUNRecordMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TUNRecordMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TUNRecordMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TUNRecordMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TUNRecordMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TUNRecordMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetConfigID sets the "config_id" field.
+func (m *TUNRecordMutation) SetConfigID(i int64) {
+	m._config = &i
+}
+
+// ConfigID returns the value of the "config_id" field in the mutation.
+func (m *TUNRecordMutation) ConfigID() (r int64, exists bool) {
+	v := m._config
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfigID returns the old "config_id" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldConfigID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConfigID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConfigID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfigID: %w", err)
+	}
+	return oldValue.ConfigID, nil
+}
+
+// ResetConfigID resets all changes to the "config_id" field.
+func (m *TUNRecordMutation) ResetConfigID() {
+	m._config = nil
+}
+
+// SetRecordID sets the "record_id" field.
+func (m *TUNRecordMutation) SetRecordID(s string) {
+	m.record_id = &s
+}
+
+// RecordID returns the value of the "record_id" field in the mutation.
+func (m *TUNRecordMutation) RecordID() (r string, exists bool) {
+	v := m.record_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordID returns the old "record_id" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldRecordID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordID: %w", err)
+	}
+	return oldValue.RecordID, nil
+}
+
+// ClearRecordID clears the value of the "record_id" field.
+func (m *TUNRecordMutation) ClearRecordID() {
+	m.record_id = nil
+	m.clearedFields[tunrecord.FieldRecordID] = struct{}{}
+}
+
+// RecordIDCleared returns if the "record_id" field was cleared in this mutation.
+func (m *TUNRecordMutation) RecordIDCleared() bool {
+	_, ok := m.clearedFields[tunrecord.FieldRecordID]
+	return ok
+}
+
+// ResetRecordID resets all changes to the "record_id" field.
+func (m *TUNRecordMutation) ResetRecordID() {
+	m.record_id = nil
+	delete(m.clearedFields, tunrecord.FieldRecordID)
+}
+
+// SetSubDomain sets the "sub_domain" field.
+func (m *TUNRecordMutation) SetSubDomain(s string) {
+	m.sub_domain = &s
+}
+
+// SubDomain returns the value of the "sub_domain" field in the mutation.
+func (m *TUNRecordMutation) SubDomain() (r string, exists bool) {
+	v := m.sub_domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubDomain returns the old "sub_domain" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldSubDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubDomain: %w", err)
+	}
+	return oldValue.SubDomain, nil
+}
+
+// ResetSubDomain resets all changes to the "sub_domain" field.
+func (m *TUNRecordMutation) ResetSubDomain() {
+	m.sub_domain = nil
+}
+
+// SetDomainPath sets the "domain_path" field.
+func (m *TUNRecordMutation) SetDomainPath(s string) {
+	m.domain_path = &s
+}
+
+// DomainPath returns the value of the "domain_path" field in the mutation.
+func (m *TUNRecordMutation) DomainPath() (r string, exists bool) {
+	v := m.domain_path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomainPath returns the old "domain_path" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldDomainPath(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDomainPath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDomainPath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomainPath: %w", err)
+	}
+	return oldValue.DomainPath, nil
+}
+
+// ClearDomainPath clears the value of the "domain_path" field.
+func (m *TUNRecordMutation) ClearDomainPath() {
+	m.domain_path = nil
+	m.clearedFields[tunrecord.FieldDomainPath] = struct{}{}
+}
+
+// DomainPathCleared returns if the "domain_path" field was cleared in this mutation.
+func (m *TUNRecordMutation) DomainPathCleared() bool {
+	_, ok := m.clearedFields[tunrecord.FieldDomainPath]
+	return ok
+}
+
+// ResetDomainPath resets all changes to the "domain_path" field.
+func (m *TUNRecordMutation) ResetDomainPath() {
+	m.domain_path = nil
+	delete(m.clearedFields, tunrecord.FieldDomainPath)
+}
+
+// SetServeType sets the "serve_type" field.
+func (m *TUNRecordMutation) SetServeType(tt tunrecord.ServeType) {
+	m.serve_type = &tt
+}
+
+// ServeType returns the value of the "serve_type" field in the mutation.
+func (m *TUNRecordMutation) ServeType() (r tunrecord.ServeType, exists bool) {
+	v := m.serve_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldServeType returns the old "serve_type" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldServeType(ctx context.Context) (v tunrecord.ServeType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldServeType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldServeType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldServeType: %w", err)
+	}
+	return oldValue.ServeType, nil
+}
+
+// ResetServeType resets all changes to the "serve_type" field.
+func (m *TUNRecordMutation) ResetServeType() {
+	m.serve_type = nil
+}
+
+// SetServeURI sets the "serve_uri" field.
+func (m *TUNRecordMutation) SetServeURI(s string) {
+	m.serve_uri = &s
+}
+
+// ServeURI returns the value of the "serve_uri" field in the mutation.
+func (m *TUNRecordMutation) ServeURI() (r string, exists bool) {
+	v := m.serve_uri
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldServeURI returns the old "serve_uri" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldServeURI(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldServeURI is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldServeURI requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldServeURI: %w", err)
+	}
+	return oldValue.ServeURI, nil
+}
+
+// ClearServeURI clears the value of the "serve_uri" field.
+func (m *TUNRecordMutation) ClearServeURI() {
+	m.serve_uri = nil
+	m.clearedFields[tunrecord.FieldServeURI] = struct{}{}
+}
+
+// ServeURICleared returns if the "serve_uri" field was cleared in this mutation.
+func (m *TUNRecordMutation) ServeURICleared() bool {
+	_, ok := m.clearedFields[tunrecord.FieldServeURI]
+	return ok
+}
+
+// ResetServeURI resets all changes to the "serve_uri" field.
+func (m *TUNRecordMutation) ResetServeURI() {
+	m.serve_uri = nil
+	delete(m.clearedFields, tunrecord.FieldServeURI)
+}
+
+// SetConfigJSON sets the "config_json" field.
+func (m *TUNRecordMutation) SetConfigJSON(jm json.RawMessage) {
+	m.config_json = &jm
+	m.appendconfig_json = nil
+}
+
+// ConfigJSON returns the value of the "config_json" field in the mutation.
+func (m *TUNRecordMutation) ConfigJSON() (r json.RawMessage, exists bool) {
+	v := m.config_json
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfigJSON returns the old "config_json" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldConfigJSON(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConfigJSON is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConfigJSON requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfigJSON: %w", err)
+	}
+	return oldValue.ConfigJSON, nil
+}
+
+// AppendConfigJSON adds jm to the "config_json" field.
+func (m *TUNRecordMutation) AppendConfigJSON(jm json.RawMessage) {
+	m.appendconfig_json = append(m.appendconfig_json, jm...)
+}
+
+// AppendedConfigJSON returns the list of values that were appended to the "config_json" field in this mutation.
+func (m *TUNRecordMutation) AppendedConfigJSON() (json.RawMessage, bool) {
+	if len(m.appendconfig_json) == 0 {
+		return nil, false
+	}
+	return m.appendconfig_json, true
+}
+
+// ClearConfigJSON clears the value of the "config_json" field.
+func (m *TUNRecordMutation) ClearConfigJSON() {
+	m.config_json = nil
+	m.appendconfig_json = nil
+	m.clearedFields[tunrecord.FieldConfigJSON] = struct{}{}
+}
+
+// ConfigJSONCleared returns if the "config_json" field was cleared in this mutation.
+func (m *TUNRecordMutation) ConfigJSONCleared() bool {
+	_, ok := m.clearedFields[tunrecord.FieldConfigJSON]
+	return ok
+}
+
+// ResetConfigJSON resets all changes to the "config_json" field.
+func (m *TUNRecordMutation) ResetConfigJSON() {
+	m.config_json = nil
+	m.appendconfig_json = nil
+	delete(m.clearedFields, tunrecord.FieldConfigJSON)
+}
+
+// SetIsActive sets the "is_active" field.
+func (m *TUNRecordMutation) SetIsActive(b bool) {
+	m.is_active = &b
+}
+
+// IsActive returns the value of the "is_active" field in the mutation.
+func (m *TUNRecordMutation) IsActive() (r bool, exists bool) {
+	v := m.is_active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsActive returns the old "is_active" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldIsActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsActive: %w", err)
+	}
+	return oldValue.IsActive, nil
+}
+
+// ResetIsActive resets all changes to the "is_active" field.
+func (m *TUNRecordMutation) ResetIsActive() {
+	m.is_active = nil
+}
+
+// SetLastRefreshAt sets the "last_refresh_at" field.
+func (m *TUNRecordMutation) SetLastRefreshAt(t time.Time) {
+	m.last_refresh_at = &t
+}
+
+// LastRefreshAt returns the value of the "last_refresh_at" field in the mutation.
+func (m *TUNRecordMutation) LastRefreshAt() (r time.Time, exists bool) {
+	v := m.last_refresh_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastRefreshAt returns the old "last_refresh_at" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldLastRefreshAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastRefreshAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastRefreshAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastRefreshAt: %w", err)
+	}
+	return oldValue.LastRefreshAt, nil
+}
+
+// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
+func (m *TUNRecordMutation) ClearLastRefreshAt() {
+	m.last_refresh_at = nil
+	m.clearedFields[tunrecord.FieldLastRefreshAt] = struct{}{}
+}
+
+// LastRefreshAtCleared returns if the "last_refresh_at" field was cleared in this mutation.
+func (m *TUNRecordMutation) LastRefreshAtCleared() bool {
+	_, ok := m.clearedFields[tunrecord.FieldLastRefreshAt]
+	return ok
+}
+
+// ResetLastRefreshAt resets all changes to the "last_refresh_at" field.
+func (m *TUNRecordMutation) ResetLastRefreshAt() {
+	m.last_refresh_at = nil
+	delete(m.clearedFields, tunrecord.FieldLastRefreshAt)
+}
+
+// SetLastAPIResponse sets the "last_api_response" field.
+func (m *TUNRecordMutation) SetLastAPIResponse(s string) {
+	m.last_api_response = &s
+}
+
+// LastAPIResponse returns the value of the "last_api_response" field in the mutation.
+func (m *TUNRecordMutation) LastAPIResponse() (r string, exists bool) {
+	v := m.last_api_response
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastAPIResponse returns the old "last_api_response" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldLastAPIResponse(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastAPIResponse is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastAPIResponse requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastAPIResponse: %w", err)
+	}
+	return oldValue.LastAPIResponse, nil
+}
+
+// ClearLastAPIResponse clears the value of the "last_api_response" field.
+func (m *TUNRecordMutation) ClearLastAPIResponse() {
+	m.last_api_response = nil
+	m.clearedFields[tunrecord.FieldLastAPIResponse] = struct{}{}
+}
+
+// LastAPIResponseCleared returns if the "last_api_response" field was cleared in this mutation.
+func (m *TUNRecordMutation) LastAPIResponseCleared() bool {
+	_, ok := m.clearedFields[tunrecord.FieldLastAPIResponse]
+	return ok
+}
+
+// ResetLastAPIResponse resets all changes to the "last_api_response" field.
+func (m *TUNRecordMutation) ResetLastAPIResponse() {
+	m.last_api_response = nil
+	delete(m.clearedFields, tunrecord.FieldLastAPIResponse)
+}
+
+// SetLastAPIResponseAt sets the "last_api_response_at" field.
+func (m *TUNRecordMutation) SetLastAPIResponseAt(t time.Time) {
+	m.last_api_response_at = &t
+}
+
+// LastAPIResponseAt returns the value of the "last_api_response_at" field in the mutation.
+func (m *TUNRecordMutation) LastAPIResponseAt() (r time.Time, exists bool) {
+	v := m.last_api_response_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastAPIResponseAt returns the old "last_api_response_at" field's value of the TUNRecord entity.
+// If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TUNRecordMutation) OldLastAPIResponseAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastAPIResponseAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastAPIResponseAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastAPIResponseAt: %w", err)
+	}
+	return oldValue.LastAPIResponseAt, nil
+}
+
+// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
+func (m *TUNRecordMutation) ClearLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	m.clearedFields[tunrecord.FieldLastAPIResponseAt] = struct{}{}
+}
+
+// LastAPIResponseAtCleared returns if the "last_api_response_at" field was cleared in this mutation.
+func (m *TUNRecordMutation) LastAPIResponseAtCleared() bool {
+	_, ok := m.clearedFields[tunrecord.FieldLastAPIResponseAt]
+	return ok
+}
+
+// ResetLastAPIResponseAt resets all changes to the "last_api_response_at" field.
+func (m *TUNRecordMutation) ResetLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	delete(m.clearedFields, tunrecord.FieldLastAPIResponseAt)
+}
+
+// ClearConfig clears the "config" edge to the PlatformConfig entity.
+func (m *TUNRecordMutation) ClearConfig() {
+	m.cleared_config = true
+	m.clearedFields[tunrecord.FieldConfigID] = struct{}{}
+}
+
+// ConfigCleared reports if the "config" edge to the PlatformConfig entity was cleared.
+func (m *TUNRecordMutation) ConfigCleared() bool {
+	return m.cleared_config
+}
+
+// ConfigIDs returns the "config" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ConfigID instead. It exists only for internal usage by the builders.
+func (m *TUNRecordMutation) ConfigIDs() (ids []int64) {
+	if id := m._config; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetConfig resets all changes to the "config" edge.
+func (m *TUNRecordMutation) ResetConfig() {
+	m._config = nil
+	m.cleared_config = false
+}
+
+// Where appends a list predicates to the TUNRecordMutation builder.
+func (m *TUNRecordMutation) Where(ps ...predicate.TUNRecord) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the TUNRecordMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *TUNRecordMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.TUNRecord, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *TUNRecordMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *TUNRecordMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (TUNRecord).
+func (m *TUNRecordMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TUNRecordMutation) Fields() []string {
+	fields := make([]string, 0, 13)
+	if m.created_at != nil {
+		fields = append(fields, tunrecord.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, tunrecord.FieldUpdatedAt)
+	}
+	if m._config != nil {
+		fields = append(fields, tunrecord.FieldConfigID)
+	}
+	if m.record_id != nil {
+		fields = append(fields, tunrecord.FieldRecordID)
+	}
+	if m.sub_domain != nil {
+		fields = append(fields, tunrecord.FieldSubDomain)
+	}
+	if m.domain_path != nil {
+		fields = append(fields, tunrecord.FieldDomainPath)
+	}
+	if m.serve_type != nil {
+		fields = append(fields, tunrecord.FieldServeType)
+	}
+	if m.serve_uri != nil {
+		fields = append(fields, tunrecord.FieldServeURI)
+	}
+	if m.config_json != nil {
+		fields = append(fields, tunrecord.FieldConfigJSON)
+	}
+	if m.is_active != nil {
+		fields = append(fields, tunrecord.FieldIsActive)
+	}
+	if m.last_refresh_at != nil {
+		fields = append(fields, tunrecord.FieldLastRefreshAt)
+	}
+	if m.last_api_response != nil {
+		fields = append(fields, tunrecord.FieldLastAPIResponse)
+	}
+	if m.last_api_response_at != nil {
+		fields = append(fields, tunrecord.FieldLastAPIResponseAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TUNRecordMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case tunrecord.FieldCreatedAt:
+		return m.CreatedAt()
+	case tunrecord.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case tunrecord.FieldConfigID:
+		return m.ConfigID()
+	case tunrecord.FieldRecordID:
+		return m.RecordID()
+	case tunrecord.FieldSubDomain:
+		return m.SubDomain()
+	case tunrecord.FieldDomainPath:
+		return m.DomainPath()
+	case tunrecord.FieldServeType:
+		return m.ServeType()
+	case tunrecord.FieldServeURI:
+		return m.ServeURI()
+	case tunrecord.FieldConfigJSON:
+		return m.ConfigJSON()
+	case tunrecord.FieldIsActive:
+		return m.IsActive()
+	case tunrecord.FieldLastRefreshAt:
+		return m.LastRefreshAt()
+	case tunrecord.FieldLastAPIResponse:
+		return m.LastAPIResponse()
+	case tunrecord.FieldLastAPIResponseAt:
+		return m.LastAPIResponseAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TUNRecordMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case tunrecord.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case tunrecord.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case tunrecord.FieldConfigID:
+		return m.OldConfigID(ctx)
+	case tunrecord.FieldRecordID:
+		return m.OldRecordID(ctx)
+	case tunrecord.FieldSubDomain:
+		return m.OldSubDomain(ctx)
+	case tunrecord.FieldDomainPath:
+		return m.OldDomainPath(ctx)
+	case tunrecord.FieldServeType:
+		return m.OldServeType(ctx)
+	case tunrecord.FieldServeURI:
+		return m.OldServeURI(ctx)
+	case tunrecord.FieldConfigJSON:
+		return m.OldConfigJSON(ctx)
+	case tunrecord.FieldIsActive:
+		return m.OldIsActive(ctx)
+	case tunrecord.FieldLastRefreshAt:
+		return m.OldLastRefreshAt(ctx)
+	case tunrecord.FieldLastAPIResponse:
+		return m.OldLastAPIResponse(ctx)
+	case tunrecord.FieldLastAPIResponseAt:
+		return m.OldLastAPIResponseAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TUNRecord field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TUNRecordMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case tunrecord.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case tunrecord.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case tunrecord.FieldConfigID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfigID(v)
+		return nil
+	case tunrecord.FieldRecordID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordID(v)
+		return nil
+	case tunrecord.FieldSubDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubDomain(v)
+		return nil
+	case tunrecord.FieldDomainPath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomainPath(v)
+		return nil
+	case tunrecord.FieldServeType:
+		v, ok := value.(tunrecord.ServeType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetServeType(v)
+		return nil
+	case tunrecord.FieldServeURI:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetServeURI(v)
+		return nil
+	case tunrecord.FieldConfigJSON:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfigJSON(v)
+		return nil
+	case tunrecord.FieldIsActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsActive(v)
+		return nil
+	case tunrecord.FieldLastRefreshAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastRefreshAt(v)
+		return nil
+	case tunrecord.FieldLastAPIResponse:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastAPIResponse(v)
+		return nil
+	case tunrecord.FieldLastAPIResponseAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastAPIResponseAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TUNRecord field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TUNRecordMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TUNRecordMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TUNRecordMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TUNRecord numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TUNRecordMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(tunrecord.FieldRecordID) {
+		fields = append(fields, tunrecord.FieldRecordID)
+	}
+	if m.FieldCleared(tunrecord.FieldDomainPath) {
+		fields = append(fields, tunrecord.FieldDomainPath)
+	}
+	if m.FieldCleared(tunrecord.FieldServeURI) {
+		fields = append(fields, tunrecord.FieldServeURI)
+	}
+	if m.FieldCleared(tunrecord.FieldConfigJSON) {
+		fields = append(fields, tunrecord.FieldConfigJSON)
+	}
+	if m.FieldCleared(tunrecord.FieldLastRefreshAt) {
+		fields = append(fields, tunrecord.FieldLastRefreshAt)
+	}
+	if m.FieldCleared(tunrecord.FieldLastAPIResponse) {
+		fields = append(fields, tunrecord.FieldLastAPIResponse)
+	}
+	if m.FieldCleared(tunrecord.FieldLastAPIResponseAt) {
+		fields = append(fields, tunrecord.FieldLastAPIResponseAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TUNRecordMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TUNRecordMutation) ClearField(name string) error {
+	switch name {
+	case tunrecord.FieldRecordID:
+		m.ClearRecordID()
+		return nil
+	case tunrecord.FieldDomainPath:
+		m.ClearDomainPath()
+		return nil
+	case tunrecord.FieldServeURI:
+		m.ClearServeURI()
+		return nil
+	case tunrecord.FieldConfigJSON:
+		m.ClearConfigJSON()
+		return nil
+	case tunrecord.FieldLastRefreshAt:
+		m.ClearLastRefreshAt()
+		return nil
+	case tunrecord.FieldLastAPIResponse:
+		m.ClearLastAPIResponse()
+		return nil
+	case tunrecord.FieldLastAPIResponseAt:
+		m.ClearLastAPIResponseAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TUNRecord nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TUNRecordMutation) ResetField(name string) error {
+	switch name {
+	case tunrecord.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case tunrecord.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case tunrecord.FieldConfigID:
+		m.ResetConfigID()
+		return nil
+	case tunrecord.FieldRecordID:
+		m.ResetRecordID()
+		return nil
+	case tunrecord.FieldSubDomain:
+		m.ResetSubDomain()
+		return nil
+	case tunrecord.FieldDomainPath:
+		m.ResetDomainPath()
+		return nil
+	case tunrecord.FieldServeType:
+		m.ResetServeType()
+		return nil
+	case tunrecord.FieldServeURI:
+		m.ResetServeURI()
+		return nil
+	case tunrecord.FieldConfigJSON:
+		m.ResetConfigJSON()
+		return nil
+	case tunrecord.FieldIsActive:
+		m.ResetIsActive()
+		return nil
+	case tunrecord.FieldLastRefreshAt:
+		m.ResetLastRefreshAt()
+		return nil
+	case tunrecord.FieldLastAPIResponse:
+		m.ResetLastAPIResponse()
+		return nil
+	case tunrecord.FieldLastAPIResponseAt:
+		m.ResetLastAPIResponseAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TUNRecord field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TUNRecordMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m._config != nil {
+		edges = append(edges, tunrecord.EdgeConfig)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TUNRecordMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case tunrecord.EdgeConfig:
+		if id := m._config; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TUNRecordMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TUNRecordMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TUNRecordMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cleared_config {
+		edges = append(edges, tunrecord.EdgeConfig)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TUNRecordMutation) EdgeCleared(name string) bool {
+	switch name {
+	case tunrecord.EdgeConfig:
+		return m.cleared_config
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TUNRecordMutation) ClearEdge(name string) error {
+	switch name {
+	case tunrecord.EdgeConfig:
+		m.ClearConfig()
+		return nil
+	}
+	return fmt.Errorf("unknown TUNRecord unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TUNRecordMutation) ResetEdge(name string) error {
+	switch name {
+	case tunrecord.EdgeConfig:
+		m.ResetConfig()
+		return nil
+	}
+	return fmt.Errorf("unknown TUNRecord edge %s", name)
 }
 
 // WebhookMutation represents an operation that mutates the Webhook nodes in the graph.

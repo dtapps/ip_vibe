@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/sslrecord"
+	"vibe_ip/internal/ent/tunrecord"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -149,6 +150,21 @@ func (_c *PlatformConfigCreate) AddSslRecords(v ...*SSLRecord) *PlatformConfigCr
 		ids[i] = v[i].ID
 	}
 	return _c.AddSslRecordIDs(ids...)
+}
+
+// AddTunRecordIDs adds the "tun_records" edge to the TUNRecord entity by IDs.
+func (_c *PlatformConfigCreate) AddTunRecordIDs(ids ...int64) *PlatformConfigCreate {
+	_c.mutation.AddTunRecordIDs(ids...)
+	return _c
+}
+
+// AddTunRecords adds the "tun_records" edges to the TUNRecord entity.
+func (_c *PlatformConfigCreate) AddTunRecords(v ...*TUNRecord) *PlatformConfigCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddTunRecordIDs(ids...)
 }
 
 // Mutation returns the PlatformConfigMutation object of the builder.
@@ -343,6 +359,22 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(sslrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.TunRecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.TunRecordsTable,
+			Columns: []string{platformconfig.TunRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tunrecord.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

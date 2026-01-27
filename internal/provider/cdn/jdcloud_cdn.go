@@ -59,7 +59,7 @@ type JdcloudCDNProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
 	cfg    *JdcloudCDNConfig
-	opts   *cdnOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *JdcloudCDNCustomConfig
@@ -76,12 +76,12 @@ type JdcloudCDNProvider struct {
 }
 
 // NewJdcloudCDNProvider 创建京东云 CDN 提供程序
-func NewJdcloudCDNProvider(ctx context.Context, logger *slog.Logger, cfg *JdcloudCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+func NewJdcloudCDNProvider(ctx context.Context, logger *slog.Logger, cfg *JdcloudCDNConfig, opts ...Option) (provider.CDNProvider, error) {
 	return NewJdcloudCDNProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewJdcloudCDNProviderRaw 创建京东云 CDN 提供程序
-func NewJdcloudCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *JdcloudCDNConfig, opts ...CdnOption) (*JdcloudCDNProvider, error) {
+func NewJdcloudCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *JdcloudCDNConfig, opts ...Option) (*JdcloudCDNProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -94,7 +94,7 @@ func NewJdcloudCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Jdc
 
 	p := &JdcloudCDNProvider{
 		cfg:          cfg,
-		opts:         &cdnOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &JdcloudCDNCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},

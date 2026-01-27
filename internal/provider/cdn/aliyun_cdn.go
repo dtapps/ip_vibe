@@ -67,7 +67,7 @@ type AliyunCDNProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
 	cfg    *AliyunCDNConfig
-	opts   *cdnOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *AliyunCDNCustomConfig
@@ -86,12 +86,12 @@ type AliyunCDNProvider struct {
 }
 
 // NewAliyunCDNProvider 创建阿里云 CDN 提供程序
-func NewAliyunCDNProvider(ctx context.Context, logger *slog.Logger, cfg *AliyunCDNConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+func NewAliyunCDNProvider(ctx context.Context, logger *slog.Logger, cfg *AliyunCDNConfig, opts ...Option) (provider.CDNProvider, error) {
 	return NewAliyunCDNProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewAliyunCDNProviderRaw 创建阿里云 CDN 提供程序
-func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *AliyunCDNConfig, opts ...CdnOption) (*AliyunCDNProvider, error) {
+func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *AliyunCDNConfig, opts ...Option) (*AliyunCDNProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -105,7 +105,7 @@ func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 	var err error
 	p := &AliyunCDNProvider{
 		cfg:          cfg,
-		opts:         &cdnOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &AliyunCDNCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},

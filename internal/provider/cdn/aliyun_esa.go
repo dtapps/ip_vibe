@@ -73,7 +73,7 @@ type AliyunESAProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
 	cfg    *AliyunESAConfig
-	opts   *cdnOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *AliyunESACustomConfig
@@ -92,12 +92,12 @@ type AliyunESAProvider struct {
 }
 
 // NewAliyunESAProvider 创建阿里云 ESA 提供程序
-func NewAliyunESAProvider(ctx context.Context, logger *slog.Logger, cfg *AliyunESAConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+func NewAliyunESAProvider(ctx context.Context, logger *slog.Logger, cfg *AliyunESAConfig, opts ...Option) (provider.CDNProvider, error) {
 	return NewAliyunESAProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewAliyunESAProviderRaw 创建阿里云 ESA 提供程序
-func NewAliyunESAProviderRaw(ctx context.Context, logger *slog.Logger, cfg *AliyunESAConfig, opts ...CdnOption) (*AliyunESAProvider, error) {
+func NewAliyunESAProviderRaw(ctx context.Context, logger *slog.Logger, cfg *AliyunESAConfig, opts ...Option) (*AliyunESAProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -111,7 +111,7 @@ func NewAliyunESAProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 	var err error
 	p := &AliyunESAProvider{
 		cfg:          cfg,
-		opts:         &cdnOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &AliyunESACustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},

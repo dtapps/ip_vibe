@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/sslrecord"
+	"vibe_ip/internal/ent/tunrecord"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -144,6 +145,21 @@ func (_u *PlatformConfigUpdate) AddSslRecords(v ...*SSLRecord) *PlatformConfigUp
 	return _u.AddSslRecordIDs(ids...)
 }
 
+// AddTunRecordIDs adds the "tun_records" edge to the TUNRecord entity by IDs.
+func (_u *PlatformConfigUpdate) AddTunRecordIDs(ids ...int64) *PlatformConfigUpdate {
+	_u.mutation.AddTunRecordIDs(ids...)
+	return _u
+}
+
+// AddTunRecords adds the "tun_records" edges to the TUNRecord entity.
+func (_u *PlatformConfigUpdate) AddTunRecords(v ...*TUNRecord) *PlatformConfigUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTunRecordIDs(ids...)
+}
+
 // Mutation returns the PlatformConfigMutation object of the builder.
 func (_u *PlatformConfigUpdate) Mutation() *PlatformConfigMutation {
 	return _u.mutation
@@ -210,6 +226,27 @@ func (_u *PlatformConfigUpdate) RemoveSslRecords(v ...*SSLRecord) *PlatformConfi
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveSslRecordIDs(ids...)
+}
+
+// ClearTunRecords clears all "tun_records" edges to the TUNRecord entity.
+func (_u *PlatformConfigUpdate) ClearTunRecords() *PlatformConfigUpdate {
+	_u.mutation.ClearTunRecords()
+	return _u
+}
+
+// RemoveTunRecordIDs removes the "tun_records" edge to TUNRecord entities by IDs.
+func (_u *PlatformConfigUpdate) RemoveTunRecordIDs(ids ...int64) *PlatformConfigUpdate {
+	_u.mutation.RemoveTunRecordIDs(ids...)
+	return _u
+}
+
+// RemoveTunRecords removes "tun_records" edges to TUNRecord entities.
+func (_u *PlatformConfigUpdate) RemoveTunRecords(v ...*TUNRecord) *PlatformConfigUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTunRecordIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -443,6 +480,51 @@ func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.TunRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.TunRecordsTable,
+			Columns: []string{platformconfig.TunRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tunrecord.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTunRecordsIDs(); len(nodes) > 0 && !_u.mutation.TunRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.TunRecordsTable,
+			Columns: []string{platformconfig.TunRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tunrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TunRecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.TunRecordsTable,
+			Columns: []string{platformconfig.TunRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tunrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -576,6 +658,21 @@ func (_u *PlatformConfigUpdateOne) AddSslRecords(v ...*SSLRecord) *PlatformConfi
 	return _u.AddSslRecordIDs(ids...)
 }
 
+// AddTunRecordIDs adds the "tun_records" edge to the TUNRecord entity by IDs.
+func (_u *PlatformConfigUpdateOne) AddTunRecordIDs(ids ...int64) *PlatformConfigUpdateOne {
+	_u.mutation.AddTunRecordIDs(ids...)
+	return _u
+}
+
+// AddTunRecords adds the "tun_records" edges to the TUNRecord entity.
+func (_u *PlatformConfigUpdateOne) AddTunRecords(v ...*TUNRecord) *PlatformConfigUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTunRecordIDs(ids...)
+}
+
 // Mutation returns the PlatformConfigMutation object of the builder.
 func (_u *PlatformConfigUpdateOne) Mutation() *PlatformConfigMutation {
 	return _u.mutation
@@ -642,6 +739,27 @@ func (_u *PlatformConfigUpdateOne) RemoveSslRecords(v ...*SSLRecord) *PlatformCo
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveSslRecordIDs(ids...)
+}
+
+// ClearTunRecords clears all "tun_records" edges to the TUNRecord entity.
+func (_u *PlatformConfigUpdateOne) ClearTunRecords() *PlatformConfigUpdateOne {
+	_u.mutation.ClearTunRecords()
+	return _u
+}
+
+// RemoveTunRecordIDs removes the "tun_records" edge to TUNRecord entities by IDs.
+func (_u *PlatformConfigUpdateOne) RemoveTunRecordIDs(ids ...int64) *PlatformConfigUpdateOne {
+	_u.mutation.RemoveTunRecordIDs(ids...)
+	return _u
+}
+
+// RemoveTunRecords removes "tun_records" edges to TUNRecord entities.
+func (_u *PlatformConfigUpdateOne) RemoveTunRecords(v ...*TUNRecord) *PlatformConfigUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTunRecordIDs(ids...)
 }
 
 // Where appends a list predicates to the PlatformConfigUpdate builder.
@@ -898,6 +1016,51 @@ func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *Platform
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(sslrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TunRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.TunRecordsTable,
+			Columns: []string{platformconfig.TunRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tunrecord.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTunRecordsIDs(); len(nodes) > 0 && !_u.mutation.TunRecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.TunRecordsTable,
+			Columns: []string{platformconfig.TunRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tunrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TunRecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.TunRecordsTable,
+			Columns: []string{platformconfig.TunRecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tunrecord.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

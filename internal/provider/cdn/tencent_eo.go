@@ -67,7 +67,7 @@ type TencentEOProvider struct {
 	provider.UnimplementedCDNProvider // 嵌入未实现的
 
 	cfg    *TencentEOConfig
-	opts   *cdnOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *TencentEOCustomConfig
@@ -85,12 +85,12 @@ type TencentEOProvider struct {
 }
 
 // NewTencentEOProvider 创建腾讯云 EO 提供程序
-func NewTencentEOProvider(ctx context.Context, logger *slog.Logger, cfg *TencentEOConfig, opts ...CdnOption) (provider.CDNProvider, error) {
+func NewTencentEOProvider(ctx context.Context, logger *slog.Logger, cfg *TencentEOConfig, opts ...Option) (provider.CDNProvider, error) {
 	return NewTencentEOProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewTencentEOProviderRaw 创建腾讯云 EO 提供程序
-func NewTencentEOProviderRaw(ctx context.Context, logger *slog.Logger, cfg *TencentEOConfig, opts ...CdnOption) (*TencentEOProvider, error) {
+func NewTencentEOProviderRaw(ctx context.Context, logger *slog.Logger, cfg *TencentEOConfig, opts ...Option) (*TencentEOProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -104,7 +104,7 @@ func NewTencentEOProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Tenc
 	var err error
 	p := &TencentEOProvider{
 		cfg:          cfg,
-		opts:         &cdnOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &TencentEOCustomConfig{},
 		InternalData: &provider.CDNProviderInternalData{},

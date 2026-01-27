@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
+	"vibe_ip/internal/ent/tunrecord"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -154,6 +155,35 @@ func (q *PlatformConfigQuery) WhereConfigJSONContains(val any) *PlatformConfigQu
 
 // WhereConfigJSONContainsIf 只有在 condition 为 true 时才调用 WhereConfigJSONContains。
 func (q *PlatformConfigQuery) WhereConfigJSONContainsIf(condition bool, val any) *PlatformConfigQuery {
+	if condition {
+		return q.WhereConfigJSONContains(val)
+	}
+	return q
+}
+
+// WhereConfigJSONContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *TUNRecordQuery) WhereConfigJSONContains(val any) *TUNRecordQuery {
+	return q.Where(predicate.TUNRecord(func(s *sql.Selector) {
+		column := tunrecord.FieldConfigJSON
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereConfigJSONContainsIf 只有在 condition 为 true 时才调用 WhereConfigJSONContains。
+func (q *TUNRecordQuery) WhereConfigJSONContainsIf(condition bool, val any) *TUNRecordQuery {
 	if condition {
 		return q.WhereConfigJSONContains(val)
 	}

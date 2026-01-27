@@ -40,6 +40,8 @@ type Tx struct {
 	SSLImport *SSLImportClient
 	// SSLRecord is the client for interacting with the SSLRecord builders.
 	SSLRecord *SSLRecordClient
+	// TUNRecord is the client for interacting with the TUNRecord builders.
+	TUNRecord *TUNRecordClient
 	// Webhook is the client for interacting with the Webhook builders.
 	Webhook *WebhookClient
 	// WebhookSubscription is the client for interacting with the WebhookSubscription builders.
@@ -188,6 +190,7 @@ func (tx *Tx) init() {
 	tx.PlatformConfig = NewPlatformConfigClient(tx.config)
 	tx.SSLImport = NewSSLImportClient(tx.config)
 	tx.SSLRecord = NewSSLRecordClient(tx.config)
+	tx.TUNRecord = NewTUNRecordClient(tx.config)
 	tx.Webhook = NewWebhookClient(tx.config)
 	tx.WebhookSubscription = NewWebhookSubscriptionClient(tx.config)
 }

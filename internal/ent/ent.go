@@ -21,6 +21,7 @@ import (
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
+	"vibe_ip/internal/ent/tunrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
 
@@ -100,6 +101,7 @@ func checkColumn(t, c string) error {
 			platformconfig.Table:      platformconfig.ValidColumn,
 			sslimport.Table:           sslimport.ValidColumn,
 			sslrecord.Table:           sslrecord.ValidColumn,
+			tunrecord.Table:           tunrecord.ValidColumn,
 			webhook.Table:             webhook.ValidColumn,
 			webhooksubscription.Table: webhooksubscription.ValidColumn,
 		})

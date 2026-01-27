@@ -64,7 +64,7 @@ type TencentDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
 	cfg    *TencentDNSConfig
-	opts   *dnsOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *TencentDNSCustomConfig
@@ -82,12 +82,12 @@ type TencentDNSProvider struct {
 }
 
 // NewTencentDNSProvider 创建腾讯云 DNS 提供程序
-func NewTencentDNSProvider(ctx context.Context, logger *slog.Logger, cfg *TencentDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+func NewTencentDNSProvider(ctx context.Context, logger *slog.Logger, cfg *TencentDNSConfig, opts ...Option) (provider.DNSProvider, error) {
 	return NewTencentDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewTencentDNSProviderRaw 创建腾讯云 DNS 提供程序
-func NewTencentDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *TencentDNSConfig, opts ...DnsOption) (*TencentDNSProvider, error) {
+func NewTencentDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *TencentDNSConfig, opts ...Option) (*TencentDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -101,7 +101,7 @@ func NewTencentDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Ten
 	var err error
 	p := &TencentDNSProvider{
 		cfg:          cfg,
-		opts:         &dnsOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &TencentDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},

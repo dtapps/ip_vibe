@@ -510,7 +510,7 @@ func (s *IPUpdateTask) CdnUpdate(ctx context.Context, logger *slog.Logger, param
 	defer logger.InfoContext(ctx, "处理完成")
 
 	var cdnProvider provider.CDNProvider
-	var cdnProviderOpts = make([]cdn.CdnOption, 0, len(schematype.GetConfigPlatforms))
+	var cdnProviderOpts = make([]cdn.Option, 0, len(schematype.GetConfigPlatforms))
 	if s.httpTransport != nil {
 		cdnProviderOpts = append(cdnProviderOpts, cdn.WithHttpTransport(s.httpTransport))
 	}
@@ -647,7 +647,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 	defer logger.InfoContext(ctx, "处理完成")
 
 	var dnsProvider provider.DNSProvider
-	var dnsProviderOpts = make([]dns.DnsOption, 0, len(schematype.GetConfigPlatforms))
+	var dnsProviderOpts = make([]dns.Option, 0, len(schematype.GetConfigPlatforms))
 	if s.httpTransport != nil {
 		dnsProviderOpts = append(dnsProviderOpts, dns.WithHttpTransport(s.httpTransport))
 	}

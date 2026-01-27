@@ -68,7 +68,7 @@ type VolcengineDNSProvider struct {
 	provider.UnimplementedDNSProvider // 嵌入未实现的
 
 	cfg    *VolcengineDNSConfig
-	opts   *dnsOptions
+	opts   *Options
 	logger *slog.Logger
 
 	CustomConfig *VolcengineDNSCustomConfig
@@ -87,12 +87,12 @@ type VolcengineDNSProvider struct {
 }
 
 // NewVolcengineDNSProvider 创建火山引擎 DNS 提供程序
-func NewVolcengineDNSProvider(ctx context.Context, logger *slog.Logger, cfg *VolcengineDNSConfig, opts ...DnsOption) (provider.DNSProvider, error) {
+func NewVolcengineDNSProvider(ctx context.Context, logger *slog.Logger, cfg *VolcengineDNSConfig, opts ...Option) (provider.DNSProvider, error) {
 	return NewVolcengineDNSProviderRaw(ctx, logger, cfg, opts...)
 }
 
 // NewVolcengineDNSProviderRaw 创建火山引擎 DNS 提供程序
-func NewVolcengineDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *VolcengineDNSConfig, opts ...DnsOption) (*VolcengineDNSProvider, error) {
+func NewVolcengineDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *VolcengineDNSConfig, opts ...Option) (*VolcengineDNSProvider, error) {
 
 	if cfg == nil {
 		return nil, fmt.Errorf("配置不能为空")
@@ -106,7 +106,7 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *
 	var err error
 	p := &VolcengineDNSProvider{
 		cfg:          cfg,
-		opts:         &dnsOptions{},
+		opts:         &Options{},
 		logger:       logger,
 		CustomConfig: &VolcengineDNSCustomConfig{},
 		InternalData: &provider.DNSProviderInternalData{},

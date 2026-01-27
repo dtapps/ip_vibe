@@ -64,3 +64,30 @@ func (UnimplementedCDNProvider) Update(ctx context.Context, domain string, subdo
 func (UnimplementedCDNProvider) ParseCustomConfig(configJSON json.RawMessage) (err error) {
 	return ErrUnimplemented("CDNProvider", "ParseCustomConfig")
 }
+
+// ---------- TUN 模块 ----------
+
+// UnimplementedTUNProvider 是一个“安全默认实现”，
+// 所有方法都返回 Unimplemented 错误。
+// 建议所有 TUNProvider 实现都嵌入它。
+type UnimplementedTUNProvider struct{}
+
+// Name 返回 TUN 提供程序的名称
+func (UnimplementedTUNProvider) Name() string {
+	return "Unimplemented"
+}
+
+// Check 检查 TUN 记录是否存在
+func (UnimplementedTUNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *TUNProviderInternalData, err error) {
+	return nil, ErrUnimplemented("TUNProvider", "Check")
+}
+
+// Update 更新 TUN 记录
+func (UnimplementedTUNProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+	return ErrUnimplemented("TUNProvider", "Update")
+}
+
+// ParseCustomConfig 解析 TUN 自定义配置
+func (UnimplementedTUNProvider) ParseCustomConfig(configJSON json.RawMessage) (err error) {
+	return ErrUnimplemented("TUNProvider", "ParseCustomConfig")
+}

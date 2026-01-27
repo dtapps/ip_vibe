@@ -49,3 +49,14 @@ type GetDnsRecordSchemaRequest struct {
 type GetDnsRecordSchemaResponse struct {
 	Fields []json.RawMessage `json:"fields"` // 字段列表
 }
+
+// 获取TUN记录Schema 请求结构
+type GetTunRecordSchemaRequest struct {
+	ConfigType string `uri:"config_type" json:"config_type" form:"config_type" binding:"required" jsonschema:"平台类型"` // 平台类型
+	ConfigID   int64  `uri:"config_id" json:"config_id" form:"config_id" binding:"required" jsonschema:"平台配置ID"`     // 平台配置ID
+}
+
+// 获取TUN记录Schema 响应结构
+type GetTunRecordSchemaResponse struct {
+	Fields []json.RawMessage `json:"fields"` // 字段列表
+}

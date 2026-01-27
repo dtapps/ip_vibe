@@ -164,6 +164,18 @@ func (f SSLRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SSLRecordMutation", m)
 }
 
+// The TUNRecordFunc type is an adapter to allow the use of ordinary
+// function as TUNRecord mutator.
+type TUNRecordFunc func(context.Context, *ent.TUNRecordMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TUNRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TUNRecordMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TUNRecordMutation", m)
+}
+
 // The WebhookFunc type is an adapter to allow the use of ordinary
 // function as Webhook mutator.
 type WebhookFunc func(context.Context, *ent.WebhookMutation) (ent.Value, error)
