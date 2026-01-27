@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"vibe_ip/internal/ent/platformconfig"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
+	"golang.org/x/sync/errgroup"
 )
 
 // 获取平台配置Schema
@@ -136,24 +138,36 @@ func GetDnsRecordSchema(c *gin.Context) {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		// 查询线路
-		lines, err := dnsProvider.ListLines(c)
-		if err != nil {
+
+		// 并发检查
+		eg, egCtx := errgroup.WithContext(c)
+		eg.SetLimit(10) // 最多 10 个并发
+
+		// 准备线路选项
+		recordLineOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 查询线路列表
+			lines, err := dnsProvider.ListLines(egCtx)
+			if err != nil {
+				return err
+			}
+			if len(lines) == 0 {
+				return fmt.Errorf("未查询到线路")
+			}
+			for _, line := range lines {
+				recordLineOptions = append(recordLineOptions, types.SCHEMAFieldOption{
+					Value: line.LineID,
+					Label: line.LineName,
+				})
+			}
+			return nil
+		})
+
+		if err = eg.Wait(); err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		if len(lines) == 0 {
-			errorResponse(c, http.StatusNotFound, "未查询到线路")
-			return
-		}
-		// 准备 线路 选项
-		recordLineOptions := make([]types.SCHEMAFieldOption, 0, len(lines))
-		for _, line := range lines {
-			recordLineOptions = append(recordLineOptions, types.SCHEMAFieldOption{
-				Value: line.LineID,
-				Label: line.LineName,
-			})
-		}
+
 		// 构造字段
 		multipleFields = []types.SCHEMAField{
 			{
@@ -193,24 +207,36 @@ func GetDnsRecordSchema(c *gin.Context) {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		// 查询线路
-		lines, err := dnsProvider.ListLines(c)
-		if err != nil {
+
+		// 并发检查
+		eg, egCtx := errgroup.WithContext(c)
+		eg.SetLimit(10) // 最多 10 个并发
+
+		// 准备线路选项
+		lineOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 查询线路列表
+			lines, err := dnsProvider.ListLines(egCtx)
+			if err != nil {
+				return err
+			}
+			if len(lines) == 0 {
+				return fmt.Errorf("未查询到线路")
+			}
+			for _, line := range lines {
+				lineOptions = append(lineOptions, types.SCHEMAFieldOption{
+					Value: line.LineID,
+					Label: line.LineName,
+				})
+			}
+			return nil
+		})
+
+		if err = eg.Wait(); err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		if len(lines) == 0 {
-			errorResponse(c, http.StatusNotFound, "未查询到线路")
-			return
-		}
-		// 准备 线路 选项
-		lineOptions := make([]types.SCHEMAFieldOption, 0, len(lines))
-		for _, line := range lines {
-			lineOptions = append(lineOptions, types.SCHEMAFieldOption{
-				Value: line.LineID,
-				Label: line.LineName,
-			})
-		}
+
 		// 构造字段组
 		multipleFields = types.SCHEMAField{
 			ID:          "line",
@@ -241,24 +267,36 @@ func GetDnsRecordSchema(c *gin.Context) {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		// 查询线路
-		lines, err := dnsProvider.ListLines(c)
-		if err != nil {
+
+		// 并发检查
+		eg, egCtx := errgroup.WithContext(c)
+		eg.SetLimit(10) // 最多 10 个并发
+
+		// 准备线路选项
+		lineOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 查询线路列表
+			lines, err := dnsProvider.ListLines(egCtx)
+			if err != nil {
+				return err
+			}
+			if len(lines) == 0 {
+				return fmt.Errorf("未查询到线路")
+			}
+			for _, line := range lines {
+				lineOptions = append(lineOptions, types.SCHEMAFieldOption{
+					Value: line.LineID,
+					Label: line.LineName,
+				})
+			}
+			return nil
+		})
+
+		if err = eg.Wait(); err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		if len(lines) == 0 {
-			errorResponse(c, http.StatusNotFound, "未查询到线路")
-			return
-		}
-		// 准备 线路 选项
-		lineOptions := make([]types.SCHEMAFieldOption, 0, len(lines))
-		for _, line := range lines {
-			lineOptions = append(lineOptions, types.SCHEMAFieldOption{
-				Value: line.LineID,
-				Label: line.LineName,
-			})
-		}
+
 		// 构造字段
 		multipleFields = []types.SCHEMAField{
 			{
@@ -366,42 +404,56 @@ func GetTunRecordSchema(c *gin.Context) {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		// 查询隧道列表
-		connectors, err := tunProvider.Connectors(c)
-		if err != nil {
-			errorResponse(c, http.StatusNotFound, err.Error())
-			return
-		}
-		if len(connectors) == 0 {
-			errorResponse(c, http.StatusNotFound, "未查询到隧道")
-			return
-		}
+
+		// 并发检查
+		eg, egCtx := errgroup.WithContext(c)
+		eg.SetLimit(10) // 最多 10 个并发
+
 		// 准备隧道选项
-		tunnelOptions := make([]types.SCHEMAFieldOption, 0, len(connectors))
-		for _, connector := range connectors {
-			tunnelOptions = append(tunnelOptions, types.SCHEMAFieldOption{
-				Value: connector.ID,
-				Label: connector.Name,
-			})
-		}
-		// 查询域名列表
-		zones, err := tunProvider.Zones(c)
-		if err != nil {
+		tunnelOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 查询隧道列表
+			connectors, err := tunProvider.Connectors(egCtx)
+			if err != nil {
+				return err
+			}
+			if len(connectors) == 0 {
+				return fmt.Errorf("未查询到隧道")
+			}
+			for _, connector := range connectors {
+				tunnelOptions = append(tunnelOptions, types.SCHEMAFieldOption{
+					Value: connector.ID,
+					Label: connector.Name,
+				})
+			}
+			return nil
+		})
+
+		// 准备域名选项
+		zoneOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 查询域名列表
+			zones, err := tunProvider.Zones(egCtx)
+			if err != nil {
+				return err
+			}
+			if len(zones) == 0 {
+				return fmt.Errorf("未查询到域名")
+			}
+			for _, zone := range zones {
+				zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
+					Value: zone.ID,
+					Label: zone.Name,
+				})
+			}
+			return nil
+		})
+
+		if err = eg.Wait(); err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
-		if len(zones) == 0 {
-			errorResponse(c, http.StatusNotFound, "未查询到域名")
-			return
-		}
-		// 准备域名选项
-		zoneOptions := make([]types.SCHEMAFieldOption, 0, len(zones))
-		for _, zone := range zones {
-			zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
-				Value: zone.ID,
-				Label: zone.Name,
-			})
-		}
+
 		// 构造字段
 		multipleFields = []types.SCHEMAField{
 			{

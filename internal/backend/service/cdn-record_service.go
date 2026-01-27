@@ -382,7 +382,7 @@ func (s *CDNRecordServiceImpl) HealthcheckCdnRecord(ctx context.Context, id int6
 	// 检查健康状态
 	results := make([][]ToPairsStruct, 0)
 
-	// 并发检查 (使用 context.Context)
+	// 并发检查
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(10) // 最多 10 个并发
 

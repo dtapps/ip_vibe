@@ -349,7 +349,7 @@ func (s *PortForwardServiceImpl) HealthcheckPortForward(ctx context.Context, id 
 	// 检查健康状态
 	results := make([][]ToPairsStruct, 0)
 
-	// 并发检查 (保持原始 errgroup 逻辑和限制)
+	// 并发检查
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(10) // 最多 10 个并发
 
