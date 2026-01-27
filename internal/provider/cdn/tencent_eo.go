@@ -173,7 +173,7 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 	requestCdnQuery.ZoneId = common.StringPtr(p.cfg.ZoneID)
 	requestCdnQuery.Offset = common.Int64Ptr(0)
 	requestCdnQuery.Limit = common.Int64Ptr(200)
-	requestCdnQuery.Filters = make([]*teo.AdvancedFilter, 0)
+	requestCdnQuery.Filters = make([]*teo.AdvancedFilter, 0, 1)
 	requestCdnQuery.Filters = append(requestCdnQuery.Filters, &teo.AdvancedFilter{
 		Name:   common.StringPtr("domain-name"),
 		Values: common.StringPtrs([]string{fullDomain}),
@@ -199,7 +199,7 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 			p.ItemData = *item
 
 			// 查找记录值列表
-			itemOriginValues := make([]string, 0)
+			itemOriginValues := make([]string, 0, 1)
 			itemOriginValues = append(itemOriginValues, utils.PtrToString(item.OriginDetail.Origin))
 			// 查找回源协议
 			itemOriginProtocol := utils.PtrToString(item.OriginProtocol)
@@ -357,7 +357,7 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 	requestGroupQuery.ZoneId = common.StringPtr(p.cfg.ZoneID) // 站点ID
 	requestGroupQuery.Offset = common.Uint64Ptr(0)            // 分页查询偏移量
 	requestGroupQuery.Limit = common.Uint64Ptr(1000)          // 分页查询限制数目
-	requestGroupQuery.Filters = make([]*teo.AdvancedFilter, 0)
+	requestGroupQuery.Filters = make([]*teo.AdvancedFilter, 0, 1)
 	requestGroupQuery.Filters = append(requestGroupQuery.Filters, &teo.AdvancedFilter{
 		Name:   common.StringPtr("origin-group-name"), // 按照源站组名称进行过滤
 		Values: common.StringPtrs([]string{p.CustomConfig.IPGroupCode}),
@@ -405,11 +405,11 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 		// 创建源站组
 		requestGroupCreate := teo.NewCreateOriginGroupRequest()
-		requestGroupCreate.ZoneId = common.StringPtr(p.cfg.ZoneID) // 站点ID
-		requestGroupCreate.Records = make([]*teo.OriginRecord, 0)  // 源站记录信息
-		for _, item := range newOriginValues {
+		requestGroupCreate.ZoneId = common.StringPtr(p.cfg.ZoneID)                      // 站点ID
+		requestGroupCreate.Records = make([]*teo.OriginRecord, 0, len(newOriginValues)) // 源站记录信息
+		for _, originValue := range newOriginValues {
 			requestGroupCreate.Records = append(requestGroupCreate.Records, &teo.OriginRecord{
-				Record: common.StringPtr(item),
+				Record: common.StringPtr(originValue),
 				Type:   common.StringPtr("IP_DOMAIN"),
 			})
 		}
@@ -427,12 +427,12 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 		// 更新源站组
 		requestGroupUpdate := teo.NewModifyOriginGroupRequest()
-		requestGroupUpdate.ZoneId = common.StringPtr(p.cfg.ZoneID)   // 站点ID
-		requestGroupUpdate.GroupId = common.StringPtr(originInfo.ID) // 源站组ID
-		requestGroupUpdate.Records = make([]*teo.OriginRecord, 0)    // 源站记录信息
-		for _, item := range newOriginValues {
+		requestGroupUpdate.ZoneId = common.StringPtr(p.cfg.ZoneID)                      // 站点ID
+		requestGroupUpdate.GroupId = common.StringPtr(originInfo.ID)                    // 源站组ID
+		requestGroupUpdate.Records = make([]*teo.OriginRecord, 0, len(newOriginValues)) // 源站记录信息
+		for _, originValue := range newOriginValues {
 			requestGroupUpdate.Records = append(requestGroupUpdate.Records, &teo.OriginRecord{
-				Record: common.StringPtr(item),
+				Record: common.StringPtr(originValue),
 				Type:   common.StringPtr("IP_DOMAIN"),
 			})
 		}

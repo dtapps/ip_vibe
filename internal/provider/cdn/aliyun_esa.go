@@ -210,7 +210,7 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 			p.ItemData = *item
 
 			// 查找记录值列表
-			itemOriginValues := make([]string, 0)
+			itemOriginValues := make([]string, 0, 1)
 			itemOriginValues = append(itemOriginValues, tea.StringValue(item.GetData().GetValue()))
 			// 查找用于标记DNS记录的业务场景
 			itemBizName := tea.StringValue(item.GetBizName())
@@ -279,7 +279,7 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 	sourceType := ""
 
 	// 记录值或部分内容
-	originValues := make([]string, 0)
+	originValues := make([]string, 0, len(newOriginValues))
 
 	switch recordType {
 	case "A", "AAAA":
@@ -363,6 +363,7 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 
 // AliyunESAProviderGroupOriginInfo 阿里云 ESA 源站组信息
 type AliyunESAProviderGroupOriginInfo struct {
+	ID         int64    // 源站组ID
 	Cname      string   // 源站组别名
 	List       []string // 源站组记录值列表
 	SourceType string   // 类型
@@ -410,6 +411,8 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 			for _, origin := range item.GetOrigins() {
 				itemOriginValues = append(itemOriginValues, tea.StringValue(origin.GetAddress()))
 			}
+			// 查找源站组ID
+			originInfo.ID = tea.Int64Value(item.GetId())
 			// 查找源站组别名
 			originInfo.Cname = tea.StringValue(item.GetRecordName())
 
@@ -432,15 +435,15 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 		// 创建源站组
 		requestGroupCreate := &esa20240910.CreateOriginPoolRequest{}
-		requestGroupCreate.Name = tea.String(p.CustomConfig.IPGroupCode)                    // 列表名称
-		requestGroupCreate.Enabled = tea.Bool(true)                                         // 源地址池是否启用
-		requestGroupCreate.SiteId = tea.Int64(p.cfg.SiteID)                                 // 站点ID
-		requestGroupCreate.Origins = make([]*esa20240910.CreateOriginPoolRequestOrigins, 0) // 源地址池里添加的源站信息
-		for _, item := range newOriginValues {
+		requestGroupCreate.Name = tea.String(p.CustomConfig.IPGroupCode)                                          // 列表名称
+		requestGroupCreate.Enabled = tea.Bool(true)                                                               // 源地址池是否启用
+		requestGroupCreate.SiteId = tea.Int64(p.cfg.SiteID)                                                       // 站点ID
+		requestGroupCreate.Origins = make([]*esa20240910.CreateOriginPoolRequestOrigins, 0, len(newOriginValues)) // 源地址池里添加的源站信息
+		for _, originValue := range newOriginValues {
 			requestGroupCreate.Origins = append(requestGroupCreate.Origins, &esa20240910.CreateOriginPoolRequestOrigins{
-				Address: tea.String(item),
+				Address: tea.String(originValue),
 				Enabled: tea.Bool(true),
-				Name:    tea.String(gomd5.Get16MD5Encode(item)),
+				Name:    tea.String(gomd5.Get16MD5Encode(originValue)),
 				Type:    tea.String("ip_domain"),
 				Weight:  tea.Int32(weight),
 			})
@@ -454,26 +457,29 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 		requestGroupDetail := &esa20240910.GetOriginPoolRequest{}
 		requestGroupDetail.Id = responseGroupCreate.GetBody().GetId() // 源地址池ID
 		requestGroupDetail.SiteId = tea.Int64(p.cfg.SiteID)           // 站点ID
-		responseGroupetail, err := p.Provider.Client.GetOriginPoolWithContext(ctx, requestGroupDetail, p.Provider.Runtime)
+		responseGroupDetail, err := p.Provider.Client.GetOriginPoolWithContext(ctx, requestGroupDetail, p.Provider.Runtime)
 		if err != nil {
 			return nil, fmt.Errorf("接口 GetOriginPoolWithContext 失败 %w", err)
 		}
 
+		// 源站组ID
+		originInfo.ID = tea.Int64Value(responseGroupDetail.GetBody().GetId())
+
 		// 源站组别名
-		originInfo.Cname = tea.StringValue(responseGroupetail.GetBody().GetRecordName())
+		originInfo.Cname = tea.StringValue(responseGroupDetail.GetBody().GetRecordName())
 
 	} else if needUpdate {
 
 		// 更新源站组
 		requestGroupUpdate := &esa20240910.UpdateOriginPoolRequest{}
-		requestGroupUpdate.Id = tea.Int64(cast.ToInt64(p.CustomConfig.IPGroupCode))         // 源站组ID
-		requestGroupUpdate.Enabled = tea.Bool(true)                                         // 源地址池是否启用
-		requestGroupUpdate.Origins = make([]*esa20240910.UpdateOriginPoolRequestOrigins, 0) // 源地址池里添加的源站信息
-		for _, item := range newOriginValues {
+		requestGroupUpdate.Id = tea.Int64(originInfo.ID)                                                          // 源站组ID
+		requestGroupUpdate.Enabled = tea.Bool(true)                                                               // 源地址池是否启用
+		requestGroupUpdate.Origins = make([]*esa20240910.UpdateOriginPoolRequestOrigins, 0, len(newOriginValues)) // 源地址池里添加的源站信息
+		for _, originValue := range newOriginValues {
 			requestGroupUpdate.Origins = append(requestGroupUpdate.Origins, &esa20240910.UpdateOriginPoolRequestOrigins{
-				Address: tea.String(item),
+				Address: tea.String(originValue),
 				Enabled: tea.Bool(true),
-				Name:    tea.String(gomd5.Get16MD5Encode(item)),
+				Name:    tea.String(gomd5.Get16MD5Encode(originValue)),
 				Type:    tea.String("ip_domain"),
 				Weight:  tea.Int32(weight),
 			})

@@ -156,9 +156,9 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 
 	// 源站配置
 	originValues := make([]string, 0, len(newOriginValues)*2)
-	for _, source := range newOriginValues {
-		originValues = append(originValues, fmt.Sprintf("http://[%v]:%v", source, p.CustomConfig.HttpPort))
-		originValues = append(originValues, fmt.Sprintf("https://[%v]:%v", source, p.CustomConfig.HttpsPort))
+	for _, originValue := range newOriginValues {
+		originValues = append(originValues, fmt.Sprintf("http://[%v]:%v", originValue, p.CustomConfig.HttpPort))
+		originValues = append(originValues, fmt.Sprintf("https://[%v]:%v", originValue, p.CustomConfig.HttpsPort))
 	}
 
 	// 查询用户名下所有域名
@@ -196,8 +196,8 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 
 	// 查找记录值列表
 	itemOriginValues := make([]string, 0, len(responseCdnInfo.Origin))
-	for _, origin := range responseCdnInfo.Origin {
-		itemOriginValues = append(itemOriginValues, origin.Peer)
+	for _, originValue := range responseCdnInfo.Origin {
+		itemOriginValues = append(itemOriginValues, originValue.Peer)
 	}
 	// 查找类型
 	itemForm := responseCdnInfo.Form
@@ -260,13 +260,13 @@ func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain 
 
 	// 源站配置
 	sources := make([]api.OriginPeer, 0, len(newOriginValues)*2)
-	for _, origin := range newOriginValues {
+	for _, originValue := range newOriginValues {
 		httpSrc := api.OriginPeer{
-			Peer:   fmt.Sprintf("http://[%v]:%v", origin, p.CustomConfig.HttpPort),
+			Peer:   fmt.Sprintf("http://[%v]:%v", originValue, p.CustomConfig.HttpPort),
 			Backup: false,
 		}
 		httpsSrc := api.OriginPeer{
-			Peer:   fmt.Sprintf("https://[%v]:%v", origin, p.CustomConfig.HttpsPort),
+			Peer:   fmt.Sprintf("https://[%v]:%v", originValue, p.CustomConfig.HttpsPort),
 			Backup: false,
 		}
 		sources = append(sources, httpSrc)

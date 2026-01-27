@@ -156,7 +156,7 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 	requestCdnQuery := cdn.NewDescribeDomainsRequest()
 	requestCdnQuery.Offset = common.Int64Ptr(0)
 	requestCdnQuery.Limit = common.Int64Ptr(1000)
-	requestCdnQuery.Filters = make([]*cdn.DomainFilter, 0)
+	requestCdnQuery.Filters = make([]*cdn.DomainFilter, 0, 1)
 	requestCdnQuery.Filters = append(requestCdnQuery.Filters, &cdn.DomainFilter{
 		Name:  common.StringPtr("domain"),
 		Value: common.StringPtrs([]string{fullDomain}),
@@ -184,8 +184,8 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 
 			// 查找记录值列表
 			itemOriginValues := make([]string, 0, len(item.Origin.Origins))
-			for _, origin := range item.Origin.Origins {
-				itemOriginValues = append(itemOriginValues, utils.PtrToString(origin))
+			for _, originValue := range item.Origin.Origins {
+				itemOriginValues = append(itemOriginValues, utils.PtrToString(originValue))
 			}
 			// 查找加速域名业务类型
 			itemServiceType := utils.PtrToString(item.ServiceType)
