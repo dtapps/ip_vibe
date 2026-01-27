@@ -38,6 +38,20 @@ func (m *GinServerManager) setupWebRouter() {
 	// DNS页面 - 提供HTML页面并渲染数据
 	r.GET("/dns", handlers.Dns)
 
+	// SSL页面 - 提供HTML页面并渲染数据
+	r.GET("/ssl", handlers.Ssl)
+	r.GET("/ssl/:id/detail", handlers.SslDetail)
+	r.GET("/ssl/:id/history", handlers.SslHistory)
+
+	// SSL导入页面 - 提供HTML页面并渲染数据
+	r.GET("/ssl-import", handlers.SslImport)
+	r.GET("/ssl-import/:id/detail", handlers.SslImportDetail)
+
+	// 域名监控页面 - 提供HTML页面并渲染数据
+	r.GET("/domain-monitor", handlers.DomainMonitor)
+	r.GET("/domain-monitor/:id/detail", handlers.DomainMonitorDetail)
+	r.GET("/domain-monitor/:id/history", handlers.DomainMonitorHistory)
+
 	// 设备页面 - 提供HTML页面并渲染数据
 	r.GET("/device", handlers.Device)
 	r.GET("/device/:id/port-forward/stats", handlers.DevicePortForwardStats)
@@ -54,20 +68,6 @@ func (m *GinServerManager) setupWebRouter() {
 	r.GET("/port-forward", handlers.PortForward)
 	r.GET("/port-forward/:id/stats", handlers.PortForwardStats)
 
-	// SSL页面 - 提供HTML页面并渲染数据
-	r.GET("/ssl", handlers.Ssl)
-	r.GET("/ssl/:id/detail", handlers.SslDetail)
-	r.GET("/ssl/:id/history", handlers.SslHistory)
-
-	// SSL导入页面 - 提供HTML页面并渲染数据
-	r.GET("/ssl-import", handlers.SslImport)
-	r.GET("/ssl-import/:id/detail", handlers.SslImportDetail)
-
-	// 域名监控页面 - 提供HTML页面并渲染数据
-	r.GET("/domain-monitor", handlers.DomainMonitor)
-	r.GET("/domain-monitor/:id/detail", handlers.DomainMonitorDetail)
-	r.GET("/domain-monitor/:id/history", handlers.DomainMonitorHistory)
-
 	// 通知页面 - 提供HTML页面并渲染数据
 	r.GET("/webhook", handlers.Webhook)
 
@@ -77,11 +77,11 @@ func (m *GinServerManager) setupWebRouter() {
 	// 任务页面 - 提供HTML页面并渲染数据
 	r.GET("/task", handlers.Task)
 
-	// 日志页面 - 提供HTML页面并渲染数据
-	r.GET("/log", handlers.Log)
-
 	// 接口页面 - 提供HTML页面并渲染数据
 	r.GET("/interface", handlers.Interface)
+
+	// 日志页面 - 提供HTML页面并渲染数据
+	r.GET("/log", handlers.Log)
 
 	// 日志内容页面 - 提供HTML页面并渲染数据
 	r.GET("/log-content", handlers.LogContent)
@@ -169,6 +169,46 @@ func (m *GinServerManager) setupApiRouter() {
 			dnsRecords.GET("/:id/health-check", handlers.HealthCheckDnsRecord)     // 检查DNS记录健康状态
 		}
 
+		// SSL记录管理相关API
+		sslRecords := api.Group("/ssl-records")
+		{
+			sslRecords.GET("", handlers.GetSSLRecords)                                     // 获取全部SSL记录
+			sslRecords.GET("/:id", handlers.GetSSLRecordDetail)                            // 获取SSL记录详情
+			sslRecords.POST("/import", handlers.ImportSSLRecord)                           // 导入SSL记录
+			sslRecords.POST("", handlers.CreateSSLRecord)                                  // 创建SSL记录
+			sslRecords.PATCH("/:id", handlers.UpdateSSLRecord)                             // 更新SSL记录
+			sslRecords.PATCH("/:id/auto-renewal", handlers.UpdateSSLRecordAutoRenewal)     // 更新SSL记录自动续费状态
+			sslRecords.PATCH("/:id/active", handlers.UpdateSSLRecordActive)                // 更新SSL记录启用状态
+			sslRecords.PATCH("/batch/active", handlers.BatchUpdateSSLRecordActive)         // 批量更新SSL记录启用状态
+			sslRecords.DELETE("/:id", handlers.DeleteSSLRecord)                            // 删除SSL记录
+			sslRecords.DELETE("/batch", handlers.BatchDeleteSSLRecord)                     // 批量删除SSL记录
+			sslRecords.POST("/:id/apply", handlers.ApplySSLRecord)                         // 申请新的SSL证书
+			sslRecords.GET("/:id/history/:history_id", handlers.GetSSLRecordHistoryDetail) // 获取SSL记录历史详情
+		}
+
+		// SSL记录管理相关API
+		sslImports := api.Group("/ssl-imports")
+		{
+			sslImports.POST("/import", handlers.ImportSSLImport)       // 导入SSL导入记录
+			sslImports.POST("", handlers.CreateSSLImport)              // 创建SSL导入记录
+			sslImports.DELETE("/:id", handlers.DeleteSSLImport)        // 删除SSL导入记录
+			sslImports.DELETE("/batch", handlers.BatchDeleteSSLImport) // 批量删除SSL导入记录
+		}
+
+		// 域名监控相关API
+		domainMonitors := api.Group("/domain-monitors")
+		{
+			domainMonitors.GET("", handlers.GetDomainMonitors)                             // 获取所有域名监控
+			domainMonitors.GET("/:id", handlers.GetDomainMonitorDetail)                    // 获取域名监控详情
+			domainMonitors.POST("", handlers.CreateDomainMonitor)                          // 创建域名监控
+			domainMonitors.PATCH("/:id", handlers.UpdateDomainMonitor)                     // 更新域名监控
+			domainMonitors.PATCH("/:id/active", handlers.UpdateDomainMonitorActive)        // 更新域名监控启用状态
+			domainMonitors.PATCH("/batch/active", handlers.BatchUpdateDomainMonitorActive) // 批量更新域名监控启用状态
+			domainMonitors.DELETE("/:id", handlers.DeleteDomainMonitor)                    // 删除域名监控
+			domainMonitors.DELETE("/batch", handlers.BatchDeleteDomainMonitor)             // 批量删除域名监控
+			domainMonitors.POST("/:id/check", handlers.CheckDomainMonitor)                 // 检查域名监控
+		}
+
 		// 设备相关API
 		devices := api.Group("/devices")
 		{
@@ -225,46 +265,6 @@ func (m *GinServerManager) setupApiRouter() {
 			portForwards.DELETE("/batch", handlers.BatchDeletePortForward)             // 批量删除端口转发
 			portForwards.GET("/:id/health-check", handlers.HealthCheckPortForward)     // 检查端口转发健康状态
 			portForwards.GET("/:id/stats", handlers.GetPortForwardStats)               // 获取端口转发统计数据
-		}
-
-		// SSL记录管理相关API
-		sslRecords := api.Group("/ssl-records")
-		{
-			sslRecords.GET("", handlers.GetSSLRecords)                                     // 获取全部SSL记录
-			sslRecords.GET("/:id", handlers.GetSSLRecordDetail)                            // 获取SSL记录详情
-			sslRecords.POST("/import", handlers.ImportSSLRecord)                           // 导入SSL记录
-			sslRecords.POST("", handlers.CreateSSLRecord)                                  // 创建SSL记录
-			sslRecords.PATCH("/:id", handlers.UpdateSSLRecord)                             // 更新SSL记录
-			sslRecords.PATCH("/:id/auto-renewal", handlers.UpdateSSLRecordAutoRenewal)     // 更新SSL记录自动续费状态
-			sslRecords.PATCH("/:id/active", handlers.UpdateSSLRecordActive)                // 更新SSL记录启用状态
-			sslRecords.PATCH("/batch/active", handlers.BatchUpdateSSLRecordActive)         // 批量更新SSL记录启用状态
-			sslRecords.DELETE("/:id", handlers.DeleteSSLRecord)                            // 删除SSL记录
-			sslRecords.DELETE("/batch", handlers.BatchDeleteSSLRecord)                     // 批量删除SSL记录
-			sslRecords.POST("/:id/apply", handlers.ApplySSLRecord)                         // 申请新的SSL证书
-			sslRecords.GET("/:id/history/:history_id", handlers.GetSSLRecordHistoryDetail) // 获取SSL记录历史详情
-		}
-
-		// SSL记录管理相关API
-		sslImports := api.Group("/ssl-imports")
-		{
-			sslImports.POST("/import", handlers.ImportSSLImport)       // 导入SSL导入记录
-			sslImports.POST("", handlers.CreateSSLImport)              // 创建SSL导入记录
-			sslImports.DELETE("/:id", handlers.DeleteSSLImport)        // 删除SSL导入记录
-			sslImports.DELETE("/batch", handlers.BatchDeleteSSLImport) // 批量删除SSL导入记录
-		}
-
-		// 域名监控相关API
-		domainMonitors := api.Group("/domain-monitors")
-		{
-			domainMonitors.GET("", handlers.GetDomainMonitors)                             // 获取所有域名监控
-			domainMonitors.GET("/:id", handlers.GetDomainMonitorDetail)                    // 获取域名监控详情
-			domainMonitors.POST("", handlers.CreateDomainMonitor)                          // 创建域名监控
-			domainMonitors.PATCH("/:id", handlers.UpdateDomainMonitor)                     // 更新域名监控
-			domainMonitors.PATCH("/:id/active", handlers.UpdateDomainMonitorActive)        // 更新域名监控启用状态
-			domainMonitors.PATCH("/batch/active", handlers.BatchUpdateDomainMonitorActive) // 批量更新域名监控启用状态
-			domainMonitors.DELETE("/:id", handlers.DeleteDomainMonitor)                    // 删除域名监控
-			domainMonitors.DELETE("/batch", handlers.BatchDeleteDomainMonitor)             // 批量删除域名监控
-			domainMonitors.POST("/:id/check", handlers.CheckDomainMonitor)                 // 检查域名监控
 		}
 
 		// 通知相关API
