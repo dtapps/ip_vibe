@@ -384,7 +384,7 @@ definitions:
   vibe_ip_internal_types.CreatePlatformConfigRequest:
     properties:
       capability:
-        description: 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
+        description: 平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）
         type: string
       config_json:
         description: 配置平台密钥等敏感信息（JSON）
@@ -941,7 +941,7 @@ definitions:
   vibe_ip_internal_types.GetPlatformConfigResponse:
     properties:
       capability:
-        description: 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
+        description: 平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）
         type: string
       config_json:
         description: 平台密钥等敏感信息（JSON）
@@ -1474,7 +1474,7 @@ definitions:
   vibe_ip_internal_types.UpdatePlatformConfigRequest:
     properties:
       capability:
-        description: 平台支持的服务能力：dns（仅DNS）、cdn（仅CDN）、all（DNS+CDN）
+        description: 平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）
         type: string
       config_json:
         description: 配置平台密钥等敏感信息（JSON）

@@ -112,6 +112,7 @@ const (
 	CapabilityDNS Capability = "dns"
 	CapabilityCdn Capability = "cdn"
 	CapabilitySsl Capability = "ssl"
+	CapabilityTun Capability = "tun"
 )
 
 func (c Capability) String() string {
@@ -121,7 +122,7 @@ func (c Capability) String() string {
 // CapabilityValidator is a validator for the "capability" field enum values. It is called by the builders before save.
 func CapabilityValidator(c Capability) error {
 	switch c {
-	case CapabilityAll, CapabilityDNS, CapabilityCdn, CapabilitySsl:
+	case CapabilityAll, CapabilityDNS, CapabilityCdn, CapabilitySsl, CapabilityTun:
 		return nil
 	default:
 		return fmt.Errorf("platformconfig: invalid enum value for capability field: %q", c)

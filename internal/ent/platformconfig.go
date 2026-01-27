@@ -23,7 +23,7 @@ type PlatformConfig struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 更新时间
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// 平台支持的服务能力：all（全部）dns（仅DNS）、cdn（仅CDN）、ssl（仅SSL）
+	// 平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）
 	Capability platformconfig.Capability `json:"capability,omitempty"`
 	// 平台配置名称
 	Name string `json:"name,omitempty"`
