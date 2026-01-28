@@ -69,13 +69,12 @@ func (CloudflareTunnel) Fields() []ent.Field {
 			Comment("隧道连接配置（JSON）").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("conns_active_at").
+		field.Time("conns_active_at").
 			Optional().
 			Comment("隧道连接活跃时间").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("remote_created_at").
-			Optional().
+		field.Time("remote_created_at").
 			Comment("隧道创建时间").
 			Annotations(entsql.WithComments(true)),
 

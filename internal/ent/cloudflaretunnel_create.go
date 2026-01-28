@@ -84,13 +84,13 @@ func (_c *CloudflareTunnelCreate) SetConnections(v json.RawMessage) *CloudflareT
 }
 
 // SetConnsActiveAt sets the "conns_active_at" field.
-func (_c *CloudflareTunnelCreate) SetConnsActiveAt(v string) *CloudflareTunnelCreate {
+func (_c *CloudflareTunnelCreate) SetConnsActiveAt(v time.Time) *CloudflareTunnelCreate {
 	_c.mutation.SetConnsActiveAt(v)
 	return _c
 }
 
 // SetNillableConnsActiveAt sets the "conns_active_at" field if the given value is not nil.
-func (_c *CloudflareTunnelCreate) SetNillableConnsActiveAt(v *string) *CloudflareTunnelCreate {
+func (_c *CloudflareTunnelCreate) SetNillableConnsActiveAt(v *time.Time) *CloudflareTunnelCreate {
 	if v != nil {
 		_c.SetConnsActiveAt(*v)
 	}
@@ -98,16 +98,8 @@ func (_c *CloudflareTunnelCreate) SetNillableConnsActiveAt(v *string) *Cloudflar
 }
 
 // SetRemoteCreatedAt sets the "remote_created_at" field.
-func (_c *CloudflareTunnelCreate) SetRemoteCreatedAt(v string) *CloudflareTunnelCreate {
+func (_c *CloudflareTunnelCreate) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelCreate {
 	_c.mutation.SetRemoteCreatedAt(v)
-	return _c
-}
-
-// SetNillableRemoteCreatedAt sets the "remote_created_at" field if the given value is not nil.
-func (_c *CloudflareTunnelCreate) SetNillableRemoteCreatedAt(v *string) *CloudflareTunnelCreate {
-	if v != nil {
-		_c.SetRemoteCreatedAt(*v)
-	}
 	return _c
 }
 
@@ -249,6 +241,9 @@ func (_c *CloudflareTunnelCreate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnel.status": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.RemoteCreatedAt(); !ok {
+		return &ValidationError{Name: "remote_created_at", err: errors.New(`ent: missing required field "CloudflareTunnel.remote_created_at"`)}
+	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := cloudflaretunnel.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnel.id": %w`, err)}
@@ -315,11 +310,11 @@ func (_c *CloudflareTunnelCreate) createSpec() (*CloudflareTunnel, *sqlgraph.Cre
 		_node.Connections = value
 	}
 	if value, ok := _c.mutation.ConnsActiveAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldConnsActiveAt, field.TypeString, value)
+		_spec.SetField(cloudflaretunnel.FieldConnsActiveAt, field.TypeTime, value)
 		_node.ConnsActiveAt = value
 	}
 	if value, ok := _c.mutation.RemoteCreatedAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldRemoteCreatedAt, field.TypeString, value)
+		_spec.SetField(cloudflaretunnel.FieldRemoteCreatedAt, field.TypeTime, value)
 		_node.RemoteCreatedAt = value
 	}
 	if value, ok := _c.mutation.LastAPIResponse(); ok {
@@ -470,7 +465,7 @@ func (u *CloudflareTunnelUpsert) ClearConnections() *CloudflareTunnelUpsert {
 }
 
 // SetConnsActiveAt sets the "conns_active_at" field.
-func (u *CloudflareTunnelUpsert) SetConnsActiveAt(v string) *CloudflareTunnelUpsert {
+func (u *CloudflareTunnelUpsert) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpsert {
 	u.Set(cloudflaretunnel.FieldConnsActiveAt, v)
 	return u
 }
@@ -488,7 +483,7 @@ func (u *CloudflareTunnelUpsert) ClearConnsActiveAt() *CloudflareTunnelUpsert {
 }
 
 // SetRemoteCreatedAt sets the "remote_created_at" field.
-func (u *CloudflareTunnelUpsert) SetRemoteCreatedAt(v string) *CloudflareTunnelUpsert {
+func (u *CloudflareTunnelUpsert) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelUpsert {
 	u.Set(cloudflaretunnel.FieldRemoteCreatedAt, v)
 	return u
 }
@@ -496,12 +491,6 @@ func (u *CloudflareTunnelUpsert) SetRemoteCreatedAt(v string) *CloudflareTunnelU
 // UpdateRemoteCreatedAt sets the "remote_created_at" field to the value that was provided on create.
 func (u *CloudflareTunnelUpsert) UpdateRemoteCreatedAt() *CloudflareTunnelUpsert {
 	u.SetExcluded(cloudflaretunnel.FieldRemoteCreatedAt)
-	return u
-}
-
-// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
-func (u *CloudflareTunnelUpsert) ClearRemoteCreatedAt() *CloudflareTunnelUpsert {
-	u.SetNull(cloudflaretunnel.FieldRemoteCreatedAt)
 	return u
 }
 
@@ -662,7 +651,7 @@ func (u *CloudflareTunnelUpsertOne) ClearConnections() *CloudflareTunnelUpsertOn
 }
 
 // SetConnsActiveAt sets the "conns_active_at" field.
-func (u *CloudflareTunnelUpsertOne) SetConnsActiveAt(v string) *CloudflareTunnelUpsertOne {
+func (u *CloudflareTunnelUpsertOne) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.SetConnsActiveAt(v)
 	})
@@ -683,7 +672,7 @@ func (u *CloudflareTunnelUpsertOne) ClearConnsActiveAt() *CloudflareTunnelUpsert
 }
 
 // SetRemoteCreatedAt sets the "remote_created_at" field.
-func (u *CloudflareTunnelUpsertOne) SetRemoteCreatedAt(v string) *CloudflareTunnelUpsertOne {
+func (u *CloudflareTunnelUpsertOne) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.SetRemoteCreatedAt(v)
 	})
@@ -693,13 +682,6 @@ func (u *CloudflareTunnelUpsertOne) SetRemoteCreatedAt(v string) *CloudflareTunn
 func (u *CloudflareTunnelUpsertOne) UpdateRemoteCreatedAt() *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.UpdateRemoteCreatedAt()
-	})
-}
-
-// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
-func (u *CloudflareTunnelUpsertOne) ClearRemoteCreatedAt() *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearRemoteCreatedAt()
 	})
 }
 
@@ -1032,7 +1014,7 @@ func (u *CloudflareTunnelUpsertBulk) ClearConnections() *CloudflareTunnelUpsertB
 }
 
 // SetConnsActiveAt sets the "conns_active_at" field.
-func (u *CloudflareTunnelUpsertBulk) SetConnsActiveAt(v string) *CloudflareTunnelUpsertBulk {
+func (u *CloudflareTunnelUpsertBulk) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.SetConnsActiveAt(v)
 	})
@@ -1053,7 +1035,7 @@ func (u *CloudflareTunnelUpsertBulk) ClearConnsActiveAt() *CloudflareTunnelUpser
 }
 
 // SetRemoteCreatedAt sets the "remote_created_at" field.
-func (u *CloudflareTunnelUpsertBulk) SetRemoteCreatedAt(v string) *CloudflareTunnelUpsertBulk {
+func (u *CloudflareTunnelUpsertBulk) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.SetRemoteCreatedAt(v)
 	})
@@ -1063,13 +1045,6 @@ func (u *CloudflareTunnelUpsertBulk) SetRemoteCreatedAt(v string) *CloudflareTun
 func (u *CloudflareTunnelUpsertBulk) UpdateRemoteCreatedAt() *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.UpdateRemoteCreatedAt()
-	})
-}
-
-// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
-func (u *CloudflareTunnelUpsertBulk) ClearRemoteCreatedAt() *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearRemoteCreatedAt()
 	})
 }
 

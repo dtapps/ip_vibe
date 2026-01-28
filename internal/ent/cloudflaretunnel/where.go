@@ -81,12 +81,12 @@ func Name(v string) predicate.CloudflareTunnel {
 }
 
 // ConnsActiveAt applies equality check predicate on the "conns_active_at" field. It's identical to ConnsActiveAtEQ.
-func ConnsActiveAt(v string) predicate.CloudflareTunnel {
+func ConnsActiveAt(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldEQ(FieldConnsActiveAt, v))
 }
 
 // RemoteCreatedAt applies equality check predicate on the "remote_created_at" field. It's identical to RemoteCreatedAtEQ.
-func RemoteCreatedAt(v string) predicate.CloudflareTunnel {
+func RemoteCreatedAt(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldEQ(FieldRemoteCreatedAt, v))
 }
 
@@ -361,58 +361,43 @@ func ConnectionsNotNil() predicate.CloudflareTunnel {
 }
 
 // ConnsActiveAtEQ applies the EQ predicate on the "conns_active_at" field.
-func ConnsActiveAtEQ(v string) predicate.CloudflareTunnel {
+func ConnsActiveAtEQ(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldEQ(FieldConnsActiveAt, v))
 }
 
 // ConnsActiveAtNEQ applies the NEQ predicate on the "conns_active_at" field.
-func ConnsActiveAtNEQ(v string) predicate.CloudflareTunnel {
+func ConnsActiveAtNEQ(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldNEQ(FieldConnsActiveAt, v))
 }
 
 // ConnsActiveAtIn applies the In predicate on the "conns_active_at" field.
-func ConnsActiveAtIn(vs ...string) predicate.CloudflareTunnel {
+func ConnsActiveAtIn(vs ...time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldIn(FieldConnsActiveAt, vs...))
 }
 
 // ConnsActiveAtNotIn applies the NotIn predicate on the "conns_active_at" field.
-func ConnsActiveAtNotIn(vs ...string) predicate.CloudflareTunnel {
+func ConnsActiveAtNotIn(vs ...time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldNotIn(FieldConnsActiveAt, vs...))
 }
 
 // ConnsActiveAtGT applies the GT predicate on the "conns_active_at" field.
-func ConnsActiveAtGT(v string) predicate.CloudflareTunnel {
+func ConnsActiveAtGT(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldGT(FieldConnsActiveAt, v))
 }
 
 // ConnsActiveAtGTE applies the GTE predicate on the "conns_active_at" field.
-func ConnsActiveAtGTE(v string) predicate.CloudflareTunnel {
+func ConnsActiveAtGTE(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldGTE(FieldConnsActiveAt, v))
 }
 
 // ConnsActiveAtLT applies the LT predicate on the "conns_active_at" field.
-func ConnsActiveAtLT(v string) predicate.CloudflareTunnel {
+func ConnsActiveAtLT(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldLT(FieldConnsActiveAt, v))
 }
 
 // ConnsActiveAtLTE applies the LTE predicate on the "conns_active_at" field.
-func ConnsActiveAtLTE(v string) predicate.CloudflareTunnel {
+func ConnsActiveAtLTE(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldLTE(FieldConnsActiveAt, v))
-}
-
-// ConnsActiveAtContains applies the Contains predicate on the "conns_active_at" field.
-func ConnsActiveAtContains(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldContains(FieldConnsActiveAt, v))
-}
-
-// ConnsActiveAtHasPrefix applies the HasPrefix predicate on the "conns_active_at" field.
-func ConnsActiveAtHasPrefix(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldHasPrefix(FieldConnsActiveAt, v))
-}
-
-// ConnsActiveAtHasSuffix applies the HasSuffix predicate on the "conns_active_at" field.
-func ConnsActiveAtHasSuffix(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldHasSuffix(FieldConnsActiveAt, v))
 }
 
 // ConnsActiveAtIsNil applies the IsNil predicate on the "conns_active_at" field.
@@ -425,89 +410,44 @@ func ConnsActiveAtNotNil() predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldConnsActiveAt))
 }
 
-// ConnsActiveAtEqualFold applies the EqualFold predicate on the "conns_active_at" field.
-func ConnsActiveAtEqualFold(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldEqualFold(FieldConnsActiveAt, v))
-}
-
-// ConnsActiveAtContainsFold applies the ContainsFold predicate on the "conns_active_at" field.
-func ConnsActiveAtContainsFold(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldContainsFold(FieldConnsActiveAt, v))
-}
-
 // RemoteCreatedAtEQ applies the EQ predicate on the "remote_created_at" field.
-func RemoteCreatedAtEQ(v string) predicate.CloudflareTunnel {
+func RemoteCreatedAtEQ(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldEQ(FieldRemoteCreatedAt, v))
 }
 
 // RemoteCreatedAtNEQ applies the NEQ predicate on the "remote_created_at" field.
-func RemoteCreatedAtNEQ(v string) predicate.CloudflareTunnel {
+func RemoteCreatedAtNEQ(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldNEQ(FieldRemoteCreatedAt, v))
 }
 
 // RemoteCreatedAtIn applies the In predicate on the "remote_created_at" field.
-func RemoteCreatedAtIn(vs ...string) predicate.CloudflareTunnel {
+func RemoteCreatedAtIn(vs ...time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldIn(FieldRemoteCreatedAt, vs...))
 }
 
 // RemoteCreatedAtNotIn applies the NotIn predicate on the "remote_created_at" field.
-func RemoteCreatedAtNotIn(vs ...string) predicate.CloudflareTunnel {
+func RemoteCreatedAtNotIn(vs ...time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldNotIn(FieldRemoteCreatedAt, vs...))
 }
 
 // RemoteCreatedAtGT applies the GT predicate on the "remote_created_at" field.
-func RemoteCreatedAtGT(v string) predicate.CloudflareTunnel {
+func RemoteCreatedAtGT(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldGT(FieldRemoteCreatedAt, v))
 }
 
 // RemoteCreatedAtGTE applies the GTE predicate on the "remote_created_at" field.
-func RemoteCreatedAtGTE(v string) predicate.CloudflareTunnel {
+func RemoteCreatedAtGTE(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldGTE(FieldRemoteCreatedAt, v))
 }
 
 // RemoteCreatedAtLT applies the LT predicate on the "remote_created_at" field.
-func RemoteCreatedAtLT(v string) predicate.CloudflareTunnel {
+func RemoteCreatedAtLT(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldLT(FieldRemoteCreatedAt, v))
 }
 
 // RemoteCreatedAtLTE applies the LTE predicate on the "remote_created_at" field.
-func RemoteCreatedAtLTE(v string) predicate.CloudflareTunnel {
+func RemoteCreatedAtLTE(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldLTE(FieldRemoteCreatedAt, v))
-}
-
-// RemoteCreatedAtContains applies the Contains predicate on the "remote_created_at" field.
-func RemoteCreatedAtContains(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldContains(FieldRemoteCreatedAt, v))
-}
-
-// RemoteCreatedAtHasPrefix applies the HasPrefix predicate on the "remote_created_at" field.
-func RemoteCreatedAtHasPrefix(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldHasPrefix(FieldRemoteCreatedAt, v))
-}
-
-// RemoteCreatedAtHasSuffix applies the HasSuffix predicate on the "remote_created_at" field.
-func RemoteCreatedAtHasSuffix(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldHasSuffix(FieldRemoteCreatedAt, v))
-}
-
-// RemoteCreatedAtIsNil applies the IsNil predicate on the "remote_created_at" field.
-func RemoteCreatedAtIsNil() predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldRemoteCreatedAt))
-}
-
-// RemoteCreatedAtNotNil applies the NotNil predicate on the "remote_created_at" field.
-func RemoteCreatedAtNotNil() predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldRemoteCreatedAt))
-}
-
-// RemoteCreatedAtEqualFold applies the EqualFold predicate on the "remote_created_at" field.
-func RemoteCreatedAtEqualFold(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldEqualFold(FieldRemoteCreatedAt, v))
-}
-
-// RemoteCreatedAtContainsFold applies the ContainsFold predicate on the "remote_created_at" field.
-func RemoteCreatedAtContainsFold(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldContainsFold(FieldRemoteCreatedAt, v))
 }
 
 // LastAPIResponseEQ applies the EQ predicate on the "last_api_response" field.

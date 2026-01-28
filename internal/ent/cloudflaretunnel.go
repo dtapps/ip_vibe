@@ -35,9 +35,9 @@ type CloudflareTunnel struct {
 	// 隧道连接配置（JSON）
 	Connections json.RawMessage `json:"connections,omitempty"`
 	// 隧道连接活跃时间
-	ConnsActiveAt string `json:"conns_active_at,omitempty"`
+	ConnsActiveAt time.Time `json:"conns_active_at,omitempty"`
 	// 隧道创建时间
-	RemoteCreatedAt string `json:"remote_created_at,omitempty"`
+	RemoteCreatedAt time.Time `json:"remote_created_at,omitempty"`
 	// 最近一次接口的反馈
 	LastAPIResponse string `json:"-"`
 	// 最近一次接口的反馈时间
@@ -89,9 +89,9 @@ func (*CloudflareTunnel) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case cloudflaretunnel.FieldID, cloudflaretunnel.FieldConfigID:
 			values[i] = new(sql.NullInt64)
-		case cloudflaretunnel.FieldTunnelID, cloudflaretunnel.FieldName, cloudflaretunnel.FieldStatus, cloudflaretunnel.FieldConnsActiveAt, cloudflaretunnel.FieldRemoteCreatedAt, cloudflaretunnel.FieldLastAPIResponse:
+		case cloudflaretunnel.FieldTunnelID, cloudflaretunnel.FieldName, cloudflaretunnel.FieldStatus, cloudflaretunnel.FieldLastAPIResponse:
 			values[i] = new(sql.NullString)
-		case cloudflaretunnel.FieldCreatedAt, cloudflaretunnel.FieldUpdatedAt, cloudflaretunnel.FieldLastAPIResponseAt:
+		case cloudflaretunnel.FieldCreatedAt, cloudflaretunnel.FieldUpdatedAt, cloudflaretunnel.FieldConnsActiveAt, cloudflaretunnel.FieldRemoteCreatedAt, cloudflaretunnel.FieldLastAPIResponseAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -159,16 +159,16 @@ func (_m *CloudflareTunnel) assignValues(columns []string, values []any) error {
 				}
 			}
 		case cloudflaretunnel.FieldConnsActiveAt:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field conns_active_at", values[i])
 			} else if value.Valid {
-				_m.ConnsActiveAt = value.String
+				_m.ConnsActiveAt = value.Time
 			}
 		case cloudflaretunnel.FieldRemoteCreatedAt:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field remote_created_at", values[i])
 			} else if value.Valid {
-				_m.RemoteCreatedAt = value.String
+				_m.RemoteCreatedAt = value.Time
 			}
 		case cloudflaretunnel.FieldLastAPIResponse:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -250,10 +250,10 @@ func (_m *CloudflareTunnel) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.Connections))
 	builder.WriteString(", ")
 	builder.WriteString("conns_active_at=")
-	builder.WriteString(_m.ConnsActiveAt)
+	builder.WriteString(_m.ConnsActiveAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("remote_created_at=")
-	builder.WriteString(_m.RemoteCreatedAt)
+	builder.WriteString(_m.RemoteCreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("last_api_response=<sensitive>")
 	builder.WriteString(", ")

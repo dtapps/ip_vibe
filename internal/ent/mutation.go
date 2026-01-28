@@ -1923,8 +1923,8 @@ type CloudflareTunnelMutation struct {
 	status               *cloudflaretunnel.Status
 	connections          *json.RawMessage
 	appendconnections    json.RawMessage
-	conns_active_at      *string
-	remote_created_at    *string
+	conns_active_at      *time.Time
+	remote_created_at    *time.Time
 	last_api_response    *string
 	last_api_response_at *time.Time
 	clearedFields        map[string]struct{}
@@ -2324,12 +2324,12 @@ func (m *CloudflareTunnelMutation) ResetConnections() {
 }
 
 // SetConnsActiveAt sets the "conns_active_at" field.
-func (m *CloudflareTunnelMutation) SetConnsActiveAt(s string) {
-	m.conns_active_at = &s
+func (m *CloudflareTunnelMutation) SetConnsActiveAt(t time.Time) {
+	m.conns_active_at = &t
 }
 
 // ConnsActiveAt returns the value of the "conns_active_at" field in the mutation.
-func (m *CloudflareTunnelMutation) ConnsActiveAt() (r string, exists bool) {
+func (m *CloudflareTunnelMutation) ConnsActiveAt() (r time.Time, exists bool) {
 	v := m.conns_active_at
 	if v == nil {
 		return
@@ -2340,7 +2340,7 @@ func (m *CloudflareTunnelMutation) ConnsActiveAt() (r string, exists bool) {
 // OldConnsActiveAt returns the old "conns_active_at" field's value of the CloudflareTunnel entity.
 // If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareTunnelMutation) OldConnsActiveAt(ctx context.Context) (v string, err error) {
+func (m *CloudflareTunnelMutation) OldConnsActiveAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldConnsActiveAt is only allowed on UpdateOne operations")
 	}
@@ -2373,12 +2373,12 @@ func (m *CloudflareTunnelMutation) ResetConnsActiveAt() {
 }
 
 // SetRemoteCreatedAt sets the "remote_created_at" field.
-func (m *CloudflareTunnelMutation) SetRemoteCreatedAt(s string) {
-	m.remote_created_at = &s
+func (m *CloudflareTunnelMutation) SetRemoteCreatedAt(t time.Time) {
+	m.remote_created_at = &t
 }
 
 // RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
-func (m *CloudflareTunnelMutation) RemoteCreatedAt() (r string, exists bool) {
+func (m *CloudflareTunnelMutation) RemoteCreatedAt() (r time.Time, exists bool) {
 	v := m.remote_created_at
 	if v == nil {
 		return
@@ -2389,7 +2389,7 @@ func (m *CloudflareTunnelMutation) RemoteCreatedAt() (r string, exists bool) {
 // OldRemoteCreatedAt returns the old "remote_created_at" field's value of the CloudflareTunnel entity.
 // If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareTunnelMutation) OldRemoteCreatedAt(ctx context.Context) (v string, err error) {
+func (m *CloudflareTunnelMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -2403,22 +2403,9 @@ func (m *CloudflareTunnelMutation) OldRemoteCreatedAt(ctx context.Context) (v st
 	return oldValue.RemoteCreatedAt, nil
 }
 
-// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
-func (m *CloudflareTunnelMutation) ClearRemoteCreatedAt() {
-	m.remote_created_at = nil
-	m.clearedFields[cloudflaretunnel.FieldRemoteCreatedAt] = struct{}{}
-}
-
-// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
-func (m *CloudflareTunnelMutation) RemoteCreatedAtCleared() bool {
-	_, ok := m.clearedFields[cloudflaretunnel.FieldRemoteCreatedAt]
-	return ok
-}
-
 // ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
 func (m *CloudflareTunnelMutation) ResetRemoteCreatedAt() {
 	m.remote_created_at = nil
-	delete(m.clearedFields, cloudflaretunnel.FieldRemoteCreatedAt)
 }
 
 // SetLastAPIResponse sets the "last_api_response" field.
@@ -2788,14 +2775,14 @@ func (m *CloudflareTunnelMutation) SetField(name string, value ent.Value) error 
 		m.SetConnections(v)
 		return nil
 	case cloudflaretunnel.FieldConnsActiveAt:
-		v, ok := value.(string)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetConnsActiveAt(v)
 		return nil
 	case cloudflaretunnel.FieldRemoteCreatedAt:
-		v, ok := value.(string)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2854,9 +2841,6 @@ func (m *CloudflareTunnelMutation) ClearedFields() []string {
 	if m.FieldCleared(cloudflaretunnel.FieldConnsActiveAt) {
 		fields = append(fields, cloudflaretunnel.FieldConnsActiveAt)
 	}
-	if m.FieldCleared(cloudflaretunnel.FieldRemoteCreatedAt) {
-		fields = append(fields, cloudflaretunnel.FieldRemoteCreatedAt)
-	}
 	if m.FieldCleared(cloudflaretunnel.FieldLastAPIResponse) {
 		fields = append(fields, cloudflaretunnel.FieldLastAPIResponse)
 	}
@@ -2882,9 +2866,6 @@ func (m *CloudflareTunnelMutation) ClearField(name string) error {
 		return nil
 	case cloudflaretunnel.FieldConnsActiveAt:
 		m.ClearConnsActiveAt()
-		return nil
-	case cloudflaretunnel.FieldRemoteCreatedAt:
-		m.ClearRemoteCreatedAt()
 		return nil
 	case cloudflaretunnel.FieldLastAPIResponse:
 		m.ClearLastAPIResponse()

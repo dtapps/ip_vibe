@@ -362,6 +362,22 @@ type CloudfareTUNProviderConnector struct {
 // Lists 获取 Cloudfare TUN 隧道列表
 // https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/methods/list/
 func (p *CloudfareTUNProvider) Connectors(ctx context.Context) (lines []*CloudfareTUNProviderConnector, err error) {
+	responseQueryList, err := p.ConnectorsRaw(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("接口 ZeroTrust.Tunnels.List 失败 %w", err)
+	}
+	for _, item := range responseQueryList {
+		lines = append(lines, &CloudfareTUNProviderConnector{
+			ID:   item.ID,
+			Name: item.Name,
+		})
+	}
+	return lines, nil
+}
+
+// Lists 获取 Cloudfare TUN 隧道列表
+// https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/methods/list/
+func (p *CloudfareTUNProvider) ConnectorsRaw(ctx context.Context) (lines []zero_trust.TunnelListResponse, err error) {
 	// 查询隧道列表
 	requestQueryList := zero_trust.TunnelListParams{}
 	requestQueryList.AccountID = cloudflare.F(p.cfg.AccountID)
@@ -371,13 +387,7 @@ func (p *CloudfareTUNProvider) Connectors(ctx context.Context) (lines []*Cloudfa
 	if err != nil {
 		return nil, fmt.Errorf("接口 ZeroTrust.Tunnels.List 失败 %w", err)
 	}
-	for _, item := range responseQueryList.Result {
-		lines = append(lines, &CloudfareTUNProviderConnector{
-			ID:   item.ID,
-			Name: item.Name,
-		})
-	}
-	return lines, nil
+	return responseQueryList.Result, nil
 }
 
 // CloudfareTUNProviderZone Cloudfare TUN 域名
