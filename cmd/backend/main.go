@@ -180,6 +180,21 @@ func main() {
 		panic(err)
 	}
 
+	// 启动 TUN 刷新任务
+	tunUpdate := task.NewTUNUpdateTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+	)
+	if err := tunUpdate.StartJob(ctx); err != nil {
+		slog.Error("启动TUN刷新任务失败",
+			slog.Any("err", err),
+		)
+		panic(err)
+	}
+
 	// 启动 SSL 申请任务
 	sslApply := task.NewSSLApplyTask(
 		global.GvaEntDb,

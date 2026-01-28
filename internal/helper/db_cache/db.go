@@ -23,6 +23,8 @@ type Setting struct {
 	CDNRefreshTaskTime string `json:"cdn_refresh_task_time"`
 	// DNS刷新任务时间（分，默认 10-12 分钟，范围时用-分隔）
 	DNSRefreshTaskTime string `json:"dns_refresh_task_time"`
+	// TUN刷新任务时间（分，默认 10-12 分钟，范围时用-分隔）
+	TUNRefreshTaskTime string `json:"tun_refresh_task_time"`
 	// SSL申请任务时间（时，默认 8-10 小时，范围时用-分隔）
 	SSLApplyTaskTime string `json:"ssl_apply_task_time"`
 	// SSL刷新任务时间（时，默认 12-24 小时，范围时用-分隔）
@@ -47,6 +49,7 @@ const (
 	KeyPortForwardReport        = "conf:port_forward_report_time"
 	KeyCDNRefreshTime           = "conf:cdn_refresh_task_time"
 	KeyDNSRefreshTime           = "conf:dns_refresh_task_time"
+	KeyTUNRefreshTime           = "conf:tun_refresh_task_time"
 	KeySSLApplyTime             = "conf:ssl_apply_task_time"
 	KeySSLRefreshTime           = "conf:ssl_refresh_task_time"
 	KeyHTTPRequestLogRecordTime = "conf:http_request_log_record_time"
@@ -80,6 +83,7 @@ func InitSetting(ctx context.Context, db *ent.Client) {
 	GvaSetting.PortForwardReportTime = getVal(KeyPortForwardReport, "8-12")
 	GvaSetting.CDNRefreshTaskTime = getVal(KeyCDNRefreshTime, "10-12")
 	GvaSetting.DNSRefreshTaskTime = getVal(KeyDNSRefreshTime, "10-12")
+	GvaSetting.TUNRefreshTaskTime = getVal(KeyTUNRefreshTime, "10-12")
 	GvaSetting.SSLApplyTaskTime = getVal(KeySSLApplyTime, "8-10")
 	GvaSetting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "12-24")
 	GvaSetting.HTTPRequestLogRecordTime = cast.ToInt64(getVal(KeyHTTPRequestLogRecordTime, "90"))
@@ -114,6 +118,7 @@ func GetSetting(ctx context.Context, db *ent.Client) *Setting {
 	setting.PortForwardReportTime = getVal(KeyPortForwardReport, "8-12")
 	setting.CDNRefreshTaskTime = getVal(KeyCDNRefreshTime, "10-12")
 	setting.DNSRefreshTaskTime = getVal(KeyDNSRefreshTime, "10-12")
+	setting.TUNRefreshTaskTime = getVal(KeyTUNRefreshTime, "10-12")
 	setting.SSLApplyTaskTime = getVal(KeySSLApplyTime, "8-10")
 	setting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "12-24")
 	setting.HTTPRequestLogRecordTime = cast.ToInt64(getVal(KeyHTTPRequestLogRecordTime, "90"))
@@ -133,6 +138,7 @@ func UpdateSetting(ctx context.Context, db *ent.Client, newSetting *Setting) err
 		KeyPortForwardReport:        newSetting.PortForwardReportTime,
 		KeyCDNRefreshTime:           newSetting.CDNRefreshTaskTime,
 		KeyDNSRefreshTime:           newSetting.DNSRefreshTaskTime,
+		KeyTUNRefreshTime:           newSetting.TUNRefreshTaskTime,
 		KeySSLApplyTime:             newSetting.SSLApplyTaskTime,
 		KeySSLRefreshTime:           newSetting.SSLRefreshTaskTime,
 		KeyHTTPRequestLogRecordTime: newSetting.HTTPRequestLogRecordTime,

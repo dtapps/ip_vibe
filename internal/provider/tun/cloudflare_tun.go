@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 	"vibe_ip/internal/provider"
+	"vibe_ip/internal/utils"
 
 	"github.com/cloudflare/cloudflare-go/v6"
 	"github.com/cloudflare/cloudflare-go/v6/option"
 	"github.com/cloudflare/cloudflare-go/v6/zero_trust"
 	"github.com/cloudflare/cloudflare-go/v6/zones"
+	"github.com/spf13/cast"
 )
 
 // CloudfareTUNConfig Cloudfare TUN 配置
@@ -63,6 +66,9 @@ type CloudfareTUNProvider struct {
 
 	// 内部数据
 	InternalData *provider.TUNProviderInternalData
+
+	// 记录数据
+	ItemData []zero_trust.TunnelCloudflaredConfigurationGetResponseConfigIngress
 }
 
 // NewCloudfareTUNProvider 创建Cloudfare TUN 提供程序
@@ -120,136 +126,153 @@ func (p *CloudfareTUNProvider) Name() string {
 }
 
 // Check 检查子域名是否存在
-// https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
-func (p *CloudfareTUNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.TUNProviderInternalData, err error) {
+// https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/get/
+func (p *CloudfareTUNProvider) Check(ctx context.Context, domain string, subdomain string, domainpath string, serve_type string, serve_uri string) (data *provider.TUNProviderInternalData, err error) {
 
-	// // 完整域名
-	// fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+	// 转小写
+	serve_type = strings.ToLower(serve_type)
 
-	// // 查询域名记录
-	// requestDnsQuery := dns.RecordListParams{}
-	// requestDnsQuery.ZoneID = cloudflare.String(p.cfg.ZoneID)
-	// requestDnsQuery.Name = cloudflare.F(dns.RecordListParamsName{
-	// 	Exact: cloudflare.String(fullDomain),
-	// })
-	// if recordType != "" {
-	// 	requestDnsQuery.Type = cloudflare.F(dns.RecordListParamsType(recordType))
-	// }
-	// responseDnsQuery, err := p.Provider.Client.DNS.Records.List(ctx, requestDnsQuery)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("接口 DNS.Records.List 失败 %w", err)
-	// }
-	// // 响应参数
-	// if responseDnsQuery.Result == nil || len(responseDnsQuery.Result) == 0 {
-	// 	p.InternalData.IsContinue = true
-	// 	return p.InternalData, nil
-	// }
-	// for _, item := range responseDnsQuery.Result {
+	// unix+tls需要额外处理
+	if strings.EqualFold(serve_type, "unix_tls") {
+		serve_type = "unix+tls"
+	}
 
-	// 	// 查找域名
-	// 	itemFullDomain := item.Name
+	// 主机名
+	hostname := fmt.Sprintf("%s.%s", subdomain, p.CustomConfig.ZoneName)
 
-	// 	if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+	// 服务
+	service := fmt.Sprintf("%s://%s", serve_type, hostname)
+	switch serve_type {
+	case "http_status":
+		service = fmt.Sprintf("%s:%s", serve_type, hostname)
+	}
 
-	// 		// 记录数据
-	// 		p.ItemData = item
+	// 查询记录
+	requestTunQuery := zero_trust.TunnelCloudflaredConfigurationGetParams{}
+	requestTunQuery.AccountID = cloudflare.String(p.cfg.AccountID)
+	responseTunQuery, err := p.Provider.Client.ZeroTrust.Tunnels.Cloudflared.Configurations.Get(ctx, p.CustomConfig.TunnelID, requestTunQuery)
+	if err != nil {
+		return nil, fmt.Errorf("接口 ZeroTrust.Tunnels.Cloudflared.Configurations.Get 失败 %w", err)
+	}
+	// 响应参数
+	if responseTunQuery.Config.Ingress == nil || len(responseTunQuery.Config.Ingress) == 0 {
+		p.InternalData.IsContinue = true
+		return p.InternalData, nil
+	}
+	// 记录数据
+	p.ItemData = responseTunQuery.Config.Ingress
+	for _, item := range responseTunQuery.Config.Ingress {
 
-	// 		// 查找记录类型
-	// 		itemRecordType := cast.ToString(item.Type)
-	// 		// 查找记录值
-	// 		itemOriginValue := item.Content
-	// 		// 查找记录集的描述信息
-	// 		itemComment := item.Comment
+		// 查找主机名
+		itemHostname := item.Hostname
 
-	// 		// 检查记录类型
-	// 		if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
-	// 			continue
-	// 		}
+		if utils.EqualDomainIgnoreCase(itemHostname, hostname) {
 
-	// 		// 域名ID
-	// 		p.InternalData.RecordID = item.ID
+			// 存在主机名
+			p.InternalData.IsExist = true
 
-	// 		// 判断记录值
-	// 		if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
-	// 			p.InternalData.IsContinue = true
-	// 			p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", newOriginValue, itemOriginValue)
-	// 			return p.InternalData, nil
-	// 		}
+			// 查找服务
+			itemService := item.Service
 
-	// 		// 判断解析记录描述
-	// 		if !utils.EqualDomainIgnoreCase(itemComment, p.CustomConfig.Comment) {
-	// 			p.InternalData.IsContinue = true
-	// 			p.InternalData.Tips = fmt.Sprintf("解析记录描述不匹配，期望 %v，实际 %v", p.CustomConfig.Comment, itemComment)
-	// 			return p.InternalData, nil
-	// 		}
+			// 判断服务
+			if !utils.EqualDomainIgnoreCase(itemService, service) {
+				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("服务不匹配，期望 %v，实际 %v", service, itemService)
+				return p.InternalData, nil
+			}
 
-	// 		p.InternalData.IsContinue = false
-	// 		return p.InternalData, nil
-	// 	}
-	// }
+			p.InternalData.IsContinue = false
+			return p.InternalData, nil
+		}
+	}
 
-	// // 未找到记录
-	// p.InternalData.IsContinue = true
+	// 未找到记录
+	p.InternalData.IsContinue = true
 	return p.InternalData, nil
 }
 
-// Update 更新 DNS 记录
-// https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
-// https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/edit/
-func (p *CloudfareTUNProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+// Update 更新 记录
+// https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/update/
+func (p *CloudfareTUNProvider) Update(ctx context.Context, domain string, subdomain string, domainpath string, serve_type string, serve_uri string) (err error) {
 
-	// // 完整域名
-	// fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+	// 转小写
+	serve_type = strings.ToLower(serve_type)
 
-	// if p.InternalData.RecordID == "" {
+	// unix+tls需要额外处理
+	if strings.EqualFold(serve_type, "unix_tls") {
+		serve_type = "unix+tls"
+	}
 
-	// 	// 创建域名记录
-	// 	requestDnsCreateBody := dns.ARecordParam{}
-	// 	requestDnsCreateBody.Name = cloudflare.String(fullDomain)
-	// 	requestDnsCreateBody.Type = cloudflare.F(dns.ARecordType(recordType))
-	// 	requestDnsCreateBody.Content = cloudflare.String(originValue)
-	// 	requestDnsCreateBody.Comment = cloudflare.String(p.CustomConfig.Comment)
-	// 	requestDnsCreate := dns.RecordNewParams{
-	// 		ZoneID: cloudflare.String(p.cfg.ZoneID),
-	// 		Body:   requestDnsCreateBody,
-	// 	}
-	// 	responseDnsCreate, err := p.Provider.Client.DNS.Records.New(ctx, requestDnsCreate)
-	// 	if err != nil {
-	// 		return fmt.Errorf("接口 DNS.Records.New 失败 %w", err)
-	// 	}
+	// 主机名
+	hostname := fmt.Sprintf("%s.%s", subdomain, p.CustomConfig.ZoneName)
 
-	// 	// 域名ID
-	// 	p.InternalData.RecordID = responseDnsCreate.ID
+	// 服务
+	service := fmt.Sprintf("%s://%s", serve_type, hostname)
+	switch serve_type {
+	case "http_status":
+		service = fmt.Sprintf("%s:%s", serve_type, hostname)
+	}
 
-	// } else if p.InternalData.RecordID != "" {
+	// 从 ItemData 复制到 ingress
+	configIngress := make([]zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress, 0, len(p.ItemData))
+	// 转为 JSON 字符串
+	tempItemData, err := json.Marshal(p.ItemData)
+	if err != nil {
+		return fmt.Errorf("json.Marshal 失败 %w", err)
+	}
+	// 解析 JSON 字符串
+	if err := json.Unmarshal(tempItemData, &configIngress); err != nil {
+		return fmt.Errorf("json.Unmarshal 失败 %w", err)
+	}
 
-	// 	// 更新域名记录
-	// 	requestDnsUpdateBody := dns.ARecordParam{}
-	// 	requestDnsUpdateBody.Name = cloudflare.String(fullDomain)
-	// 	requestDnsUpdateBody.Type = cloudflare.F(dns.ARecordType(recordType))
-	// 	requestDnsUpdateBody.Content = cloudflare.String(originValue)
-	// 	requestDnsUpdateBody.Comment = cloudflare.String(p.CustomConfig.Comment)
-	// 	requestDnsUpdate := dns.RecordEditParams{
-	// 		ZoneID: cloudflare.String(p.cfg.ZoneID),
-	// 		Body:   requestDnsUpdateBody,
-	// 	}
-	// 	responseDnsUpdate, err := p.Provider.Client.DNS.Records.Edit(ctx, p.InternalData.RecordID, requestDnsUpdate)
-	// 	if err != nil {
-	// 		return fmt.Errorf("接口 DNS.Records.Edit 失败 %w", err)
-	// 	}
+	if p.InternalData.IsExist {
+		for i, item := range configIngress {
+			if utils.EqualDomainIgnoreCase(cast.ToString(item.Hostname), hostname) {
+				if hostname != "" {
+					configIngress[i].Hostname = cloudflare.String(hostname)
+				}
+				if service != "" {
+					configIngress[i].Service = cloudflare.String(service)
+				}
+				if domainpath != "" {
+					configIngress[i].Path = cloudflare.String(domainpath)
+				}
+			}
+		}
+	} else {
+		configIngres := zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress{}
+		if hostname != "" {
+			configIngres.Hostname = cloudflare.String(hostname)
+		}
+		if service != "" {
+			configIngres.Service = cloudflare.String(service)
+		}
+		if domainpath != "" {
+			configIngres.Path = cloudflare.String(domainpath)
+		}
+		configIngress = append(configIngress, configIngres)
+	}
 
-	// 	// 域名ID
-	// 	p.InternalData.RecordID = responseDnsUpdate.ID
-
-	// }
+	// 更新记录
+	requestTunUpdate := zero_trust.TunnelCloudflaredConfigurationUpdateParams{}
+	requestTunUpdate.AccountID = cloudflare.String(p.cfg.AccountID)
+	requestTunUpdate.Config = cloudflare.F(zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfig{
+		Ingress: cloudflare.F(configIngress),
+	})
+	_, err = p.Provider.Client.ZeroTrust.Tunnels.Cloudflared.Configurations.Update(ctx, p.CustomConfig.TunnelID, requestTunUpdate)
+	if err != nil {
+		return fmt.Errorf("接口 ZeroTrust.Tunnels.Cloudflared.Configurations.Update 失败 %w", err)
+	}
 
 	return nil
 }
 
 // Cloudfare TUN 自定义配置
 type CloudfareTUNCustomConfig struct {
-	Comment     string `json:"comment"`                 // 记录集的描述信息
-	IPGroupCode string `json:"ip_group_code,omitempty"` // IP 分组代码
+	TunnelID   string `json:"tunnel_id"`             // 隧道ID
+	TunnelName string `json:"tunnel_name,omitempty"` // 隧道名称
+	ZoneID     string `json:"zone_id"`               // 域名ID
+	ZoneName   string `json:"zone_name"`             // 域名名称
 }
 
 // ParseCustomConfig 解析 TUN 自定义配置

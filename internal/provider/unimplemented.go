@@ -78,12 +78,12 @@ func (UnimplementedTUNProvider) Name() string {
 }
 
 // Check 检查 TUN 记录是否存在
-func (UnimplementedTUNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *TUNProviderInternalData, err error) {
+func (UnimplementedTUNProvider) Check(ctx context.Context, domain string, subdomain string, domainpath string, serve_type string, serve_uri string) (data *TUNProviderInternalData, err error) {
 	return nil, ErrUnimplemented("TUNProvider", "Check")
 }
 
 // Update 更新 TUN 记录
-func (UnimplementedTUNProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+func (UnimplementedTUNProvider) Update(ctx context.Context, domain string, subdomain string, domainpath string, serve_type string, serve_uri string) (err error) {
 	return ErrUnimplemented("TUNProvider", "Update")
 }
 

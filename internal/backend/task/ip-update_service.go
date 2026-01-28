@@ -222,7 +222,6 @@ func (s *IPUpdateTask) RunDnsTask() {
 				cdnRecord := dnsRecord.Edges.CdnRecord
 				if cdnRecord == nil {
 					// err = fmt.Errorf("记录 %d 没有关联的 CNAME 记录", dnsRecord.ID)
-					// _ = s.updateDbOfDnsResponse(ctx, dnsRecord.ID, err.Error())
 					continue
 				}
 				params.OriginValue = cdnRecord.CdnDomain
@@ -233,7 +232,6 @@ func (s *IPUpdateTask) RunDnsTask() {
 				ipGroup := dnsRecord.Edges.IPGroup
 				if ipGroup == nil {
 					// err = fmt.Errorf("记录 %d 没有关联的 IP组", dnsRecord.ID)
-					// _ = s.updateDbOfDnsResponse(ctx, dnsRecord.ID, err.Error())
 					continue
 				}
 				params.GroupRecordID = cast.ToString(ipGroup.ID)
@@ -242,7 +240,6 @@ func (s *IPUpdateTask) RunDnsTask() {
 				devices := ipGroup.Edges.Devices
 				if len(devices) == 0 {
 					// err = fmt.Errorf("记录 %d 没有可用设备", ipGroup.ID)
-					// _ = s.updateDbOfDnsResponse(ctx, dnsRecord.ID, err.Error())
 					continue
 				}
 
@@ -260,7 +257,6 @@ func (s *IPUpdateTask) RunDnsTask() {
 
 			if params.OriginValue == "" {
 				// err = fmt.Errorf("记录 %d 需要更新的源为空", dnsRecord.ID)
-				// _ = s.updateDbOfDnsResponse(ctx, dnsRecord.ID, err.Error())
 				continue
 			}
 
@@ -389,7 +385,6 @@ func (s *IPUpdateTask) RunCdnTask() {
 			ipGroup := cdnRecord.Edges.IPGroup
 			if ipGroup == nil {
 				// err = fmt.Errorf("记录 %d 没有关联的 IP组", cdnRecord.ID)
-				// _ = s.updateDbOfCdnResponse(ctx, cdnRecord.ID, err.Error())
 				continue
 			}
 			pendingRecord.GroupRecordID = cast.ToString(ipGroup.ID)
@@ -399,7 +394,6 @@ func (s *IPUpdateTask) RunCdnTask() {
 			devices := ipGroup.Edges.Devices
 			if len(devices) == 0 {
 				// err = fmt.Errorf("记录 %d 没有可用设备", cdnRecord.ID)
-				// _ = s.updateDbOfCdnResponse(ctx, cdnRecord.ID, err.Error())
 				continue
 			}
 
@@ -417,7 +411,6 @@ func (s *IPUpdateTask) RunCdnTask() {
 			pendingRecord.OriginValues = goarray.RemoveDuplicateElement(pendingRecord.OriginValues)
 			if len(pendingRecord.OriginValues) == 0 {
 				// err = fmt.Errorf("记录 %d 需要更新的源为空", cdnRecord.ID)
-				// _ = s.updateDbOfCdnResponse(ctx, cdnRecord.ID, err.Error())
 				continue
 			}
 
@@ -750,16 +743,5 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 		return err
 	}
 
-	return nil
-}
-
-// 更新CDN记录的LastAPIResponse
-func (s *IPUpdateTask) updateDbOfCdnResponse(ctx context.Context, id int64, last_api_response string) error {
-	if s.db != nil && id != 0 {
-		return s.db.CDNRecord.UpdateOneID(id).
-			SetLastAPIResponse(last_api_response).
-			SetLastAPIResponseAt(time.Now()).
-			Exec(ctx)
-	}
 	return nil
 }
