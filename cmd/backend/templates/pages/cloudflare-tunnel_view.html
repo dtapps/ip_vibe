@@ -11,9 +11,15 @@
                 <h3 class="text-2xl font-black uppercase tracking-tighter">入站规则 (Ingress)</h3>
                 <p class="text-[10px] font-bold opacity-30 mt-1 uppercase text-primary" id="drawerTunnelName"></p>
             </div>
-            <button class="btn btn-circle btn-sm btn-ghost" onclick="closeIngressDrawer()">
-                {{ template "icons" (dict "Name" "i-lucide-x") }}
-            </button>
+            <div class="flex items-center gap-2">
+                <button class="btn btn-primary btn-sm rounded-xl gap-2 font-bold" onclick="addIngress()">
+                    {{ template "icons" (dict "Name" "i-lucide-plus" "Class" "w-4 h-4") }}
+                    <span>添加规则</span>
+                </button>
+                <button class="btn btn-circle btn-sm btn-ghost" onclick="closeIngressDrawer()">
+                    {{ template "icons" (dict "Name" "i-lucide-x") }}
+                </button>
+            </div>
         </div>
 
         <div id="ingressList" class="flex-1 overflow-y-auto p-8 bg-base-200/10">
@@ -27,12 +33,21 @@
                             <span class="text-[10px] font-black text-primary uppercase tracking-widest opacity-50">
                                 Hostname
                             </span>
-                            {{ if $rule.Hostname }}
-                            <button class="btn btn-ghost btn-xs text-[10px] h-6 min-h-6 copy-btn"
-                                data-clipboard-text="{{ $rule.Hostname }}">
-                                复制
-                            </button>
-                            {{ end }}
+                            <div class="flex items-center gap-1">
+                                {{ if $rule.Hostname }}
+                                <button class="btn btn-ghost btn-xs text-[10px] h-6 min-h-6 copy-btn"
+                                    data-clipboard-text="{{ $rule.Hostname }}">
+                                    <span>复制</span>
+                                </button>
+                                {{ end }}
+
+                                <button
+                                    class="btn btn-ghost btn-xs text-[10px] h-6 min-h-6 text-primary/60 hover:text-primary transition-all gap-1"
+                                    onclick="editIngress('{{ $tunnel.ID }}', '{{ $rule.Hostname }}', '{{ $rule.Service }}', '{{ $rule.Path }}')">
+                                    {{ template "icons" (dict "Name" "i-lucide-edit-3" "Class" "w-3 h-3") }}
+                                    <span>编辑</span>
+                                </button>
+                            </div>
                         </div>
                         <div class="text-lg font-bold text-base-content break-all mb-4">
                             {{ if $rule.Hostname }}
@@ -48,6 +63,14 @@
                             <code class="text-sm text-primary font-mono">
                                 {{ $rule.Service }}
                             </code>
+
+                            <div class="mt-3 pt-3 border-t border-base-300/30 flex items-center justify-between">
+                                <span class="text-[9px] font-bold opacity-30 uppercase tracking-tighter">Path
+                                    Prefix</span>
+                                <span class="badge badge-ghost badge-xs font-mono opacity-60">
+                                    {{ if $rule.Path }}{{ $rule.Path }}{{ else }}/ (All){{ end }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div></div>
