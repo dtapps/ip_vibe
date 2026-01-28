@@ -9,23 +9,50 @@
 {{ end }}
 
 <div class="nav-sidebar">
-  <a href="/" class='nav-item {{ if eq $activeMenu "dashboard" }}nav-item-active{{ end }}'>仪表盘</a>
-  <a href="/platform-config" class='nav-item {{ if eq $activeMenu "platform-config" }}nav-item-active{{ end }}'>平台配置</a>
-  <a href="/cdn" class='nav-item {{ if eq $activeMenu "cdn" }}nav-item-active{{ end }}'>CDN 记录</a>
-  <a href="/dns" class='nav-item {{ if eq $activeMenu "dns" }}nav-item-active{{ end }}'>DNS 记录</a>
-  <a href="/ssl" class='nav-item {{ if eq $activeMenu "ssl" }}nav-item-active{{ end }}'>SSL 记录</a>
-  <a href="/tun" class='nav-item {{ if eq $activeMenu "tun" }}nav-item-active{{ end }}'>TUN 记录</a>
-  <a href="/domain-monitor" class='nav-item {{ if eq $activeMenu "domain-monitor" }}nav-item-active{{ end }}'>域名监控</a>
-  <a href="/device" class='nav-item {{ if eq $activeMenu "device" }}nav-item-active{{ end }}'>设备管理</a>
-  <a href="/port-forward" class='nav-item {{ if eq $activeMenu "port-forward" }}nav-item-active{{ end }}'>端口转发</a>
-  <a href="/cloudflare-tunnel" class='nav-item {{ if eq $activeMenu "cloudflare-tunnel" }}nav-item-active{{ end }}'>
-    CF 隧道管理
+  <a href="/" class='nav-item {{ if eq $activeMenu "dashboard" }}nav-item-active{{ end }}'>
+    仪表盘
   </a>
-  <a href="/webhook" class='nav-item {{ if eq $activeMenu "webhook" }}nav-item-active{{ end }}'>通知管理</a>
-  <a href="/task" class='nav-item {{ if eq $activeMenu "task" }}nav-item-active{{ end }}'>任务管理</a>
-  <a href="/interface" class='nav-item {{ if eq $activeMenu "interface" }}nav-item-active{{ end }}'>开放接口</a>
-  <a href="/log" class='nav-item {{ if eq $activeMenu "log" }}nav-item-active{{ end }}'>操作日志</a>
-  <a href="/log-content" class='nav-item {{ if eq $activeMenu "log-content" }}nav-item-active{{ end }}'>日志内容</a>
+  <a href="/platform-config" class='nav-item {{ if eq $activeMenu "platform-config" }}nav-item-active{{ end }}'>
+    平台配置
+  </a>
+  <a href="/cdn" class='nav-item {{ if eq $activeMenu "cdn" }}nav-item-active{{ end }}'>
+    CDN 记录
+
+  </a>
+  <a href="/dns" class='nav-item {{ if eq $activeMenu "dns" }}nav-item-active{{ end }}'>
+    DNS 记录
+  </a>
+  <a href="/ssl" class='nav-item {{ if eq $activeMenu "ssl" }}nav-item-active{{ end }}'>
+    SSL 记录
+  </a>
+  <!-- <a href="/tun" class='nav-item {{ if eq $activeMenu "tun" }}nav-item-active{{ end }}'>TUN 记录</a> -->
+  <a href="/domain-monitor" class='nav-item {{ if eq $activeMenu "domain-monitor" }}nav-item-active{{ end }}'>
+    域名监控
+  </a>
+  <a href="/device" class='nav-item {{ if eq $activeMenu "device" }}nav-item-active{{ end }}'>
+    设备管理
+  </a>
+  <a href="/port-forward" class='nav-item {{ if eq $activeMenu "port-forward" }}nav-item-active{{ end }}'>
+    端口转发
+  </a>
+  <a href="/cloudflare-tunnel" class='nav-item {{ if eq $activeMenu "cloudflare-tunnel" }}nav-item-active{{ end }}'>
+    CF 隧道
+  </a>
+  <a href="/webhook" class='nav-item {{ if eq $activeMenu "webhook" }}nav-item-active{{ end }}'>
+    通知管理
+  </a>
+  <a href="/task" class='nav-item {{ if eq $activeMenu "task" }}nav-item-active{{ end }}'>
+    任务管理
+  </a>
+  <a href="/interface" class='nav-item {{ if eq $activeMenu "interface" }}nav-item-active{{ end }}'>
+    开放接口
+  </a>
+  <a href="/log" class='nav-item {{ if eq $activeMenu "log" }}nav-item-active{{ end }}'>
+    操作日志
+  </a>
+  <a href="/log-content" class='nav-item {{ if eq $activeMenu "log-content" }}nav-item-active{{ end }}'>
+    日志内容
+  </a>
 </div>
 
 <div class="main-container">
