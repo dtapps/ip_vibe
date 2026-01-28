@@ -207,17 +207,7 @@ func (p *CloudfareTUNProvider) Update(ctx context.Context, domain string, subdom
 	hostname, service := p.handleHostnameAndService(subdomain, serve_type, serve_uri)
 
 	// 从 ItemData 复制到 ingress
-	configIngress := make([]zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress, 0, len(p.ItemData))
-	// 转为 JSON 字符串
-	tempItemData, err := json.Marshal(p.ItemData)
-	if err != nil {
-		return fmt.Errorf("json.Marshal 失败 %w", err)
-	}
-	// 解析 JSON 字符串
-	err = json.Unmarshal(tempItemData, &configIngress)
-	if err != nil {
-		return fmt.Errorf("json.Unmarshal 失败 %w", err)
-	}
+	configIngress := p.mapIngressToUpdate(p.ItemData)
 
 	if p.InternalData.IsExist {
 		for i, item := range configIngress {
@@ -264,29 +254,83 @@ func (p *CloudfareTUNProvider) Update(ctx context.Context, domain string, subdom
 	return nil
 }
 
+// mapIngressToUpdate 将 TunnelCloudflaredConfigurationGetResponseConfigIngress 转换为 TunnelCloudflaredConfigurationUpdateParamsConfigIngress
+func (p *CloudfareTUNProvider) mapIngressToUpdate(items []zero_trust.TunnelCloudflaredConfigurationGetResponseConfigIngress) []zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress {
+	updateRules := make([]zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress, 0, len(items))
+	for _, item := range items {
+		// 1. 转换基础字段
+		rule := zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress{
+			Hostname: cloudflare.F(item.Hostname),
+			Service:  cloudflare.F(item.Service),
+			Path:     cloudflare.F(item.Path),
+		}
+		// 2. 转换 OriginRequest (只有在原始 JSON 中存在该字段时才处理)
+		if item.JSON.OriginRequest.Raw() != "" {
+			req := item.OriginRequest
+			// 映射 OriginRequest 内部所有字段
+			originReq := zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngressOriginRequest{
+				// 基础设置
+				ConnectTimeout:         cloudflare.F(req.ConnectTimeout),
+				TLSTimeout:             cloudflare.F(req.TLSTimeout),
+				TCPKeepAlive:           cloudflare.F(req.TCPKeepAlive),
+				NoTLSVerify:            cloudflare.F(req.NoTLSVerify),
+				NoHappyEyeballs:        cloudflare.F(req.NoHappyEyeballs),
+				DisableChunkedEncoding: cloudflare.F(req.DisableChunkedEncoding),
+
+				// HTTP & 代理设置
+				HTTPHostHeader:   cloudflare.F(req.HTTPHostHeader),
+				OriginServerName: cloudflare.F(req.OriginServerName),
+				ProxyType:        cloudflare.F(req.ProxyType),
+				HTTP2Origin:      cloudflare.F(req.HTTP2Origin),
+
+				// 连接池管理
+				KeepAliveConnections: cloudflare.F(req.KeepAliveConnections),
+				KeepAliveTimeout:     cloudflare.F(req.KeepAliveTimeout),
+
+				// 证书与安全
+				CAPool:         cloudflare.F(req.CAPool),
+				MatchSnItoHost: cloudflare.F(req.MatchSnItoHost),
+			}
+			// 3. 处理嵌套的 Access 策略
+			if req.Access.TeamName != "" || len(req.Access.AUDTag) > 0 {
+				originReq.Access = cloudflare.F(zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngressOriginRequestAccess{
+					AUDTag:   cloudflare.F(req.Access.AUDTag),
+					TeamName: cloudflare.F(req.Access.TeamName),
+					Required: cloudflare.F(req.Access.Required),
+				})
+			}
+			rule.OriginRequest = cloudflare.F(originReq)
+		}
+		updateRules = append(updateRules, rule)
+	}
+	return updateRules
+}
+
 // moveCatchAllRulesToLast 将所有 catch-all 规则移动到最后
 func (p *CloudfareTUNProvider) moveCatchAllRulesToLast(rules []zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress) []zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress {
-	var normal, catchAll []zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress
+	var normal []zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress
+	var catchAll []zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress
+
 	for _, rule := range rules {
-		// 判断是否是兜底规则
-		isCatchAll := false
+		// 如果一条规则既没有 Hostname 也没有 Service，那是之前 make([]T, len) 留下的垃圾数据，必须丢弃
+		if rule.Hostname.Value == "" && rule.Service.Value == "" {
+			continue
+		}
 
-		// 情况1: Hostname 未设置，或显式为空字符串
+		// 判断是否是兜底规则 (没有 Hostname 的规则)
 		if rule.Hostname.Value == "" {
-			isCatchAll = true
-		}
-
-		// 情况2: Service 是 http_status 开头（即使有 hostname，也视为兜底？通常不会，但保险起见）
-		if !isCatchAll && strings.HasPrefix(rule.Service.Value, "http_status:") {
-			isCatchAll = true
-		}
-
-		if isCatchAll {
 			catchAll = append(catchAll, rule)
 		} else {
 			normal = append(normal, rule)
 		}
 	}
+
+	// Cloudflare 只允许最后有一个兜底。如果因为逻辑产生了多个，只取最后一个，或者合并。
+	if len(catchAll) > 1 {
+		// 比如只保留最后一条真正的 http_status 规则
+		catchAll = []zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress{catchAll[len(catchAll)-1]}
+	}
+
 	return append(normal, catchAll...)
 }
 
