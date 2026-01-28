@@ -7,6 +7,8 @@ import (
 	"strings"
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/cloudflaretunnel"
+	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -160,6 +162,70 @@ func (q *CacheQuery) OrderByExpr(expr string) *CacheQuery {
 		for _, f := range item.Fields {
 			// 校验字段是否为该实体的有效列
 			if cache.ValidColumn(f) {
+				fields = append(fields, f)
+			}
+		}
+
+		if len(fields) > 0 {
+			if item.Direction == orderAsc {
+				q = q.Order(Asc(fields...))
+			} else {
+				q = q.Order(Desc(fields...))
+			}
+		}
+	}
+	return q
+}
+
+// OrderByExpr 根据给定的排序表达式对查询结果进行排序。
+// 表达式格式： "field1,field2 ASC; field3 DESC"
+// 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
+// 无效字段将被忽略，至少有一个有效字段时才会应用排序。
+func (q *CloudflareTunnelQuery) OrderByExpr(expr string) *CloudflareTunnelQuery {
+	q.log("OrderByExpr: expr=", expr)
+	if expr == "" {
+		return q
+	}
+
+	items, _ := parseSortExpr(expr)
+
+	for _, item := range items {
+		var fields []string
+		for _, f := range item.Fields {
+			// 校验字段是否为该实体的有效列
+			if cloudflaretunnel.ValidColumn(f) {
+				fields = append(fields, f)
+			}
+		}
+
+		if len(fields) > 0 {
+			if item.Direction == orderAsc {
+				q = q.Order(Asc(fields...))
+			} else {
+				q = q.Order(Desc(fields...))
+			}
+		}
+	}
+	return q
+}
+
+// OrderByExpr 根据给定的排序表达式对查询结果进行排序。
+// 表达式格式： "field1,field2 ASC; field3 DESC"
+// 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
+// 无效字段将被忽略，至少有一个有效字段时才会应用排序。
+func (q *CloudflareTunnelIngressQuery) OrderByExpr(expr string) *CloudflareTunnelIngressQuery {
+	q.log("OrderByExpr: expr=", expr)
+	if expr == "" {
+		return q
+	}
+
+	items, _ := parseSortExpr(expr)
+
+	for _, item := range items {
+		var fields []string
+		for _, f := range item.Fields {
+			// 校验字段是否为该实体的有效列
+			if cloudflaretunnelingress.ValidColumn(f) {
 				fields = append(fields, f)
 			}
 		}

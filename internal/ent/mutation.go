@@ -11,6 +11,8 @@ import (
 	"time"
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/cloudflaretunnel"
+	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -40,22 +42,24 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeCDNRecord           = "CDNRecord"
-	TypeCache               = "Cache"
-	TypeDNSRecord           = "DNSRecord"
-	TypeDevice              = "Device"
-	TypeDeviceGroup         = "DeviceGroup"
-	TypeDeviceGroupDevice   = "DeviceGroupDevice"
-	TypeDevicePortForward   = "DevicePortForward"
-	TypeDomainMonitor       = "DomainMonitor"
-	TypeIpGroup             = "IpGroup"
-	TypeIpGroupDevice       = "IpGroupDevice"
-	TypePlatformConfig      = "PlatformConfig"
-	TypeSSLImport           = "SSLImport"
-	TypeSSLRecord           = "SSLRecord"
-	TypeTUNRecord           = "TUNRecord"
-	TypeWebhook             = "Webhook"
-	TypeWebhookSubscription = "WebhookSubscription"
+	TypeCDNRecord               = "CDNRecord"
+	TypeCache                   = "Cache"
+	TypeCloudflareTunnel        = "CloudflareTunnel"
+	TypeCloudflareTunnelIngress = "CloudflareTunnelIngress"
+	TypeDNSRecord               = "DNSRecord"
+	TypeDevice                  = "Device"
+	TypeDeviceGroup             = "DeviceGroup"
+	TypeDeviceGroupDevice       = "DeviceGroupDevice"
+	TypeDevicePortForward       = "DevicePortForward"
+	TypeDomainMonitor           = "DomainMonitor"
+	TypeIpGroup                 = "IpGroup"
+	TypeIpGroupDevice           = "IpGroupDevice"
+	TypePlatformConfig          = "PlatformConfig"
+	TypeSSLImport               = "SSLImport"
+	TypeSSLRecord               = "SSLRecord"
+	TypeTUNRecord               = "TUNRecord"
+	TypeWebhook                 = "Webhook"
+	TypeWebhookSubscription     = "WebhookSubscription"
 )
 
 // CDNRecordMutation represents an operation that mutates the CDNRecord nodes in the graph.
@@ -1904,6 +1908,1925 @@ func (m *CacheMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *CacheMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Cache edge %s", name)
+}
+
+// CloudflareTunnelMutation represents an operation that mutates the CloudflareTunnel nodes in the graph.
+type CloudflareTunnelMutation struct {
+	config
+	op                   Op
+	typ                  string
+	id                   *int64
+	created_at           *time.Time
+	updated_at           *time.Time
+	tunnel_id            *string
+	name                 *string
+	status               *cloudflaretunnel.Status
+	connections          *json.RawMessage
+	appendconnections    json.RawMessage
+	conns_active_at      *string
+	remote_created_at    *string
+	last_api_response    *string
+	last_api_response_at *time.Time
+	clearedFields        map[string]struct{}
+	_config              *int64
+	cleared_config       bool
+	ingresses            map[int64]struct{}
+	removedingresses     map[int64]struct{}
+	clearedingresses     bool
+	done                 bool
+	oldValue             func(context.Context) (*CloudflareTunnel, error)
+	predicates           []predicate.CloudflareTunnel
+}
+
+var _ ent.Mutation = (*CloudflareTunnelMutation)(nil)
+
+// cloudflaretunnelOption allows management of the mutation configuration using functional options.
+type cloudflaretunnelOption func(*CloudflareTunnelMutation)
+
+// newCloudflareTunnelMutation creates new mutation for the CloudflareTunnel entity.
+func newCloudflareTunnelMutation(c config, op Op, opts ...cloudflaretunnelOption) *CloudflareTunnelMutation {
+	m := &CloudflareTunnelMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCloudflareTunnel,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCloudflareTunnelID sets the ID field of the mutation.
+func withCloudflareTunnelID(id int64) cloudflaretunnelOption {
+	return func(m *CloudflareTunnelMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CloudflareTunnel
+		)
+		m.oldValue = func(ctx context.Context) (*CloudflareTunnel, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CloudflareTunnel.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCloudflareTunnel sets the old CloudflareTunnel of the mutation.
+func withCloudflareTunnel(node *CloudflareTunnel) cloudflaretunnelOption {
+	return func(m *CloudflareTunnelMutation) {
+		m.oldValue = func(context.Context) (*CloudflareTunnel, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CloudflareTunnelMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CloudflareTunnelMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of CloudflareTunnel entities.
+func (m *CloudflareTunnelMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CloudflareTunnelMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CloudflareTunnelMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CloudflareTunnel.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CloudflareTunnelMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CloudflareTunnelMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CloudflareTunnelMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CloudflareTunnelMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CloudflareTunnelMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CloudflareTunnelMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetConfigID sets the "config_id" field.
+func (m *CloudflareTunnelMutation) SetConfigID(i int64) {
+	m._config = &i
+}
+
+// ConfigID returns the value of the "config_id" field in the mutation.
+func (m *CloudflareTunnelMutation) ConfigID() (r int64, exists bool) {
+	v := m._config
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfigID returns the old "config_id" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldConfigID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConfigID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConfigID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfigID: %w", err)
+	}
+	return oldValue.ConfigID, nil
+}
+
+// ResetConfigID resets all changes to the "config_id" field.
+func (m *CloudflareTunnelMutation) ResetConfigID() {
+	m._config = nil
+}
+
+// SetTunnelID sets the "tunnel_id" field.
+func (m *CloudflareTunnelMutation) SetTunnelID(s string) {
+	m.tunnel_id = &s
+}
+
+// TunnelID returns the value of the "tunnel_id" field in the mutation.
+func (m *CloudflareTunnelMutation) TunnelID() (r string, exists bool) {
+	v := m.tunnel_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTunnelID returns the old "tunnel_id" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldTunnelID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTunnelID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTunnelID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTunnelID: %w", err)
+	}
+	return oldValue.TunnelID, nil
+}
+
+// ResetTunnelID resets all changes to the "tunnel_id" field.
+func (m *CloudflareTunnelMutation) ResetTunnelID() {
+	m.tunnel_id = nil
+}
+
+// SetName sets the "name" field.
+func (m *CloudflareTunnelMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *CloudflareTunnelMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *CloudflareTunnelMutation) ResetName() {
+	m.name = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *CloudflareTunnelMutation) SetStatus(c cloudflaretunnel.Status) {
+	m.status = &c
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *CloudflareTunnelMutation) Status() (r cloudflaretunnel.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldStatus(ctx context.Context) (v cloudflaretunnel.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *CloudflareTunnelMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetConnections sets the "connections" field.
+func (m *CloudflareTunnelMutation) SetConnections(jm json.RawMessage) {
+	m.connections = &jm
+	m.appendconnections = nil
+}
+
+// Connections returns the value of the "connections" field in the mutation.
+func (m *CloudflareTunnelMutation) Connections() (r json.RawMessage, exists bool) {
+	v := m.connections
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConnections returns the old "connections" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldConnections(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConnections is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConnections requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConnections: %w", err)
+	}
+	return oldValue.Connections, nil
+}
+
+// AppendConnections adds jm to the "connections" field.
+func (m *CloudflareTunnelMutation) AppendConnections(jm json.RawMessage) {
+	m.appendconnections = append(m.appendconnections, jm...)
+}
+
+// AppendedConnections returns the list of values that were appended to the "connections" field in this mutation.
+func (m *CloudflareTunnelMutation) AppendedConnections() (json.RawMessage, bool) {
+	if len(m.appendconnections) == 0 {
+		return nil, false
+	}
+	return m.appendconnections, true
+}
+
+// ClearConnections clears the value of the "connections" field.
+func (m *CloudflareTunnelMutation) ClearConnections() {
+	m.connections = nil
+	m.appendconnections = nil
+	m.clearedFields[cloudflaretunnel.FieldConnections] = struct{}{}
+}
+
+// ConnectionsCleared returns if the "connections" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) ConnectionsCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldConnections]
+	return ok
+}
+
+// ResetConnections resets all changes to the "connections" field.
+func (m *CloudflareTunnelMutation) ResetConnections() {
+	m.connections = nil
+	m.appendconnections = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldConnections)
+}
+
+// SetConnsActiveAt sets the "conns_active_at" field.
+func (m *CloudflareTunnelMutation) SetConnsActiveAt(s string) {
+	m.conns_active_at = &s
+}
+
+// ConnsActiveAt returns the value of the "conns_active_at" field in the mutation.
+func (m *CloudflareTunnelMutation) ConnsActiveAt() (r string, exists bool) {
+	v := m.conns_active_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConnsActiveAt returns the old "conns_active_at" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldConnsActiveAt(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConnsActiveAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConnsActiveAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConnsActiveAt: %w", err)
+	}
+	return oldValue.ConnsActiveAt, nil
+}
+
+// ClearConnsActiveAt clears the value of the "conns_active_at" field.
+func (m *CloudflareTunnelMutation) ClearConnsActiveAt() {
+	m.conns_active_at = nil
+	m.clearedFields[cloudflaretunnel.FieldConnsActiveAt] = struct{}{}
+}
+
+// ConnsActiveAtCleared returns if the "conns_active_at" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) ConnsActiveAtCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldConnsActiveAt]
+	return ok
+}
+
+// ResetConnsActiveAt resets all changes to the "conns_active_at" field.
+func (m *CloudflareTunnelMutation) ResetConnsActiveAt() {
+	m.conns_active_at = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldConnsActiveAt)
+}
+
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (m *CloudflareTunnelMutation) SetRemoteCreatedAt(s string) {
+	m.remote_created_at = &s
+}
+
+// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
+func (m *CloudflareTunnelMutation) RemoteCreatedAt() (r string, exists bool) {
+	v := m.remote_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldRemoteCreatedAt(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
+	}
+	return oldValue.RemoteCreatedAt, nil
+}
+
+// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
+func (m *CloudflareTunnelMutation) ClearRemoteCreatedAt() {
+	m.remote_created_at = nil
+	m.clearedFields[cloudflaretunnel.FieldRemoteCreatedAt] = struct{}{}
+}
+
+// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) RemoteCreatedAtCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldRemoteCreatedAt]
+	return ok
+}
+
+// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
+func (m *CloudflareTunnelMutation) ResetRemoteCreatedAt() {
+	m.remote_created_at = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldRemoteCreatedAt)
+}
+
+// SetLastAPIResponse sets the "last_api_response" field.
+func (m *CloudflareTunnelMutation) SetLastAPIResponse(s string) {
+	m.last_api_response = &s
+}
+
+// LastAPIResponse returns the value of the "last_api_response" field in the mutation.
+func (m *CloudflareTunnelMutation) LastAPIResponse() (r string, exists bool) {
+	v := m.last_api_response
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastAPIResponse returns the old "last_api_response" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldLastAPIResponse(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastAPIResponse is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastAPIResponse requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastAPIResponse: %w", err)
+	}
+	return oldValue.LastAPIResponse, nil
+}
+
+// ClearLastAPIResponse clears the value of the "last_api_response" field.
+func (m *CloudflareTunnelMutation) ClearLastAPIResponse() {
+	m.last_api_response = nil
+	m.clearedFields[cloudflaretunnel.FieldLastAPIResponse] = struct{}{}
+}
+
+// LastAPIResponseCleared returns if the "last_api_response" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) LastAPIResponseCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldLastAPIResponse]
+	return ok
+}
+
+// ResetLastAPIResponse resets all changes to the "last_api_response" field.
+func (m *CloudflareTunnelMutation) ResetLastAPIResponse() {
+	m.last_api_response = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldLastAPIResponse)
+}
+
+// SetLastAPIResponseAt sets the "last_api_response_at" field.
+func (m *CloudflareTunnelMutation) SetLastAPIResponseAt(t time.Time) {
+	m.last_api_response_at = &t
+}
+
+// LastAPIResponseAt returns the value of the "last_api_response_at" field in the mutation.
+func (m *CloudflareTunnelMutation) LastAPIResponseAt() (r time.Time, exists bool) {
+	v := m.last_api_response_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastAPIResponseAt returns the old "last_api_response_at" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldLastAPIResponseAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastAPIResponseAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastAPIResponseAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastAPIResponseAt: %w", err)
+	}
+	return oldValue.LastAPIResponseAt, nil
+}
+
+// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
+func (m *CloudflareTunnelMutation) ClearLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	m.clearedFields[cloudflaretunnel.FieldLastAPIResponseAt] = struct{}{}
+}
+
+// LastAPIResponseAtCleared returns if the "last_api_response_at" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) LastAPIResponseAtCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldLastAPIResponseAt]
+	return ok
+}
+
+// ResetLastAPIResponseAt resets all changes to the "last_api_response_at" field.
+func (m *CloudflareTunnelMutation) ResetLastAPIResponseAt() {
+	m.last_api_response_at = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldLastAPIResponseAt)
+}
+
+// ClearConfig clears the "config" edge to the PlatformConfig entity.
+func (m *CloudflareTunnelMutation) ClearConfig() {
+	m.cleared_config = true
+	m.clearedFields[cloudflaretunnel.FieldConfigID] = struct{}{}
+}
+
+// ConfigCleared reports if the "config" edge to the PlatformConfig entity was cleared.
+func (m *CloudflareTunnelMutation) ConfigCleared() bool {
+	return m.cleared_config
+}
+
+// ConfigIDs returns the "config" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ConfigID instead. It exists only for internal usage by the builders.
+func (m *CloudflareTunnelMutation) ConfigIDs() (ids []int64) {
+	if id := m._config; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetConfig resets all changes to the "config" edge.
+func (m *CloudflareTunnelMutation) ResetConfig() {
+	m._config = nil
+	m.cleared_config = false
+}
+
+// AddIngressIDs adds the "ingresses" edge to the CloudflareTunnelIngress entity by ids.
+func (m *CloudflareTunnelMutation) AddIngressIDs(ids ...int64) {
+	if m.ingresses == nil {
+		m.ingresses = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.ingresses[ids[i]] = struct{}{}
+	}
+}
+
+// ClearIngresses clears the "ingresses" edge to the CloudflareTunnelIngress entity.
+func (m *CloudflareTunnelMutation) ClearIngresses() {
+	m.clearedingresses = true
+}
+
+// IngressesCleared reports if the "ingresses" edge to the CloudflareTunnelIngress entity was cleared.
+func (m *CloudflareTunnelMutation) IngressesCleared() bool {
+	return m.clearedingresses
+}
+
+// RemoveIngressIDs removes the "ingresses" edge to the CloudflareTunnelIngress entity by IDs.
+func (m *CloudflareTunnelMutation) RemoveIngressIDs(ids ...int64) {
+	if m.removedingresses == nil {
+		m.removedingresses = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.ingresses, ids[i])
+		m.removedingresses[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedIngresses returns the removed IDs of the "ingresses" edge to the CloudflareTunnelIngress entity.
+func (m *CloudflareTunnelMutation) RemovedIngressesIDs() (ids []int64) {
+	for id := range m.removedingresses {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// IngressesIDs returns the "ingresses" edge IDs in the mutation.
+func (m *CloudflareTunnelMutation) IngressesIDs() (ids []int64) {
+	for id := range m.ingresses {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetIngresses resets all changes to the "ingresses" edge.
+func (m *CloudflareTunnelMutation) ResetIngresses() {
+	m.ingresses = nil
+	m.clearedingresses = false
+	m.removedingresses = nil
+}
+
+// Where appends a list predicates to the CloudflareTunnelMutation builder.
+func (m *CloudflareTunnelMutation) Where(ps ...predicate.CloudflareTunnel) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CloudflareTunnelMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CloudflareTunnelMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CloudflareTunnel, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CloudflareTunnelMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CloudflareTunnelMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CloudflareTunnel).
+func (m *CloudflareTunnelMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CloudflareTunnelMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.created_at != nil {
+		fields = append(fields, cloudflaretunnel.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, cloudflaretunnel.FieldUpdatedAt)
+	}
+	if m._config != nil {
+		fields = append(fields, cloudflaretunnel.FieldConfigID)
+	}
+	if m.tunnel_id != nil {
+		fields = append(fields, cloudflaretunnel.FieldTunnelID)
+	}
+	if m.name != nil {
+		fields = append(fields, cloudflaretunnel.FieldName)
+	}
+	if m.status != nil {
+		fields = append(fields, cloudflaretunnel.FieldStatus)
+	}
+	if m.connections != nil {
+		fields = append(fields, cloudflaretunnel.FieldConnections)
+	}
+	if m.conns_active_at != nil {
+		fields = append(fields, cloudflaretunnel.FieldConnsActiveAt)
+	}
+	if m.remote_created_at != nil {
+		fields = append(fields, cloudflaretunnel.FieldRemoteCreatedAt)
+	}
+	if m.last_api_response != nil {
+		fields = append(fields, cloudflaretunnel.FieldLastAPIResponse)
+	}
+	if m.last_api_response_at != nil {
+		fields = append(fields, cloudflaretunnel.FieldLastAPIResponseAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CloudflareTunnelMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case cloudflaretunnel.FieldCreatedAt:
+		return m.CreatedAt()
+	case cloudflaretunnel.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case cloudflaretunnel.FieldConfigID:
+		return m.ConfigID()
+	case cloudflaretunnel.FieldTunnelID:
+		return m.TunnelID()
+	case cloudflaretunnel.FieldName:
+		return m.Name()
+	case cloudflaretunnel.FieldStatus:
+		return m.Status()
+	case cloudflaretunnel.FieldConnections:
+		return m.Connections()
+	case cloudflaretunnel.FieldConnsActiveAt:
+		return m.ConnsActiveAt()
+	case cloudflaretunnel.FieldRemoteCreatedAt:
+		return m.RemoteCreatedAt()
+	case cloudflaretunnel.FieldLastAPIResponse:
+		return m.LastAPIResponse()
+	case cloudflaretunnel.FieldLastAPIResponseAt:
+		return m.LastAPIResponseAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CloudflareTunnelMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case cloudflaretunnel.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case cloudflaretunnel.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case cloudflaretunnel.FieldConfigID:
+		return m.OldConfigID(ctx)
+	case cloudflaretunnel.FieldTunnelID:
+		return m.OldTunnelID(ctx)
+	case cloudflaretunnel.FieldName:
+		return m.OldName(ctx)
+	case cloudflaretunnel.FieldStatus:
+		return m.OldStatus(ctx)
+	case cloudflaretunnel.FieldConnections:
+		return m.OldConnections(ctx)
+	case cloudflaretunnel.FieldConnsActiveAt:
+		return m.OldConnsActiveAt(ctx)
+	case cloudflaretunnel.FieldRemoteCreatedAt:
+		return m.OldRemoteCreatedAt(ctx)
+	case cloudflaretunnel.FieldLastAPIResponse:
+		return m.OldLastAPIResponse(ctx)
+	case cloudflaretunnel.FieldLastAPIResponseAt:
+		return m.OldLastAPIResponseAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown CloudflareTunnel field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CloudflareTunnelMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case cloudflaretunnel.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case cloudflaretunnel.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case cloudflaretunnel.FieldConfigID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfigID(v)
+		return nil
+	case cloudflaretunnel.FieldTunnelID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTunnelID(v)
+		return nil
+	case cloudflaretunnel.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case cloudflaretunnel.FieldStatus:
+		v, ok := value.(cloudflaretunnel.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case cloudflaretunnel.FieldConnections:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConnections(v)
+		return nil
+	case cloudflaretunnel.FieldConnsActiveAt:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConnsActiveAt(v)
+		return nil
+	case cloudflaretunnel.FieldRemoteCreatedAt:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteCreatedAt(v)
+		return nil
+	case cloudflaretunnel.FieldLastAPIResponse:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastAPIResponse(v)
+		return nil
+	case cloudflaretunnel.FieldLastAPIResponseAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastAPIResponseAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareTunnel field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CloudflareTunnelMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CloudflareTunnelMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CloudflareTunnelMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown CloudflareTunnel numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CloudflareTunnelMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(cloudflaretunnel.FieldConnections) {
+		fields = append(fields, cloudflaretunnel.FieldConnections)
+	}
+	if m.FieldCleared(cloudflaretunnel.FieldConnsActiveAt) {
+		fields = append(fields, cloudflaretunnel.FieldConnsActiveAt)
+	}
+	if m.FieldCleared(cloudflaretunnel.FieldRemoteCreatedAt) {
+		fields = append(fields, cloudflaretunnel.FieldRemoteCreatedAt)
+	}
+	if m.FieldCleared(cloudflaretunnel.FieldLastAPIResponse) {
+		fields = append(fields, cloudflaretunnel.FieldLastAPIResponse)
+	}
+	if m.FieldCleared(cloudflaretunnel.FieldLastAPIResponseAt) {
+		fields = append(fields, cloudflaretunnel.FieldLastAPIResponseAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CloudflareTunnelMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CloudflareTunnelMutation) ClearField(name string) error {
+	switch name {
+	case cloudflaretunnel.FieldConnections:
+		m.ClearConnections()
+		return nil
+	case cloudflaretunnel.FieldConnsActiveAt:
+		m.ClearConnsActiveAt()
+		return nil
+	case cloudflaretunnel.FieldRemoteCreatedAt:
+		m.ClearRemoteCreatedAt()
+		return nil
+	case cloudflaretunnel.FieldLastAPIResponse:
+		m.ClearLastAPIResponse()
+		return nil
+	case cloudflaretunnel.FieldLastAPIResponseAt:
+		m.ClearLastAPIResponseAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareTunnel nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CloudflareTunnelMutation) ResetField(name string) error {
+	switch name {
+	case cloudflaretunnel.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case cloudflaretunnel.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case cloudflaretunnel.FieldConfigID:
+		m.ResetConfigID()
+		return nil
+	case cloudflaretunnel.FieldTunnelID:
+		m.ResetTunnelID()
+		return nil
+	case cloudflaretunnel.FieldName:
+		m.ResetName()
+		return nil
+	case cloudflaretunnel.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case cloudflaretunnel.FieldConnections:
+		m.ResetConnections()
+		return nil
+	case cloudflaretunnel.FieldConnsActiveAt:
+		m.ResetConnsActiveAt()
+		return nil
+	case cloudflaretunnel.FieldRemoteCreatedAt:
+		m.ResetRemoteCreatedAt()
+		return nil
+	case cloudflaretunnel.FieldLastAPIResponse:
+		m.ResetLastAPIResponse()
+		return nil
+	case cloudflaretunnel.FieldLastAPIResponseAt:
+		m.ResetLastAPIResponseAt()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareTunnel field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CloudflareTunnelMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m._config != nil {
+		edges = append(edges, cloudflaretunnel.EdgeConfig)
+	}
+	if m.ingresses != nil {
+		edges = append(edges, cloudflaretunnel.EdgeIngresses)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CloudflareTunnelMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case cloudflaretunnel.EdgeConfig:
+		if id := m._config; id != nil {
+			return []ent.Value{*id}
+		}
+	case cloudflaretunnel.EdgeIngresses:
+		ids := make([]ent.Value, 0, len(m.ingresses))
+		for id := range m.ingresses {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CloudflareTunnelMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedingresses != nil {
+		edges = append(edges, cloudflaretunnel.EdgeIngresses)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CloudflareTunnelMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case cloudflaretunnel.EdgeIngresses:
+		ids := make([]ent.Value, 0, len(m.removedingresses))
+		for id := range m.removedingresses {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CloudflareTunnelMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.cleared_config {
+		edges = append(edges, cloudflaretunnel.EdgeConfig)
+	}
+	if m.clearedingresses {
+		edges = append(edges, cloudflaretunnel.EdgeIngresses)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CloudflareTunnelMutation) EdgeCleared(name string) bool {
+	switch name {
+	case cloudflaretunnel.EdgeConfig:
+		return m.cleared_config
+	case cloudflaretunnel.EdgeIngresses:
+		return m.clearedingresses
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CloudflareTunnelMutation) ClearEdge(name string) error {
+	switch name {
+	case cloudflaretunnel.EdgeConfig:
+		m.ClearConfig()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareTunnel unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CloudflareTunnelMutation) ResetEdge(name string) error {
+	switch name {
+	case cloudflaretunnel.EdgeConfig:
+		m.ResetConfig()
+		return nil
+	case cloudflaretunnel.EdgeIngresses:
+		m.ResetIngresses()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareTunnel edge %s", name)
+}
+
+// CloudflareTunnelIngressMutation represents an operation that mutates the CloudflareTunnelIngress nodes in the graph.
+type CloudflareTunnelIngressMutation struct {
+	config
+	op                       Op
+	typ                      string
+	id                       *int64
+	created_at               *time.Time
+	updated_at               *time.Time
+	hostname                 *string
+	service                  *string
+	_path                    *string
+	origin_request           *json.RawMessage
+	appendorigin_request     json.RawMessage
+	clearedFields            map[string]struct{}
+	cloudflare_tunnel        *int64
+	clearedcloudflare_tunnel bool
+	done                     bool
+	oldValue                 func(context.Context) (*CloudflareTunnelIngress, error)
+	predicates               []predicate.CloudflareTunnelIngress
+}
+
+var _ ent.Mutation = (*CloudflareTunnelIngressMutation)(nil)
+
+// cloudflaretunnelingressOption allows management of the mutation configuration using functional options.
+type cloudflaretunnelingressOption func(*CloudflareTunnelIngressMutation)
+
+// newCloudflareTunnelIngressMutation creates new mutation for the CloudflareTunnelIngress entity.
+func newCloudflareTunnelIngressMutation(c config, op Op, opts ...cloudflaretunnelingressOption) *CloudflareTunnelIngressMutation {
+	m := &CloudflareTunnelIngressMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCloudflareTunnelIngress,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCloudflareTunnelIngressID sets the ID field of the mutation.
+func withCloudflareTunnelIngressID(id int64) cloudflaretunnelingressOption {
+	return func(m *CloudflareTunnelIngressMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CloudflareTunnelIngress
+		)
+		m.oldValue = func(ctx context.Context) (*CloudflareTunnelIngress, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CloudflareTunnelIngress.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCloudflareTunnelIngress sets the old CloudflareTunnelIngress of the mutation.
+func withCloudflareTunnelIngress(node *CloudflareTunnelIngress) cloudflaretunnelingressOption {
+	return func(m *CloudflareTunnelIngressMutation) {
+		m.oldValue = func(context.Context) (*CloudflareTunnelIngress, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CloudflareTunnelIngressMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CloudflareTunnelIngressMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of CloudflareTunnelIngress entities.
+func (m *CloudflareTunnelIngressMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CloudflareTunnelIngressMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CloudflareTunnelIngressMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CloudflareTunnelIngress.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CloudflareTunnelIngressMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CloudflareTunnelIngressMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CloudflareTunnelIngress entity.
+// If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelIngressMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CloudflareTunnelIngressMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CloudflareTunnelIngressMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CloudflareTunnelIngressMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CloudflareTunnelIngress entity.
+// If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelIngressMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CloudflareTunnelIngressMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetCloudflareTunnelID sets the "cloudflare_tunnel_id" field.
+func (m *CloudflareTunnelIngressMutation) SetCloudflareTunnelID(i int64) {
+	m.cloudflare_tunnel = &i
+}
+
+// CloudflareTunnelID returns the value of the "cloudflare_tunnel_id" field in the mutation.
+func (m *CloudflareTunnelIngressMutation) CloudflareTunnelID() (r int64, exists bool) {
+	v := m.cloudflare_tunnel
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCloudflareTunnelID returns the old "cloudflare_tunnel_id" field's value of the CloudflareTunnelIngress entity.
+// If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelIngressMutation) OldCloudflareTunnelID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCloudflareTunnelID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCloudflareTunnelID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCloudflareTunnelID: %w", err)
+	}
+	return oldValue.CloudflareTunnelID, nil
+}
+
+// ResetCloudflareTunnelID resets all changes to the "cloudflare_tunnel_id" field.
+func (m *CloudflareTunnelIngressMutation) ResetCloudflareTunnelID() {
+	m.cloudflare_tunnel = nil
+}
+
+// SetHostname sets the "hostname" field.
+func (m *CloudflareTunnelIngressMutation) SetHostname(s string) {
+	m.hostname = &s
+}
+
+// Hostname returns the value of the "hostname" field in the mutation.
+func (m *CloudflareTunnelIngressMutation) Hostname() (r string, exists bool) {
+	v := m.hostname
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHostname returns the old "hostname" field's value of the CloudflareTunnelIngress entity.
+// If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelIngressMutation) OldHostname(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHostname is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHostname requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHostname: %w", err)
+	}
+	return oldValue.Hostname, nil
+}
+
+// ClearHostname clears the value of the "hostname" field.
+func (m *CloudflareTunnelIngressMutation) ClearHostname() {
+	m.hostname = nil
+	m.clearedFields[cloudflaretunnelingress.FieldHostname] = struct{}{}
+}
+
+// HostnameCleared returns if the "hostname" field was cleared in this mutation.
+func (m *CloudflareTunnelIngressMutation) HostnameCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnelingress.FieldHostname]
+	return ok
+}
+
+// ResetHostname resets all changes to the "hostname" field.
+func (m *CloudflareTunnelIngressMutation) ResetHostname() {
+	m.hostname = nil
+	delete(m.clearedFields, cloudflaretunnelingress.FieldHostname)
+}
+
+// SetService sets the "service" field.
+func (m *CloudflareTunnelIngressMutation) SetService(s string) {
+	m.service = &s
+}
+
+// Service returns the value of the "service" field in the mutation.
+func (m *CloudflareTunnelIngressMutation) Service() (r string, exists bool) {
+	v := m.service
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldService returns the old "service" field's value of the CloudflareTunnelIngress entity.
+// If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelIngressMutation) OldService(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldService is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldService requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldService: %w", err)
+	}
+	return oldValue.Service, nil
+}
+
+// ResetService resets all changes to the "service" field.
+func (m *CloudflareTunnelIngressMutation) ResetService() {
+	m.service = nil
+}
+
+// SetPath sets the "path" field.
+func (m *CloudflareTunnelIngressMutation) SetPath(s string) {
+	m._path = &s
+}
+
+// Path returns the value of the "path" field in the mutation.
+func (m *CloudflareTunnelIngressMutation) Path() (r string, exists bool) {
+	v := m._path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPath returns the old "path" field's value of the CloudflareTunnelIngress entity.
+// If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelIngressMutation) OldPath(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPath: %w", err)
+	}
+	return oldValue.Path, nil
+}
+
+// ClearPath clears the value of the "path" field.
+func (m *CloudflareTunnelIngressMutation) ClearPath() {
+	m._path = nil
+	m.clearedFields[cloudflaretunnelingress.FieldPath] = struct{}{}
+}
+
+// PathCleared returns if the "path" field was cleared in this mutation.
+func (m *CloudflareTunnelIngressMutation) PathCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnelingress.FieldPath]
+	return ok
+}
+
+// ResetPath resets all changes to the "path" field.
+func (m *CloudflareTunnelIngressMutation) ResetPath() {
+	m._path = nil
+	delete(m.clearedFields, cloudflaretunnelingress.FieldPath)
+}
+
+// SetOriginRequest sets the "origin_request" field.
+func (m *CloudflareTunnelIngressMutation) SetOriginRequest(jm json.RawMessage) {
+	m.origin_request = &jm
+	m.appendorigin_request = nil
+}
+
+// OriginRequest returns the value of the "origin_request" field in the mutation.
+func (m *CloudflareTunnelIngressMutation) OriginRequest() (r json.RawMessage, exists bool) {
+	v := m.origin_request
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOriginRequest returns the old "origin_request" field's value of the CloudflareTunnelIngress entity.
+// If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelIngressMutation) OldOriginRequest(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOriginRequest is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOriginRequest requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOriginRequest: %w", err)
+	}
+	return oldValue.OriginRequest, nil
+}
+
+// AppendOriginRequest adds jm to the "origin_request" field.
+func (m *CloudflareTunnelIngressMutation) AppendOriginRequest(jm json.RawMessage) {
+	m.appendorigin_request = append(m.appendorigin_request, jm...)
+}
+
+// AppendedOriginRequest returns the list of values that were appended to the "origin_request" field in this mutation.
+func (m *CloudflareTunnelIngressMutation) AppendedOriginRequest() (json.RawMessage, bool) {
+	if len(m.appendorigin_request) == 0 {
+		return nil, false
+	}
+	return m.appendorigin_request, true
+}
+
+// ClearOriginRequest clears the value of the "origin_request" field.
+func (m *CloudflareTunnelIngressMutation) ClearOriginRequest() {
+	m.origin_request = nil
+	m.appendorigin_request = nil
+	m.clearedFields[cloudflaretunnelingress.FieldOriginRequest] = struct{}{}
+}
+
+// OriginRequestCleared returns if the "origin_request" field was cleared in this mutation.
+func (m *CloudflareTunnelIngressMutation) OriginRequestCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnelingress.FieldOriginRequest]
+	return ok
+}
+
+// ResetOriginRequest resets all changes to the "origin_request" field.
+func (m *CloudflareTunnelIngressMutation) ResetOriginRequest() {
+	m.origin_request = nil
+	m.appendorigin_request = nil
+	delete(m.clearedFields, cloudflaretunnelingress.FieldOriginRequest)
+}
+
+// ClearCloudflareTunnel clears the "cloudflare_tunnel" edge to the CloudflareTunnel entity.
+func (m *CloudflareTunnelIngressMutation) ClearCloudflareTunnel() {
+	m.clearedcloudflare_tunnel = true
+	m.clearedFields[cloudflaretunnelingress.FieldCloudflareTunnelID] = struct{}{}
+}
+
+// CloudflareTunnelCleared reports if the "cloudflare_tunnel" edge to the CloudflareTunnel entity was cleared.
+func (m *CloudflareTunnelIngressMutation) CloudflareTunnelCleared() bool {
+	return m.clearedcloudflare_tunnel
+}
+
+// CloudflareTunnelIDs returns the "cloudflare_tunnel" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CloudflareTunnelID instead. It exists only for internal usage by the builders.
+func (m *CloudflareTunnelIngressMutation) CloudflareTunnelIDs() (ids []int64) {
+	if id := m.cloudflare_tunnel; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCloudflareTunnel resets all changes to the "cloudflare_tunnel" edge.
+func (m *CloudflareTunnelIngressMutation) ResetCloudflareTunnel() {
+	m.cloudflare_tunnel = nil
+	m.clearedcloudflare_tunnel = false
+}
+
+// Where appends a list predicates to the CloudflareTunnelIngressMutation builder.
+func (m *CloudflareTunnelIngressMutation) Where(ps ...predicate.CloudflareTunnelIngress) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CloudflareTunnelIngressMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CloudflareTunnelIngressMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CloudflareTunnelIngress, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CloudflareTunnelIngressMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CloudflareTunnelIngressMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CloudflareTunnelIngress).
+func (m *CloudflareTunnelIngressMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CloudflareTunnelIngressMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.created_at != nil {
+		fields = append(fields, cloudflaretunnelingress.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, cloudflaretunnelingress.FieldUpdatedAt)
+	}
+	if m.cloudflare_tunnel != nil {
+		fields = append(fields, cloudflaretunnelingress.FieldCloudflareTunnelID)
+	}
+	if m.hostname != nil {
+		fields = append(fields, cloudflaretunnelingress.FieldHostname)
+	}
+	if m.service != nil {
+		fields = append(fields, cloudflaretunnelingress.FieldService)
+	}
+	if m._path != nil {
+		fields = append(fields, cloudflaretunnelingress.FieldPath)
+	}
+	if m.origin_request != nil {
+		fields = append(fields, cloudflaretunnelingress.FieldOriginRequest)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CloudflareTunnelIngressMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case cloudflaretunnelingress.FieldCreatedAt:
+		return m.CreatedAt()
+	case cloudflaretunnelingress.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case cloudflaretunnelingress.FieldCloudflareTunnelID:
+		return m.CloudflareTunnelID()
+	case cloudflaretunnelingress.FieldHostname:
+		return m.Hostname()
+	case cloudflaretunnelingress.FieldService:
+		return m.Service()
+	case cloudflaretunnelingress.FieldPath:
+		return m.Path()
+	case cloudflaretunnelingress.FieldOriginRequest:
+		return m.OriginRequest()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CloudflareTunnelIngressMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case cloudflaretunnelingress.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case cloudflaretunnelingress.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case cloudflaretunnelingress.FieldCloudflareTunnelID:
+		return m.OldCloudflareTunnelID(ctx)
+	case cloudflaretunnelingress.FieldHostname:
+		return m.OldHostname(ctx)
+	case cloudflaretunnelingress.FieldService:
+		return m.OldService(ctx)
+	case cloudflaretunnelingress.FieldPath:
+		return m.OldPath(ctx)
+	case cloudflaretunnelingress.FieldOriginRequest:
+		return m.OldOriginRequest(ctx)
+	}
+	return nil, fmt.Errorf("unknown CloudflareTunnelIngress field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CloudflareTunnelIngressMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case cloudflaretunnelingress.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case cloudflaretunnelingress.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case cloudflaretunnelingress.FieldCloudflareTunnelID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCloudflareTunnelID(v)
+		return nil
+	case cloudflaretunnelingress.FieldHostname:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHostname(v)
+		return nil
+	case cloudflaretunnelingress.FieldService:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetService(v)
+		return nil
+	case cloudflaretunnelingress.FieldPath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPath(v)
+		return nil
+	case cloudflaretunnelingress.FieldOriginRequest:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOriginRequest(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareTunnelIngress field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CloudflareTunnelIngressMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CloudflareTunnelIngressMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CloudflareTunnelIngressMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown CloudflareTunnelIngress numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CloudflareTunnelIngressMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(cloudflaretunnelingress.FieldHostname) {
+		fields = append(fields, cloudflaretunnelingress.FieldHostname)
+	}
+	if m.FieldCleared(cloudflaretunnelingress.FieldPath) {
+		fields = append(fields, cloudflaretunnelingress.FieldPath)
+	}
+	if m.FieldCleared(cloudflaretunnelingress.FieldOriginRequest) {
+		fields = append(fields, cloudflaretunnelingress.FieldOriginRequest)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CloudflareTunnelIngressMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CloudflareTunnelIngressMutation) ClearField(name string) error {
+	switch name {
+	case cloudflaretunnelingress.FieldHostname:
+		m.ClearHostname()
+		return nil
+	case cloudflaretunnelingress.FieldPath:
+		m.ClearPath()
+		return nil
+	case cloudflaretunnelingress.FieldOriginRequest:
+		m.ClearOriginRequest()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareTunnelIngress nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CloudflareTunnelIngressMutation) ResetField(name string) error {
+	switch name {
+	case cloudflaretunnelingress.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case cloudflaretunnelingress.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case cloudflaretunnelingress.FieldCloudflareTunnelID:
+		m.ResetCloudflareTunnelID()
+		return nil
+	case cloudflaretunnelingress.FieldHostname:
+		m.ResetHostname()
+		return nil
+	case cloudflaretunnelingress.FieldService:
+		m.ResetService()
+		return nil
+	case cloudflaretunnelingress.FieldPath:
+		m.ResetPath()
+		return nil
+	case cloudflaretunnelingress.FieldOriginRequest:
+		m.ResetOriginRequest()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareTunnelIngress field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CloudflareTunnelIngressMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cloudflare_tunnel != nil {
+		edges = append(edges, cloudflaretunnelingress.EdgeCloudflareTunnel)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CloudflareTunnelIngressMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case cloudflaretunnelingress.EdgeCloudflareTunnel:
+		if id := m.cloudflare_tunnel; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CloudflareTunnelIngressMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CloudflareTunnelIngressMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CloudflareTunnelIngressMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedcloudflare_tunnel {
+		edges = append(edges, cloudflaretunnelingress.EdgeCloudflareTunnel)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CloudflareTunnelIngressMutation) EdgeCleared(name string) bool {
+	switch name {
+	case cloudflaretunnelingress.EdgeCloudflareTunnel:
+		return m.clearedcloudflare_tunnel
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CloudflareTunnelIngressMutation) ClearEdge(name string) error {
+	switch name {
+	case cloudflaretunnelingress.EdgeCloudflareTunnel:
+		m.ClearCloudflareTunnel()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareTunnelIngress unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CloudflareTunnelIngressMutation) ResetEdge(name string) error {
+	switch name {
+	case cloudflaretunnelingress.EdgeCloudflareTunnel:
+		m.ResetCloudflareTunnel()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareTunnelIngress edge %s", name)
 }
 
 // DNSRecordMutation represents an operation that mutates the DNSRecord nodes in the graph.
@@ -8973,33 +10896,36 @@ func (m *IpGroupDeviceMutation) ResetEdge(name string) error {
 // PlatformConfigMutation represents an operation that mutates the PlatformConfig nodes in the graph.
 type PlatformConfigMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *int64
-	created_at         *time.Time
-	updated_at         *time.Time
-	capability         *platformconfig.Capability
-	name               *string
-	description        *string
-	platform           *platformconfig.Platform
-	config_json        *json.RawMessage
-	appendconfig_json  json.RawMessage
-	clearedFields      map[string]struct{}
-	dns_records        map[int64]struct{}
-	removeddns_records map[int64]struct{}
-	cleareddns_records bool
-	cdn_records        map[int64]struct{}
-	removedcdn_records map[int64]struct{}
-	clearedcdn_records bool
-	ssl_records        map[int64]struct{}
-	removedssl_records map[int64]struct{}
-	clearedssl_records bool
-	tun_records        map[int64]struct{}
-	removedtun_records map[int64]struct{}
-	clearedtun_records bool
-	done               bool
-	oldValue           func(context.Context) (*PlatformConfig, error)
-	predicates         []predicate.PlatformConfig
+	op                        Op
+	typ                       string
+	id                        *int64
+	created_at                *time.Time
+	updated_at                *time.Time
+	capability                *platformconfig.Capability
+	name                      *string
+	description               *string
+	platform                  *platformconfig.Platform
+	config_json               *json.RawMessage
+	appendconfig_json         json.RawMessage
+	clearedFields             map[string]struct{}
+	dns_records               map[int64]struct{}
+	removeddns_records        map[int64]struct{}
+	cleareddns_records        bool
+	cdn_records               map[int64]struct{}
+	removedcdn_records        map[int64]struct{}
+	clearedcdn_records        bool
+	ssl_records               map[int64]struct{}
+	removedssl_records        map[int64]struct{}
+	clearedssl_records        bool
+	tun_records               map[int64]struct{}
+	removedtun_records        map[int64]struct{}
+	clearedtun_records        bool
+	cloudflare_tunnels        map[int64]struct{}
+	removedcloudflare_tunnels map[int64]struct{}
+	clearedcloudflare_tunnels bool
+	done                      bool
+	oldValue                  func(context.Context) (*PlatformConfig, error)
+	predicates                []predicate.PlatformConfig
 }
 
 var _ ent.Mutation = (*PlatformConfigMutation)(nil)
@@ -9616,6 +11542,60 @@ func (m *PlatformConfigMutation) ResetTunRecords() {
 	m.removedtun_records = nil
 }
 
+// AddCloudflareTunnelIDs adds the "cloudflare_tunnels" edge to the CloudflareTunnel entity by ids.
+func (m *PlatformConfigMutation) AddCloudflareTunnelIDs(ids ...int64) {
+	if m.cloudflare_tunnels == nil {
+		m.cloudflare_tunnels = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.cloudflare_tunnels[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCloudflareTunnels clears the "cloudflare_tunnels" edge to the CloudflareTunnel entity.
+func (m *PlatformConfigMutation) ClearCloudflareTunnels() {
+	m.clearedcloudflare_tunnels = true
+}
+
+// CloudflareTunnelsCleared reports if the "cloudflare_tunnels" edge to the CloudflareTunnel entity was cleared.
+func (m *PlatformConfigMutation) CloudflareTunnelsCleared() bool {
+	return m.clearedcloudflare_tunnels
+}
+
+// RemoveCloudflareTunnelIDs removes the "cloudflare_tunnels" edge to the CloudflareTunnel entity by IDs.
+func (m *PlatformConfigMutation) RemoveCloudflareTunnelIDs(ids ...int64) {
+	if m.removedcloudflare_tunnels == nil {
+		m.removedcloudflare_tunnels = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.cloudflare_tunnels, ids[i])
+		m.removedcloudflare_tunnels[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCloudflareTunnels returns the removed IDs of the "cloudflare_tunnels" edge to the CloudflareTunnel entity.
+func (m *PlatformConfigMutation) RemovedCloudflareTunnelsIDs() (ids []int64) {
+	for id := range m.removedcloudflare_tunnels {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CloudflareTunnelsIDs returns the "cloudflare_tunnels" edge IDs in the mutation.
+func (m *PlatformConfigMutation) CloudflareTunnelsIDs() (ids []int64) {
+	for id := range m.cloudflare_tunnels {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCloudflareTunnels resets all changes to the "cloudflare_tunnels" edge.
+func (m *PlatformConfigMutation) ResetCloudflareTunnels() {
+	m.cloudflare_tunnels = nil
+	m.clearedcloudflare_tunnels = false
+	m.removedcloudflare_tunnels = nil
+}
+
 // Where appends a list predicates to the PlatformConfigMutation builder.
 func (m *PlatformConfigMutation) Where(ps ...predicate.PlatformConfig) {
 	m.predicates = append(m.predicates, ps...)
@@ -9866,7 +11846,7 @@ func (m *PlatformConfigMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlatformConfigMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.dns_records != nil {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
@@ -9878,6 +11858,9 @@ func (m *PlatformConfigMutation) AddedEdges() []string {
 	}
 	if m.tun_records != nil {
 		edges = append(edges, platformconfig.EdgeTunRecords)
+	}
+	if m.cloudflare_tunnels != nil {
+		edges = append(edges, platformconfig.EdgeCloudflareTunnels)
 	}
 	return edges
 }
@@ -9910,13 +11893,19 @@ func (m *PlatformConfigMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case platformconfig.EdgeCloudflareTunnels:
+		ids := make([]ent.Value, 0, len(m.cloudflare_tunnels))
+		for id := range m.cloudflare_tunnels {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlatformConfigMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removeddns_records != nil {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
@@ -9928,6 +11917,9 @@ func (m *PlatformConfigMutation) RemovedEdges() []string {
 	}
 	if m.removedtun_records != nil {
 		edges = append(edges, platformconfig.EdgeTunRecords)
+	}
+	if m.removedcloudflare_tunnels != nil {
+		edges = append(edges, platformconfig.EdgeCloudflareTunnels)
 	}
 	return edges
 }
@@ -9960,13 +11952,19 @@ func (m *PlatformConfigMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case platformconfig.EdgeCloudflareTunnels:
+		ids := make([]ent.Value, 0, len(m.removedcloudflare_tunnels))
+		for id := range m.removedcloudflare_tunnels {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlatformConfigMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.cleareddns_records {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
@@ -9978,6 +11976,9 @@ func (m *PlatformConfigMutation) ClearedEdges() []string {
 	}
 	if m.clearedtun_records {
 		edges = append(edges, platformconfig.EdgeTunRecords)
+	}
+	if m.clearedcloudflare_tunnels {
+		edges = append(edges, platformconfig.EdgeCloudflareTunnels)
 	}
 	return edges
 }
@@ -9994,6 +11995,8 @@ func (m *PlatformConfigMutation) EdgeCleared(name string) bool {
 		return m.clearedssl_records
 	case platformconfig.EdgeTunRecords:
 		return m.clearedtun_records
+	case platformconfig.EdgeCloudflareTunnels:
+		return m.clearedcloudflare_tunnels
 	}
 	return false
 }
@@ -10021,6 +12024,9 @@ func (m *PlatformConfigMutation) ResetEdge(name string) error {
 		return nil
 	case platformconfig.EdgeTunRecords:
 		m.ResetTunRecords()
+		return nil
+	case platformconfig.EdgeCloudflareTunnels:
+		m.ResetCloudflareTunnels()
 		return nil
 	}
 	return fmt.Errorf("unknown PlatformConfig edge %s", name)

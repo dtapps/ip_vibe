@@ -356,22 +356,24 @@ const (
 
 	// ent/mutation.go
 
-	LogObjTypeCDNRecord           string = "CDNRecord"           // CDN记录
-	LogObjTypeCache               string = "Cache"               // 缓存
-	LogObjTypeDNSRecord           string = "DNSRecord"           // DNS记录
-	LogObjTypeDevice              string = "Device"              // 设备
-	LogObjTypeDeviceGroup         string = "DeviceGroup"         // 设备组
-	LogObjTypeDeviceGroupDevice   string = "DeviceGroupDevice"   // 设备组设备
-	LogObjTypeDevicePortForward   string = "DevicePortForward"   // 端口转发
-	LogObjTypeDomainMonitor       string = "DomainMonitor"       // 域名监控
-	LogObjTypeIpGroup             string = "IpGroup"             // IP组
-	LogObjTypeIpGroupDevice       string = "IpGroupDevice"       // IP组设备
-	LogObjTypePlatformConfig      string = "PlatformConfig"      // 平台配置
-	LogObjTypeSSLImport           string = "SSLImport"           // SSL导入
-	LogObjTypeSSLRecord           string = "SSLRecord"           // SSL记录
-	LogObjTypeTUNRecord           string = "TUNRecord"           // TUN记录
-	LogObjTypeWebhook             string = "Webhook"             // 通知
-	LogObjTypeWebhookSubscription string = "WebhookSubscription" // 通知订阅
+	LogObjTypeCDNRecord               string = "CDNRecord"               // CDN记录
+	LogObjTypeCache                   string = "Cache"                   // 缓存
+	LogObjTypeCloudflareTunnel        string = "CloudflareTunnel"        // Cloudflare隧道
+	LogObjTypeCloudflareTunnelIngress string = "CloudflareTunnelIngress" // Cloudflare隧道入站规则
+	LogObjTypeDNSRecord               string = "DNSRecord"               // DNS记录
+	LogObjTypeDevice                  string = "Device"                  // 设备
+	LogObjTypeDeviceGroup             string = "DeviceGroup"             // 设备组
+	LogObjTypeDeviceGroupDevice       string = "DeviceGroupDevice"       // 设备组设备
+	LogObjTypeDevicePortForward       string = "DevicePortForward"       // 端口转发
+	LogObjTypeDomainMonitor           string = "DomainMonitor"           // 域名监控
+	LogObjTypeIpGroup                 string = "IpGroup"                 // IP组
+	LogObjTypeIpGroupDevice           string = "IpGroupDevice"           // IP组设备
+	LogObjTypePlatformConfig          string = "PlatformConfig"          // 平台配置
+	LogObjTypeSSLImport               string = "SSLImport"               // SSL导入
+	LogObjTypeSSLRecord               string = "SSLRecord"               // SSL记录
+	LogObjTypeTUNRecord               string = "TUNRecord"               // TUN记录
+	LogObjTypeWebhook                 string = "Webhook"                 // 通知
+	LogObjTypeWebhookSubscription     string = "WebhookSubscription"     // 通知订阅
 
 	// ent_log/mutation.go
 
@@ -390,22 +392,24 @@ const (
 var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeUnknown: "未知",
 
-	LogObjTypeCache:               "缓存",
-	LogObjTypeCDNRecord:           "CDN记录",
-	LogObjTypeDNSRecord:           "DNS记录",
-	LogObjTypeDevice:              "设备",
-	LogObjTypeDeviceGroup:         "设备组",
-	LogObjTypeDeviceGroupDevice:   "设备组设备",
-	LogObjTypeDevicePortForward:   "端口转发",
-	LogObjTypeDomainMonitor:       "域名监控",
-	LogObjTypeIpGroup:             "IP组",
-	LogObjTypeIpGroupDevice:       "IP组设备",
-	LogObjTypePlatformConfig:      "平台配置",
-	LogObjTypeSSLImport:           "SSL导入",
-	LogObjTypeSSLRecord:           "SSL记录",
-	LogObjTypeTUNRecord:           "TUN记录",
-	LogObjTypeWebhook:             "通知",
-	LogObjTypeWebhookSubscription: "通知订阅",
+	LogObjTypeCache:                   "缓存",
+	LogObjTypeCloudflareTunnel:        "Cloudflare隧道",
+	LogObjTypeCloudflareTunnelIngress: "Cloudflare隧道入站规则",
+	LogObjTypeCDNRecord:               "CDN记录",
+	LogObjTypeDNSRecord:               "DNS记录",
+	LogObjTypeDevice:                  "设备",
+	LogObjTypeDeviceGroup:             "设备组",
+	LogObjTypeDeviceGroupDevice:       "设备组设备",
+	LogObjTypeDevicePortForward:       "端口转发",
+	LogObjTypeDomainMonitor:           "域名监控",
+	LogObjTypeIpGroup:                 "IP组",
+	LogObjTypeIpGroupDevice:           "IP组设备",
+	LogObjTypePlatformConfig:          "平台配置",
+	LogObjTypeSSLImport:               "SSL导入",
+	LogObjTypeSSLRecord:               "SSL记录",
+	LogObjTypeTUNRecord:               "TUN记录",
+	LogObjTypeWebhook:                 "通知",
+	LogObjTypeWebhookSubscription:     "通知订阅",
 
 	LogObjTypeDeviceIpReport:        "设备IP记录",
 	LogObjTypeDomainMonitorHistory:  "域名监控历史记录",
@@ -422,6 +426,8 @@ var GetLogObjTypes = []string{
 	LogObjTypeUnknown,
 
 	LogObjTypeCache,
+	LogObjTypeCloudflareTunnel,
+	LogObjTypeCloudflareTunnelIngress,
 	LogObjTypeCDNRecord,
 	LogObjTypeDNSRecord,
 	LogObjTypeDevice,
@@ -667,4 +673,29 @@ var GetTUNRecordServeTypes = []string{
 	TUNRecordServeTypeSMB,
 	TUNRecordServeTypeHTTP_STATUS,
 	TUNRecordServeTypeBASTION,
+}
+
+// --------
+
+const (
+	CloudflareTunnelStatusInactive string = "inactive" // 活跃
+	CloudflareTunnelStatusDegraded string = "degraded" // 降级
+	CloudflareTunnelStatusHealthy  string = "healthy"  // 健康
+	CloudflareTunnelStatusDown     string = "down"     // 下线
+)
+
+// GetCloudflareTunnelStatusDescriptions 隧道状态说明映射
+var GetCloudflareTunnelStatusDescriptions = map[string]string{
+	CloudflareTunnelStatusInactive: "活跃",
+	CloudflareTunnelStatusDegraded: "降级",
+	CloudflareTunnelStatusHealthy:  "健康",
+	CloudflareTunnelStatusDown:     "下线",
+}
+
+// GetCloudflareTunnelStatuss 返回所有隧道状态
+var GetCloudflareTunnelStatuss = []string{
+	CloudflareTunnelStatusInactive,
+	CloudflareTunnelStatusDegraded,
+	CloudflareTunnelStatusHealthy,
+	CloudflareTunnelStatusDown,
 }

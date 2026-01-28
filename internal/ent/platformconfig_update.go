@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
@@ -160,6 +161,21 @@ func (_u *PlatformConfigUpdate) AddTunRecords(v ...*TUNRecord) *PlatformConfigUp
 	return _u.AddTunRecordIDs(ids...)
 }
 
+// AddCloudflareTunnelIDs adds the "cloudflare_tunnels" edge to the CloudflareTunnel entity by IDs.
+func (_u *PlatformConfigUpdate) AddCloudflareTunnelIDs(ids ...int64) *PlatformConfigUpdate {
+	_u.mutation.AddCloudflareTunnelIDs(ids...)
+	return _u
+}
+
+// AddCloudflareTunnels adds the "cloudflare_tunnels" edges to the CloudflareTunnel entity.
+func (_u *PlatformConfigUpdate) AddCloudflareTunnels(v ...*CloudflareTunnel) *PlatformConfigUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddCloudflareTunnelIDs(ids...)
+}
+
 // Mutation returns the PlatformConfigMutation object of the builder.
 func (_u *PlatformConfigUpdate) Mutation() *PlatformConfigMutation {
 	return _u.mutation
@@ -247,6 +263,27 @@ func (_u *PlatformConfigUpdate) RemoveTunRecords(v ...*TUNRecord) *PlatformConfi
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveTunRecordIDs(ids...)
+}
+
+// ClearCloudflareTunnels clears all "cloudflare_tunnels" edges to the CloudflareTunnel entity.
+func (_u *PlatformConfigUpdate) ClearCloudflareTunnels() *PlatformConfigUpdate {
+	_u.mutation.ClearCloudflareTunnels()
+	return _u
+}
+
+// RemoveCloudflareTunnelIDs removes the "cloudflare_tunnels" edge to CloudflareTunnel entities by IDs.
+func (_u *PlatformConfigUpdate) RemoveCloudflareTunnelIDs(ids ...int64) *PlatformConfigUpdate {
+	_u.mutation.RemoveCloudflareTunnelIDs(ids...)
+	return _u
+}
+
+// RemoveCloudflareTunnels removes "cloudflare_tunnels" edges to CloudflareTunnel entities.
+func (_u *PlatformConfigUpdate) RemoveCloudflareTunnels(v ...*CloudflareTunnel) *PlatformConfigUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveCloudflareTunnelIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -525,6 +562,51 @@ func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.CloudflareTunnelsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.CloudflareTunnelsTable,
+			Columns: []string{platformconfig.CloudflareTunnelsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cloudflaretunnel.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedCloudflareTunnelsIDs(); len(nodes) > 0 && !_u.mutation.CloudflareTunnelsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.CloudflareTunnelsTable,
+			Columns: []string{platformconfig.CloudflareTunnelsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cloudflaretunnel.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CloudflareTunnelsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.CloudflareTunnelsTable,
+			Columns: []string{platformconfig.CloudflareTunnelsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cloudflaretunnel.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -673,6 +755,21 @@ func (_u *PlatformConfigUpdateOne) AddTunRecords(v ...*TUNRecord) *PlatformConfi
 	return _u.AddTunRecordIDs(ids...)
 }
 
+// AddCloudflareTunnelIDs adds the "cloudflare_tunnels" edge to the CloudflareTunnel entity by IDs.
+func (_u *PlatformConfigUpdateOne) AddCloudflareTunnelIDs(ids ...int64) *PlatformConfigUpdateOne {
+	_u.mutation.AddCloudflareTunnelIDs(ids...)
+	return _u
+}
+
+// AddCloudflareTunnels adds the "cloudflare_tunnels" edges to the CloudflareTunnel entity.
+func (_u *PlatformConfigUpdateOne) AddCloudflareTunnels(v ...*CloudflareTunnel) *PlatformConfigUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddCloudflareTunnelIDs(ids...)
+}
+
 // Mutation returns the PlatformConfigMutation object of the builder.
 func (_u *PlatformConfigUpdateOne) Mutation() *PlatformConfigMutation {
 	return _u.mutation
@@ -760,6 +857,27 @@ func (_u *PlatformConfigUpdateOne) RemoveTunRecords(v ...*TUNRecord) *PlatformCo
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveTunRecordIDs(ids...)
+}
+
+// ClearCloudflareTunnels clears all "cloudflare_tunnels" edges to the CloudflareTunnel entity.
+func (_u *PlatformConfigUpdateOne) ClearCloudflareTunnels() *PlatformConfigUpdateOne {
+	_u.mutation.ClearCloudflareTunnels()
+	return _u
+}
+
+// RemoveCloudflareTunnelIDs removes the "cloudflare_tunnels" edge to CloudflareTunnel entities by IDs.
+func (_u *PlatformConfigUpdateOne) RemoveCloudflareTunnelIDs(ids ...int64) *PlatformConfigUpdateOne {
+	_u.mutation.RemoveCloudflareTunnelIDs(ids...)
+	return _u
+}
+
+// RemoveCloudflareTunnels removes "cloudflare_tunnels" edges to CloudflareTunnel entities.
+func (_u *PlatformConfigUpdateOne) RemoveCloudflareTunnels(v ...*CloudflareTunnel) *PlatformConfigUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveCloudflareTunnelIDs(ids...)
 }
 
 // Where appends a list predicates to the PlatformConfigUpdate builder.
@@ -1061,6 +1179,51 @@ func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *Platform
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(tunrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CloudflareTunnelsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.CloudflareTunnelsTable,
+			Columns: []string{platformconfig.CloudflareTunnelsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cloudflaretunnel.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedCloudflareTunnelsIDs(); len(nodes) > 0 && !_u.mutation.CloudflareTunnelsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.CloudflareTunnelsTable,
+			Columns: []string{platformconfig.CloudflareTunnelsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cloudflaretunnel.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CloudflareTunnelsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.CloudflareTunnelsTable,
+			Columns: []string{platformconfig.CloudflareTunnelsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cloudflaretunnel.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

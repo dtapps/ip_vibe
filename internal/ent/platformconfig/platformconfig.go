@@ -38,6 +38,8 @@ const (
 	EdgeSslRecords = "ssl_records"
 	// EdgeTunRecords holds the string denoting the tun_records edge name in mutations.
 	EdgeTunRecords = "tun_records"
+	// EdgeCloudflareTunnels holds the string denoting the cloudflare_tunnels edge name in mutations.
+	EdgeCloudflareTunnels = "cloudflare_tunnels"
 	// Table holds the table name of the platformconfig in the database.
 	Table = "platform_config"
 	// DNSRecordsTable is the table that holds the dns_records relation/edge.
@@ -68,6 +70,13 @@ const (
 	TunRecordsInverseTable = "tun_record"
 	// TunRecordsColumn is the table column denoting the tun_records relation/edge.
 	TunRecordsColumn = "config_id"
+	// CloudflareTunnelsTable is the table that holds the cloudflare_tunnels relation/edge.
+	CloudflareTunnelsTable = "cloudflare_tunnel"
+	// CloudflareTunnelsInverseTable is the table name for the CloudflareTunnel entity.
+	// It exists in this package in order to avoid circular dependency with the "cloudflaretunnel" package.
+	CloudflareTunnelsInverseTable = "cloudflare_tunnel"
+	// CloudflareTunnelsColumn is the table column denoting the cloudflare_tunnels relation/edge.
+	CloudflareTunnelsColumn = "config_id"
 )
 
 // Columns holds all SQL columns for platformconfig fields.
@@ -268,6 +277,20 @@ func ByTunRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTunRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCloudflareTunnelsCount orders the results by cloudflare_tunnels count.
+func ByCloudflareTunnelsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCloudflareTunnelsStep(), opts...)
+	}
+}
+
+// ByCloudflareTunnels orders the results by cloudflare_tunnels terms.
+func ByCloudflareTunnels(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCloudflareTunnelsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newDNSRecordsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -294,5 +317,12 @@ func newTunRecordsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TunRecordsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, TunRecordsTable, TunRecordsColumn),
+	)
+}
+func newCloudflareTunnelsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CloudflareTunnelsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CloudflareTunnelsTable, CloudflareTunnelsColumn),
 	)
 }

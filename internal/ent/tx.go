@@ -18,6 +18,10 @@ type Tx struct {
 	CDNRecord *CDNRecordClient
 	// Cache is the client for interacting with the Cache builders.
 	Cache *CacheClient
+	// CloudflareTunnel is the client for interacting with the CloudflareTunnel builders.
+	CloudflareTunnel *CloudflareTunnelClient
+	// CloudflareTunnelIngress is the client for interacting with the CloudflareTunnelIngress builders.
+	CloudflareTunnelIngress *CloudflareTunnelIngressClient
 	// DNSRecord is the client for interacting with the DNSRecord builders.
 	DNSRecord *DNSRecordClient
 	// Device is the client for interacting with the Device builders.
@@ -179,6 +183,8 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.CDNRecord = NewCDNRecordClient(tx.config)
 	tx.Cache = NewCacheClient(tx.config)
+	tx.CloudflareTunnel = NewCloudflareTunnelClient(tx.config)
+	tx.CloudflareTunnelIngress = NewCloudflareTunnelIngressClient(tx.config)
 	tx.DNSRecord = NewDNSRecordClient(tx.config)
 	tx.Device = NewDeviceClient(tx.config)
 	tx.DeviceGroup = NewDeviceGroupClient(tx.config)

@@ -5,6 +5,8 @@ package ent
 import (
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/cloudflaretunnel"
+	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -394,6 +396,456 @@ func (q *CacheQuery) OrderByValueDesc() *CacheQuery {
 //	    All(ctx)
 func (q *CacheQuery) OrderByValueAsc() *CacheQuery {
 	return q.Order(Asc(cache.FieldValue))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByIDDesc() *CloudflareTunnelQuery {
+	return q.Order(Desc(cloudflaretunnel.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByIDAsc() *CloudflareTunnelQuery {
+	return q.Order(Asc(cloudflaretunnel.FieldID))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByCreatedAtDesc() *CloudflareTunnelQuery {
+	return q.Order(Desc(cloudflaretunnel.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByCreatedAtAsc() *CloudflareTunnelQuery {
+	return q.Order(Asc(cloudflaretunnel.FieldCreatedAt))
+}
+
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByUpdatedAtDesc() *CloudflareTunnelQuery {
+	return q.Order(Desc(cloudflaretunnel.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByUpdatedAtAsc() *CloudflareTunnelQuery {
+	return q.Order(Asc(cloudflaretunnel.FieldUpdatedAt))
+}
+
+// OrderByTunnelIDDesc 按字段 tunnel_id 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByTunnelIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByTunnelIDDesc() *CloudflareTunnelQuery {
+	return q.Order(Desc(cloudflaretunnel.FieldTunnelID))
+}
+
+// OrderByTunnelIDAsc 按字段 tunnel_id 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByTunnelIDAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByTunnelIDAsc() *CloudflareTunnelQuery {
+	return q.Order(Asc(cloudflaretunnel.FieldTunnelID))
+}
+
+// OrderByNameDesc 按字段 name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByNameDesc() *CloudflareTunnelQuery {
+	return q.Order(Desc(cloudflaretunnel.FieldName))
+}
+
+// OrderByNameAsc 按字段 name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByNameAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByNameAsc() *CloudflareTunnelQuery {
+	return q.Order(Asc(cloudflaretunnel.FieldName))
+}
+
+// OrderByStatusDesc 按字段 status 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByStatusDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByStatusDesc() *CloudflareTunnelQuery {
+	return q.Order(Desc(cloudflaretunnel.FieldStatus))
+}
+
+// OrderByStatusAsc 按字段 status 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByStatusAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByStatusAsc() *CloudflareTunnelQuery {
+	return q.Order(Asc(cloudflaretunnel.FieldStatus))
+}
+
+// OrderByConnectionsDesc 按字段 connections 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByConnectionsDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByConnectionsDesc() *CloudflareTunnelQuery {
+	return q.Order(Desc(cloudflaretunnel.FieldConnections))
+}
+
+// OrderByConnectionsAsc 按字段 connections 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByConnectionsAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByConnectionsAsc() *CloudflareTunnelQuery {
+	return q.Order(Asc(cloudflaretunnel.FieldConnections))
+}
+
+// OrderByConnsActiveAtDesc 按字段 conns_active_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByConnsActiveAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByConnsActiveAtDesc() *CloudflareTunnelQuery {
+	return q.Order(Desc(cloudflaretunnel.FieldConnsActiveAt))
+}
+
+// OrderByConnsActiveAtAsc 按字段 conns_active_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByConnsActiveAtAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByConnsActiveAtAsc() *CloudflareTunnelQuery {
+	return q.Order(Asc(cloudflaretunnel.FieldConnsActiveAt))
+}
+
+// OrderByRemoteCreatedAtDesc 按字段 remote_created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByRemoteCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByRemoteCreatedAtDesc() *CloudflareTunnelQuery {
+	return q.Order(Desc(cloudflaretunnel.FieldRemoteCreatedAt))
+}
+
+// OrderByRemoteCreatedAtAsc 按字段 remote_created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByRemoteCreatedAtAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByRemoteCreatedAtAsc() *CloudflareTunnelQuery {
+	return q.Order(Asc(cloudflaretunnel.FieldRemoteCreatedAt))
+}
+
+// OrderByLastAPIResponseDesc 按字段 last_api_response 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByLastAPIResponseDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByLastAPIResponseDesc() *CloudflareTunnelQuery {
+	return q.Order(Desc(cloudflaretunnel.FieldLastAPIResponse))
+}
+
+// OrderByLastAPIResponseAsc 按字段 last_api_response 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByLastAPIResponseAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByLastAPIResponseAsc() *CloudflareTunnelQuery {
+	return q.Order(Asc(cloudflaretunnel.FieldLastAPIResponse))
+}
+
+// OrderByLastAPIResponseAtDesc 按字段 last_api_response_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByLastAPIResponseAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByLastAPIResponseAtDesc() *CloudflareTunnelQuery {
+	return q.Order(Desc(cloudflaretunnel.FieldLastAPIResponseAt))
+}
+
+// OrderByLastAPIResponseAtAsc 按字段 last_api_response_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnel.Query().
+//	    OrderByLastAPIResponseAtAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelQuery) OrderByLastAPIResponseAtAsc() *CloudflareTunnelQuery {
+	return q.Order(Asc(cloudflaretunnel.FieldLastAPIResponseAt))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByIDDesc() *CloudflareTunnelIngressQuery {
+	return q.Order(Desc(cloudflaretunnelingress.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByIDAsc() *CloudflareTunnelIngressQuery {
+	return q.Order(Asc(cloudflaretunnelingress.FieldID))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByCreatedAtDesc() *CloudflareTunnelIngressQuery {
+	return q.Order(Desc(cloudflaretunnelingress.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByCreatedAtAsc() *CloudflareTunnelIngressQuery {
+	return q.Order(Asc(cloudflaretunnelingress.FieldCreatedAt))
+}
+
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByUpdatedAtDesc() *CloudflareTunnelIngressQuery {
+	return q.Order(Desc(cloudflaretunnelingress.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByUpdatedAtAsc() *CloudflareTunnelIngressQuery {
+	return q.Order(Asc(cloudflaretunnelingress.FieldUpdatedAt))
+}
+
+// OrderByHostnameDesc 按字段 hostname 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByHostnameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByHostnameDesc() *CloudflareTunnelIngressQuery {
+	return q.Order(Desc(cloudflaretunnelingress.FieldHostname))
+}
+
+// OrderByHostnameAsc 按字段 hostname 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByHostnameAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByHostnameAsc() *CloudflareTunnelIngressQuery {
+	return q.Order(Asc(cloudflaretunnelingress.FieldHostname))
+}
+
+// OrderByServiceDesc 按字段 service 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByServiceDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByServiceDesc() *CloudflareTunnelIngressQuery {
+	return q.Order(Desc(cloudflaretunnelingress.FieldService))
+}
+
+// OrderByServiceAsc 按字段 service 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByServiceAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByServiceAsc() *CloudflareTunnelIngressQuery {
+	return q.Order(Asc(cloudflaretunnelingress.FieldService))
+}
+
+// OrderByPathDesc 按字段 path 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByPathDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByPathDesc() *CloudflareTunnelIngressQuery {
+	return q.Order(Desc(cloudflaretunnelingress.FieldPath))
+}
+
+// OrderByPathAsc 按字段 path 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByPathAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByPathAsc() *CloudflareTunnelIngressQuery {
+	return q.Order(Asc(cloudflaretunnelingress.FieldPath))
+}
+
+// OrderByOriginRequestDesc 按字段 origin_request 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByOriginRequestDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByOriginRequestDesc() *CloudflareTunnelIngressQuery {
+	return q.Order(Desc(cloudflaretunnelingress.FieldOriginRequest))
+}
+
+// OrderByOriginRequestAsc 按字段 origin_request 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareTunnelIngressQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareTunnelIngress.Query().
+//	    OrderByOriginRequestAsc().
+//	    All(ctx)
+func (q *CloudflareTunnelIngressQuery) OrderByOriginRequestAsc() *CloudflareTunnelIngressQuery {
+	return q.Order(Asc(cloudflaretunnelingress.FieldOriginRequest))
 }
 
 // OrderByIDDesc 按主键 ID 降序排列查询结果。

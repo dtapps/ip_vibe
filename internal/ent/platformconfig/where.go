@@ -437,6 +437,29 @@ func HasTunRecordsWith(preds ...predicate.TUNRecord) predicate.PlatformConfig {
 	})
 }
 
+// HasCloudflareTunnels applies the HasEdge predicate on the "cloudflare_tunnels" edge.
+func HasCloudflareTunnels() predicate.PlatformConfig {
+	return predicate.PlatformConfig(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CloudflareTunnelsTable, CloudflareTunnelsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCloudflareTunnelsWith applies the HasEdge predicate on the "cloudflare_tunnels" edge with a given conditions (other predicates).
+func HasCloudflareTunnelsWith(preds ...predicate.CloudflareTunnel) predicate.PlatformConfig {
+	return predicate.PlatformConfig(func(s *sql.Selector) {
+		step := newCloudflareTunnelsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.PlatformConfig) predicate.PlatformConfig {
 	return predicate.PlatformConfig(sql.AndPredicates(predicates...))

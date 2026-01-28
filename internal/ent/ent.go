@@ -10,6 +10,8 @@ import (
 	"sync"
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/cloudflaretunnel"
+	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -88,22 +90,24 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			cdnrecord.Table:           cdnrecord.ValidColumn,
-			cache.Table:               cache.ValidColumn,
-			dnsrecord.Table:           dnsrecord.ValidColumn,
-			device.Table:              device.ValidColumn,
-			devicegroup.Table:         devicegroup.ValidColumn,
-			devicegroupdevice.Table:   devicegroupdevice.ValidColumn,
-			deviceportforward.Table:   deviceportforward.ValidColumn,
-			domainmonitor.Table:       domainmonitor.ValidColumn,
-			ipgroup.Table:             ipgroup.ValidColumn,
-			ipgroupdevice.Table:       ipgroupdevice.ValidColumn,
-			platformconfig.Table:      platformconfig.ValidColumn,
-			sslimport.Table:           sslimport.ValidColumn,
-			sslrecord.Table:           sslrecord.ValidColumn,
-			tunrecord.Table:           tunrecord.ValidColumn,
-			webhook.Table:             webhook.ValidColumn,
-			webhooksubscription.Table: webhooksubscription.ValidColumn,
+			cdnrecord.Table:               cdnrecord.ValidColumn,
+			cache.Table:                   cache.ValidColumn,
+			cloudflaretunnel.Table:        cloudflaretunnel.ValidColumn,
+			cloudflaretunnelingress.Table: cloudflaretunnelingress.ValidColumn,
+			dnsrecord.Table:               dnsrecord.ValidColumn,
+			device.Table:                  device.ValidColumn,
+			devicegroup.Table:             devicegroup.ValidColumn,
+			devicegroupdevice.Table:       devicegroupdevice.ValidColumn,
+			deviceportforward.Table:       deviceportforward.ValidColumn,
+			domainmonitor.Table:           domainmonitor.ValidColumn,
+			ipgroup.Table:                 ipgroup.ValidColumn,
+			ipgroupdevice.Table:           ipgroupdevice.ValidColumn,
+			platformconfig.Table:          platformconfig.ValidColumn,
+			sslimport.Table:               sslimport.ValidColumn,
+			sslrecord.Table:               sslrecord.ValidColumn,
+			tunrecord.Table:               tunrecord.ValidColumn,
+			webhook.Table:                 webhook.ValidColumn,
+			webhooksubscription.Table:     webhooksubscription.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

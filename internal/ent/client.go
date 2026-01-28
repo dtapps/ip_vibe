@@ -13,6 +13,8 @@ import (
 
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/cloudflaretunnel"
+	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -45,6 +47,10 @@ type Client struct {
 	CDNRecord *CDNRecordClient
 	// Cache is the client for interacting with the Cache builders.
 	Cache *CacheClient
+	// CloudflareTunnel is the client for interacting with the CloudflareTunnel builders.
+	CloudflareTunnel *CloudflareTunnelClient
+	// CloudflareTunnelIngress is the client for interacting with the CloudflareTunnelIngress builders.
+	CloudflareTunnelIngress *CloudflareTunnelIngressClient
 	// DNSRecord is the client for interacting with the DNSRecord builders.
 	DNSRecord *DNSRecordClient
 	// Device is the client for interacting with the Device builders.
@@ -86,6 +92,8 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.CDNRecord = NewCDNRecordClient(c.config)
 	c.Cache = NewCacheClient(c.config)
+	c.CloudflareTunnel = NewCloudflareTunnelClient(c.config)
+	c.CloudflareTunnelIngress = NewCloudflareTunnelIngressClient(c.config)
 	c.DNSRecord = NewDNSRecordClient(c.config)
 	c.Device = NewDeviceClient(c.config)
 	c.DeviceGroup = NewDeviceGroupClient(c.config)
@@ -190,24 +198,26 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                 ctx,
-		config:              cfg,
-		CDNRecord:           NewCDNRecordClient(cfg),
-		Cache:               NewCacheClient(cfg),
-		DNSRecord:           NewDNSRecordClient(cfg),
-		Device:              NewDeviceClient(cfg),
-		DeviceGroup:         NewDeviceGroupClient(cfg),
-		DeviceGroupDevice:   NewDeviceGroupDeviceClient(cfg),
-		DevicePortForward:   NewDevicePortForwardClient(cfg),
-		DomainMonitor:       NewDomainMonitorClient(cfg),
-		IpGroup:             NewIpGroupClient(cfg),
-		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
-		PlatformConfig:      NewPlatformConfigClient(cfg),
-		SSLImport:           NewSSLImportClient(cfg),
-		SSLRecord:           NewSSLRecordClient(cfg),
-		TUNRecord:           NewTUNRecordClient(cfg),
-		Webhook:             NewWebhookClient(cfg),
-		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
+		ctx:                     ctx,
+		config:                  cfg,
+		CDNRecord:               NewCDNRecordClient(cfg),
+		Cache:                   NewCacheClient(cfg),
+		CloudflareTunnel:        NewCloudflareTunnelClient(cfg),
+		CloudflareTunnelIngress: NewCloudflareTunnelIngressClient(cfg),
+		DNSRecord:               NewDNSRecordClient(cfg),
+		Device:                  NewDeviceClient(cfg),
+		DeviceGroup:             NewDeviceGroupClient(cfg),
+		DeviceGroupDevice:       NewDeviceGroupDeviceClient(cfg),
+		DevicePortForward:       NewDevicePortForwardClient(cfg),
+		DomainMonitor:           NewDomainMonitorClient(cfg),
+		IpGroup:                 NewIpGroupClient(cfg),
+		IpGroupDevice:           NewIpGroupDeviceClient(cfg),
+		PlatformConfig:          NewPlatformConfigClient(cfg),
+		SSLImport:               NewSSLImportClient(cfg),
+		SSLRecord:               NewSSLRecordClient(cfg),
+		TUNRecord:               NewTUNRecordClient(cfg),
+		Webhook:                 NewWebhookClient(cfg),
+		WebhookSubscription:     NewWebhookSubscriptionClient(cfg),
 	}, nil
 }
 
@@ -225,24 +235,26 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                 ctx,
-		config:              cfg,
-		CDNRecord:           NewCDNRecordClient(cfg),
-		Cache:               NewCacheClient(cfg),
-		DNSRecord:           NewDNSRecordClient(cfg),
-		Device:              NewDeviceClient(cfg),
-		DeviceGroup:         NewDeviceGroupClient(cfg),
-		DeviceGroupDevice:   NewDeviceGroupDeviceClient(cfg),
-		DevicePortForward:   NewDevicePortForwardClient(cfg),
-		DomainMonitor:       NewDomainMonitorClient(cfg),
-		IpGroup:             NewIpGroupClient(cfg),
-		IpGroupDevice:       NewIpGroupDeviceClient(cfg),
-		PlatformConfig:      NewPlatformConfigClient(cfg),
-		SSLImport:           NewSSLImportClient(cfg),
-		SSLRecord:           NewSSLRecordClient(cfg),
-		TUNRecord:           NewTUNRecordClient(cfg),
-		Webhook:             NewWebhookClient(cfg),
-		WebhookSubscription: NewWebhookSubscriptionClient(cfg),
+		ctx:                     ctx,
+		config:                  cfg,
+		CDNRecord:               NewCDNRecordClient(cfg),
+		Cache:                   NewCacheClient(cfg),
+		CloudflareTunnel:        NewCloudflareTunnelClient(cfg),
+		CloudflareTunnelIngress: NewCloudflareTunnelIngressClient(cfg),
+		DNSRecord:               NewDNSRecordClient(cfg),
+		Device:                  NewDeviceClient(cfg),
+		DeviceGroup:             NewDeviceGroupClient(cfg),
+		DeviceGroupDevice:       NewDeviceGroupDeviceClient(cfg),
+		DevicePortForward:       NewDevicePortForwardClient(cfg),
+		DomainMonitor:           NewDomainMonitorClient(cfg),
+		IpGroup:                 NewIpGroupClient(cfg),
+		IpGroupDevice:           NewIpGroupDeviceClient(cfg),
+		PlatformConfig:          NewPlatformConfigClient(cfg),
+		SSLImport:               NewSSLImportClient(cfg),
+		SSLRecord:               NewSSLRecordClient(cfg),
+		TUNRecord:               NewTUNRecordClient(cfg),
+		Webhook:                 NewWebhookClient(cfg),
+		WebhookSubscription:     NewWebhookSubscriptionClient(cfg),
 	}, nil
 }
 
@@ -272,10 +284,10 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.CDNRecord, c.Cache, c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice,
-		c.DevicePortForward, c.DomainMonitor, c.IpGroup, c.IpGroupDevice,
-		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord, c.Webhook,
-		c.WebhookSubscription,
+		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
+		c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward,
+		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLImport,
+		c.SSLRecord, c.TUNRecord, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -285,10 +297,10 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.CDNRecord, c.Cache, c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice,
-		c.DevicePortForward, c.DomainMonitor, c.IpGroup, c.IpGroupDevice,
-		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord, c.Webhook,
-		c.WebhookSubscription,
+		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
+		c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward,
+		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLImport,
+		c.SSLRecord, c.TUNRecord, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -301,6 +313,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CDNRecord.mutate(ctx, m)
 	case *CacheMutation:
 		return c.Cache.mutate(ctx, m)
+	case *CloudflareTunnelMutation:
+		return c.CloudflareTunnel.mutate(ctx, m)
+	case *CloudflareTunnelIngressMutation:
+		return c.CloudflareTunnelIngress.mutate(ctx, m)
 	case *DNSRecordMutation:
 		return c.DNSRecord.mutate(ctx, m)
 	case *DeviceMutation:
@@ -663,6 +679,322 @@ func (c *CacheClient) mutate(ctx context.Context, m *CacheMutation) (Value, erro
 		return (&CacheDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Cache mutation op: %q", m.Op())
+	}
+}
+
+// CloudflareTunnelClient is a client for the CloudflareTunnel schema.
+type CloudflareTunnelClient struct {
+	config
+}
+
+// NewCloudflareTunnelClient returns a client for the CloudflareTunnel from the given config.
+func NewCloudflareTunnelClient(c config) *CloudflareTunnelClient {
+	return &CloudflareTunnelClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `cloudflaretunnel.Hooks(f(g(h())))`.
+func (c *CloudflareTunnelClient) Use(hooks ...Hook) {
+	c.hooks.CloudflareTunnel = append(c.hooks.CloudflareTunnel, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `cloudflaretunnel.Intercept(f(g(h())))`.
+func (c *CloudflareTunnelClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CloudflareTunnel = append(c.inters.CloudflareTunnel, interceptors...)
+}
+
+// Create returns a builder for creating a CloudflareTunnel entity.
+func (c *CloudflareTunnelClient) Create() *CloudflareTunnelCreate {
+	mutation := newCloudflareTunnelMutation(c.config, OpCreate)
+	return &CloudflareTunnelCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CloudflareTunnel entities.
+func (c *CloudflareTunnelClient) CreateBulk(builders ...*CloudflareTunnelCreate) *CloudflareTunnelCreateBulk {
+	return &CloudflareTunnelCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CloudflareTunnelClient) MapCreateBulk(slice any, setFunc func(*CloudflareTunnelCreate, int)) *CloudflareTunnelCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CloudflareTunnelCreateBulk{err: fmt.Errorf("calling to CloudflareTunnelClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CloudflareTunnelCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CloudflareTunnelCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CloudflareTunnel.
+func (c *CloudflareTunnelClient) Update() *CloudflareTunnelUpdate {
+	mutation := newCloudflareTunnelMutation(c.config, OpUpdate)
+	return &CloudflareTunnelUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CloudflareTunnelClient) UpdateOne(_m *CloudflareTunnel) *CloudflareTunnelUpdateOne {
+	mutation := newCloudflareTunnelMutation(c.config, OpUpdateOne, withCloudflareTunnel(_m))
+	return &CloudflareTunnelUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CloudflareTunnelClient) UpdateOneID(id int64) *CloudflareTunnelUpdateOne {
+	mutation := newCloudflareTunnelMutation(c.config, OpUpdateOne, withCloudflareTunnelID(id))
+	return &CloudflareTunnelUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CloudflareTunnel.
+func (c *CloudflareTunnelClient) Delete() *CloudflareTunnelDelete {
+	mutation := newCloudflareTunnelMutation(c.config, OpDelete)
+	return &CloudflareTunnelDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CloudflareTunnelClient) DeleteOne(_m *CloudflareTunnel) *CloudflareTunnelDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CloudflareTunnelClient) DeleteOneID(id int64) *CloudflareTunnelDeleteOne {
+	builder := c.Delete().Where(cloudflaretunnel.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CloudflareTunnelDeleteOne{builder}
+}
+
+// Query returns a query builder for CloudflareTunnel.
+func (c *CloudflareTunnelClient) Query() *CloudflareTunnelQuery {
+	return &CloudflareTunnelQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCloudflareTunnel},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CloudflareTunnel entity by its id.
+func (c *CloudflareTunnelClient) Get(ctx context.Context, id int64) (*CloudflareTunnel, error) {
+	return c.Query().Where(cloudflaretunnel.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CloudflareTunnelClient) GetX(ctx context.Context, id int64) *CloudflareTunnel {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryConfig queries the config edge of a CloudflareTunnel.
+func (c *CloudflareTunnelClient) QueryConfig(_m *CloudflareTunnel) *PlatformConfigQuery {
+	query := (&PlatformConfigClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cloudflaretunnel.Table, cloudflaretunnel.FieldID, id),
+			sqlgraph.To(platformconfig.Table, platformconfig.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cloudflaretunnel.ConfigTable, cloudflaretunnel.ConfigColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryIngresses queries the ingresses edge of a CloudflareTunnel.
+func (c *CloudflareTunnelClient) QueryIngresses(_m *CloudflareTunnel) *CloudflareTunnelIngressQuery {
+	query := (&CloudflareTunnelIngressClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cloudflaretunnel.Table, cloudflaretunnel.FieldID, id),
+			sqlgraph.To(cloudflaretunnelingress.Table, cloudflaretunnelingress.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cloudflaretunnel.IngressesTable, cloudflaretunnel.IngressesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CloudflareTunnelClient) Hooks() []Hook {
+	hooks := c.hooks.CloudflareTunnel
+	return append(hooks[:len(hooks):len(hooks)], cloudflaretunnel.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *CloudflareTunnelClient) Interceptors() []Interceptor {
+	return c.inters.CloudflareTunnel
+}
+
+func (c *CloudflareTunnelClient) mutate(ctx context.Context, m *CloudflareTunnelMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CloudflareTunnelCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CloudflareTunnelUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CloudflareTunnelUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CloudflareTunnelDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CloudflareTunnel mutation op: %q", m.Op())
+	}
+}
+
+// CloudflareTunnelIngressClient is a client for the CloudflareTunnelIngress schema.
+type CloudflareTunnelIngressClient struct {
+	config
+}
+
+// NewCloudflareTunnelIngressClient returns a client for the CloudflareTunnelIngress from the given config.
+func NewCloudflareTunnelIngressClient(c config) *CloudflareTunnelIngressClient {
+	return &CloudflareTunnelIngressClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `cloudflaretunnelingress.Hooks(f(g(h())))`.
+func (c *CloudflareTunnelIngressClient) Use(hooks ...Hook) {
+	c.hooks.CloudflareTunnelIngress = append(c.hooks.CloudflareTunnelIngress, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `cloudflaretunnelingress.Intercept(f(g(h())))`.
+func (c *CloudflareTunnelIngressClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CloudflareTunnelIngress = append(c.inters.CloudflareTunnelIngress, interceptors...)
+}
+
+// Create returns a builder for creating a CloudflareTunnelIngress entity.
+func (c *CloudflareTunnelIngressClient) Create() *CloudflareTunnelIngressCreate {
+	mutation := newCloudflareTunnelIngressMutation(c.config, OpCreate)
+	return &CloudflareTunnelIngressCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CloudflareTunnelIngress entities.
+func (c *CloudflareTunnelIngressClient) CreateBulk(builders ...*CloudflareTunnelIngressCreate) *CloudflareTunnelIngressCreateBulk {
+	return &CloudflareTunnelIngressCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CloudflareTunnelIngressClient) MapCreateBulk(slice any, setFunc func(*CloudflareTunnelIngressCreate, int)) *CloudflareTunnelIngressCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CloudflareTunnelIngressCreateBulk{err: fmt.Errorf("calling to CloudflareTunnelIngressClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CloudflareTunnelIngressCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CloudflareTunnelIngressCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CloudflareTunnelIngress.
+func (c *CloudflareTunnelIngressClient) Update() *CloudflareTunnelIngressUpdate {
+	mutation := newCloudflareTunnelIngressMutation(c.config, OpUpdate)
+	return &CloudflareTunnelIngressUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CloudflareTunnelIngressClient) UpdateOne(_m *CloudflareTunnelIngress) *CloudflareTunnelIngressUpdateOne {
+	mutation := newCloudflareTunnelIngressMutation(c.config, OpUpdateOne, withCloudflareTunnelIngress(_m))
+	return &CloudflareTunnelIngressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CloudflareTunnelIngressClient) UpdateOneID(id int64) *CloudflareTunnelIngressUpdateOne {
+	mutation := newCloudflareTunnelIngressMutation(c.config, OpUpdateOne, withCloudflareTunnelIngressID(id))
+	return &CloudflareTunnelIngressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CloudflareTunnelIngress.
+func (c *CloudflareTunnelIngressClient) Delete() *CloudflareTunnelIngressDelete {
+	mutation := newCloudflareTunnelIngressMutation(c.config, OpDelete)
+	return &CloudflareTunnelIngressDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CloudflareTunnelIngressClient) DeleteOne(_m *CloudflareTunnelIngress) *CloudflareTunnelIngressDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CloudflareTunnelIngressClient) DeleteOneID(id int64) *CloudflareTunnelIngressDeleteOne {
+	builder := c.Delete().Where(cloudflaretunnelingress.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CloudflareTunnelIngressDeleteOne{builder}
+}
+
+// Query returns a query builder for CloudflareTunnelIngress.
+func (c *CloudflareTunnelIngressClient) Query() *CloudflareTunnelIngressQuery {
+	return &CloudflareTunnelIngressQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCloudflareTunnelIngress},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CloudflareTunnelIngress entity by its id.
+func (c *CloudflareTunnelIngressClient) Get(ctx context.Context, id int64) (*CloudflareTunnelIngress, error) {
+	return c.Query().Where(cloudflaretunnelingress.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CloudflareTunnelIngressClient) GetX(ctx context.Context, id int64) *CloudflareTunnelIngress {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCloudflareTunnel queries the cloudflare_tunnel edge of a CloudflareTunnelIngress.
+func (c *CloudflareTunnelIngressClient) QueryCloudflareTunnel(_m *CloudflareTunnelIngress) *CloudflareTunnelQuery {
+	query := (&CloudflareTunnelClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cloudflaretunnelingress.Table, cloudflaretunnelingress.FieldID, id),
+			sqlgraph.To(cloudflaretunnel.Table, cloudflaretunnel.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cloudflaretunnelingress.CloudflareTunnelTable, cloudflaretunnelingress.CloudflareTunnelColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CloudflareTunnelIngressClient) Hooks() []Hook {
+	hooks := c.hooks.CloudflareTunnelIngress
+	return append(hooks[:len(hooks):len(hooks)], cloudflaretunnelingress.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *CloudflareTunnelIngressClient) Interceptors() []Interceptor {
+	return c.inters.CloudflareTunnelIngress
+}
+
+func (c *CloudflareTunnelIngressClient) mutate(ctx context.Context, m *CloudflareTunnelIngressMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CloudflareTunnelIngressCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CloudflareTunnelIngressUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CloudflareTunnelIngressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CloudflareTunnelIngressDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CloudflareTunnelIngress mutation op: %q", m.Op())
 	}
 }
 
@@ -2162,6 +2494,22 @@ func (c *PlatformConfigClient) QueryTunRecords(_m *PlatformConfig) *TUNRecordQue
 	return query
 }
 
+// QueryCloudflareTunnels queries the cloudflare_tunnels edge of a PlatformConfig.
+func (c *PlatformConfigClient) QueryCloudflareTunnels(_m *PlatformConfig) *CloudflareTunnelQuery {
+	query := (&CloudflareTunnelClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, id),
+			sqlgraph.To(cloudflaretunnel.Table, cloudflaretunnel.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.CloudflareTunnelsTable, platformconfig.CloudflareTunnelsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlatformConfigClient) Hooks() []Hook {
 	hooks := c.hooks.PlatformConfig
@@ -2925,14 +3273,16 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		CDNRecord, Cache, DNSRecord, Device, DeviceGroup, DeviceGroupDevice,
-		DevicePortForward, DomainMonitor, IpGroup, IpGroupDevice, PlatformConfig,
-		SSLImport, SSLRecord, TUNRecord, Webhook, WebhookSubscription []ent.Hook
+		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, DNSRecord, Device,
+		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor, IpGroup,
+		IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, TUNRecord, Webhook,
+		WebhookSubscription []ent.Hook
 	}
 	inters struct {
-		CDNRecord, Cache, DNSRecord, Device, DeviceGroup, DeviceGroupDevice,
-		DevicePortForward, DomainMonitor, IpGroup, IpGroupDevice, PlatformConfig,
-		SSLImport, SSLRecord, TUNRecord, Webhook, WebhookSubscription []ent.Interceptor
+		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, DNSRecord, Device,
+		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor, IpGroup,
+		IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, TUNRecord, Webhook,
+		WebhookSubscription []ent.Interceptor
 	}
 )
 

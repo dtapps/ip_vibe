@@ -12,6 +12,12 @@ type CDNRecord func(*sql.Selector)
 // Cache is the predicate function for cache builders.
 type Cache func(*sql.Selector)
 
+// CloudflareTunnel is the predicate function for cloudflaretunnel builders.
+type CloudflareTunnel func(*sql.Selector)
+
+// CloudflareTunnelIngress is the predicate function for cloudflaretunnelingress builders.
+type CloudflareTunnelIngress func(*sql.Selector)
+
 // DNSRecord is the predicate function for dnsrecord builders.
 type DNSRecord func(*sql.Selector)
 

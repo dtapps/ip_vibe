@@ -49,13 +49,16 @@ type PlatformConfigEdges struct {
 	SslRecords []*SSLRecord `json:"ssl_records,omitempty"`
 	// 关联的TUN记录
 	TunRecords []*TUNRecord `json:"tun_records,omitempty"`
+	// 关联的Cloudflare隧道
+	CloudflareTunnels []*CloudflareTunnel `json:"cloudflare_tunnels,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes     [4]bool
-	namedDNSRecords map[string][]*DNSRecord
-	namedCdnRecords map[string][]*CDNRecord
-	namedSslRecords map[string][]*SSLRecord
-	namedTunRecords map[string][]*TUNRecord
+	loadedTypes            [5]bool
+	namedDNSRecords        map[string][]*DNSRecord
+	namedCdnRecords        map[string][]*CDNRecord
+	namedSslRecords        map[string][]*SSLRecord
+	namedTunRecords        map[string][]*TUNRecord
+	namedCloudflareTunnels map[string][]*CloudflareTunnel
 }
 
 // DNSRecordsOrErr returns the DNSRecords value or an error if the edge
@@ -92,6 +95,15 @@ func (e PlatformConfigEdges) TunRecordsOrErr() ([]*TUNRecord, error) {
 		return e.TunRecords, nil
 	}
 	return nil, &NotLoadedError{edge: "tun_records"}
+}
+
+// CloudflareTunnelsOrErr returns the CloudflareTunnels value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlatformConfigEdges) CloudflareTunnelsOrErr() ([]*CloudflareTunnel, error) {
+	if e.loadedTypes[4] {
+		return e.CloudflareTunnels, nil
+	}
+	return nil, &NotLoadedError{edge: "cloudflare_tunnels"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -203,6 +215,11 @@ func (_m *PlatformConfig) QuerySslRecords() *SSLRecordQuery {
 // QueryTunRecords queries the "tun_records" edge of the PlatformConfig entity.
 func (_m *PlatformConfig) QueryTunRecords() *TUNRecordQuery {
 	return NewPlatformConfigClient(_m.config).QueryTunRecords(_m)
+}
+
+// QueryCloudflareTunnels queries the "cloudflare_tunnels" edge of the PlatformConfig entity.
+func (_m *PlatformConfig) QueryCloudflareTunnels() *CloudflareTunnelQuery {
+	return NewPlatformConfigClient(_m.config).QueryCloudflareTunnels(_m)
 }
 
 // Update returns a builder for updating this PlatformConfig.
@@ -344,6 +361,30 @@ func (_m *PlatformConfig) appendNamedTunRecords(name string, edges ...*TUNRecord
 		_m.Edges.namedTunRecords[name] = []*TUNRecord{}
 	} else {
 		_m.Edges.namedTunRecords[name] = append(_m.Edges.namedTunRecords[name], edges...)
+	}
+}
+
+// NamedCloudflareTunnels returns the CloudflareTunnels named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *PlatformConfig) NamedCloudflareTunnels(name string) ([]*CloudflareTunnel, error) {
+	if _m.Edges.namedCloudflareTunnels == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedCloudflareTunnels[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *PlatformConfig) appendNamedCloudflareTunnels(name string, edges ...*CloudflareTunnel) {
+	if _m.Edges.namedCloudflareTunnels == nil {
+		_m.Edges.namedCloudflareTunnels = make(map[string][]*CloudflareTunnel)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedCloudflareTunnels[name] = []*CloudflareTunnel{}
+	} else {
+		_m.Edges.namedCloudflareTunnels[name] = append(_m.Edges.namedCloudflareTunnels[name], edges...)
 	}
 }
 

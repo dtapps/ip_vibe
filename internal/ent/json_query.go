@@ -5,6 +5,8 @@ package ent
 import (
 	"fmt"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/cloudflaretunnel"
+	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -41,6 +43,64 @@ func (q *CDNRecordQuery) WhereConfigJSONContains(val any) *CDNRecordQuery {
 func (q *CDNRecordQuery) WhereConfigJSONContainsIf(condition bool, val any) *CDNRecordQuery {
 	if condition {
 		return q.WhereConfigJSONContains(val)
+	}
+	return q
+}
+
+// WhereConnectionsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *CloudflareTunnelQuery) WhereConnectionsContains(val any) *CloudflareTunnelQuery {
+	return q.Where(predicate.CloudflareTunnel(func(s *sql.Selector) {
+		column := cloudflaretunnel.FieldConnections
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereConnectionsContainsIf 只有在 condition 为 true 时才调用 WhereConnectionsContains。
+func (q *CloudflareTunnelQuery) WhereConnectionsContainsIf(condition bool, val any) *CloudflareTunnelQuery {
+	if condition {
+		return q.WhereConnectionsContains(val)
+	}
+	return q
+}
+
+// WhereOriginRequestContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *CloudflareTunnelIngressQuery) WhereOriginRequestContains(val any) *CloudflareTunnelIngressQuery {
+	return q.Where(predicate.CloudflareTunnelIngress(func(s *sql.Selector) {
+		column := cloudflaretunnelingress.FieldOriginRequest
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereOriginRequestContainsIf 只有在 condition 为 true 时才调用 WhereOriginRequestContains。
+func (q *CloudflareTunnelIngressQuery) WhereOriginRequestContainsIf(condition bool, val any) *CloudflareTunnelIngressQuery {
+	if condition {
+		return q.WhereOriginRequestContains(val)
 	}
 	return q
 }

@@ -6,6 +6,8 @@ import (
 	"time"
 	"vibe_ip/internal/ent/cache"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/cloudflaretunnel"
+	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -64,6 +66,56 @@ func init() {
 	cacheDescID := cacheFields[0].Descriptor()
 	// cache.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	cache.IDValidator = cacheDescID.Validators[0].(func(int64) error)
+	cloudflaretunnelMixin := schema.CloudflareTunnel{}.Mixin()
+	cloudflaretunnelHooks := schema.CloudflareTunnel{}.Hooks()
+	cloudflaretunnel.Hooks[0] = cloudflaretunnelHooks[0]
+	cloudflaretunnelMixinFields0 := cloudflaretunnelMixin[0].Fields()
+	_ = cloudflaretunnelMixinFields0
+	cloudflaretunnelFields := schema.CloudflareTunnel{}.Fields()
+	_ = cloudflaretunnelFields
+	// cloudflaretunnelDescCreatedAt is the schema descriptor for created_at field.
+	cloudflaretunnelDescCreatedAt := cloudflaretunnelMixinFields0[0].Descriptor()
+	// cloudflaretunnel.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cloudflaretunnel.DefaultCreatedAt = cloudflaretunnelDescCreatedAt.Default.(func() time.Time)
+	// cloudflaretunnelDescUpdatedAt is the schema descriptor for updated_at field.
+	cloudflaretunnelDescUpdatedAt := cloudflaretunnelMixinFields0[1].Descriptor()
+	// cloudflaretunnel.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cloudflaretunnel.DefaultUpdatedAt = cloudflaretunnelDescUpdatedAt.Default.(func() time.Time)
+	// cloudflaretunnel.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cloudflaretunnel.UpdateDefaultUpdatedAt = cloudflaretunnelDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cloudflaretunnelDescConfigID is the schema descriptor for config_id field.
+	cloudflaretunnelDescConfigID := cloudflaretunnelFields[1].Descriptor()
+	// cloudflaretunnel.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
+	cloudflaretunnel.ConfigIDValidator = cloudflaretunnelDescConfigID.Validators[0].(func(int64) error)
+	// cloudflaretunnelDescID is the schema descriptor for id field.
+	cloudflaretunnelDescID := cloudflaretunnelFields[0].Descriptor()
+	// cloudflaretunnel.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	cloudflaretunnel.IDValidator = cloudflaretunnelDescID.Validators[0].(func(int64) error)
+	cloudflaretunnelingressMixin := schema.CloudflareTunnelIngress{}.Mixin()
+	cloudflaretunnelingressHooks := schema.CloudflareTunnelIngress{}.Hooks()
+	cloudflaretunnelingress.Hooks[0] = cloudflaretunnelingressHooks[0]
+	cloudflaretunnelingressMixinFields0 := cloudflaretunnelingressMixin[0].Fields()
+	_ = cloudflaretunnelingressMixinFields0
+	cloudflaretunnelingressFields := schema.CloudflareTunnelIngress{}.Fields()
+	_ = cloudflaretunnelingressFields
+	// cloudflaretunnelingressDescCreatedAt is the schema descriptor for created_at field.
+	cloudflaretunnelingressDescCreatedAt := cloudflaretunnelingressMixinFields0[0].Descriptor()
+	// cloudflaretunnelingress.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cloudflaretunnelingress.DefaultCreatedAt = cloudflaretunnelingressDescCreatedAt.Default.(func() time.Time)
+	// cloudflaretunnelingressDescUpdatedAt is the schema descriptor for updated_at field.
+	cloudflaretunnelingressDescUpdatedAt := cloudflaretunnelingressMixinFields0[1].Descriptor()
+	// cloudflaretunnelingress.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cloudflaretunnelingress.DefaultUpdatedAt = cloudflaretunnelingressDescUpdatedAt.Default.(func() time.Time)
+	// cloudflaretunnelingress.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cloudflaretunnelingress.UpdateDefaultUpdatedAt = cloudflaretunnelingressDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cloudflaretunnelingressDescCloudflareTunnelID is the schema descriptor for cloudflare_tunnel_id field.
+	cloudflaretunnelingressDescCloudflareTunnelID := cloudflaretunnelingressFields[1].Descriptor()
+	// cloudflaretunnelingress.CloudflareTunnelIDValidator is a validator for the "cloudflare_tunnel_id" field. It is called by the builders before save.
+	cloudflaretunnelingress.CloudflareTunnelIDValidator = cloudflaretunnelingressDescCloudflareTunnelID.Validators[0].(func(int64) error)
+	// cloudflaretunnelingressDescID is the schema descriptor for id field.
+	cloudflaretunnelingressDescID := cloudflaretunnelingressFields[0].Descriptor()
+	// cloudflaretunnelingress.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	cloudflaretunnelingress.IDValidator = cloudflaretunnelingressDescID.Validators[0].(func(int64) error)
 	dnsrecordMixin := schema.DNSRecord{}.Mixin()
 	dnsrecordHooks := schema.DNSRecord{}.Hooks()
 	dnsrecord.Hooks[0] = dnsrecordHooks[0]

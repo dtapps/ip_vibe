@@ -114,6 +114,97 @@ var (
 			},
 		},
 	}
+	// CloudflareTunnelColumns holds the columns for the "cloudflare_tunnel" table.
+	CloudflareTunnelColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "Cloudflare 隧道序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "tunnel_id", Type: field.TypeString, Comment: "Cloudflare 隧道ID"},
+		{Name: "name", Type: field.TypeString, Comment: "隧道名称"},
+		{Name: "status", Type: field.TypeEnum, Comment: "隧道状态", Enums: []string{"inactive", "degraded", "healthy", "down"}},
+		{Name: "connections", Type: field.TypeJSON, Nullable: true, Comment: "隧道连接配置（JSON）"},
+		{Name: "conns_active_at", Type: field.TypeString, Nullable: true, Comment: "隧道连接活跃时间"},
+		{Name: "remote_created_at", Type: field.TypeString, Nullable: true, Comment: "隧道创建时间"},
+		{Name: "last_api_response", Type: field.TypeString, Nullable: true, Comment: "最近一次接口的反馈"},
+		{Name: "last_api_response_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次接口的反馈时间"},
+		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
+	}
+	// CloudflareTunnelTable holds the schema information for the "cloudflare_tunnel" table.
+	CloudflareTunnelTable = &schema.Table{
+		Name:       "cloudflare_tunnel",
+		Comment:    "Cloudflare 隧道",
+		Columns:    CloudflareTunnelColumns,
+		PrimaryKey: []*schema.Column{CloudflareTunnelColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "cloudflare_tunnel_platform_config_cloudflare_tunnels",
+				Columns:    []*schema.Column{CloudflareTunnelColumns[11]},
+				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cloudflaretunnel_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareTunnelColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "cloudflaretunnel_config_id",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareTunnelColumns[11]},
+			},
+			{
+				Name:    "cloudflaretunnel_tunnel_id",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareTunnelColumns[3]},
+			},
+		},
+	}
+	// CloudflareTunnelIngressColumns holds the columns for the "cloudflare_tunnel_ingress" table.
+	CloudflareTunnelIngressColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "Cloudflare 隧道入站规则序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "hostname", Type: field.TypeString, Nullable: true, Comment: "主机名"},
+		{Name: "service", Type: field.TypeString, Comment: "服务"},
+		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "路径"},
+		{Name: "origin_request", Type: field.TypeJSON, Nullable: true, Comment: "入站请求配置（JSON）"},
+		{Name: "cloudflare_tunnel_id", Type: field.TypeInt64, Comment: "关联 Cloudflare 隧道序号"},
+	}
+	// CloudflareTunnelIngressTable holds the schema information for the "cloudflare_tunnel_ingress" table.
+	CloudflareTunnelIngressTable = &schema.Table{
+		Name:       "cloudflare_tunnel_ingress",
+		Comment:    "Cloudflare 隧道入站规则",
+		Columns:    CloudflareTunnelIngressColumns,
+		PrimaryKey: []*schema.Column{CloudflareTunnelIngressColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "cloudflare_tunnel_ingress_cloudflare_tunnel_ingresses",
+				Columns:    []*schema.Column{CloudflareTunnelIngressColumns[7]},
+				RefColumns: []*schema.Column{CloudflareTunnelColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cloudflaretunnelingress_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareTunnelIngressColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "cloudflaretunnelingress_cloudflare_tunnel_id",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareTunnelIngressColumns[7]},
+			},
+		},
+	}
 	// DNSRecordColumns holds the columns for the "dns_record" table.
 	DNSRecordColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "DNS记录序号"},
@@ -837,6 +928,8 @@ var (
 	Tables = []*schema.Table{
 		CdnRecordTable,
 		CacheTable,
+		CloudflareTunnelTable,
+		CloudflareTunnelIngressTable,
 		DNSRecordTable,
 		DeviceTable,
 		DeviceGroupTable,
@@ -863,6 +956,14 @@ func init() {
 	}
 	CacheTable.Annotation = &entsql.Annotation{
 		Table: "cache",
+	}
+	CloudflareTunnelTable.ForeignKeys[0].RefTable = PlatformConfigTable
+	CloudflareTunnelTable.Annotation = &entsql.Annotation{
+		Table: "cloudflare_tunnel",
+	}
+	CloudflareTunnelIngressTable.ForeignKeys[0].RefTable = CloudflareTunnelTable
+	CloudflareTunnelIngressTable.Annotation = &entsql.Annotation{
+		Table: "cloudflare_tunnel_ingress",
 	}
 	DNSRecordTable.ForeignKeys[0].RefTable = CdnRecordTable
 	DNSRecordTable.ForeignKeys[1].RefTable = DeviceGroupTable

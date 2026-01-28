@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
@@ -23,19 +24,21 @@ import (
 // PlatformConfigQuery is the builder for querying PlatformConfig entities.
 type PlatformConfigQuery struct {
 	config
-	ctx                 *QueryContext
-	order               []platformconfig.OrderOption
-	inters              []Interceptor
-	predicates          []predicate.PlatformConfig
-	withDNSRecords      *DNSRecordQuery
-	withCdnRecords      *CDNRecordQuery
-	withSslRecords      *SSLRecordQuery
-	withTunRecords      *TUNRecordQuery
-	modifiers           []func(*sql.Selector)
-	withNamedDNSRecords map[string]*DNSRecordQuery
-	withNamedCdnRecords map[string]*CDNRecordQuery
-	withNamedSslRecords map[string]*SSLRecordQuery
-	withNamedTunRecords map[string]*TUNRecordQuery
+	ctx                        *QueryContext
+	order                      []platformconfig.OrderOption
+	inters                     []Interceptor
+	predicates                 []predicate.PlatformConfig
+	withDNSRecords             *DNSRecordQuery
+	withCdnRecords             *CDNRecordQuery
+	withSslRecords             *SSLRecordQuery
+	withTunRecords             *TUNRecordQuery
+	withCloudflareTunnels      *CloudflareTunnelQuery
+	modifiers                  []func(*sql.Selector)
+	withNamedDNSRecords        map[string]*DNSRecordQuery
+	withNamedCdnRecords        map[string]*CDNRecordQuery
+	withNamedSslRecords        map[string]*SSLRecordQuery
+	withNamedTunRecords        map[string]*TUNRecordQuery
+	withNamedCloudflareTunnels map[string]*CloudflareTunnelQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -153,6 +156,28 @@ func (_q *PlatformConfigQuery) QueryTunRecords() *TUNRecordQuery {
 			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, selector),
 			sqlgraph.To(tunrecord.Table, tunrecord.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.TunRecordsTable, platformconfig.TunRecordsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCloudflareTunnels chains the current query on the "cloudflare_tunnels" edge.
+func (_q *PlatformConfigQuery) QueryCloudflareTunnels() *CloudflareTunnelQuery {
+	query := (&CloudflareTunnelClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, selector),
+			sqlgraph.To(cloudflaretunnel.Table, cloudflaretunnel.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.CloudflareTunnelsTable, platformconfig.CloudflareTunnelsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -347,15 +372,16 @@ func (_q *PlatformConfigQuery) Clone() *PlatformConfigQuery {
 		return nil
 	}
 	return &PlatformConfigQuery{
-		config:         _q.config,
-		ctx:            _q.ctx.Clone(),
-		order:          append([]platformconfig.OrderOption{}, _q.order...),
-		inters:         append([]Interceptor{}, _q.inters...),
-		predicates:     append([]predicate.PlatformConfig{}, _q.predicates...),
-		withDNSRecords: _q.withDNSRecords.Clone(),
-		withCdnRecords: _q.withCdnRecords.Clone(),
-		withSslRecords: _q.withSslRecords.Clone(),
-		withTunRecords: _q.withTunRecords.Clone(),
+		config:                _q.config,
+		ctx:                   _q.ctx.Clone(),
+		order:                 append([]platformconfig.OrderOption{}, _q.order...),
+		inters:                append([]Interceptor{}, _q.inters...),
+		predicates:            append([]predicate.PlatformConfig{}, _q.predicates...),
+		withDNSRecords:        _q.withDNSRecords.Clone(),
+		withCdnRecords:        _q.withCdnRecords.Clone(),
+		withSslRecords:        _q.withSslRecords.Clone(),
+		withTunRecords:        _q.withTunRecords.Clone(),
+		withCloudflareTunnels: _q.withCloudflareTunnels.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -404,6 +430,17 @@ func (_q *PlatformConfigQuery) WithTunRecords(opts ...func(*TUNRecordQuery)) *Pl
 		opt(query)
 	}
 	_q.withTunRecords = query
+	return _q
+}
+
+// WithCloudflareTunnels tells the query-builder to eager-load the nodes that are connected to
+// the "cloudflare_tunnels" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *PlatformConfigQuery) WithCloudflareTunnels(opts ...func(*CloudflareTunnelQuery)) *PlatformConfigQuery {
+	query := (&CloudflareTunnelClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withCloudflareTunnels = query
 	return _q
 }
 
@@ -485,11 +522,12 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	var (
 		nodes       = []*PlatformConfig{}
 		_spec       = _q.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			_q.withDNSRecords != nil,
 			_q.withCdnRecords != nil,
 			_q.withSslRecords != nil,
 			_q.withTunRecords != nil,
+			_q.withCloudflareTunnels != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -561,6 +599,18 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			return nil, err
 		}
 	}
+	if query := _q.withCloudflareTunnels; query != nil {
+		if err := _q.loadCloudflareTunnels(ctx, query, nodes,
+			func(n *PlatformConfig) { n.Edges.CloudflareTunnels = []*CloudflareTunnel{} },
+			func(n *PlatformConfig, e *CloudflareTunnel) {
+				n.Edges.CloudflareTunnels = append(n.Edges.CloudflareTunnels, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Config = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range _q.withNamedDNSRecords {
 		if err := _q.loadDNSRecords(ctx, query, nodes,
 			func(n *PlatformConfig) { n.appendNamedDNSRecords(name) },
@@ -602,6 +652,18 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			func(n *PlatformConfig) { n.appendNamedTunRecords(name) },
 			func(n *PlatformConfig, e *TUNRecord) {
 				n.appendNamedTunRecords(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Config = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedCloudflareTunnels {
+		if err := _q.loadCloudflareTunnels(ctx, query, nodes,
+			func(n *PlatformConfig) { n.appendNamedCloudflareTunnels(name) },
+			func(n *PlatformConfig, e *CloudflareTunnel) {
+				n.appendNamedCloudflareTunnels(name, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.Config = n
 				}
@@ -717,6 +779,36 @@ func (_q *PlatformConfigQuery) loadTunRecords(ctx context.Context, query *TUNRec
 	}
 	query.Where(predicate.TUNRecord(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(platformconfig.TunRecordsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ConfigID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "config_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *PlatformConfigQuery) loadCloudflareTunnels(ctx context.Context, query *CloudflareTunnelQuery, nodes []*PlatformConfig, init func(*PlatformConfig), assign func(*PlatformConfig, *CloudflareTunnel)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*PlatformConfig)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(cloudflaretunnel.FieldConfigID)
+	}
+	query.Where(predicate.CloudflareTunnel(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(platformconfig.CloudflareTunnelsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -879,6 +971,20 @@ func (_q *PlatformConfigQuery) WithNamedTunRecords(name string, opts ...func(*TU
 		_q.withNamedTunRecords = make(map[string]*TUNRecordQuery)
 	}
 	_q.withNamedTunRecords[name] = query
+	return _q
+}
+
+// WithNamedCloudflareTunnels tells the query-builder to eager-load the nodes that are connected to the "cloudflare_tunnels"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *PlatformConfigQuery) WithNamedCloudflareTunnels(name string, opts ...func(*CloudflareTunnelQuery)) *PlatformConfigQuery {
+	query := (&CloudflareTunnelClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedCloudflareTunnels == nil {
+		_q.withNamedCloudflareTunnels = make(map[string]*CloudflareTunnelQuery)
+	}
+	_q.withNamedCloudflareTunnels[name] = query
 	return _q
 }
 
