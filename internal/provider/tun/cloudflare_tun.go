@@ -125,10 +125,8 @@ func (p *CloudfareTUNProvider) Name() string {
 	return "Cloudflare TUN"
 }
 
-// Check 检查子域名是否存在
-// https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/get/
-func (p *CloudfareTUNProvider) Check(ctx context.Context, domain string, subdomain string, domainpath string, serve_type string, serve_uri string) (data *provider.TUNProviderInternalData, err error) {
-
+// 处理主机名和服务
+func (p *CloudfareTUNProvider) handleHostnameAndService(subdomain string, serve_type string, serve_uri string) (hostname string, service string) {
 	// 转小写
 	serve_type = strings.ToLower(serve_type)
 
@@ -137,15 +135,25 @@ func (p *CloudfareTUNProvider) Check(ctx context.Context, domain string, subdoma
 		serve_type = "unix+tls"
 	}
 
-	// 主机名
-	hostname := fmt.Sprintf("%s.%s", subdomain, p.CustomConfig.ZoneName)
-
-	// 服务
-	service := fmt.Sprintf("%s://%s", serve_type, hostname)
+	// 主机名和服务
 	switch serve_type {
 	case "http_status":
-		service = fmt.Sprintf("%s:%s", serve_type, hostname)
+		hostname = ""
+		service = fmt.Sprintf("%s:%s", serve_type, serve_uri)
+	default:
+		hostname = fmt.Sprintf("%s.%s", subdomain, p.CustomConfig.ZoneName)
+		service = fmt.Sprintf("%s://%s", serve_type, serve_uri)
 	}
+
+	return hostname, service
+}
+
+// Check 检查子域名是否存在
+// https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/get/
+func (p *CloudfareTUNProvider) Check(ctx context.Context, domain string, subdomain string, domainpath string, serve_type string, serve_uri string) (data *provider.TUNProviderInternalData, err error) {
+
+	// 主机名和服务
+	hostname, service := p.handleHostnameAndService(subdomain, serve_type, serve_uri)
 
 	// 查询记录
 	requestTunQuery := zero_trust.TunnelCloudflaredConfigurationGetParams{}
@@ -195,23 +203,8 @@ func (p *CloudfareTUNProvider) Check(ctx context.Context, domain string, subdoma
 // https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/update/
 func (p *CloudfareTUNProvider) Update(ctx context.Context, domain string, subdomain string, domainpath string, serve_type string, serve_uri string) (err error) {
 
-	// 转小写
-	serve_type = strings.ToLower(serve_type)
-
-	// unix+tls需要额外处理
-	if strings.EqualFold(serve_type, "unix_tls") {
-		serve_type = "unix+tls"
-	}
-
-	// 主机名
-	hostname := fmt.Sprintf("%s.%s", subdomain, p.CustomConfig.ZoneName)
-
-	// 服务
-	service := fmt.Sprintf("%s://%s", serve_type, hostname)
-	switch serve_type {
-	case "http_status":
-		service = fmt.Sprintf("%s:%s", serve_type, hostname)
-	}
+	// 主机名和服务
+	hostname, service := p.handleHostnameAndService(subdomain, serve_type, serve_uri)
 
 	// 从 ItemData 复制到 ingress
 	configIngress := make([]zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress, 0, len(p.ItemData))
@@ -221,7 +214,8 @@ func (p *CloudfareTUNProvider) Update(ctx context.Context, domain string, subdom
 		return fmt.Errorf("json.Marshal 失败 %w", err)
 	}
 	// 解析 JSON 字符串
-	if err := json.Unmarshal(tempItemData, &configIngress); err != nil {
+	err = json.Unmarshal(tempItemData, &configIngress)
+	if err != nil {
 		return fmt.Errorf("json.Unmarshal 失败 %w", err)
 	}
 
@@ -253,6 +247,9 @@ func (p *CloudfareTUNProvider) Update(ctx context.Context, domain string, subdom
 		configIngress = append(configIngress, configIngres)
 	}
 
+	// 重排规则，把兜底规则（如 http_status）移到最后
+	configIngress = p.moveCatchAllRulesToLast(configIngress)
+
 	// 更新记录
 	requestTunUpdate := zero_trust.TunnelCloudflaredConfigurationUpdateParams{}
 	requestTunUpdate.AccountID = cloudflare.String(p.cfg.AccountID)
@@ -265,6 +262,32 @@ func (p *CloudfareTUNProvider) Update(ctx context.Context, domain string, subdom
 	}
 
 	return nil
+}
+
+// moveCatchAllRulesToLast 将所有 catch-all 规则移动到最后
+func (p *CloudfareTUNProvider) moveCatchAllRulesToLast(rules []zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress) []zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress {
+	var normal, catchAll []zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress
+	for _, rule := range rules {
+		// 判断是否是兜底规则
+		isCatchAll := false
+
+		// 情况1: Hostname 未设置，或显式为空字符串
+		if rule.Hostname.Value == "" {
+			isCatchAll = true
+		}
+
+		// 情况2: Service 是 http_status 开头（即使有 hostname，也视为兜底？通常不会，但保险起见）
+		if !isCatchAll && strings.HasPrefix(rule.Service.Value, "http_status:") {
+			isCatchAll = true
+		}
+
+		if isCatchAll {
+			catchAll = append(catchAll, rule)
+		} else {
+			normal = append(normal, rule)
+		}
+	}
+	return append(normal, catchAll...)
 }
 
 // Cloudfare TUN 自定义配置
