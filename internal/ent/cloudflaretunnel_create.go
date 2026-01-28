@@ -103,30 +103,16 @@ func (_c *CloudflareTunnelCreate) SetRemoteCreatedAt(v time.Time) *CloudflareTun
 	return _c
 }
 
-// SetLastAPIResponse sets the "last_api_response" field.
-func (_c *CloudflareTunnelCreate) SetLastAPIResponse(v string) *CloudflareTunnelCreate {
-	_c.mutation.SetLastAPIResponse(v)
+// SetSyncAt sets the "sync_at" field.
+func (_c *CloudflareTunnelCreate) SetSyncAt(v time.Time) *CloudflareTunnelCreate {
+	_c.mutation.SetSyncAt(v)
 	return _c
 }
 
-// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
-func (_c *CloudflareTunnelCreate) SetNillableLastAPIResponse(v *string) *CloudflareTunnelCreate {
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_c *CloudflareTunnelCreate) SetNillableSyncAt(v *time.Time) *CloudflareTunnelCreate {
 	if v != nil {
-		_c.SetLastAPIResponse(*v)
-	}
-	return _c
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (_c *CloudflareTunnelCreate) SetLastAPIResponseAt(v time.Time) *CloudflareTunnelCreate {
-	_c.mutation.SetLastAPIResponseAt(v)
-	return _c
-}
-
-// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
-func (_c *CloudflareTunnelCreate) SetNillableLastAPIResponseAt(v *time.Time) *CloudflareTunnelCreate {
-	if v != nil {
-		_c.SetLastAPIResponseAt(*v)
+		_c.SetSyncAt(*v)
 	}
 	return _c
 }
@@ -317,13 +303,9 @@ func (_c *CloudflareTunnelCreate) createSpec() (*CloudflareTunnel, *sqlgraph.Cre
 		_spec.SetField(cloudflaretunnel.FieldRemoteCreatedAt, field.TypeTime, value)
 		_node.RemoteCreatedAt = value
 	}
-	if value, ok := _c.mutation.LastAPIResponse(); ok {
-		_spec.SetField(cloudflaretunnel.FieldLastAPIResponse, field.TypeString, value)
-		_node.LastAPIResponse = value
-	}
-	if value, ok := _c.mutation.LastAPIResponseAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldLastAPIResponseAt, field.TypeTime, value)
-		_node.LastAPIResponseAt = value
+	if value, ok := _c.mutation.SyncAt(); ok {
+		_spec.SetField(cloudflaretunnel.FieldSyncAt, field.TypeTime, value)
+		_node.SyncAt = value
 	}
 	if nodes := _c.mutation.ConfigIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -494,39 +476,21 @@ func (u *CloudflareTunnelUpsert) UpdateRemoteCreatedAt() *CloudflareTunnelUpsert
 	return u
 }
 
-// SetLastAPIResponse sets the "last_api_response" field.
-func (u *CloudflareTunnelUpsert) SetLastAPIResponse(v string) *CloudflareTunnelUpsert {
-	u.Set(cloudflaretunnel.FieldLastAPIResponse, v)
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelUpsert) SetSyncAt(v time.Time) *CloudflareTunnelUpsert {
+	u.Set(cloudflaretunnel.FieldSyncAt, v)
 	return u
 }
 
-// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsert) UpdateLastAPIResponse() *CloudflareTunnelUpsert {
-	u.SetExcluded(cloudflaretunnel.FieldLastAPIResponse)
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsert) UpdateSyncAt() *CloudflareTunnelUpsert {
+	u.SetExcluded(cloudflaretunnel.FieldSyncAt)
 	return u
 }
 
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (u *CloudflareTunnelUpsert) ClearLastAPIResponse() *CloudflareTunnelUpsert {
-	u.SetNull(cloudflaretunnel.FieldLastAPIResponse)
-	return u
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (u *CloudflareTunnelUpsert) SetLastAPIResponseAt(v time.Time) *CloudflareTunnelUpsert {
-	u.Set(cloudflaretunnel.FieldLastAPIResponseAt, v)
-	return u
-}
-
-// UpdateLastAPIResponseAt sets the "last_api_response_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsert) UpdateLastAPIResponseAt() *CloudflareTunnelUpsert {
-	u.SetExcluded(cloudflaretunnel.FieldLastAPIResponseAt)
-	return u
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (u *CloudflareTunnelUpsert) ClearLastAPIResponseAt() *CloudflareTunnelUpsert {
-	u.SetNull(cloudflaretunnel.FieldLastAPIResponseAt)
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelUpsert) ClearSyncAt() *CloudflareTunnelUpsert {
+	u.SetNull(cloudflaretunnel.FieldSyncAt)
 	return u
 }
 
@@ -685,45 +649,24 @@ func (u *CloudflareTunnelUpsertOne) UpdateRemoteCreatedAt() *CloudflareTunnelUps
 	})
 }
 
-// SetLastAPIResponse sets the "last_api_response" field.
-func (u *CloudflareTunnelUpsertOne) SetLastAPIResponse(v string) *CloudflareTunnelUpsertOne {
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelUpsertOne) SetSyncAt(v time.Time) *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetLastAPIResponse(v)
+		s.SetSyncAt(v)
 	})
 }
 
-// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertOne) UpdateLastAPIResponse() *CloudflareTunnelUpsertOne {
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertOne) UpdateSyncAt() *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateLastAPIResponse()
+		s.UpdateSyncAt()
 	})
 }
 
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (u *CloudflareTunnelUpsertOne) ClearLastAPIResponse() *CloudflareTunnelUpsertOne {
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelUpsertOne) ClearSyncAt() *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearLastAPIResponse()
-	})
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (u *CloudflareTunnelUpsertOne) SetLastAPIResponseAt(v time.Time) *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetLastAPIResponseAt(v)
-	})
-}
-
-// UpdateLastAPIResponseAt sets the "last_api_response_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertOne) UpdateLastAPIResponseAt() *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateLastAPIResponseAt()
-	})
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (u *CloudflareTunnelUpsertOne) ClearLastAPIResponseAt() *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearLastAPIResponseAt()
+		s.ClearSyncAt()
 	})
 }
 
@@ -1048,45 +991,24 @@ func (u *CloudflareTunnelUpsertBulk) UpdateRemoteCreatedAt() *CloudflareTunnelUp
 	})
 }
 
-// SetLastAPIResponse sets the "last_api_response" field.
-func (u *CloudflareTunnelUpsertBulk) SetLastAPIResponse(v string) *CloudflareTunnelUpsertBulk {
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelUpsertBulk) SetSyncAt(v time.Time) *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetLastAPIResponse(v)
+		s.SetSyncAt(v)
 	})
 }
 
-// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertBulk) UpdateLastAPIResponse() *CloudflareTunnelUpsertBulk {
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertBulk) UpdateSyncAt() *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateLastAPIResponse()
+		s.UpdateSyncAt()
 	})
 }
 
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (u *CloudflareTunnelUpsertBulk) ClearLastAPIResponse() *CloudflareTunnelUpsertBulk {
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelUpsertBulk) ClearSyncAt() *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearLastAPIResponse()
-	})
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (u *CloudflareTunnelUpsertBulk) SetLastAPIResponseAt(v time.Time) *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetLastAPIResponseAt(v)
-	})
-}
-
-// UpdateLastAPIResponseAt sets the "last_api_response_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertBulk) UpdateLastAPIResponseAt() *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateLastAPIResponseAt()
-	})
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (u *CloudflareTunnelUpsertBulk) ClearLastAPIResponseAt() *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearLastAPIResponseAt()
+		s.ClearSyncAt()
 	})
 }
 

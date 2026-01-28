@@ -90,14 +90,9 @@ func RemoteCreatedAt(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldEQ(FieldRemoteCreatedAt, v))
 }
 
-// LastAPIResponse applies equality check predicate on the "last_api_response" field. It's identical to LastAPIResponseEQ.
-func LastAPIResponse(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldEQ(FieldLastAPIResponse, v))
-}
-
-// LastAPIResponseAt applies equality check predicate on the "last_api_response_at" field. It's identical to LastAPIResponseAtEQ.
-func LastAPIResponseAt(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldEQ(FieldLastAPIResponseAt, v))
+// SyncAt applies equality check predicate on the "sync_at" field. It's identical to SyncAtEQ.
+func SyncAt(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldEQ(FieldSyncAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -450,129 +445,54 @@ func RemoteCreatedAtLTE(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldLTE(FieldRemoteCreatedAt, v))
 }
 
-// LastAPIResponseEQ applies the EQ predicate on the "last_api_response" field.
-func LastAPIResponseEQ(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldEQ(FieldLastAPIResponse, v))
+// SyncAtEQ applies the EQ predicate on the "sync_at" field.
+func SyncAtEQ(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldEQ(FieldSyncAt, v))
 }
 
-// LastAPIResponseNEQ applies the NEQ predicate on the "last_api_response" field.
-func LastAPIResponseNEQ(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldNEQ(FieldLastAPIResponse, v))
+// SyncAtNEQ applies the NEQ predicate on the "sync_at" field.
+func SyncAtNEQ(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNEQ(FieldSyncAt, v))
 }
 
-// LastAPIResponseIn applies the In predicate on the "last_api_response" field.
-func LastAPIResponseIn(vs ...string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldIn(FieldLastAPIResponse, vs...))
+// SyncAtIn applies the In predicate on the "sync_at" field.
+func SyncAtIn(vs ...time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldIn(FieldSyncAt, vs...))
 }
 
-// LastAPIResponseNotIn applies the NotIn predicate on the "last_api_response" field.
-func LastAPIResponseNotIn(vs ...string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldNotIn(FieldLastAPIResponse, vs...))
+// SyncAtNotIn applies the NotIn predicate on the "sync_at" field.
+func SyncAtNotIn(vs ...time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNotIn(FieldSyncAt, vs...))
 }
 
-// LastAPIResponseGT applies the GT predicate on the "last_api_response" field.
-func LastAPIResponseGT(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldGT(FieldLastAPIResponse, v))
+// SyncAtGT applies the GT predicate on the "sync_at" field.
+func SyncAtGT(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldGT(FieldSyncAt, v))
 }
 
-// LastAPIResponseGTE applies the GTE predicate on the "last_api_response" field.
-func LastAPIResponseGTE(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldGTE(FieldLastAPIResponse, v))
+// SyncAtGTE applies the GTE predicate on the "sync_at" field.
+func SyncAtGTE(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldGTE(FieldSyncAt, v))
 }
 
-// LastAPIResponseLT applies the LT predicate on the "last_api_response" field.
-func LastAPIResponseLT(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldLT(FieldLastAPIResponse, v))
+// SyncAtLT applies the LT predicate on the "sync_at" field.
+func SyncAtLT(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldLT(FieldSyncAt, v))
 }
 
-// LastAPIResponseLTE applies the LTE predicate on the "last_api_response" field.
-func LastAPIResponseLTE(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldLTE(FieldLastAPIResponse, v))
+// SyncAtLTE applies the LTE predicate on the "sync_at" field.
+func SyncAtLTE(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldLTE(FieldSyncAt, v))
 }
 
-// LastAPIResponseContains applies the Contains predicate on the "last_api_response" field.
-func LastAPIResponseContains(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldContains(FieldLastAPIResponse, v))
+// SyncAtIsNil applies the IsNil predicate on the "sync_at" field.
+func SyncAtIsNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldSyncAt))
 }
 
-// LastAPIResponseHasPrefix applies the HasPrefix predicate on the "last_api_response" field.
-func LastAPIResponseHasPrefix(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldHasPrefix(FieldLastAPIResponse, v))
-}
-
-// LastAPIResponseHasSuffix applies the HasSuffix predicate on the "last_api_response" field.
-func LastAPIResponseHasSuffix(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldHasSuffix(FieldLastAPIResponse, v))
-}
-
-// LastAPIResponseIsNil applies the IsNil predicate on the "last_api_response" field.
-func LastAPIResponseIsNil() predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldLastAPIResponse))
-}
-
-// LastAPIResponseNotNil applies the NotNil predicate on the "last_api_response" field.
-func LastAPIResponseNotNil() predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldLastAPIResponse))
-}
-
-// LastAPIResponseEqualFold applies the EqualFold predicate on the "last_api_response" field.
-func LastAPIResponseEqualFold(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldEqualFold(FieldLastAPIResponse, v))
-}
-
-// LastAPIResponseContainsFold applies the ContainsFold predicate on the "last_api_response" field.
-func LastAPIResponseContainsFold(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldContainsFold(FieldLastAPIResponse, v))
-}
-
-// LastAPIResponseAtEQ applies the EQ predicate on the "last_api_response_at" field.
-func LastAPIResponseAtEQ(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldEQ(FieldLastAPIResponseAt, v))
-}
-
-// LastAPIResponseAtNEQ applies the NEQ predicate on the "last_api_response_at" field.
-func LastAPIResponseAtNEQ(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldNEQ(FieldLastAPIResponseAt, v))
-}
-
-// LastAPIResponseAtIn applies the In predicate on the "last_api_response_at" field.
-func LastAPIResponseAtIn(vs ...time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldIn(FieldLastAPIResponseAt, vs...))
-}
-
-// LastAPIResponseAtNotIn applies the NotIn predicate on the "last_api_response_at" field.
-func LastAPIResponseAtNotIn(vs ...time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldNotIn(FieldLastAPIResponseAt, vs...))
-}
-
-// LastAPIResponseAtGT applies the GT predicate on the "last_api_response_at" field.
-func LastAPIResponseAtGT(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldGT(FieldLastAPIResponseAt, v))
-}
-
-// LastAPIResponseAtGTE applies the GTE predicate on the "last_api_response_at" field.
-func LastAPIResponseAtGTE(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldGTE(FieldLastAPIResponseAt, v))
-}
-
-// LastAPIResponseAtLT applies the LT predicate on the "last_api_response_at" field.
-func LastAPIResponseAtLT(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldLT(FieldLastAPIResponseAt, v))
-}
-
-// LastAPIResponseAtLTE applies the LTE predicate on the "last_api_response_at" field.
-func LastAPIResponseAtLTE(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldLTE(FieldLastAPIResponseAt, v))
-}
-
-// LastAPIResponseAtIsNil applies the IsNil predicate on the "last_api_response_at" field.
-func LastAPIResponseAtIsNil() predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldLastAPIResponseAt))
-}
-
-// LastAPIResponseAtNotNil applies the NotNil predicate on the "last_api_response_at" field.
-func LastAPIResponseAtNotNil() predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldLastAPIResponseAt))
+// SyncAtNotNil applies the NotNil predicate on the "sync_at" field.
+func SyncAtNotNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldSyncAt))
 }
 
 // HasConfig applies the HasEdge predicate on the "config" edge.

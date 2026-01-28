@@ -29,6 +29,8 @@ const (
 	FieldPath = "path"
 	// FieldOriginRequest holds the string denoting the origin_request field in the database.
 	FieldOriginRequest = "origin_request"
+	// FieldSyncAt holds the string denoting the sync_at field in the database.
+	FieldSyncAt = "sync_at"
 	// EdgeCloudflareTunnel holds the string denoting the cloudflare_tunnel edge name in mutations.
 	EdgeCloudflareTunnel = "cloudflare_tunnel"
 	// Table holds the table name of the cloudflaretunnelingress in the database.
@@ -52,6 +54,7 @@ var Columns = []string{
 	FieldService,
 	FieldPath,
 	FieldOriginRequest,
+	FieldSyncAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -119,6 +122,11 @@ func ByService(opts ...sql.OrderTermOption) OrderOption {
 // ByPath orders the results by the path field.
 func ByPath(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPath, opts...).ToFunc()
+}
+
+// BySyncAt orders the results by the sync_at field.
+func BySyncAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSyncAt, opts...).ToFunc()
 }
 
 // ByCloudflareTunnelField orders the results by cloudflare_tunnel field.

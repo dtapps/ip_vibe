@@ -1913,29 +1913,28 @@ func (m *CacheMutation) ResetEdge(name string) error {
 // CloudflareTunnelMutation represents an operation that mutates the CloudflareTunnel nodes in the graph.
 type CloudflareTunnelMutation struct {
 	config
-	op                   Op
-	typ                  string
-	id                   *int64
-	created_at           *time.Time
-	updated_at           *time.Time
-	tunnel_id            *string
-	name                 *string
-	status               *cloudflaretunnel.Status
-	connections          *json.RawMessage
-	appendconnections    json.RawMessage
-	conns_active_at      *time.Time
-	remote_created_at    *time.Time
-	last_api_response    *string
-	last_api_response_at *time.Time
-	clearedFields        map[string]struct{}
-	_config              *int64
-	cleared_config       bool
-	ingresses            map[int64]struct{}
-	removedingresses     map[int64]struct{}
-	clearedingresses     bool
-	done                 bool
-	oldValue             func(context.Context) (*CloudflareTunnel, error)
-	predicates           []predicate.CloudflareTunnel
+	op                Op
+	typ               string
+	id                *int64
+	created_at        *time.Time
+	updated_at        *time.Time
+	tunnel_id         *string
+	name              *string
+	status            *cloudflaretunnel.Status
+	connections       *json.RawMessage
+	appendconnections json.RawMessage
+	conns_active_at   *time.Time
+	remote_created_at *time.Time
+	sync_at           *time.Time
+	clearedFields     map[string]struct{}
+	_config           *int64
+	cleared_config    bool
+	ingresses         map[int64]struct{}
+	removedingresses  map[int64]struct{}
+	clearedingresses  bool
+	done              bool
+	oldValue          func(context.Context) (*CloudflareTunnel, error)
+	predicates        []predicate.CloudflareTunnel
 }
 
 var _ ent.Mutation = (*CloudflareTunnelMutation)(nil)
@@ -2408,102 +2407,53 @@ func (m *CloudflareTunnelMutation) ResetRemoteCreatedAt() {
 	m.remote_created_at = nil
 }
 
-// SetLastAPIResponse sets the "last_api_response" field.
-func (m *CloudflareTunnelMutation) SetLastAPIResponse(s string) {
-	m.last_api_response = &s
+// SetSyncAt sets the "sync_at" field.
+func (m *CloudflareTunnelMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
 }
 
-// LastAPIResponse returns the value of the "last_api_response" field in the mutation.
-func (m *CloudflareTunnelMutation) LastAPIResponse() (r string, exists bool) {
-	v := m.last_api_response
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *CloudflareTunnelMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastAPIResponse returns the old "last_api_response" field's value of the CloudflareTunnel entity.
+// OldSyncAt returns the old "sync_at" field's value of the CloudflareTunnel entity.
 // If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareTunnelMutation) OldLastAPIResponse(ctx context.Context) (v string, err error) {
+func (m *CloudflareTunnelMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastAPIResponse is only allowed on UpdateOne operations")
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastAPIResponse requires an ID field in the mutation")
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastAPIResponse: %w", err)
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
 	}
-	return oldValue.LastAPIResponse, nil
+	return oldValue.SyncAt, nil
 }
 
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (m *CloudflareTunnelMutation) ClearLastAPIResponse() {
-	m.last_api_response = nil
-	m.clearedFields[cloudflaretunnel.FieldLastAPIResponse] = struct{}{}
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *CloudflareTunnelMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[cloudflaretunnel.FieldSyncAt] = struct{}{}
 }
 
-// LastAPIResponseCleared returns if the "last_api_response" field was cleared in this mutation.
-func (m *CloudflareTunnelMutation) LastAPIResponseCleared() bool {
-	_, ok := m.clearedFields[cloudflaretunnel.FieldLastAPIResponse]
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldSyncAt]
 	return ok
 }
 
-// ResetLastAPIResponse resets all changes to the "last_api_response" field.
-func (m *CloudflareTunnelMutation) ResetLastAPIResponse() {
-	m.last_api_response = nil
-	delete(m.clearedFields, cloudflaretunnel.FieldLastAPIResponse)
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (m *CloudflareTunnelMutation) SetLastAPIResponseAt(t time.Time) {
-	m.last_api_response_at = &t
-}
-
-// LastAPIResponseAt returns the value of the "last_api_response_at" field in the mutation.
-func (m *CloudflareTunnelMutation) LastAPIResponseAt() (r time.Time, exists bool) {
-	v := m.last_api_response_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastAPIResponseAt returns the old "last_api_response_at" field's value of the CloudflareTunnel entity.
-// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareTunnelMutation) OldLastAPIResponseAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastAPIResponseAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastAPIResponseAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastAPIResponseAt: %w", err)
-	}
-	return oldValue.LastAPIResponseAt, nil
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (m *CloudflareTunnelMutation) ClearLastAPIResponseAt() {
-	m.last_api_response_at = nil
-	m.clearedFields[cloudflaretunnel.FieldLastAPIResponseAt] = struct{}{}
-}
-
-// LastAPIResponseAtCleared returns if the "last_api_response_at" field was cleared in this mutation.
-func (m *CloudflareTunnelMutation) LastAPIResponseAtCleared() bool {
-	_, ok := m.clearedFields[cloudflaretunnel.FieldLastAPIResponseAt]
-	return ok
-}
-
-// ResetLastAPIResponseAt resets all changes to the "last_api_response_at" field.
-func (m *CloudflareTunnelMutation) ResetLastAPIResponseAt() {
-	m.last_api_response_at = nil
-	delete(m.clearedFields, cloudflaretunnel.FieldLastAPIResponseAt)
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *CloudflareTunnelMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldSyncAt)
 }
 
 // ClearConfig clears the "config" edge to the PlatformConfig entity.
@@ -2621,7 +2571,7 @@ func (m *CloudflareTunnelMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CloudflareTunnelMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, cloudflaretunnel.FieldCreatedAt)
 	}
@@ -2649,11 +2599,8 @@ func (m *CloudflareTunnelMutation) Fields() []string {
 	if m.remote_created_at != nil {
 		fields = append(fields, cloudflaretunnel.FieldRemoteCreatedAt)
 	}
-	if m.last_api_response != nil {
-		fields = append(fields, cloudflaretunnel.FieldLastAPIResponse)
-	}
-	if m.last_api_response_at != nil {
-		fields = append(fields, cloudflaretunnel.FieldLastAPIResponseAt)
+	if m.sync_at != nil {
+		fields = append(fields, cloudflaretunnel.FieldSyncAt)
 	}
 	return fields
 }
@@ -2681,10 +2628,8 @@ func (m *CloudflareTunnelMutation) Field(name string) (ent.Value, bool) {
 		return m.ConnsActiveAt()
 	case cloudflaretunnel.FieldRemoteCreatedAt:
 		return m.RemoteCreatedAt()
-	case cloudflaretunnel.FieldLastAPIResponse:
-		return m.LastAPIResponse()
-	case cloudflaretunnel.FieldLastAPIResponseAt:
-		return m.LastAPIResponseAt()
+	case cloudflaretunnel.FieldSyncAt:
+		return m.SyncAt()
 	}
 	return nil, false
 }
@@ -2712,10 +2657,8 @@ func (m *CloudflareTunnelMutation) OldField(ctx context.Context, name string) (e
 		return m.OldConnsActiveAt(ctx)
 	case cloudflaretunnel.FieldRemoteCreatedAt:
 		return m.OldRemoteCreatedAt(ctx)
-	case cloudflaretunnel.FieldLastAPIResponse:
-		return m.OldLastAPIResponse(ctx)
-	case cloudflaretunnel.FieldLastAPIResponseAt:
-		return m.OldLastAPIResponseAt(ctx)
+	case cloudflaretunnel.FieldSyncAt:
+		return m.OldSyncAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown CloudflareTunnel field %s", name)
 }
@@ -2788,19 +2731,12 @@ func (m *CloudflareTunnelMutation) SetField(name string, value ent.Value) error 
 		}
 		m.SetRemoteCreatedAt(v)
 		return nil
-	case cloudflaretunnel.FieldLastAPIResponse:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastAPIResponse(v)
-		return nil
-	case cloudflaretunnel.FieldLastAPIResponseAt:
+	case cloudflaretunnel.FieldSyncAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastAPIResponseAt(v)
+		m.SetSyncAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnel field %s", name)
@@ -2841,11 +2777,8 @@ func (m *CloudflareTunnelMutation) ClearedFields() []string {
 	if m.FieldCleared(cloudflaretunnel.FieldConnsActiveAt) {
 		fields = append(fields, cloudflaretunnel.FieldConnsActiveAt)
 	}
-	if m.FieldCleared(cloudflaretunnel.FieldLastAPIResponse) {
-		fields = append(fields, cloudflaretunnel.FieldLastAPIResponse)
-	}
-	if m.FieldCleared(cloudflaretunnel.FieldLastAPIResponseAt) {
-		fields = append(fields, cloudflaretunnel.FieldLastAPIResponseAt)
+	if m.FieldCleared(cloudflaretunnel.FieldSyncAt) {
+		fields = append(fields, cloudflaretunnel.FieldSyncAt)
 	}
 	return fields
 }
@@ -2867,11 +2800,8 @@ func (m *CloudflareTunnelMutation) ClearField(name string) error {
 	case cloudflaretunnel.FieldConnsActiveAt:
 		m.ClearConnsActiveAt()
 		return nil
-	case cloudflaretunnel.FieldLastAPIResponse:
-		m.ClearLastAPIResponse()
-		return nil
-	case cloudflaretunnel.FieldLastAPIResponseAt:
-		m.ClearLastAPIResponseAt()
+	case cloudflaretunnel.FieldSyncAt:
+		m.ClearSyncAt()
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnel nullable field %s", name)
@@ -2908,11 +2838,8 @@ func (m *CloudflareTunnelMutation) ResetField(name string) error {
 	case cloudflaretunnel.FieldRemoteCreatedAt:
 		m.ResetRemoteCreatedAt()
 		return nil
-	case cloudflaretunnel.FieldLastAPIResponse:
-		m.ResetLastAPIResponse()
-		return nil
-	case cloudflaretunnel.FieldLastAPIResponseAt:
-		m.ResetLastAPIResponseAt()
+	case cloudflaretunnel.FieldSyncAt:
+		m.ResetSyncAt()
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnel field %s", name)
@@ -3033,6 +2960,7 @@ type CloudflareTunnelIngressMutation struct {
 	_path                    *string
 	origin_request           *json.RawMessage
 	appendorigin_request     json.RawMessage
+	sync_at                  *time.Time
 	clearedFields            map[string]struct{}
 	cloudflare_tunnel        *int64
 	clearedcloudflare_tunnel bool
@@ -3452,6 +3380,55 @@ func (m *CloudflareTunnelIngressMutation) ResetOriginRequest() {
 	delete(m.clearedFields, cloudflaretunnelingress.FieldOriginRequest)
 }
 
+// SetSyncAt sets the "sync_at" field.
+func (m *CloudflareTunnelIngressMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
+}
+
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *CloudflareTunnelIngressMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncAt returns the old "sync_at" field's value of the CloudflareTunnelIngress entity.
+// If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelIngressMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
+	}
+	return oldValue.SyncAt, nil
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *CloudflareTunnelIngressMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[cloudflaretunnelingress.FieldSyncAt] = struct{}{}
+}
+
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *CloudflareTunnelIngressMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnelingress.FieldSyncAt]
+	return ok
+}
+
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *CloudflareTunnelIngressMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, cloudflaretunnelingress.FieldSyncAt)
+}
+
 // ClearCloudflareTunnel clears the "cloudflare_tunnel" edge to the CloudflareTunnel entity.
 func (m *CloudflareTunnelIngressMutation) ClearCloudflareTunnel() {
 	m.clearedcloudflare_tunnel = true
@@ -3513,7 +3490,7 @@ func (m *CloudflareTunnelIngressMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CloudflareTunnelIngressMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, cloudflaretunnelingress.FieldCreatedAt)
 	}
@@ -3534,6 +3511,9 @@ func (m *CloudflareTunnelIngressMutation) Fields() []string {
 	}
 	if m.origin_request != nil {
 		fields = append(fields, cloudflaretunnelingress.FieldOriginRequest)
+	}
+	if m.sync_at != nil {
+		fields = append(fields, cloudflaretunnelingress.FieldSyncAt)
 	}
 	return fields
 }
@@ -3557,6 +3537,8 @@ func (m *CloudflareTunnelIngressMutation) Field(name string) (ent.Value, bool) {
 		return m.Path()
 	case cloudflaretunnelingress.FieldOriginRequest:
 		return m.OriginRequest()
+	case cloudflaretunnelingress.FieldSyncAt:
+		return m.SyncAt()
 	}
 	return nil, false
 }
@@ -3580,6 +3562,8 @@ func (m *CloudflareTunnelIngressMutation) OldField(ctx context.Context, name str
 		return m.OldPath(ctx)
 	case cloudflaretunnelingress.FieldOriginRequest:
 		return m.OldOriginRequest(ctx)
+	case cloudflaretunnelingress.FieldSyncAt:
+		return m.OldSyncAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown CloudflareTunnelIngress field %s", name)
 }
@@ -3638,6 +3622,13 @@ func (m *CloudflareTunnelIngressMutation) SetField(name string, value ent.Value)
 		}
 		m.SetOriginRequest(v)
 		return nil
+	case cloudflaretunnelingress.FieldSyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnelIngress field %s", name)
 }
@@ -3680,6 +3671,9 @@ func (m *CloudflareTunnelIngressMutation) ClearedFields() []string {
 	if m.FieldCleared(cloudflaretunnelingress.FieldOriginRequest) {
 		fields = append(fields, cloudflaretunnelingress.FieldOriginRequest)
 	}
+	if m.FieldCleared(cloudflaretunnelingress.FieldSyncAt) {
+		fields = append(fields, cloudflaretunnelingress.FieldSyncAt)
+	}
 	return fields
 }
 
@@ -3702,6 +3696,9 @@ func (m *CloudflareTunnelIngressMutation) ClearField(name string) error {
 		return nil
 	case cloudflaretunnelingress.FieldOriginRequest:
 		m.ClearOriginRequest()
+		return nil
+	case cloudflaretunnelingress.FieldSyncAt:
+		m.ClearSyncAt()
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnelIngress nullable field %s", name)
@@ -3731,6 +3728,9 @@ func (m *CloudflareTunnelIngressMutation) ResetField(name string) error {
 		return nil
 	case cloudflaretunnelingress.FieldOriginRequest:
 		m.ResetOriginRequest()
+		return nil
+	case cloudflaretunnelingress.FieldSyncAt:
+		m.ResetSyncAt()
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnelIngress field %s", name)

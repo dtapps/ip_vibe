@@ -75,18 +75,13 @@ func (CloudflareTunnel) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("remote_created_at").
+			Immutable().
 			Comment("隧道创建时间").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("last_api_response").
+		field.Time("sync_at").
 			Optional().
-			Sensitive(). // 敏感
-			Comment("最近一次接口的反馈").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("last_api_response_at").
-			Optional().
-			Comment("最近一次接口的反馈时间").
+			Comment("最近一次同步时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

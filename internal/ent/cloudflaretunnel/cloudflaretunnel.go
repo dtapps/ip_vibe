@@ -34,10 +34,8 @@ const (
 	FieldConnsActiveAt = "conns_active_at"
 	// FieldRemoteCreatedAt holds the string denoting the remote_created_at field in the database.
 	FieldRemoteCreatedAt = "remote_created_at"
-	// FieldLastAPIResponse holds the string denoting the last_api_response field in the database.
-	FieldLastAPIResponse = "last_api_response"
-	// FieldLastAPIResponseAt holds the string denoting the last_api_response_at field in the database.
-	FieldLastAPIResponseAt = "last_api_response_at"
+	// FieldSyncAt holds the string denoting the sync_at field in the database.
+	FieldSyncAt = "sync_at"
 	// EdgeConfig holds the string denoting the config edge name in mutations.
 	EdgeConfig = "config"
 	// EdgeIngresses holds the string denoting the ingresses edge name in mutations.
@@ -72,8 +70,7 @@ var Columns = []string{
 	FieldConnections,
 	FieldConnsActiveAt,
 	FieldRemoteCreatedAt,
-	FieldLastAPIResponse,
-	FieldLastAPIResponseAt,
+	FieldSyncAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -178,14 +175,9 @@ func ByRemoteCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRemoteCreatedAt, opts...).ToFunc()
 }
 
-// ByLastAPIResponse orders the results by the last_api_response field.
-func ByLastAPIResponse(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastAPIResponse, opts...).ToFunc()
-}
-
-// ByLastAPIResponseAt orders the results by the last_api_response_at field.
-func ByLastAPIResponseAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastAPIResponseAt, opts...).ToFunc()
+// BySyncAt orders the results by the sync_at field.
+func BySyncAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSyncAt, opts...).ToFunc()
 }
 
 // ByConfigField orders the results by config field.

@@ -38,10 +38,8 @@ type CloudflareTunnel struct {
 	ConnsActiveAt time.Time `json:"conns_active_at,omitempty"`
 	// 隧道创建时间
 	RemoteCreatedAt time.Time `json:"remote_created_at,omitempty"`
-	// 最近一次接口的反馈
-	LastAPIResponse string `json:"-"`
-	// 最近一次接口的反馈时间
-	LastAPIResponseAt time.Time `json:"last_api_response_at,omitempty"`
+	// 最近一次同步时间
+	SyncAt time.Time `json:"sync_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CloudflareTunnelQuery when eager-loading is set.
 	Edges        CloudflareTunnelEdges `json:"edges"`
@@ -89,9 +87,9 @@ func (*CloudflareTunnel) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case cloudflaretunnel.FieldID, cloudflaretunnel.FieldConfigID:
 			values[i] = new(sql.NullInt64)
-		case cloudflaretunnel.FieldTunnelID, cloudflaretunnel.FieldName, cloudflaretunnel.FieldStatus, cloudflaretunnel.FieldLastAPIResponse:
+		case cloudflaretunnel.FieldTunnelID, cloudflaretunnel.FieldName, cloudflaretunnel.FieldStatus:
 			values[i] = new(sql.NullString)
-		case cloudflaretunnel.FieldCreatedAt, cloudflaretunnel.FieldUpdatedAt, cloudflaretunnel.FieldConnsActiveAt, cloudflaretunnel.FieldRemoteCreatedAt, cloudflaretunnel.FieldLastAPIResponseAt:
+		case cloudflaretunnel.FieldCreatedAt, cloudflaretunnel.FieldUpdatedAt, cloudflaretunnel.FieldConnsActiveAt, cloudflaretunnel.FieldRemoteCreatedAt, cloudflaretunnel.FieldSyncAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -170,17 +168,11 @@ func (_m *CloudflareTunnel) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.RemoteCreatedAt = value.Time
 			}
-		case cloudflaretunnel.FieldLastAPIResponse:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field last_api_response", values[i])
-			} else if value.Valid {
-				_m.LastAPIResponse = value.String
-			}
-		case cloudflaretunnel.FieldLastAPIResponseAt:
+		case cloudflaretunnel.FieldSyncAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field last_api_response_at", values[i])
+				return fmt.Errorf("unexpected type %T for field sync_at", values[i])
 			} else if value.Valid {
-				_m.LastAPIResponseAt = value.Time
+				_m.SyncAt = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -255,10 +247,8 @@ func (_m *CloudflareTunnel) String() string {
 	builder.WriteString("remote_created_at=")
 	builder.WriteString(_m.RemoteCreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("last_api_response=<sensitive>")
-	builder.WriteString(", ")
-	builder.WriteString("last_api_response_at=")
-	builder.WriteString(_m.LastAPIResponseAt.Format(time.ANSIC))
+	builder.WriteString("sync_at=")
+	builder.WriteString(_m.SyncAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

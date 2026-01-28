@@ -125,8 +125,7 @@ var (
 		{Name: "connections", Type: field.TypeJSON, Nullable: true, Comment: "隧道连接配置（JSON）"},
 		{Name: "conns_active_at", Type: field.TypeTime, Nullable: true, Comment: "隧道连接活跃时间"},
 		{Name: "remote_created_at", Type: field.TypeTime, Comment: "隧道创建时间"},
-		{Name: "last_api_response", Type: field.TypeString, Nullable: true, Comment: "最近一次接口的反馈"},
-		{Name: "last_api_response_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次接口的反馈时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
 	// CloudflareTunnelTable holds the schema information for the "cloudflare_tunnel" table.
@@ -138,7 +137,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cloudflare_tunnel_platform_config_cloudflare_tunnels",
-				Columns:    []*schema.Column{CloudflareTunnelColumns[11]},
+				Columns:    []*schema.Column{CloudflareTunnelColumns[10]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -155,7 +154,7 @@ var (
 			{
 				Name:    "cloudflaretunnel_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{CloudflareTunnelColumns[11]},
+				Columns: []*schema.Column{CloudflareTunnelColumns[10]},
 			},
 			{
 				Name:    "cloudflaretunnel_tunnel_id",
@@ -173,6 +172,7 @@ var (
 		{Name: "service", Type: field.TypeString, Comment: "服务"},
 		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "路径"},
 		{Name: "origin_request", Type: field.TypeJSON, Nullable: true, Comment: "入站请求配置（JSON）"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "cloudflare_tunnel_id", Type: field.TypeInt64, Comment: "关联 Cloudflare 隧道序号"},
 	}
 	// CloudflareTunnelIngressTable holds the schema information for the "cloudflare_tunnel_ingress" table.
@@ -184,7 +184,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cloudflare_tunnel_ingress_cloudflare_tunnel_ingresses",
-				Columns:    []*schema.Column{CloudflareTunnelIngressColumns[7]},
+				Columns:    []*schema.Column{CloudflareTunnelIngressColumns[8]},
 				RefColumns: []*schema.Column{CloudflareTunnelColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -201,7 +201,7 @@ var (
 			{
 				Name:    "cloudflaretunnelingress_cloudflare_tunnel_id",
 				Unique:  false,
-				Columns: []*schema.Column{CloudflareTunnelIngressColumns[7]},
+				Columns: []*schema.Column{CloudflareTunnelIngressColumns[8]},
 			},
 		},
 	}

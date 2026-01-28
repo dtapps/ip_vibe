@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cloudflaretunnel"
+	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/tunrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -19,6 +21,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
 	"go.dtapp.net/library/contrib/http_log"
+	"go.dtapp.net/library/utils/gojson"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -26,6 +29,7 @@ import (
 type CloudflareTunnelService interface {
 	BuildResponse(ctx context.Context, item *ent.TUNRecord) (*types.GetTunRecordResponse, error)
 	SyncCloudflareTunnels(ctx context.Context) error
+	SyncCloudflareTunnelIngresses(ctx context.Context) error
 	GetTUNRecords(ctx context.Context, request *types.GetTunRecordsRequest) ([]*types.GetTunRecordResponse, error)
 	GetTUNRecord(ctx context.Context, id int64) (*types.GetTunRecordResponse, error)
 	CreateTUNRecord(ctx context.Context, request *types.CreateTunRecordRequest) error
@@ -132,14 +136,13 @@ func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnels(ctx context.Context)
 
 	// 并发同步Cloudflare隧道
 	eg, egCtx := errgroup.WithContext(ctx)
-	eg.SetLimit(10) // 最多 10 个并发
+	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofing := range allPlatformCofing {
 		itemPlatformCofing := itemPlatformCofing
 		eg.Go(func() error {
 
 			// 判断是否存在 账号ID
 			if len(itemPlatformCofing.ConfigJSON) == 0 || gjson.GetBytes(itemPlatformCofing.ConfigJSON, "account_id").String() == "" {
-				// Cloudflare隧道配置中缺少 account_id
 				return nil
 			}
 
@@ -163,9 +166,6 @@ func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnels(ctx context.Context)
 			if err != nil {
 				return err
 			}
-			if len(connectors) == 0 {
-				return fmt.Errorf("未查询到隧道")
-			}
 
 			// 入库
 			for _, connector := range connectors {
@@ -179,12 +179,14 @@ func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnels(ctx context.Context)
 					}
 					// 创建记录
 					err = s.db.CloudflareTunnel.Create().
+						SetConfigID(itemPlatformCofing.ID).
 						SetTunnelID(connector.ID).
 						SetName(connector.Name).
 						SetStatus(cloudflaretunnel.Status(connector.Status)).
-						SetConnections([]byte(cast.ToString(connector.Connections))).
+						SetConnections([]byte(gojson.JsonEncodeNoError(connector.Connections))).
 						SetConnsActiveAt(connector.ConnsActiveAt).
 						SetRemoteCreatedAt(connector.CreatedAt).
+						SetSyncAt(time.Now()).
 						Exec(ctx)
 					if err != nil {
 						return fmt.Errorf("创建Cloudflare隧道记录失败: %w", err)
@@ -194,8 +196,9 @@ func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnels(ctx context.Context)
 					err = s.db.CloudflareTunnel.UpdateOne(firstTunnel).
 						SetName(connector.Name).
 						SetStatus(cloudflaretunnel.Status(connector.Status)).
-						SetConnections([]byte(cast.ToString(connector.Connections))).
+						SetConnections([]byte(gojson.JsonEncodeNoError(connector.Connections))).
 						SetConnsActiveAt(connector.ConnsActiveAt).
+						SetSyncAt(time.Now()).
 						Exec(ctx)
 					if err != nil {
 						return fmt.Errorf("更新Cloudflare隧道记录失败: %w", err)
@@ -210,6 +213,90 @@ func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnels(ctx context.Context)
 	// 等待所有goroutine完成
 	if err := eg.Wait(); err != nil {
 		return fmt.Errorf("同步Cloudflare隧道失败: %w", err)
+	}
+
+	return nil
+}
+
+// SyncCloudflareTunnels 同步Cloudflare隧道入站规则
+func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnelIngresses(ctx context.Context) error {
+	// 查询全部Cloudflare隧道
+	allCloudflareTunnel, err := s.db.CloudflareTunnel.Query().
+		WithConfig().
+		All(ctx)
+	if err != nil {
+		return fmt.Errorf("查询Cloudflare隧道失败: %w", err)
+	}
+
+	// 并发同步Cloudflare隧道
+	eg, egCtx := errgroup.WithContext(ctx)
+	eg.SetLimit(5) // 最多 5 个并发
+	for _, itemCloudflareTunnel := range allCloudflareTunnel {
+		itemCloudflareTunnel := itemCloudflareTunnel
+		eg.Go(func() error {
+
+			// 判断是否存在 账号ID
+			if len(itemCloudflareTunnel.Edges.Config.ConfigJSON) == 0 || gjson.GetBytes(itemCloudflareTunnel.Edges.Config.ConfigJSON, "account_id").String() == "" {
+				return nil
+			}
+
+			var tunProviderOpts = make([]tun.Option, 0, 1)
+			if s.httpTransport != nil {
+				tunProviderOpts = append(tunProviderOpts, tun.WithHttpTransport(s.httpTransport))
+			}
+
+			tunProviderCfg := tun.NewDefaultCloudfareTUNConfig()
+			err = tunProviderCfg.ParseCustomConfig(itemCloudflareTunnel.Edges.Config.ConfigJSON)
+			if err != nil {
+				return fmt.Errorf("解析Cloudflare隧道配置失败: %w", err)
+			}
+			tunProvider, err := tun.NewCloudfareTUNProviderRaw(egCtx, s.logger, tunProviderCfg, tunProviderOpts...)
+			if err != nil {
+				return fmt.Errorf("创建Cloudflare隧道提供程序失败: %w", err)
+			}
+
+			// 查询隧道入站规则列表
+			ingresses, err := tunProvider.IngresssRaw(egCtx, itemCloudflareTunnel.TunnelID)
+			if err != nil {
+				return err
+			}
+
+			// 先清空旧的入站规则
+			_, err = s.db.CloudflareTunnelIngress.Delete().
+				Where(cloudflaretunnelingress.CloudflareTunnelID(itemCloudflareTunnel.ID)).
+				Exec(ctx)
+			if err != nil {
+				return fmt.Errorf("删除Cloudflare隧道入站规则失败: %w", err)
+			}
+
+			// 入库
+			createBulkList := make([]*ent.CloudflareTunnelIngressCreate, 0, len(ingresses))
+			for _, ingress := range ingresses {
+				createBulkList = append(createBulkList,
+					s.db.CloudflareTunnelIngress.Create().
+						SetCloudflareTunnelID(itemCloudflareTunnel.ID).
+						SetHostname(ingress.Hostname).
+						SetService(ingress.Service).
+						SetPath(ingress.Path).
+						SetOriginRequest([]byte(gojson.JsonEncodeNoError(ingress.OriginRequest))).
+						SetSyncAt(time.Now()),
+				)
+			}
+			if len(createBulkList) > 0 {
+				err = s.db.CloudflareTunnelIngress.CreateBulk(createBulkList...).
+					Exec(ctx)
+				if err != nil {
+					return fmt.Errorf("批量创建Cloudflare隧道入站规则记录失败: %w", err)
+				}
+			}
+
+			return nil
+		})
+	}
+
+	// 等待所有goroutine完成
+	if err := eg.Wait(); err != nil {
+		return fmt.Errorf("同步Cloudflare隧道入站规则失败: %w", err)
 	}
 
 	return nil

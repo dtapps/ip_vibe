@@ -34,6 +34,8 @@ type CloudflareTunnelIngress struct {
 	Path string `json:"path,omitempty"`
 	// 入站请求配置（JSON）
 	OriginRequest json.RawMessage `json:"origin_request,omitempty"`
+	// 最近一次同步时间
+	SyncAt time.Time `json:"sync_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CloudflareTunnelIngressQuery when eager-loading is set.
 	Edges        CloudflareTunnelIngressEdges `json:"edges"`
@@ -71,7 +73,7 @@ func (*CloudflareTunnelIngress) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case cloudflaretunnelingress.FieldHostname, cloudflaretunnelingress.FieldService, cloudflaretunnelingress.FieldPath:
 			values[i] = new(sql.NullString)
-		case cloudflaretunnelingress.FieldCreatedAt, cloudflaretunnelingress.FieldUpdatedAt:
+		case cloudflaretunnelingress.FieldCreatedAt, cloudflaretunnelingress.FieldUpdatedAt, cloudflaretunnelingress.FieldSyncAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -138,6 +140,12 @@ func (_m *CloudflareTunnelIngress) assignValues(columns []string, values []any) 
 					return fmt.Errorf("unmarshal field origin_request: %w", err)
 				}
 			}
+		case cloudflaretunnelingress.FieldSyncAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field sync_at", values[i])
+			} else if value.Valid {
+				_m.SyncAt = value.Time
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -199,6 +207,9 @@ func (_m *CloudflareTunnelIngress) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("origin_request=")
 	builder.WriteString(fmt.Sprintf("%v", _m.OriginRequest))
+	builder.WriteString(", ")
+	builder.WriteString("sync_at=")
+	builder.WriteString(_m.SyncAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

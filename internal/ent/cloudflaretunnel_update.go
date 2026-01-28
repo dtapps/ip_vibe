@@ -126,43 +126,23 @@ func (_u *CloudflareTunnelUpdate) SetNillableRemoteCreatedAt(v *time.Time) *Clou
 	return _u
 }
 
-// SetLastAPIResponse sets the "last_api_response" field.
-func (_u *CloudflareTunnelUpdate) SetLastAPIResponse(v string) *CloudflareTunnelUpdate {
-	_u.mutation.SetLastAPIResponse(v)
+// SetSyncAt sets the "sync_at" field.
+func (_u *CloudflareTunnelUpdate) SetSyncAt(v time.Time) *CloudflareTunnelUpdate {
+	_u.mutation.SetSyncAt(v)
 	return _u
 }
 
-// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdate) SetNillableLastAPIResponse(v *string) *CloudflareTunnelUpdate {
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_u *CloudflareTunnelUpdate) SetNillableSyncAt(v *time.Time) *CloudflareTunnelUpdate {
 	if v != nil {
-		_u.SetLastAPIResponse(*v)
+		_u.SetSyncAt(*v)
 	}
 	return _u
 }
 
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (_u *CloudflareTunnelUpdate) ClearLastAPIResponse() *CloudflareTunnelUpdate {
-	_u.mutation.ClearLastAPIResponse()
-	return _u
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (_u *CloudflareTunnelUpdate) SetLastAPIResponseAt(v time.Time) *CloudflareTunnelUpdate {
-	_u.mutation.SetLastAPIResponseAt(v)
-	return _u
-}
-
-// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdate) SetNillableLastAPIResponseAt(v *time.Time) *CloudflareTunnelUpdate {
-	if v != nil {
-		_u.SetLastAPIResponseAt(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (_u *CloudflareTunnelUpdate) ClearLastAPIResponseAt() *CloudflareTunnelUpdate {
-	_u.mutation.ClearLastAPIResponseAt()
+// ClearSyncAt clears the value of the "sync_at" field.
+func (_u *CloudflareTunnelUpdate) ClearSyncAt() *CloudflareTunnelUpdate {
+	_u.mutation.ClearSyncAt()
 	return _u
 }
 
@@ -312,17 +292,11 @@ func (_u *CloudflareTunnelUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if value, ok := _u.mutation.RemoteCreatedAt(); ok {
 		_spec.SetField(cloudflaretunnel.FieldRemoteCreatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.LastAPIResponse(); ok {
-		_spec.SetField(cloudflaretunnel.FieldLastAPIResponse, field.TypeString, value)
+	if value, ok := _u.mutation.SyncAt(); ok {
+		_spec.SetField(cloudflaretunnel.FieldSyncAt, field.TypeTime, value)
 	}
-	if _u.mutation.LastAPIResponseCleared() {
-		_spec.ClearField(cloudflaretunnel.FieldLastAPIResponse, field.TypeString)
-	}
-	if value, ok := _u.mutation.LastAPIResponseAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldLastAPIResponseAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastAPIResponseAtCleared() {
-		_spec.ClearField(cloudflaretunnel.FieldLastAPIResponseAt, field.TypeTime)
+	if _u.mutation.SyncAtCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldSyncAt, field.TypeTime)
 	}
 	if _u.mutation.IngressesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -485,43 +459,23 @@ func (_u *CloudflareTunnelUpdateOne) SetNillableRemoteCreatedAt(v *time.Time) *C
 	return _u
 }
 
-// SetLastAPIResponse sets the "last_api_response" field.
-func (_u *CloudflareTunnelUpdateOne) SetLastAPIResponse(v string) *CloudflareTunnelUpdateOne {
-	_u.mutation.SetLastAPIResponse(v)
+// SetSyncAt sets the "sync_at" field.
+func (_u *CloudflareTunnelUpdateOne) SetSyncAt(v time.Time) *CloudflareTunnelUpdateOne {
+	_u.mutation.SetSyncAt(v)
 	return _u
 }
 
-// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdateOne) SetNillableLastAPIResponse(v *string) *CloudflareTunnelUpdateOne {
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_u *CloudflareTunnelUpdateOne) SetNillableSyncAt(v *time.Time) *CloudflareTunnelUpdateOne {
 	if v != nil {
-		_u.SetLastAPIResponse(*v)
+		_u.SetSyncAt(*v)
 	}
 	return _u
 }
 
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (_u *CloudflareTunnelUpdateOne) ClearLastAPIResponse() *CloudflareTunnelUpdateOne {
-	_u.mutation.ClearLastAPIResponse()
-	return _u
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (_u *CloudflareTunnelUpdateOne) SetLastAPIResponseAt(v time.Time) *CloudflareTunnelUpdateOne {
-	_u.mutation.SetLastAPIResponseAt(v)
-	return _u
-}
-
-// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdateOne) SetNillableLastAPIResponseAt(v *time.Time) *CloudflareTunnelUpdateOne {
-	if v != nil {
-		_u.SetLastAPIResponseAt(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (_u *CloudflareTunnelUpdateOne) ClearLastAPIResponseAt() *CloudflareTunnelUpdateOne {
-	_u.mutation.ClearLastAPIResponseAt()
+// ClearSyncAt clears the value of the "sync_at" field.
+func (_u *CloudflareTunnelUpdateOne) ClearSyncAt() *CloudflareTunnelUpdateOne {
+	_u.mutation.ClearSyncAt()
 	return _u
 }
 
@@ -701,17 +655,11 @@ func (_u *CloudflareTunnelUpdateOne) sqlSave(ctx context.Context) (_node *Cloudf
 	if value, ok := _u.mutation.RemoteCreatedAt(); ok {
 		_spec.SetField(cloudflaretunnel.FieldRemoteCreatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.LastAPIResponse(); ok {
-		_spec.SetField(cloudflaretunnel.FieldLastAPIResponse, field.TypeString, value)
+	if value, ok := _u.mutation.SyncAt(); ok {
+		_spec.SetField(cloudflaretunnel.FieldSyncAt, field.TypeTime, value)
 	}
-	if _u.mutation.LastAPIResponseCleared() {
-		_spec.ClearField(cloudflaretunnel.FieldLastAPIResponse, field.TypeString)
-	}
-	if value, ok := _u.mutation.LastAPIResponseAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldLastAPIResponseAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastAPIResponseAtCleared() {
-		_spec.ClearField(cloudflaretunnel.FieldLastAPIResponseAt, field.TypeTime)
+	if _u.mutation.SyncAtCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldSyncAt, field.TypeTime)
 	}
 	if _u.mutation.IngressesCleared() {
 		edge := &sqlgraph.EdgeSpec{

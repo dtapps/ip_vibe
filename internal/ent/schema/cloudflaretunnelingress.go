@@ -68,6 +68,11 @@ func (CloudflareTunnelIngress) Fields() []ent.Field {
 			Optional().
 			Comment("入站请求配置（JSON）").
 			Annotations(entsql.WithComments(true)),
+
+		field.Time("sync_at").
+			Optional().
+			Comment("最近一次同步时间").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

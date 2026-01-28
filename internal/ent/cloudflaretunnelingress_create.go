@@ -98,6 +98,20 @@ func (_c *CloudflareTunnelIngressCreate) SetOriginRequest(v json.RawMessage) *Cl
 	return _c
 }
 
+// SetSyncAt sets the "sync_at" field.
+func (_c *CloudflareTunnelIngressCreate) SetSyncAt(v time.Time) *CloudflareTunnelIngressCreate {
+	_c.mutation.SetSyncAt(v)
+	return _c
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_c *CloudflareTunnelIngressCreate) SetNillableSyncAt(v *time.Time) *CloudflareTunnelIngressCreate {
+	if v != nil {
+		_c.SetSyncAt(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *CloudflareTunnelIngressCreate) SetID(v int64) *CloudflareTunnelIngressCreate {
 	_c.mutation.SetID(v)
@@ -247,6 +261,10 @@ func (_c *CloudflareTunnelIngressCreate) createSpec() (*CloudflareTunnelIngress,
 		_spec.SetField(cloudflaretunnelingress.FieldOriginRequest, field.TypeJSON, value)
 		_node.OriginRequest = value
 	}
+	if value, ok := _c.mutation.SyncAt(); ok {
+		_spec.SetField(cloudflaretunnelingress.FieldSyncAt, field.TypeTime, value)
+		_node.SyncAt = value
+	}
 	if nodes := _c.mutation.CloudflareTunnelIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -382,6 +400,24 @@ func (u *CloudflareTunnelIngressUpsert) ClearOriginRequest() *CloudflareTunnelIn
 	return u
 }
 
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsert) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpsert {
+	u.Set(cloudflaretunnelingress.FieldSyncAt, v)
+	return u
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelIngressUpsert) UpdateSyncAt() *CloudflareTunnelIngressUpsert {
+	u.SetExcluded(cloudflaretunnelingress.FieldSyncAt)
+	return u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsert) ClearSyncAt() *CloudflareTunnelIngressUpsert {
+	u.SetNull(cloudflaretunnelingress.FieldSyncAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -513,6 +549,27 @@ func (u *CloudflareTunnelIngressUpsertOne) UpdateOriginRequest() *CloudflareTunn
 func (u *CloudflareTunnelIngressUpsertOne) ClearOriginRequest() *CloudflareTunnelIngressUpsertOne {
 	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
 		s.ClearOriginRequest()
+	})
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsertOne) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpsertOne {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.SetSyncAt(v)
+	})
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelIngressUpsertOne) UpdateSyncAt() *CloudflareTunnelIngressUpsertOne {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.UpdateSyncAt()
+	})
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsertOne) ClearSyncAt() *CloudflareTunnelIngressUpsertOne {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.ClearSyncAt()
 	})
 }
 
@@ -813,6 +870,27 @@ func (u *CloudflareTunnelIngressUpsertBulk) UpdateOriginRequest() *CloudflareTun
 func (u *CloudflareTunnelIngressUpsertBulk) ClearOriginRequest() *CloudflareTunnelIngressUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
 		s.ClearOriginRequest()
+	})
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsertBulk) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.SetSyncAt(v)
+	})
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelIngressUpsertBulk) UpdateSyncAt() *CloudflareTunnelIngressUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.UpdateSyncAt()
+	})
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsertBulk) ClearSyncAt() *CloudflareTunnelIngressUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.ClearSyncAt()
 	})
 }
 

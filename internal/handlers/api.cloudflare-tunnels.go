@@ -35,6 +35,11 @@ func SyncCloudflareTunnels(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
+	err = service.SyncCloudflareTunnelIngresses(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
 
 	successResponse(c, nil)
 }
