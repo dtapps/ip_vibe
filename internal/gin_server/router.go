@@ -320,6 +320,12 @@ func (m *GinServerManager) setupApiRouter() {
 			tasks.POST("/stop-scheduler", handlers.StopScheduler)   // 停止调度器
 		}
 
+		// CloudflareTunnel 相关API
+		cloudflareTunnels := api.Group("/cloudflare-tunnels")
+		{
+			cloudflareTunnels.POST("/sync", handlers.SyncCloudflareTunnels) // 同步Cloudflare隧道
+		}
+
 		// 分组内兜底：未匹配路径返回 JSON 404（不会与 /api/d 冲突）
 		api.Any("/:any", func(c *gin.Context) {
 			c.JSON(http.StatusNotFound, handlers.APIResponse{

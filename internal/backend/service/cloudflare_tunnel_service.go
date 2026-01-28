@@ -25,7 +25,7 @@ import (
 // CloudflareTunnelService Cloudflare隧道服务接口
 type CloudflareTunnelService interface {
 	BuildResponse(ctx context.Context, item *ent.TUNRecord) (*types.GetTunRecordResponse, error)
-	Sync(ctx context.Context) error
+	SyncCloudflareTunnels(ctx context.Context) error
 	GetTUNRecords(ctx context.Context, request *types.GetTunRecordsRequest) ([]*types.GetTunRecordResponse, error)
 	GetTUNRecord(ctx context.Context, id int64) (*types.GetTunRecordResponse, error)
 	CreateTUNRecord(ctx context.Context, request *types.CreateTunRecordRequest) error
@@ -119,8 +119,8 @@ func (s *CloudflareTunnelServiceImpl) BuildResponse(ctx context.Context, item *e
 	return resp, nil
 }
 
-// Sync 同步
-func (s *CloudflareTunnelServiceImpl) Sync(ctx context.Context) error {
+// SyncCloudflareTunnels 同步Cloudflare隧道
+func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnels(ctx context.Context) error {
 	// 查询全部Cloudflare
 	allPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).

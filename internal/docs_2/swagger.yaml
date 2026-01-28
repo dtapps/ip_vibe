@@ -1230,9 +1230,6 @@ definitions:
       config_name:
         description: 平台配置名称
         type: string
-      domain_name:
-        description: 域名（如 www.example.com）
-        type: string
       domain_path:
         description: 域名路径（如 /api/v1）
         type: string
@@ -1771,6 +1768,9 @@ definitions:
       serve_uri:
         description: 服务URI（如 127.0.0.1:8080）
         type: string
+      sub_domain:
+        description: 子域名（如 www, blog, api）
+        type: string
       webhook_ids:
         description: 关联的 Webhook 列表
         items:
@@ -1780,6 +1780,7 @@ definitions:
     - id
     - serve_type
     - serve_uri
+    - sub_domain
     type: object
   vibe_ip_internal_types.UpdateWebhookActiveRequest:
     properties:
@@ -2137,6 +2138,29 @@ paths:
       summary: 批量更新CDN记录启用状态
       tags:
       - CDN记录
+  /cloudflare-tunnels/sync:
+    post:
+      consumes:
+      - application/json
+      description: 同步Cloudflare隧道
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 同步Cloudflare隧道
+      tags:
+      - CloudflareTunnel
   /device-groups:
     get:
       consumes:

@@ -472,6 +472,41 @@
                 }
             }
         },
+        "/cloudflare-tunnels/sync": {
+            "post": {
+                "description": "同步Cloudflare隧道",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CloudflareTunnel"
+                ],
+                "summary": "同步Cloudflare隧道",
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/device-groups": {
             "get": {
                 "description": "获取全部设备组",
@@ -7899,10 +7934,6 @@
                     "description": "平台配置名称",
                     "type": "string"
                 },
-                "domain_name": {
-                    "description": "域名（如 www.example.com）",
-                    "type": "string"
-                },
                 "domain_path": {
                     "description": "域名路径（如 /api/v1）",
                     "type": "string"
@@ -8632,7 +8663,8 @@
             "required": [
                 "id",
                 "serve_type",
-                "serve_uri"
+                "serve_uri",
+                "sub_domain"
             ],
             "properties": {
                 "config_json": {
@@ -8653,6 +8685,10 @@
                 },
                 "serve_uri": {
                     "description": "服务URI（如 127.0.0.1:8080）",
+                    "type": "string"
+                },
+                "sub_domain": {
+                    "description": "子域名（如 www, blog, api）",
                     "type": "string"
                 },
                 "webhook_ids": {
