@@ -89,6 +89,9 @@ func (m *GinServerManager) setupWebRouter() {
 	// 日志内容页面 - 提供HTML页面并渲染数据
 	r.GET("/log-content", handlers.LogContent)
 
+	// CF 隧道管理页面 - 提供HTML页面并渲染数据
+	r.GET("/cloudflare-tunnel", handlers.CloudflareTunnel)
+
 	// 未匹配到任何路由
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, handlers.APIResponse{
@@ -323,7 +326,9 @@ func (m *GinServerManager) setupApiRouter() {
 		// CloudflareTunnel 相关API
 		cloudflareTunnels := api.Group("/cloudflare-tunnels")
 		{
-			cloudflareTunnels.POST("/sync", handlers.SyncCloudflareTunnels) // 同步Cloudflare隧道
+			cloudflareTunnels.POST("/sync-all", handlers.SyncAllCloudflareTunnels)     // 同步全部Cloudflare隧道
+			cloudflareTunnels.POST("/sync/:id", handlers.SyncCloudflareTunnels)        // 同步Cloudflare隧道
+			cloudflareTunnels.GET("/:id/ingress", handlers.GetCloudflareTunnelIngress) // 获取Cloudflare隧道入站配置
 		}
 
 		// 分组内兜底：未匹配路径返回 JSON 404（不会与 /api/d 冲突）

@@ -621,6 +621,26 @@ definitions:
           type: array
         type: array
     type: object
+  vibe_ip_internal_types.GetCloudflareTunnelTunnelIngresse:
+    properties:
+      hostname:
+        description: 主机名
+        type: string
+      id:
+        description: Cloudflare 隧道入站规则序号
+        type: integer
+      origin_request:
+        description: 入站请求配置（JSON）
+        items:
+          type: integer
+        type: array
+      path:
+        description: 路径
+        type: string
+      service:
+        description: 服务
+        type: string
+    type: object
   vibe_ip_internal_types.GetDeviceGroupDevicePortForwardStatsDelta:
     properties:
       bytes_in_incr:
@@ -2138,11 +2158,78 @@ paths:
       summary: 批量更新CDN记录启用状态
       tags:
       - CDN记录
-  /cloudflare-tunnels/sync:
+  /cloudflare-tunnels/{id}/ingresses:
+    get:
+      consumes:
+      - application/json
+      description: 获取CloudflareTunnel 隧道 入站配置
+      parameters:
+      - description: 隧道序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetCloudflareTunnelTunnelIngresse'
+                  type: array
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取CloudflareTunnel 隧道 入站配置
+      tags:
+      - CloudflareTunnel
+  /cloudflare-tunnels/sync-all:
+    post:
+      consumes:
+      - application/json
+      description: 同步全部Cloudflare隧道
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 同步全部Cloudflare隧道
+      tags:
+      - CloudflareTunnel
+  /cloudflare-tunnels/sync/{id}:
     post:
       consumes:
       - application/json
       description: 同步Cloudflare隧道
+      parameters:
+      - description: 平台配置序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:

@@ -1,0 +1,152 @@
+{{ define "content" }}
+
+{{/* 初始化局部变量 */}}
+{{ $filter := .Data.Filter }}
+{{ $list := .Data.List }}
+{{ $page := .Data.Page }}
+{{ $total := .Data.Total }}
+{{ $pageSize := .Data.PageSize }}
+{{ $baseWebUrlPath := .CurrentPath }}
+{{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
+{{ $baseApiUrlPath := "/api/cloudflare-tunnels" }}
+
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content flex items-center gap-3 uppercase tracking-tighter">
+    {{ template "icons" (dict "Name" "i-lucide-cloud-lightning" "Class" "w-8 h-8 text-primary") }}
+    CloudFlare Tunnel 隧道管理
+</h1>
+
+<div class="ui-panel">
+    <div class="ui-header">
+        <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
+            {{ template "icons" (dict "Name" "i-lucide-cloud-lightning") }} 账号列表（平台维度）
+        </h2>
+        <div>
+            <button class="btn-ui-primary" onclick="syncAllConfigs()">
+                {{ template "icons" (dict "Name" "i-lucide-refresh-ccw") }} 同步所有账号
+            </button>
+        </div>
+    </div>
+
+    {{ range $config := $list }}
+    <div class="ui-panel">
+        <div class="ui-header flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="p-2.5 bg-primary/10 rounded-xl text-primary font-bold">
+                    {{ template "icons" (dict "Name" "i-lucide-user-cog") }}
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-xl font-bold">{{ $config.Name }}</h2>
+                        <span class="badge badge-primary badge-outline badge-sm font-mono">
+                            {{ fieldEnumLabel "platform_config_platform" $config.Platform }}
+                        </span>
+                    </div>
+                    <p class="text-[10px] opacity-40 font-bold mt-1 uppercase tracking-wider">
+                        ID: {{ $config.ID }} — {{ $config.Description }}
+                    </p>
+                </div>
+            </div>
+            <button class="btn btn-xs btn-ghost text-primary font-bold" onclick="syncConfig('{{ $config.ID }}')">
+                {{ template "icons" (dict "Name" "i-lucide-rotate-cw" "Class" "w-3 h-3 mr-1") }} 同步此账号
+            </button>
+        </div>
+
+        <div class="ui-table-container !p-0">
+            <table class="ui-table">
+                <thead>
+                    <tr>
+                        <th class="ui-th pl-8">隧道名称</th>
+                        <th class="ui-th">Tunnel ID</th>
+                        <th class="ui-th text-center">状态</th>
+                        <th class="ui-th text-center">入站规则数</th>
+                        <th class="ui-th text-right pr-8">详情</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range $tunnel := $config.Tunnels }}
+                    <tr class="hover:bg-base-200/50 transition-all cursor-pointer group"
+                        onclick="openIngressDrawer('{{ $tunnel.ID }}', '{{ $tunnel.Name }}')">
+                        <td class="ui-td pl-8 font-bold text-primary italic">
+                            {{ $tunnel.Name }}
+                        </td>
+
+                        <td class="ui-td font-mono text-[10px] opacity-40">
+                            {{ $tunnel.TunnelID }}
+                        </td>
+
+                        <td class="ui-td text-center">
+                            {{ if equalFold $tunnel.Status "inactive" }}
+                            <span class="badge">
+                                <div class="inline-grid *:[grid-area:1/1]">
+                                    <div class="status status-success animate-ping"></div>
+                                    <div class="status status-success"></div>
+                                </div>
+                                {{ fieldEnumLabel "cloudflare_tunnel_status" $tunnel.Status }}
+                            </span>
+                            {{ else if equalFold $tunnel.Status "degraded" }}
+                            <span class="badge">
+                                <div class="inline-grid *:[grid-area:1/1]">
+                                    <div class="status status-info animate-ping"></div>
+                                    <div class="status status-info"></div>
+                                </div>
+                                {{ fieldEnumLabel "cloudflare_tunnel_status" $tunnel.Status }}
+                            </span>
+                            {{ else if equalFold $tunnel.Status "healthy" }}
+                            <span class="badge">
+                                <div class="inline-grid *:[grid-area:1/1]">
+                                    <div class="status status-success animate-ping"></div>
+                                    <div class="status status-success"></div>
+                                </div>
+                                {{ fieldEnumLabel "cloudflare_tunnel_status" $tunnel.Status }}
+                            </span>
+                            {{ else if equalFold $tunnel.Status "down" }}
+                            <span class="badge">
+                                <div class="inline-grid *:[grid-area:1/1]">
+                                    <div class="status status-error animate-ping"></div>
+                                    <div class="status status-error"></div>
+                                </div>
+                                {{ fieldEnumLabel "cloudflare_tunnel_status" $tunnel.Status }}
+                            </span>
+                            {{ else }}
+                            <span class="badge badge-ghost font-bold">
+                                {{ fieldEnumLabel "cloudflare_tunnel_status" $tunnel.Status }}
+                            </span>
+                            {{ end }}
+                        </td>
+
+                        <td class="ui-td text-center">
+                            <span class="text-lg font-black font-mono text-base-content/70">
+                                {{ len $tunnel.Ingresses }}
+                            </span>
+                        </td>
+
+                        <td class="ui-td text-right pr-8">
+                            <button
+                                class="btn btn-sm btn-ghost btn-circle text-primary opacity-0 group-hover:opacity-100 transition-all">
+                                {{ template "icons" (dict "Name" "i-lucide-chevron-right") }}
+                            </button>
+                        </td>
+                    </tr>
+                    {{ else }}
+                    <tr>
+                        <td colspan="5" class="ui-td text-center py-10 opacity-20 italic underline decoration-dotted">
+                            该账号下暂无同步数据
+                        </td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {{ end }}
+
+</div>
+
+<!-- 查看 -->
+{{ template "pages/cloudflare-tunnel_view.html" . }}
+
+<!-- 表单 -->
+{{ template "pages/cloudflare-tunnel_form.html" . }}
+
+<script src="/static/js/cloudflare-tunnel.js"></script>
+{{ end }}

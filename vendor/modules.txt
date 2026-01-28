@@ -365,7 +365,7 @@ github.com/corazawaf/libinjection-go
 # github.com/denisbrodbeck/machineid v1.0.1
 ## explicit
 github.com/denisbrodbeck/machineid
-# github.com/dromara/carbon/v2 v2.6.15
+# github.com/dromara/carbon/v2 v2.6.16
 ## explicit; go 1.18
 github.com/dromara/carbon/v2
 github.com/dromara/carbon/v2/calendar

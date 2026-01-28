@@ -1,0 +1,161 @@
+{{ define "pages/cloudflare-tunnel_view.html" }}
+
+{{/* 初始化局部变量 */}}
+{{ $list := .Data.List }}
+
+<div id="ingressDrawer"
+    class="fixed inset-y-0 right-0 w-full md:w-[600px] bg-base-100 shadow-2xl transform translate-x-full transition-all duration-300 z-[100] border-l border-base-300 hidden">
+    <div class="flex flex-col h-full">
+        <div class="ui-header flex justify-between items-center !p-8 bg-base-200/50">
+            <div>
+                <h3 class="text-2xl font-black uppercase tracking-tighter">入站规则 (Ingress)</h3>
+                <p class="text-[10px] font-bold opacity-30 mt-1 uppercase text-primary" id="drawerTunnelName"></p>
+            </div>
+            <button class="btn btn-circle btn-sm btn-ghost" onclick="closeIngressDrawer()">
+                {{ template "icons" (dict "Name" "i-lucide-x") }}
+            </button>
+        </div>
+
+        <div id="ingressList" class="flex-1 overflow-y-auto p-8 bg-base-200/10">
+            {{ range $config := $list }}
+            {{ range $tunnel := $config.Tunnels }}
+            <div id="rules-container-{{ $tunnel.ID }}" class="rules-group hidden space-y-6">
+                {{ range $rule := $tunnel.Ingresses }}
+                <div class="hover-3d">
+                    <div class="ui-panel !p-6 bg-base-100 border-base-300 relative z-10">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-[10px] font-black text-primary uppercase tracking-widest opacity-50">
+                                Hostname
+                            </span>
+                            {{ if $rule.Hostname }}
+                            <button class="btn btn-ghost btn-xs text-[10px] h-6 min-h-6 copy-btn"
+                                data-clipboard-text="{{ $rule.Hostname }}">
+                                复制
+                            </button>
+                            {{ end }}
+                        </div>
+                        <div class="text-lg font-bold text-base-content break-all mb-4">
+                            {{ if $rule.Hostname }}
+                            {{ $rule.Hostname }}
+                            {{ else }}
+                            <span class="opacity-20 underline italic">Default Rule</span>
+                            {{ end }}
+                        </div>
+                        <div class="bg-base-200/50 rounded-2xl p-4 border border-base-300/30 font-bold">
+                            <span class="text-[9px] font-bold opacity-30 uppercase block mb-2 tracking-tighter">
+                                Service Path
+                            </span>
+                            <code class="text-sm text-primary font-mono">
+                                {{ $rule.Service }}
+                            </code>
+                        </div>
+                    </div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                {{ else }}
+                <div
+                    class="text-center py-20 opacity-20 font-bold uppercase italic border-2 border-dashed border-base-content/20 rounded-3xl">
+                    No Ingress Rules Found
+                </div>
+                {{ end }}
+            </div>
+            {{ end }}
+            {{ end }}
+        </div>
+    </div>
+</div>
+
+<div id="drawerBackdrop"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[90] hidden opacity-0 transition-opacity duration-300"
+    onclick="closeIngressDrawer()">
+</div>
+
+<script>
+    // 初始化 ClipboardJS
+    (async () => {
+        // 如果 loadClipboardJS 是你定义的异步加载函数
+        if (typeof loadClipboardJS === 'function') {
+            try {
+                await loadClipboardJS();
+            } catch (err) {
+                console.error('ClipboardJS 库加载失败:', err);
+                return;
+            }
+        }
+
+        // 确保 ClipboardJS 已定义
+        if (typeof ClipboardJS !== 'undefined') {
+            // 初始化
+            const clipboard = new ClipboardJS('.copy-btn');
+
+            clipboard.on('success', function (e) {
+
+                const btn = e.trigger;
+
+                // 优先找 span，找不到就直接改按钮 innerText
+                const textTarget = btn.querySelector('span') || btn;
+                const oldText = textTarget.innerText;
+
+                // UI 反馈
+                textTarget.innerText = '✅ 已复制';
+                btn.classList.add("text-success");
+
+                setTimeout(() => {
+                    textTarget.innerText = oldText;
+                    btn.classList.remove("text-success");
+                }, 1500);
+
+                e.clearSelection();
+            });
+
+            clipboard.on('error', function (e) {
+                console.error('复制失败:', e);
+            });
+        }
+    })();
+
+    // 打开规则抽屉
+    async function openIngressDrawer(tunnelId, tunnelName) {
+        const drawer = document.getElementById("ingressDrawer");
+        const backdrop = document.getElementById("drawerBackdrop");
+
+        // 1. 隐藏所有规则组，只显示当前点击的这一个
+        document
+            .querySelectorAll(".rules-group")
+            .forEach((el) => el.classList.add("hidden"));
+        const targetGroup = document.getElementById("rules-container-" + tunnelId);
+        if (targetGroup) targetGroup.classList.remove("hidden");
+
+        // 2. 更新抽屉标题
+        document.getElementById("drawerTunnelName").innerText =
+            "TUNNEL: " + tunnelName;
+
+        // 3. 动画显示抽屉
+        drawer.classList.remove("hidden");
+        backdrop.classList.remove("hidden");
+
+        setTimeout(() => {
+            drawer.classList.remove("translate-x-full");
+            backdrop.classList.add("opacity-100");
+        }, 10);
+    }
+
+    // 关闭抽屉
+    function closeIngressDrawer() {
+        const drawer = document.getElementById("ingressDrawer");
+        const backdrop = document.getElementById("drawerBackdrop");
+
+        if (drawer) drawer.classList.add("translate-x-full");
+        if (backdrop) backdrop.classList.remove("opacity-100");
+
+        setTimeout(() => {
+            if (drawer) drawer.classList.add("hidden");
+            if (backdrop) backdrop.classList.add("hidden");
+        }, 300);
+    }
+</script>
+
+{{ end }}

@@ -120,6 +120,11 @@ var EnumRegistry = map[string]EnumDefinition{
 		Values:       schematype.GetTUNRecordServeTypes,
 		Descriptions: schematype.GetTUNRecordServeTypeDescriptions,
 	},
+	// Cloudflare 隧道 隧道状态
+	"cloudflare_tunnel_status": {
+		Values:       schematype.GetCloudflareTunnelStatuss,
+		Descriptions: schematype.GetCloudflareTunnelStatusDescriptions,
+	},
 }
 
 // 将原 main.go 的 funcMap 逻辑移入此处
@@ -280,6 +285,10 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 				return false
 			}
 			return strings.Contains(s, substr)
+		},
+		// 判断字符串是否相等（不区分大小写）
+		"equalFold": func(s, t string) bool {
+			return strings.EqualFold(s, t)
 		},
 		// 将任意类型转换为 JSON 字符串
 		"marshalJSON": func(v any) string {

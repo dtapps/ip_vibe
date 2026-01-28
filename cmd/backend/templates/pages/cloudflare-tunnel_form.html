@@ -1,0 +1,87 @@
+{{ define "pages/cloudflare-tunnel_form.html" }}
+<div id="formModal" class="modal">
+    <div class="ui-modal-box">
+        <div class="ui-header">
+            <h3 class="text-xl font-bold">
+                {{ template "icons" (dict "Name" "i-lucide-database-zap") }} <span id="modalTitle">添加 / 编辑 DNS 记录</span>
+            </h3>
+            <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('formModal')">
+                {{ template "icons" (dict "Name" "i-lucide-x") }}
+            </button>
+        </div>
+
+        <form id="form" class="p-8 space-y-5">
+            <div class="ui-form-control">
+                <label class="ui-label-text">选择配置 <span class="text-error">*</span></label>
+                <select name="config_id" class="ui-select" required onchange="onConfigSelect(this)"></select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="ui-form-control">
+                    <label class="ui-label-text">子域名 <span class="text-error">*</span></label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" name="sub_domain" class="ui-input" required
+                            placeholder="例如 www, blog, api" />
+                    </div>
+                </div>
+
+                <div class="ui-form-control">
+                    <label class="ui-label-text">域名路径 </label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" name="domain_path" class="ui-input" placeholder="例如 /api, /blog" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="ui-form-control">
+                    <label class="ui-label-text">服务类型 <span class="text-error">*</span></label>
+                    <select name="serve_type" class="ui-select" required>
+                        <option value="" disabled selected>请选择服务类型</option>
+                        <option value="http">HTTP</option>
+                        <option value="https">HTTPS</option>
+                        <option value="unix">UNIX</option>
+                        <option value="tcp">TCP</option>
+                        <option value="ssh">SSH</option>
+                        <option value="rdp">RDP</option>
+                        <option value="unix_tls">UNIX+TLS</option>
+                        <option value="smb">SMB</option>
+                        <!-- <option value="http_status">HTTP_STATUS</option>
+                        <option value="bastion">BASTION</option> -->
+                    </select>
+                </div>
+
+                <div class="ui-form-control">
+                    <label class="ui-label-text">URI <span class="text-error">*</span></label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" name="serve_uri" class="ui-input" placeholder="例如 127.0.0.1:8080" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- 动态渲染 -->
+            <div id="dynamic_fields_container" class="space-y-4"> </div>
+
+            <div class="ui-form-control">
+                <label class="ui-label-text">通知 (多选)</label>
+                <select name="webhook_ids" id="webhook_ids" class="ui-select" multiple></select>
+                <div class="ui-hint">选择需要接收此记录变动通知的 Webhook</div>
+            </div>
+
+            <input type="hidden" name="id" />
+            <input type="hidden" name="platform" />
+            <input type="hidden" name="config_json" id="config_json" />
+            <input type="hidden" name="original_config_json" />
+
+            <div class="modal-action gap-3">
+                <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('formModal')">
+                    {{ template "icons" (dict "Name" "i-lucide-x") }} 取消
+                </button>
+                <button type="submit" class="btn-ui-primary">
+                    {{ template "icons" (dict "Name" "i-lucide-save") }} 保存
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{{ end }}

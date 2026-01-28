@@ -472,7 +472,42 @@
                 }
             }
         },
-        "/cloudflare-tunnels/sync": {
+        "/cloudflare-tunnels/sync-all": {
+            "post": {
+                "description": "同步全部Cloudflare隧道",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CloudflareTunnel"
+                ],
+                "summary": "同步全部Cloudflare隧道",
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cloudflare-tunnels/sync/{id}": {
             "post": {
                 "description": "同步Cloudflare隧道",
                 "consumes": [
@@ -485,11 +520,81 @@
                     "CloudflareTunnel"
                 ],
                 "summary": "同步Cloudflare隧道",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "平台配置序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "成功响应",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cloudflare-tunnels/{id}/ingresses": {
+            "get": {
+                "description": "获取CloudflareTunnel 隧道 入站配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CloudflareTunnel"
+                ],
+                "summary": "获取CloudflareTunnel 隧道 入站配置",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "隧道序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/vibe_ip_internal_types.GetCloudflareTunnelTunnelIngresse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -7077,6 +7182,34 @@
                             "type": "integer"
                         }
                     }
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetCloudflareTunnelTunnelIngresse": {
+            "type": "object",
+            "properties": {
+                "hostname": {
+                    "description": "主机名",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Cloudflare 隧道入站规则序号",
+                    "type": "integer"
+                },
+                "origin_request": {
+                    "description": "入站请求配置（JSON）",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "path": {
+                    "description": "路径",
+                    "type": "string"
+                },
+                "service": {
+                    "description": "服务",
+                    "type": "string"
                 }
             }
         },
