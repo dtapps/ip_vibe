@@ -67,7 +67,7 @@
                 <tbody>
                     {{ range $tunnel := $config.Tunnels }}
                     <tr class="hover:bg-base-200/50 transition-all cursor-pointer group"
-                        onclick="openIngressDrawer('{{ $tunnel.ID }}', '{{ $tunnel.Name }}')">
+                        onclick="openIngressDrawer('{{ $config.ID }}','{{ $tunnel.ID }}', '{{ $tunnel.Name }}')">
                         <td class="ui-td pl-8 font-bold text-primary italic">
                             {{ $tunnel.Name }}
                         </td>

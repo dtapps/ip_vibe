@@ -323,6 +323,12 @@ func (m *GinServerManager) setupApiRouter() {
 			tasks.POST("/stop-scheduler", handlers.StopScheduler)   // 停止调度器
 		}
 
+		// cloudflares 相关API
+		cloudflares := api.Group("/cloudflares")
+		{
+			cloudflares.GET("/:id/domain", handlers.GetCloudflareDomain) // 获取Cloudflare域名
+		}
+
 		// CloudflareTunnel 相关API
 		cloudflareTunnels := api.Group("/cloudflare-tunnels")
 		{

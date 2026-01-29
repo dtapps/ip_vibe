@@ -13,11 +13,11 @@
                 <p class="text-[10px] font-bold opacity-30 mt-1 uppercase text-primary" id="drawerTunnelName"></p>
             </div>
             <div class="flex items-center gap-2">
-                <button class="btn btn-primary btn-sm rounded-xl gap-2 font-bold" onclick="addIngress()">
+                <button class="btn btn-primary btn-sm rounded-xl gap-2 font-bold" onclick="openIngressFormModal(this)">
                     {{ template "icons" (dict "Name" "i-lucide-plus" "Class" "w-4 h-4") }}
                     <span>添加规则</span>
                 </button>
-                <button class="btn btn-circle btn-sm btn-ghost" onclick="closeIngressDrawer()">
+                <button class="btn btn-circle btn-sm btn-ghost" onclick="closeIngressDrawer(this)">
                     {{ template "icons" (dict "Name" "i-lucide-x") }}
                 </button>
             </div>
@@ -144,9 +144,15 @@
     })();
 
     // 打开规则抽屉
-    async function openIngressDrawer(tunnelId, tunnelName) {
+    async function openIngressDrawer(configId, tunnelId, tunnelName) {
         const drawer = document.getElementById("ingressDrawer");
         const backdrop = document.getElementById("drawerBackdrop");
+
+        const addBtn = drawer.querySelector('.ui-header button[onclick*="openIngressFormModal"]');
+        if (addBtn) {
+            addBtn.setAttribute('data-config-id', configId);
+            addBtn.setAttribute('data-tunnel-id', tunnelId);
+        }
 
         // 1. 隐藏所有规则组，只显示当前点击的这一个
         document

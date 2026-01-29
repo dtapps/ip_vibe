@@ -1,43 +1,42 @@
 {{ define "pages/cloudflare-tunnel_form.html" }}
-<div id="formModal" class="modal">
+<div id="ingressFormModal" class="modal">
     <div class="ui-modal-box">
         <div class="ui-header">
             <h3 class="text-xl font-bold">
                 {{ template "icons" (dict "Name" "i-lucide-database-zap") }} <span id="modalTitle">添加 / 编辑 DNS 记录</span>
             </h3>
-            <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('formModal')">
+            <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('ingressFormModal')">
                 {{ template "icons" (dict "Name" "i-lucide-x") }}
             </button>
         </div>
 
-        <form id="form" class="p-8 space-y-5">
-            <div class="ui-form-control">
-                <label class="ui-label-text">选择配置 <span class="text-error">*</span></label>
-                <select name="config_id" class="ui-select" required onchange="onConfigSelect(this)"></select>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
+        <form id="ingressForm" class="p-8 space-y-5">
+            <div class="grid grid-cols-3 gap-4">
                 <div class="ui-form-control">
-                    <label class="ui-label-text">子域名 <span class="text-error">*</span></label>
+                    <label class="ui-label-text">子域 <span class="text-error">*</span></label>
                     <div class="flex items-center gap-2">
-                        <input type="text" name="sub_domain" class="ui-input" required
-                            placeholder="例如 www, blog, api" />
+                        <input type="text" name="sub_domain" class="ui-input" required placeholder="例如 www, @" />
                     </div>
                 </div>
 
                 <div class="ui-form-control">
-                    <label class="ui-label-text">域名路径 </label>
+                    <label class="ui-label-text">域名 <span class="text-error">*</span></label>
+                    <select name="domain_name" class="ui-select" required onchange="onDomainNameSelect(this)"></select>
+                </div>
+
+                <div class="ui-form-control">
+                    <label class="ui-label-text">路径 </label>
                     <div class="flex items-center gap-2">
                         <input type="text" name="domain_path" class="ui-input" placeholder="例如 /api, /blog" />
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="ui-form-control">
+            <div class="grid grid-cols-12 gap-4 items-end">
+                <div class="ui-form-control col-span-4">
                     <label class="ui-label-text">服务类型 <span class="text-error">*</span></label>
-                    <select name="serve_type" class="ui-select" required>
-                        <option value="" disabled selected>请选择服务类型</option>
+                    <select name="serve_type" class="ui-select" required onchange="onServeTypeSelect(this)">
+                        <option value="" disabled selected>选择类型</option>
                         <option value="http">HTTP</option>
                         <option value="https">HTTPS</option>
                         <option value="unix">UNIX</option>
@@ -46,35 +45,26 @@
                         <option value="rdp">RDP</option>
                         <option value="unix_tls">UNIX+TLS</option>
                         <option value="smb">SMB</option>
-                        <!-- <option value="http_status">HTTP_STATUS</option>
-                        <option value="bastion">BASTION</option> -->
+                        <option value="http_status">HTTP_STATUS</option>
+                        <option value="bastion">BASTION</option>
                     </select>
                 </div>
 
-                <div class="ui-form-control">
-                    <label class="ui-label-text">URI <span class="text-error">*</span></label>
-                    <div class="flex items-center gap-2">
-                        <input type="text" name="serve_uri" class="ui-input" placeholder="例如 127.0.0.1:8080" />
-                    </div>
+                <div class="col-span-1 pb-3 text-center opacity-30 font-black italic">
+                    <span id="serve_protocol">://</span>
+                </div>
+
+                <div class="ui-form-control col-span-7" id="serve_container_input">
+                    <label class="ui-label-text" id="serve_container_label">URI <span
+                            class="text-error">*</span></label>
+                    <input type="text" name="serve_container" class="ui-input" placeholder="例如 127.0.0.1:8080" />
                 </div>
             </div>
 
-            <!-- 动态渲染 -->
-            <div id="dynamic_fields_container" class="space-y-4"> </div>
-
-            <div class="ui-form-control">
-                <label class="ui-label-text">通知 (多选)</label>
-                <select name="webhook_ids" id="webhook_ids" class="ui-select" multiple></select>
-                <div class="ui-hint">选择需要接收此记录变动通知的 Webhook</div>
-            </div>
-
             <input type="hidden" name="id" />
-            <input type="hidden" name="platform" />
-            <input type="hidden" name="config_json" id="config_json" />
-            <input type="hidden" name="original_config_json" />
 
             <div class="modal-action gap-3">
-                <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('formModal')">
+                <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('ingressFormModal')">
                     {{ template "icons" (dict "Name" "i-lucide-x") }} 取消
                 </button>
                 <button type="submit" class="btn-ui-primary">
@@ -84,4 +74,154 @@
         </form>
     </div>
 </div>
+
+<script>
+
+    /**
+     * 域名选择事件
+     * @param {HTMLSelectElement} el 触发事件的元素
+     * @returns
+     */
+    function onDomainNameSelect(el) {
+        const domain_name = el.value;
+        const zone_id = el.options[el.selectedIndex].dataset.zone_id;
+        const zone_name = el.options[el.selectedIndex].dataset.zone_name;
+    }
+
+    /**
+     * 服务类型选择事件
+     * @param {HTMLSelectElement} el 触发事件的元素
+     * @returns
+     */
+    function onServeTypeSelect(el) {
+        const serve_type = el.value;
+        const serve_protocol = document.getElementById("serve_protocol");
+        const serve_container_label = document.getElementById("serve_container_label");
+        const serve_container = document.querySelector('input[name="serve_container"]');
+        const serve_container_input = document.getElementById("serve_container_input");
+
+        // 重置默认状态
+        serve_container_input.style.opacity = "1";
+        serve_container.disabled = false;
+        serve_protocol.innerText = "://";
+
+        switch (serve_type) {
+            case "bastion":
+                serve_container_label.innerText = "Bastion Mode";
+                serve_container.placeholder = "不需要填写地址";
+                serve_container.value = "";
+                serve_container.disabled = true;
+                serve_container_input.style.opacity = "0.3";
+                serve_protocol.innerText = "---";
+                break;
+
+            case "http_status":
+                serve_container_label.innerText = "HTTP 状态码";
+                serve_container.placeholder = "例如 404, 502";
+                serve_protocol.innerText = ":";
+                break;
+
+            case "unix":
+            case "unix_tls":
+                serve_container_label.innerText = "Socket 路径";
+                serve_container.placeholder = "/tmp/server.sock";
+                serve_protocol.innerText = "://";
+                break;
+
+            default:
+                serve_container_label.innerText = "URI 地址";
+                serve_container.placeholder = "例如 127.0.0.1:8080";
+                serve_protocol.innerText = "://";
+                break;
+        }
+    }
+
+    /**
+     * 打开 入站规则表单 弹窗
+     * @param {HTMLButtonElement} el 触发事件的元素
+     * @returns
+     */
+    async function openIngressFormModal(el) {
+        const ingressForm = document.getElementById("ingressForm");
+        if (!ingressForm) {
+            throw new Error("未找到表单");
+        }
+
+        // 重置表单
+        ingressForm.reset();
+
+        try {
+            const {
+                configId,
+                tunnelId,
+                ingressId,
+
+            } = el.dataset;
+
+            // 表单elements集合
+            const els = ingressForm.elements;
+
+            // 域名列表
+            const { data: domainNames } = await API.get(`/api/cloudflares/${configId}/domain`);
+            console.log("domainNames", domainNames);
+            if (domainNames) {
+                const domainNameSelect = els.domain_name;
+                domainNameSelect.innerHTML = "";
+                addPlaceholder(domainNameSelect, "请选择域名");
+                domainNames.forEach((d) => {
+                    const opt = document.createElement("option");
+                    opt.dataset.zone_id = d.zone_id;
+                    opt.dataset.zone_name = d.zone_name;
+                    opt.value = d.zone_id;
+                    opt.text = `${d.zone_name}`;
+                    domainNameSelect.appendChild(opt);
+                });
+            }
+
+            showModal("ingressFormModal", "modalTitle", "添加 入站规则");
+        } catch (err) {
+            alert(`打开失败: ${err.message}`);
+            console.error("openIngressFormModal failed", err);
+            return;
+        }
+    }
+
+    // 入站规则表单提交
+    const ingressForm = document.getElementById("ingressForm");
+    if (ingressForm) {
+        ingressForm.onsubmit = async (e) => {
+            try {
+                // 阻止事件默认行为
+                e.preventDefault();
+
+                // 表单elements集合
+                const els = ingressForm.elements;
+
+                // 表单数据
+                const form_data = {
+                    domain: els.domain.value.trim(),
+                    certificate: els.certificate.value.trim(),
+                    private_key: els.private_key.value.trim(),
+                };
+                console.log("form_data", form_data);
+
+                // 校验
+                if (!form_data.domain) {
+                    return alert("请输入域名");
+                }
+
+                // 提交
+                await API.post("/api/ssl-imports", form_data);
+
+                // 刷新页面
+                location.reload();
+            } catch (err) {
+                alert(`操作失败: ${err.message}`);
+                console.error("onsubmit failed", err);
+                return;
+            }
+        };
+    }
+
+</script>
 {{ end }}
