@@ -26,6 +26,7 @@ require (
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/aliyun/credentials-go v1.4.11
 	github.com/baidubce/bce-sdk-go v0.9.258
+	github.com/chenyahui/gin-cache v1.10.0
 	github.com/cloudflare/cloudflare-go/v6 v6.6.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
 	github.com/corazawaf/coraza/v3 v3.3.3
@@ -42,7 +43,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.6
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.185
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.186
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.67
@@ -56,11 +57,11 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.36
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.40
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.41
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.38
 	github.com/tidwall/gjson v1.18.0
-	github.com/volcengine/volcengine-go-sdk v1.2.9
+	github.com/volcengine/volcengine-go-sdk v1.2.10
 	github.com/wdcbot/qingfeng v1.6.3
 	go.dtapp.net/library/contrib/http_log v1.0.11
 	go.dtapp.net/library/contrib/req_log v1.0.4
@@ -109,9 +110,11 @@ require (
 	github.com/bytedance/sonic/loader v0.5.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
 	github.com/corazawaf/libinjection-go v0.2.3 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
@@ -135,6 +138,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.30.1 // indirect
+	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
@@ -144,6 +148,7 @@ require (
 	github.com/google/pprof v0.0.0-20251213031049-b05bdaca462f // indirect
 	github.com/hashicorp/hcl/v2 v2.24.0 // indirect
 	github.com/icholy/digest v1.1.0 // indirect
+	github.com/jellydator/ttlcache/v2 v2.11.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12 // indirect

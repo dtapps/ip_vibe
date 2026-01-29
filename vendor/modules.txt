@@ -204,6 +204,13 @@ github.com/cenkalti/backoff/v4
 # github.com/cenkalti/backoff/v5 v5.0.3
 ## explicit; go 1.23
 github.com/cenkalti/backoff/v5
+# github.com/cespare/xxhash/v2 v2.3.0
+## explicit; go 1.11
+github.com/cespare/xxhash/v2
+# github.com/chenyahui/gin-cache v1.10.0
+## explicit; go 1.13
+github.com/chenyahui/gin-cache
+github.com/chenyahui/gin-cache/persist
 # github.com/clbanning/mxj/v2 v2.7.0
 ## explicit; go 1.15
 github.com/clbanning/mxj/v2
@@ -365,6 +372,9 @@ github.com/corazawaf/libinjection-go
 # github.com/denisbrodbeck/machineid v1.0.1
 ## explicit
 github.com/denisbrodbeck/machineid
+# github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
+## explicit
+github.com/dgryski/go-rendezvous
 # github.com/dromara/carbon/v2 v2.6.16
 ## explicit; go 1.18
 github.com/dromara/carbon/v2
@@ -521,6 +531,16 @@ github.com/go-playground/universal-translator
 # github.com/go-playground/validator/v10 v10.30.1
 ## explicit; go 1.24.0
 github.com/go-playground/validator/v10
+# github.com/go-redis/redis/v8 v8.11.5
+## explicit; go 1.17
+github.com/go-redis/redis/v8
+github.com/go-redis/redis/v8/internal
+github.com/go-redis/redis/v8/internal/hashtag
+github.com/go-redis/redis/v8/internal/hscan
+github.com/go-redis/redis/v8/internal/pool
+github.com/go-redis/redis/v8/internal/proto
+github.com/go-redis/redis/v8/internal/rand
+github.com/go-redis/redis/v8/internal/util
 # github.com/goccy/go-json v0.10.5
 ## explicit; go 1.19
 github.com/goccy/go-json
@@ -583,7 +603,7 @@ github.com/hashicorp/hcl/v2/hclparse
 github.com/hashicorp/hcl/v2/hclsyntax
 github.com/hashicorp/hcl/v2/hclwrite
 github.com/hashicorp/hcl/v2/json
-# github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.185
+# github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.186
 ## explicit; go 1.14
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth
@@ -650,6 +670,9 @@ github.com/jdcloud-api/jdcloud-sdk-go/services/cdn/models
 github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/apis
 github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/client
 github.com/jdcloud-api/jdcloud-sdk-go/services/domainservice/models
+# github.com/jellydator/ttlcache/v2 v2.11.1
+## explicit; go 1.15
+github.com/jellydator/ttlcache/v2
 # github.com/jmespath/go-jmespath v0.4.0
 ## explicit; go 1.14
 github.com/jmespath/go-jmespath
@@ -822,7 +845,7 @@ github.com/swaggo/swag/v2
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.36
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.40
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.41
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -891,7 +914,7 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
 github.com/volcengine/volc-sdk-golang/base
 github.com/volcengine/volc-sdk-golang/service/dns
 github.com/volcengine/volc-sdk-golang/service/sts
-# github.com/volcengine/volcengine-go-sdk v1.2.9
+# github.com/volcengine/volcengine-go-sdk v1.2.10
 ## explicit; go 1.14
 github.com/volcengine/volcengine-go-sdk/internal/ini
 github.com/volcengine/volcengine-go-sdk/internal/sdkio

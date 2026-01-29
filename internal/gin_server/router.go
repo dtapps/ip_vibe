@@ -2,12 +2,15 @@ package gin_server
 
 import (
 	"net/http"
+	"time"
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/helper/sys_env"
 
+	"github.com/chenyahui/gin-cache"
+	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -111,6 +114,10 @@ func (m *GinServerManager) setupWebRouter() {
 
 // setupApiRouter 配置 API 路由
 func (m *GinServerManager) setupApiRouter() {
+
+	// 缓存配置
+	memoryStore := persist.NewMemoryStore(2 * time.Minute)
+
 	// API路由组
 	api := m.engine.Group("/api")
 	{
@@ -131,10 +138,10 @@ func (m *GinServerManager) setupApiRouter() {
 		// 配置Schema相关API
 		schemas := api.Group("/schemas")
 		{
-			schemas.GET("/:config_type/platform-config", handlers.GetPlatformConfigSchema)  // 获取平台配置Schema
-			schemas.GET("/:config_type/cdn-record/:config_id", handlers.GetCdnRecordSchema) // 获取CDN记录Schema
-			schemas.GET("/:config_type/dns-record/:config_id", handlers.GetDnsRecordSchema) // 获取DNS记录Schema
-			schemas.GET("/:config_type/tun-record/:config_id", handlers.GetTunRecordSchema) // 获取TUN记录Schema
+			schemas.GET("/:config_type/platform-config", cache.CacheByRequestURI(memoryStore, 30*time.Second), handlers.GetPlatformConfigSchema)  // 获取平台配置Schema
+			schemas.GET("/:config_type/cdn-record/:config_id", cache.CacheByRequestURI(memoryStore, 30*time.Second), handlers.GetCdnRecordSchema) // 获取CDN记录Schema
+			schemas.GET("/:config_type/dns-record/:config_id", cache.CacheByRequestURI(memoryStore, 30*time.Second), handlers.GetDnsRecordSchema) // 获取DNS记录Schema
+			schemas.GET("/:config_type/tun-record/:config_id", cache.CacheByRequestURI(memoryStore, 30*time.Second), handlers.GetTunRecordSchema) // 获取TUN记录Schema
 		}
 
 		// 平台配置相关API
@@ -326,7 +333,7 @@ func (m *GinServerManager) setupApiRouter() {
 		// cloudflares 相关API
 		cloudflares := api.Group("/cloudflares")
 		{
-			cloudflares.GET("/:id/domain", handlers.GetCloudflareDomain) // 获取Cloudflare域名
+			cloudflares.GET("/:id/domain", cache.CacheByRequestURI(memoryStore, 1*time.Minute), handlers.GetCloudflareDomain) // 获取Cloudflare域名
 		}
 
 		// CloudflareTunnel 相关API
