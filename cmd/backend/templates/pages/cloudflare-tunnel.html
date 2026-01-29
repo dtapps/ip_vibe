@@ -21,7 +21,7 @@
             {{ template "icons" (dict "Name" "i-lucide-cloud-lightning") }} 账号列表（平台维度）
         </h2>
         <div>
-            <button class="btn-ui-primary" onclick="syncAllConfigs()">
+            <button class="btn-ui-primary" onclick="syncAllTunnels(this)">
                 {{ template "icons" (dict "Name" "i-lucide-refresh-ccw") }} 同步所有账号
             </button>
         </div>
@@ -46,7 +46,8 @@
                     </p>
                 </div>
             </div>
-            <button class="btn btn-xs btn-ghost text-primary font-bold" onclick="syncConfig('{{ $config.ID }}')">
+            <button class="btn btn-xs btn-ghost text-primary font-bold" data-config-id="{{ $config.ID }}"
+                onclick="syncThisTunnel(this)">
                 {{ template "icons" (dict "Name" "i-lucide-rotate-cw" "Class" "w-3 h-3 mr-1") }} 同步此账号
             </button>
         </div>
@@ -156,4 +157,64 @@
 {{ template "pages/cloudflare-tunnel_form.html" . }}
 
 <script src="/static/js/cloudflare-tunnel.js"></script>
+
+<script>
+    // 同步所有账号
+    async function syncAllTunnels(el) {
+        try {
+            const {
+                tips = "确定同步所有账号吗？",
+                reload = true,
+            } = el.dataset;
+
+            // 提示是否确认删除
+            const confirmed = confirm(tips);
+            if (!confirmed) {
+                return;
+            }
+
+            // 调用同步
+            await API.post(`/api/cloudflare-tunnels/sync-all`);
+
+            // 刷新页面
+            if (reload) {
+                closeIngressDrawer();
+                location.reload();
+            }
+        } catch (err) {
+            alert(`同步失败: ${err.message}`);
+            console.error("syncAllTunnels", err);
+        }
+    }
+
+    // 同步此账号
+    async function syncThisTunnel(el) {
+        try {
+            const {
+                configId,
+
+                tips = "确定同步此账号吗？",
+                reload = true,
+            } = el.dataset;
+
+            // 提示是否确认删除
+            const confirmed = confirm(tips);
+            if (!confirmed) {
+                return;
+            }
+
+            // 调用同步
+            await API.post(`/api/cloudflare-tunnels/sync/${configId}`);
+
+            // 刷新页面
+            if (reload) {
+                closeIngressDrawer();
+                location.reload();
+            }
+        } catch (err) {
+            alert(`同步失败: ${err.message}`);
+            console.error("syncAllTunnels", err);
+        }
+    }
+</script>
 {{ end }}

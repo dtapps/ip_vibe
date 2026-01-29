@@ -440,7 +440,7 @@ func (p *CloudfareTUNProvider) ZonesRaw(ctx context.Context) (lines []zones.Zone
 
 // Update 更新 记录
 // https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/update/
-func (p *CloudfareTUNProvider) UpdateIngress(ctx context.Context, updatedIngresses []zero_trust.TunnelCloudflaredConfigurationGetResponseConfigIngress) (err error) {
+func (p *CloudfareTUNProvider) UpdateIngress(ctx context.Context, tunnelID string, updatedIngresses []zero_trust.TunnelCloudflaredConfigurationGetResponseConfigIngress) (err error) {
 
 	// 从 ItemData 复制到 ingress
 	configIngress := p.mapIngressToUpdate(updatedIngresses)
@@ -454,7 +454,7 @@ func (p *CloudfareTUNProvider) UpdateIngress(ctx context.Context, updatedIngress
 	requestTunUpdate.Config = cloudflare.F(zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfig{
 		Ingress: cloudflare.F(configIngress),
 	})
-	_, err = p.Provider.Client.ZeroTrust.Tunnels.Cloudflared.Configurations.Update(ctx, p.CustomConfig.TunnelID, requestTunUpdate)
+	_, err = p.Provider.Client.ZeroTrust.Tunnels.Cloudflared.Configurations.Update(ctx, tunnelID, requestTunUpdate)
 	if err != nil {
 		return fmt.Errorf("接口 ZeroTrust.Tunnels.Cloudflared.Configurations.Update 失败 %w", err)
 	}

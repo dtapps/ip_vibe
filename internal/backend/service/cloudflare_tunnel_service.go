@@ -454,7 +454,7 @@ func (s *CloudflareTunnelServiceImpl) DeleteCloudflareTunnelIngress(ctx context.
 	}
 
 	// 调用 API 更新 Cloudflare 远程配置
-	err = tunProvider.UpdateIngress(ctx, updatedIngresses)
+	err = tunProvider.UpdateIngress(ctx, firstPlatformCofing.TunnelID, updatedIngresses)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("同步到 Cloudflare 远程失败: %w", err)

@@ -68,7 +68,9 @@
                             {{ if $rule.Hostname }}
                             <button
                                 class="btn btn-ghost btn-xs h-7 w-7 p-0 text-error/40 hover:text-error tooltip tooltip-left tooltip-warning"
-                                data-tip="删除" onclick="deleteIngress('{{ $ruleApiUrlPath }}')">
+                                data-tip="删除" data-url="{{ $ruleApiUrlPath }}" data-config-id="{{ $config.ID }}"
+                                data-tunnel-id="{{ $tunnel.ID }}" data-ingress-id="{{ $rule.ID }}"
+                                onclick="deleteIngress(this)">
                                 {{ template "icons" (dict "Name" "i-lucide-trash-2" "Class" "w-3 h-3") }}
                             </button>
                             {{ end }}
@@ -182,35 +184,42 @@
     }
 
     // 删除 Ingress 规则
-    async function deleteIngress(url, options = {}) {
-        console.log("deleteIngress", url, options);
-
-        const {
-            tips = "确定删除此 Ingress 规则吗？",
-            errorMsg = "删除失败",
-            reload = false,
-        } = options;
-
-        if (!url) {
-            return;
-        }
-
-        // 提示是否确认删除
-        const confirmed = confirm(tips);
-        if (!confirmed) {
-            return;
-        }
-
+    async function deleteIngress(el) {
         try {
-            const result = await API.delete(url);
-            console.info("deleteIngress API.delete", result);
+            const {
+                url,
+                configId,
+                tunnelId,
+                ingressId,
+
+                tips = "确定删除此 Ingress 规则吗？",
+                reload = true,
+            } = el.dataset;
+
+            if (!url) {
+                return;
+            }
+
+            // 提示是否确认删除
+            const confirmed = confirm(tips);
+            if (!confirmed) {
+                return;
+            }
+
+            // 调用删除
+            const result = await API.delete(`/api/cloudflare-tunnels/${tunnelId}/ingress/${ingressId}`);
+
+            // 调用同步
+            await API.post(`/api/cloudflare-tunnels/sync/${configId}`);
+
             // 刷新页面
             if (reload) {
+                closeIngressDrawer();
                 location.reload();
             }
         } catch (err) {
-            alert(`${errorMsg}: ${err.message}`);
-            console.error("deleteIngress catch", err);
+            alert(`删除失败: ${err.message}`);
+            console.error("deleteIngress", err);
         }
     }
 </script>

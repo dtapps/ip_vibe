@@ -32,12 +32,14 @@ func SyncAllCloudflareTunnels(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 调用
+	// 调用 同步全部Cloudflare隧道
 	err := service.SyncAllCloudflareTunnels(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
+
+	// 调用 同步全部Cloudflare隧道入站规则
 	err = service.SyncAllCloudflareTunnelIngresses(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
@@ -120,7 +122,7 @@ func GetCloudflareTunnelIngress(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 调用
+	// 调用 获取Cloudflare隧道全部入站规则
 	ingresses, err := service.GetCloudflareTunnelIngresses(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
@@ -161,7 +163,7 @@ func DeleteCloudflareTunnelIngress(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 调用
+	// 调用 删除Cloudflare隧道入站规则
 	err := service.DeleteCloudflareTunnelIngress(c, requestParams.ID, requestParams.IngressID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
