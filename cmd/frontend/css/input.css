@@ -11,8 +11,8 @@
 
 /* 扫描 backend/templates/ 下的所有 HTML / JS 文件 */
 @source "../../backend/templates/**/*.html";
-@source "../../backend/js/components/*.js";
-@source "../../backend/js/*.js";
+@source "../../backend/static/js/components/*.js";
+@source "../../backend/static/js/*.js";
 
 /* 扫描 Select2 主题 CSS 中的 Tailwind 类（purge 优化，确保 dark:bg-gray-900 等生成） */
 @source "../node_modules/select2-tailwindcss-v4-theme/dist/select2-tailwindcss-theme.css";

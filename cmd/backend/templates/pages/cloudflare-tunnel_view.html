@@ -27,56 +27,54 @@
             {{ range $tunnel := $config.Tunnels }}
             <div id="rules-container-{{ $tunnel.ID }}" class="rules-group hidden space-y-6">
                 {{ range $rule := $tunnel.Ingresses }}
-                <div class="hover-3d">
-                    <div class="ui-panel !p-6 bg-base-100 border-base-300 relative z-10">
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="text-[10px] font-black text-primary uppercase tracking-widest opacity-50">
-                                Hostname
-                            </span>
-                            <div class="flex items-center gap-1">
+                <div
+                    class="ui-panel !p-4 !shadow-sm !rounded-lg bg-base-100 border-base-300 relative group transition-all hover:border-primary/30">
+                    <div class="flex justify-between items-center gap-4 mb-2">
+                        <div class="flex items-center gap-2 min-w-0">
+                            {{ template "icons" (dict
+                            "Name" "i-lucide-globe"
+                            "Class" "w-3.5 h-3.5 text-primary opacity-70"
+                            ) }}
+                            <span class="font-bold text-base-content truncate">
                                 {{ if $rule.Hostname }}
-                                <button class="btn btn-ghost btn-xs text-[10px] h-6 min-h-6 copy-btn"
-                                    data-clipboard-text="{{ $rule.Hostname }}">
-                                    <span>复制</span>
-                                </button>
+                                {{ $rule.Hostname }}
+                                {{ else }}
+                                <span class="opacity-30 italic text-sm">Default</span>
                                 {{ end }}
-
-                                <button
-                                    class="btn btn-ghost btn-xs text-[10px] h-6 min-h-6 text-primary/60 hover:text-primary transition-all gap-1"
-                                    onclick="editIngress('{{ $tunnel.ID }}', '{{ $rule.Hostname }}', '{{ $rule.Service }}', '{{ $rule.Path }}')">
-                                    {{ template "icons" (dict "Name" "i-lucide-edit-3" "Class" "w-3 h-3") }}
-                                    <span>编辑</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="text-lg font-bold text-base-content break-all mb-4">
-                            {{ if $rule.Hostname }}
-                            {{ $rule.Hostname }}
-                            {{ else }}
-                            <span class="opacity-20 underline italic">Default Rule</span>
+                            </span>
+                            {{ if $rule.Path }}
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-base-200 font-mono opacity-70">
+                                {{ $rule.Path }}
+                            </span>
                             {{ end }}
                         </div>
-                        <div class="bg-base-200/50 rounded-2xl p-4 border border-base-300/30 font-bold">
-                            <span class="text-[9px] font-bold opacity-30 uppercase block mb-2 tracking-tighter">
-                                Service Path
-                            </span>
-                            <code class="text-sm text-primary font-mono">
-                                {{ $rule.Service }}
-                            </code>
 
-                            <div class="mt-3 pt-3 border-t border-base-300/30 flex items-center justify-between">
-                                <span class="text-[9px] font-bold opacity-30 uppercase tracking-tighter">Path
-                                    Prefix</span>
-                                <span class="badge badge-ghost badge-xs font-mono opacity-60">
-                                    {{ if $rule.Path }}{{ $rule.Path }}{{ else }}/ (All){{ end }}
-                                </span>
-                            </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            {{ if $rule.Hostname }}
+                            <button class="btn btn-ghost btn-xs h-7 w-7 p-0 copy-btn"
+                                data-clipboard-text="{{ $rule.Hostname }}" title="复制">
+                                {{ template "icons" (dict "Name" "i-lucide-copy" "Class" "w-3 h-3") }}
+                            </button>
+                            {{ end }}
+                            <button class="btn btn-ghost btn-xs h-7 w-7 p-0 text-primary/60"
+                                onclick="editIngress('{{ $tunnel.ID }}', '{{ $rule.Hostname }}', '{{ $rule.Service }}', '{{ $rule.Path }}')"
+                                title="编辑">
+                                {{ template "icons" (dict "Name" "i-lucide-edit-3" "Class" "w-3 h-3") }}
+                            </button>
+                            <button class="btn btn-ghost btn-xs h-7 w-7 p-0 text-error/40 hover:text-error"
+                                onclick="deleteIngress('{{ $tunnel.ID }}', '{{ $rule.Hostname }}', '{{ $rule.Path }}')"
+                                title="删除">
+                                {{ template "icons" (dict "Name" "i-lucide-trash-2" "Class" "w-3 h-3") }}
+                            </button>
                         </div>
                     </div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
+
+                    <div class="flex items-center gap-2 pl-5">
+                        <!-- <div class="w-1.5 h-1.5 rounded-full bg-success/50"></div> -->
+                        <code class="text-[11px] text-primary/80 font-mono break-all leading-tight">
+                            {{ $rule.Service }}
+                        </code>
+                    </div>
                 </div>
                 {{ else }}
                 <div
@@ -117,17 +115,14 @@
             clipboard.on('success', function (e) {
 
                 const btn = e.trigger;
-
-                // 优先找 span，找不到就直接改按钮 innerText
-                const textTarget = btn.querySelector('span') || btn;
-                const oldText = textTarget.innerText;
+                const oldHtml = btn.innerHTML;
 
                 // UI 反馈
-                textTarget.innerText = '✅ 已复制';
+                btn.innerHTML = '✅';
                 btn.classList.add("text-success");
 
                 setTimeout(() => {
-                    textTarget.innerText = oldText;
+                    btn.innerHTML = oldHtml;
                     btn.classList.remove("text-success");
                 }, 1500);
 
