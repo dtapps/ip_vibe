@@ -47,7 +47,7 @@
                 </div>
             </div>
             <button class="btn btn-xs btn-ghost text-primary font-bold" data-config-id="{{ $config.ID }}"
-                onclick="syncAllTunnels(this)">
+                data-tips="确定同步此账号吗？" onclick="syncAllTunnels(this)">
                 {{ template "icons" (dict "Name" "i-lucide-rotate-cw" "Class" "w-3 h-3 mr-1") }} 同步此账号
             </button>
         </div>
@@ -132,7 +132,7 @@
                             <button
                                 class="btn btn-sm btn-ghost btn-circle text-primary opacity-20 group-hover:opacity-100 transition-all tooltip tooltip-left"
                                 data-tip="同步此隧道配置" data-config-id="{{ $config.ID }}" data-tunnel-id="{{ $tunnel.ID }}"
-                                onclick="syncAllTunnels(this)">
+                                data-tips="确定同步此隧道配置吗？" onclick="syncAllTunnels(this)">
                                 {{ template "icons" (dict "Name" "i-lucide-rotate-cw" "Class" "w-4 h-4") }}
                             </button>
 
