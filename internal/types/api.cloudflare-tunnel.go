@@ -5,14 +5,20 @@ import (
 	"time"
 )
 
-// 同步某个Cloudflare隧道 请求结构
+// 同步某个账号Cloudflare隧道和入站规则 请求结构
 type SyncThisCloudflareTunnelsRequest struct {
 	ConfigID int64 `uri:"config_id" json:"config_id" binding:"required" jsonschema:"平台配置序号"` // 平台配置序号
 }
 
-// 同步某个Cloudflare隧道入站规则 请求结构
+// 同步某个账号Cloudflare隧道的入站规则 请求结构
 type SyncThisCloudflareTunnelIngressesRequest struct {
 	ConfigID int64 `uri:"config_id" json:"config_id" binding:"required" jsonschema:"平台配置序号"` // 平台配置序号
+}
+
+// 同步某个账号Cloudflare某个隧道的入站规则 请求结构
+type SyncThisCloudflareThisTunnelIngressRequest struct {
+	ConfigID int64 `uri:"config_id" json:"config_id" binding:"required" jsonschema:"平台配置序号"` // 平台配置序号
+	TunnelID int64 `uri:"tunnel_id" json:"tunnel_id" binding:"required" jsonschema:"隧道序号"`   // 隧道序号
 }
 
 // 获取Cloudflare隧道入站配置 请求结构

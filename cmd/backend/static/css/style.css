@@ -3004,6 +3004,9 @@
   .justify-center {
     justify-content: center;
   }
+  .justify-end {
+    justify-content: flex-end;
+  }
   .justify-items-center {
     justify-items: center;
   }

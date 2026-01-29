@@ -211,11 +211,8 @@
             // 调用 删除Cloudflare隧道入站配置
             const result = await API.delete(`/api/cloudflare-tunnels/${tunnelId}/ingress/${ingressId}`);
 
-            // 调用 同步某个Cloudflare隧道
-            // await API.post(`/api/cloudflare-tunnels/sync/${configId}`);
-
-            // 调用 同步某个Cloudflare隧道入站规则
-            await API.post(`/api/cloudflare-tunnels/sync/${configId}/ingress`);
+            // 调用 同步某个账号Cloudflare某个隧道的入站规则
+            await API.post(`/api/cloudflare-tunnels/sync/${configId}/${tunnelId}/ingress`);
 
             // 刷新页面
             if (reload) {
