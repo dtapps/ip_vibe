@@ -326,9 +326,14 @@ func (p *CloudfareTUNProvider) moveCatchAllRulesToLast(rules []zero_trust.Tunnel
 		}
 	}
 
-	// Cloudflare 只允许最后有一个兜底。如果因为逻辑产生了多个，只取最后一个，或者合并。
-	if len(catchAll) > 1 {
-		// 比如只保留最后一条真正的 http_status 规则
+	if len(catchAll) == 0 {
+		// 如果没有兜底规则，手动创建一个 404 状态
+		catchAll = append(catchAll, zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress{
+			Service: cloudflare.F("http_status:404"),
+			// Hostname 保持为空
+		})
+	} else if len(catchAll) > 1 {
+		// 如果有多个，只保留最后一条
 		catchAll = []zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfigIngress{catchAll[len(catchAll)-1]}
 	}
 

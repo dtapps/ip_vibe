@@ -230,7 +230,7 @@ func CreateCloudflareTunnelIngress(c *gin.Context) {
 	// 请求参数
 	var requestParams types.CreateCloudflareTunnelIngressRequest
 	requestParams.TunnelID = cast.ToInt64(c.Param("tunnel_id"))
-	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
@@ -271,7 +271,7 @@ func UpdateCloudflareTunnelIngress(c *gin.Context) {
 	var requestParams types.UpdateCloudflareTunnelIngressRequest
 	requestParams.TunnelID = cast.ToInt64(c.Param("tunnel_id"))
 	requestParams.IngressID = cast.ToInt64(c.Param("ingress_id"))
-	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}

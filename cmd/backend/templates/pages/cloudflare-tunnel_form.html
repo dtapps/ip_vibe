@@ -179,8 +179,10 @@
                 });
             }
 
-            els.tunnel_id.value = tunnelId;
-            els.ingress_id.value = ingressId || 0;
+
+            els.config_id.value = configId;   // 配置ID
+            els.tunnel_id.value = tunnelId;  // 隧道ID
+            els.ingress_id.value = ingressId || 0;     // 入站规则ID
 
             showModal("ingressFormModal", "modalTitle", "添加 入站规则");
         } catch (err) {
@@ -201,6 +203,7 @@
                 // 表单elements集合
                 const els = ingressForm.elements;
 
+                const configId = Number(els.config_id.value.trim());
                 const tunnelId = Number(els.tunnel_id.value.trim());
                 const ingressId = Number(els.ingress_id.value.trim());
 
@@ -232,6 +235,12 @@
                     // 调用 更新Cloudflare隧道入站配置
                     await API.patch(`/api/cloudflare-tunnels/${tunnelId}/ingress/${ingressId}`, form_data);
                 }
+
+                // 调用 同步某个Cloudflare隧道
+                // await API.post(`/api/cloudflare-tunnels/sync/${configId}`);
+
+                // 调用 同步某个Cloudflare隧道入站规则
+                await API.post(`/api/cloudflare-tunnels/sync/${configId}/ingress`);
 
                 // 刷新页面
                 location.reload();
