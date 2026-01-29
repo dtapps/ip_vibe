@@ -99,6 +99,7 @@
 </div>
 
 <script>
+
     // 初始化 ClipboardJS
     (async () => {
         // 如果 loadClipboardJS 是你定义的异步加载函数
@@ -139,10 +140,25 @@
         }
     })();
 
-    // 打开规则抽屉
-    async function openIngressDrawer(configId, tunnelId, tunnelName) {
+    /**
+     * 打开规则抽屉
+     * @param {*} el 触发事件的元素
+     * @returns
+     */
+    async function openIngressDrawer(el) {
         const drawer = document.getElementById("ingressDrawer");
         const backdrop = document.getElementById("drawerBackdrop");
+
+        const {
+            configId,
+            tunnelId,
+            tunnelName,
+        } = el.dataset;
+
+        // 验证必要参数
+        if (!configId || !tunnelId || !ingressId) {
+            return;
+        }
 
         const addBtn = drawer.querySelector('.ui-header button[onclick*="openIngressFormModal"]');
         if (addBtn) {
@@ -150,18 +166,20 @@
             addBtn.setAttribute('data-tunnel-id', tunnelId);
         }
 
-        // 1. 隐藏所有规则组，只显示当前点击的这一个
+        // 隐藏所有规则组，只显示当前点击的这一个
         document
             .querySelectorAll(".rules-group")
             .forEach((el) => el.classList.add("hidden"));
         const targetGroup = document.getElementById("rules-container-" + tunnelId);
-        if (targetGroup) targetGroup.classList.remove("hidden");
+        if (targetGroup) {
+            targetGroup.classList.remove("hidden");
+        }
 
-        // 2. 更新抽屉标题
+        // 更新抽屉标题
         document.getElementById("drawerTunnelName").innerText =
             "TUNNEL: " + tunnelName;
 
-        // 3. 动画显示抽屉
+        // 动画显示抽屉
         drawer.classList.remove("hidden");
         backdrop.classList.remove("hidden");
 
@@ -171,21 +189,32 @@
         }, 10);
     }
 
-    // 关闭抽屉
+    // 关闭规则抽屉
     function closeIngressDrawer() {
         const drawer = document.getElementById("ingressDrawer");
         const backdrop = document.getElementById("drawerBackdrop");
 
-        if (drawer) drawer.classList.add("translate-x-full");
-        if (backdrop) backdrop.classList.remove("opacity-100");
+        if (drawer) {
+            drawer.classList.add("translate-x-full");
+        }
+        if (backdrop) {
+            backdrop.classList.remove("opacity-100");
+        }
 
         setTimeout(() => {
-            if (drawer) drawer.classList.add("hidden");
-            if (backdrop) backdrop.classList.add("hidden");
+            if (drawer) {
+                drawer.classList.add("hidden");
+            }
+            if (backdrop) {
+                backdrop.classList.add("hidden");
+            }
         }, 300);
     }
 
-    // 删除 Ingress 规则
+    /**
+     * 删除Cloudflare隧道入站配置
+     * @param {*} el 触发事件的元素
+     */
     async function deleteIngress(el) {
         try {
             const {
@@ -196,9 +225,9 @@
                 tips = "确定删除此 Ingress 规则吗？",
                 reload = true,
             } = el.dataset;
-            console.log("deleteIngress", configId, tunnelId, ingressId);
 
-            if (!ingressId) {
+            // 验证必要参数
+            if (!configId || !tunnelId || !ingressId) {
                 return;
             }
 
@@ -222,8 +251,10 @@
         } catch (err) {
             alert(`删除失败: ${err.message}`);
             console.error(err);
+            return;
         }
     }
+
 </script>
 
 {{ end }}

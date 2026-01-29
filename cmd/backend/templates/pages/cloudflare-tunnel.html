@@ -67,7 +67,8 @@
                 <tbody>
                     {{ range $tunnel := $config.Tunnels }}
                     <tr class="hover:bg-base-200/50 transition-all cursor-pointer group"
-                        onclick="openIngressDrawer('{{ $config.ID }}','{{ $tunnel.ID }}', '{{ $tunnel.Name }}')">
+                        data-config-id="{{ $config.ID }}" data-tunnel-id="{{ $tunnel.ID }}"
+                        data-tunnel-name="{{ $tunnel.Name }}" onclick="openIngressDrawer(this)">
                         <td class="ui-td pl-8 font-bold text-primary italic">
                             {{ $tunnel.Name }}
                         </td>
@@ -129,10 +130,10 @@
                         </td>
 
                         <td class="ui-td text-right pr-8">
-                            <button
+                            <button type="button"
                                 class="btn btn-sm btn-ghost btn-circle text-primary opacity-20 group-hover:opacity-100 transition-all tooltip tooltip-left"
                                 data-tip="同步此隧道配置" data-config-id="{{ $config.ID }}" data-tunnel-id="{{ $tunnel.ID }}"
-                                data-tips="确定同步此隧道配置吗？" onclick="syncAllTunnels(this)">
+                                data-tips="确定同步此隧道配置吗？" onclick="event.stopPropagation(); syncAllTunnels(this)">
                                 {{ template "icons" (dict "Name" "i-lucide-rotate-cw" "Class" "w-4 h-4") }}
                             </button>
 
@@ -168,10 +169,13 @@
 <!-- 表单 -->
 {{ template "pages/cloudflare-tunnel_form.html" . }}
 
-<script src="/static/js/cloudflare-tunnel.js"></script>
-
 <script>
-    // 同步
+
+    /**
+     * 同步
+     * @param {*} el 触发事件的元素
+     * @returns
+     */
     async function syncAllTunnels(el) {
         try {
             const {
@@ -208,7 +212,9 @@
         } catch (err) {
             alert(`同步失败: ${err.message}`);
             console.error(err);
+            return;
         }
     }
+
 </script>
 {{ end }}

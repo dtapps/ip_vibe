@@ -80,7 +80,7 @@
 
     /**
      * 域名选择事件
-     * @param {HTMLSelectElement} el 触发事件的元素
+     * @param {*} el 触发事件的元素
      * @returns
      */
     function onDomainNameSelect(el) {
@@ -91,7 +91,7 @@
 
     /**
      * 服务类型选择事件
-     * @param {HTMLSelectElement} el 触发事件的元素
+     * @param {*} el 触发事件的元素
      * @returns
      */
     function onServeTypeSelect(el) {
@@ -138,8 +138,8 @@
     }
 
     /**
-     * 打开 入站规则表单 弹窗
-     * @param {HTMLButtonElement} el 触发事件的元素
+     * 打开入站规则表单弹窗
+     * @param {*} el 触发事件的元素
      * @returns
      */
     async function openIngressFormModal(el) {
@@ -157,7 +157,11 @@
                 tunnelId,
                 ingressId,
             } = el.dataset;
-            console.log("openIngressFormModal", configId, tunnelId, ingressId);
+
+            // 验证必要参数
+            if (!configId || !tunnelId) {
+                return;
+            }
 
             // 表单elements集合
             const els = ingressForm.elements;
@@ -187,7 +191,7 @@
             showModal("ingressFormModal", "modalTitle", "添加 入站规则");
         } catch (err) {
             alert(`打开失败: ${err.message}`);
-            console.error("openIngressFormModal failed", err);
+            console.error(err);
             return;
         }
     }
@@ -206,6 +210,11 @@
                 const configId = Number(els.config_id.value.trim());
                 const tunnelId = Number(els.tunnel_id.value.trim());
                 const ingressId = Number(els.ingress_id.value.trim());
+
+                // 验证必要参数
+                if (!configId || !tunnelId) {
+                    return;
+                }
 
                 // 表单数据
                 const form_data = {
@@ -243,7 +252,7 @@
                 location.reload();
             } catch (err) {
                 alert(`操作失败: ${err.message}`);
-                console.error("onsubmit failed", err);
+                console.error(err);
                 return;
             }
         };
