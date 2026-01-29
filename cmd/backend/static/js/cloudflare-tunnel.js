@@ -92,4 +92,57 @@ const IngressUtil = {
       path: formEls.domain_path.value.trim(),
     };
   },
+
+  /**
+   * 根据服务类型构建服务协议
+   * @param {*} service_type 服务类型
+   * @returns
+   */
+  buildServiceProtocol(service_type) {
+    const service_protocol = document.getElementById("service_protocol");
+    const service_content_label = document.getElementById(
+      "service_content_label",
+    );
+    const service_content = document.querySelector(
+      'input[name="service_content"]',
+    );
+    const service_content_input = document.getElementById(
+      "service_content_input",
+    );
+
+    // 重置默认状态
+    service_content_input.style.opacity = "1";
+    service_content.disabled = false;
+    service_protocol.innerText = "://";
+
+    switch (service_type) {
+      case "bastion":
+        service_content_label.innerText = "Bastion Mode";
+        service_content.placeholder = "不需要填写地址";
+        service_content.value = "";
+        service_content.disabled = true;
+        service_content_input.style.opacity = "0.3";
+        service_protocol.innerText = "---";
+        break;
+
+      case "http_status":
+        service_content_label.innerText = "HTTP 状态码";
+        service_content.placeholder = "例如 404, 502";
+        service_protocol.innerText = ":";
+        break;
+
+      case "unix":
+      case "unix_tls":
+        service_content_label.innerText = "Socket 路径";
+        service_content.placeholder = "/tmp/server.sock";
+        service_protocol.innerText = "://";
+        break;
+
+      default:
+        service_content_label.innerText = "URI 地址";
+        service_content.placeholder = "例如 127.0.0.1:8080";
+        service_protocol.innerText = "://";
+        break;
+    }
+  },
 };
