@@ -10,7 +10,6 @@ import (
 	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/platformconfig"
-	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/provider/tun"
@@ -26,13 +25,17 @@ import (
 
 // CloudflareTunnelService Cloudflare隧道服务接口
 type CloudflareTunnelService interface {
-	BuildResponse(ctx context.Context, item *ent.TUNRecord) (*types.GetTunRecordResponse, error)
 	SyncAllCloudflareTunnels(ctx context.Context) error
-	SyncCloudflareTunnels(ctx context.Context, config_id int64) error
+	SyncThisCloudflareTunnels(ctx context.Context, config_id int64) error
 	SyncAllCloudflareTunnelIngresses(ctx context.Context) error
-	SyncCloudflareTunnelIngresses(ctx context.Context, config_id int64) error
-	GetCloudflareTunnelIngresses(ctx context.Context, id int64) ([]*types.GetCloudflareTunnelTunnelIngresse, error)
-	DeleteCloudflareTunnelIngress(ctx context.Context, id int64, ingress_id int64) error
+	SyncThisCloudflareTunnelIngresses(ctx context.Context, config_id int64) error
+
+	GetCloudflareTunnelIngress(ctx context.Context, tunnel_id int64) ([]*types.GetCloudflareTunnelIngressDetailResponse, error)
+
+	GetCloudflareTunnelIngressDetail(ctx context.Context, tunnel_id int64, ingress_id int64) (*types.GetCloudflareTunnelIngressDetailResponse, error)
+	CreateCloudflareTunnelIngress(ctx context.Context, tunnel_id int64, request *types.CreateCloudflareTunnelIngressRequest) error
+	UpdateCloudflareTunnelIngress(ctx context.Context, tunnel_id int64, ingress_id int64, request *types.UpdateCloudflareTunnelIngressRequest) error
+	DeleteCloudflareTunnelIngress(ctx context.Context, tunnel_id int64, ingress_id int64) error
 }
 
 // CloudflareTunnelServiceImpl Cloudflare隧道服务实现
@@ -62,60 +65,6 @@ func NewCloudflareTunnelService(db *ent.Client, logDb *ent_log.Client, logger *s
 // SetDebug 设置调试模式
 func (s *CloudflareTunnelServiceImpl) SetDebug(debug bool) {
 	s.debug = debug
-}
-
-// BuildResponse 将实体转换为响应
-func (s *CloudflareTunnelServiceImpl) BuildResponse(ctx context.Context, item *ent.TUNRecord) (*types.GetTunRecordResponse, error) {
-	resp := &types.GetTunRecordResponse{
-		ID:            item.ID,
-		ConfigID:      item.ConfigID,
-		Platform:      item.Edges.Config.Platform.String(),
-		RecordID:      item.RecordID,
-		SubDomain:     item.SubDomain,
-		DomainPath:    item.DomainPath,
-		ServeType:     item.ServeType.String(),
-		ServeURI:      item.ServeURI,
-		ConfigJSON:    item.ConfigJSON,
-		IsActive:      item.IsActive,
-		LastRefreshAt: item.LastRefreshAt,
-
-		CreatedAt:         item.CreatedAt,
-		UpdatedAt:         item.UpdatedAt,
-		LastAPIResponse:   item.LastAPIResponse,
-		LastAPIResponseAt: item.LastAPIResponseAt,
-	}
-
-	// 平台配置
-	if config, err := item.Edges.ConfigOrErr(); err == nil {
-		resp.ConfigName = config.Name
-		resp.Platform = config.Platform.String()
-		// 从平台配置中获取 ConfigJSON 里的 Domain
-		if len(config.ConfigJSON) > 0 {
-			resp.ConfigJSONAccountID = gjson.GetBytes(config.ConfigJSON, "account_id").String()
-		}
-
-		switch config.Platform {
-		case platformconfig.PlatformCloudflare:
-			// 从配置中获取 ConfigJSON 里的 TunnelName 和 ZoneName
-			if len(item.ConfigJSON) > 0 {
-				resp.ConfigJSONTunnelID = gjson.GetBytes(item.ConfigJSON, "tunnel_id").String()
-				resp.ConfigJSONTunnelName = gjson.GetBytes(item.ConfigJSON, "tunnel_name").String()
-				resp.ConfigJSONZoneID = gjson.GetBytes(item.ConfigJSON, "zone_id").String()
-				resp.ConfigJSONZoneName = gjson.GetBytes(item.ConfigJSON, "zone_name").String()
-			}
-		}
-	}
-
-	// 查询通知订阅
-	webhookIDs, _ := s.db.WebhookSubscription.Query().
-		Where(webhooksubscription.ObjTypeEQ(webhooksubscription.ObjTypeTunRecord)).
-		Where(webhooksubscription.ObjIDEQ(item.ID)).
-		QueryWebhook().
-		IDs(ctx)
-
-	resp.Webhooks = webhookIDs
-
-	return resp, nil
 }
 
 // getTunClient 获取Cloudflare Tunnel提供程序
@@ -160,7 +109,7 @@ func (s *CloudflareTunnelServiceImpl) SyncAllCloudflareTunnels(ctx context.Conte
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
 		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
-			return s.SyncCloudflareTunnels(egCtx, itemPlatformCofingID)
+			return s.SyncThisCloudflareTunnels(egCtx, itemPlatformCofingID)
 		})
 	}
 
@@ -172,8 +121,8 @@ func (s *CloudflareTunnelServiceImpl) SyncAllCloudflareTunnels(ctx context.Conte
 	return nil
 }
 
-// SyncCloudflareTunnels 同步某个Cloudflare隧道
-func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnels(ctx context.Context, config_id int64) error {
+// SyncThisCloudflareTunnels 同步某个Cloudflare隧道
+func (s *CloudflareTunnelServiceImpl) SyncThisCloudflareTunnels(ctx context.Context, config_id int64) error {
 	// 查询Cloudflare平台
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -260,7 +209,7 @@ func (s *CloudflareTunnelServiceImpl) SyncAllCloudflareTunnelIngresses(ctx conte
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
 		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
-			return s.SyncCloudflareTunnelIngresses(egCtx, itemPlatformCofingID)
+			return s.SyncThisCloudflareTunnelIngresses(egCtx, itemPlatformCofingID)
 		})
 	}
 
@@ -272,8 +221,8 @@ func (s *CloudflareTunnelServiceImpl) SyncAllCloudflareTunnelIngresses(ctx conte
 	return nil
 }
 
-// SyncCloudflareTunnels 同步某个Cloudflare隧道入站规则
-func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnelIngresses(ctx context.Context, config_id int64) error {
+// SyncThisCloudflareTunnels 同步某个Cloudflare隧道入站规则
+func (s *CloudflareTunnelServiceImpl) SyncThisCloudflareTunnelIngresses(ctx context.Context, config_id int64) error {
 	// 查询Cloudflare隧道
 	allCloudflareTunnel, err := s.db.CloudflareTunnel.Query().
 		Where(cloudflaretunnel.ConfigIDEQ(config_id)).
@@ -351,20 +300,20 @@ func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnelIngresses(ctx context.
 	return nil
 }
 
-// GetCloudflareTunnelIngresses 获取Cloudflare隧道全部入站规则
-func (s *CloudflareTunnelServiceImpl) GetCloudflareTunnelIngresses(ctx context.Context, id int64) ([]*types.GetCloudflareTunnelTunnelIngresse, error) {
+// GetCloudflareTunnelIngress 获取Cloudflare隧道全部入站规则
+func (s *CloudflareTunnelServiceImpl) GetCloudflareTunnelIngress(ctx context.Context, tunnel_id int64) ([]*types.GetCloudflareTunnelIngressDetailResponse, error) {
 	// 查询Cloudflare隧道
 	firstCloudflareTunnel, err := s.db.CloudflareTunnel.Query().
-		Where(cloudflaretunnel.IDEQ(id)).
+		Where(cloudflaretunnel.IDEQ(tunnel_id)).
 		WithIngresses().
 		First(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询Cloudflare隧道失败: %w", err)
 	}
 
-	ingresses := make([]*types.GetCloudflareTunnelTunnelIngresse, 0, len(firstCloudflareTunnel.Edges.Ingresses))
+	ingresses := make([]*types.GetCloudflareTunnelIngressDetailResponse, 0, len(firstCloudflareTunnel.Edges.Ingresses))
 	for _, ingress := range firstCloudflareTunnel.Edges.Ingresses {
-		ingresses = append(ingresses, &types.GetCloudflareTunnelTunnelIngresse{
+		ingresses = append(ingresses, &types.GetCloudflareTunnelIngressDetailResponse{
 			ID:            ingress.ID,
 			Hostname:      ingress.Hostname,
 			Service:       ingress.Service,
@@ -376,8 +325,159 @@ func (s *CloudflareTunnelServiceImpl) GetCloudflareTunnelIngresses(ctx context.C
 	return ingresses, nil
 }
 
+// 获取Cloudflare隧道入站配置详情
+func (s *CloudflareTunnelServiceImpl) GetCloudflareTunnelIngressDetail(ctx context.Context, tunnel_id int64, ingress_id int64) (*types.GetCloudflareTunnelIngressDetailResponse, error) {
+
+	// 查询Cloudflare隧道入站规则
+	firstCloudflareTunnelIngress, err := s.db.CloudflareTunnelIngress.Query().
+		Where(cloudflaretunnelingress.CloudflareTunnelID(tunnel_id)).
+		Where(cloudflaretunnelingress.IDEQ(ingress_id)).
+		First(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("查询Cloudflare隧道入站规则失败: %w", err)
+	}
+
+	return &types.GetCloudflareTunnelIngressDetailResponse{
+		ID:            firstCloudflareTunnelIngress.ID,
+		Hostname:      firstCloudflareTunnelIngress.Hostname,
+		Service:       firstCloudflareTunnelIngress.Service,
+		Path:          firstCloudflareTunnelIngress.Path,
+		OriginRequest: firstCloudflareTunnelIngress.OriginRequest,
+	}, nil
+}
+
+// 创建Cloudflare隧道入站配置
+func (s *CloudflareTunnelServiceImpl) CreateCloudflareTunnelIngress(ctx context.Context, tunnel_id int64, request *types.CreateCloudflareTunnelIngressRequest) error {
+
+	// 查询Cloudflare隧道及关联配置
+	firstPlatformCofing, err := s.db.CloudflareTunnel.Query().
+		Where(cloudflaretunnel.IDEQ(tunnel_id)).
+		WithConfig().
+		First(ctx)
+	if err != nil {
+		return fmt.Errorf("查询Cloudflare隧道及关联配置失败: %w", err)
+	}
+
+	// 获取Cloudflare Tunnel提供程序
+	tunProvider, err := s.getTunClient(ctx, firstPlatformCofing.Edges.Config.ConfigJSON)
+	if err != nil {
+		return fmt.Errorf("获取Cloudflare Tunnel提供程序失败: %w", err)
+	}
+
+	// 处理新数据：根据请求参数生成新的 Hostname 和 Service 字符串
+	newHostname, newService := tunProvider.HandleHostnameAndService(
+		request.SubDomain,
+		request.DomainName,
+		request.ServiceType,
+		request.ServiceContent,
+	)
+
+	// 获取远程隧道入站规则列表
+	ingresses, err := tunProvider.IngresssRaw(ctx, firstPlatformCofing.TunnelID)
+	if err != nil {
+		return fmt.Errorf("获取远程隧道入站规则列表失败: %w", err)
+	}
+
+	// 增加新的入站规则
+	ingresses = append(ingresses,
+		zero_trust.TunnelCloudflaredConfigurationGetResponseConfigIngress{
+			Hostname: newHostname,
+			Service:  newService,
+			Path:     request.DomainPath,
+		},
+	)
+
+	// 调用 API 更新 Cloudflare 远程配置
+	err = tunProvider.UpdateIngress(ctx, firstPlatformCofing.TunnelID, ingresses)
+	if err != nil {
+		return fmt.Errorf("同步到 Cloudflare 远程失败: %w", err)
+	}
+
+	return nil
+}
+
+// 更新Cloudflare隧道入站配置
+func (s *CloudflareTunnelServiceImpl) UpdateCloudflareTunnelIngress(ctx context.Context, tunnel_id int64, ingress_id int64, request *types.UpdateCloudflareTunnelIngressRequest) error {
+
+	// 查询Cloudflare隧道及关联配置
+	firstPlatformCofing, err := s.db.CloudflareTunnel.Query().
+		Where(cloudflaretunnel.IDEQ(tunnel_id)).
+		WithConfig().
+		First(ctx)
+	if err != nil {
+		return fmt.Errorf("查询Cloudflare隧道及关联配置失败: %w", err)
+	}
+
+	// 查询Cloudflare隧道入站规则
+	oldRuleRecord, err := s.db.CloudflareTunnelIngress.Query().
+		Where(cloudflaretunnelingress.IDEQ(ingress_id)).
+		First(ctx)
+	if err != nil {
+		return fmt.Errorf("查询Cloudflare隧道入站规则失败: %w", err)
+	}
+
+	// 获取Cloudflare Tunnel提供程序
+	tunProvider, err := s.getTunClient(ctx, firstPlatformCofing.Edges.Config.ConfigJSON)
+	if err != nil {
+		return fmt.Errorf("获取Cloudflare Tunnel提供程序失败: %w", err)
+	}
+
+	// 处理新数据：根据请求参数生成新的 Hostname 和 Service 字符串
+	newHostname, newService := tunProvider.HandleHostnameAndService(
+		request.SubDomain,
+		request.DomainName,
+		request.ServiceType,
+		request.ServiceContent,
+	)
+
+	// 获取远程隧道入站规则列表
+	remoteIngresses, err := tunProvider.IngresssRaw(ctx, firstPlatformCofing.TunnelID)
+	if err != nil {
+		return fmt.Errorf("获取远程隧道入站规则列表失败: %w", err)
+	}
+
+	// 新的隧道入站规则列表
+	var updatedIngresses []zero_trust.TunnelCloudflaredConfigurationGetResponseConfigIngress
+
+	// 旧的入站规则哈希值
+	oldHash := gomd5.Get16MD5Encode(oldRuleRecord.Service + oldRuleRecord.Hostname + oldRuleRecord.Path)
+
+	// 是否存在旧的入站规则
+	foundInRemote := false
+
+	for _, remoteIngresse := range remoteIngresses {
+		// 当前入站规则的哈希值
+		currentHash := gomd5.Get16MD5Encode(remoteIngresse.Service + remoteIngresse.Hostname + remoteIngresse.Path)
+
+		// 查找需要旧的规则
+		if currentHash == oldHash {
+			updatedIngresses = append(updatedIngresses, zero_trust.TunnelCloudflaredConfigurationGetResponseConfigIngress{
+				Hostname: newHostname,
+				Service:  newService,
+				Path:     request.DomainPath,
+			})
+			foundInRemote = true
+		} else {
+			updatedIngresses = append(updatedIngresses, remoteIngresse)
+		}
+	}
+
+	// 没有找到旧的入站规则
+	if !foundInRemote {
+		return fmt.Errorf("更新失败：远程规则库中未匹配到原始规则，请同步后再试")
+	}
+
+	// 调用 API 更新 Cloudflare 远程配置
+	err = tunProvider.UpdateIngress(ctx, firstPlatformCofing.TunnelID, updatedIngresses)
+	if err != nil {
+		return fmt.Errorf("同步到 Cloudflare 远程失败: %w", err)
+	}
+
+	return nil
+}
+
 // DeleteCloudflareTunnelIngress 删除Cloudflare隧道入站规则
-func (s *CloudflareTunnelServiceImpl) DeleteCloudflareTunnelIngress(ctx context.Context, id int64, ingress_id int64) error {
+func (s *CloudflareTunnelServiceImpl) DeleteCloudflareTunnelIngress(ctx context.Context, tunnel_id int64, ingress_id int64) error {
 
 	// 创建事务
 	tx, err := s.db.Tx(ctx)
@@ -385,14 +485,14 @@ func (s *CloudflareTunnelServiceImpl) DeleteCloudflareTunnelIngress(ctx context.
 		return fmt.Errorf("创建事务失败: %w", err)
 	}
 
-	// 查询Cloudflare隧道
+	// 查询Cloudflare隧道及关联配置
 	firstPlatformCofing, err := tx.CloudflareTunnel.Query().
-		Where(cloudflaretunnel.IDEQ(id)).
+		Where(cloudflaretunnel.IDEQ(tunnel_id)).
 		WithConfig().
 		First(ctx)
 	if err != nil {
 		tx.Rollback()
-		return fmt.Errorf("查询Cloudflare隧道失败: %w", err)
+		return fmt.Errorf("查询Cloudflare隧道及关联配置失败: %w", err)
 	}
 
 	// 查询Cloudflare隧道入站规则
@@ -412,7 +512,7 @@ func (s *CloudflareTunnelServiceImpl) DeleteCloudflareTunnelIngress(ctx context.
 	}
 
 	// 获取远程隧道入站规则列表
-	ingresses, err := tunProvider.IngresssRaw(ctx, firstPlatformCofing.TunnelID)
+	remoteIngresses, err := tunProvider.IngresssRaw(ctx, firstPlatformCofing.TunnelID)
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("获取远程隧道入站规则列表失败: %w", err)
@@ -427,19 +527,20 @@ func (s *CloudflareTunnelServiceImpl) DeleteCloudflareTunnelIngress(ctx context.
 	// 是否存在删除的入站规则
 	foundInRemote := false
 
-	for _, ingress := range ingresses {
+	for _, remoteIngresse := range remoteIngresses {
 		// 当前入站规则的哈希值
-		currentHash := gomd5.Get16MD5Encode(ingress.Service + ingress.Hostname + ingress.Path)
-		// 判断是否为需要删除的规则
+		currentHash := gomd5.Get16MD5Encode(remoteIngresse.Service + remoteIngresse.Hostname + remoteIngresse.Path)
+
+		// 查找需要删除的规则
 		if currentHash == targetHash {
 			foundInRemote = true
 			continue
+		} else {
+			updatedIngresses = append(updatedIngresses, remoteIngresse)
 		}
-		// 非删除目标，按原顺序保留
-		updatedIngresses = append(updatedIngresses, ingress)
 	}
 
-	// 远程入站规则找不到需要删除的规则
+	// 没有找到删除的入站规则
 	if !foundInRemote {
 		tx.Rollback()
 		return fmt.Errorf("删除失败，请先同步入站规则再确认是否存在")

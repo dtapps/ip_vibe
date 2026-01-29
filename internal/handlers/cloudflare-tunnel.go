@@ -45,9 +45,9 @@ func CloudflareTunnel(c *gin.Context) {
 				All(c)
 			if err == nil {
 				for _, tunnel := range allTunnels {
-					ingresses := make([]types.GetCloudflareTunnelTunnelIngresse, 0, len(tunnel.Edges.Ingresses))
+					ingresses := make([]types.GetCloudflareTunnelIngressDetailResponse, 0, len(tunnel.Edges.Ingresses))
 					for _, ingress := range tunnel.Edges.Ingresses {
-						ingresses = append(ingresses, types.GetCloudflareTunnelTunnelIngresse{
+						ingresses = append(ingresses, types.GetCloudflareTunnelIngressDetailResponse{
 							ID:            ingress.ID,
 							Hostname:      ingress.Hostname,
 							Service:       ingress.Service,

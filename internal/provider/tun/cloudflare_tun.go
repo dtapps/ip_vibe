@@ -126,23 +126,24 @@ func (p *CloudfareTUNProvider) Name() string {
 }
 
 // 处理主机名和服务
-func (p *CloudfareTUNProvider) handleHostnameAndService(sub_domain string, serve_type string, serve_uri string) (hostname string, service string) {
-	// 转小写
-	serve_type = strings.ToLower(serve_type)
+func (p *CloudfareTUNProvider) HandleHostnameAndService(sub_domain string, domain_name, service_type string, service_content string) (hostname string, service string) {
+
+	// 服务类型转小写
+	service_type = strings.ToLower(service_type)
 
 	// unix+tls需要额外处理
-	if strings.EqualFold(serve_type, "unix_tls") {
-		serve_type = "unix+tls"
+	if strings.EqualFold(service_type, "unix_tls") {
+		service_type = "unix+tls"
 	}
 
 	// 主机名和服务
-	switch serve_type {
+	switch service_type {
 	case "http_status":
 		hostname = ""
-		service = fmt.Sprintf("%s:%s", serve_type, serve_uri)
+		service = fmt.Sprintf("%s:%s", service_type, service_content)
 	default:
-		hostname = fmt.Sprintf("%s.%s", sub_domain, p.CustomConfig.ZoneName)
-		service = fmt.Sprintf("%s://%s", serve_type, serve_uri)
+		hostname = fmt.Sprintf("%s.%s", sub_domain, domain_name)
+		service = fmt.Sprintf("%s://%s", service_type, service_content)
 	}
 
 	return hostname, service
@@ -152,8 +153,8 @@ func (p *CloudfareTUNProvider) handleHostnameAndService(sub_domain string, serve
 // https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/get/
 func (p *CloudfareTUNProvider) Check(ctx context.Context, sub_domain string, domain_path string, serve_type string, serve_uri string) (data *provider.TUNProviderInternalData, err error) {
 
-	// 主机名和服务
-	hostname, service := p.handleHostnameAndService(sub_domain, serve_type, serve_uri)
+	// 处理主机名和服务
+	hostname, service := p.HandleHostnameAndService(sub_domain, p.CustomConfig.ZoneName, serve_type, serve_uri)
 
 	// 查询记录
 	requestTunQuery := zero_trust.TunnelCloudflaredConfigurationGetParams{}
@@ -203,8 +204,8 @@ func (p *CloudfareTUNProvider) Check(ctx context.Context, sub_domain string, dom
 // https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/update/
 func (p *CloudfareTUNProvider) Update(ctx context.Context, sub_domain string, domain_path string, serve_type string, serve_uri string) (err error) {
 
-	// 主机名和服务
-	hostname, service := p.handleHostnameAndService(sub_domain, serve_type, serve_uri)
+	// 处理主机名和服务
+	hostname, service := p.HandleHostnameAndService(sub_domain, p.CustomConfig.ZoneName, serve_type, serve_uri)
 
 	// 从 ItemData 复制到 ingress
 	configIngress := p.mapIngressToUpdate(p.ItemData)

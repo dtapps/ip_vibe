@@ -621,7 +621,16 @@ definitions:
           type: array
         type: array
     type: object
-  vibe_ip_internal_types.GetCloudflareTunnelTunnelIngresse:
+  vibe_ip_internal_types.GetCloudflareDomainResponse:
+    properties:
+      zone_id:
+        description: 区域ID
+        type: string
+      zone_name:
+        description: 区域名称
+        type: string
+    type: object
+  vibe_ip_internal_types.GetCloudflareTunnelIngressDetailResponse:
     properties:
       hostname:
         description: 主机名
@@ -2158,16 +2167,16 @@ paths:
       summary: 批量更新CDN记录启用状态
       tags:
       - CDN记录
-  /cloudflare-tunnels/{id}/ingresses:
+  /cloudflare-tunnels/{tunnel_id}/ingresses:
     get:
       consumes:
       - application/json
-      description: 获取CloudflareTunnel 隧道 入站配置
+      description: 获取Cloudflare隧道入站配置
       parameters:
       - description: 隧道序号
         format: int64
         in: path
-        name: id
+        name: tunnel_id
         required: true
         type: integer
       produces:
@@ -2181,7 +2190,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/vibe_ip_internal_types.GetCloudflareTunnelTunnelIngresse'
+                    $ref: '#/definitions/vibe_ip_internal_types.GetCloudflareTunnelIngressDetailResponse'
                   type: array
               type: object
         "400":
@@ -2192,7 +2201,147 @@ paths:
           description: 错误响应
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 获取CloudflareTunnel 隧道 入站配置
+      summary: 获取Cloudflare隧道入站配置
+      tags:
+      - CloudflareTunnel
+    post:
+      consumes:
+      - application/json
+      description: 创建Cloudflare隧道入站配置
+      parameters:
+      - description: 隧道序号
+        format: int64
+        in: path
+        name: tunnel_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 创建Cloudflare隧道入站配置
+      tags:
+      - CloudflareTunnel
+  /cloudflare-tunnels/{tunnel_id}/ingresses/{ingress_id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除Cloudflare隧道入站配置
+      parameters:
+      - description: 隧道序号
+        format: int64
+        in: path
+        name: tunnel_id
+        required: true
+        type: integer
+      - description: 入站规则序号
+        format: int64
+        in: path
+        name: ingress_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 删除Cloudflare隧道入站配置
+      tags:
+      - CloudflareTunnel
+    get:
+      consumes:
+      - application/json
+      description: 获取Cloudflare隧道入站配置详情
+      parameters:
+      - description: 隧道序号
+        format: int64
+        in: path
+        name: tunnel_id
+        required: true
+        type: integer
+      - description: 入站规则序号
+        format: int64
+        in: path
+        name: ingress_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetCloudflareTunnelIngressDetailResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取Cloudflare隧道入站配置详情
+      tags:
+      - CloudflareTunnel
+    patch:
+      consumes:
+      - application/json
+      description: 更新Cloudflare隧道入站配置
+      parameters:
+      - description: 隧道序号
+        format: int64
+        in: path
+        name: tunnel_id
+        required: true
+        type: integer
+      - description: 入站规则序号
+        format: int64
+        in: path
+        name: ingress_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 更新Cloudflare隧道入站配置
       tags:
       - CloudflareTunnel
   /cloudflare-tunnels/sync-all:
@@ -2218,16 +2367,16 @@ paths:
       summary: 同步全部Cloudflare隧道
       tags:
       - CloudflareTunnel
-  /cloudflare-tunnels/sync/{id}:
+  /cloudflare-tunnels/sync/{config_id}:
     post:
       consumes:
       - application/json
-      description: 同步Cloudflare隧道
+      description: 同步某个Cloudflare隧道
       parameters:
       - description: 平台配置序号
         format: int64
         in: path
-        name: id
+        name: config_id
         required: true
         type: integer
       produces:
@@ -2245,9 +2394,76 @@ paths:
           description: 错误响应
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 同步Cloudflare隧道
+      summary: 同步某个Cloudflare隧道
       tags:
       - CloudflareTunnel
+  /cloudflare-tunnels/sync/{config_id}/ingress:
+    post:
+      consumes:
+      - application/json
+      description: 同步某个Cloudflare隧道入站规则
+      parameters:
+      - description: 平台配置序号
+        format: int64
+        in: path
+        name: config_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 同步某个Cloudflare隧道入站规则
+      tags:
+      - CloudflareTunnel
+  /cloudflares/{id}/domain:
+    get:
+      consumes:
+      - application/json
+      description: 获取Cloudflare域名
+      parameters:
+      - description: 隧道序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetCloudflareDomainResponse'
+                  type: array
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取Cloudflare域名
+      tags:
+      - Cloudflare
   /device-groups:
     get:
       consumes:

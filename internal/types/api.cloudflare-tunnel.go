@@ -5,24 +5,29 @@ import (
 	"time"
 )
 
-// 同步Cloudflare隧道 请求结构
-type SyncCloudflareTunnelsRequest struct {
-	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"平台配置序号"` // 平台配置序号
+// 同步某个Cloudflare隧道 请求结构
+type SyncThisCloudflareTunnelsRequest struct {
+	ConfigID int64 `uri:"config_id" json:"config_id" binding:"required" jsonschema:"平台配置序号"` // 平台配置序号
+}
+
+// 同步某个Cloudflare隧道入站规则 请求结构
+type SyncThisCloudflareTunnelIngressesRequest struct {
+	ConfigID int64 `uri:"config_id" json:"config_id" binding:"required" jsonschema:"平台配置序号"` // 平台配置序号
 }
 
 // 获取Cloudflare隧道入站配置 请求结构
 type GetCloudflareTunnelIngressRequest struct {
-	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"隧道序号"` // 隧道序号
+	TunnelID int64 `uri:"tunnel_id" json:"tunnel_id" binding:"required" jsonschema:"隧道序号"` // 隧道序号
 }
 
-// 删除Cloudflare隧道入站配置 请求结构
-type DeleteCloudflareTunnelIngressRequest struct {
-	ID        int64 `uri:"id" json:"id" binding:"required" jsonschema:"隧道序号"`                   // 隧道序号
-	IngressID int64 `uri:"ingress_id" json:"ingress_id" binding:"required" jsonschema:"入站配置序号"` // 入站配置序号
+// 获取Cloudflare隧道入站配置详情 请求结构
+type GetCloudflareTunnelIngressDetailRequest struct {
+	TunnelID  int64 `uri:"tunnel_id" json:"tunnel_id" binding:"required" jsonschema:"隧道序号"`     // 隧道序号
+	IngressID int64 `uri:"ingress_id" json:"ingress_id" binding:"required" jsonschema:"入站规则序号"` // 入站规则序号
 }
 
-// 获取CloudflareTunnel 隧道 入站配置
-type GetCloudflareTunnelTunnelIngresse struct {
+// 获取Cloudflare隧道入站配置详情 响应结构
+type GetCloudflareTunnelIngressDetailResponse struct {
 	ID            int64           `json:"id"`             // Cloudflare 隧道入站规则序号
 	Hostname      string          `json:"hostname"`       // 主机名
 	Service       string          `json:"service"`        // 服务
@@ -30,16 +35,43 @@ type GetCloudflareTunnelTunnelIngresse struct {
 	OriginRequest json.RawMessage `json:"origin_request"` // 入站请求配置（JSON）
 }
 
+// 创建Cloudflare隧道入站配置 请求结构
+type CreateCloudflareTunnelIngressRequest struct {
+	TunnelID       int64  `uri:"tunnel_id" json:"tunnel_id" binding:"required" jsonschema:"隧道序号"` // 隧道序号
+	SubDomain      string `json:"sub_domain" binding:"required" jsonschema:"子域"`                  // 子域
+	DomainName     string `json:"domain_name" binding:"required" jsonschema:"域名"`                 // 域名
+	DomainPath     string `json:"domain_path,omitempty" jsonschema:"路径"`                          // 路径
+	ServiceType    string `json:"service_type" binding:"required" jsonschema:"服务类型"`              // 服务类型
+	ServiceContent string `json:"service_content,omitempty" jsonschema:"服务内容"`                    // 服务内容
+}
+
+// 更新Cloudflare隧道入站配置 请求结构
+type UpdateCloudflareTunnelIngressRequest struct {
+	TunnelID       int64  `uri:"tunnel_id" json:"tunnel_id" binding:"required" jsonschema:"隧道序号"`     // 隧道序号
+	IngressID      int64  `uri:"ingress_id" json:"ingress_id" binding:"required" jsonschema:"入站规则序号"` // 入站规则序号
+	SubDomain      string `json:"sub_domain" binding:"required" jsonschema:"子域"`                      // 子域
+	DomainName     string `json:"domain_name" binding:"required" jsonschema:"域名"`                     // 域名
+	DomainPath     string `json:"domain_path,omitempty" jsonschema:"路径"`                              // 路径
+	ServiceType    string `json:"service_type" binding:"required" jsonschema:"服务类型"`                  // 服务类型
+	ServiceContent string `json:"service_content,omitempty" jsonschema:"服务内容"`                        // 服务内容
+}
+
+// 删除Cloudflare隧道入站配置 请求结构
+type DeleteCloudflareTunnelIngressRequest struct {
+	TunnelID  int64 `uri:"tunnel_id" json:"tunnel_id" binding:"required" jsonschema:"隧道序号"`     // 隧道序号
+	IngressID int64 `uri:"ingress_id" json:"ingress_id" binding:"required" jsonschema:"入站规则序号"` // 入站规则序号
+}
+
 // 获取CloudflareTunnel 隧道
 type GetCloudflareTunnelTunnel struct {
-	ID              int64                               `json:"id"`                // Cloudflare 隧道序号
-	TunnelID        string                              `json:"tunnel_id"`         // Cloudflare 隧道ID
-	Name            string                              `json:"name"`              // 隧道名称
-	Status          string                              `json:"status"`            // 隧道状态
-	Connections     json.RawMessage                     `json:"connections"`       // 隧道连接配置（JSON）
-	ConnsActiveAt   time.Time                           `json:"conns_active_at"`   // 隧道连接活跃时间
-	RemoteCreatedAt time.Time                           `json:"remote_created_at"` // 隧道创建时间
-	Ingresses       []GetCloudflareTunnelTunnelIngresse `json:"ingresses"`         // 隧道入站配置
+	ID              int64                                      `json:"id"`                // Cloudflare 隧道序号
+	TunnelID        string                                     `json:"tunnel_id"`         // Cloudflare 隧道ID
+	Name            string                                     `json:"name"`              // 隧道名称
+	Status          string                                     `json:"status"`            // 隧道状态
+	Connections     json.RawMessage                            `json:"connections"`       // 隧道连接配置（JSON）
+	ConnsActiveAt   time.Time                                  `json:"conns_active_at"`   // 隧道连接活跃时间
+	RemoteCreatedAt time.Time                                  `json:"remote_created_at"` // 隧道创建时间
+	Ingresses       []GetCloudflareTunnelIngressDetailResponse `json:"ingresses"`         // 隧道入站配置
 }
 
 // 获取CloudflareTunnel 响应结构

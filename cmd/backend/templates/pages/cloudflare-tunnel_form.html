@@ -35,7 +35,7 @@
             <div class="grid grid-cols-12 gap-4 items-end">
                 <div class="ui-form-control col-span-4">
                     <label class="ui-label-text">服务类型 <span class="text-error">*</span></label>
-                    <select name="serve_type" class="ui-select" required onchange="onServeTypeSelect(this)">
+                    <select name="service_type" class="ui-select" required onchange="onServeTypeSelect(this)">
                         <option value="" disabled selected>选择类型</option>
                         <option value="http">HTTP</option>
                         <option value="https">HTTPS</option>
@@ -51,17 +51,18 @@
                 </div>
 
                 <div class="col-span-1 pb-3 text-center opacity-30 font-black italic">
-                    <span id="serve_protocol">://</span>
+                    <span id="service_protocol">://</span>
                 </div>
 
-                <div class="ui-form-control col-span-7" id="serve_container_input">
-                    <label class="ui-label-text" id="serve_container_label">URI <span
+                <div class="ui-form-control col-span-7" id="service_content_input">
+                    <label class="ui-label-text" id="service_content_label">URI <span
                             class="text-error">*</span></label>
-                    <input type="text" name="serve_container" class="ui-input" placeholder="例如 127.0.0.1:8080" />
+                    <input type="text" name="service_content" class="ui-input" placeholder="例如 127.0.0.1:8080" />
                 </div>
             </div>
 
-            <input type="hidden" name="id" />
+            <input type="hidden" name="tunnel_id" />
+            <input type="hidden" name="ingress_id" />
 
             <div class="modal-action gap-3">
                 <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('ingressFormModal')">
@@ -94,44 +95,44 @@
      * @returns
      */
     function onServeTypeSelect(el) {
-        const serve_type = el.value;
-        const serve_protocol = document.getElementById("serve_protocol");
-        const serve_container_label = document.getElementById("serve_container_label");
-        const serve_container = document.querySelector('input[name="serve_container"]');
-        const serve_container_input = document.getElementById("serve_container_input");
+        const service_type = el.value;
+        const service_protocol = document.getElementById("service_protocol");
+        const service_content_label = document.getElementById("service_content_label");
+        const service_content = document.querySelector('input[name="service_content"]');
+        const service_content_input = document.getElementById("service_content_input");
 
         // 重置默认状态
-        serve_container_input.style.opacity = "1";
-        serve_container.disabled = false;
-        serve_protocol.innerText = "://";
+        service_content_input.style.opacity = "1";
+        service_content.disabled = false;
+        service_protocol.innerText = "://";
 
-        switch (serve_type) {
+        switch (service_type) {
             case "bastion":
-                serve_container_label.innerText = "Bastion Mode";
-                serve_container.placeholder = "不需要填写地址";
-                serve_container.value = "";
-                serve_container.disabled = true;
-                serve_container_input.style.opacity = "0.3";
-                serve_protocol.innerText = "---";
+                service_content_label.innerText = "Bastion Mode";
+                service_content.placeholder = "不需要填写地址";
+                service_content.value = "";
+                service_content.disabled = true;
+                service_content_input.style.opacity = "0.3";
+                service_protocol.innerText = "---";
                 break;
 
             case "http_status":
-                serve_container_label.innerText = "HTTP 状态码";
-                serve_container.placeholder = "例如 404, 502";
-                serve_protocol.innerText = ":";
+                service_content_label.innerText = "HTTP 状态码";
+                service_content.placeholder = "例如 404, 502";
+                service_protocol.innerText = ":";
                 break;
 
             case "unix":
             case "unix_tls":
-                serve_container_label.innerText = "Socket 路径";
-                serve_container.placeholder = "/tmp/server.sock";
-                serve_protocol.innerText = "://";
+                service_content_label.innerText = "Socket 路径";
+                service_content.placeholder = "/tmp/server.sock";
+                service_protocol.innerText = "://";
                 break;
 
             default:
-                serve_container_label.innerText = "URI 地址";
-                serve_container.placeholder = "例如 127.0.0.1:8080";
-                serve_protocol.innerText = "://";
+                service_content_label.innerText = "URI 地址";
+                service_content.placeholder = "例如 127.0.0.1:8080";
+                service_protocol.innerText = "://";
                 break;
         }
     }
@@ -155,8 +156,8 @@
                 configId,
                 tunnelId,
                 ingressId,
-
             } = el.dataset;
+            console.log("openIngressFormModal", configId, tunnelId, ingressId);
 
             // 表单elements集合
             const els = ingressForm.elements;
@@ -172,11 +173,14 @@
                     const opt = document.createElement("option");
                     opt.dataset.zone_id = d.zone_id;
                     opt.dataset.zone_name = d.zone_name;
-                    opt.value = d.zone_id;
+                    opt.value = d.zone_name;
                     opt.text = `${d.zone_name}`;
                     domainNameSelect.appendChild(opt);
                 });
             }
+
+            els.tunnel_id.value = tunnelId;
+            els.ingress_id.value = ingressId || 0;
 
             showModal("ingressFormModal", "modalTitle", "添加 入站规则");
         } catch (err) {
@@ -197,21 +201,37 @@
                 // 表单elements集合
                 const els = ingressForm.elements;
 
+                const tunnelId = Number(els.tunnel_id.value.trim());
+                const ingressId = Number(els.ingress_id.value.trim());
+
                 // 表单数据
                 const form_data = {
-                    domain: els.domain.value.trim(),
-                    certificate: els.certificate.value.trim(),
-                    private_key: els.private_key.value.trim(),
+                    sub_domain: els.sub_domain.value.trim(),
+                    domain_name: els.domain_name.value.trim(),
+                    domain_path: els.domain_path.value.trim(),
+                    service_type: els.service_type.value.trim(),
+                    service_content: els.service_content.value.trim(),
                 };
                 console.log("form_data", form_data);
 
                 // 校验
-                if (!form_data.domain) {
-                    return alert("请输入域名");
+                if (!form_data.sub_domain) {
+                    return alert("请输入子域");
+                }
+                if (!form_data.domain_name) {
+                    return alert("请选择域名");
+                }
+                if (!form_data.service_type) {
+                    return alert("请选择服务类型");
                 }
 
-                // 提交
-                await API.post("/api/ssl-imports", form_data);
+                if (isNaN(ingressId) || ingressId <= 0) {
+                    // 调用 创建Cloudflare隧道入站配置
+                    await API.post(`/api/cloudflare-tunnels/${tunnelId}/ingress`, form_data);
+                } else {
+                    // 调用 更新Cloudflare隧道入站配置
+                    await API.patch(`/api/cloudflare-tunnels/${tunnelId}/ingress/${ingressId}`, form_data);
+                }
 
                 // 刷新页面
                 location.reload();
