@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
@@ -15,9 +16,11 @@ import (
 	"vibe_ip/internal/provider/tun"
 	"vibe_ip/internal/types"
 
+	"github.com/cloudflare/cloudflare-go/v6/zero_trust"
 	"github.com/tidwall/gjson"
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/gojson"
+	"go.dtapp.net/library/utils/gomd5"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -25,10 +28,11 @@ import (
 type CloudflareTunnelService interface {
 	BuildResponse(ctx context.Context, item *ent.TUNRecord) (*types.GetTunRecordResponse, error)
 	SyncAllCloudflareTunnels(ctx context.Context) error
-	SyncCloudflareTunnels(ctx context.Context, configID int64) error
+	SyncCloudflareTunnels(ctx context.Context, config_id int64) error
 	SyncAllCloudflareTunnelIngresses(ctx context.Context) error
-	SyncCloudflareTunnelIngresses(ctx context.Context, configID int64) error
+	SyncCloudflareTunnelIngresses(ctx context.Context, config_id int64) error
 	GetCloudflareTunnelIngresses(ctx context.Context, id int64) ([]*types.GetCloudflareTunnelTunnelIngresse, error)
+	DeleteCloudflareTunnelIngress(ctx context.Context, id int64, ingress_id int64) error
 }
 
 // CloudflareTunnelServiceImpl Cloudflare隧道服务实现
@@ -114,6 +118,31 @@ func (s *CloudflareTunnelServiceImpl) BuildResponse(ctx context.Context, item *e
 	return resp, nil
 }
 
+// getTunClient 获取Cloudflare Tunnel提供程序
+func (s *CloudflareTunnelServiceImpl) getTunClient(ctx context.Context, platformConfigJSON json.RawMessage) (*tun.CloudfareTUNProvider, error) {
+
+	// 创建Cloudflare Tunnel提供程序选项
+	var tunProviderOpts = make([]tun.Option, 0, 1)
+	if s.httpTransport != nil {
+		tunProviderOpts = append(tunProviderOpts, tun.WithHttpTransport(s.httpTransport))
+	}
+
+	// 创建默认的Cloudflare Tunnel配置
+	tunProviderCfg := tun.NewDefaultCloudfareTUNConfig()
+	err := tunProviderCfg.ParseCustomConfig(platformConfigJSON)
+	if err != nil {
+		return nil, fmt.Errorf("解析Cloudflare隧道配置失败: %w", err)
+	}
+
+	// 创建Cloudflare Tunnel提供程序
+	tunProvider, err := tun.NewCloudfareTUNProviderRaw(ctx, s.logger, tunProviderCfg, tunProviderOpts...)
+	if err != nil {
+		return nil, fmt.Errorf("创建Cloudflare隧道提供程序失败: %w", err)
+	}
+
+	return tunProvider, nil
+}
+
 // SyncAllCloudflareTunnels 同步全部Cloudflare隧道
 func (s *CloudflareTunnelServiceImpl) SyncAllCloudflareTunnels(ctx context.Context) error {
 	// 查询全部Cloudflare平台
@@ -144,10 +173,10 @@ func (s *CloudflareTunnelServiceImpl) SyncAllCloudflareTunnels(ctx context.Conte
 }
 
 // SyncCloudflareTunnels 同步某个Cloudflare隧道
-func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnels(ctx context.Context, configID int64) error {
+func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnels(ctx context.Context, config_id int64) error {
 	// 查询Cloudflare平台
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
-		Where(platformconfig.IDEQ(configID)).
+		Where(platformconfig.IDEQ(config_id)).
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
 		Where(platformconfig.CapabilityIn(platformconfig.CapabilityAll, platformconfig.CapabilityTun)).
 		First(ctx)
@@ -160,23 +189,10 @@ func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnels(ctx context.Context,
 		return nil
 	}
 
-	// 创建Cloudfare TUN 提供程序选项
-	var tunProviderOpts = make([]tun.Option, 0, 1)
-	if s.httpTransport != nil {
-		tunProviderOpts = append(tunProviderOpts, tun.WithHttpTransport(s.httpTransport))
-	}
-
-	// 创建默认的Cloudfare TUN 配置
-	tunProviderCfg := tun.NewDefaultCloudfareTUNConfig()
-	err = tunProviderCfg.ParseCustomConfig(firstPlatformCofing.ConfigJSON)
+	// 获取Cloudflare Tunnel提供程序
+	tunProvider, err := s.getTunClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return fmt.Errorf("解析Cloudflare隧道配置失败: %w", err)
-	}
-
-	// 创建Cloudfare TUN 提供程序
-	tunProvider, err := tun.NewCloudfareTUNProviderRaw(ctx, s.logger, tunProviderCfg, tunProviderOpts...)
-	if err != nil {
-		return fmt.Errorf("创建Cloudflare隧道提供程序失败: %w", err)
+		return fmt.Errorf("获取Cloudflare隧道提供程序失败: %w", err)
 	}
 
 	// 查询隧道列表
@@ -257,10 +273,10 @@ func (s *CloudflareTunnelServiceImpl) SyncAllCloudflareTunnelIngresses(ctx conte
 }
 
 // SyncCloudflareTunnels 同步某个Cloudflare隧道入站规则
-func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnelIngresses(ctx context.Context, configID int64) error {
+func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnelIngresses(ctx context.Context, config_id int64) error {
 	// 查询Cloudflare隧道
 	allCloudflareTunnel, err := s.db.CloudflareTunnel.Query().
-		Where(cloudflaretunnel.ConfigIDEQ(configID)).
+		Where(cloudflaretunnel.ConfigIDEQ(config_id)).
 		WithConfig().
 		WithIngresses().
 		All(ctx)
@@ -280,23 +296,10 @@ func (s *CloudflareTunnelServiceImpl) SyncCloudflareTunnelIngresses(ctx context.
 				return nil
 			}
 
-			// 创建Cloudfare TUN 提供程序选项
-			var tunProviderOpts = make([]tun.Option, 0, 1)
-			if s.httpTransport != nil {
-				tunProviderOpts = append(tunProviderOpts, tun.WithHttpTransport(s.httpTransport))
-			}
-
-			// 创建默认的Cloudfare TUN 配置
-			tunProviderCfg := tun.NewDefaultCloudfareTUNConfig()
-			err = tunProviderCfg.ParseCustomConfig(itemCloudflareTunnel.Edges.Config.ConfigJSON)
+			// 获取Cloudflare Tunnel提供程序
+			tunProvider, err := s.getTunClient(ctx, itemCloudflareTunnel.Edges.Config.ConfigJSON)
 			if err != nil {
-				return fmt.Errorf("解析Cloudflare隧道配置失败: %w", err)
-			}
-
-			// 创建Cloudfare TUN 提供程序
-			tunProvider, err := tun.NewCloudfareTUNProviderRaw(egCtx, s.logger, tunProviderCfg, tunProviderOpts...)
-			if err != nil {
-				return fmt.Errorf("创建Cloudflare隧道提供程序失败: %w", err)
+				return fmt.Errorf("获取Cloudflare隧道提供程序失败: %w", err)
 			}
 
 			// 查询隧道入站规则列表
@@ -371,4 +374,97 @@ func (s *CloudflareTunnelServiceImpl) GetCloudflareTunnelIngresses(ctx context.C
 	}
 
 	return ingresses, nil
+}
+
+// DeleteCloudflareTunnelIngress 删除Cloudflare隧道入站规则
+func (s *CloudflareTunnelServiceImpl) DeleteCloudflareTunnelIngress(ctx context.Context, id int64, ingress_id int64) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
+	// 查询Cloudflare隧道
+	firstPlatformCofing, err := tx.CloudflareTunnel.Query().
+		Where(cloudflaretunnel.IDEQ(id)).
+		WithConfig().
+		First(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("查询Cloudflare隧道失败: %w", err)
+	}
+
+	// 查询Cloudflare隧道入站规则
+	firstCloudflareTunnelIngress, err := tx.CloudflareTunnelIngress.Query().
+		Where(cloudflaretunnelingress.IDEQ(ingress_id)).
+		First(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("查询Cloudflare隧道入站规则失败: %w", err)
+	}
+
+	// 获取Cloudflare Tunnel提供程序
+	tunProvider, err := s.getTunClient(ctx, firstPlatformCofing.Edges.Config.ConfigJSON)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("获取Cloudflare Tunnel提供程序失败: %w", err)
+	}
+
+	// 获取远程隧道入站规则列表
+	ingresses, err := tunProvider.IngresssRaw(ctx, firstPlatformCofing.TunnelID)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("获取远程隧道入站规则列表失败: %w", err)
+	}
+
+	// 新的隧道入站规则列表
+	var updatedIngresses []zero_trust.TunnelCloudflaredConfigurationGetResponseConfigIngress
+
+	// 需要删除的入站规则哈希值
+	targetHash := gomd5.Get16MD5Encode(firstCloudflareTunnelIngress.Service + firstCloudflareTunnelIngress.Hostname + firstCloudflareTunnelIngress.Path)
+
+	// 是否存在删除的入站规则
+	foundInRemote := false
+
+	for _, ingress := range ingresses {
+		// 当前入站规则的哈希值
+		currentHash := gomd5.Get16MD5Encode(ingress.Service + ingress.Hostname + ingress.Path)
+		// 判断是否为需要删除的规则
+		if currentHash == targetHash {
+			foundInRemote = true
+			continue
+		}
+		// 非删除目标，按原顺序保留
+		updatedIngresses = append(updatedIngresses, ingress)
+	}
+
+	// 远程入站规则找不到需要删除的规则
+	if !foundInRemote {
+		tx.Rollback()
+		return fmt.Errorf("删除失败，请先同步入站规则再确认是否存在")
+	}
+
+	// 删除Cloudflare隧道入站规则
+	err = tx.CloudflareTunnelIngress.DeleteOne(firstCloudflareTunnelIngress).
+		Exec(ctx)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("删除Cloudflare隧道入站规则失败: %w", err)
+	}
+
+	// 调用 API 更新 Cloudflare 远程配置
+	err = tunProvider.UpdateIngress(ctx, updatedIngresses)
+	if err != nil {
+		tx.Rollback()
+		return fmt.Errorf("同步到 Cloudflare 远程失败: %w", err)
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
+	}
+
+	return nil
 }

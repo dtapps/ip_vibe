@@ -26,9 +26,9 @@ type TUNProvider interface {
 	// Name 返回 TUN 提供程序的名称
 	Name() (name string)
 	// Check 检查 TUN 记录是否存在
-	Check(ctx context.Context, domain string, subdomain string, domainpath string, serve_type string, serve_uri string) (data *TUNProviderInternalData, err error)
+	Check(ctx context.Context, sub_domain string, domain_path string, serve_type string, serve_uri string) (data *TUNProviderInternalData, err error)
 	// Update 更新 TUN 记录
-	Update(ctx context.Context, domain string, subdomain string, domainpath string, serve_type string, serve_uri string) (err error)
+	Update(ctx context.Context, sub_domain string, domain_path string, serve_type string, serve_uri string) (err error)
 	// ParseCustomConfig 解析 TUN 自定义配置
 	ParseCustomConfig(config_json json.RawMessage) (err error)
 }
@@ -61,32 +61,20 @@ func NewTUNTask(logger *slog.Logger, provider TUNProvider, platform_config_json 
 		slog.String("提供商", t.provider.Name()),
 	)
 
-	if len(t.platform_config_json) > 0 {
-		var platformConfig PlatformConfigJson
-		if err := json.Unmarshal(t.platform_config_json, &platformConfig); err != nil {
-			t.logger.Error("解析平台配置失败",
-				slog.Any("err", err),
-			)
-			return nil, err
-		}
-		t.config.domain = platformConfig.DomainName
-	}
-
 	return t, nil
 }
 
 type TUNConfigParams struct {
-	domain     string // 域名名称
-	subdomain  string // 子域名
-	domainpath string // 域名路径
-	serve_type string // 服务类型
-	serve_uri  string // 服务URI
+	sub_domain  string // 子域名
+	domain_path string // 域名路径
+	serve_type  string // 服务类型
+	serve_uri   string // 服务URI
 }
 
 // Config 配置 TUN 参数
-func (t *TUNTask) Config(subdomain string, domainpath string, serve_type string, serve_uri string) *TUNTask {
-	t.config.subdomain = subdomain
-	t.config.domainpath = domainpath
+func (t *TUNTask) Config(sub_domain string, domain_path string, serve_type string, serve_uri string) *TUNTask {
+	t.config.sub_domain = sub_domain
+	t.config.domain_path = domain_path
 	t.config.serve_type = serve_type
 	t.config.serve_uri = serve_uri
 	return t
@@ -94,11 +82,8 @@ func (t *TUNTask) Config(subdomain string, domainpath string, serve_type string,
 
 // Validate 验证 TUN 更新任务配置
 func (t *TUNTask) Validate() error {
-	// if t.config.domain == "" {
-	// 	return fmt.Errorf("domain 不能为空")
-	// }
-	if t.config.subdomain == "" {
-		return fmt.Errorf("subdomain 不能为空")
+	if t.config.sub_domain == "" {
+		return fmt.Errorf("sub_domain 不能为空")
 	}
 	if t.config.serve_type == "" {
 		return fmt.Errorf("serve_type 不能为空")
@@ -115,8 +100,8 @@ func (t *TUNTask) Execute(ctx context.Context) (err error) {
 		return nil
 	}
 	t.logger.InfoContext(ctx, "开始执行",
-		slog.String("域名名称", t.config.domain),
-		slog.String("子域名", t.config.subdomain),
+		slog.String("子域名", t.config.sub_domain),
+		slog.String("域名路径", t.config.domain_path),
 		slog.String("服务类型", t.config.serve_type),
 		slog.String("服务URI", t.config.serve_uri),
 		slog.String("自定义配置", string(t.record_config_json)),
@@ -145,9 +130,8 @@ func (t *TUNTask) Execute(ctx context.Context) (err error) {
 	t.logger.DebugContext(ctx, "执行检查")
 	checkData, err := t.provider.Check(
 		ctx,
-		t.config.domain,
-		t.config.subdomain,
-		t.config.domainpath,
+		t.config.sub_domain,
+		t.config.domain_path,
 		t.config.serve_type,
 		t.config.serve_uri,
 	)
@@ -168,9 +152,8 @@ func (t *TUNTask) Execute(ctx context.Context) (err error) {
 	)
 	if err := t.provider.Update(
 		ctx,
-		t.config.domain,
-		t.config.subdomain,
-		t.config.domainpath,
+		t.config.sub_domain,
+		t.config.domain_path,
 		t.config.serve_type,
 		t.config.serve_uri,
 	); err != nil {
@@ -243,7 +226,6 @@ func (t *TUNTask) Notify(ctx context.Context, webhookService *webhookService.Sen
 		EventType:      "TUN_UPDATE",
 		EventTime:      time.Now().Format("2006-01-02 15:04:05"),
 		EventBody:      "TUN记录更新事件",
-		RecordDomain:   fmt.Sprintf("%s.%s", t.config.subdomain, t.config.domain),
 		RecordType:     t.config.serve_type,
 		RecordOldValue: t.config.serve_uri,
 	}

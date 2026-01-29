@@ -3822,11 +3822,27 @@
       }
     }
   }
+  .tooltip-info {
+    @layer daisyui.l1.l2 {
+      --tt-bg: var(--color-info);
+      > .tooltip-content, &[data-tip]:before {
+        color: var(--color-info-content);
+      }
+    }
+  }
   .tooltip-primary {
     @layer daisyui.l1.l2 {
       --tt-bg: var(--color-primary);
       > .tooltip-content, &[data-tip]:before {
         color: var(--color-primary-content);
+      }
+    }
+  }
+  .tooltip-success {
+    @layer daisyui.l1.l2 {
+      --tt-bg: var(--color-success);
+      > .tooltip-content, &[data-tip]:before {
+        color: var(--color-success-content);
       }
     }
   }

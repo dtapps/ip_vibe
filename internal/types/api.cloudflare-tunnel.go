@@ -15,6 +15,12 @@ type GetCloudflareTunnelIngressRequest struct {
 	ID int64 `uri:"id" json:"id" binding:"required" jsonschema:"隧道序号"` // 隧道序号
 }
 
+// 删除Cloudflare隧道入站配置 请求结构
+type DeleteCloudflareTunnelIngressRequest struct {
+	ID        int64 `uri:"id" json:"id" binding:"required" jsonschema:"隧道序号"`                   // 隧道序号
+	IngressID int64 `uri:"ingress_id" json:"ingress_id" binding:"required" jsonschema:"入站配置序号"` // 入站配置序号
+}
+
 // 获取CloudflareTunnel 隧道 入站配置
 type GetCloudflareTunnelTunnelIngresse struct {
 	ID            int64           `json:"id"`             // Cloudflare 隧道入站规则序号

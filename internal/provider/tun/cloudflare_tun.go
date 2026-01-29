@@ -126,7 +126,7 @@ func (p *CloudfareTUNProvider) Name() string {
 }
 
 // 处理主机名和服务
-func (p *CloudfareTUNProvider) handleHostnameAndService(subdomain string, serve_type string, serve_uri string) (hostname string, service string) {
+func (p *CloudfareTUNProvider) handleHostnameAndService(sub_domain string, serve_type string, serve_uri string) (hostname string, service string) {
 	// 转小写
 	serve_type = strings.ToLower(serve_type)
 
@@ -141,7 +141,7 @@ func (p *CloudfareTUNProvider) handleHostnameAndService(subdomain string, serve_
 		hostname = ""
 		service = fmt.Sprintf("%s:%s", serve_type, serve_uri)
 	default:
-		hostname = fmt.Sprintf("%s.%s", subdomain, p.CustomConfig.ZoneName)
+		hostname = fmt.Sprintf("%s.%s", sub_domain, p.CustomConfig.ZoneName)
 		service = fmt.Sprintf("%s://%s", serve_type, serve_uri)
 	}
 
@@ -150,10 +150,10 @@ func (p *CloudfareTUNProvider) handleHostnameAndService(subdomain string, serve_
 
 // Check 检查子域名是否存在
 // https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/get/
-func (p *CloudfareTUNProvider) Check(ctx context.Context, domain string, subdomain string, domainpath string, serve_type string, serve_uri string) (data *provider.TUNProviderInternalData, err error) {
+func (p *CloudfareTUNProvider) Check(ctx context.Context, sub_domain string, domain_path string, serve_type string, serve_uri string) (data *provider.TUNProviderInternalData, err error) {
 
 	// 主机名和服务
-	hostname, service := p.handleHostnameAndService(subdomain, serve_type, serve_uri)
+	hostname, service := p.handleHostnameAndService(sub_domain, serve_type, serve_uri)
 
 	// 查询记录
 	requestTunQuery := zero_trust.TunnelCloudflaredConfigurationGetParams{}
@@ -201,10 +201,10 @@ func (p *CloudfareTUNProvider) Check(ctx context.Context, domain string, subdoma
 
 // Update 更新 记录
 // https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/update/
-func (p *CloudfareTUNProvider) Update(ctx context.Context, domain string, subdomain string, domainpath string, serve_type string, serve_uri string) (err error) {
+func (p *CloudfareTUNProvider) Update(ctx context.Context, sub_domain string, domain_path string, serve_type string, serve_uri string) (err error) {
 
 	// 主机名和服务
-	hostname, service := p.handleHostnameAndService(subdomain, serve_type, serve_uri)
+	hostname, service := p.handleHostnameAndService(sub_domain, serve_type, serve_uri)
 
 	// 从 ItemData 复制到 ingress
 	configIngress := p.mapIngressToUpdate(p.ItemData)
@@ -218,8 +218,8 @@ func (p *CloudfareTUNProvider) Update(ctx context.Context, domain string, subdom
 				if service != "" {
 					configIngress[i].Service = cloudflare.String(service)
 				}
-				if domainpath != "" {
-					configIngress[i].Path = cloudflare.String(domainpath)
+				if domain_path != "" {
+					configIngress[i].Path = cloudflare.String(domain_path)
 				}
 			}
 		}
@@ -231,8 +231,8 @@ func (p *CloudfareTUNProvider) Update(ctx context.Context, domain string, subdom
 		if service != "" {
 			configIngres.Service = cloudflare.String(service)
 		}
-		if domainpath != "" {
-			configIngres.Path = cloudflare.String(domainpath)
+		if domain_path != "" {
+			configIngres.Path = cloudflare.String(domain_path)
 		}
 		configIngress = append(configIngress, configIngres)
 	}
@@ -436,4 +436,28 @@ func (p *CloudfareTUNProvider) ZonesRaw(ctx context.Context) (lines []zones.Zone
 		return nil, fmt.Errorf("接口 Zones.List 失败 %w", err)
 	}
 	return responseQueryList.Result, nil
+}
+
+// Update 更新 记录
+// https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/update/
+func (p *CloudfareTUNProvider) UpdateIngress(ctx context.Context, updatedIngresses []zero_trust.TunnelCloudflaredConfigurationGetResponseConfigIngress) (err error) {
+
+	// 从 ItemData 复制到 ingress
+	configIngress := p.mapIngressToUpdate(updatedIngresses)
+
+	// 重排规则，把兜底规则（如 http_status）移到最后
+	configIngress = p.moveCatchAllRulesToLast(configIngress)
+
+	// 更新记录
+	requestTunUpdate := zero_trust.TunnelCloudflaredConfigurationUpdateParams{}
+	requestTunUpdate.AccountID = cloudflare.String(p.cfg.AccountID)
+	requestTunUpdate.Config = cloudflare.F(zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfig{
+		Ingress: cloudflare.F(configIngress),
+	})
+	_, err = p.Provider.Client.ZeroTrust.Tunnels.Cloudflared.Configurations.Update(ctx, p.CustomConfig.TunnelID, requestTunUpdate)
+	if err != nil {
+		return fmt.Errorf("接口 ZeroTrust.Tunnels.Cloudflared.Configurations.Update 失败 %w", err)
+	}
+
+	return nil
 }

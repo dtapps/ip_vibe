@@ -91,10 +91,10 @@ func SyncCloudflareTunnels(c *gin.Context) {
 	successResponse(c, nil)
 }
 
-// 获取CloudflareTunnel 隧道 入站配置
+// 获取Cloudflare隧道入站配置
 //
-//	@Description	获取CloudflareTunnel 隧道 入站配置
-//	@Summary		获取CloudflareTunnel 隧道 入站配置
+//	@Description	获取Cloudflare隧道入站配置
+//	@Summary		获取Cloudflare隧道入站配置
 //	@Tags			CloudflareTunnel
 //	@Accept			application/json
 //	@Produce		application/json
@@ -128,4 +128,45 @@ func GetCloudflareTunnelIngress(c *gin.Context) {
 	}
 
 	successResponse(c, ingresses)
+}
+
+// 删除Cloudflare隧道入站配置
+//
+//	@Description	删除Cloudflare隧道入站配置
+//	@Summary		删除Cloudflare隧道入站配置
+//	@Tags			CloudflareTunnel
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64														true	"隧道序号"
+//	@Param			ingress_id	path		int64														true	"入站配置序号"
+//	@Success		200	{object}	APIResponse{}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}												"参数错误"
+//	@Failure		404	{object}	APIResponse{}												"错误响应"
+//	@Router			/cloudflare-tunnels/{id}/ingresses/{ingress_id} [delete]
+func DeleteCloudflareTunnelIngress(c *gin.Context) {
+	// 请求参数
+	var requestParams types.DeleteCloudflareTunnelIngressRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	requestParams.IngressID = cast.ToInt64(c.Param("ingress_id"))
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewCloudflareTunnelService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
+		global.GvaHttpLog,
+	)
+
+	// 调用
+	err := service.DeleteCloudflareTunnelIngress(c, requestParams.ID, requestParams.IngressID)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+
+	successResponse(c, nil)
 }
