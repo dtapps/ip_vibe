@@ -61,6 +61,7 @@
                 </div>
             </div>
 
+            <input type="hidden" name="config_id" />
             <input type="hidden" name="tunnel_id" />
             <input type="hidden" name="ingress_id" />
 
@@ -167,13 +168,13 @@
             const els = ingressForm.elements;
 
             // 域名列表
-            const { data: domainNames } = await API.get(`/api/cloudflares/${configId}/domain`);
-            console.log("domainNames", domainNames);
-            if (domainNames) {
+            const { data: domainList } = await API.get(`/api/cloudflares/${configId}/domain`);
+            console.log("domainList", domainList);
+            if (domainList) {
                 const domainNameSelect = els.domain_name;
                 domainNameSelect.innerHTML = "";
                 addPlaceholder(domainNameSelect, "请选择域名");
-                domainNames.forEach((d) => {
+                domainList.forEach((d) => {
                     const opt = document.createElement("option");
                     opt.dataset.zone_id = d.zone_id;
                     opt.dataset.zone_name = d.zone_name;
@@ -184,11 +185,45 @@
             }
 
 
-            els.config_id.value = configId;   // 配置ID
-            els.tunnel_id.value = tunnelId;  // 隧道ID
-            els.ingress_id.value = ingressId || 0;     // 入站规则ID
+            // 配置ID
+            els.config_id.value = configId;
 
-            showModal("ingressFormModal", "modalTitle", "添加 入站规则");
+            // 隧道ID
+            els.tunnel_id.value = tunnelId;
+
+            // 入站规则ID
+            els.ingress_id.value = ingressId || 0;
+
+            if (isNaN(ingressId) || ingressId <= 0) {
+                showModal("ingressFormModal", "modalTitle", "添加 入站规则");
+            } else {
+                // 获取并解析数据
+                if (!el.dataset.detail) {
+                    throw new Error("未找到数据");
+                }
+                const d = JSON.parse(el.dataset.detail);
+
+                // 解析 Hostname 和 Service
+                const parseRemoteData = IngressUtil.parseRemoteData(d.hostname, d.service, domainList);
+
+                // 子域
+                els.sub_domain.value = parseRemoteData.sub_domain;
+
+                // 域名
+                els.domain_name.value = parseRemoteData.domain_name;
+
+                // 路径
+                els.domain_path.value = d.path;
+
+                // 服务类型
+                els.service_type.value = parseRemoteData.service_type;
+
+                // URI
+                els.service_content.value = parseRemoteData.service_content;
+
+                showModal("ingressFormModal", "modalTitle", "编辑 入站规则");
+            }
+
         } catch (err) {
             alert(`打开失败: ${err.message}`);
             console.error(err);
