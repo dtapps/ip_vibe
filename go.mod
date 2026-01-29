@@ -38,10 +38,10 @@ require (
 	github.com/gin-contrib/requestid v1.0.5
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-acme/lego/v4 v4.31.0
-	github.com/go-co-op/gocron/v2 v2.19.0
+	github.com/go-co-op/gocron/v2 v2.19.1
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.5
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.6
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.185
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
@@ -117,8 +117,8 @@ require (
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/go-acme/alidns-20150109/v4 v4.7.0 // indirect
 	github.com/go-acme/esa-20240910/v2 v2.47.0 // indirect
-	github.com/go-acme/tencentclouddnspod v1.1.25 // indirect
-	github.com/go-acme/tencentedgdeone v1.1.48 // indirect
+	github.com/go-acme/tencentclouddnspod v1.3.24 // indirect
+	github.com/go-acme/tencentedgdeone v1.3.38 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.3 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-openapi/inflect v0.21.5 // indirect
