@@ -41,7 +41,7 @@ func CloudflareTunnel(c *gin.Context) {
 			allTunnels, err := global.GvaEntDb.CloudflareTunnel.Query().
 				Where(cloudflaretunnel.ConfigID(item.ID)).
 				WithIngresses().
-				OrderByCreatedAtAsc().
+				OrderByNameAsc().
 				All(c)
 			if err == nil {
 				for _, tunnel := range allTunnels {
