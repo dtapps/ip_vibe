@@ -17,14 +17,16 @@ import (
 // RemoteLogService 远程日志服务
 type RemoteLogService struct {
 	logger *slog.Logger // 日志记录器
+	debug  bool         // 是否开启调试模式
 
 	grpcClient      *grpc.ClientConn                      // gRPC 客户端
 	remoteLogClient grpc_generated.RemoteLogServiceClient // gRPC 业务服务
 }
 
-func NewRemoteLogService(logger *slog.Logger, grpcClient *grpc.ClientConn) *RemoteLogService {
+func NewRemoteLogService(logger *slog.Logger, debug bool, grpcClient *grpc.ClientConn) *RemoteLogService {
 	return &RemoteLogService{
 		logger:          logger.With("component", "remote-log-service"),
+		debug:           debug,
 		grpcClient:      grpcClient,
 		remoteLogClient: grpc_generated.NewRemoteLogServiceClient(grpcClient),
 	}

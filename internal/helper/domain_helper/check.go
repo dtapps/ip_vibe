@@ -24,27 +24,37 @@ type DomainCheck struct {
 	logger        *slog.Logger                  // 日志记录器
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 	debug         bool                          // 是否开启调试模式
+	timeout       time.Duration                 // 请求超时时间
 	httpClient    *http.Client                  // HTTP 客户端
 	restyClient   *resty.Client                 // Resty 客户端
 	reqClient     *req.Client                   // Req 客户端
 }
 
+// NewDomainCheck 创建一个新的 DomainCheck 实例
 func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *DomainCheck {
 	s := &DomainCheck{
 		logger:        logger,
 		httpTransport: httpTransport,
 		debug:         debug,
+		timeout:       60 * time.Second,
 	}
 	s.initHttpClient()
 	return s
 }
 
+// initHttpClient 初始化 HTTP 客户端
 func (s *DomainCheck) initHttpClient() {
 
 	// 创建客户端
 	httpClient := &http.Client{}
 	restyClient := resty.New()
 	reqClient := req.NewClient()
+
+	// 开启日志
+	if s.debug {
+		restyClient.EnableDebug()
+		reqClient.DevMode()
+	}
 
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
@@ -63,9 +73,9 @@ func (s *DomainCheck) initHttpClient() {
 	}
 
 	// 设置超时
-	httpClient.Timeout = 60 * time.Second
-	restyClient.SetTimeout(60 * time.Second)
-	reqClient.SetTimeout(60 * time.Second)
+	httpClient.Timeout = s.timeout
+	restyClient.SetTimeout(s.timeout)
+	reqClient.SetTimeout(s.timeout)
 
 	// 设置 HTTP 客户端
 	s.httpClient = httpClient
@@ -152,15 +162,13 @@ func (s *DomainCheck) Check(ctx context.Context, protocol string, domain string,
 
 	// ---------- HTTP / HTTPS 请求 ----------
 	fetchHttps := []fetchHttpFunc{
-		s.fetchHTTP,          // 官方 标准 库
-		s.fetchHTTPWithResty, // 第三方 Resty 库
-		s.fetchHTTPWithReq,   // 第三方 Req 库
+		s.fetchHTTPWithStandard, // 官方 标准 库
+		s.fetchHTTPWithResty,    // 第三方 Resty 库
+		s.fetchHTTPWithReq,      // 第三方 Req 库
 	}
-
 	// 随机选一个
-	selectedHttpIndex := rand.Intn(len(fetchHttps))
-	selectedHttpMethod := fetchHttps[selectedHttpIndex]
-	if err := selectedHttpMethod(ctx, u, httpHeaders, start, result); err != nil {
+	fetchHttp := fetchHttps[rand.Intn(len(fetchHttps))]
+	if err := fetchHttp(ctx, u, httpHeaders, start, result); err != nil {
 		return result
 	}
 
@@ -209,7 +217,7 @@ func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *C
 }
 
 // 发起 HTTP 请求，使用官方 标准 库
-func (s *DomainCheck) fetchHTTP(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
+func (s *DomainCheck) fetchHTTPWithStandard(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
 
 	// 设置检查类型
 	result.CheckType = schematype.DomainMonitorHistoryCheckTypeStandard

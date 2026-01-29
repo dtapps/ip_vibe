@@ -11,12 +11,14 @@ import (
 // IPReportService IP报告服务
 type IPReportService struct {
 	logger *slog.Logger // 日志记录器
+	debug  bool         // 是否开启调试模式
 }
 
 // NewIPReportService 创建IP报告服务
-func NewIPReportService(logger *slog.Logger) *IPReportService {
+func NewIPReportService(logger *slog.Logger, debug bool) *IPReportService {
 	return &IPReportService{
 		logger: logger.With("component", "ip-report-service"),
+		debug:  debug,
 	}
 }
 
@@ -50,7 +52,7 @@ func (s *IPReportService) GetDeviceData(ctx context.Context, deviceCode, deviceN
 	}
 
 	// 获取设备IP
-	iPHelper := ip_helper.NewIPHelper()
+	iPHelper := ip_helper.NewIPHelper(s.logger, s.debug)
 	ipv4, err := iPHelper.GetIP(ctx, ip_helper.IPTypeV4)
 	if err == nil {
 		resp.IPV4Addr = ipv4.IP

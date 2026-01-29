@@ -4,10 +4,12 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"log/slog"
+	"math/rand"
 	"regexp"
 	"time"
-	"vibe_ip/internal/helper/sys_env"
 
+	"github.com/imroc/req/v3"
 	"golang.org/x/sync/errgroup"
 	"resty.dev/v3"
 )
@@ -21,67 +23,88 @@ const (
 
 // IPHelper 用于检查公网 IP 地址
 type IPHelper struct {
-	// 用于 IPv4 检查的 URL 列表
-	iPv4URLs []string
-	// 用于 IPv6 检查的 URL 列表
-	iPv6URLs []string
-	// Resty HTTP 客户端
-	client *resty.Client
-	// 请求超时时间
-	timeout time.Duration
+	iPv4URLs    []string      // 用于 IPv4 检查的 URL 列表
+	iPv6URLs    []string      // 用于 IPv6 检查的 URL 列表
+	logger      *slog.Logger  // 日志记录器
+	debug       bool          // 是否开启调试模式
+	timeout     time.Duration // 请求超时时间
+	restyClient *resty.Client // Resty 客户端
+	reqClient   *req.Client   // Req 客户端
 }
 
 // NewIPHelper 创建一个新的 IPHelper 实例
-func NewIPHelper() *IPHelper {
-
-	// 创建 Resty 客户端
-	client := resty.New()
-
-	// 设置默认超时
-	client.SetTimeout(5 * time.Second)
-
-	// 开启日志
-	client.SetDebug(sys_env.GvaEnv.DEBUG)
-
-	// 跳过证书验证
-	client.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
-
-	return &IPHelper{
-		iPv4URLs: []string{
-			"http://eo-ip.dtapp.net",
-			// "https://eo-ip.dtapp.top",
-			// "https://eo-ip.liguangchun.cn",
-			// "https://eo-ip.liguangchun.com",
-			"http://cf-ip.dtapp.net",
-			// "https://cf-ip.dtapp.top",
-			// "https://cf-ip.liguangchun.cn",
-			// "https://cf-ip.liguangchun.com",
-			"http://esa-ip.dtapp.net",
-			"http://ddns.oray.com/checkip",
-			"http://v4.66666.host:66/ip",
-			"http://myip.ipip.net",
-			"http://v4.666666.host:66/ip",
-			"http://4.ipw.cn",
-			"http://ip.3322.net",
-		},
-		iPv6URLs: []string{
-			"http://eo-ip.dtapp.net",
-			// "https://eo-ip.dtapp.top",
-			// "https://eo-ip.liguangchun.cn",
-			// "https://eo-ip.liguangchun.com",
-			"http://cf-ip.dtapp.net",
-			// "https://cf-ip.dtapp.top",
-			// "https://cf-ip.liguangchun.cn",
-			// "https://cf-ip.liguangchun.com",
-			"http://esa-ip.dtapp.net",
-			"http://v6.66666.host:66/ip",
-			"http://myip6.ipip.net",
-			"http://6.ipw.cn",
-			"http://v6.666666.host:66/ip",
-		},
-		client:  client,
+func NewIPHelper(logger *slog.Logger, debug bool) *IPHelper {
+	c := &IPHelper{
+		logger:  logger,
+		debug:   debug,
 		timeout: 5 * time.Second,
 	}
+
+	// 初始化 HTTP 客户端
+	c.initHttpClient()
+
+	c.iPv4URLs = []string{
+		"https://eo-ip.dtapp.net",
+		// "https://eo-ip.dtapp.top",
+		// "https://eo-ip.liguangchun.cn",
+		// "https://eo-ip.liguangchun.com",
+		"https://cf-ip.dtapp.net",
+		// "https://cf-ip.dtapp.top",
+		// "https://cf-ip.liguangchun.cn",
+		// "https://cf-ip.liguangchun.com",
+		"https://esa-ip.dtapp.net",
+		"https://ddns.oray.com/checkip",
+		"https://v4.66666.host:66/ip",
+		"https://myip.ipip.net",
+		"https://v4.666666.host:66/ip",
+		"https://4.ipw.cn",
+		"https://ip.3322.net",
+	}
+
+	c.iPv6URLs = []string{
+		"https://eo-ip.dtapp.net",
+		// "https://eo-ip.dtapp.top",
+		// "https://eo-ip.liguangchun.cn",
+		// "https://eo-ip.liguangchun.com",
+		"https://cf-ip.dtapp.net",
+		// "https://cf-ip.dtapp.top",
+		// "https://cf-ip.liguangchun.cn",
+		// "https://cf-ip.liguangchun.com",
+		"https://esa-ip.dtapp.net",
+		"https://v6.66666.host:66/ip",
+		"https://myip6.ipip.net",
+		"https://6.ipw.cn",
+		"https://v6.666666.host:66/ip",
+	}
+
+	return c
+}
+
+// initHttpClient 初始化 HTTP 客户端
+func (c *IPHelper) initHttpClient() {
+
+	// 创建客户端
+	restyClient := resty.New()
+	reqClient := req.NewClient()
+
+	// 开启日志
+	if c.debug {
+		restyClient.EnableDebug()
+		reqClient.DevMode()
+	}
+
+	// 设置超时
+	restyClient.SetTimeout(c.timeout)
+	reqClient.SetTimeout(c.timeout)
+
+	// 跳过证书验证
+	restyClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	reqClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+
+	// 设置 HTTP 客户端
+	c.restyClient = restyClient
+	c.reqClient = reqClient
+
 }
 
 // IPResult 表示从 IP 查询服务获取的结果
@@ -121,6 +144,13 @@ func (c *IPHelper) GetIP(ctx context.Context, ipType IPType) (*IPResult, error) 
 	// 使用errgroup来管理goroutines
 	g, gCtx := errgroup.WithContext(ctxWithTimeout)
 
+	// 随机选一个
+	fetchIPs := []fetchIPFunc{
+		c.fetchIPWithResty, // 第三方 Resty 库
+		c.fetchIPWithReq,   // 第三方 Req 库
+	}
+	fetchIP := fetchIPs[rand.Intn(len(fetchIPs))]
+
 	// 启动goroutine来并发请求所有URL
 	for _, url := range urls {
 		url := url // 创建局部变量避免闭包问题
@@ -130,7 +160,7 @@ func (c *IPHelper) GetIP(ctx context.Context, ipType IPType) (*IPResult, error) 
 			case <-gCtx.Done():
 				return gCtx.Err()
 			default:
-				c.fetchIP(gCtx, url, ipType, resultChan)
+				fetchIP(gCtx, url, ipType, resultChan)
 				return nil
 			}
 		})
@@ -195,6 +225,13 @@ func (c *IPHelper) GetAllIP(ctx context.Context, ipType IPType) ([]*IPResult, er
 	// 使用errgroup来管理goroutines
 	g, gCtx := errgroup.WithContext(ctxWithTimeout)
 
+	// 随机选一个
+	fetchIPs := []fetchIPFunc{
+		c.fetchIPWithResty, // 第三方 Resty 库
+		c.fetchIPWithReq,   // 第三方 Req 库
+	}
+	fetchIP := fetchIPs[rand.Intn(len(fetchIPs))]
+
 	// 启动goroutine来并发请求所有URL
 	for _, url := range urls {
 		url := url // 创建局部变量避免闭包问题
@@ -204,7 +241,7 @@ func (c *IPHelper) GetAllIP(ctx context.Context, ipType IPType) ([]*IPResult, er
 			case <-gCtx.Done():
 				return gCtx.Err()
 			default:
-				c.fetchIP(gCtx, url, ipType, resultChan)
+				fetchIP(gCtx, url, ipType, resultChan)
 				return nil
 			}
 		})
@@ -241,14 +278,16 @@ func (c *IPHelper) GetAllIP(ctx context.Context, ipType IPType) ([]*IPResult, er
 	return results, nil
 }
 
+type fetchIPFunc func(ctx context.Context, url string, ipType IPType, resultChan chan<- *IPResult)
+
 // fetchIP 从指定的 URL 获取 IP 地址，并根据 ipType 验证 IP 类型
-func (c *IPHelper) fetchIP(ctx context.Context, url string, ipType IPType, resultChan chan<- *IPResult) {
+func (c *IPHelper) fetchIPWithResty(ctx context.Context, url string, ipType IPType, resultChan chan<- *IPResult) {
 	result := &IPResult{
 		Source: url,
 	}
 
 	// 使用 Resty 发送请求
-	resp, err := c.client.R().
+	resp, err := c.restyClient.R().
 		SetContext(ctx).
 		Get(url)
 
@@ -262,6 +301,50 @@ func (c *IPHelper) fetchIP(ctx context.Context, url string, ipType IPType, resul
 	// IsError 检查状态码是否为 4xx 或 5xx
 	if resp.IsError() {
 		result.Error = fmt.Errorf("请求返回错误状态码: %s", resp.Status())
+		resultChan <- result
+		return
+	}
+
+	// resp.String() 返回响应体作为字符串
+	ip := c.extractIP(resp.String())
+	if ip == "" {
+		result.Error = fmt.Errorf("无法从响应体中提取 IP 地址")
+		resultChan <- result
+		return
+	}
+
+	// 验证提取的 IP 地址是否符合请求的 IP 类型
+	if !c.validateIPType(ip, ipType) {
+		result.Error = fmt.Errorf("提取的 IP 地址类型与请求的类型不匹配: %s", ipType)
+		resultChan <- result
+		return
+	}
+
+	result.IP = ip
+	resultChan <- result
+}
+
+// fetchIP 从指定的 URL 获取 IP 地址，并根据 ipType 验证 IP 类型
+func (c *IPHelper) fetchIPWithReq(ctx context.Context, url string, ipType IPType, resultChan chan<- *IPResult) {
+	result := &IPResult{
+		Source: url,
+	}
+
+	// 使用 Resty 发送请求
+	resp, err := c.reqClient.R().
+		SetContext(ctx).
+		Get(url)
+
+	// err != nil 意味着请求失败 (例如，DNS 查找失败，连接被拒绝等)
+	if err != nil {
+		result.Error = err
+		resultChan <- result
+		return
+	}
+
+	// IsErrorState 检查状态码是否为 4xx 或 5xx
+	if resp.IsErrorState() {
+		result.Error = fmt.Errorf("请求返回错误状态码: %s", resp.Status)
 		resultChan <- result
 		return
 	}

@@ -95,7 +95,7 @@ func main() {
 	}
 
 	// 创建 IP 报告服务
-	ipReportService := service.NewIPReportService(global.GvaGocronSlog)
+	ipReportService := service.NewIPReportService(global.GvaGocronSlog, sys_env.GvaEnv.DEBUG)
 
 	if sys_env.GvaEnv.GRPC_URL != "" {
 
@@ -137,7 +137,7 @@ func main() {
 		defer ipReportTask.Close()
 
 		// 启动远程日志隧道
-		remoteLogService := service.NewRemoteLogService(global.GvaGocronSlog, grpcClientConn)
+		remoteLogService := service.NewRemoteLogService(global.GvaGocronSlog, sys_env.GvaEnv.DEBUG, grpcClientConn)
 		go remoteLogService.StartTunnel(ctx, config.DeviceCode)
 
 	} else {
