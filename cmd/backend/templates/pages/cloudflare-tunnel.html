@@ -58,6 +58,7 @@
                         <th class="ui-th pl-8">隧道名称</th>
                         <th class="ui-th">Tunnel ID</th>
                         <th class="ui-th text-center">状态</th>
+                        <th class="ui-th text-center">运行时间</th>
                         <th class="ui-th text-center">入站规则数</th>
                         <th class="ui-th text-right pr-8">详情</th>
                     </tr>
@@ -112,6 +113,12 @@
                                 {{ fieldEnumLabel "cloudflare_tunnel_status" $tunnel.Status }}
                             </span>
                             {{ end }}
+                        </td>
+
+                        <td class="ui-td text-center">
+                            <span class="tooltip" data-tip="{{ formatTimeOrNil $tunnel.ConnsActiveAt }}">
+                                {{ diffForHumans $tunnel.ConnsActiveAt }}
+                            </span>
                         </td>
 
                         <td class="ui-td text-center">
