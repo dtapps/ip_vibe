@@ -1,0 +1,190 @@
+{{ define "content" }}
+{{ $filter := .Data.Filter }}
+{{ $list := .Data.List }}
+{{ $page := .Data.Page }}
+{{ $total := .Data.Total }}
+{{ $pageSize := .Data.PageSize }}
+{{ $baseWebUrlPath := .CurrentPath }}
+{{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
+{{ $baseApiUrlPath := "/api/edgeones" }}
+
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content flex items-center gap-3 uppercase tracking-tighter italic">
+    {{ template "icons" (dict "Name" "i-lucide-globe-2" "Class" "w-8 h-8 text-primary") }}
+    EdgeOne 边缘安全加速
+</h1>
+
+<div class="ui-panel">
+    <div class="ui-header">
+        <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
+
+        </h2>
+        <div>
+            <button class="btn-ui-primary" onclick="syncAllZones(this)">
+                {{ template "icons" (dict "Name" "i-lucide-refresh-ccw") }} 同步所有
+            </button>
+        </div>
+    </div>
+
+    <div class="edgeone-container flex flex-col gap-8">
+        {{ range $config := $list }}
+        <div class="ui-panel shadow-lg">
+            <div class="ui-header bg-base-200/20 py-6">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-primary/10 rounded-2xl text-primary">
+                        {{ template "icons" (dict "Name" "i-lucide-user-cog" "Class" "w-6 h-6") }}
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-xl font-black italic uppercase tracking-tighter text-base-content">
+                                {{ $config.Name }}
+                            </h2>
+                        </div>
+                        <p class="text-[11px] font-bold opacity-30 uppercase tracking-widest mt-0.5">
+                            ID: {{ $config.ID }} — {{ $config.Description }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button
+                        class="btn btn-sm btn-ghost gap-2 opacity-50 hover:opacity-100 hover:text-primary transition-all"
+                        data-config-id="{{ $config.ID }}" data-tips="确定同步此账号吗？" onclick="syncAllZones(this)">
+                        {{ template "icons" (dict "Name" "i-lucide-refresh-cw" "Class" "w-3 h-3") }} 增量同步
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {{ range $zone := $config.Zones }}
+                    <div class="group relative bg-base-200/30 rounded-[2rem] p-6 border border-base-300/50 hover:border-primary/40 hover:bg-base-100 hover:shadow-2xl transition-all duration-500 cursor-pointer"
+                        onclick="openZoneWorkspace('{{$zone.ID}}', '{{$zone.Name}}', '{{$zone.Type}}')">
+
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[9px] font-black uppercase italic opacity-40">Access Type</span>
+                                <span class="badge badge-sm font-bold italic uppercase {{ if eq $zone.Type " full"
+                                    }}badge-primary{{ else }}badge-ghost border-base-300{{ end }}">
+                                    {{ $zone.Type }}
+                                </span>
+                            </div>
+
+                            <div class="flex flex-col items-end gap-1">
+                                {{ if gt $zone.AccelerationdomainCount 0 }}
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[9px] font-bold opacity-30">CDN</span>
+                                    <div class="w-1.5 h-1.5 rounded-full bg-warning animate-pulse"></div>
+                                </div>
+                                {{ end }}
+                                {{ if gt $zone.DnsrecordCount 0 }}
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[9px] font-bold opacity-30">DNS</span>
+                                    <div class="w-1.5 h-1.5 rounded-full bg-info"></div>
+                                </div>
+                                {{ end }}
+                            </div>
+                        </div>
+
+                        <h3
+                            class="text-xl font-black italic tracking-tighter uppercase truncate mb-6 group-hover:text-primary transition-colors">
+                            {{ or $zone.Name $zone.ZoneID }}
+                        </h3>
+
+                        <div class="grid grid-cols-3 gap-2 py-4 border-y border-base-300/30">
+                            <div class="text-center">
+                                <div class="text-[9px] font-black opacity-20 uppercase">Domains</div>
+                                <div class="text-sm font-mono font-bold">{{ $zone.AccelerationdomainCount }}</div>
+                            </div>
+                            <div class="text-center border-x border-base-300/30">
+                                <div class="text-[9px] font-black opacity-20 uppercase">Records</div>
+                                <div class="text-sm font-mono font-bold">{{ $zone.DnsrecordCount }}</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-[9px] font-black opacity-20 uppercase">Origins</div>
+                                <div class="text-sm font-mono font-bold">{{ $zone.OrigingroupCount }}</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex justify-between items-center">
+                            <div class="flex flex-col">
+                                <span class="text-[8px] font-black opacity-20 uppercase">Zone Status</span>
+                                <span class="text-[10px] font-bold uppercase {{ if eq $zone.Status " active"
+                                    }}text-success{{ else }}text-warning{{ end }}">
+                                    {{ $zone.Status }}
+                                </span>
+                            </div>
+                            <div
+                                class="opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all text-primary">
+                                {{ template "icons" (dict "Name" "i-lucide-arrow-right" "Class" "w-4 h-4") }}
+                            </div>
+                        </div>
+                    </div>
+                    {{ end }}
+
+                    <button
+                        class="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-base-300/50 rounded-[2rem] min-h-[220px] opacity-30 hover:opacity-100 hover:border-primary hover:text-primary transition-all">
+                        {{ template "icons" (dict "Name" "i-lucide-plus-circle" "Class" "w-8 h-8") }}
+                        <span class="text-xs font-black uppercase italic tracking-widest">New Zone</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+
+    <!-- 分页 -->
+    <div class="p-8">
+        {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
+    </div>
+</div>
+
+
+<script>
+
+    /**
+     * 同步
+     * @param {*} el 触发事件的元素
+     * @returns
+     */
+    async function syncAllZones(el) {
+        try {
+            const {
+                configId,
+                zoneId,
+                groupId,
+
+                tips = "确定同步所有账号吗？",
+                reload = true,
+            } = el.dataset;
+
+            // 提示确认
+            const confirmed = confirm(tips);
+            if (!confirmed) {
+                return;
+            }
+
+            if (configId && zoneId && groupId) {
+                // 调用 同步 某个账号 某个站点 所有源站组
+                await API.post(`/api/edgeones/sync/${configId}/${zoneId}/${groupId}`);
+            } else if (configId && zoneId) {
+                // 调用 同步某个账号Cloudflare隧道和入站规则
+                await API.post(`/api/edgeones/sync/${configId}`);
+            } else {
+                // 调用 同步 全部账号 所有站点
+                await API.post(`/api/edgeones/sync-all`);
+            }
+
+
+            // 刷新页面
+            if (reload) {
+                location.reload();
+            }
+        } catch (err) {
+            alert(`同步失败: ${err.message}`);
+            console.error(err);
+            return;
+        }
+    }
+
+</script>
+{{ end }}

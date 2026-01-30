@@ -129,6 +129,11 @@ func Dashboard(c *gin.Context) {
 			Href:  "/cloudflare-tunnel",
 		},
 		{
+			Title: "EO 管理",
+			Icon:  "i-lucide-shield-check",
+			Href:  "/edgeone",
+		},
+		{
 			Title: "通知管理",
 			Icon:  "i-lucide-bell",
 			Href:  "/webhook",

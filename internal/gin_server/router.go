@@ -95,6 +95,9 @@ func (m *GinServerManager) setupWebRouter() {
 	// CF 隧道管理页面 - 提供HTML页面并渲染数据
 	r.GET("/cloudflare-tunnel", handlers.CloudflareTunnel)
 
+	// EdgeOne 管理页面 - 提供HTML页面并渲染数据
+	r.GET("/edgeone", handlers.EdgeOne)
+
 	// 未匹配到任何路由
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, handlers.APIResponse{
