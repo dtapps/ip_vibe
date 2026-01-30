@@ -91,12 +91,12 @@ func Cname(v string) predicate.EdgeOneZoneAccelerationDomain {
 }
 
 // HTTPOriginPort applies equality check predicate on the "http_origin_port" field. It's identical to HTTPOriginPortEQ.
-func HTTPOriginPort(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPOriginPort(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldEQ(FieldHTTPOriginPort, v))
 }
 
 // HTTPSOriginPort applies equality check predicate on the "https_origin_port" field. It's identical to HTTPSOriginPortEQ.
-func HTTPSOriginPort(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPSOriginPort(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldEQ(FieldHTTPSOriginPort, v))
 }
 
@@ -581,42 +581,42 @@ func OriginProtocolNotNil() predicate.EdgeOneZoneAccelerationDomain {
 }
 
 // HTTPOriginPortEQ applies the EQ predicate on the "http_origin_port" field.
-func HTTPOriginPortEQ(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPOriginPortEQ(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldEQ(FieldHTTPOriginPort, v))
 }
 
 // HTTPOriginPortNEQ applies the NEQ predicate on the "http_origin_port" field.
-func HTTPOriginPortNEQ(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPOriginPortNEQ(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldNEQ(FieldHTTPOriginPort, v))
 }
 
 // HTTPOriginPortIn applies the In predicate on the "http_origin_port" field.
-func HTTPOriginPortIn(vs ...int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPOriginPortIn(vs ...uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldIn(FieldHTTPOriginPort, vs...))
 }
 
 // HTTPOriginPortNotIn applies the NotIn predicate on the "http_origin_port" field.
-func HTTPOriginPortNotIn(vs ...int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPOriginPortNotIn(vs ...uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldNotIn(FieldHTTPOriginPort, vs...))
 }
 
 // HTTPOriginPortGT applies the GT predicate on the "http_origin_port" field.
-func HTTPOriginPortGT(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPOriginPortGT(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldGT(FieldHTTPOriginPort, v))
 }
 
 // HTTPOriginPortGTE applies the GTE predicate on the "http_origin_port" field.
-func HTTPOriginPortGTE(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPOriginPortGTE(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldGTE(FieldHTTPOriginPort, v))
 }
 
 // HTTPOriginPortLT applies the LT predicate on the "http_origin_port" field.
-func HTTPOriginPortLT(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPOriginPortLT(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldLT(FieldHTTPOriginPort, v))
 }
 
 // HTTPOriginPortLTE applies the LTE predicate on the "http_origin_port" field.
-func HTTPOriginPortLTE(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPOriginPortLTE(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldLTE(FieldHTTPOriginPort, v))
 }
 
@@ -631,42 +631,42 @@ func HTTPOriginPortNotNil() predicate.EdgeOneZoneAccelerationDomain {
 }
 
 // HTTPSOriginPortEQ applies the EQ predicate on the "https_origin_port" field.
-func HTTPSOriginPortEQ(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPSOriginPortEQ(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldEQ(FieldHTTPSOriginPort, v))
 }
 
 // HTTPSOriginPortNEQ applies the NEQ predicate on the "https_origin_port" field.
-func HTTPSOriginPortNEQ(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPSOriginPortNEQ(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldNEQ(FieldHTTPSOriginPort, v))
 }
 
 // HTTPSOriginPortIn applies the In predicate on the "https_origin_port" field.
-func HTTPSOriginPortIn(vs ...int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPSOriginPortIn(vs ...uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldIn(FieldHTTPSOriginPort, vs...))
 }
 
 // HTTPSOriginPortNotIn applies the NotIn predicate on the "https_origin_port" field.
-func HTTPSOriginPortNotIn(vs ...int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPSOriginPortNotIn(vs ...uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldNotIn(FieldHTTPSOriginPort, vs...))
 }
 
 // HTTPSOriginPortGT applies the GT predicate on the "https_origin_port" field.
-func HTTPSOriginPortGT(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPSOriginPortGT(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldGT(FieldHTTPSOriginPort, v))
 }
 
 // HTTPSOriginPortGTE applies the GTE predicate on the "https_origin_port" field.
-func HTTPSOriginPortGTE(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPSOriginPortGTE(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldGTE(FieldHTTPSOriginPort, v))
 }
 
 // HTTPSOriginPortLT applies the LT predicate on the "https_origin_port" field.
-func HTTPSOriginPortLT(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPSOriginPortLT(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldLT(FieldHTTPSOriginPort, v))
 }
 
 // HTTPSOriginPortLTE applies the LTE predicate on the "https_origin_port" field.
-func HTTPSOriginPortLTE(v int) predicate.EdgeOneZoneAccelerationDomain {
+func HTTPSOriginPortLTE(v uint64) predicate.EdgeOneZoneAccelerationDomain {
 	return predicate.EdgeOneZoneAccelerationDomain(sql.FieldLTE(FieldHTTPSOriginPort, v))
 }
 

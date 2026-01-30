@@ -202,14 +202,14 @@ func (_u *EdgeOneZoneAccelerationDomainUpdate) ClearOriginProtocol() *EdgeOneZon
 }
 
 // SetHTTPOriginPort sets the "http_origin_port" field.
-func (_u *EdgeOneZoneAccelerationDomainUpdate) SetHTTPOriginPort(v int) *EdgeOneZoneAccelerationDomainUpdate {
+func (_u *EdgeOneZoneAccelerationDomainUpdate) SetHTTPOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpdate {
 	_u.mutation.ResetHTTPOriginPort()
 	_u.mutation.SetHTTPOriginPort(v)
 	return _u
 }
 
 // SetNillableHTTPOriginPort sets the "http_origin_port" field if the given value is not nil.
-func (_u *EdgeOneZoneAccelerationDomainUpdate) SetNillableHTTPOriginPort(v *int) *EdgeOneZoneAccelerationDomainUpdate {
+func (_u *EdgeOneZoneAccelerationDomainUpdate) SetNillableHTTPOriginPort(v *uint64) *EdgeOneZoneAccelerationDomainUpdate {
 	if v != nil {
 		_u.SetHTTPOriginPort(*v)
 	}
@@ -217,7 +217,7 @@ func (_u *EdgeOneZoneAccelerationDomainUpdate) SetNillableHTTPOriginPort(v *int)
 }
 
 // AddHTTPOriginPort adds value to the "http_origin_port" field.
-func (_u *EdgeOneZoneAccelerationDomainUpdate) AddHTTPOriginPort(v int) *EdgeOneZoneAccelerationDomainUpdate {
+func (_u *EdgeOneZoneAccelerationDomainUpdate) AddHTTPOriginPort(v int64) *EdgeOneZoneAccelerationDomainUpdate {
 	_u.mutation.AddHTTPOriginPort(v)
 	return _u
 }
@@ -229,14 +229,14 @@ func (_u *EdgeOneZoneAccelerationDomainUpdate) ClearHTTPOriginPort() *EdgeOneZon
 }
 
 // SetHTTPSOriginPort sets the "https_origin_port" field.
-func (_u *EdgeOneZoneAccelerationDomainUpdate) SetHTTPSOriginPort(v int) *EdgeOneZoneAccelerationDomainUpdate {
+func (_u *EdgeOneZoneAccelerationDomainUpdate) SetHTTPSOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpdate {
 	_u.mutation.ResetHTTPSOriginPort()
 	_u.mutation.SetHTTPSOriginPort(v)
 	return _u
 }
 
 // SetNillableHTTPSOriginPort sets the "https_origin_port" field if the given value is not nil.
-func (_u *EdgeOneZoneAccelerationDomainUpdate) SetNillableHTTPSOriginPort(v *int) *EdgeOneZoneAccelerationDomainUpdate {
+func (_u *EdgeOneZoneAccelerationDomainUpdate) SetNillableHTTPSOriginPort(v *uint64) *EdgeOneZoneAccelerationDomainUpdate {
 	if v != nil {
 		_u.SetHTTPSOriginPort(*v)
 	}
@@ -244,7 +244,7 @@ func (_u *EdgeOneZoneAccelerationDomainUpdate) SetNillableHTTPSOriginPort(v *int
 }
 
 // AddHTTPSOriginPort adds value to the "https_origin_port" field.
-func (_u *EdgeOneZoneAccelerationDomainUpdate) AddHTTPSOriginPort(v int) *EdgeOneZoneAccelerationDomainUpdate {
+func (_u *EdgeOneZoneAccelerationDomainUpdate) AddHTTPSOriginPort(v int64) *EdgeOneZoneAccelerationDomainUpdate {
 	_u.mutation.AddHTTPSOriginPort(v)
 	return _u
 }
@@ -428,22 +428,22 @@ func (_u *EdgeOneZoneAccelerationDomainUpdate) sqlSave(ctx context.Context) (_no
 		_spec.ClearField(edgeonezoneaccelerationdomain.FieldOriginProtocol, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.HTTPOriginPort(); ok {
-		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeInt, value)
+		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedHTTPOriginPort(); ok {
-		_spec.AddField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeInt, value)
+		_spec.AddField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeUint64, value)
 	}
 	if _u.mutation.HTTPOriginPortCleared() {
-		_spec.ClearField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeInt)
+		_spec.ClearField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.HTTPSOriginPort(); ok {
-		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeInt, value)
+		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedHTTPSOriginPort(); ok {
-		_spec.AddField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeInt, value)
+		_spec.AddField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeUint64, value)
 	}
 	if _u.mutation.HTTPSOriginPortCleared() {
-		_spec.ClearField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeInt)
+		_spec.ClearField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Certificate(); ok {
 		_spec.SetField(edgeonezoneaccelerationdomain.FieldCertificate, field.TypeJSON, value)
@@ -649,14 +649,14 @@ func (_u *EdgeOneZoneAccelerationDomainUpdateOne) ClearOriginProtocol() *EdgeOne
 }
 
 // SetHTTPOriginPort sets the "http_origin_port" field.
-func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetHTTPOriginPort(v int) *EdgeOneZoneAccelerationDomainUpdateOne {
+func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetHTTPOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpdateOne {
 	_u.mutation.ResetHTTPOriginPort()
 	_u.mutation.SetHTTPOriginPort(v)
 	return _u
 }
 
 // SetNillableHTTPOriginPort sets the "http_origin_port" field if the given value is not nil.
-func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetNillableHTTPOriginPort(v *int) *EdgeOneZoneAccelerationDomainUpdateOne {
+func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetNillableHTTPOriginPort(v *uint64) *EdgeOneZoneAccelerationDomainUpdateOne {
 	if v != nil {
 		_u.SetHTTPOriginPort(*v)
 	}
@@ -664,7 +664,7 @@ func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetNillableHTTPOriginPort(v *i
 }
 
 // AddHTTPOriginPort adds value to the "http_origin_port" field.
-func (_u *EdgeOneZoneAccelerationDomainUpdateOne) AddHTTPOriginPort(v int) *EdgeOneZoneAccelerationDomainUpdateOne {
+func (_u *EdgeOneZoneAccelerationDomainUpdateOne) AddHTTPOriginPort(v int64) *EdgeOneZoneAccelerationDomainUpdateOne {
 	_u.mutation.AddHTTPOriginPort(v)
 	return _u
 }
@@ -676,14 +676,14 @@ func (_u *EdgeOneZoneAccelerationDomainUpdateOne) ClearHTTPOriginPort() *EdgeOne
 }
 
 // SetHTTPSOriginPort sets the "https_origin_port" field.
-func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetHTTPSOriginPort(v int) *EdgeOneZoneAccelerationDomainUpdateOne {
+func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetHTTPSOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpdateOne {
 	_u.mutation.ResetHTTPSOriginPort()
 	_u.mutation.SetHTTPSOriginPort(v)
 	return _u
 }
 
 // SetNillableHTTPSOriginPort sets the "https_origin_port" field if the given value is not nil.
-func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetNillableHTTPSOriginPort(v *int) *EdgeOneZoneAccelerationDomainUpdateOne {
+func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetNillableHTTPSOriginPort(v *uint64) *EdgeOneZoneAccelerationDomainUpdateOne {
 	if v != nil {
 		_u.SetHTTPSOriginPort(*v)
 	}
@@ -691,7 +691,7 @@ func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetNillableHTTPSOriginPort(v *
 }
 
 // AddHTTPSOriginPort adds value to the "https_origin_port" field.
-func (_u *EdgeOneZoneAccelerationDomainUpdateOne) AddHTTPSOriginPort(v int) *EdgeOneZoneAccelerationDomainUpdateOne {
+func (_u *EdgeOneZoneAccelerationDomainUpdateOne) AddHTTPSOriginPort(v int64) *EdgeOneZoneAccelerationDomainUpdateOne {
 	_u.mutation.AddHTTPSOriginPort(v)
 	return _u
 }
@@ -905,22 +905,22 @@ func (_u *EdgeOneZoneAccelerationDomainUpdateOne) sqlSave(ctx context.Context) (
 		_spec.ClearField(edgeonezoneaccelerationdomain.FieldOriginProtocol, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.HTTPOriginPort(); ok {
-		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeInt, value)
+		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedHTTPOriginPort(); ok {
-		_spec.AddField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeInt, value)
+		_spec.AddField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeUint64, value)
 	}
 	if _u.mutation.HTTPOriginPortCleared() {
-		_spec.ClearField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeInt)
+		_spec.ClearField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.HTTPSOriginPort(); ok {
-		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeInt, value)
+		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeUint64, value)
 	}
 	if value, ok := _u.mutation.AddedHTTPSOriginPort(); ok {
-		_spec.AddField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeInt, value)
+		_spec.AddField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeUint64, value)
 	}
 	if _u.mutation.HTTPSOriginPortCleared() {
-		_spec.ClearField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeInt)
+		_spec.ClearField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeUint64)
 	}
 	if value, ok := _u.mutation.Certificate(); ok {
 		_spec.SetField(edgeonezoneaccelerationdomain.FieldCertificate, field.TypeJSON, value)

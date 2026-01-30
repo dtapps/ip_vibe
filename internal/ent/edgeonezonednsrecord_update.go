@@ -144,14 +144,14 @@ func (_u *EdgeOneZoneDNSRecordUpdate) ClearContent() *EdgeOneZoneDNSRecordUpdate
 }
 
 // SetTTL sets the "ttl" field.
-func (_u *EdgeOneZoneDNSRecordUpdate) SetTTL(v int) *EdgeOneZoneDNSRecordUpdate {
+func (_u *EdgeOneZoneDNSRecordUpdate) SetTTL(v int64) *EdgeOneZoneDNSRecordUpdate {
 	_u.mutation.ResetTTL()
 	_u.mutation.SetTTL(v)
 	return _u
 }
 
 // SetNillableTTL sets the "ttl" field if the given value is not nil.
-func (_u *EdgeOneZoneDNSRecordUpdate) SetNillableTTL(v *int) *EdgeOneZoneDNSRecordUpdate {
+func (_u *EdgeOneZoneDNSRecordUpdate) SetNillableTTL(v *int64) *EdgeOneZoneDNSRecordUpdate {
 	if v != nil {
 		_u.SetTTL(*v)
 	}
@@ -159,7 +159,7 @@ func (_u *EdgeOneZoneDNSRecordUpdate) SetNillableTTL(v *int) *EdgeOneZoneDNSReco
 }
 
 // AddTTL adds value to the "ttl" field.
-func (_u *EdgeOneZoneDNSRecordUpdate) AddTTL(v int) *EdgeOneZoneDNSRecordUpdate {
+func (_u *EdgeOneZoneDNSRecordUpdate) AddTTL(v int64) *EdgeOneZoneDNSRecordUpdate {
 	_u.mutation.AddTTL(v)
 	return _u
 }
@@ -171,14 +171,14 @@ func (_u *EdgeOneZoneDNSRecordUpdate) ClearTTL() *EdgeOneZoneDNSRecordUpdate {
 }
 
 // SetWeight sets the "weight" field.
-func (_u *EdgeOneZoneDNSRecordUpdate) SetWeight(v int) *EdgeOneZoneDNSRecordUpdate {
+func (_u *EdgeOneZoneDNSRecordUpdate) SetWeight(v int64) *EdgeOneZoneDNSRecordUpdate {
 	_u.mutation.ResetWeight()
 	_u.mutation.SetWeight(v)
 	return _u
 }
 
 // SetNillableWeight sets the "weight" field if the given value is not nil.
-func (_u *EdgeOneZoneDNSRecordUpdate) SetNillableWeight(v *int) *EdgeOneZoneDNSRecordUpdate {
+func (_u *EdgeOneZoneDNSRecordUpdate) SetNillableWeight(v *int64) *EdgeOneZoneDNSRecordUpdate {
 	if v != nil {
 		_u.SetWeight(*v)
 	}
@@ -186,7 +186,7 @@ func (_u *EdgeOneZoneDNSRecordUpdate) SetNillableWeight(v *int) *EdgeOneZoneDNSR
 }
 
 // AddWeight adds value to the "weight" field.
-func (_u *EdgeOneZoneDNSRecordUpdate) AddWeight(v int) *EdgeOneZoneDNSRecordUpdate {
+func (_u *EdgeOneZoneDNSRecordUpdate) AddWeight(v int64) *EdgeOneZoneDNSRecordUpdate {
 	_u.mutation.AddWeight(v)
 	return _u
 }
@@ -198,14 +198,14 @@ func (_u *EdgeOneZoneDNSRecordUpdate) ClearWeight() *EdgeOneZoneDNSRecordUpdate 
 }
 
 // SetPriority sets the "priority" field.
-func (_u *EdgeOneZoneDNSRecordUpdate) SetPriority(v int) *EdgeOneZoneDNSRecordUpdate {
+func (_u *EdgeOneZoneDNSRecordUpdate) SetPriority(v int64) *EdgeOneZoneDNSRecordUpdate {
 	_u.mutation.ResetPriority()
 	_u.mutation.SetPriority(v)
 	return _u
 }
 
 // SetNillablePriority sets the "priority" field if the given value is not nil.
-func (_u *EdgeOneZoneDNSRecordUpdate) SetNillablePriority(v *int) *EdgeOneZoneDNSRecordUpdate {
+func (_u *EdgeOneZoneDNSRecordUpdate) SetNillablePriority(v *int64) *EdgeOneZoneDNSRecordUpdate {
 	if v != nil {
 		_u.SetPriority(*v)
 	}
@@ -213,7 +213,7 @@ func (_u *EdgeOneZoneDNSRecordUpdate) SetNillablePriority(v *int) *EdgeOneZoneDN
 }
 
 // AddPriority adds value to the "priority" field.
-func (_u *EdgeOneZoneDNSRecordUpdate) AddPriority(v int) *EdgeOneZoneDNSRecordUpdate {
+func (_u *EdgeOneZoneDNSRecordUpdate) AddPriority(v int64) *EdgeOneZoneDNSRecordUpdate {
 	_u.mutation.AddPriority(v)
 	return _u
 }
@@ -361,31 +361,31 @@ func (_u *EdgeOneZoneDNSRecordUpdate) sqlSave(ctx context.Context) (_node int, e
 		_spec.ClearField(edgeonezonednsrecord.FieldContent, field.TypeString)
 	}
 	if value, ok := _u.mutation.TTL(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldTTL, field.TypeInt, value)
+		_spec.SetField(edgeonezonednsrecord.FieldTTL, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedTTL(); ok {
-		_spec.AddField(edgeonezonednsrecord.FieldTTL, field.TypeInt, value)
+		_spec.AddField(edgeonezonednsrecord.FieldTTL, field.TypeInt64, value)
 	}
 	if _u.mutation.TTLCleared() {
-		_spec.ClearField(edgeonezonednsrecord.FieldTTL, field.TypeInt)
+		_spec.ClearField(edgeonezonednsrecord.FieldTTL, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Weight(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldWeight, field.TypeInt, value)
+		_spec.SetField(edgeonezonednsrecord.FieldWeight, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedWeight(); ok {
-		_spec.AddField(edgeonezonednsrecord.FieldWeight, field.TypeInt, value)
+		_spec.AddField(edgeonezonednsrecord.FieldWeight, field.TypeInt64, value)
 	}
 	if _u.mutation.WeightCleared() {
-		_spec.ClearField(edgeonezonednsrecord.FieldWeight, field.TypeInt)
+		_spec.ClearField(edgeonezonednsrecord.FieldWeight, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Priority(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldPriority, field.TypeInt, value)
+		_spec.SetField(edgeonezonednsrecord.FieldPriority, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedPriority(); ok {
-		_spec.AddField(edgeonezonednsrecord.FieldPriority, field.TypeInt, value)
+		_spec.AddField(edgeonezonednsrecord.FieldPriority, field.TypeInt64, value)
 	}
 	if _u.mutation.PriorityCleared() {
-		_spec.ClearField(edgeonezonednsrecord.FieldPriority, field.TypeInt)
+		_spec.ClearField(edgeonezonednsrecord.FieldPriority, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(edgeonezonednsrecord.FieldStatus, field.TypeEnum, value)
@@ -530,14 +530,14 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) ClearContent() *EdgeOneZoneDNSRecordUpd
 }
 
 // SetTTL sets the "ttl" field.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) SetTTL(v int) *EdgeOneZoneDNSRecordUpdateOne {
+func (_u *EdgeOneZoneDNSRecordUpdateOne) SetTTL(v int64) *EdgeOneZoneDNSRecordUpdateOne {
 	_u.mutation.ResetTTL()
 	_u.mutation.SetTTL(v)
 	return _u
 }
 
 // SetNillableTTL sets the "ttl" field if the given value is not nil.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillableTTL(v *int) *EdgeOneZoneDNSRecordUpdateOne {
+func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillableTTL(v *int64) *EdgeOneZoneDNSRecordUpdateOne {
 	if v != nil {
 		_u.SetTTL(*v)
 	}
@@ -545,7 +545,7 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillableTTL(v *int) *EdgeOneZoneDNSR
 }
 
 // AddTTL adds value to the "ttl" field.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) AddTTL(v int) *EdgeOneZoneDNSRecordUpdateOne {
+func (_u *EdgeOneZoneDNSRecordUpdateOne) AddTTL(v int64) *EdgeOneZoneDNSRecordUpdateOne {
 	_u.mutation.AddTTL(v)
 	return _u
 }
@@ -557,14 +557,14 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) ClearTTL() *EdgeOneZoneDNSRecordUpdateO
 }
 
 // SetWeight sets the "weight" field.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) SetWeight(v int) *EdgeOneZoneDNSRecordUpdateOne {
+func (_u *EdgeOneZoneDNSRecordUpdateOne) SetWeight(v int64) *EdgeOneZoneDNSRecordUpdateOne {
 	_u.mutation.ResetWeight()
 	_u.mutation.SetWeight(v)
 	return _u
 }
 
 // SetNillableWeight sets the "weight" field if the given value is not nil.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillableWeight(v *int) *EdgeOneZoneDNSRecordUpdateOne {
+func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillableWeight(v *int64) *EdgeOneZoneDNSRecordUpdateOne {
 	if v != nil {
 		_u.SetWeight(*v)
 	}
@@ -572,7 +572,7 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillableWeight(v *int) *EdgeOneZoneD
 }
 
 // AddWeight adds value to the "weight" field.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) AddWeight(v int) *EdgeOneZoneDNSRecordUpdateOne {
+func (_u *EdgeOneZoneDNSRecordUpdateOne) AddWeight(v int64) *EdgeOneZoneDNSRecordUpdateOne {
 	_u.mutation.AddWeight(v)
 	return _u
 }
@@ -584,14 +584,14 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) ClearWeight() *EdgeOneZoneDNSRecordUpda
 }
 
 // SetPriority sets the "priority" field.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) SetPriority(v int) *EdgeOneZoneDNSRecordUpdateOne {
+func (_u *EdgeOneZoneDNSRecordUpdateOne) SetPriority(v int64) *EdgeOneZoneDNSRecordUpdateOne {
 	_u.mutation.ResetPriority()
 	_u.mutation.SetPriority(v)
 	return _u
 }
 
 // SetNillablePriority sets the "priority" field if the given value is not nil.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillablePriority(v *int) *EdgeOneZoneDNSRecordUpdateOne {
+func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillablePriority(v *int64) *EdgeOneZoneDNSRecordUpdateOne {
 	if v != nil {
 		_u.SetPriority(*v)
 	}
@@ -599,7 +599,7 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillablePriority(v *int) *EdgeOneZon
 }
 
 // AddPriority adds value to the "priority" field.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) AddPriority(v int) *EdgeOneZoneDNSRecordUpdateOne {
+func (_u *EdgeOneZoneDNSRecordUpdateOne) AddPriority(v int64) *EdgeOneZoneDNSRecordUpdateOne {
 	_u.mutation.AddPriority(v)
 	return _u
 }
@@ -777,31 +777,31 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) sqlSave(ctx context.Context) (_node *Ed
 		_spec.ClearField(edgeonezonednsrecord.FieldContent, field.TypeString)
 	}
 	if value, ok := _u.mutation.TTL(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldTTL, field.TypeInt, value)
+		_spec.SetField(edgeonezonednsrecord.FieldTTL, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedTTL(); ok {
-		_spec.AddField(edgeonezonednsrecord.FieldTTL, field.TypeInt, value)
+		_spec.AddField(edgeonezonednsrecord.FieldTTL, field.TypeInt64, value)
 	}
 	if _u.mutation.TTLCleared() {
-		_spec.ClearField(edgeonezonednsrecord.FieldTTL, field.TypeInt)
+		_spec.ClearField(edgeonezonednsrecord.FieldTTL, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Weight(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldWeight, field.TypeInt, value)
+		_spec.SetField(edgeonezonednsrecord.FieldWeight, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedWeight(); ok {
-		_spec.AddField(edgeonezonednsrecord.FieldWeight, field.TypeInt, value)
+		_spec.AddField(edgeonezonednsrecord.FieldWeight, field.TypeInt64, value)
 	}
 	if _u.mutation.WeightCleared() {
-		_spec.ClearField(edgeonezonednsrecord.FieldWeight, field.TypeInt)
+		_spec.ClearField(edgeonezonednsrecord.FieldWeight, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Priority(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldPriority, field.TypeInt, value)
+		_spec.SetField(edgeonezonednsrecord.FieldPriority, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.AddedPriority(); ok {
-		_spec.AddField(edgeonezonednsrecord.FieldPriority, field.TypeInt, value)
+		_spec.AddField(edgeonezonednsrecord.FieldPriority, field.TypeInt64, value)
 	}
 	if _u.mutation.PriorityCleared() {
-		_spec.ClearField(edgeonezonednsrecord.FieldPriority, field.TypeInt)
+		_spec.ClearField(edgeonezonednsrecord.FieldPriority, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(edgeonezonednsrecord.FieldStatus, field.TypeEnum, value)

@@ -11267,10 +11267,10 @@ type EdgeOneZoneAccelerationDomainMutation struct {
 	origin_detail                *json.RawMessage
 	appendorigin_detail          json.RawMessage
 	origin_protocol              *edgeonezoneaccelerationdomain.OriginProtocol
-	http_origin_port             *int
-	addhttp_origin_port          *int
-	https_origin_port            *int
-	addhttps_origin_port         *int
+	http_origin_port             *uint64
+	addhttp_origin_port          *int64
+	https_origin_port            *uint64
+	addhttps_origin_port         *int64
 	certificate                  *json.RawMessage
 	appendcertificate            json.RawMessage
 	clearedFields                map[string]struct{}
@@ -12003,13 +12003,13 @@ func (m *EdgeOneZoneAccelerationDomainMutation) ResetOriginProtocol() {
 }
 
 // SetHTTPOriginPort sets the "http_origin_port" field.
-func (m *EdgeOneZoneAccelerationDomainMutation) SetHTTPOriginPort(i int) {
-	m.http_origin_port = &i
+func (m *EdgeOneZoneAccelerationDomainMutation) SetHTTPOriginPort(u uint64) {
+	m.http_origin_port = &u
 	m.addhttp_origin_port = nil
 }
 
 // HTTPOriginPort returns the value of the "http_origin_port" field in the mutation.
-func (m *EdgeOneZoneAccelerationDomainMutation) HTTPOriginPort() (r int, exists bool) {
+func (m *EdgeOneZoneAccelerationDomainMutation) HTTPOriginPort() (r uint64, exists bool) {
 	v := m.http_origin_port
 	if v == nil {
 		return
@@ -12020,7 +12020,7 @@ func (m *EdgeOneZoneAccelerationDomainMutation) HTTPOriginPort() (r int, exists 
 // OldHTTPOriginPort returns the old "http_origin_port" field's value of the EdgeOneZoneAccelerationDomain entity.
 // If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneAccelerationDomainMutation) OldHTTPOriginPort(ctx context.Context) (v int, err error) {
+func (m *EdgeOneZoneAccelerationDomainMutation) OldHTTPOriginPort(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldHTTPOriginPort is only allowed on UpdateOne operations")
 	}
@@ -12034,17 +12034,17 @@ func (m *EdgeOneZoneAccelerationDomainMutation) OldHTTPOriginPort(ctx context.Co
 	return oldValue.HTTPOriginPort, nil
 }
 
-// AddHTTPOriginPort adds i to the "http_origin_port" field.
-func (m *EdgeOneZoneAccelerationDomainMutation) AddHTTPOriginPort(i int) {
+// AddHTTPOriginPort adds u to the "http_origin_port" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) AddHTTPOriginPort(u int64) {
 	if m.addhttp_origin_port != nil {
-		*m.addhttp_origin_port += i
+		*m.addhttp_origin_port += u
 	} else {
-		m.addhttp_origin_port = &i
+		m.addhttp_origin_port = &u
 	}
 }
 
 // AddedHTTPOriginPort returns the value that was added to the "http_origin_port" field in this mutation.
-func (m *EdgeOneZoneAccelerationDomainMutation) AddedHTTPOriginPort() (r int, exists bool) {
+func (m *EdgeOneZoneAccelerationDomainMutation) AddedHTTPOriginPort() (r int64, exists bool) {
 	v := m.addhttp_origin_port
 	if v == nil {
 		return
@@ -12073,13 +12073,13 @@ func (m *EdgeOneZoneAccelerationDomainMutation) ResetHTTPOriginPort() {
 }
 
 // SetHTTPSOriginPort sets the "https_origin_port" field.
-func (m *EdgeOneZoneAccelerationDomainMutation) SetHTTPSOriginPort(i int) {
-	m.https_origin_port = &i
+func (m *EdgeOneZoneAccelerationDomainMutation) SetHTTPSOriginPort(u uint64) {
+	m.https_origin_port = &u
 	m.addhttps_origin_port = nil
 }
 
 // HTTPSOriginPort returns the value of the "https_origin_port" field in the mutation.
-func (m *EdgeOneZoneAccelerationDomainMutation) HTTPSOriginPort() (r int, exists bool) {
+func (m *EdgeOneZoneAccelerationDomainMutation) HTTPSOriginPort() (r uint64, exists bool) {
 	v := m.https_origin_port
 	if v == nil {
 		return
@@ -12090,7 +12090,7 @@ func (m *EdgeOneZoneAccelerationDomainMutation) HTTPSOriginPort() (r int, exists
 // OldHTTPSOriginPort returns the old "https_origin_port" field's value of the EdgeOneZoneAccelerationDomain entity.
 // If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneAccelerationDomainMutation) OldHTTPSOriginPort(ctx context.Context) (v int, err error) {
+func (m *EdgeOneZoneAccelerationDomainMutation) OldHTTPSOriginPort(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldHTTPSOriginPort is only allowed on UpdateOne operations")
 	}
@@ -12104,17 +12104,17 @@ func (m *EdgeOneZoneAccelerationDomainMutation) OldHTTPSOriginPort(ctx context.C
 	return oldValue.HTTPSOriginPort, nil
 }
 
-// AddHTTPSOriginPort adds i to the "https_origin_port" field.
-func (m *EdgeOneZoneAccelerationDomainMutation) AddHTTPSOriginPort(i int) {
+// AddHTTPSOriginPort adds u to the "https_origin_port" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) AddHTTPSOriginPort(u int64) {
 	if m.addhttps_origin_port != nil {
-		*m.addhttps_origin_port += i
+		*m.addhttps_origin_port += u
 	} else {
-		m.addhttps_origin_port = &i
+		m.addhttps_origin_port = &u
 	}
 }
 
 // AddedHTTPSOriginPort returns the value that was added to the "https_origin_port" field in this mutation.
-func (m *EdgeOneZoneAccelerationDomainMutation) AddedHTTPSOriginPort() (r int, exists bool) {
+func (m *EdgeOneZoneAccelerationDomainMutation) AddedHTTPSOriginPort() (r int64, exists bool) {
 	v := m.addhttps_origin_port
 	if v == nil {
 		return
@@ -12499,14 +12499,14 @@ func (m *EdgeOneZoneAccelerationDomainMutation) SetField(name string, value ent.
 		m.SetOriginProtocol(v)
 		return nil
 	case edgeonezoneaccelerationdomain.FieldHTTPOriginPort:
-		v, ok := value.(int)
+		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetHTTPOriginPort(v)
 		return nil
 	case edgeonezoneaccelerationdomain.FieldHTTPSOriginPort:
-		v, ok := value.(int)
+		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -12555,14 +12555,14 @@ func (m *EdgeOneZoneAccelerationDomainMutation) AddedField(name string) (ent.Val
 func (m *EdgeOneZoneAccelerationDomainMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case edgeonezoneaccelerationdomain.FieldHTTPOriginPort:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddHTTPOriginPort(v)
 		return nil
 	case edgeonezoneaccelerationdomain.FieldHTTPSOriginPort:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -12811,12 +12811,12 @@ type EdgeOneZoneDNSRecordMutation struct {
 	_type               *edgeonezonednsrecord.Type
 	location            *string
 	content             *string
-	ttl                 *int
-	addttl              *int
-	weight              *int
-	addweight           *int
-	priority            *int
-	addpriority         *int
+	ttl                 *int64
+	addttl              *int64
+	weight              *int64
+	addweight           *int64
+	priority            *int64
+	addpriority         *int64
 	status              *edgeonezonednsrecord.Status
 	clearedFields       map[string]struct{}
 	edgeone_zone        *int64
@@ -13369,13 +13369,13 @@ func (m *EdgeOneZoneDNSRecordMutation) ResetContent() {
 }
 
 // SetTTL sets the "ttl" field.
-func (m *EdgeOneZoneDNSRecordMutation) SetTTL(i int) {
+func (m *EdgeOneZoneDNSRecordMutation) SetTTL(i int64) {
 	m.ttl = &i
 	m.addttl = nil
 }
 
 // TTL returns the value of the "ttl" field in the mutation.
-func (m *EdgeOneZoneDNSRecordMutation) TTL() (r int, exists bool) {
+func (m *EdgeOneZoneDNSRecordMutation) TTL() (r int64, exists bool) {
 	v := m.ttl
 	if v == nil {
 		return
@@ -13386,7 +13386,7 @@ func (m *EdgeOneZoneDNSRecordMutation) TTL() (r int, exists bool) {
 // OldTTL returns the old "ttl" field's value of the EdgeOneZoneDNSRecord entity.
 // If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneDNSRecordMutation) OldTTL(ctx context.Context) (v int, err error) {
+func (m *EdgeOneZoneDNSRecordMutation) OldTTL(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTTL is only allowed on UpdateOne operations")
 	}
@@ -13401,7 +13401,7 @@ func (m *EdgeOneZoneDNSRecordMutation) OldTTL(ctx context.Context) (v int, err e
 }
 
 // AddTTL adds i to the "ttl" field.
-func (m *EdgeOneZoneDNSRecordMutation) AddTTL(i int) {
+func (m *EdgeOneZoneDNSRecordMutation) AddTTL(i int64) {
 	if m.addttl != nil {
 		*m.addttl += i
 	} else {
@@ -13410,7 +13410,7 @@ func (m *EdgeOneZoneDNSRecordMutation) AddTTL(i int) {
 }
 
 // AddedTTL returns the value that was added to the "ttl" field in this mutation.
-func (m *EdgeOneZoneDNSRecordMutation) AddedTTL() (r int, exists bool) {
+func (m *EdgeOneZoneDNSRecordMutation) AddedTTL() (r int64, exists bool) {
 	v := m.addttl
 	if v == nil {
 		return
@@ -13439,13 +13439,13 @@ func (m *EdgeOneZoneDNSRecordMutation) ResetTTL() {
 }
 
 // SetWeight sets the "weight" field.
-func (m *EdgeOneZoneDNSRecordMutation) SetWeight(i int) {
+func (m *EdgeOneZoneDNSRecordMutation) SetWeight(i int64) {
 	m.weight = &i
 	m.addweight = nil
 }
 
 // Weight returns the value of the "weight" field in the mutation.
-func (m *EdgeOneZoneDNSRecordMutation) Weight() (r int, exists bool) {
+func (m *EdgeOneZoneDNSRecordMutation) Weight() (r int64, exists bool) {
 	v := m.weight
 	if v == nil {
 		return
@@ -13456,7 +13456,7 @@ func (m *EdgeOneZoneDNSRecordMutation) Weight() (r int, exists bool) {
 // OldWeight returns the old "weight" field's value of the EdgeOneZoneDNSRecord entity.
 // If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneDNSRecordMutation) OldWeight(ctx context.Context) (v int, err error) {
+func (m *EdgeOneZoneDNSRecordMutation) OldWeight(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldWeight is only allowed on UpdateOne operations")
 	}
@@ -13471,7 +13471,7 @@ func (m *EdgeOneZoneDNSRecordMutation) OldWeight(ctx context.Context) (v int, er
 }
 
 // AddWeight adds i to the "weight" field.
-func (m *EdgeOneZoneDNSRecordMutation) AddWeight(i int) {
+func (m *EdgeOneZoneDNSRecordMutation) AddWeight(i int64) {
 	if m.addweight != nil {
 		*m.addweight += i
 	} else {
@@ -13480,7 +13480,7 @@ func (m *EdgeOneZoneDNSRecordMutation) AddWeight(i int) {
 }
 
 // AddedWeight returns the value that was added to the "weight" field in this mutation.
-func (m *EdgeOneZoneDNSRecordMutation) AddedWeight() (r int, exists bool) {
+func (m *EdgeOneZoneDNSRecordMutation) AddedWeight() (r int64, exists bool) {
 	v := m.addweight
 	if v == nil {
 		return
@@ -13509,13 +13509,13 @@ func (m *EdgeOneZoneDNSRecordMutation) ResetWeight() {
 }
 
 // SetPriority sets the "priority" field.
-func (m *EdgeOneZoneDNSRecordMutation) SetPriority(i int) {
+func (m *EdgeOneZoneDNSRecordMutation) SetPriority(i int64) {
 	m.priority = &i
 	m.addpriority = nil
 }
 
 // Priority returns the value of the "priority" field in the mutation.
-func (m *EdgeOneZoneDNSRecordMutation) Priority() (r int, exists bool) {
+func (m *EdgeOneZoneDNSRecordMutation) Priority() (r int64, exists bool) {
 	v := m.priority
 	if v == nil {
 		return
@@ -13526,7 +13526,7 @@ func (m *EdgeOneZoneDNSRecordMutation) Priority() (r int, exists bool) {
 // OldPriority returns the old "priority" field's value of the EdgeOneZoneDNSRecord entity.
 // If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneDNSRecordMutation) OldPriority(ctx context.Context) (v int, err error) {
+func (m *EdgeOneZoneDNSRecordMutation) OldPriority(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPriority is only allowed on UpdateOne operations")
 	}
@@ -13541,7 +13541,7 @@ func (m *EdgeOneZoneDNSRecordMutation) OldPriority(ctx context.Context) (v int, 
 }
 
 // AddPriority adds i to the "priority" field.
-func (m *EdgeOneZoneDNSRecordMutation) AddPriority(i int) {
+func (m *EdgeOneZoneDNSRecordMutation) AddPriority(i int64) {
 	if m.addpriority != nil {
 		*m.addpriority += i
 	} else {
@@ -13550,7 +13550,7 @@ func (m *EdgeOneZoneDNSRecordMutation) AddPriority(i int) {
 }
 
 // AddedPriority returns the value that was added to the "priority" field in this mutation.
-func (m *EdgeOneZoneDNSRecordMutation) AddedPriority() (r int, exists bool) {
+func (m *EdgeOneZoneDNSRecordMutation) AddedPriority() (r int64, exists bool) {
 	v := m.addpriority
 	if v == nil {
 		return
@@ -13884,21 +13884,21 @@ func (m *EdgeOneZoneDNSRecordMutation) SetField(name string, value ent.Value) er
 		m.SetContent(v)
 		return nil
 	case edgeonezonednsrecord.FieldTTL:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTTL(v)
 		return nil
 	case edgeonezonednsrecord.FieldWeight:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetWeight(v)
 		return nil
 	case edgeonezonednsrecord.FieldPriority:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -13952,21 +13952,21 @@ func (m *EdgeOneZoneDNSRecordMutation) AddedField(name string) (ent.Value, bool)
 func (m *EdgeOneZoneDNSRecordMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case edgeonezonednsrecord.FieldTTL:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddTTL(v)
 		return nil
 	case edgeonezonednsrecord.FieldWeight:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddWeight(v)
 		return nil
 	case edgeonezonednsrecord.FieldPriority:
-		v, ok := value.(int)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

@@ -94,12 +94,12 @@ func (EdgeOneZoneAccelerationDomain) Fields() []ent.Field {
 			Comment("回源协议").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int("http_origin_port").
+		field.Uint64("http_origin_port").
 			Optional().
 			Comment("HTTP 回源端口").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int("https_origin_port").
+		field.Uint64("https_origin_port").
 			Optional().
 			Comment("HTTPS 回源端口").
 			Annotations(entsql.WithComments(true)),

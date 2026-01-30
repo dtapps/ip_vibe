@@ -75,17 +75,17 @@ func (EdgeOneZoneDNSRecord) Fields() []ent.Field {
 			Comment("DNS 记录内容").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int("ttl").
+		field.Int64("ttl").
 			Optional().
 			Comment("缓存时间").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int("weight").
+		field.Int64("weight").
 			Optional().
 			Comment("DNS 记录权重").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int("priority").
+		field.Int64("priority").
 			Optional().
 			Comment("MX 记录优先级").
 			Annotations(entsql.WithComments(true)),

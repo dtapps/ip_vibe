@@ -148,13 +148,13 @@ func (_c *EdgeOneZoneDNSRecordCreate) SetNillableContent(v *string) *EdgeOneZone
 }
 
 // SetTTL sets the "ttl" field.
-func (_c *EdgeOneZoneDNSRecordCreate) SetTTL(v int) *EdgeOneZoneDNSRecordCreate {
+func (_c *EdgeOneZoneDNSRecordCreate) SetTTL(v int64) *EdgeOneZoneDNSRecordCreate {
 	_c.mutation.SetTTL(v)
 	return _c
 }
 
 // SetNillableTTL sets the "ttl" field if the given value is not nil.
-func (_c *EdgeOneZoneDNSRecordCreate) SetNillableTTL(v *int) *EdgeOneZoneDNSRecordCreate {
+func (_c *EdgeOneZoneDNSRecordCreate) SetNillableTTL(v *int64) *EdgeOneZoneDNSRecordCreate {
 	if v != nil {
 		_c.SetTTL(*v)
 	}
@@ -162,13 +162,13 @@ func (_c *EdgeOneZoneDNSRecordCreate) SetNillableTTL(v *int) *EdgeOneZoneDNSReco
 }
 
 // SetWeight sets the "weight" field.
-func (_c *EdgeOneZoneDNSRecordCreate) SetWeight(v int) *EdgeOneZoneDNSRecordCreate {
+func (_c *EdgeOneZoneDNSRecordCreate) SetWeight(v int64) *EdgeOneZoneDNSRecordCreate {
 	_c.mutation.SetWeight(v)
 	return _c
 }
 
 // SetNillableWeight sets the "weight" field if the given value is not nil.
-func (_c *EdgeOneZoneDNSRecordCreate) SetNillableWeight(v *int) *EdgeOneZoneDNSRecordCreate {
+func (_c *EdgeOneZoneDNSRecordCreate) SetNillableWeight(v *int64) *EdgeOneZoneDNSRecordCreate {
 	if v != nil {
 		_c.SetWeight(*v)
 	}
@@ -176,13 +176,13 @@ func (_c *EdgeOneZoneDNSRecordCreate) SetNillableWeight(v *int) *EdgeOneZoneDNSR
 }
 
 // SetPriority sets the "priority" field.
-func (_c *EdgeOneZoneDNSRecordCreate) SetPriority(v int) *EdgeOneZoneDNSRecordCreate {
+func (_c *EdgeOneZoneDNSRecordCreate) SetPriority(v int64) *EdgeOneZoneDNSRecordCreate {
 	_c.mutation.SetPriority(v)
 	return _c
 }
 
 // SetNillablePriority sets the "priority" field if the given value is not nil.
-func (_c *EdgeOneZoneDNSRecordCreate) SetNillablePriority(v *int) *EdgeOneZoneDNSRecordCreate {
+func (_c *EdgeOneZoneDNSRecordCreate) SetNillablePriority(v *int64) *EdgeOneZoneDNSRecordCreate {
 	if v != nil {
 		_c.SetPriority(*v)
 	}
@@ -366,15 +366,15 @@ func (_c *EdgeOneZoneDNSRecordCreate) createSpec() (*EdgeOneZoneDNSRecord, *sqlg
 		_node.Content = value
 	}
 	if value, ok := _c.mutation.TTL(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldTTL, field.TypeInt, value)
+		_spec.SetField(edgeonezonednsrecord.FieldTTL, field.TypeInt64, value)
 		_node.TTL = value
 	}
 	if value, ok := _c.mutation.Weight(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldWeight, field.TypeInt, value)
+		_spec.SetField(edgeonezonednsrecord.FieldWeight, field.TypeInt64, value)
 		_node.Weight = value
 	}
 	if value, ok := _c.mutation.Priority(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldPriority, field.TypeInt, value)
+		_spec.SetField(edgeonezonednsrecord.FieldPriority, field.TypeInt64, value)
 		_node.Priority = value
 	}
 	if value, ok := _c.mutation.Status(); ok {
@@ -553,7 +553,7 @@ func (u *EdgeOneZoneDNSRecordUpsert) ClearContent() *EdgeOneZoneDNSRecordUpsert 
 }
 
 // SetTTL sets the "ttl" field.
-func (u *EdgeOneZoneDNSRecordUpsert) SetTTL(v int) *EdgeOneZoneDNSRecordUpsert {
+func (u *EdgeOneZoneDNSRecordUpsert) SetTTL(v int64) *EdgeOneZoneDNSRecordUpsert {
 	u.Set(edgeonezonednsrecord.FieldTTL, v)
 	return u
 }
@@ -565,7 +565,7 @@ func (u *EdgeOneZoneDNSRecordUpsert) UpdateTTL() *EdgeOneZoneDNSRecordUpsert {
 }
 
 // AddTTL adds v to the "ttl" field.
-func (u *EdgeOneZoneDNSRecordUpsert) AddTTL(v int) *EdgeOneZoneDNSRecordUpsert {
+func (u *EdgeOneZoneDNSRecordUpsert) AddTTL(v int64) *EdgeOneZoneDNSRecordUpsert {
 	u.Add(edgeonezonednsrecord.FieldTTL, v)
 	return u
 }
@@ -577,7 +577,7 @@ func (u *EdgeOneZoneDNSRecordUpsert) ClearTTL() *EdgeOneZoneDNSRecordUpsert {
 }
 
 // SetWeight sets the "weight" field.
-func (u *EdgeOneZoneDNSRecordUpsert) SetWeight(v int) *EdgeOneZoneDNSRecordUpsert {
+func (u *EdgeOneZoneDNSRecordUpsert) SetWeight(v int64) *EdgeOneZoneDNSRecordUpsert {
 	u.Set(edgeonezonednsrecord.FieldWeight, v)
 	return u
 }
@@ -589,7 +589,7 @@ func (u *EdgeOneZoneDNSRecordUpsert) UpdateWeight() *EdgeOneZoneDNSRecordUpsert 
 }
 
 // AddWeight adds v to the "weight" field.
-func (u *EdgeOneZoneDNSRecordUpsert) AddWeight(v int) *EdgeOneZoneDNSRecordUpsert {
+func (u *EdgeOneZoneDNSRecordUpsert) AddWeight(v int64) *EdgeOneZoneDNSRecordUpsert {
 	u.Add(edgeonezonednsrecord.FieldWeight, v)
 	return u
 }
@@ -601,7 +601,7 @@ func (u *EdgeOneZoneDNSRecordUpsert) ClearWeight() *EdgeOneZoneDNSRecordUpsert {
 }
 
 // SetPriority sets the "priority" field.
-func (u *EdgeOneZoneDNSRecordUpsert) SetPriority(v int) *EdgeOneZoneDNSRecordUpsert {
+func (u *EdgeOneZoneDNSRecordUpsert) SetPriority(v int64) *EdgeOneZoneDNSRecordUpsert {
 	u.Set(edgeonezonednsrecord.FieldPriority, v)
 	return u
 }
@@ -613,7 +613,7 @@ func (u *EdgeOneZoneDNSRecordUpsert) UpdatePriority() *EdgeOneZoneDNSRecordUpser
 }
 
 // AddPriority adds v to the "priority" field.
-func (u *EdgeOneZoneDNSRecordUpsert) AddPriority(v int) *EdgeOneZoneDNSRecordUpsert {
+func (u *EdgeOneZoneDNSRecordUpsert) AddPriority(v int64) *EdgeOneZoneDNSRecordUpsert {
 	u.Add(edgeonezonednsrecord.FieldPriority, v)
 	return u
 }
@@ -822,14 +822,14 @@ func (u *EdgeOneZoneDNSRecordUpsertOne) ClearContent() *EdgeOneZoneDNSRecordUpse
 }
 
 // SetTTL sets the "ttl" field.
-func (u *EdgeOneZoneDNSRecordUpsertOne) SetTTL(v int) *EdgeOneZoneDNSRecordUpsertOne {
+func (u *EdgeOneZoneDNSRecordUpsertOne) SetTTL(v int64) *EdgeOneZoneDNSRecordUpsertOne {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.SetTTL(v)
 	})
 }
 
 // AddTTL adds v to the "ttl" field.
-func (u *EdgeOneZoneDNSRecordUpsertOne) AddTTL(v int) *EdgeOneZoneDNSRecordUpsertOne {
+func (u *EdgeOneZoneDNSRecordUpsertOne) AddTTL(v int64) *EdgeOneZoneDNSRecordUpsertOne {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.AddTTL(v)
 	})
@@ -850,14 +850,14 @@ func (u *EdgeOneZoneDNSRecordUpsertOne) ClearTTL() *EdgeOneZoneDNSRecordUpsertOn
 }
 
 // SetWeight sets the "weight" field.
-func (u *EdgeOneZoneDNSRecordUpsertOne) SetWeight(v int) *EdgeOneZoneDNSRecordUpsertOne {
+func (u *EdgeOneZoneDNSRecordUpsertOne) SetWeight(v int64) *EdgeOneZoneDNSRecordUpsertOne {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.SetWeight(v)
 	})
 }
 
 // AddWeight adds v to the "weight" field.
-func (u *EdgeOneZoneDNSRecordUpsertOne) AddWeight(v int) *EdgeOneZoneDNSRecordUpsertOne {
+func (u *EdgeOneZoneDNSRecordUpsertOne) AddWeight(v int64) *EdgeOneZoneDNSRecordUpsertOne {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.AddWeight(v)
 	})
@@ -878,14 +878,14 @@ func (u *EdgeOneZoneDNSRecordUpsertOne) ClearWeight() *EdgeOneZoneDNSRecordUpser
 }
 
 // SetPriority sets the "priority" field.
-func (u *EdgeOneZoneDNSRecordUpsertOne) SetPriority(v int) *EdgeOneZoneDNSRecordUpsertOne {
+func (u *EdgeOneZoneDNSRecordUpsertOne) SetPriority(v int64) *EdgeOneZoneDNSRecordUpsertOne {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.SetPriority(v)
 	})
 }
 
 // AddPriority adds v to the "priority" field.
-func (u *EdgeOneZoneDNSRecordUpsertOne) AddPriority(v int) *EdgeOneZoneDNSRecordUpsertOne {
+func (u *EdgeOneZoneDNSRecordUpsertOne) AddPriority(v int64) *EdgeOneZoneDNSRecordUpsertOne {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.AddPriority(v)
 	})
@@ -1272,14 +1272,14 @@ func (u *EdgeOneZoneDNSRecordUpsertBulk) ClearContent() *EdgeOneZoneDNSRecordUps
 }
 
 // SetTTL sets the "ttl" field.
-func (u *EdgeOneZoneDNSRecordUpsertBulk) SetTTL(v int) *EdgeOneZoneDNSRecordUpsertBulk {
+func (u *EdgeOneZoneDNSRecordUpsertBulk) SetTTL(v int64) *EdgeOneZoneDNSRecordUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.SetTTL(v)
 	})
 }
 
 // AddTTL adds v to the "ttl" field.
-func (u *EdgeOneZoneDNSRecordUpsertBulk) AddTTL(v int) *EdgeOneZoneDNSRecordUpsertBulk {
+func (u *EdgeOneZoneDNSRecordUpsertBulk) AddTTL(v int64) *EdgeOneZoneDNSRecordUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.AddTTL(v)
 	})
@@ -1300,14 +1300,14 @@ func (u *EdgeOneZoneDNSRecordUpsertBulk) ClearTTL() *EdgeOneZoneDNSRecordUpsertB
 }
 
 // SetWeight sets the "weight" field.
-func (u *EdgeOneZoneDNSRecordUpsertBulk) SetWeight(v int) *EdgeOneZoneDNSRecordUpsertBulk {
+func (u *EdgeOneZoneDNSRecordUpsertBulk) SetWeight(v int64) *EdgeOneZoneDNSRecordUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.SetWeight(v)
 	})
 }
 
 // AddWeight adds v to the "weight" field.
-func (u *EdgeOneZoneDNSRecordUpsertBulk) AddWeight(v int) *EdgeOneZoneDNSRecordUpsertBulk {
+func (u *EdgeOneZoneDNSRecordUpsertBulk) AddWeight(v int64) *EdgeOneZoneDNSRecordUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.AddWeight(v)
 	})
@@ -1328,14 +1328,14 @@ func (u *EdgeOneZoneDNSRecordUpsertBulk) ClearWeight() *EdgeOneZoneDNSRecordUpse
 }
 
 // SetPriority sets the "priority" field.
-func (u *EdgeOneZoneDNSRecordUpsertBulk) SetPriority(v int) *EdgeOneZoneDNSRecordUpsertBulk {
+func (u *EdgeOneZoneDNSRecordUpsertBulk) SetPriority(v int64) *EdgeOneZoneDNSRecordUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.SetPriority(v)
 	})
 }
 
 // AddPriority adds v to the "priority" field.
-func (u *EdgeOneZoneDNSRecordUpsertBulk) AddPriority(v int) *EdgeOneZoneDNSRecordUpsertBulk {
+func (u *EdgeOneZoneDNSRecordUpsertBulk) AddPriority(v int64) *EdgeOneZoneDNSRecordUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.AddPriority(v)
 	})

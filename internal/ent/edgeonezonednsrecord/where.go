@@ -101,17 +101,17 @@ func Content(v string) predicate.EdgeOneZoneDNSRecord {
 }
 
 // TTL applies equality check predicate on the "ttl" field. It's identical to TTLEQ.
-func TTL(v int) predicate.EdgeOneZoneDNSRecord {
+func TTL(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldEQ(FieldTTL, v))
 }
 
 // Weight applies equality check predicate on the "weight" field. It's identical to WeightEQ.
-func Weight(v int) predicate.EdgeOneZoneDNSRecord {
+func Weight(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldEQ(FieldWeight, v))
 }
 
 // Priority applies equality check predicate on the "priority" field. It's identical to PriorityEQ.
-func Priority(v int) predicate.EdgeOneZoneDNSRecord {
+func Priority(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldEQ(FieldPriority, v))
 }
 
@@ -636,42 +636,42 @@ func ContentContainsFold(v string) predicate.EdgeOneZoneDNSRecord {
 }
 
 // TTLEQ applies the EQ predicate on the "ttl" field.
-func TTLEQ(v int) predicate.EdgeOneZoneDNSRecord {
+func TTLEQ(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldEQ(FieldTTL, v))
 }
 
 // TTLNEQ applies the NEQ predicate on the "ttl" field.
-func TTLNEQ(v int) predicate.EdgeOneZoneDNSRecord {
+func TTLNEQ(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldNEQ(FieldTTL, v))
 }
 
 // TTLIn applies the In predicate on the "ttl" field.
-func TTLIn(vs ...int) predicate.EdgeOneZoneDNSRecord {
+func TTLIn(vs ...int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldIn(FieldTTL, vs...))
 }
 
 // TTLNotIn applies the NotIn predicate on the "ttl" field.
-func TTLNotIn(vs ...int) predicate.EdgeOneZoneDNSRecord {
+func TTLNotIn(vs ...int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldNotIn(FieldTTL, vs...))
 }
 
 // TTLGT applies the GT predicate on the "ttl" field.
-func TTLGT(v int) predicate.EdgeOneZoneDNSRecord {
+func TTLGT(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldGT(FieldTTL, v))
 }
 
 // TTLGTE applies the GTE predicate on the "ttl" field.
-func TTLGTE(v int) predicate.EdgeOneZoneDNSRecord {
+func TTLGTE(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldGTE(FieldTTL, v))
 }
 
 // TTLLT applies the LT predicate on the "ttl" field.
-func TTLLT(v int) predicate.EdgeOneZoneDNSRecord {
+func TTLLT(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldLT(FieldTTL, v))
 }
 
 // TTLLTE applies the LTE predicate on the "ttl" field.
-func TTLLTE(v int) predicate.EdgeOneZoneDNSRecord {
+func TTLLTE(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldLTE(FieldTTL, v))
 }
 
@@ -686,42 +686,42 @@ func TTLNotNil() predicate.EdgeOneZoneDNSRecord {
 }
 
 // WeightEQ applies the EQ predicate on the "weight" field.
-func WeightEQ(v int) predicate.EdgeOneZoneDNSRecord {
+func WeightEQ(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldEQ(FieldWeight, v))
 }
 
 // WeightNEQ applies the NEQ predicate on the "weight" field.
-func WeightNEQ(v int) predicate.EdgeOneZoneDNSRecord {
+func WeightNEQ(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldNEQ(FieldWeight, v))
 }
 
 // WeightIn applies the In predicate on the "weight" field.
-func WeightIn(vs ...int) predicate.EdgeOneZoneDNSRecord {
+func WeightIn(vs ...int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldIn(FieldWeight, vs...))
 }
 
 // WeightNotIn applies the NotIn predicate on the "weight" field.
-func WeightNotIn(vs ...int) predicate.EdgeOneZoneDNSRecord {
+func WeightNotIn(vs ...int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldNotIn(FieldWeight, vs...))
 }
 
 // WeightGT applies the GT predicate on the "weight" field.
-func WeightGT(v int) predicate.EdgeOneZoneDNSRecord {
+func WeightGT(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldGT(FieldWeight, v))
 }
 
 // WeightGTE applies the GTE predicate on the "weight" field.
-func WeightGTE(v int) predicate.EdgeOneZoneDNSRecord {
+func WeightGTE(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldGTE(FieldWeight, v))
 }
 
 // WeightLT applies the LT predicate on the "weight" field.
-func WeightLT(v int) predicate.EdgeOneZoneDNSRecord {
+func WeightLT(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldLT(FieldWeight, v))
 }
 
 // WeightLTE applies the LTE predicate on the "weight" field.
-func WeightLTE(v int) predicate.EdgeOneZoneDNSRecord {
+func WeightLTE(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldLTE(FieldWeight, v))
 }
 
@@ -736,42 +736,42 @@ func WeightNotNil() predicate.EdgeOneZoneDNSRecord {
 }
 
 // PriorityEQ applies the EQ predicate on the "priority" field.
-func PriorityEQ(v int) predicate.EdgeOneZoneDNSRecord {
+func PriorityEQ(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldEQ(FieldPriority, v))
 }
 
 // PriorityNEQ applies the NEQ predicate on the "priority" field.
-func PriorityNEQ(v int) predicate.EdgeOneZoneDNSRecord {
+func PriorityNEQ(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldNEQ(FieldPriority, v))
 }
 
 // PriorityIn applies the In predicate on the "priority" field.
-func PriorityIn(vs ...int) predicate.EdgeOneZoneDNSRecord {
+func PriorityIn(vs ...int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldIn(FieldPriority, vs...))
 }
 
 // PriorityNotIn applies the NotIn predicate on the "priority" field.
-func PriorityNotIn(vs ...int) predicate.EdgeOneZoneDNSRecord {
+func PriorityNotIn(vs ...int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldNotIn(FieldPriority, vs...))
 }
 
 // PriorityGT applies the GT predicate on the "priority" field.
-func PriorityGT(v int) predicate.EdgeOneZoneDNSRecord {
+func PriorityGT(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldGT(FieldPriority, v))
 }
 
 // PriorityGTE applies the GTE predicate on the "priority" field.
-func PriorityGTE(v int) predicate.EdgeOneZoneDNSRecord {
+func PriorityGTE(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldGTE(FieldPriority, v))
 }
 
 // PriorityLT applies the LT predicate on the "priority" field.
-func PriorityLT(v int) predicate.EdgeOneZoneDNSRecord {
+func PriorityLT(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldLT(FieldPriority, v))
 }
 
 // PriorityLTE applies the LTE predicate on the "priority" field.
-func PriorityLTE(v int) predicate.EdgeOneZoneDNSRecord {
+func PriorityLTE(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldLTE(FieldPriority, v))
 }
 

@@ -175,13 +175,13 @@ func (_c *EdgeOneZoneAccelerationDomainCreate) SetNillableOriginProtocol(v *edge
 }
 
 // SetHTTPOriginPort sets the "http_origin_port" field.
-func (_c *EdgeOneZoneAccelerationDomainCreate) SetHTTPOriginPort(v int) *EdgeOneZoneAccelerationDomainCreate {
+func (_c *EdgeOneZoneAccelerationDomainCreate) SetHTTPOriginPort(v uint64) *EdgeOneZoneAccelerationDomainCreate {
 	_c.mutation.SetHTTPOriginPort(v)
 	return _c
 }
 
 // SetNillableHTTPOriginPort sets the "http_origin_port" field if the given value is not nil.
-func (_c *EdgeOneZoneAccelerationDomainCreate) SetNillableHTTPOriginPort(v *int) *EdgeOneZoneAccelerationDomainCreate {
+func (_c *EdgeOneZoneAccelerationDomainCreate) SetNillableHTTPOriginPort(v *uint64) *EdgeOneZoneAccelerationDomainCreate {
 	if v != nil {
 		_c.SetHTTPOriginPort(*v)
 	}
@@ -189,13 +189,13 @@ func (_c *EdgeOneZoneAccelerationDomainCreate) SetNillableHTTPOriginPort(v *int)
 }
 
 // SetHTTPSOriginPort sets the "https_origin_port" field.
-func (_c *EdgeOneZoneAccelerationDomainCreate) SetHTTPSOriginPort(v int) *EdgeOneZoneAccelerationDomainCreate {
+func (_c *EdgeOneZoneAccelerationDomainCreate) SetHTTPSOriginPort(v uint64) *EdgeOneZoneAccelerationDomainCreate {
 	_c.mutation.SetHTTPSOriginPort(v)
 	return _c
 }
 
 // SetNillableHTTPSOriginPort sets the "https_origin_port" field if the given value is not nil.
-func (_c *EdgeOneZoneAccelerationDomainCreate) SetNillableHTTPSOriginPort(v *int) *EdgeOneZoneAccelerationDomainCreate {
+func (_c *EdgeOneZoneAccelerationDomainCreate) SetNillableHTTPSOriginPort(v *uint64) *EdgeOneZoneAccelerationDomainCreate {
 	if v != nil {
 		_c.SetHTTPSOriginPort(*v)
 	}
@@ -393,11 +393,11 @@ func (_c *EdgeOneZoneAccelerationDomainCreate) createSpec() (*EdgeOneZoneAcceler
 		_node.OriginProtocol = value
 	}
 	if value, ok := _c.mutation.HTTPOriginPort(); ok {
-		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeInt, value)
+		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, field.TypeUint64, value)
 		_node.HTTPOriginPort = value
 	}
 	if value, ok := _c.mutation.HTTPSOriginPort(); ok {
-		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeInt, value)
+		_spec.SetField(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, field.TypeUint64, value)
 		_node.HTTPSOriginPort = value
 	}
 	if value, ok := _c.mutation.Certificate(); ok {
@@ -630,7 +630,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsert) ClearOriginProtocol() *EdgeOneZone
 }
 
 // SetHTTPOriginPort sets the "http_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsert) SetHTTPOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsert {
+func (u *EdgeOneZoneAccelerationDomainUpsert) SetHTTPOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsert {
 	u.Set(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, v)
 	return u
 }
@@ -642,7 +642,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsert) UpdateHTTPOriginPort() *EdgeOneZon
 }
 
 // AddHTTPOriginPort adds v to the "http_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsert) AddHTTPOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsert {
+func (u *EdgeOneZoneAccelerationDomainUpsert) AddHTTPOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsert {
 	u.Add(edgeonezoneaccelerationdomain.FieldHTTPOriginPort, v)
 	return u
 }
@@ -654,7 +654,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsert) ClearHTTPOriginPort() *EdgeOneZone
 }
 
 // SetHTTPSOriginPort sets the "https_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsert) SetHTTPSOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsert {
+func (u *EdgeOneZoneAccelerationDomainUpsert) SetHTTPSOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsert {
 	u.Set(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, v)
 	return u
 }
@@ -666,7 +666,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsert) UpdateHTTPSOriginPort() *EdgeOneZo
 }
 
 // AddHTTPSOriginPort adds v to the "https_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsert) AddHTTPSOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsert {
+func (u *EdgeOneZoneAccelerationDomainUpsert) AddHTTPSOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsert {
 	u.Add(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort, v)
 	return u
 }
@@ -938,14 +938,14 @@ func (u *EdgeOneZoneAccelerationDomainUpsertOne) ClearOriginProtocol() *EdgeOneZ
 }
 
 // SetHTTPOriginPort sets the "http_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertOne) SetHTTPOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsertOne {
+func (u *EdgeOneZoneAccelerationDomainUpsertOne) SetHTTPOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.SetHTTPOriginPort(v)
 	})
 }
 
 // AddHTTPOriginPort adds v to the "http_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertOne) AddHTTPOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsertOne {
+func (u *EdgeOneZoneAccelerationDomainUpsertOne) AddHTTPOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.AddHTTPOriginPort(v)
 	})
@@ -966,14 +966,14 @@ func (u *EdgeOneZoneAccelerationDomainUpsertOne) ClearHTTPOriginPort() *EdgeOneZ
 }
 
 // SetHTTPSOriginPort sets the "https_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertOne) SetHTTPSOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsertOne {
+func (u *EdgeOneZoneAccelerationDomainUpsertOne) SetHTTPSOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.SetHTTPSOriginPort(v)
 	})
 }
 
 // AddHTTPSOriginPort adds v to the "https_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertOne) AddHTTPSOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsertOne {
+func (u *EdgeOneZoneAccelerationDomainUpsertOne) AddHTTPSOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.AddHTTPSOriginPort(v)
 	})
@@ -1423,14 +1423,14 @@ func (u *EdgeOneZoneAccelerationDomainUpsertBulk) ClearOriginProtocol() *EdgeOne
 }
 
 // SetHTTPOriginPort sets the "http_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertBulk) SetHTTPOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsertBulk {
+func (u *EdgeOneZoneAccelerationDomainUpsertBulk) SetHTTPOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.SetHTTPOriginPort(v)
 	})
 }
 
 // AddHTTPOriginPort adds v to the "http_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertBulk) AddHTTPOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsertBulk {
+func (u *EdgeOneZoneAccelerationDomainUpsertBulk) AddHTTPOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.AddHTTPOriginPort(v)
 	})
@@ -1451,14 +1451,14 @@ func (u *EdgeOneZoneAccelerationDomainUpsertBulk) ClearHTTPOriginPort() *EdgeOne
 }
 
 // SetHTTPSOriginPort sets the "https_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertBulk) SetHTTPSOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsertBulk {
+func (u *EdgeOneZoneAccelerationDomainUpsertBulk) SetHTTPSOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.SetHTTPSOriginPort(v)
 	})
 }
 
 // AddHTTPSOriginPort adds v to the "https_origin_port" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertBulk) AddHTTPSOriginPort(v int) *EdgeOneZoneAccelerationDomainUpsertBulk {
+func (u *EdgeOneZoneAccelerationDomainUpsertBulk) AddHTTPSOriginPort(v uint64) *EdgeOneZoneAccelerationDomainUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.AddHTTPSOriginPort(v)
 	})

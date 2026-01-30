@@ -2,6 +2,21 @@ package utils
 
 import "time"
 
+// Int64ToPtr 将 int64 转为 *int64（返回新分配的内存，跨函数安全）
+func Int64ToPtr(v int64) *int64 {
+	p := new(int64)
+	*p = v
+	return p
+}
+
+// PtrToInt64 将 *int64 转为 int64，nil 安全（nil 返回 0）
+func PtrToInt64(a *int64) int64 {
+	if a == nil {
+		return 0
+	}
+	return *a
+}
+
 // Uint64ToPtr 将 uint64 转为 *uint64（返回新分配的内存，跨函数安全）
 func Uint64ToPtr(v uint64) *uint64 {
 	p := new(uint64)

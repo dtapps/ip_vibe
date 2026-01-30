@@ -40,11 +40,11 @@ type EdgeOneZoneDNSRecord struct {
 	// DNS 记录内容
 	Content string `json:"content,omitempty"`
 	// 缓存时间
-	TTL int `json:"ttl,omitempty"`
+	TTL int64 `json:"ttl,omitempty"`
 	// DNS 记录权重
-	Weight int `json:"weight,omitempty"`
+	Weight int64 `json:"weight,omitempty"`
 	// MX 记录优先级
-	Priority int `json:"priority,omitempty"`
+	Priority int64 `json:"priority,omitempty"`
 	// DNS 记录解析状态
 	Status edgeonezonednsrecord.Status `json:"status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -169,19 +169,19 @@ func (_m *EdgeOneZoneDNSRecord) assignValues(columns []string, values []any) err
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field ttl", values[i])
 			} else if value.Valid {
-				_m.TTL = int(value.Int64)
+				_m.TTL = value.Int64
 			}
 		case edgeonezonednsrecord.FieldWeight:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field weight", values[i])
 			} else if value.Valid {
-				_m.Weight = int(value.Int64)
+				_m.Weight = value.Int64
 			}
 		case edgeonezonednsrecord.FieldPriority:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field priority", values[i])
 			} else if value.Valid {
-				_m.Priority = int(value.Int64)
+				_m.Priority = value.Int64
 			}
 		case edgeonezonednsrecord.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {

@@ -492,3 +492,33 @@ func (p *TencentEOProvider) OriginGroupsRaw(ctx context.Context, zone_id string)
 	}
 	return response.Response.OriginGroups, nil
 }
+
+// DnsRecordsRaw 获取所有DNS记录
+func (p *TencentEOProvider) DnsRecordsRaw(ctx context.Context, zone_id string) (zones []*teo.DnsRecord, err error) {
+	request := teo.NewDescribeDnsRecordsRequest()
+	request.ZoneId = common.StringPtr(zone_id)
+	request.Offset = common.Int64Ptr(0)
+	request.Limit = common.Int64Ptr(1000)
+	request.SortBy = common.StringPtr("created-on")
+	request.SortOrder = common.StringPtr("asc")
+	response, err := p.Provider.Client.DescribeDnsRecordsWithContext(ctx, request)
+	if err != nil {
+		return nil, fmt.Errorf("接口 DescribeDnsRecordsWithContext 失败 %w", err)
+	}
+	return response.Response.DnsRecords, nil
+}
+
+// AccelerationDomainsRaw 获取所有加速域名
+func (p *TencentEOProvider) AccelerationDomainsRaw(ctx context.Context, zone_id string) (zones []*teo.AccelerationDomain, err error) {
+	request := teo.NewDescribeAccelerationDomainsRequest()
+	request.ZoneId = common.StringPtr(zone_id)
+	request.Offset = common.Int64Ptr(0)
+	request.Limit = common.Int64Ptr(200)
+	request.Order = common.StringPtr("created_on")
+	request.Direction = common.StringPtr("asc")
+	response, err := p.Provider.Client.DescribeAccelerationDomainsWithContext(ctx, request)
+	if err != nil {
+		return nil, fmt.Errorf("接口 DescribeAccelerationDomainsWithContext 失败 %w", err)
+	}
+	return response.Response.AccelerationDomains, nil
+}

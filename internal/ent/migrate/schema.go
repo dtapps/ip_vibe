@@ -575,8 +575,8 @@ var (
 		{Name: "ownership_verification", Type: field.TypeJSON, Nullable: true, Comment: "加速域名需进行归属权验证才能继续提供服务时，该对象会携带对应验证方式所需要的信息"},
 		{Name: "origin_detail", Type: field.TypeJSON, Nullable: true, Comment: "源站信息"},
 		{Name: "origin_protocol", Type: field.TypeEnum, Nullable: true, Comment: "回源协议", Enums: []string{"FOLLOW", "HTTP", "HTTPS"}},
-		{Name: "http_origin_port", Type: field.TypeInt, Nullable: true, Comment: "HTTP 回源端口"},
-		{Name: "https_origin_port", Type: field.TypeInt, Nullable: true, Comment: "HTTPS 回源端口"},
+		{Name: "http_origin_port", Type: field.TypeUint64, Nullable: true, Comment: "HTTP 回源端口"},
+		{Name: "https_origin_port", Type: field.TypeUint64, Nullable: true, Comment: "HTTPS 回源端口"},
 		{Name: "certificate", Type: field.TypeJSON, Nullable: true, Comment: "加速域名证书信息"},
 		{Name: "edgeone_zone_id", Type: field.TypeInt64, Comment: "关联 EdgeOne 站点序号"},
 	}
@@ -622,9 +622,9 @@ var (
 		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "DNS 记录类型", Enums: []string{"A", "AAAA", "MX", "CNAME", "TXT", "NS", "CAA", "SRV"}},
 		{Name: "location", Type: field.TypeString, Nullable: true, Comment: "DNS 记录解析线路"},
 		{Name: "content", Type: field.TypeString, Nullable: true, Comment: "DNS 记录内容"},
-		{Name: "ttl", Type: field.TypeInt, Nullable: true, Comment: "缓存时间"},
-		{Name: "weight", Type: field.TypeInt, Nullable: true, Comment: "DNS 记录权重"},
-		{Name: "priority", Type: field.TypeInt, Nullable: true, Comment: "MX 记录优先级"},
+		{Name: "ttl", Type: field.TypeInt64, Nullable: true, Comment: "缓存时间"},
+		{Name: "weight", Type: field.TypeInt64, Nullable: true, Comment: "DNS 记录权重"},
+		{Name: "priority", Type: field.TypeInt64, Nullable: true, Comment: "MX 记录优先级"},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "DNS 记录解析状态", Enums: []string{"enable", "disable"}},
 		{Name: "edgeone_zone_id", Type: field.TypeInt64, Comment: "关联 EdgeOne 站点序号"},
 	}

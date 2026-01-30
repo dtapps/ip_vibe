@@ -47,9 +47,9 @@ type EdgeOneZoneAccelerationDomain struct {
 	// 回源协议
 	OriginProtocol edgeonezoneaccelerationdomain.OriginProtocol `json:"origin_protocol,omitempty"`
 	// HTTP 回源端口
-	HTTPOriginPort int `json:"http_origin_port,omitempty"`
+	HTTPOriginPort uint64 `json:"http_origin_port,omitempty"`
 	// HTTPS 回源端口
-	HTTPSOriginPort int `json:"https_origin_port,omitempty"`
+	HTTPSOriginPort uint64 `json:"https_origin_port,omitempty"`
 	// 加速域名证书信息
 	Certificate json.RawMessage `json:"certificate,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -198,13 +198,13 @@ func (_m *EdgeOneZoneAccelerationDomain) assignValues(columns []string, values [
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field http_origin_port", values[i])
 			} else if value.Valid {
-				_m.HTTPOriginPort = int(value.Int64)
+				_m.HTTPOriginPort = uint64(value.Int64)
 			}
 		case edgeonezoneaccelerationdomain.FieldHTTPSOriginPort:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field https_origin_port", values[i])
 			} else if value.Valid {
-				_m.HTTPSOriginPort = int(value.Int64)
+				_m.HTTPSOriginPort = uint64(value.Int64)
 			}
 		case edgeonezoneaccelerationdomain.FieldCertificate:
 			if value, ok := values[i].(*[]byte); !ok {

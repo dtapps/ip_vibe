@@ -8,6 +8,8 @@ import (
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
+	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent_log"
@@ -125,7 +127,7 @@ func (s *EdgeOneSync) SyncThisZones(ctx context.Context, config_id int64) (err e
 		return err
 	}
 
-	// 入库
+	// 入库所有站点
 	for _, zone := range zones {
 		// 查询站点记录
 		firstZone, err := s.db.EdgeOneZone.Query().
@@ -195,7 +197,7 @@ func (s *EdgeOneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id
 		return err
 	}
 
-	// 入库
+	// 入库所有站点
 	for _, zone := range zones {
 		if utils.PtrToString(zone.ZoneId) != zone_id {
 			continue
@@ -325,7 +327,7 @@ func (s *EdgeOneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id int
 		return fmt.Errorf("获取所有源站组失败: %w", err)
 	}
 
-	// 入库
+	// 入库所有源站组
 	for _, originGroup := range originGroups {
 		// 查询源站组记录
 		firstOriginGroup, err := s.db.EdgeOneZoneOriginGroup.Query().
@@ -361,6 +363,193 @@ func (s *EdgeOneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id int
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新源站组记录失败: %w", err)
+			}
+		}
+	}
+
+	return nil
+}
+
+// 同步 全部账号 所有站点 所有记录
+func (s *EdgeOneSync) SyncAllZoneRecords(ctx context.Context) (err error) {
+	// 查询全部EdgeOne平台
+	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
+		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
+		IDs(ctx)
+	if err != nil {
+		return fmt.Errorf("查询全部EdgeOne平台失败: %w", err)
+	}
+
+	// 并发同步
+	eg, egCtx := errgroup.WithContext(ctx)
+	eg.SetLimit(5) // 最多 5 个并发
+	for _, itemPlatformCofingID := range allPlatformCofingIDs {
+		itemPlatformCofingID := itemPlatformCofingID
+		eg.Go(func() error {
+			return s.SyncThisZoneRecords(egCtx, itemPlatformCofingID)
+		})
+	}
+
+	// 等待所有goroutine完成
+	if err := eg.Wait(); err != nil {
+		return fmt.Errorf("并发同步失败: %w", err)
+	}
+
+	return nil
+}
+
+// 同步 某个账号 所有站点 所有记录
+func (s *EdgeOneSync) SyncThisZoneRecords(ctx context.Context, config_id int64) (err error) {
+
+	// 查询所有站点
+	allEdgeOneZoneIDs, err := s.db.EdgeOneZone.Query().
+		Where(edgeonezone.ConfigIDEQ(config_id)).
+		IDs(ctx)
+	if err != nil {
+		return fmt.Errorf("查询所有站点失败: %w", err)
+	}
+
+	// 并发同步
+	eg, egCtx := errgroup.WithContext(ctx)
+	eg.SetLimit(5) // 最多 5 个并发
+	for _, itemEdgeOneZoneID := range allEdgeOneZoneIDs {
+		itemEdgeOneZoneID := itemEdgeOneZoneID
+		eg.Go(func() error {
+			return s.SyncThisZoneRecord(egCtx, config_id, itemEdgeOneZoneID)
+		})
+	}
+
+	// 等待所有goroutine完成
+	if err := eg.Wait(); err != nil {
+		return fmt.Errorf("并发同步失败: %w", err)
+	}
+
+	return nil
+}
+
+// 同步 某个账号 某个站点 所有记录
+func (s *EdgeOneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, zone_id int64) (err error) {
+	// 查询站点记录
+	firstEdgeOneZone, err := s.db.EdgeOneZone.Query().
+		Where(edgeonezone.IDEQ(zone_id)).
+		WithConfig().
+		First(ctx)
+	if err != nil {
+		return fmt.Errorf("查询站点记录失败: %w", err)
+	}
+
+	// 获取EdgeOne提供程序
+	cdnProvider, err := s.GetApiClient(ctx, firstEdgeOneZone.Edges.Config.ConfigJSON)
+	if err != nil {
+		return fmt.Errorf("获取EdgeOne提供程序失败: %w", err)
+	}
+
+	// 获取所有DNS记录
+	dnsRecords, err := cdnProvider.DnsRecordsRaw(ctx, firstEdgeOneZone.ZoneID)
+	if err != nil {
+		return fmt.Errorf("获取所有DNS记录失败: %w", err)
+	}
+
+	// 入库所有DNS记录
+	for _, dnsRecord := range dnsRecords {
+		// 查询DNS记录
+		firstDNSRecord, err := s.db.EdgeOneZoneDNSRecord.Query().
+			Where(edgeonezonednsrecord.EdgeoneZoneIDEQ(firstEdgeOneZone.ID)).
+			Where(edgeonezonednsrecord.RecordIdEQ(utils.PtrToString(dnsRecord.RecordId))).
+			First(ctx)
+		if err != nil {
+			if !ent.IsNotFound(err) {
+				return fmt.Errorf("查询DNS记录记录失败: %w", err)
+			}
+			// 创建DNS记录记录
+			err = s.db.EdgeOneZoneDNSRecord.Create().
+				SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(dnsRecord.CreatedOn)).Time).
+				SetSyncAt(time.Now()).
+				SetEdgeoneZoneID(firstEdgeOneZone.ID).
+				SetRecordId(utils.PtrToString(dnsRecord.RecordId)).
+				SetName(utils.PtrToString(dnsRecord.Name)).
+				SetType(edgeonezonednsrecord.Type(utils.PtrToString(dnsRecord.Type))).
+				SetLocation(utils.PtrToString(dnsRecord.Location)).
+				SetContent(utils.PtrToString(dnsRecord.Content)).
+				SetTTL(utils.PtrToInt64(dnsRecord.TTL)).
+				SetWeight(utils.PtrToInt64(dnsRecord.Weight)).
+				SetPriority(utils.PtrToInt64(dnsRecord.Priority)).
+				SetStatus(edgeonezonednsrecord.Status(utils.PtrToString(dnsRecord.Status))).
+				Exec(ctx)
+			if err != nil {
+				return fmt.Errorf("创建DNS记录记录失败: %w", err)
+			}
+		} else {
+			// 更新DNS记录记录
+			err = s.db.EdgeOneZoneDNSRecord.UpdateOne(firstDNSRecord).
+				SetSyncAt(time.Now()).
+				SetName(utils.PtrToString(dnsRecord.Name)).
+				SetType(edgeonezonednsrecord.Type(utils.PtrToString(dnsRecord.Type))).
+				SetLocation(utils.PtrToString(dnsRecord.Location)).
+				SetContent(utils.PtrToString(dnsRecord.Content)).
+				SetTTL(utils.PtrToInt64(dnsRecord.TTL)).
+				SetWeight(utils.PtrToInt64(dnsRecord.Weight)).
+				SetPriority(utils.PtrToInt64(dnsRecord.Priority)).
+				SetStatus(edgeonezonednsrecord.Status(utils.PtrToString(dnsRecord.Status))).
+				Exec(ctx)
+			if err != nil {
+				return fmt.Errorf("更新DNS记录记录失败: %w", err)
+			}
+		}
+	}
+
+	// 获取所有加速域名
+	accelerationDomains, err := cdnProvider.AccelerationDomainsRaw(ctx, firstEdgeOneZone.ZoneID)
+	if err != nil {
+		return fmt.Errorf("获取所有加速域名失败: %w", err)
+	}
+
+	// 入库所有加速域名
+	for _, accelerationDomain := range accelerationDomains {
+		// 查询加速域名记录
+		firstAccelerationDomain, err := s.db.EdgeOneZoneAccelerationDomain.Query().
+			Where(edgeonezoneaccelerationdomain.EdgeoneZoneIDEQ(firstEdgeOneZone.ID)).
+			Where(edgeonezoneaccelerationdomain.DomainNameEQ(utils.PtrToString(accelerationDomain.DomainName))).
+			First(ctx)
+		if err != nil {
+			if !ent.IsNotFound(err) {
+				return fmt.Errorf("查询加速域名记录失败: %w", err)
+			}
+			// 创建加速域名记录
+			err = s.db.EdgeOneZoneAccelerationDomain.Create().
+				SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(accelerationDomain.CreatedOn)).Time).
+				SetSyncAt(time.Now()).
+				SetEdgeoneZoneID(firstEdgeOneZone.ID).
+				SetDomainName(utils.PtrToString(accelerationDomain.DomainName)).
+				SetDomainStatus(edgeonezoneaccelerationdomain.DomainStatus(utils.PtrToString(accelerationDomain.DomainStatus))).
+				SetCname(utils.PtrToString(accelerationDomain.Cname)).
+				SetIpv6Status(edgeonezoneaccelerationdomain.Ipv6Status(utils.PtrToString(accelerationDomain.IPv6Status))).
+				SetIdentificationStatus(edgeonezoneaccelerationdomain.IdentificationStatus(utils.PtrToString(accelerationDomain.IdentificationStatus))).
+				SetOwnershipVerification([]byte(gojson.JsonEncodeNoError(accelerationDomain.OwnershipVerification))).
+				SetOriginDetail([]byte(gojson.JsonEncodeNoError(accelerationDomain.OriginDetail))).
+				SetHTTPOriginPort(utils.PtrToUint64(accelerationDomain.HttpOriginPort)).
+				SetHTTPSOriginPort(utils.PtrToUint64(accelerationDomain.HttpsOriginPort)).
+				SetCertificate([]byte(gojson.JsonEncodeNoError(accelerationDomain.Certificate))).
+				Exec(ctx)
+			if err != nil {
+				return fmt.Errorf("创建加速域名记录失败: %w", err)
+			}
+		} else {
+			// 更新加速域名记录
+			err = s.db.EdgeOneZoneAccelerationDomain.UpdateOne(firstAccelerationDomain).
+				SetSyncAt(time.Now()).
+				SetDomainStatus(edgeonezoneaccelerationdomain.DomainStatus(utils.PtrToString(accelerationDomain.DomainStatus))).
+				SetCname(utils.PtrToString(accelerationDomain.Cname)).
+				SetIpv6Status(edgeonezoneaccelerationdomain.Ipv6Status(utils.PtrToString(accelerationDomain.IPv6Status))).
+				SetIdentificationStatus(edgeonezoneaccelerationdomain.IdentificationStatus(utils.PtrToString(accelerationDomain.IdentificationStatus))).
+				SetOwnershipVerification([]byte(gojson.JsonEncodeNoError(accelerationDomain.OwnershipVerification))).
+				SetOriginDetail([]byte(gojson.JsonEncodeNoError(accelerationDomain.OriginDetail))).
+				SetHTTPOriginPort(utils.PtrToUint64(accelerationDomain.HttpOriginPort)).
+				SetHTTPSOriginPort(utils.PtrToUint64(accelerationDomain.HttpsOriginPort)).
+				SetCertificate([]byte(gojson.JsonEncodeNoError(accelerationDomain.Certificate))).
+				Exec(ctx)
+			if err != nil {
+				return fmt.Errorf("更新加速域名记录失败: %w", err)
 			}
 		}
 	}

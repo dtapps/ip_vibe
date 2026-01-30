@@ -140,4 +140,12 @@ func (s *EdgeOneTask) RunTunTask() {
 		return
 	}
 
+	// 调用 同步 全部账号 所有站点 所有记录
+	err = s.edgeOneSync.SyncAllZoneRecords(ctx)
+	if err != nil {
+		logger.ErrorContext(ctx, "同步 全部账号 所有站点 所有记录",
+			slog.Any("err", err),
+		)
+		return
+	}
 }
