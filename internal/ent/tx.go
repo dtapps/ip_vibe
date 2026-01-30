@@ -42,6 +42,12 @@ type Tx struct {
 	EdgeOneZoneDNSRecord *EdgeOneZoneDNSRecordClient
 	// EdgeOneZoneOriginGroup is the client for interacting with the EdgeOneZoneOriginGroup builders.
 	EdgeOneZoneOriginGroup *EdgeOneZoneOriginGroupClient
+	// EsaSite is the client for interacting with the EsaSite builders.
+	EsaSite *EsaSiteClient
+	// EsaSiteOriginPool is the client for interacting with the EsaSiteOriginPool builders.
+	EsaSiteOriginPool *EsaSiteOriginPoolClient
+	// EsaSiteRecord is the client for interacting with the EsaSiteRecord builders.
+	EsaSiteRecord *EsaSiteRecordClient
 	// IpGroup is the client for interacting with the IpGroup builders.
 	IpGroup *IpGroupClient
 	// IpGroupDevice is the client for interacting with the IpGroupDevice builders.
@@ -203,6 +209,9 @@ func (tx *Tx) init() {
 	tx.EdgeOneZoneAccelerationDomain = NewEdgeOneZoneAccelerationDomainClient(tx.config)
 	tx.EdgeOneZoneDNSRecord = NewEdgeOneZoneDNSRecordClient(tx.config)
 	tx.EdgeOneZoneOriginGroup = NewEdgeOneZoneOriginGroupClient(tx.config)
+	tx.EsaSite = NewEsaSiteClient(tx.config)
+	tx.EsaSiteOriginPool = NewEsaSiteOriginPoolClient(tx.config)
+	tx.EsaSiteRecord = NewEsaSiteRecordClient(tx.config)
 	tx.IpGroup = NewIpGroupClient(tx.config)
 	tx.IpGroupDevice = NewIpGroupDeviceClient(tx.config)
 	tx.PlatformConfig = NewPlatformConfigClient(tx.config)

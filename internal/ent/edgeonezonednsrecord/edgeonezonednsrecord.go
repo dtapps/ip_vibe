@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -25,8 +26,8 @@ const (
 	FieldSyncAt = "sync_at"
 	// FieldEdgeoneZoneID holds the string denoting the edgeone_zone_id field in the database.
 	FieldEdgeoneZoneID = "edgeone_zone_id"
-	// FieldRecordId holds the string denoting the recordid field in the database.
-	FieldRecordId = "record_id"
+	// FieldRecordID holds the string denoting the record_id field in the database.
+	FieldRecordID = "record_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldType holds the string denoting the type field in the database.
@@ -64,7 +65,7 @@ var Columns = []string{
 	FieldRemoteCreatedAt,
 	FieldSyncAt,
 	FieldEdgeoneZoneID,
-	FieldRecordId,
+	FieldRecordID,
 	FieldName,
 	FieldType,
 	FieldLocation,
@@ -85,7 +86,13 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "vibe_ip/internal/ent/runtime"
 var (
+	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -183,9 +190,9 @@ func ByEdgeoneZoneID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEdgeoneZoneID, opts...).ToFunc()
 }
 
-// ByRecordId orders the results by the recordId field.
-func ByRecordId(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRecordId, opts...).ToFunc()
+// ByRecordID orders the results by the record_id field.
+func ByRecordID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRecordID, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.

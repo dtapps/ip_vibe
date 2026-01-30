@@ -370,6 +370,9 @@ const (
 	LogObjTypeEdgeOneZoneAccelerationDomain string = "EdgeOneZoneAccelerationDomain" // EdgeOne加速域名
 	LogObjTypeEdgeOneZoneDNSRecord          string = "EdgeOneZoneDNSRecord"          // EdgeOneDNS记录
 	LogObjTypeEdgeOneZoneOriginGroup        string = "EdgeOneZoneOriginGroup"        // EdgeOne站点源站组
+	LogObjTypeTypeEsaSite                   string = "EsaSite"                       // Esa站点
+	LogObjTypeTypeEsaSiteOriginPool         string = "EsaSiteOriginPool"             // Esa站点源站池
+	LogObjTypeTypeEsaSiteRecord             string = "EsaSiteRecord"                 // Esa站点记录
 	LogObjTypeIpGroup                       string = "IpGroup"                       // IP组
 	LogObjTypeIpGroupDevice                 string = "IpGroupDevice"                 // IP组设备
 	LogObjTypePlatformConfig                string = "PlatformConfig"                // 平台配置
@@ -410,6 +413,9 @@ var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeEdgeOneZoneAccelerationDomain: "EdgeOne加速域名",
 	LogObjTypeEdgeOneZoneDNSRecord:          "EdgeOneDNS记录",
 	LogObjTypeEdgeOneZoneOriginGroup:        "EdgeOne站点源站组",
+	LogObjTypeTypeEsaSite:                   "Esa站点",
+	LogObjTypeTypeEsaSiteOriginPool:         "Esa站点源站池",
+	LogObjTypeTypeEsaSiteRecord:             "Esa站点记录",
 	LogObjTypeIpGroup:                       "IP组",
 	LogObjTypeIpGroupDevice:                 "IP组设备",
 	LogObjTypePlatformConfig:                "平台配置",
@@ -447,6 +453,9 @@ var GetLogObjTypes = []string{
 	LogObjTypeEdgeOneZoneAccelerationDomain,
 	LogObjTypeEdgeOneZoneDNSRecord,
 	LogObjTypeEdgeOneZoneOriginGroup,
+	LogObjTypeTypeEsaSite,
+	LogObjTypeTypeEsaSiteOriginPool,
+	LogObjTypeTypeEsaSiteRecord,
 	LogObjTypeIpGroup,
 	LogObjTypeIpGroupDevice,
 	LogObjTypePlatformConfig,
@@ -979,4 +988,168 @@ var GetEdgeOneZoneOriginGroupTypeDescriptions = map[string]string{
 var GetEdgeOneZoneOriginGroupTypes = []string{
 	EdgeOneZoneOriginGroupTypeGeneral,
 	EdgeOneZoneOriginGroupTypeHttp,
+}
+
+// --------
+
+const (
+	EsaSiteAccessTypeNs    string = "NS"    // NS
+	EsaSiteAccessTypeCname string = "CNAME" // CNAME
+)
+
+// GetEsaSiteAccessTypeDescriptions 站点接入类型 说明映射
+var GetEsaSiteAccessTypeDescriptions = map[string]string{
+	EsaSiteAccessTypeNs:    "NS",
+	EsaSiteAccessTypeCname: "CNAME",
+}
+
+// GetEsaSiteAccessTypes 返回所有 站点接入类型
+var GetEsaSiteAccessTypes = []string{
+	EsaSiteAccessTypeNs,
+	EsaSiteAccessTypeCname,
+}
+
+const (
+	EsaSiteCoverageDomestic string = "domestic" // 仅中国内地
+	EsaSiteCoverageGlobal   string = "global"   // 全球
+	EsaSiteCoverageOverseas string = "overseas" // 全球（不包含中国内地）
+)
+
+// GetEsaSiteCoverageDescriptions 站点加速区域 说明映射
+var GetEsaSiteCoverageDescriptions = map[string]string{
+	EsaSiteCoverageDomestic: "仅中国内地",
+	EsaSiteCoverageGlobal:   "全球",
+	EsaSiteCoverageOverseas: "全球（不包含中国内地）",
+}
+
+// GetEsaSiteCoverages 返回所有 站点加速区域
+var GetEsaSiteCoverages = []string{
+	EsaSiteCoverageDomestic,
+	EsaSiteCoverageGlobal,
+	EsaSiteCoverageOverseas,
+}
+
+const (
+	EsaSiteStatusPending string = "pending" // 站点待配置
+	EsaSiteStatusActive  string = "active"  // 站点已激活
+	EsaSiteStatusOffline string = "offline" // 站点已下线
+	EsaSiteStatusMoved   string = "moved"   // 站点已被顶替
+)
+
+// GetEsaSiteStatusDescriptions 站点状态 说明映射
+var GetEsaSiteStatusDescriptions = map[string]string{
+	EsaSiteStatusPending: "站点待配置",
+	EsaSiteStatusActive:  "站点已激活",
+	EsaSiteStatusOffline: "站点已下线",
+	EsaSiteStatusMoved:   "站点已被顶替",
+}
+
+// GetEsaSiteStatuss 返回所有 站点状态
+var GetEsaSiteStatuss = []string{
+	EsaSiteStatusPending,
+	EsaSiteStatusActive,
+	EsaSiteStatusOffline,
+	EsaSiteStatusMoved,
+}
+
+// --------
+
+const (
+	EsaSiteRecordBizNameImageVideo string = "image_video" // 视频图片
+	EsaSiteRecordBizNameApi        string = "api"         // api 接口
+	EsaSiteRecordBizNameWeb        string = "web"         // web 网页
+)
+
+// GetEsaSiteRecordBizNameDescriptions 记录加速时的业务场景 说明映射
+var GetEsaSiteRecordBizNameDescriptions = map[string]string{
+	EsaSiteRecordBizNameImageVideo: "视频图片",
+	EsaSiteRecordBizNameApi:        "api 接口",
+	EsaSiteRecordBizNameWeb:        "web 网页",
+}
+
+// GetEsaSiteRecordBizNames 返回所有 记录加速时的业务场景
+var GetEsaSiteRecordBizNames = []string{
+	EsaSiteRecordBizNameImageVideo,
+	EsaSiteRecordBizNameApi,
+	EsaSiteRecordBizNameWeb,
+}
+
+const (
+	EsaSiteRecordProxiedTrue  string = "true"  // 开启代理
+	EsaSiteRecordProxiedFalse string = "false" // 关闭代理加速
+)
+
+// GetEsaSiteRecordProxiedDescriptions 记录是否开启代理加速 说明映射
+var GetEsaSiteRecordProxiedDescriptions = map[string]string{
+	EsaSiteRecordProxiedTrue:  "开启代理",
+	EsaSiteRecordProxiedFalse: "关闭代理加速",
+}
+
+// GetEsaSiteRecordProxieds 返回所有 记录是否开启代理加速
+var GetEsaSiteRecordProxieds = []string{
+	EsaSiteRecordProxiedTrue,
+	EsaSiteRecordProxiedFalse,
+}
+
+const (
+	EsaSiteRecordRecordSourceTypeOss    string = "OSS"    // OSS 源站
+	EsaSiteRecordRecordSourceTypeS3     string = "S3"     // S3 源站
+	EsaSiteRecordRecordSourceTypeLb     string = "LB"     // 负载均衡器源站
+	EsaSiteRecordRecordSourceTypeOp     string = "OP"     // 源地址池源站
+	EsaSiteRecordRecordSourceTypeDomain string = "Domain" // 普通域名源站
+)
+
+// GetEsaSiteRecordRecordSourceTypeDescriptions CNAME 记录的源站类型 说明映射
+var GetEsaSiteRecordRecordSourceTypeDescriptions = map[string]string{
+	EsaSiteRecordRecordSourceTypeOss:    "OSS 源站",
+	EsaSiteRecordRecordSourceTypeS3:     "S3 源站",
+	EsaSiteRecordRecordSourceTypeLb:     "负载均衡器源站",
+	EsaSiteRecordRecordSourceTypeOp:     "源地址池源站",
+	EsaSiteRecordRecordSourceTypeDomain: "普通域名源站",
+}
+
+// GetEsaSiteRecordRecordSourceTypes 返回所有 CNAME 记录的源站类型
+var GetEsaSiteRecordRecordSourceTypes = []string{
+	EsaSiteRecordRecordSourceTypeOss,
+	EsaSiteRecordRecordSourceTypeS3,
+	EsaSiteRecordRecordSourceTypeLb,
+	EsaSiteRecordRecordSourceTypeOp,
+	EsaSiteRecordRecordSourceTypeDomain,
+}
+
+const (
+	EsaSiteRecordRecordTypeAaaaa string = "A_AAAA" // A/AAAA
+	EsaSiteRecordRecordTypeCname string = "CNAME"  // CNAME
+	EsaSiteRecordRecordTypeTxt   string = "TXT"    // TXT
+)
+
+// GetEsaSiteRecordRecordTypeDescriptions 记录的 DNS 类型 说明映射
+var GetEsaSiteRecordRecordTypeDescriptions = map[string]string{
+	EsaSiteRecordRecordTypeAaaaa: "AAAAA",
+	EsaSiteRecordRecordTypeCname: "CNAME",
+	EsaSiteRecordRecordTypeTxt:   "TXT",
+}
+
+// GetEsaSiteRecordRecordTypes 返回所有 记录的 DNS 类型
+var GetEsaSiteRecordRecordTypes = []string{
+	EsaSiteRecordRecordTypeAaaaa,
+	EsaSiteRecordRecordTypeCname,
+	EsaSiteRecordRecordTypeTxt,
+}
+
+const (
+	EsaSiteRecordHostPolicyFollowHostname     string = "follow_hostname"      // 跟随请求 HOST
+	EsaSiteRecordHostPolicyFollowOriginDomain string = "follow_origin_domain" // 跟随源站域名
+)
+
+// GetEsaSiteRecordHostPolicyDescriptions 回源 HOST 策略 说明映射
+var GetEsaSiteRecordHostPolicyDescriptions = map[string]string{
+	EsaSiteRecordHostPolicyFollowHostname:     "跟随请求 HOST",
+	EsaSiteRecordHostPolicyFollowOriginDomain: "跟随源站域名",
+}
+
+// GetEsaSiteRecordHostPolicys 返回所有 回源 HOST 策略
+var GetEsaSiteRecordHostPolicys = []string{
+	EsaSiteRecordHostPolicyFollowHostname,
+	EsaSiteRecordHostPolicyFollowOriginDomain,
 }

@@ -702,6 +702,151 @@ var (
 			},
 		},
 	}
+	// EsaSiteColumns holds the columns for the "esa_site" table.
+	EsaSiteColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "ESA 站点序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
+		{Name: "access_type", Type: field.TypeEnum, Nullable: true, Comment: "站点接入类型", Enums: []string{"NS", "CNAME"}},
+		{Name: "coverage", Type: field.TypeEnum, Nullable: true, Comment: "站点加速区域", Enums: []string{"domestic", "global", "overseas"}},
+		{Name: "site_id", Type: field.TypeInt64, Comment: "站点 ID"},
+		{Name: "site_name", Type: field.TypeString, Nullable: true, Comment: "站点名称"},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "站点状态", Enums: []string{"pending", "active", "offline", "moved"}},
+		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
+	}
+	// EsaSiteTable holds the schema information for the "esa_site" table.
+	EsaSiteTable = &schema.Table{
+		Name:       "esa_site",
+		Comment:    "ESA 站点",
+		Columns:    EsaSiteColumns,
+		PrimaryKey: []*schema.Column{EsaSiteColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "esa_site_platform_config_esa_zones",
+				Columns:    []*schema.Column{EsaSiteColumns[10]},
+				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "esasite_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "esasite_config_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteColumns[10]},
+			},
+			{
+				Name:    "esasite_site_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteColumns[7]},
+			},
+		},
+	}
+	// EsaSiteOrigingroupColumns holds the columns for the "esa_site_origingroup" table.
+	EsaSiteOrigingroupColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "ESA 站点源地址池序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
+		{Name: "pool_id", Type: field.TypeInt64, Comment: "源站池ID"},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "源地址池名称"},
+		{Name: "record_name", Type: field.TypeString, Nullable: true, Comment: "源地址池分配的域名"},
+		{Name: "enabled", Type: field.TypeBool, Nullable: true, Comment: "源地址池是否启用"},
+		{Name: "references", Type: field.TypeJSON, Nullable: true, Comment: "源地址池被引用信息"},
+		{Name: "origins", Type: field.TypeJSON, Nullable: true, Comment: "源地址池里添加的源站信息"},
+		{Name: "esa_site_id", Type: field.TypeInt64, Comment: "关联 ESA 站点序号"},
+	}
+	// EsaSiteOrigingroupTable holds the schema information for the "esa_site_origingroup" table.
+	EsaSiteOrigingroupTable = &schema.Table{
+		Name:       "esa_site_origingroup",
+		Comment:    "ESA 站点源地址池",
+		Columns:    EsaSiteOrigingroupColumns,
+		PrimaryKey: []*schema.Column{EsaSiteOrigingroupColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "esa_site_origingroup_esa_site_originpools",
+				Columns:    []*schema.Column{EsaSiteOrigingroupColumns[11]},
+				RefColumns: []*schema.Column{EsaSiteColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "esasiteoriginpool_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteOrigingroupColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "esasiteoriginpool_esa_site_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteOrigingroupColumns[11]},
+			},
+		},
+	}
+	// EsaSiteRecordColumns holds the columns for the "esa_site_record" table.
+	EsaSiteRecordColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "ESA 站点记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
+		{Name: "biz_name", Type: field.TypeEnum, Nullable: true, Comment: "记录加速时的业务场景", Enums: []string{"image_video", "api", "web"}},
+		{Name: "data", Type: field.TypeJSON, Nullable: true, Comment: "记录的具体 DNS 信息"},
+		{Name: "proxied", Type: field.TypeEnum, Nullable: true, Comment: "记录是否开启代理加速", Enums: []string{"true", "false"}},
+		{Name: "record_id", Type: field.TypeString, Comment: "记录 ID"},
+		{Name: "record_source_type", Type: field.TypeEnum, Nullable: true, Comment: "CNAME 记录的源站类型", Enums: []string{"OSS", "S3", "LB", "OP", "Domain"}},
+		{Name: "record_name", Type: field.TypeString, Nullable: true, Comment: "记录名称"},
+		{Name: "record_type", Type: field.TypeEnum, Nullable: true, Comment: "记录的 DNS 类型", Enums: []string{"A_AAAA", "CNAME", "TXT"}},
+		{Name: "ttl", Type: field.TypeInt64, Nullable: true, Comment: "记录的过期时间"},
+		{Name: "record_cname", Type: field.TypeString, Nullable: true, Comment: "记录的 CNAME"},
+		{Name: "comment", Type: field.TypeString, Nullable: true, Comment: "记录的备注"},
+		{Name: "auth_conf", Type: field.TypeJSON, Nullable: true, Comment: "CNAME 记录的源站鉴权信息"},
+		{Name: "host_policy", Type: field.TypeEnum, Nullable: true, Comment: "回源 HOST 策略", Enums: []string{"follow_hostname", "follow_origin_domain"}},
+		{Name: "esa_site_id", Type: field.TypeInt64, Comment: "关联 ESA 站点序号"},
+	}
+	// EsaSiteRecordTable holds the schema information for the "esa_site_record" table.
+	EsaSiteRecordTable = &schema.Table{
+		Name:       "esa_site_record",
+		Comment:    "ESA 站点记录",
+		Columns:    EsaSiteRecordColumns,
+		PrimaryKey: []*schema.Column{EsaSiteRecordColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "esa_site_record_esa_site_records",
+				Columns:    []*schema.Column{EsaSiteRecordColumns[17]},
+				RefColumns: []*schema.Column{EsaSiteColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "esasiterecord_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteRecordColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "esasiterecord_esa_site_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteRecordColumns[17]},
+			},
+		},
+	}
 	// IPGroupColumns holds the columns for the "ip_group" table.
 	IPGroupColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "IP组序号"},
@@ -1135,6 +1280,9 @@ var (
 		EdgeoneZoneAccelerationdomainTable,
 		EdgeoneZoneDnsrecordTable,
 		EdgeoneZoneOrigingroupTable,
+		EsaSiteTable,
+		EsaSiteOrigingroupTable,
+		EsaSiteRecordTable,
 		IPGroupTable,
 		IPGroupDeviceTable,
 		PlatformConfigTable,
@@ -1204,6 +1352,18 @@ func init() {
 	EdgeoneZoneOrigingroupTable.ForeignKeys[0].RefTable = EdgeoneZoneTable
 	EdgeoneZoneOrigingroupTable.Annotation = &entsql.Annotation{
 		Table: "edgeone_zone_origingroup",
+	}
+	EsaSiteTable.ForeignKeys[0].RefTable = PlatformConfigTable
+	EsaSiteTable.Annotation = &entsql.Annotation{
+		Table: "esa_site",
+	}
+	EsaSiteOrigingroupTable.ForeignKeys[0].RefTable = EsaSiteTable
+	EsaSiteOrigingroupTable.Annotation = &entsql.Annotation{
+		Table: "esa_site_origingroup",
+	}
+	EsaSiteRecordTable.ForeignKeys[0].RefTable = EsaSiteTable
+	EsaSiteRecordTable.Annotation = &entsql.Annotation{
+		Table: "esa_site_record",
 	}
 	IPGroupTable.Annotation = &entsql.Annotation{
 		Table: "ip_group",

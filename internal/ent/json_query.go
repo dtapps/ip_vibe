@@ -12,6 +12,8 @@ import (
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
+	"vibe_ip/internal/ent/esasiteoriginpool"
+	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/tunrecord"
@@ -335,6 +337,122 @@ func (q *EdgeOneZoneOriginGroupQuery) WhereReferencesContains(val any) *EdgeOneZ
 func (q *EdgeOneZoneOriginGroupQuery) WhereReferencesContainsIf(condition bool, val any) *EdgeOneZoneOriginGroupQuery {
 	if condition {
 		return q.WhereReferencesContains(val)
+	}
+	return q
+}
+
+// WhereReferencesContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EsaSiteOriginPoolQuery) WhereReferencesContains(val any) *EsaSiteOriginPoolQuery {
+	return q.Where(predicate.EsaSiteOriginPool(func(s *sql.Selector) {
+		column := esasiteoriginpool.FieldReferences
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereReferencesContainsIf 只有在 condition 为 true 时才调用 WhereReferencesContains。
+func (q *EsaSiteOriginPoolQuery) WhereReferencesContainsIf(condition bool, val any) *EsaSiteOriginPoolQuery {
+	if condition {
+		return q.WhereReferencesContains(val)
+	}
+	return q
+}
+
+// WhereOriginsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EsaSiteOriginPoolQuery) WhereOriginsContains(val any) *EsaSiteOriginPoolQuery {
+	return q.Where(predicate.EsaSiteOriginPool(func(s *sql.Selector) {
+		column := esasiteoriginpool.FieldOrigins
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereOriginsContainsIf 只有在 condition 为 true 时才调用 WhereOriginsContains。
+func (q *EsaSiteOriginPoolQuery) WhereOriginsContainsIf(condition bool, val any) *EsaSiteOriginPoolQuery {
+	if condition {
+		return q.WhereOriginsContains(val)
+	}
+	return q
+}
+
+// WhereDataContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EsaSiteRecordQuery) WhereDataContains(val any) *EsaSiteRecordQuery {
+	return q.Where(predicate.EsaSiteRecord(func(s *sql.Selector) {
+		column := esasiterecord.FieldData
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereDataContainsIf 只有在 condition 为 true 时才调用 WhereDataContains。
+func (q *EsaSiteRecordQuery) WhereDataContainsIf(condition bool, val any) *EsaSiteRecordQuery {
+	if condition {
+		return q.WhereDataContains(val)
+	}
+	return q
+}
+
+// WhereAuthConfContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EsaSiteRecordQuery) WhereAuthConfContains(val any) *EsaSiteRecordQuery {
+	return q.Where(predicate.EsaSiteRecord(func(s *sql.Selector) {
+		column := esasiterecord.FieldAuthConf
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereAuthConfContainsIf 只有在 condition 为 true 时才调用 WhereAuthConfContains。
+func (q *EsaSiteRecordQuery) WhereAuthConfContainsIf(condition bool, val any) *EsaSiteRecordQuery {
+	if condition {
+		return q.WhereAuthConfContains(val)
 	}
 	return q
 }

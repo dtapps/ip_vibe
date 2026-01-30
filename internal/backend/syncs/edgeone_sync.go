@@ -455,7 +455,7 @@ func (s *EdgeOneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, z
 		// 查询DNS记录
 		firstDNSRecord, err := s.db.EdgeOneZoneDNSRecord.Query().
 			Where(edgeonezonednsrecord.EdgeoneZoneIDEQ(firstEdgeOneZone.ID)).
-			Where(edgeonezonednsrecord.RecordIdEQ(utils.PtrToString(dnsRecord.RecordId))).
+			Where(edgeonezonednsrecord.RecordIDEQ(utils.PtrToString(dnsRecord.RecordId))).
 			First(ctx)
 		if err != nil {
 			if !ent.IsNotFound(err) {
@@ -466,7 +466,7 @@ func (s *EdgeOneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, z
 				SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(dnsRecord.CreatedOn)).Time).
 				SetSyncAt(time.Now()).
 				SetEdgeoneZoneID(firstEdgeOneZone.ID).
-				SetRecordId(utils.PtrToString(dnsRecord.RecordId)).
+				SetRecordID(utils.PtrToString(dnsRecord.RecordId)).
 				SetName(utils.PtrToString(dnsRecord.Name)).
 				SetType(edgeonezonednsrecord.Type(utils.PtrToString(dnsRecord.Type))).
 				SetLocation(utils.PtrToString(dnsRecord.Location)).

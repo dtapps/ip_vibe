@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/esasite"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/sslrecord"
@@ -35,6 +36,7 @@ type PlatformConfigQuery struct {
 	withTunRecords             *TUNRecordQuery
 	withCloudflareTunnels      *CloudflareTunnelQuery
 	withEdgeoneZones           *EdgeOneZoneQuery
+	withEsaZones               *EsaSiteQuery
 	modifiers                  []func(*sql.Selector)
 	withNamedDNSRecords        map[string]*DNSRecordQuery
 	withNamedCdnRecords        map[string]*CDNRecordQuery
@@ -42,6 +44,7 @@ type PlatformConfigQuery struct {
 	withNamedTunRecords        map[string]*TUNRecordQuery
 	withNamedCloudflareTunnels map[string]*CloudflareTunnelQuery
 	withNamedEdgeoneZones      map[string]*EdgeOneZoneQuery
+	withNamedEsaZones          map[string]*EsaSiteQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -203,6 +206,28 @@ func (_q *PlatformConfigQuery) QueryEdgeoneZones() *EdgeOneZoneQuery {
 			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, selector),
 			sqlgraph.To(edgeonezone.Table, edgeonezone.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.EdgeoneZonesTable, platformconfig.EdgeoneZonesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEsaZones chains the current query on the "esa_zones" edge.
+func (_q *PlatformConfigQuery) QueryEsaZones() *EsaSiteQuery {
+	query := (&EsaSiteClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, selector),
+			sqlgraph.To(esasite.Table, esasite.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.EsaZonesTable, platformconfig.EsaZonesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -408,6 +433,7 @@ func (_q *PlatformConfigQuery) Clone() *PlatformConfigQuery {
 		withTunRecords:        _q.withTunRecords.Clone(),
 		withCloudflareTunnels: _q.withCloudflareTunnels.Clone(),
 		withEdgeoneZones:      _q.withEdgeoneZones.Clone(),
+		withEsaZones:          _q.withEsaZones.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -478,6 +504,17 @@ func (_q *PlatformConfigQuery) WithEdgeoneZones(opts ...func(*EdgeOneZoneQuery))
 		opt(query)
 	}
 	_q.withEdgeoneZones = query
+	return _q
+}
+
+// WithEsaZones tells the query-builder to eager-load the nodes that are connected to
+// the "esa_zones" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *PlatformConfigQuery) WithEsaZones(opts ...func(*EsaSiteQuery)) *PlatformConfigQuery {
+	query := (&EsaSiteClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withEsaZones = query
 	return _q
 }
 
@@ -559,13 +596,14 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	var (
 		nodes       = []*PlatformConfig{}
 		_spec       = _q.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			_q.withDNSRecords != nil,
 			_q.withCdnRecords != nil,
 			_q.withSslRecords != nil,
 			_q.withTunRecords != nil,
 			_q.withCloudflareTunnels != nil,
 			_q.withEdgeoneZones != nil,
+			_q.withEsaZones != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -661,6 +699,18 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			return nil, err
 		}
 	}
+	if query := _q.withEsaZones; query != nil {
+		if err := _q.loadEsaZones(ctx, query, nodes,
+			func(n *PlatformConfig) { n.Edges.EsaZones = []*EsaSite{} },
+			func(n *PlatformConfig, e *EsaSite) {
+				n.Edges.EsaZones = append(n.Edges.EsaZones, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Config = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range _q.withNamedDNSRecords {
 		if err := _q.loadDNSRecords(ctx, query, nodes,
 			func(n *PlatformConfig) { n.appendNamedDNSRecords(name) },
@@ -726,6 +776,18 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			func(n *PlatformConfig) { n.appendNamedEdgeoneZones(name) },
 			func(n *PlatformConfig, e *EdgeOneZone) {
 				n.appendNamedEdgeoneZones(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Config = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedEsaZones {
+		if err := _q.loadEsaZones(ctx, query, nodes,
+			func(n *PlatformConfig) { n.appendNamedEsaZones(name) },
+			func(n *PlatformConfig, e *EsaSite) {
+				n.appendNamedEsaZones(name, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.Config = n
 				}
@@ -916,6 +978,36 @@ func (_q *PlatformConfigQuery) loadEdgeoneZones(ctx context.Context, query *Edge
 	}
 	return nil
 }
+func (_q *PlatformConfigQuery) loadEsaZones(ctx context.Context, query *EsaSiteQuery, nodes []*PlatformConfig, init func(*PlatformConfig), assign func(*PlatformConfig, *EsaSite)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*PlatformConfig)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(esasite.FieldConfigID)
+	}
+	query.Where(predicate.EsaSite(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(platformconfig.EsaZonesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ConfigID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "config_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (_q *PlatformConfigQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
@@ -1091,6 +1183,20 @@ func (_q *PlatformConfigQuery) WithNamedEdgeoneZones(name string, opts ...func(*
 		_q.withNamedEdgeoneZones = make(map[string]*EdgeOneZoneQuery)
 	}
 	_q.withNamedEdgeoneZones[name] = query
+	return _q
+}
+
+// WithNamedEsaZones tells the query-builder to eager-load the nodes that are connected to the "esa_zones"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *PlatformConfigQuery) WithNamedEsaZones(name string, opts ...func(*EsaSiteQuery)) *PlatformConfigQuery {
+	query := (&EsaSiteClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedEsaZones == nil {
+		_q.withNamedEsaZones = make(map[string]*EsaSiteQuery)
+	}
+	_q.withNamedEsaZones[name] = query
 	return _q
 }
 

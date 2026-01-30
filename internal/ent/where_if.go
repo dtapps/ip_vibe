@@ -443,6 +443,99 @@ func (q *EdgeOneZoneOriginGroupQuery) WhereIfFunc(condition bool, predicateFunc 
 
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EsaSiteQuery) WhereIf(condition bool, p predicate.EsaSite) *EsaSiteQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EsaSiteQuery) WhereIfs(condition bool, p ...predicate.EsaSite) *EsaSiteQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *EsaSiteQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.EsaSite) *EsaSiteQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EsaSiteOriginPoolQuery) WhereIf(condition bool, p predicate.EsaSiteOriginPool) *EsaSiteOriginPoolQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EsaSiteOriginPoolQuery) WhereIfs(condition bool, p ...predicate.EsaSiteOriginPool) *EsaSiteOriginPoolQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *EsaSiteOriginPoolQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.EsaSiteOriginPool) *EsaSiteOriginPoolQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EsaSiteRecordQuery) WhereIf(condition bool, p predicate.EsaSiteRecord) *EsaSiteRecordQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EsaSiteRecordQuery) WhereIfs(condition bool, p ...predicate.EsaSiteRecord) *EsaSiteRecordQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *EsaSiteRecordQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.EsaSiteRecord) *EsaSiteRecordQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
 func (q *IpGroupQuery) WhereIf(condition bool, p predicate.IpGroup) *IpGroupQuery {
 	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {

@@ -2,6 +2,7 @@ package schema
 
 import (
 	"encoding/json"
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -142,6 +143,6 @@ func (EdgeOneZoneAccelerationDomain) Indexes() []ent.Index {
 // Hooks of the EdgeOneZoneAccelerationDomain.
 func (EdgeOneZoneAccelerationDomain) Hooks() []ent.Hook {
 	return []ent.Hook{
-		// schemahook.EdgeOneZoneAccelerationDomainLogHook(),
+		schemahook.EdgeOneZoneAccelerationDomainLogHook(),
 	}
 }

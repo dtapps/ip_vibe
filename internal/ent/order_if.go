@@ -18,6 +18,9 @@ import (
 	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
 	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
+	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/esasiteoriginpool"
+	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
@@ -301,6 +304,66 @@ func (q *EdgeOneZoneOriginGroupQuery) OrderIf(condition bool, o edgeonezoneorigi
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *EdgeOneZoneOriginGroupQuery) OrderIfs(condition bool, o ...edgeonezoneorigingroup.OrderOption) *EdgeOneZoneOriginGroupQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteQuery) OrderIf(condition bool, o esasite.OrderOption) *EsaSiteQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteQuery) OrderIfs(condition bool, o ...esasite.OrderOption) *EsaSiteQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteOriginPoolQuery) OrderIf(condition bool, o esasiteoriginpool.OrderOption) *EsaSiteOriginPoolQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteOriginPoolQuery) OrderIfs(condition bool, o ...esasiteoriginpool.OrderOption) *EsaSiteOriginPoolQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteRecordQuery) OrderIf(condition bool, o esasiterecord.OrderOption) *EsaSiteRecordQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteRecordQuery) OrderIfs(condition bool, o ...esasiterecord.OrderOption) *EsaSiteRecordQuery {
 	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)

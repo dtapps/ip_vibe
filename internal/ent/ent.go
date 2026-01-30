@@ -22,6 +22,9 @@ import (
 	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
 	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
+	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/esasiteoriginpool"
+	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
@@ -108,6 +111,9 @@ func checkColumn(t, c string) error {
 			edgeonezoneaccelerationdomain.Table: edgeonezoneaccelerationdomain.ValidColumn,
 			edgeonezonednsrecord.Table:          edgeonezonednsrecord.ValidColumn,
 			edgeonezoneorigingroup.Table:        edgeonezoneorigingroup.ValidColumn,
+			esasite.Table:                       esasite.ValidColumn,
+			esasiteoriginpool.Table:             esasiteoriginpool.ValidColumn,
+			esasiterecord.Table:                 esasiterecord.ValidColumn,
 			ipgroup.Table:                       ipgroup.ValidColumn,
 			ipgroupdevice.Table:                 ipgroupdevice.ValidColumn,
 			platformconfig.Table:                platformconfig.ValidColumn,

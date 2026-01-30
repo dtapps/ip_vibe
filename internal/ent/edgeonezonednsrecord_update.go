@@ -49,16 +49,16 @@ func (_u *EdgeOneZoneDNSRecordUpdate) ClearSyncAt() *EdgeOneZoneDNSRecordUpdate 
 	return _u
 }
 
-// SetRecordId sets the "recordId" field.
-func (_u *EdgeOneZoneDNSRecordUpdate) SetRecordId(v string) *EdgeOneZoneDNSRecordUpdate {
-	_u.mutation.SetRecordId(v)
+// SetRecordID sets the "record_id" field.
+func (_u *EdgeOneZoneDNSRecordUpdate) SetRecordID(v string) *EdgeOneZoneDNSRecordUpdate {
+	_u.mutation.SetRecordID(v)
 	return _u
 }
 
-// SetNillableRecordId sets the "recordId" field if the given value is not nil.
-func (_u *EdgeOneZoneDNSRecordUpdate) SetNillableRecordId(v *string) *EdgeOneZoneDNSRecordUpdate {
+// SetNillableRecordID sets the "record_id" field if the given value is not nil.
+func (_u *EdgeOneZoneDNSRecordUpdate) SetNillableRecordID(v *string) *EdgeOneZoneDNSRecordUpdate {
 	if v != nil {
-		_u.SetRecordId(*v)
+		_u.SetRecordID(*v)
 	}
 	return _u
 }
@@ -251,7 +251,9 @@ func (_u *EdgeOneZoneDNSRecordUpdate) Mutation() *EdgeOneZoneDNSRecordMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *EdgeOneZoneDNSRecordUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -278,11 +280,15 @@ func (_u *EdgeOneZoneDNSRecordUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *EdgeOneZoneDNSRecordUpdate) defaults() {
+func (_u *EdgeOneZoneDNSRecordUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if edgeonezonednsrecord.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized edgeonezonednsrecord.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := edgeonezonednsrecord.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -333,8 +339,8 @@ func (_u *EdgeOneZoneDNSRecordUpdate) sqlSave(ctx context.Context) (_node int, e
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezonednsrecord.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.RecordId(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldRecordId, field.TypeString, value)
+	if value, ok := _u.mutation.RecordID(); ok {
+		_spec.SetField(edgeonezonednsrecord.FieldRecordID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezonednsrecord.FieldName, field.TypeString, value)
@@ -435,16 +441,16 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) ClearSyncAt() *EdgeOneZoneDNSRecordUpda
 	return _u
 }
 
-// SetRecordId sets the "recordId" field.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) SetRecordId(v string) *EdgeOneZoneDNSRecordUpdateOne {
-	_u.mutation.SetRecordId(v)
+// SetRecordID sets the "record_id" field.
+func (_u *EdgeOneZoneDNSRecordUpdateOne) SetRecordID(v string) *EdgeOneZoneDNSRecordUpdateOne {
+	_u.mutation.SetRecordID(v)
 	return _u
 }
 
-// SetNillableRecordId sets the "recordId" field if the given value is not nil.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillableRecordId(v *string) *EdgeOneZoneDNSRecordUpdateOne {
+// SetNillableRecordID sets the "record_id" field if the given value is not nil.
+func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillableRecordID(v *string) *EdgeOneZoneDNSRecordUpdateOne {
 	if v != nil {
-		_u.SetRecordId(*v)
+		_u.SetRecordID(*v)
 	}
 	return _u
 }
@@ -650,7 +656,9 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) Select(field string, fields ...string) 
 
 // Save executes the query and returns the updated EdgeOneZoneDNSRecord entity.
 func (_u *EdgeOneZoneDNSRecordUpdateOne) Save(ctx context.Context) (*EdgeOneZoneDNSRecord, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -677,11 +685,15 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) defaults() {
+func (_u *EdgeOneZoneDNSRecordUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if edgeonezonednsrecord.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized edgeonezonednsrecord.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := edgeonezonednsrecord.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -749,8 +761,8 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) sqlSave(ctx context.Context) (_node *Ed
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezonednsrecord.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.RecordId(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldRecordId, field.TypeString, value)
+	if value, ok := _u.mutation.RecordID(); ok {
+		_spec.SetField(edgeonezonednsrecord.FieldRecordID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezonednsrecord.FieldName, field.TypeString, value)

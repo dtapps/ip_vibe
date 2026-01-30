@@ -48,6 +48,15 @@ type EdgeOneZoneDNSRecord func(*sql.Selector)
 // EdgeOneZoneOriginGroup is the predicate function for edgeonezoneorigingroup builders.
 type EdgeOneZoneOriginGroup func(*sql.Selector)
 
+// EsaSite is the predicate function for esasite builders.
+type EsaSite func(*sql.Selector)
+
+// EsaSiteOriginPool is the predicate function for esasiteoriginpool builders.
+type EsaSiteOriginPool func(*sql.Selector)
+
+// EsaSiteRecord is the predicate function for esasiterecord builders.
+type EsaSiteRecord func(*sql.Selector)
+
 // IpGroup is the predicate function for ipgroup builders.
 type IpGroup func(*sql.Selector)
 

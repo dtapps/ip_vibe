@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/esasite"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/tunrecord"
@@ -197,6 +198,21 @@ func (_c *PlatformConfigCreate) AddEdgeoneZones(v ...*EdgeOneZone) *PlatformConf
 		ids[i] = v[i].ID
 	}
 	return _c.AddEdgeoneZoneIDs(ids...)
+}
+
+// AddEsaZoneIDs adds the "esa_zones" edge to the EsaSite entity by IDs.
+func (_c *PlatformConfigCreate) AddEsaZoneIDs(ids ...int64) *PlatformConfigCreate {
+	_c.mutation.AddEsaZoneIDs(ids...)
+	return _c
+}
+
+// AddEsaZones adds the "esa_zones" edges to the EsaSite entity.
+func (_c *PlatformConfigCreate) AddEsaZones(v ...*EsaSite) *PlatformConfigCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddEsaZoneIDs(ids...)
 }
 
 // Mutation returns the PlatformConfigMutation object of the builder.
@@ -439,6 +455,22 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezone.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.EsaZonesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EsaZonesTable,
+			Columns: []string{platformconfig.EsaZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(esasite.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

@@ -25,6 +25,9 @@ import (
 	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
 	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
+	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/esasiteoriginpool"
+	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
@@ -75,6 +78,12 @@ type Client struct {
 	EdgeOneZoneDNSRecord *EdgeOneZoneDNSRecordClient
 	// EdgeOneZoneOriginGroup is the client for interacting with the EdgeOneZoneOriginGroup builders.
 	EdgeOneZoneOriginGroup *EdgeOneZoneOriginGroupClient
+	// EsaSite is the client for interacting with the EsaSite builders.
+	EsaSite *EsaSiteClient
+	// EsaSiteOriginPool is the client for interacting with the EsaSiteOriginPool builders.
+	EsaSiteOriginPool *EsaSiteOriginPoolClient
+	// EsaSiteRecord is the client for interacting with the EsaSiteRecord builders.
+	EsaSiteRecord *EsaSiteRecordClient
 	// IpGroup is the client for interacting with the IpGroup builders.
 	IpGroup *IpGroupClient
 	// IpGroupDevice is the client for interacting with the IpGroupDevice builders.
@@ -116,6 +125,9 @@ func (c *Client) init() {
 	c.EdgeOneZoneAccelerationDomain = NewEdgeOneZoneAccelerationDomainClient(c.config)
 	c.EdgeOneZoneDNSRecord = NewEdgeOneZoneDNSRecordClient(c.config)
 	c.EdgeOneZoneOriginGroup = NewEdgeOneZoneOriginGroupClient(c.config)
+	c.EsaSite = NewEsaSiteClient(c.config)
+	c.EsaSiteOriginPool = NewEsaSiteOriginPoolClient(c.config)
+	c.EsaSiteRecord = NewEsaSiteRecordClient(c.config)
 	c.IpGroup = NewIpGroupClient(c.config)
 	c.IpGroupDevice = NewIpGroupDeviceClient(c.config)
 	c.PlatformConfig = NewPlatformConfigClient(c.config)
@@ -230,6 +242,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		EdgeOneZoneAccelerationDomain: NewEdgeOneZoneAccelerationDomainClient(cfg),
 		EdgeOneZoneDNSRecord:          NewEdgeOneZoneDNSRecordClient(cfg),
 		EdgeOneZoneOriginGroup:        NewEdgeOneZoneOriginGroupClient(cfg),
+		EsaSite:                       NewEsaSiteClient(cfg),
+		EsaSiteOriginPool:             NewEsaSiteOriginPoolClient(cfg),
+		EsaSiteRecord:                 NewEsaSiteRecordClient(cfg),
 		IpGroup:                       NewIpGroupClient(cfg),
 		IpGroupDevice:                 NewIpGroupDeviceClient(cfg),
 		PlatformConfig:                NewPlatformConfigClient(cfg),
@@ -271,6 +286,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		EdgeOneZoneAccelerationDomain: NewEdgeOneZoneAccelerationDomainClient(cfg),
 		EdgeOneZoneDNSRecord:          NewEdgeOneZoneDNSRecordClient(cfg),
 		EdgeOneZoneOriginGroup:        NewEdgeOneZoneOriginGroupClient(cfg),
+		EsaSite:                       NewEsaSiteClient(cfg),
+		EsaSiteOriginPool:             NewEsaSiteOriginPoolClient(cfg),
+		EsaSiteRecord:                 NewEsaSiteRecordClient(cfg),
 		IpGroup:                       NewIpGroupClient(cfg),
 		IpGroupDevice:                 NewIpGroupDeviceClient(cfg),
 		PlatformConfig:                NewPlatformConfigClient(cfg),
@@ -311,7 +329,8 @@ func (c *Client) Use(hooks ...Hook) {
 		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
 		c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward,
 		c.DomainMonitor, c.EdgeOneZone, c.EdgeOneZoneAccelerationDomain,
-		c.EdgeOneZoneDNSRecord, c.EdgeOneZoneOriginGroup, c.IpGroup, c.IpGroupDevice,
+		c.EdgeOneZoneDNSRecord, c.EdgeOneZoneOriginGroup, c.EsaSite,
+		c.EsaSiteOriginPool, c.EsaSiteRecord, c.IpGroup, c.IpGroupDevice,
 		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord, c.Webhook,
 		c.WebhookSubscription,
 	} {
@@ -326,7 +345,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
 		c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward,
 		c.DomainMonitor, c.EdgeOneZone, c.EdgeOneZoneAccelerationDomain,
-		c.EdgeOneZoneDNSRecord, c.EdgeOneZoneOriginGroup, c.IpGroup, c.IpGroupDevice,
+		c.EdgeOneZoneDNSRecord, c.EdgeOneZoneOriginGroup, c.EsaSite,
+		c.EsaSiteOriginPool, c.EsaSiteRecord, c.IpGroup, c.IpGroupDevice,
 		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord, c.Webhook,
 		c.WebhookSubscription,
 	} {
@@ -365,6 +385,12 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.EdgeOneZoneDNSRecord.mutate(ctx, m)
 	case *EdgeOneZoneOriginGroupMutation:
 		return c.EdgeOneZoneOriginGroup.mutate(ctx, m)
+	case *EsaSiteMutation:
+		return c.EsaSite.mutate(ctx, m)
+	case *EsaSiteOriginPoolMutation:
+		return c.EsaSiteOriginPool.mutate(ctx, m)
+	case *EsaSiteRecordMutation:
+		return c.EsaSiteRecord.mutate(ctx, m)
 	case *IpGroupMutation:
 		return c.IpGroup.mutate(ctx, m)
 	case *IpGroupDeviceMutation:
@@ -2368,7 +2394,8 @@ func (c *EdgeOneZoneAccelerationDomainClient) QueryEdgeoneZone(_m *EdgeOneZoneAc
 
 // Hooks returns the client hooks.
 func (c *EdgeOneZoneAccelerationDomainClient) Hooks() []Hook {
-	return c.hooks.EdgeOneZoneAccelerationDomain
+	hooks := c.hooks.EdgeOneZoneAccelerationDomain
+	return append(hooks[:len(hooks):len(hooks)], edgeonezoneaccelerationdomain.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -2517,7 +2544,8 @@ func (c *EdgeOneZoneDNSRecordClient) QueryEdgeoneZone(_m *EdgeOneZoneDNSRecord) 
 
 // Hooks returns the client hooks.
 func (c *EdgeOneZoneDNSRecordClient) Hooks() []Hook {
-	return c.hooks.EdgeOneZoneDNSRecord
+	hooks := c.hooks.EdgeOneZoneDNSRecord
+	return append(hooks[:len(hooks):len(hooks)], edgeonezonednsrecord.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -2687,6 +2715,488 @@ func (c *EdgeOneZoneOriginGroupClient) mutate(ctx context.Context, m *EdgeOneZon
 		return (&EdgeOneZoneOriginGroupDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown EdgeOneZoneOriginGroup mutation op: %q", m.Op())
+	}
+}
+
+// EsaSiteClient is a client for the EsaSite schema.
+type EsaSiteClient struct {
+	config
+}
+
+// NewEsaSiteClient returns a client for the EsaSite from the given config.
+func NewEsaSiteClient(c config) *EsaSiteClient {
+	return &EsaSiteClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `esasite.Hooks(f(g(h())))`.
+func (c *EsaSiteClient) Use(hooks ...Hook) {
+	c.hooks.EsaSite = append(c.hooks.EsaSite, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `esasite.Intercept(f(g(h())))`.
+func (c *EsaSiteClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EsaSite = append(c.inters.EsaSite, interceptors...)
+}
+
+// Create returns a builder for creating a EsaSite entity.
+func (c *EsaSiteClient) Create() *EsaSiteCreate {
+	mutation := newEsaSiteMutation(c.config, OpCreate)
+	return &EsaSiteCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EsaSite entities.
+func (c *EsaSiteClient) CreateBulk(builders ...*EsaSiteCreate) *EsaSiteCreateBulk {
+	return &EsaSiteCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EsaSiteClient) MapCreateBulk(slice any, setFunc func(*EsaSiteCreate, int)) *EsaSiteCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EsaSiteCreateBulk{err: fmt.Errorf("calling to EsaSiteClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EsaSiteCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EsaSiteCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EsaSite.
+func (c *EsaSiteClient) Update() *EsaSiteUpdate {
+	mutation := newEsaSiteMutation(c.config, OpUpdate)
+	return &EsaSiteUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EsaSiteClient) UpdateOne(_m *EsaSite) *EsaSiteUpdateOne {
+	mutation := newEsaSiteMutation(c.config, OpUpdateOne, withEsaSite(_m))
+	return &EsaSiteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EsaSiteClient) UpdateOneID(id int64) *EsaSiteUpdateOne {
+	mutation := newEsaSiteMutation(c.config, OpUpdateOne, withEsaSiteID(id))
+	return &EsaSiteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EsaSite.
+func (c *EsaSiteClient) Delete() *EsaSiteDelete {
+	mutation := newEsaSiteMutation(c.config, OpDelete)
+	return &EsaSiteDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EsaSiteClient) DeleteOne(_m *EsaSite) *EsaSiteDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EsaSiteClient) DeleteOneID(id int64) *EsaSiteDeleteOne {
+	builder := c.Delete().Where(esasite.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EsaSiteDeleteOne{builder}
+}
+
+// Query returns a query builder for EsaSite.
+func (c *EsaSiteClient) Query() *EsaSiteQuery {
+	return &EsaSiteQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEsaSite},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EsaSite entity by its id.
+func (c *EsaSiteClient) Get(ctx context.Context, id int64) (*EsaSite, error) {
+	return c.Query().Where(esasite.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EsaSiteClient) GetX(ctx context.Context, id int64) *EsaSite {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryConfig queries the config edge of a EsaSite.
+func (c *EsaSiteClient) QueryConfig(_m *EsaSite) *PlatformConfigQuery {
+	query := (&PlatformConfigClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(esasite.Table, esasite.FieldID, id),
+			sqlgraph.To(platformconfig.Table, platformconfig.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, esasite.ConfigTable, esasite.ConfigColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRecords queries the records edge of a EsaSite.
+func (c *EsaSiteClient) QueryRecords(_m *EsaSite) *EsaSiteRecordQuery {
+	query := (&EsaSiteRecordClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(esasite.Table, esasite.FieldID, id),
+			sqlgraph.To(esasiterecord.Table, esasiterecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, esasite.RecordsTable, esasite.RecordsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOriginpools queries the originpools edge of a EsaSite.
+func (c *EsaSiteClient) QueryOriginpools(_m *EsaSite) *EsaSiteOriginPoolQuery {
+	query := (&EsaSiteOriginPoolClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(esasite.Table, esasite.FieldID, id),
+			sqlgraph.To(esasiteoriginpool.Table, esasiteoriginpool.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, esasite.OriginpoolsTable, esasite.OriginpoolsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EsaSiteClient) Hooks() []Hook {
+	hooks := c.hooks.EsaSite
+	return append(hooks[:len(hooks):len(hooks)], esasite.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *EsaSiteClient) Interceptors() []Interceptor {
+	return c.inters.EsaSite
+}
+
+func (c *EsaSiteClient) mutate(ctx context.Context, m *EsaSiteMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EsaSiteCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EsaSiteUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EsaSiteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EsaSiteDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EsaSite mutation op: %q", m.Op())
+	}
+}
+
+// EsaSiteOriginPoolClient is a client for the EsaSiteOriginPool schema.
+type EsaSiteOriginPoolClient struct {
+	config
+}
+
+// NewEsaSiteOriginPoolClient returns a client for the EsaSiteOriginPool from the given config.
+func NewEsaSiteOriginPoolClient(c config) *EsaSiteOriginPoolClient {
+	return &EsaSiteOriginPoolClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `esasiteoriginpool.Hooks(f(g(h())))`.
+func (c *EsaSiteOriginPoolClient) Use(hooks ...Hook) {
+	c.hooks.EsaSiteOriginPool = append(c.hooks.EsaSiteOriginPool, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `esasiteoriginpool.Intercept(f(g(h())))`.
+func (c *EsaSiteOriginPoolClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EsaSiteOriginPool = append(c.inters.EsaSiteOriginPool, interceptors...)
+}
+
+// Create returns a builder for creating a EsaSiteOriginPool entity.
+func (c *EsaSiteOriginPoolClient) Create() *EsaSiteOriginPoolCreate {
+	mutation := newEsaSiteOriginPoolMutation(c.config, OpCreate)
+	return &EsaSiteOriginPoolCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EsaSiteOriginPool entities.
+func (c *EsaSiteOriginPoolClient) CreateBulk(builders ...*EsaSiteOriginPoolCreate) *EsaSiteOriginPoolCreateBulk {
+	return &EsaSiteOriginPoolCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EsaSiteOriginPoolClient) MapCreateBulk(slice any, setFunc func(*EsaSiteOriginPoolCreate, int)) *EsaSiteOriginPoolCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EsaSiteOriginPoolCreateBulk{err: fmt.Errorf("calling to EsaSiteOriginPoolClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EsaSiteOriginPoolCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EsaSiteOriginPoolCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EsaSiteOriginPool.
+func (c *EsaSiteOriginPoolClient) Update() *EsaSiteOriginPoolUpdate {
+	mutation := newEsaSiteOriginPoolMutation(c.config, OpUpdate)
+	return &EsaSiteOriginPoolUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EsaSiteOriginPoolClient) UpdateOne(_m *EsaSiteOriginPool) *EsaSiteOriginPoolUpdateOne {
+	mutation := newEsaSiteOriginPoolMutation(c.config, OpUpdateOne, withEsaSiteOriginPool(_m))
+	return &EsaSiteOriginPoolUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EsaSiteOriginPoolClient) UpdateOneID(id int64) *EsaSiteOriginPoolUpdateOne {
+	mutation := newEsaSiteOriginPoolMutation(c.config, OpUpdateOne, withEsaSiteOriginPoolID(id))
+	return &EsaSiteOriginPoolUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EsaSiteOriginPool.
+func (c *EsaSiteOriginPoolClient) Delete() *EsaSiteOriginPoolDelete {
+	mutation := newEsaSiteOriginPoolMutation(c.config, OpDelete)
+	return &EsaSiteOriginPoolDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EsaSiteOriginPoolClient) DeleteOne(_m *EsaSiteOriginPool) *EsaSiteOriginPoolDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EsaSiteOriginPoolClient) DeleteOneID(id int64) *EsaSiteOriginPoolDeleteOne {
+	builder := c.Delete().Where(esasiteoriginpool.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EsaSiteOriginPoolDeleteOne{builder}
+}
+
+// Query returns a query builder for EsaSiteOriginPool.
+func (c *EsaSiteOriginPoolClient) Query() *EsaSiteOriginPoolQuery {
+	return &EsaSiteOriginPoolQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEsaSiteOriginPool},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EsaSiteOriginPool entity by its id.
+func (c *EsaSiteOriginPoolClient) Get(ctx context.Context, id int64) (*EsaSiteOriginPool, error) {
+	return c.Query().Where(esasiteoriginpool.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EsaSiteOriginPoolClient) GetX(ctx context.Context, id int64) *EsaSiteOriginPool {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEsaSite queries the esa_site edge of a EsaSiteOriginPool.
+func (c *EsaSiteOriginPoolClient) QueryEsaSite(_m *EsaSiteOriginPool) *EsaSiteQuery {
+	query := (&EsaSiteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(esasiteoriginpool.Table, esasiteoriginpool.FieldID, id),
+			sqlgraph.To(esasite.Table, esasite.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, esasiteoriginpool.EsaSiteTable, esasiteoriginpool.EsaSiteColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EsaSiteOriginPoolClient) Hooks() []Hook {
+	hooks := c.hooks.EsaSiteOriginPool
+	return append(hooks[:len(hooks):len(hooks)], esasiteoriginpool.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *EsaSiteOriginPoolClient) Interceptors() []Interceptor {
+	return c.inters.EsaSiteOriginPool
+}
+
+func (c *EsaSiteOriginPoolClient) mutate(ctx context.Context, m *EsaSiteOriginPoolMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EsaSiteOriginPoolCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EsaSiteOriginPoolUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EsaSiteOriginPoolUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EsaSiteOriginPoolDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EsaSiteOriginPool mutation op: %q", m.Op())
+	}
+}
+
+// EsaSiteRecordClient is a client for the EsaSiteRecord schema.
+type EsaSiteRecordClient struct {
+	config
+}
+
+// NewEsaSiteRecordClient returns a client for the EsaSiteRecord from the given config.
+func NewEsaSiteRecordClient(c config) *EsaSiteRecordClient {
+	return &EsaSiteRecordClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `esasiterecord.Hooks(f(g(h())))`.
+func (c *EsaSiteRecordClient) Use(hooks ...Hook) {
+	c.hooks.EsaSiteRecord = append(c.hooks.EsaSiteRecord, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `esasiterecord.Intercept(f(g(h())))`.
+func (c *EsaSiteRecordClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EsaSiteRecord = append(c.inters.EsaSiteRecord, interceptors...)
+}
+
+// Create returns a builder for creating a EsaSiteRecord entity.
+func (c *EsaSiteRecordClient) Create() *EsaSiteRecordCreate {
+	mutation := newEsaSiteRecordMutation(c.config, OpCreate)
+	return &EsaSiteRecordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EsaSiteRecord entities.
+func (c *EsaSiteRecordClient) CreateBulk(builders ...*EsaSiteRecordCreate) *EsaSiteRecordCreateBulk {
+	return &EsaSiteRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EsaSiteRecordClient) MapCreateBulk(slice any, setFunc func(*EsaSiteRecordCreate, int)) *EsaSiteRecordCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EsaSiteRecordCreateBulk{err: fmt.Errorf("calling to EsaSiteRecordClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EsaSiteRecordCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EsaSiteRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EsaSiteRecord.
+func (c *EsaSiteRecordClient) Update() *EsaSiteRecordUpdate {
+	mutation := newEsaSiteRecordMutation(c.config, OpUpdate)
+	return &EsaSiteRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EsaSiteRecordClient) UpdateOne(_m *EsaSiteRecord) *EsaSiteRecordUpdateOne {
+	mutation := newEsaSiteRecordMutation(c.config, OpUpdateOne, withEsaSiteRecord(_m))
+	return &EsaSiteRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EsaSiteRecordClient) UpdateOneID(id int64) *EsaSiteRecordUpdateOne {
+	mutation := newEsaSiteRecordMutation(c.config, OpUpdateOne, withEsaSiteRecordID(id))
+	return &EsaSiteRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EsaSiteRecord.
+func (c *EsaSiteRecordClient) Delete() *EsaSiteRecordDelete {
+	mutation := newEsaSiteRecordMutation(c.config, OpDelete)
+	return &EsaSiteRecordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EsaSiteRecordClient) DeleteOne(_m *EsaSiteRecord) *EsaSiteRecordDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EsaSiteRecordClient) DeleteOneID(id int64) *EsaSiteRecordDeleteOne {
+	builder := c.Delete().Where(esasiterecord.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EsaSiteRecordDeleteOne{builder}
+}
+
+// Query returns a query builder for EsaSiteRecord.
+func (c *EsaSiteRecordClient) Query() *EsaSiteRecordQuery {
+	return &EsaSiteRecordQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEsaSiteRecord},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EsaSiteRecord entity by its id.
+func (c *EsaSiteRecordClient) Get(ctx context.Context, id int64) (*EsaSiteRecord, error) {
+	return c.Query().Where(esasiterecord.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EsaSiteRecordClient) GetX(ctx context.Context, id int64) *EsaSiteRecord {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEsaSite queries the esa_site edge of a EsaSiteRecord.
+func (c *EsaSiteRecordClient) QueryEsaSite(_m *EsaSiteRecord) *EsaSiteQuery {
+	query := (&EsaSiteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(esasiterecord.Table, esasiterecord.FieldID, id),
+			sqlgraph.To(esasite.Table, esasite.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, esasiterecord.EsaSiteTable, esasiterecord.EsaSiteColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EsaSiteRecordClient) Hooks() []Hook {
+	hooks := c.hooks.EsaSiteRecord
+	return append(hooks[:len(hooks):len(hooks)], esasiterecord.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *EsaSiteRecordClient) Interceptors() []Interceptor {
+	return c.inters.EsaSiteRecord
+}
+
+func (c *EsaSiteRecordClient) mutate(ctx context.Context, m *EsaSiteRecordMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EsaSiteRecordCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EsaSiteRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EsaSiteRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EsaSiteRecordDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EsaSiteRecord mutation op: %q", m.Op())
 	}
 }
 
@@ -3201,6 +3711,22 @@ func (c *PlatformConfigClient) QueryEdgeoneZones(_m *PlatformConfig) *EdgeOneZon
 			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, id),
 			sqlgraph.To(edgeonezone.Table, edgeonezone.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.EdgeoneZonesTable, platformconfig.EdgeoneZonesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEsaZones queries the esa_zones edge of a PlatformConfig.
+func (c *PlatformConfigClient) QueryEsaZones(_m *PlatformConfig) *EsaSiteQuery {
+	query := (&EsaSiteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, id),
+			sqlgraph.To(esasite.Table, esasite.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.EsaZonesTable, platformconfig.EsaZonesColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -3974,15 +4500,17 @@ type (
 		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, DNSRecord, Device,
 		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor, EdgeOneZone,
 		EdgeOneZoneAccelerationDomain, EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup,
-		IpGroup, IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, TUNRecord,
-		Webhook, WebhookSubscription []ent.Hook
+		EsaSite, EsaSiteOriginPool, EsaSiteRecord, IpGroup, IpGroupDevice,
+		PlatformConfig, SSLImport, SSLRecord, TUNRecord, Webhook,
+		WebhookSubscription []ent.Hook
 	}
 	inters struct {
 		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, DNSRecord, Device,
 		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor, EdgeOneZone,
 		EdgeOneZoneAccelerationDomain, EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup,
-		IpGroup, IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, TUNRecord,
-		Webhook, WebhookSubscription []ent.Interceptor
+		EsaSite, EsaSiteOriginPool, EsaSiteRecord, IpGroup, IpGroupDevice,
+		PlatformConfig, SSLImport, SSLRecord, TUNRecord, Webhook,
+		WebhookSubscription []ent.Interceptor
 	}
 )
 

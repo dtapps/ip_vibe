@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/esasite"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/sslrecord"
@@ -192,6 +193,21 @@ func (_u *PlatformConfigUpdate) AddEdgeoneZones(v ...*EdgeOneZone) *PlatformConf
 	return _u.AddEdgeoneZoneIDs(ids...)
 }
 
+// AddEsaZoneIDs adds the "esa_zones" edge to the EsaSite entity by IDs.
+func (_u *PlatformConfigUpdate) AddEsaZoneIDs(ids ...int64) *PlatformConfigUpdate {
+	_u.mutation.AddEsaZoneIDs(ids...)
+	return _u
+}
+
+// AddEsaZones adds the "esa_zones" edges to the EsaSite entity.
+func (_u *PlatformConfigUpdate) AddEsaZones(v ...*EsaSite) *PlatformConfigUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddEsaZoneIDs(ids...)
+}
+
 // Mutation returns the PlatformConfigMutation object of the builder.
 func (_u *PlatformConfigUpdate) Mutation() *PlatformConfigMutation {
 	return _u.mutation
@@ -321,6 +337,27 @@ func (_u *PlatformConfigUpdate) RemoveEdgeoneZones(v ...*EdgeOneZone) *PlatformC
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveEdgeoneZoneIDs(ids...)
+}
+
+// ClearEsaZones clears all "esa_zones" edges to the EsaSite entity.
+func (_u *PlatformConfigUpdate) ClearEsaZones() *PlatformConfigUpdate {
+	_u.mutation.ClearEsaZones()
+	return _u
+}
+
+// RemoveEsaZoneIDs removes the "esa_zones" edge to EsaSite entities by IDs.
+func (_u *PlatformConfigUpdate) RemoveEsaZoneIDs(ids ...int64) *PlatformConfigUpdate {
+	_u.mutation.RemoveEsaZoneIDs(ids...)
+	return _u
+}
+
+// RemoveEsaZones removes "esa_zones" edges to EsaSite entities.
+func (_u *PlatformConfigUpdate) RemoveEsaZones(v ...*EsaSite) *PlatformConfigUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveEsaZoneIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -689,6 +726,51 @@ func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.EsaZonesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EsaZonesTable,
+			Columns: []string{platformconfig.EsaZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(esasite.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedEsaZonesIDs(); len(nodes) > 0 && !_u.mutation.EsaZonesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EsaZonesTable,
+			Columns: []string{platformconfig.EsaZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(esasite.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.EsaZonesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EsaZonesTable,
+			Columns: []string{platformconfig.EsaZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(esasite.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -867,6 +949,21 @@ func (_u *PlatformConfigUpdateOne) AddEdgeoneZones(v ...*EdgeOneZone) *PlatformC
 	return _u.AddEdgeoneZoneIDs(ids...)
 }
 
+// AddEsaZoneIDs adds the "esa_zones" edge to the EsaSite entity by IDs.
+func (_u *PlatformConfigUpdateOne) AddEsaZoneIDs(ids ...int64) *PlatformConfigUpdateOne {
+	_u.mutation.AddEsaZoneIDs(ids...)
+	return _u
+}
+
+// AddEsaZones adds the "esa_zones" edges to the EsaSite entity.
+func (_u *PlatformConfigUpdateOne) AddEsaZones(v ...*EsaSite) *PlatformConfigUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddEsaZoneIDs(ids...)
+}
+
 // Mutation returns the PlatformConfigMutation object of the builder.
 func (_u *PlatformConfigUpdateOne) Mutation() *PlatformConfigMutation {
 	return _u.mutation
@@ -996,6 +1093,27 @@ func (_u *PlatformConfigUpdateOne) RemoveEdgeoneZones(v ...*EdgeOneZone) *Platfo
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveEdgeoneZoneIDs(ids...)
+}
+
+// ClearEsaZones clears all "esa_zones" edges to the EsaSite entity.
+func (_u *PlatformConfigUpdateOne) ClearEsaZones() *PlatformConfigUpdateOne {
+	_u.mutation.ClearEsaZones()
+	return _u
+}
+
+// RemoveEsaZoneIDs removes the "esa_zones" edge to EsaSite entities by IDs.
+func (_u *PlatformConfigUpdateOne) RemoveEsaZoneIDs(ids ...int64) *PlatformConfigUpdateOne {
+	_u.mutation.RemoveEsaZoneIDs(ids...)
+	return _u
+}
+
+// RemoveEsaZones removes "esa_zones" edges to EsaSite entities.
+func (_u *PlatformConfigUpdateOne) RemoveEsaZones(v ...*EsaSite) *PlatformConfigUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveEsaZoneIDs(ids...)
 }
 
 // Where appends a list predicates to the PlatformConfigUpdate builder.
@@ -1387,6 +1505,51 @@ func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *Platform
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezone.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.EsaZonesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EsaZonesTable,
+			Columns: []string{platformconfig.EsaZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(esasite.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedEsaZonesIDs(); len(nodes) > 0 && !_u.mutation.EsaZonesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EsaZonesTable,
+			Columns: []string{platformconfig.EsaZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(esasite.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.EsaZonesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EsaZonesTable,
+			Columns: []string{platformconfig.EsaZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(esasite.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

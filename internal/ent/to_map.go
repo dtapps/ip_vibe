@@ -178,6 +178,47 @@ func (t *EdgeOneZoneOriginGroup) ToMap() map[string]any {
 	return m
 }
 
+// ToMap 将 EsaSite 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *EsaSite) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+	return m
+}
+
+// ToMap 将 EsaSiteOriginPool 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *EsaSiteOriginPool) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["references"] = t.References
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["origins"] = t.Origins
+	return m
+}
+
+// ToMap 将 EsaSiteRecord 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *EsaSiteRecord) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["data"] = t.Data
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["auth_conf"] = t.AuthConf
+	return m
+}
+
 // ToMap 将 IpGroup 实体转换为 map[string]any。
 // 键为数据库列名（snake_case），值为字段当前值。
 // 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。

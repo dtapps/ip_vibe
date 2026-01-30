@@ -280,7 +280,9 @@ func (_u *EdgeOneZoneAccelerationDomainUpdate) Mutation() *EdgeOneZoneAccelerati
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *EdgeOneZoneAccelerationDomainUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -307,11 +309,15 @@ func (_u *EdgeOneZoneAccelerationDomainUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *EdgeOneZoneAccelerationDomainUpdate) defaults() {
+func (_u *EdgeOneZoneAccelerationDomainUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if edgeonezoneaccelerationdomain.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized edgeonezoneaccelerationdomain.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := edgeonezoneaccelerationdomain.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -740,7 +746,9 @@ func (_u *EdgeOneZoneAccelerationDomainUpdateOne) Select(field string, fields ..
 
 // Save executes the query and returns the updated EdgeOneZoneAccelerationDomain entity.
 func (_u *EdgeOneZoneAccelerationDomainUpdateOne) Save(ctx context.Context) (*EdgeOneZoneAccelerationDomain, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -767,11 +775,15 @@ func (_u *EdgeOneZoneAccelerationDomainUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *EdgeOneZoneAccelerationDomainUpdateOne) defaults() {
+func (_u *EdgeOneZoneAccelerationDomainUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if edgeonezoneaccelerationdomain.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized edgeonezoneaccelerationdomain.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := edgeonezoneaccelerationdomain.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

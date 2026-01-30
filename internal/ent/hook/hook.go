@@ -176,6 +176,42 @@ func (f EdgeOneZoneOriginGroupFunc) Mutate(ctx context.Context, m ent.Mutation) 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EdgeOneZoneOriginGroupMutation", m)
 }
 
+// The EsaSiteFunc type is an adapter to allow the use of ordinary
+// function as EsaSite mutator.
+type EsaSiteFunc func(context.Context, *ent.EsaSiteMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EsaSiteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EsaSiteMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EsaSiteMutation", m)
+}
+
+// The EsaSiteOriginPoolFunc type is an adapter to allow the use of ordinary
+// function as EsaSiteOriginPool mutator.
+type EsaSiteOriginPoolFunc func(context.Context, *ent.EsaSiteOriginPoolMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EsaSiteOriginPoolFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EsaSiteOriginPoolMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EsaSiteOriginPoolMutation", m)
+}
+
+// The EsaSiteRecordFunc type is an adapter to allow the use of ordinary
+// function as EsaSiteRecord mutator.
+type EsaSiteRecordFunc func(context.Context, *ent.EsaSiteRecordMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EsaSiteRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EsaSiteRecordMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EsaSiteRecordMutation", m)
+}
+
 // The IpGroupFunc type is an adapter to allow the use of ordinary
 // function as IpGroup mutator.
 type IpGroupFunc func(context.Context, *ent.IpGroupMutation) (ent.Value, error)

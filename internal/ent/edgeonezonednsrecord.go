@@ -30,7 +30,7 @@ type EdgeOneZoneDNSRecord struct {
 	// 关联 EdgeOne 站点序号
 	EdgeoneZoneID int64 `json:"edgeone_zone_id,omitempty"`
 	// DNS 记录 ID
-	RecordId string `json:"recordId,omitempty"`
+	RecordID string `json:"record_id,omitempty"`
 	// DNS 记录名
 	Name string `json:"name,omitempty"`
 	// DNS 记录类型
@@ -80,7 +80,7 @@ func (*EdgeOneZoneDNSRecord) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case edgeonezonednsrecord.FieldID, edgeonezonednsrecord.FieldEdgeoneZoneID, edgeonezonednsrecord.FieldTTL, edgeonezonednsrecord.FieldWeight, edgeonezonednsrecord.FieldPriority:
 			values[i] = new(sql.NullInt64)
-		case edgeonezonednsrecord.FieldRecordId, edgeonezonednsrecord.FieldName, edgeonezonednsrecord.FieldType, edgeonezonednsrecord.FieldLocation, edgeonezonednsrecord.FieldContent, edgeonezonednsrecord.FieldStatus:
+		case edgeonezonednsrecord.FieldRecordID, edgeonezonednsrecord.FieldName, edgeonezonednsrecord.FieldType, edgeonezonednsrecord.FieldLocation, edgeonezonednsrecord.FieldContent, edgeonezonednsrecord.FieldStatus:
 			values[i] = new(sql.NullString)
 		case edgeonezonednsrecord.FieldCreatedAt, edgeonezonednsrecord.FieldUpdatedAt, edgeonezonednsrecord.FieldRemoteCreatedAt, edgeonezonednsrecord.FieldSyncAt:
 			values[i] = new(sql.NullTime)
@@ -135,11 +135,11 @@ func (_m *EdgeOneZoneDNSRecord) assignValues(columns []string, values []any) err
 			} else if value.Valid {
 				_m.EdgeoneZoneID = value.Int64
 			}
-		case edgeonezonednsrecord.FieldRecordId:
+		case edgeonezonednsrecord.FieldRecordID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field recordId", values[i])
+				return fmt.Errorf("unexpected type %T for field record_id", values[i])
 			} else if value.Valid {
-				_m.RecordId = value.String
+				_m.RecordID = value.String
 			}
 		case edgeonezonednsrecord.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -245,8 +245,8 @@ func (_m *EdgeOneZoneDNSRecord) String() string {
 	builder.WriteString("edgeone_zone_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.EdgeoneZoneID))
 	builder.WriteString(", ")
-	builder.WriteString("recordId=")
-	builder.WriteString(_m.RecordId)
+	builder.WriteString("record_id=")
+	builder.WriteString(_m.RecordID)
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)

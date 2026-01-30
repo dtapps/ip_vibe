@@ -18,6 +18,9 @@ import (
 	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
 	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
+	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/esasiteoriginpool"
+	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
@@ -320,6 +323,8 @@ func init() {
 	// edgeonezone.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	edgeonezone.IDValidator = edgeonezoneDescID.Validators[0].(func(int64) error)
 	edgeonezoneaccelerationdomainMixin := schema.EdgeOneZoneAccelerationDomain{}.Mixin()
+	edgeonezoneaccelerationdomainHooks := schema.EdgeOneZoneAccelerationDomain{}.Hooks()
+	edgeonezoneaccelerationdomain.Hooks[0] = edgeonezoneaccelerationdomainHooks[0]
 	edgeonezoneaccelerationdomainMixinFields0 := edgeonezoneaccelerationdomainMixin[0].Fields()
 	_ = edgeonezoneaccelerationdomainMixinFields0
 	edgeonezoneaccelerationdomainFields := schema.EdgeOneZoneAccelerationDomain{}.Fields()
@@ -343,6 +348,8 @@ func init() {
 	// edgeonezoneaccelerationdomain.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	edgeonezoneaccelerationdomain.IDValidator = edgeonezoneaccelerationdomainDescID.Validators[0].(func(int64) error)
 	edgeonezonednsrecordMixin := schema.EdgeOneZoneDNSRecord{}.Mixin()
+	edgeonezonednsrecordHooks := schema.EdgeOneZoneDNSRecord{}.Hooks()
+	edgeonezonednsrecord.Hooks[0] = edgeonezonednsrecordHooks[0]
 	edgeonezonednsrecordMixinFields0 := edgeonezonednsrecordMixin[0].Fields()
 	_ = edgeonezonednsrecordMixinFields0
 	edgeonezonednsrecordFields := schema.EdgeOneZoneDNSRecord{}.Fields()
@@ -390,6 +397,81 @@ func init() {
 	edgeonezoneorigingroupDescID := edgeonezoneorigingroupFields[0].Descriptor()
 	// edgeonezoneorigingroup.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	edgeonezoneorigingroup.IDValidator = edgeonezoneorigingroupDescID.Validators[0].(func(int64) error)
+	esasiteMixin := schema.EsaSite{}.Mixin()
+	esasiteHooks := schema.EsaSite{}.Hooks()
+	esasite.Hooks[0] = esasiteHooks[0]
+	esasiteMixinFields0 := esasiteMixin[0].Fields()
+	_ = esasiteMixinFields0
+	esasiteFields := schema.EsaSite{}.Fields()
+	_ = esasiteFields
+	// esasiteDescCreatedAt is the schema descriptor for created_at field.
+	esasiteDescCreatedAt := esasiteMixinFields0[0].Descriptor()
+	// esasite.DefaultCreatedAt holds the default value on creation for the created_at field.
+	esasite.DefaultCreatedAt = esasiteDescCreatedAt.Default.(func() time.Time)
+	// esasiteDescUpdatedAt is the schema descriptor for updated_at field.
+	esasiteDescUpdatedAt := esasiteMixinFields0[1].Descriptor()
+	// esasite.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	esasite.DefaultUpdatedAt = esasiteDescUpdatedAt.Default.(func() time.Time)
+	// esasite.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	esasite.UpdateDefaultUpdatedAt = esasiteDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// esasiteDescConfigID is the schema descriptor for config_id field.
+	esasiteDescConfigID := esasiteFields[1].Descriptor()
+	// esasite.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
+	esasite.ConfigIDValidator = esasiteDescConfigID.Validators[0].(func(int64) error)
+	// esasiteDescID is the schema descriptor for id field.
+	esasiteDescID := esasiteFields[0].Descriptor()
+	// esasite.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	esasite.IDValidator = esasiteDescID.Validators[0].(func(int64) error)
+	esasiteoriginpoolMixin := schema.EsaSiteOriginPool{}.Mixin()
+	esasiteoriginpoolHooks := schema.EsaSiteOriginPool{}.Hooks()
+	esasiteoriginpool.Hooks[0] = esasiteoriginpoolHooks[0]
+	esasiteoriginpoolMixinFields0 := esasiteoriginpoolMixin[0].Fields()
+	_ = esasiteoriginpoolMixinFields0
+	esasiteoriginpoolFields := schema.EsaSiteOriginPool{}.Fields()
+	_ = esasiteoriginpoolFields
+	// esasiteoriginpoolDescCreatedAt is the schema descriptor for created_at field.
+	esasiteoriginpoolDescCreatedAt := esasiteoriginpoolMixinFields0[0].Descriptor()
+	// esasiteoriginpool.DefaultCreatedAt holds the default value on creation for the created_at field.
+	esasiteoriginpool.DefaultCreatedAt = esasiteoriginpoolDescCreatedAt.Default.(func() time.Time)
+	// esasiteoriginpoolDescUpdatedAt is the schema descriptor for updated_at field.
+	esasiteoriginpoolDescUpdatedAt := esasiteoriginpoolMixinFields0[1].Descriptor()
+	// esasiteoriginpool.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	esasiteoriginpool.DefaultUpdatedAt = esasiteoriginpoolDescUpdatedAt.Default.(func() time.Time)
+	// esasiteoriginpool.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	esasiteoriginpool.UpdateDefaultUpdatedAt = esasiteoriginpoolDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// esasiteoriginpoolDescEsaSiteID is the schema descriptor for esa_site_id field.
+	esasiteoriginpoolDescEsaSiteID := esasiteoriginpoolFields[1].Descriptor()
+	// esasiteoriginpool.EsaSiteIDValidator is a validator for the "esa_site_id" field. It is called by the builders before save.
+	esasiteoriginpool.EsaSiteIDValidator = esasiteoriginpoolDescEsaSiteID.Validators[0].(func(int64) error)
+	// esasiteoriginpoolDescID is the schema descriptor for id field.
+	esasiteoriginpoolDescID := esasiteoriginpoolFields[0].Descriptor()
+	// esasiteoriginpool.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	esasiteoriginpool.IDValidator = esasiteoriginpoolDescID.Validators[0].(func(int64) error)
+	esasiterecordMixin := schema.EsaSiteRecord{}.Mixin()
+	esasiterecordHooks := schema.EsaSiteRecord{}.Hooks()
+	esasiterecord.Hooks[0] = esasiterecordHooks[0]
+	esasiterecordMixinFields0 := esasiterecordMixin[0].Fields()
+	_ = esasiterecordMixinFields0
+	esasiterecordFields := schema.EsaSiteRecord{}.Fields()
+	_ = esasiterecordFields
+	// esasiterecordDescCreatedAt is the schema descriptor for created_at field.
+	esasiterecordDescCreatedAt := esasiterecordMixinFields0[0].Descriptor()
+	// esasiterecord.DefaultCreatedAt holds the default value on creation for the created_at field.
+	esasiterecord.DefaultCreatedAt = esasiterecordDescCreatedAt.Default.(func() time.Time)
+	// esasiterecordDescUpdatedAt is the schema descriptor for updated_at field.
+	esasiterecordDescUpdatedAt := esasiterecordMixinFields0[1].Descriptor()
+	// esasiterecord.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	esasiterecord.DefaultUpdatedAt = esasiterecordDescUpdatedAt.Default.(func() time.Time)
+	// esasiterecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	esasiterecord.UpdateDefaultUpdatedAt = esasiterecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// esasiterecordDescEsaSiteID is the schema descriptor for esa_site_id field.
+	esasiterecordDescEsaSiteID := esasiterecordFields[1].Descriptor()
+	// esasiterecord.EsaSiteIDValidator is a validator for the "esa_site_id" field. It is called by the builders before save.
+	esasiterecord.EsaSiteIDValidator = esasiterecordDescEsaSiteID.Validators[0].(func(int64) error)
+	// esasiterecordDescID is the schema descriptor for id field.
+	esasiterecordDescID := esasiterecordFields[0].Descriptor()
+	// esasiterecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	esasiterecord.IDValidator = esasiterecordDescID.Validators[0].(func(int64) error)
 	ipgroupMixin := schema.IpGroup{}.Mixin()
 	ipgroupHooks := schema.IpGroup{}.Hooks()
 	ipgroup.Hooks[0] = ipgroupHooks[0]

@@ -42,6 +42,8 @@ const (
 	EdgeCloudflareTunnels = "cloudflare_tunnels"
 	// EdgeEdgeoneZones holds the string denoting the edgeone_zones edge name in mutations.
 	EdgeEdgeoneZones = "edgeone_zones"
+	// EdgeEsaZones holds the string denoting the esa_zones edge name in mutations.
+	EdgeEsaZones = "esa_zones"
 	// Table holds the table name of the platformconfig in the database.
 	Table = "platform_config"
 	// DNSRecordsTable is the table that holds the dns_records relation/edge.
@@ -86,6 +88,13 @@ const (
 	EdgeoneZonesInverseTable = "edgeone_zone"
 	// EdgeoneZonesColumn is the table column denoting the edgeone_zones relation/edge.
 	EdgeoneZonesColumn = "config_id"
+	// EsaZonesTable is the table that holds the esa_zones relation/edge.
+	EsaZonesTable = "esa_site"
+	// EsaZonesInverseTable is the table name for the EsaSite entity.
+	// It exists in this package in order to avoid circular dependency with the "esasite" package.
+	EsaZonesInverseTable = "esa_site"
+	// EsaZonesColumn is the table column denoting the esa_zones relation/edge.
+	EsaZonesColumn = "config_id"
 )
 
 // Columns holds all SQL columns for platformconfig fields.
@@ -314,6 +323,20 @@ func ByEdgeoneZones(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newEdgeoneZonesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByEsaZonesCount orders the results by esa_zones count.
+func ByEsaZonesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newEsaZonesStep(), opts...)
+	}
+}
+
+// ByEsaZones orders the results by esa_zones terms.
+func ByEsaZones(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEsaZonesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newDNSRecordsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -354,5 +377,12 @@ func newEdgeoneZonesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EdgeoneZonesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, EdgeoneZonesTable, EdgeoneZonesColumn),
+	)
+}
+func newEsaZonesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EsaZonesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, EsaZonesTable, EsaZonesColumn),
 	)
 }

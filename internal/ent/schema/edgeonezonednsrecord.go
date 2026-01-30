@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -50,7 +51,7 @@ func (EdgeOneZoneDNSRecord) Fields() []ent.Field {
 			Comment("关联 EdgeOne 站点序号").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("recordId").
+		field.String("record_id").
 			Comment("DNS 记录 ID").
 			Annotations(entsql.WithComments(true)),
 
@@ -129,6 +130,6 @@ func (EdgeOneZoneDNSRecord) Indexes() []ent.Index {
 // Hooks of the EdgeOneZoneDNSRecord.
 func (EdgeOneZoneDNSRecord) Hooks() []ent.Hook {
 	return []ent.Hook{
-		// schemahook.EdgeOneZoneDNSRecordLogHook(),
+		schemahook.EdgeOneZoneDNSRecordLogHook(),
 	}
 }

@@ -80,9 +80,9 @@ func EdgeoneZoneID(v int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldEQ(FieldEdgeoneZoneID, v))
 }
 
-// RecordId applies equality check predicate on the "recordId" field. It's identical to RecordIdEQ.
-func RecordId(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldEQ(FieldRecordId, v))
+// RecordID applies equality check predicate on the "record_id" field. It's identical to RecordIDEQ.
+func RecordID(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldEQ(FieldRecordID, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
@@ -315,69 +315,69 @@ func EdgeoneZoneIDNotIn(vs ...int64) predicate.EdgeOneZoneDNSRecord {
 	return predicate.EdgeOneZoneDNSRecord(sql.FieldNotIn(FieldEdgeoneZoneID, vs...))
 }
 
-// RecordIdEQ applies the EQ predicate on the "recordId" field.
-func RecordIdEQ(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldEQ(FieldRecordId, v))
+// RecordIDEQ applies the EQ predicate on the "record_id" field.
+func RecordIDEQ(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldEQ(FieldRecordID, v))
 }
 
-// RecordIdNEQ applies the NEQ predicate on the "recordId" field.
-func RecordIdNEQ(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldNEQ(FieldRecordId, v))
+// RecordIDNEQ applies the NEQ predicate on the "record_id" field.
+func RecordIDNEQ(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldNEQ(FieldRecordID, v))
 }
 
-// RecordIdIn applies the In predicate on the "recordId" field.
-func RecordIdIn(vs ...string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldIn(FieldRecordId, vs...))
+// RecordIDIn applies the In predicate on the "record_id" field.
+func RecordIDIn(vs ...string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldIn(FieldRecordID, vs...))
 }
 
-// RecordIdNotIn applies the NotIn predicate on the "recordId" field.
-func RecordIdNotIn(vs ...string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldNotIn(FieldRecordId, vs...))
+// RecordIDNotIn applies the NotIn predicate on the "record_id" field.
+func RecordIDNotIn(vs ...string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldNotIn(FieldRecordID, vs...))
 }
 
-// RecordIdGT applies the GT predicate on the "recordId" field.
-func RecordIdGT(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldGT(FieldRecordId, v))
+// RecordIDGT applies the GT predicate on the "record_id" field.
+func RecordIDGT(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldGT(FieldRecordID, v))
 }
 
-// RecordIdGTE applies the GTE predicate on the "recordId" field.
-func RecordIdGTE(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldGTE(FieldRecordId, v))
+// RecordIDGTE applies the GTE predicate on the "record_id" field.
+func RecordIDGTE(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldGTE(FieldRecordID, v))
 }
 
-// RecordIdLT applies the LT predicate on the "recordId" field.
-func RecordIdLT(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldLT(FieldRecordId, v))
+// RecordIDLT applies the LT predicate on the "record_id" field.
+func RecordIDLT(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldLT(FieldRecordID, v))
 }
 
-// RecordIdLTE applies the LTE predicate on the "recordId" field.
-func RecordIdLTE(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldLTE(FieldRecordId, v))
+// RecordIDLTE applies the LTE predicate on the "record_id" field.
+func RecordIDLTE(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldLTE(FieldRecordID, v))
 }
 
-// RecordIdContains applies the Contains predicate on the "recordId" field.
-func RecordIdContains(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldContains(FieldRecordId, v))
+// RecordIDContains applies the Contains predicate on the "record_id" field.
+func RecordIDContains(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldContains(FieldRecordID, v))
 }
 
-// RecordIdHasPrefix applies the HasPrefix predicate on the "recordId" field.
-func RecordIdHasPrefix(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldHasPrefix(FieldRecordId, v))
+// RecordIDHasPrefix applies the HasPrefix predicate on the "record_id" field.
+func RecordIDHasPrefix(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldHasPrefix(FieldRecordID, v))
 }
 
-// RecordIdHasSuffix applies the HasSuffix predicate on the "recordId" field.
-func RecordIdHasSuffix(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldHasSuffix(FieldRecordId, v))
+// RecordIDHasSuffix applies the HasSuffix predicate on the "record_id" field.
+func RecordIDHasSuffix(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldHasSuffix(FieldRecordID, v))
 }
 
-// RecordIdEqualFold applies the EqualFold predicate on the "recordId" field.
-func RecordIdEqualFold(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldEqualFold(FieldRecordId, v))
+// RecordIDEqualFold applies the EqualFold predicate on the "record_id" field.
+func RecordIDEqualFold(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldEqualFold(FieldRecordID, v))
 }
 
-// RecordIdContainsFold applies the ContainsFold predicate on the "recordId" field.
-func RecordIdContainsFold(v string) predicate.EdgeOneZoneDNSRecord {
-	return predicate.EdgeOneZoneDNSRecord(sql.FieldContainsFold(FieldRecordId, v))
+// RecordIDContainsFold applies the ContainsFold predicate on the "record_id" field.
+func RecordIDContainsFold(v string) predicate.EdgeOneZoneDNSRecord {
+	return predicate.EdgeOneZoneDNSRecord(sql.FieldContainsFold(FieldRecordID, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.

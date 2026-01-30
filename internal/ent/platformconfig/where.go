@@ -483,6 +483,29 @@ func HasEdgeoneZonesWith(preds ...predicate.EdgeOneZone) predicate.PlatformConfi
 	})
 }
 
+// HasEsaZones applies the HasEdge predicate on the "esa_zones" edge.
+func HasEsaZones() predicate.PlatformConfig {
+	return predicate.PlatformConfig(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, EsaZonesTable, EsaZonesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEsaZonesWith applies the HasEdge predicate on the "esa_zones" edge with a given conditions (other predicates).
+func HasEsaZonesWith(preds ...predicate.EsaSite) predicate.PlatformConfig {
+	return predicate.PlatformConfig(func(s *sql.Selector) {
+		step := newEsaZonesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.PlatformConfig) predicate.PlatformConfig {
 	return predicate.PlatformConfig(sql.AndPredicates(predicates...))

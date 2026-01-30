@@ -17,6 +17,9 @@ import (
 	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
 	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
+	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/esasiteoriginpool"
+	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
@@ -3027,29 +3030,29 @@ func (q *EdgeOneZoneDNSRecordQuery) OrderBySyncAtAsc() *EdgeOneZoneDNSRecordQuer
 	return q.Order(Asc(edgeonezonednsrecord.FieldSyncAt))
 }
 
-// OrderByRecordIdDesc 按字段 recordId 降序排列查询结果。
+// OrderByRecordIDDesc 按字段 record_id 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
 // 示例：
 //
 //	records, err := client.EdgeOneZoneDNSRecord.Query().
-//	    OrderByRecordIdDesc().
+//	    OrderByRecordIDDesc().
 //	    Limit(10).
 //	    All(ctx)
-func (q *EdgeOneZoneDNSRecordQuery) OrderByRecordIdDesc() *EdgeOneZoneDNSRecordQuery {
-	return q.Order(Desc(edgeonezonednsrecord.FieldRecordId))
+func (q *EdgeOneZoneDNSRecordQuery) OrderByRecordIDDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldRecordID))
 }
 
-// OrderByRecordIdAsc 按字段 recordId 升序排列查询结果。
+// OrderByRecordIDAsc 按字段 record_id 升序排列查询结果。
 // 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
 // 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
 // 示例：
 //
 //	records, err := client.EdgeOneZoneDNSRecord.Query().
-//	    OrderByRecordIdAsc().
+//	    OrderByRecordIDAsc().
 //	    All(ctx)
-func (q *EdgeOneZoneDNSRecordQuery) OrderByRecordIdAsc() *EdgeOneZoneDNSRecordQuery {
-	return q.Order(Asc(edgeonezonednsrecord.FieldRecordId))
+func (q *EdgeOneZoneDNSRecordQuery) OrderByRecordIDAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldRecordID))
 }
 
 // OrderByNameDesc 按字段 name 降序排列查询结果。
@@ -3500,6 +3503,956 @@ func (q *EdgeOneZoneOriginGroupQuery) OrderByReferencesDesc() *EdgeOneZoneOrigin
 //	    All(ctx)
 func (q *EdgeOneZoneOriginGroupQuery) OrderByReferencesAsc() *EdgeOneZoneOriginGroupQuery {
 	return q.Order(Asc(edgeonezoneorigingroup.FieldReferences))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByIDDesc() *EsaSiteQuery {
+	return q.Order(Desc(esasite.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByIDAsc() *EsaSiteQuery {
+	return q.Order(Asc(esasite.FieldID))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByCreatedAtDesc() *EsaSiteQuery {
+	return q.Order(Desc(esasite.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByCreatedAtAsc() *EsaSiteQuery {
+	return q.Order(Asc(esasite.FieldCreatedAt))
+}
+
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByUpdatedAtDesc() *EsaSiteQuery {
+	return q.Order(Desc(esasite.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByUpdatedAtAsc() *EsaSiteQuery {
+	return q.Order(Asc(esasite.FieldUpdatedAt))
+}
+
+// OrderByRemoteCreatedAtDesc 按字段 remote_created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByRemoteCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByRemoteCreatedAtDesc() *EsaSiteQuery {
+	return q.Order(Desc(esasite.FieldRemoteCreatedAt))
+}
+
+// OrderByRemoteCreatedAtAsc 按字段 remote_created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByRemoteCreatedAtAsc().
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByRemoteCreatedAtAsc() *EsaSiteQuery {
+	return q.Order(Asc(esasite.FieldRemoteCreatedAt))
+}
+
+// OrderBySyncAtDesc 按字段 sync_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderBySyncAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderBySyncAtDesc() *EsaSiteQuery {
+	return q.Order(Desc(esasite.FieldSyncAt))
+}
+
+// OrderBySyncAtAsc 按字段 sync_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderBySyncAtAsc().
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderBySyncAtAsc() *EsaSiteQuery {
+	return q.Order(Asc(esasite.FieldSyncAt))
+}
+
+// OrderByAccessTypeDesc 按字段 access_type 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByAccessTypeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByAccessTypeDesc() *EsaSiteQuery {
+	return q.Order(Desc(esasite.FieldAccessType))
+}
+
+// OrderByAccessTypeAsc 按字段 access_type 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByAccessTypeAsc().
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByAccessTypeAsc() *EsaSiteQuery {
+	return q.Order(Asc(esasite.FieldAccessType))
+}
+
+// OrderByCoverageDesc 按字段 coverage 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByCoverageDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByCoverageDesc() *EsaSiteQuery {
+	return q.Order(Desc(esasite.FieldCoverage))
+}
+
+// OrderByCoverageAsc 按字段 coverage 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByCoverageAsc().
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByCoverageAsc() *EsaSiteQuery {
+	return q.Order(Asc(esasite.FieldCoverage))
+}
+
+// OrderBySiteIDDesc 按字段 site_id 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderBySiteIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderBySiteIDDesc() *EsaSiteQuery {
+	return q.Order(Desc(esasite.FieldSiteID))
+}
+
+// OrderBySiteIDAsc 按字段 site_id 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderBySiteIDAsc().
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderBySiteIDAsc() *EsaSiteQuery {
+	return q.Order(Asc(esasite.FieldSiteID))
+}
+
+// OrderBySiteNameDesc 按字段 site_name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderBySiteNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderBySiteNameDesc() *EsaSiteQuery {
+	return q.Order(Desc(esasite.FieldSiteName))
+}
+
+// OrderBySiteNameAsc 按字段 site_name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderBySiteNameAsc().
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderBySiteNameAsc() *EsaSiteQuery {
+	return q.Order(Asc(esasite.FieldSiteName))
+}
+
+// OrderByStatusDesc 按字段 status 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByStatusDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByStatusDesc() *EsaSiteQuery {
+	return q.Order(Desc(esasite.FieldStatus))
+}
+
+// OrderByStatusAsc 按字段 status 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSite.Query().
+//	    OrderByStatusAsc().
+//	    All(ctx)
+func (q *EsaSiteQuery) OrderByStatusAsc() *EsaSiteQuery {
+	return q.Order(Asc(esasite.FieldStatus))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByIDDesc() *EsaSiteOriginPoolQuery {
+	return q.Order(Desc(esasiteoriginpool.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByIDAsc() *EsaSiteOriginPoolQuery {
+	return q.Order(Asc(esasiteoriginpool.FieldID))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByCreatedAtDesc() *EsaSiteOriginPoolQuery {
+	return q.Order(Desc(esasiteoriginpool.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByCreatedAtAsc() *EsaSiteOriginPoolQuery {
+	return q.Order(Asc(esasiteoriginpool.FieldCreatedAt))
+}
+
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByUpdatedAtDesc() *EsaSiteOriginPoolQuery {
+	return q.Order(Desc(esasiteoriginpool.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByUpdatedAtAsc() *EsaSiteOriginPoolQuery {
+	return q.Order(Asc(esasiteoriginpool.FieldUpdatedAt))
+}
+
+// OrderByRemoteCreatedAtDesc 按字段 remote_created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByRemoteCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByRemoteCreatedAtDesc() *EsaSiteOriginPoolQuery {
+	return q.Order(Desc(esasiteoriginpool.FieldRemoteCreatedAt))
+}
+
+// OrderByRemoteCreatedAtAsc 按字段 remote_created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByRemoteCreatedAtAsc().
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByRemoteCreatedAtAsc() *EsaSiteOriginPoolQuery {
+	return q.Order(Asc(esasiteoriginpool.FieldRemoteCreatedAt))
+}
+
+// OrderBySyncAtDesc 按字段 sync_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderBySyncAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderBySyncAtDesc() *EsaSiteOriginPoolQuery {
+	return q.Order(Desc(esasiteoriginpool.FieldSyncAt))
+}
+
+// OrderBySyncAtAsc 按字段 sync_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderBySyncAtAsc().
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderBySyncAtAsc() *EsaSiteOriginPoolQuery {
+	return q.Order(Asc(esasiteoriginpool.FieldSyncAt))
+}
+
+// OrderByPoolIDDesc 按字段 pool_id 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByPoolIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByPoolIDDesc() *EsaSiteOriginPoolQuery {
+	return q.Order(Desc(esasiteoriginpool.FieldPoolID))
+}
+
+// OrderByPoolIDAsc 按字段 pool_id 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByPoolIDAsc().
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByPoolIDAsc() *EsaSiteOriginPoolQuery {
+	return q.Order(Asc(esasiteoriginpool.FieldPoolID))
+}
+
+// OrderByNameDesc 按字段 name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByNameDesc() *EsaSiteOriginPoolQuery {
+	return q.Order(Desc(esasiteoriginpool.FieldName))
+}
+
+// OrderByNameAsc 按字段 name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByNameAsc().
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByNameAsc() *EsaSiteOriginPoolQuery {
+	return q.Order(Asc(esasiteoriginpool.FieldName))
+}
+
+// OrderByRecordNameDesc 按字段 record_name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByRecordNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByRecordNameDesc() *EsaSiteOriginPoolQuery {
+	return q.Order(Desc(esasiteoriginpool.FieldRecordName))
+}
+
+// OrderByRecordNameAsc 按字段 record_name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByRecordNameAsc().
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByRecordNameAsc() *EsaSiteOriginPoolQuery {
+	return q.Order(Asc(esasiteoriginpool.FieldRecordName))
+}
+
+// OrderByEnabledDesc 按字段 enabled 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByEnabledDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByEnabledDesc() *EsaSiteOriginPoolQuery {
+	return q.Order(Desc(esasiteoriginpool.FieldEnabled))
+}
+
+// OrderByEnabledAsc 按字段 enabled 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByEnabledAsc().
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByEnabledAsc() *EsaSiteOriginPoolQuery {
+	return q.Order(Asc(esasiteoriginpool.FieldEnabled))
+}
+
+// OrderByReferencesDesc 按字段 references 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByReferencesDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByReferencesDesc() *EsaSiteOriginPoolQuery {
+	return q.Order(Desc(esasiteoriginpool.FieldReferences))
+}
+
+// OrderByReferencesAsc 按字段 references 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByReferencesAsc().
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByReferencesAsc() *EsaSiteOriginPoolQuery {
+	return q.Order(Asc(esasiteoriginpool.FieldReferences))
+}
+
+// OrderByOriginsDesc 按字段 origins 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByOriginsDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByOriginsDesc() *EsaSiteOriginPoolQuery {
+	return q.Order(Desc(esasiteoriginpool.FieldOrigins))
+}
+
+// OrderByOriginsAsc 按字段 origins 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteOriginPoolQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteOriginPool.Query().
+//	    OrderByOriginsAsc().
+//	    All(ctx)
+func (q *EsaSiteOriginPoolQuery) OrderByOriginsAsc() *EsaSiteOriginPoolQuery {
+	return q.Order(Asc(esasiteoriginpool.FieldOrigins))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByIDDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByIDAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldID))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByCreatedAtDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByCreatedAtAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldCreatedAt))
+}
+
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByUpdatedAtDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByUpdatedAtAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldUpdatedAt))
+}
+
+// OrderByRemoteCreatedAtDesc 按字段 remote_created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRemoteCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRemoteCreatedAtDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldRemoteCreatedAt))
+}
+
+// OrderByRemoteCreatedAtAsc 按字段 remote_created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRemoteCreatedAtAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRemoteCreatedAtAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldRemoteCreatedAt))
+}
+
+// OrderBySyncAtDesc 按字段 sync_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderBySyncAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderBySyncAtDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldSyncAt))
+}
+
+// OrderBySyncAtAsc 按字段 sync_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderBySyncAtAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderBySyncAtAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldSyncAt))
+}
+
+// OrderByBizNameDesc 按字段 biz_name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByBizNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByBizNameDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldBizName))
+}
+
+// OrderByBizNameAsc 按字段 biz_name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByBizNameAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByBizNameAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldBizName))
+}
+
+// OrderByDataDesc 按字段 data 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByDataDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByDataDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldData))
+}
+
+// OrderByDataAsc 按字段 data 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByDataAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByDataAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldData))
+}
+
+// OrderByProxiedDesc 按字段 proxied 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByProxiedDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByProxiedDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldProxied))
+}
+
+// OrderByProxiedAsc 按字段 proxied 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByProxiedAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByProxiedAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldProxied))
+}
+
+// OrderByRecordIDDesc 按字段 record_id 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRecordIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRecordIDDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldRecordID))
+}
+
+// OrderByRecordIDAsc 按字段 record_id 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRecordIDAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRecordIDAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldRecordID))
+}
+
+// OrderByRecordSourceTypeDesc 按字段 record_source_type 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRecordSourceTypeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRecordSourceTypeDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldRecordSourceType))
+}
+
+// OrderByRecordSourceTypeAsc 按字段 record_source_type 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRecordSourceTypeAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRecordSourceTypeAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldRecordSourceType))
+}
+
+// OrderByRecordNameDesc 按字段 record_name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRecordNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRecordNameDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldRecordName))
+}
+
+// OrderByRecordNameAsc 按字段 record_name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRecordNameAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRecordNameAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldRecordName))
+}
+
+// OrderByRecordTypeDesc 按字段 record_type 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRecordTypeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRecordTypeDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldRecordType))
+}
+
+// OrderByRecordTypeAsc 按字段 record_type 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRecordTypeAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRecordTypeAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldRecordType))
+}
+
+// OrderByTTLDesc 按字段 ttl 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByTTLDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByTTLDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldTTL))
+}
+
+// OrderByTTLAsc 按字段 ttl 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByTTLAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByTTLAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldTTL))
+}
+
+// OrderByRecordCnameDesc 按字段 record_cname 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRecordCnameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRecordCnameDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldRecordCname))
+}
+
+// OrderByRecordCnameAsc 按字段 record_cname 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByRecordCnameAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByRecordCnameAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldRecordCname))
+}
+
+// OrderByCommentDesc 按字段 comment 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByCommentDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByCommentDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldComment))
+}
+
+// OrderByCommentAsc 按字段 comment 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByCommentAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByCommentAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldComment))
+}
+
+// OrderByAuthConfDesc 按字段 auth_conf 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByAuthConfDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByAuthConfDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldAuthConf))
+}
+
+// OrderByAuthConfAsc 按字段 auth_conf 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByAuthConfAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByAuthConfAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldAuthConf))
+}
+
+// OrderByHostPolicyDesc 按字段 host_policy 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByHostPolicyDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByHostPolicyDesc() *EsaSiteRecordQuery {
+	return q.Order(Desc(esasiterecord.FieldHostPolicy))
+}
+
+// OrderByHostPolicyAsc 按字段 host_policy 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EsaSiteRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EsaSiteRecord.Query().
+//	    OrderByHostPolicyAsc().
+//	    All(ctx)
+func (q *EsaSiteRecordQuery) OrderByHostPolicyAsc() *EsaSiteRecordQuery {
+	return q.Order(Asc(esasiterecord.FieldHostPolicy))
 }
 
 // OrderByIDDesc 按主键 ID 降序排列查询结果。

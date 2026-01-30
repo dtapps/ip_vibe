@@ -53,15 +53,18 @@ type PlatformConfigEdges struct {
 	CloudflareTunnels []*CloudflareTunnel `json:"cloudflare_tunnels,omitempty"`
 	// 关联的EdgeOne站点
 	EdgeoneZones []*EdgeOneZone `json:"edgeone_zones,omitempty"`
+	// 关联的ESA站点
+	EsaZones []*EsaSite `json:"esa_zones,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes            [6]bool
+	loadedTypes            [7]bool
 	namedDNSRecords        map[string][]*DNSRecord
 	namedCdnRecords        map[string][]*CDNRecord
 	namedSslRecords        map[string][]*SSLRecord
 	namedTunRecords        map[string][]*TUNRecord
 	namedCloudflareTunnels map[string][]*CloudflareTunnel
 	namedEdgeoneZones      map[string][]*EdgeOneZone
+	namedEsaZones          map[string][]*EsaSite
 }
 
 // DNSRecordsOrErr returns the DNSRecords value or an error if the edge
@@ -116,6 +119,15 @@ func (e PlatformConfigEdges) EdgeoneZonesOrErr() ([]*EdgeOneZone, error) {
 		return e.EdgeoneZones, nil
 	}
 	return nil, &NotLoadedError{edge: "edgeone_zones"}
+}
+
+// EsaZonesOrErr returns the EsaZones value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlatformConfigEdges) EsaZonesOrErr() ([]*EsaSite, error) {
+	if e.loadedTypes[6] {
+		return e.EsaZones, nil
+	}
+	return nil, &NotLoadedError{edge: "esa_zones"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -237,6 +249,11 @@ func (_m *PlatformConfig) QueryCloudflareTunnels() *CloudflareTunnelQuery {
 // QueryEdgeoneZones queries the "edgeone_zones" edge of the PlatformConfig entity.
 func (_m *PlatformConfig) QueryEdgeoneZones() *EdgeOneZoneQuery {
 	return NewPlatformConfigClient(_m.config).QueryEdgeoneZones(_m)
+}
+
+// QueryEsaZones queries the "esa_zones" edge of the PlatformConfig entity.
+func (_m *PlatformConfig) QueryEsaZones() *EsaSiteQuery {
+	return NewPlatformConfigClient(_m.config).QueryEsaZones(_m)
 }
 
 // Update returns a builder for updating this PlatformConfig.
@@ -426,6 +443,30 @@ func (_m *PlatformConfig) appendNamedEdgeoneZones(name string, edges ...*EdgeOne
 		_m.Edges.namedEdgeoneZones[name] = []*EdgeOneZone{}
 	} else {
 		_m.Edges.namedEdgeoneZones[name] = append(_m.Edges.namedEdgeoneZones[name], edges...)
+	}
+}
+
+// NamedEsaZones returns the EsaZones named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *PlatformConfig) NamedEsaZones(name string) ([]*EsaSite, error) {
+	if _m.Edges.namedEsaZones == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedEsaZones[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *PlatformConfig) appendNamedEsaZones(name string, edges ...*EsaSite) {
+	if _m.Edges.namedEsaZones == nil {
+		_m.Edges.namedEsaZones = make(map[string][]*EsaSite)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedEsaZones[name] = []*EsaSite{}
+	} else {
+		_m.Edges.namedEsaZones[name] = append(_m.Edges.namedEsaZones[name], edges...)
 	}
 }
 
