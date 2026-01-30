@@ -32,7 +32,7 @@ type CloudflareTunnelIngress struct {
 	Service string `json:"service,omitempty"`
 	// 路径
 	Path string `json:"path,omitempty"`
-	// 入站请求配置（JSON）
+	// 入站请求配置
 	OriginRequest json.RawMessage `json:"origin_request,omitempty"`
 	// 最近一次同步时间
 	SyncAt time.Time `json:"sync_at,omitempty"`

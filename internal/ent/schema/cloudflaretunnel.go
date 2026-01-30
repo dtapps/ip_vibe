@@ -66,7 +66,7 @@ func (CloudflareTunnel) Fields() []ent.Field {
 
 		field.JSON("connections", json.RawMessage{}).
 			Optional().
-			Comment("隧道连接配置（JSON）").
+			Comment("隧道连接配置").
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("conns_active_at").

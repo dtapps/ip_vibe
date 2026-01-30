@@ -128,6 +128,30 @@ func (f DomainMonitorFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DomainMonitorMutation", m)
 }
 
+// The EdgeOneOriginGroupFunc type is an adapter to allow the use of ordinary
+// function as EdgeOneOriginGroup mutator.
+type EdgeOneOriginGroupFunc func(context.Context, *ent.EdgeOneOriginGroupMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EdgeOneOriginGroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EdgeOneOriginGroupMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EdgeOneOriginGroupMutation", m)
+}
+
+// The EdgeOneZoneFunc type is an adapter to allow the use of ordinary
+// function as EdgeOneZone mutator.
+type EdgeOneZoneFunc func(context.Context, *ent.EdgeOneZoneMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EdgeOneZoneFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EdgeOneZoneMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EdgeOneZoneMutation", m)
+}
+
 // The IpGroupFunc type is an adapter to allow the use of ordinary
 // function as IpGroup mutator.
 type IpGroupFunc func(context.Context, *ent.IpGroupMutation) (ent.Value, error)

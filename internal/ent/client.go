@@ -21,6 +21,8 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
+	"vibe_ip/internal/ent/edgeoneorigingroup"
+	"vibe_ip/internal/ent/edgeonezone"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
@@ -63,6 +65,10 @@ type Client struct {
 	DevicePortForward *DevicePortForwardClient
 	// DomainMonitor is the client for interacting with the DomainMonitor builders.
 	DomainMonitor *DomainMonitorClient
+	// EdgeOneOriginGroup is the client for interacting with the EdgeOneOriginGroup builders.
+	EdgeOneOriginGroup *EdgeOneOriginGroupClient
+	// EdgeOneZone is the client for interacting with the EdgeOneZone builders.
+	EdgeOneZone *EdgeOneZoneClient
 	// IpGroup is the client for interacting with the IpGroup builders.
 	IpGroup *IpGroupClient
 	// IpGroupDevice is the client for interacting with the IpGroupDevice builders.
@@ -100,6 +106,8 @@ func (c *Client) init() {
 	c.DeviceGroupDevice = NewDeviceGroupDeviceClient(c.config)
 	c.DevicePortForward = NewDevicePortForwardClient(c.config)
 	c.DomainMonitor = NewDomainMonitorClient(c.config)
+	c.EdgeOneOriginGroup = NewEdgeOneOriginGroupClient(c.config)
+	c.EdgeOneZone = NewEdgeOneZoneClient(c.config)
 	c.IpGroup = NewIpGroupClient(c.config)
 	c.IpGroupDevice = NewIpGroupDeviceClient(c.config)
 	c.PlatformConfig = NewPlatformConfigClient(c.config)
@@ -210,6 +218,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		DeviceGroupDevice:       NewDeviceGroupDeviceClient(cfg),
 		DevicePortForward:       NewDevicePortForwardClient(cfg),
 		DomainMonitor:           NewDomainMonitorClient(cfg),
+		EdgeOneOriginGroup:      NewEdgeOneOriginGroupClient(cfg),
+		EdgeOneZone:             NewEdgeOneZoneClient(cfg),
 		IpGroup:                 NewIpGroupClient(cfg),
 		IpGroupDevice:           NewIpGroupDeviceClient(cfg),
 		PlatformConfig:          NewPlatformConfigClient(cfg),
@@ -247,6 +257,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		DeviceGroupDevice:       NewDeviceGroupDeviceClient(cfg),
 		DevicePortForward:       NewDevicePortForwardClient(cfg),
 		DomainMonitor:           NewDomainMonitorClient(cfg),
+		EdgeOneOriginGroup:      NewEdgeOneOriginGroupClient(cfg),
+		EdgeOneZone:             NewEdgeOneZoneClient(cfg),
 		IpGroup:                 NewIpGroupClient(cfg),
 		IpGroupDevice:           NewIpGroupDeviceClient(cfg),
 		PlatformConfig:          NewPlatformConfigClient(cfg),
@@ -286,8 +298,9 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
 		c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward,
-		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLImport,
-		c.SSLRecord, c.TUNRecord, c.Webhook, c.WebhookSubscription,
+		c.DomainMonitor, c.EdgeOneOriginGroup, c.EdgeOneZone, c.IpGroup,
+		c.IpGroupDevice, c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord,
+		c.Webhook, c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -299,8 +312,9 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
 		c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward,
-		c.DomainMonitor, c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLImport,
-		c.SSLRecord, c.TUNRecord, c.Webhook, c.WebhookSubscription,
+		c.DomainMonitor, c.EdgeOneOriginGroup, c.EdgeOneZone, c.IpGroup,
+		c.IpGroupDevice, c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord,
+		c.Webhook, c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -329,6 +343,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.DevicePortForward.mutate(ctx, m)
 	case *DomainMonitorMutation:
 		return c.DomainMonitor.mutate(ctx, m)
+	case *EdgeOneOriginGroupMutation:
+		return c.EdgeOneOriginGroup.mutate(ctx, m)
+	case *EdgeOneZoneMutation:
+		return c.EdgeOneZone.mutate(ctx, m)
 	case *IpGroupMutation:
 		return c.IpGroup.mutate(ctx, m)
 	case *IpGroupDeviceMutation:
@@ -2008,6 +2026,320 @@ func (c *DomainMonitorClient) mutate(ctx context.Context, m *DomainMonitorMutati
 	}
 }
 
+// EdgeOneOriginGroupClient is a client for the EdgeOneOriginGroup schema.
+type EdgeOneOriginGroupClient struct {
+	config
+}
+
+// NewEdgeOneOriginGroupClient returns a client for the EdgeOneOriginGroup from the given config.
+func NewEdgeOneOriginGroupClient(c config) *EdgeOneOriginGroupClient {
+	return &EdgeOneOriginGroupClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `edgeoneorigingroup.Hooks(f(g(h())))`.
+func (c *EdgeOneOriginGroupClient) Use(hooks ...Hook) {
+	c.hooks.EdgeOneOriginGroup = append(c.hooks.EdgeOneOriginGroup, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `edgeoneorigingroup.Intercept(f(g(h())))`.
+func (c *EdgeOneOriginGroupClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EdgeOneOriginGroup = append(c.inters.EdgeOneOriginGroup, interceptors...)
+}
+
+// Create returns a builder for creating a EdgeOneOriginGroup entity.
+func (c *EdgeOneOriginGroupClient) Create() *EdgeOneOriginGroupCreate {
+	mutation := newEdgeOneOriginGroupMutation(c.config, OpCreate)
+	return &EdgeOneOriginGroupCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EdgeOneOriginGroup entities.
+func (c *EdgeOneOriginGroupClient) CreateBulk(builders ...*EdgeOneOriginGroupCreate) *EdgeOneOriginGroupCreateBulk {
+	return &EdgeOneOriginGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EdgeOneOriginGroupClient) MapCreateBulk(slice any, setFunc func(*EdgeOneOriginGroupCreate, int)) *EdgeOneOriginGroupCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EdgeOneOriginGroupCreateBulk{err: fmt.Errorf("calling to EdgeOneOriginGroupClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EdgeOneOriginGroupCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EdgeOneOriginGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EdgeOneOriginGroup.
+func (c *EdgeOneOriginGroupClient) Update() *EdgeOneOriginGroupUpdate {
+	mutation := newEdgeOneOriginGroupMutation(c.config, OpUpdate)
+	return &EdgeOneOriginGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EdgeOneOriginGroupClient) UpdateOne(_m *EdgeOneOriginGroup) *EdgeOneOriginGroupUpdateOne {
+	mutation := newEdgeOneOriginGroupMutation(c.config, OpUpdateOne, withEdgeOneOriginGroup(_m))
+	return &EdgeOneOriginGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EdgeOneOriginGroupClient) UpdateOneID(id int64) *EdgeOneOriginGroupUpdateOne {
+	mutation := newEdgeOneOriginGroupMutation(c.config, OpUpdateOne, withEdgeOneOriginGroupID(id))
+	return &EdgeOneOriginGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EdgeOneOriginGroup.
+func (c *EdgeOneOriginGroupClient) Delete() *EdgeOneOriginGroupDelete {
+	mutation := newEdgeOneOriginGroupMutation(c.config, OpDelete)
+	return &EdgeOneOriginGroupDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EdgeOneOriginGroupClient) DeleteOne(_m *EdgeOneOriginGroup) *EdgeOneOriginGroupDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EdgeOneOriginGroupClient) DeleteOneID(id int64) *EdgeOneOriginGroupDeleteOne {
+	builder := c.Delete().Where(edgeoneorigingroup.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EdgeOneOriginGroupDeleteOne{builder}
+}
+
+// Query returns a query builder for EdgeOneOriginGroup.
+func (c *EdgeOneOriginGroupClient) Query() *EdgeOneOriginGroupQuery {
+	return &EdgeOneOriginGroupQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEdgeOneOriginGroup},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EdgeOneOriginGroup entity by its id.
+func (c *EdgeOneOriginGroupClient) Get(ctx context.Context, id int64) (*EdgeOneOriginGroup, error) {
+	return c.Query().Where(edgeoneorigingroup.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EdgeOneOriginGroupClient) GetX(ctx context.Context, id int64) *EdgeOneOriginGroup {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEdgeoneZone queries the edgeone_zone edge of a EdgeOneOriginGroup.
+func (c *EdgeOneOriginGroupClient) QueryEdgeoneZone(_m *EdgeOneOriginGroup) *EdgeOneZoneQuery {
+	query := (&EdgeOneZoneClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(edgeoneorigingroup.Table, edgeoneorigingroup.FieldID, id),
+			sqlgraph.To(edgeonezone.Table, edgeonezone.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, edgeoneorigingroup.EdgeoneZoneTable, edgeoneorigingroup.EdgeoneZoneColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EdgeOneOriginGroupClient) Hooks() []Hook {
+	return c.hooks.EdgeOneOriginGroup
+}
+
+// Interceptors returns the client interceptors.
+func (c *EdgeOneOriginGroupClient) Interceptors() []Interceptor {
+	return c.inters.EdgeOneOriginGroup
+}
+
+func (c *EdgeOneOriginGroupClient) mutate(ctx context.Context, m *EdgeOneOriginGroupMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EdgeOneOriginGroupCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EdgeOneOriginGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EdgeOneOriginGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EdgeOneOriginGroupDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EdgeOneOriginGroup mutation op: %q", m.Op())
+	}
+}
+
+// EdgeOneZoneClient is a client for the EdgeOneZone schema.
+type EdgeOneZoneClient struct {
+	config
+}
+
+// NewEdgeOneZoneClient returns a client for the EdgeOneZone from the given config.
+func NewEdgeOneZoneClient(c config) *EdgeOneZoneClient {
+	return &EdgeOneZoneClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `edgeonezone.Hooks(f(g(h())))`.
+func (c *EdgeOneZoneClient) Use(hooks ...Hook) {
+	c.hooks.EdgeOneZone = append(c.hooks.EdgeOneZone, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `edgeonezone.Intercept(f(g(h())))`.
+func (c *EdgeOneZoneClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EdgeOneZone = append(c.inters.EdgeOneZone, interceptors...)
+}
+
+// Create returns a builder for creating a EdgeOneZone entity.
+func (c *EdgeOneZoneClient) Create() *EdgeOneZoneCreate {
+	mutation := newEdgeOneZoneMutation(c.config, OpCreate)
+	return &EdgeOneZoneCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EdgeOneZone entities.
+func (c *EdgeOneZoneClient) CreateBulk(builders ...*EdgeOneZoneCreate) *EdgeOneZoneCreateBulk {
+	return &EdgeOneZoneCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EdgeOneZoneClient) MapCreateBulk(slice any, setFunc func(*EdgeOneZoneCreate, int)) *EdgeOneZoneCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EdgeOneZoneCreateBulk{err: fmt.Errorf("calling to EdgeOneZoneClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EdgeOneZoneCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EdgeOneZoneCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EdgeOneZone.
+func (c *EdgeOneZoneClient) Update() *EdgeOneZoneUpdate {
+	mutation := newEdgeOneZoneMutation(c.config, OpUpdate)
+	return &EdgeOneZoneUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EdgeOneZoneClient) UpdateOne(_m *EdgeOneZone) *EdgeOneZoneUpdateOne {
+	mutation := newEdgeOneZoneMutation(c.config, OpUpdateOne, withEdgeOneZone(_m))
+	return &EdgeOneZoneUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EdgeOneZoneClient) UpdateOneID(id int64) *EdgeOneZoneUpdateOne {
+	mutation := newEdgeOneZoneMutation(c.config, OpUpdateOne, withEdgeOneZoneID(id))
+	return &EdgeOneZoneUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EdgeOneZone.
+func (c *EdgeOneZoneClient) Delete() *EdgeOneZoneDelete {
+	mutation := newEdgeOneZoneMutation(c.config, OpDelete)
+	return &EdgeOneZoneDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EdgeOneZoneClient) DeleteOne(_m *EdgeOneZone) *EdgeOneZoneDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EdgeOneZoneClient) DeleteOneID(id int64) *EdgeOneZoneDeleteOne {
+	builder := c.Delete().Where(edgeonezone.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EdgeOneZoneDeleteOne{builder}
+}
+
+// Query returns a query builder for EdgeOneZone.
+func (c *EdgeOneZoneClient) Query() *EdgeOneZoneQuery {
+	return &EdgeOneZoneQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEdgeOneZone},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EdgeOneZone entity by its id.
+func (c *EdgeOneZoneClient) Get(ctx context.Context, id int64) (*EdgeOneZone, error) {
+	return c.Query().Where(edgeonezone.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EdgeOneZoneClient) GetX(ctx context.Context, id int64) *EdgeOneZone {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryConfig queries the config edge of a EdgeOneZone.
+func (c *EdgeOneZoneClient) QueryConfig(_m *EdgeOneZone) *PlatformConfigQuery {
+	query := (&PlatformConfigClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, id),
+			sqlgraph.To(platformconfig.Table, platformconfig.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, edgeonezone.ConfigTable, edgeonezone.ConfigColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOriginGroups queries the origin_groups edge of a EdgeOneZone.
+func (c *EdgeOneZoneClient) QueryOriginGroups(_m *EdgeOneZone) *EdgeOneOriginGroupQuery {
+	query := (&EdgeOneOriginGroupClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, id),
+			sqlgraph.To(edgeoneorigingroup.Table, edgeoneorigingroup.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.OriginGroupsTable, edgeonezone.OriginGroupsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EdgeOneZoneClient) Hooks() []Hook {
+	return c.hooks.EdgeOneZone
+}
+
+// Interceptors returns the client interceptors.
+func (c *EdgeOneZoneClient) Interceptors() []Interceptor {
+	return c.inters.EdgeOneZone
+}
+
+func (c *EdgeOneZoneClient) mutate(ctx context.Context, m *EdgeOneZoneMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EdgeOneZoneCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EdgeOneZoneUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EdgeOneZoneUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EdgeOneZoneDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EdgeOneZone mutation op: %q", m.Op())
+	}
+}
+
 // IpGroupClient is a client for the IpGroup schema.
 type IpGroupClient struct {
 	config
@@ -2503,6 +2835,22 @@ func (c *PlatformConfigClient) QueryCloudflareTunnels(_m *PlatformConfig) *Cloud
 			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, id),
 			sqlgraph.To(cloudflaretunnel.Table, cloudflaretunnel.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.CloudflareTunnelsTable, platformconfig.CloudflareTunnelsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEdgeoneZones queries the edgeone_zones edge of a PlatformConfig.
+func (c *PlatformConfigClient) QueryEdgeoneZones(_m *PlatformConfig) *EdgeOneZoneQuery {
+	query := (&EdgeOneZoneClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, id),
+			sqlgraph.To(edgeonezone.Table, edgeonezone.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.EdgeoneZonesTable, platformconfig.EdgeoneZonesColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -3274,15 +3622,15 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 type (
 	hooks struct {
 		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, DNSRecord, Device,
-		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor, IpGroup,
-		IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, TUNRecord, Webhook,
-		WebhookSubscription []ent.Hook
+		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor,
+		EdgeOneOriginGroup, EdgeOneZone, IpGroup, IpGroupDevice, PlatformConfig,
+		SSLImport, SSLRecord, TUNRecord, Webhook, WebhookSubscription []ent.Hook
 	}
 	inters struct {
 		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, DNSRecord, Device,
-		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor, IpGroup,
-		IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, TUNRecord, Webhook,
-		WebhookSubscription []ent.Interceptor
+		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor,
+		EdgeOneOriginGroup, EdgeOneZone, IpGroup, IpGroupDevice, PlatformConfig,
+		SSLImport, SSLRecord, TUNRecord, Webhook, WebhookSubscription []ent.Interceptor
 	}
 )
 

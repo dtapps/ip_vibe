@@ -112,20 +112,6 @@ func (_u *CloudflareTunnelUpdate) ClearConnsActiveAt() *CloudflareTunnelUpdate {
 	return _u
 }
 
-// SetRemoteCreatedAt sets the "remote_created_at" field.
-func (_u *CloudflareTunnelUpdate) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelUpdate {
-	_u.mutation.SetRemoteCreatedAt(v)
-	return _u
-}
-
-// SetNillableRemoteCreatedAt sets the "remote_created_at" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdate) SetNillableRemoteCreatedAt(v *time.Time) *CloudflareTunnelUpdate {
-	if v != nil {
-		_u.SetRemoteCreatedAt(*v)
-	}
-	return _u
-}
-
 // SetSyncAt sets the "sync_at" field.
 func (_u *CloudflareTunnelUpdate) SetSyncAt(v time.Time) *CloudflareTunnelUpdate {
 	_u.mutation.SetSyncAt(v)
@@ -289,9 +275,6 @@ func (_u *CloudflareTunnelUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if _u.mutation.ConnsActiveAtCleared() {
 		_spec.ClearField(cloudflaretunnel.FieldConnsActiveAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.RemoteCreatedAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldRemoteCreatedAt, field.TypeTime, value)
-	}
 	if value, ok := _u.mutation.SyncAt(); ok {
 		_spec.SetField(cloudflaretunnel.FieldSyncAt, field.TypeTime, value)
 	}
@@ -442,20 +425,6 @@ func (_u *CloudflareTunnelUpdateOne) SetNillableConnsActiveAt(v *time.Time) *Clo
 // ClearConnsActiveAt clears the value of the "conns_active_at" field.
 func (_u *CloudflareTunnelUpdateOne) ClearConnsActiveAt() *CloudflareTunnelUpdateOne {
 	_u.mutation.ClearConnsActiveAt()
-	return _u
-}
-
-// SetRemoteCreatedAt sets the "remote_created_at" field.
-func (_u *CloudflareTunnelUpdateOne) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelUpdateOne {
-	_u.mutation.SetRemoteCreatedAt(v)
-	return _u
-}
-
-// SetNillableRemoteCreatedAt sets the "remote_created_at" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdateOne) SetNillableRemoteCreatedAt(v *time.Time) *CloudflareTunnelUpdateOne {
-	if v != nil {
-		_u.SetRemoteCreatedAt(*v)
-	}
 	return _u
 }
 
@@ -651,9 +620,6 @@ func (_u *CloudflareTunnelUpdateOne) sqlSave(ctx context.Context) (_node *Cloudf
 	}
 	if _u.mutation.ConnsActiveAtCleared() {
 		_spec.ClearField(cloudflaretunnel.FieldConnsActiveAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.RemoteCreatedAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldRemoteCreatedAt, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.SyncAt(); ok {
 		_spec.SetField(cloudflaretunnel.FieldSyncAt, field.TypeTime, value)

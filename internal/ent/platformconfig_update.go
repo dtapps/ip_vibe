@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/dnsrecord"
+	"vibe_ip/internal/ent/edgeonezone"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/sslrecord"
@@ -176,6 +177,21 @@ func (_u *PlatformConfigUpdate) AddCloudflareTunnels(v ...*CloudflareTunnel) *Pl
 	return _u.AddCloudflareTunnelIDs(ids...)
 }
 
+// AddEdgeoneZoneIDs adds the "edgeone_zones" edge to the EdgeOneZone entity by IDs.
+func (_u *PlatformConfigUpdate) AddEdgeoneZoneIDs(ids ...int64) *PlatformConfigUpdate {
+	_u.mutation.AddEdgeoneZoneIDs(ids...)
+	return _u
+}
+
+// AddEdgeoneZones adds the "edgeone_zones" edges to the EdgeOneZone entity.
+func (_u *PlatformConfigUpdate) AddEdgeoneZones(v ...*EdgeOneZone) *PlatformConfigUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddEdgeoneZoneIDs(ids...)
+}
+
 // Mutation returns the PlatformConfigMutation object of the builder.
 func (_u *PlatformConfigUpdate) Mutation() *PlatformConfigMutation {
 	return _u.mutation
@@ -284,6 +300,27 @@ func (_u *PlatformConfigUpdate) RemoveCloudflareTunnels(v ...*CloudflareTunnel) 
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCloudflareTunnelIDs(ids...)
+}
+
+// ClearEdgeoneZones clears all "edgeone_zones" edges to the EdgeOneZone entity.
+func (_u *PlatformConfigUpdate) ClearEdgeoneZones() *PlatformConfigUpdate {
+	_u.mutation.ClearEdgeoneZones()
+	return _u
+}
+
+// RemoveEdgeoneZoneIDs removes the "edgeone_zones" edge to EdgeOneZone entities by IDs.
+func (_u *PlatformConfigUpdate) RemoveEdgeoneZoneIDs(ids ...int64) *PlatformConfigUpdate {
+	_u.mutation.RemoveEdgeoneZoneIDs(ids...)
+	return _u
+}
+
+// RemoveEdgeoneZones removes "edgeone_zones" edges to EdgeOneZone entities.
+func (_u *PlatformConfigUpdate) RemoveEdgeoneZones(v ...*EdgeOneZone) *PlatformConfigUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveEdgeoneZoneIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -607,6 +644,51 @@ func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.EdgeoneZonesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EdgeoneZonesTable,
+			Columns: []string{platformconfig.EdgeoneZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezone.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedEdgeoneZonesIDs(); len(nodes) > 0 && !_u.mutation.EdgeoneZonesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EdgeoneZonesTable,
+			Columns: []string{platformconfig.EdgeoneZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezone.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.EdgeoneZonesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EdgeoneZonesTable,
+			Columns: []string{platformconfig.EdgeoneZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezone.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -770,6 +852,21 @@ func (_u *PlatformConfigUpdateOne) AddCloudflareTunnels(v ...*CloudflareTunnel) 
 	return _u.AddCloudflareTunnelIDs(ids...)
 }
 
+// AddEdgeoneZoneIDs adds the "edgeone_zones" edge to the EdgeOneZone entity by IDs.
+func (_u *PlatformConfigUpdateOne) AddEdgeoneZoneIDs(ids ...int64) *PlatformConfigUpdateOne {
+	_u.mutation.AddEdgeoneZoneIDs(ids...)
+	return _u
+}
+
+// AddEdgeoneZones adds the "edgeone_zones" edges to the EdgeOneZone entity.
+func (_u *PlatformConfigUpdateOne) AddEdgeoneZones(v ...*EdgeOneZone) *PlatformConfigUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddEdgeoneZoneIDs(ids...)
+}
+
 // Mutation returns the PlatformConfigMutation object of the builder.
 func (_u *PlatformConfigUpdateOne) Mutation() *PlatformConfigMutation {
 	return _u.mutation
@@ -878,6 +975,27 @@ func (_u *PlatformConfigUpdateOne) RemoveCloudflareTunnels(v ...*CloudflareTunne
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCloudflareTunnelIDs(ids...)
+}
+
+// ClearEdgeoneZones clears all "edgeone_zones" edges to the EdgeOneZone entity.
+func (_u *PlatformConfigUpdateOne) ClearEdgeoneZones() *PlatformConfigUpdateOne {
+	_u.mutation.ClearEdgeoneZones()
+	return _u
+}
+
+// RemoveEdgeoneZoneIDs removes the "edgeone_zones" edge to EdgeOneZone entities by IDs.
+func (_u *PlatformConfigUpdateOne) RemoveEdgeoneZoneIDs(ids ...int64) *PlatformConfigUpdateOne {
+	_u.mutation.RemoveEdgeoneZoneIDs(ids...)
+	return _u
+}
+
+// RemoveEdgeoneZones removes "edgeone_zones" edges to EdgeOneZone entities.
+func (_u *PlatformConfigUpdateOne) RemoveEdgeoneZones(v ...*EdgeOneZone) *PlatformConfigUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveEdgeoneZoneIDs(ids...)
 }
 
 // Where appends a list predicates to the PlatformConfigUpdate builder.
@@ -1224,6 +1342,51 @@ func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *Platform
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cloudflaretunnel.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.EdgeoneZonesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EdgeoneZonesTable,
+			Columns: []string{platformconfig.EdgeoneZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezone.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedEdgeoneZonesIDs(); len(nodes) > 0 && !_u.mutation.EdgeoneZonesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EdgeoneZonesTable,
+			Columns: []string{platformconfig.EdgeoneZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezone.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.EdgeoneZonesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.EdgeoneZonesTable,
+			Columns: []string{platformconfig.EdgeoneZonesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezone.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

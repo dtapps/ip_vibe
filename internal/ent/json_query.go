@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
+	"vibe_ip/internal/ent/edgeoneorigingroup"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/tunrecord"
@@ -188,6 +189,64 @@ func (q *DomainMonitorQuery) WhereRequestHeadersContains(val any) *DomainMonitor
 func (q *DomainMonitorQuery) WhereRequestHeadersContainsIf(condition bool, val any) *DomainMonitorQuery {
 	if condition {
 		return q.WhereRequestHeadersContains(val)
+	}
+	return q
+}
+
+// WhereRecordsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EdgeOneOriginGroupQuery) WhereRecordsContains(val any) *EdgeOneOriginGroupQuery {
+	return q.Where(predicate.EdgeOneOriginGroup(func(s *sql.Selector) {
+		column := edgeoneorigingroup.FieldRecords
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereRecordsContainsIf 只有在 condition 为 true 时才调用 WhereRecordsContains。
+func (q *EdgeOneOriginGroupQuery) WhereRecordsContainsIf(condition bool, val any) *EdgeOneOriginGroupQuery {
+	if condition {
+		return q.WhereRecordsContains(val)
+	}
+	return q
+}
+
+// WhereReferencesContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EdgeOneOriginGroupQuery) WhereReferencesContains(val any) *EdgeOneOriginGroupQuery {
+	return q.Where(predicate.EdgeOneOriginGroup(func(s *sql.Selector) {
+		column := edgeoneorigingroup.FieldReferences
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereReferencesContainsIf 只有在 condition 为 true 时才调用 WhereReferencesContains。
+func (q *EdgeOneOriginGroupQuery) WhereReferencesContainsIf(condition bool, val any) *EdgeOneOriginGroupQuery {
+	if condition {
+		return q.WhereReferencesContains(val)
 	}
 	return q
 }

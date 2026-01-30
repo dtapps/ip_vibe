@@ -51,14 +51,17 @@ type PlatformConfigEdges struct {
 	TunRecords []*TUNRecord `json:"tun_records,omitempty"`
 	// 关联的Cloudflare隧道
 	CloudflareTunnels []*CloudflareTunnel `json:"cloudflare_tunnels,omitempty"`
+	// 关联的EdgeOne站点
+	EdgeoneZones []*EdgeOneZone `json:"edgeone_zones,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes            [5]bool
+	loadedTypes            [6]bool
 	namedDNSRecords        map[string][]*DNSRecord
 	namedCdnRecords        map[string][]*CDNRecord
 	namedSslRecords        map[string][]*SSLRecord
 	namedTunRecords        map[string][]*TUNRecord
 	namedCloudflareTunnels map[string][]*CloudflareTunnel
+	namedEdgeoneZones      map[string][]*EdgeOneZone
 }
 
 // DNSRecordsOrErr returns the DNSRecords value or an error if the edge
@@ -104,6 +107,15 @@ func (e PlatformConfigEdges) CloudflareTunnelsOrErr() ([]*CloudflareTunnel, erro
 		return e.CloudflareTunnels, nil
 	}
 	return nil, &NotLoadedError{edge: "cloudflare_tunnels"}
+}
+
+// EdgeoneZonesOrErr returns the EdgeoneZones value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlatformConfigEdges) EdgeoneZonesOrErr() ([]*EdgeOneZone, error) {
+	if e.loadedTypes[5] {
+		return e.EdgeoneZones, nil
+	}
+	return nil, &NotLoadedError{edge: "edgeone_zones"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -220,6 +232,11 @@ func (_m *PlatformConfig) QueryTunRecords() *TUNRecordQuery {
 // QueryCloudflareTunnels queries the "cloudflare_tunnels" edge of the PlatformConfig entity.
 func (_m *PlatformConfig) QueryCloudflareTunnels() *CloudflareTunnelQuery {
 	return NewPlatformConfigClient(_m.config).QueryCloudflareTunnels(_m)
+}
+
+// QueryEdgeoneZones queries the "edgeone_zones" edge of the PlatformConfig entity.
+func (_m *PlatformConfig) QueryEdgeoneZones() *EdgeOneZoneQuery {
+	return NewPlatformConfigClient(_m.config).QueryEdgeoneZones(_m)
 }
 
 // Update returns a builder for updating this PlatformConfig.
@@ -385,6 +402,30 @@ func (_m *PlatformConfig) appendNamedCloudflareTunnels(name string, edges ...*Cl
 		_m.Edges.namedCloudflareTunnels[name] = []*CloudflareTunnel{}
 	} else {
 		_m.Edges.namedCloudflareTunnels[name] = append(_m.Edges.namedCloudflareTunnels[name], edges...)
+	}
+}
+
+// NamedEdgeoneZones returns the EdgeoneZones named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *PlatformConfig) NamedEdgeoneZones(name string) ([]*EdgeOneZone, error) {
+	if _m.Edges.namedEdgeoneZones == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedEdgeoneZones[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *PlatformConfig) appendNamedEdgeoneZones(name string, edges ...*EdgeOneZone) {
+	if _m.Edges.namedEdgeoneZones == nil {
+		_m.Edges.namedEdgeoneZones = make(map[string][]*EdgeOneZone)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedEdgeoneZones[name] = []*EdgeOneZone{}
+	} else {
+		_m.Edges.namedEdgeoneZones[name] = append(_m.Edges.namedEdgeoneZones[name], edges...)
 	}
 }
 

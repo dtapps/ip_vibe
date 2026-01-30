@@ -116,6 +116,14 @@ func (PlatformConfig) Edges() []ent.Edge {
 				// 级联删除：删除 PlatformConfig 时，其所有 CloudflareTunnel 记录也应删除
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
+
+		// 一对多 PlatformConfig -> EdgeOneZone
+		edge.To("edgeone_zones", EdgeOneZone.Type).
+			Comment("关联的EdgeOne站点").
+			Annotations(entsql.Annotation{
+				// 级联删除：删除 PlatformConfig 时，其所有 EdgeOneZone 记录也应删除
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
 	}
 }
 

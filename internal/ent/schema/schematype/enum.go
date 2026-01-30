@@ -366,6 +366,8 @@ const (
 	LogObjTypeDeviceGroupDevice       string = "DeviceGroupDevice"       // 设备组设备
 	LogObjTypeDevicePortForward       string = "DevicePortForward"       // 端口转发
 	LogObjTypeDomainMonitor           string = "DomainMonitor"           // 域名监控
+	LogObjTypeEdgeOneZone             string = "EdgeOneZone"             // EdgeOne站点
+	LogObjTypeEdgeOneOriginGroup      string = "EdgeOneOriginGroup"      // EdgeOne源站组
 	LogObjTypeIpGroup                 string = "IpGroup"                 // IP组
 	LogObjTypeIpGroupDevice           string = "IpGroupDevice"           // IP组设备
 	LogObjTypePlatformConfig          string = "PlatformConfig"          // 平台配置
@@ -402,6 +404,8 @@ var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeDeviceGroupDevice:       "设备组设备",
 	LogObjTypeDevicePortForward:       "端口转发",
 	LogObjTypeDomainMonitor:           "域名监控",
+	LogObjTypeEdgeOneZone:             "EdgeOne站点",
+	LogObjTypeEdgeOneOriginGroup:      "EdgeOne源站组",
 	LogObjTypeIpGroup:                 "IP组",
 	LogObjTypeIpGroupDevice:           "IP组设备",
 	LogObjTypePlatformConfig:          "平台配置",
@@ -435,6 +439,8 @@ var GetLogObjTypes = []string{
 	LogObjTypeDeviceGroupDevice,
 	LogObjTypeDevicePortForward,
 	LogObjTypeDomainMonitor,
+	LogObjTypeEdgeOneZone,
+	LogObjTypeEdgeOneOriginGroup,
 	LogObjTypeIpGroup,
 	LogObjTypeIpGroupDevice,
 	LogObjTypePlatformConfig,
@@ -698,4 +704,134 @@ var GetCloudflareTunnelStatuss = []string{
 	CloudflareTunnelStatusDegraded,
 	CloudflareTunnelStatusHealthy,
 	CloudflareTunnelStatusDown,
+}
+
+// --------
+
+const (
+	EdgeOneZoneAreaGlobal   string = "global"   // 全球可用区
+	EdgeOneZoneAreaMainland string = "mainland" // 中国大陆可用区
+	EdgeOneZoneAreaOverseas string = "overseas" // 全球可用区（不含中国大陆）
+)
+
+// GetEdgeOneZoneAreaDescriptions 加速区域 说明映射
+var GetEdgeOneZoneAreaDescriptions = map[string]string{
+	EdgeOneZoneAreaGlobal:   "全球可用区",
+	EdgeOneZoneAreaMainland: "中国大陆可用区",
+	EdgeOneZoneAreaOverseas: "全球可用区（不含中国大陆）",
+}
+
+// GetEdgeOneZoneAreas 返回所有 加速区域
+var GetEdgeOneZoneAreas = []string{
+	EdgeOneZoneAreaGlobal,
+	EdgeOneZoneAreaMainland,
+	EdgeOneZoneAreaOverseas,
+}
+
+const (
+	EdgeOneZoneTypeFull           string = "full"           // NS 接入
+	EdgeOneZoneTypePartial        string = "partial"        // CNAME 接入
+	EdgeOneZoneTypeNoDomainAccess string = "noDomainAccess" // 无域名接入
+	EdgeOneZoneTypeDnsPodAccess   string = "dnsPodAccess"   // DNSPod 托管
+	EdgeOneZoneTypePages          string = "pages"          // Pages
+)
+
+// GetEdgeOneZoneTypeDescriptions 接入类型 说明映射
+var GetEdgeOneZoneTypeDescriptions = map[string]string{
+	EdgeOneZoneTypeFull:           "NS 接入",
+	EdgeOneZoneTypePartial:        "CNAME 接入",
+	EdgeOneZoneTypeNoDomainAccess: "无域名接入",
+	EdgeOneZoneTypeDnsPodAccess:   "DNSPod 托管",
+	EdgeOneZoneTypePages:          "Pages",
+}
+
+// GetEdgeOneZoneTypes 返回所有 接入类型
+var GetEdgeOneZoneTypes = []string{
+	EdgeOneZoneTypeFull,
+	EdgeOneZoneTypePartial,
+	EdgeOneZoneTypeNoDomainAccess,
+	EdgeOneZoneTypeDnsPodAccess,
+	EdgeOneZoneTypePages,
+}
+
+const (
+	EdgeOneZoneStatusActive       string = "active"       // NS 已切换
+	EdgeOneZoneStatusPending      string = "pending"      // NS 未切换
+	EdgeOneZoneStatusMoved        string = "moved"        // NS 已切走
+	EdgeOneZoneStatusDeactivated  string = "deactivated"  // 被封禁
+	EdgeOneZoneStatusInitializing string = "initializing" // 待绑定套餐
+)
+
+// GetEdgeOneZoneStatusDescriptions 站点状态 说明映射
+var GetEdgeOneZoneStatusDescriptions = map[string]string{
+	EdgeOneZoneStatusActive:       "NS 已切换",
+	EdgeOneZoneStatusPending:      "NS 未切换",
+	EdgeOneZoneStatusMoved:        "NS 已切走",
+	EdgeOneZoneStatusDeactivated:  "被封禁",
+	EdgeOneZoneStatusInitializing: "待绑定套餐",
+}
+
+// GetEdgeOneZoneStatuss 返回所有 站点状态
+var GetEdgeOneZoneStatuss = []string{
+	EdgeOneZoneStatusActive,
+	EdgeOneZoneStatusPending,
+	EdgeOneZoneStatusMoved,
+	EdgeOneZoneStatusDeactivated,
+	EdgeOneZoneStatusInitializing,
+}
+
+const (
+	EdgeOneZoneCnameStatusFinished string = "finished" // 站点已验证
+	EdgeOneZoneCnameStatusPending  string = "pending"  // 站点验证中
+)
+
+// GetEdgeOneZoneCnameStatusDescriptions CNAME 接入状态 说明映射
+var GetEdgeOneZoneCnameStatusDescriptions = map[string]string{
+	EdgeOneZoneCnameStatusFinished: "站点已验证",
+	EdgeOneZoneCnameStatusPending:  "站点验证中",
+}
+
+// GetEdgeOneZoneCnameStatuss 返回所有 CNAME 接入状态
+var GetEdgeOneZoneCnameStatuss = []string{
+	EdgeOneZoneCnameStatusFinished,
+	EdgeOneZoneCnameStatusPending,
+}
+
+const (
+	EdgeOneZoneActiveStatusActive   string = "active"   // 已启用
+	EdgeOneZoneActiveStatusInactive string = "inactive" // 未生效
+	EdgeOneZoneActiveStatusPaused   string = "paused"   // 已停用
+)
+
+// GetEdgeOneZoneActiveStatusDescriptions 展示状态 说明映射
+var GetEdgeOneZoneActiveStatusDescriptions = map[string]string{
+	EdgeOneZoneActiveStatusActive:   "已启用",
+	EdgeOneZoneActiveStatusInactive: "未生效",
+	EdgeOneZoneActiveStatusPaused:   "已停用",
+}
+
+// GetEdgeOneZoneActiveStatuss 返回所有 展示状态
+var GetEdgeOneZoneActiveStatuss = []string{
+	EdgeOneZoneActiveStatusActive,
+	EdgeOneZoneActiveStatusInactive,
+	EdgeOneZoneActiveStatusPaused,
+}
+
+// --------
+
+const (
+	EdgeOneOriginGroupTypeGENERAL string = "GENERAL" // 通用型
+	EdgeOneOriginGroupTypeHTTP    string = "HTTP"    //  HTTP专用型
+)
+
+// GetEdgeOneOriginGroupTypeDescriptions 源站组类型 说明映射
+var GetEdgeOneOriginGroupTypeDescriptions = map[string]string{
+	EdgeOneOriginGroupTypeGENERAL: "通用型",
+	EdgeOneOriginGroupTypeHTTP:    "HTTP专用型",
+}
+
+// GetEdgeOneOriginGroupTypes 返回所有 源站组类型
+var GetEdgeOneOriginGroupTypes = []string{
+	EdgeOneOriginGroupTypeGENERAL,
+	EdgeOneOriginGroupTypeHTTP,
 }

@@ -66,7 +66,7 @@ func (CloudflareTunnelIngress) Fields() []ent.Field {
 
 		field.JSON("origin_request", json.RawMessage{}).
 			Optional().
-			Comment("入站请求配置（JSON）").
+			Comment("入站请求配置").
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("sync_at").

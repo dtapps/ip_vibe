@@ -464,18 +464,6 @@ func (u *CloudflareTunnelUpsert) ClearConnsActiveAt() *CloudflareTunnelUpsert {
 	return u
 }
 
-// SetRemoteCreatedAt sets the "remote_created_at" field.
-func (u *CloudflareTunnelUpsert) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelUpsert {
-	u.Set(cloudflaretunnel.FieldRemoteCreatedAt, v)
-	return u
-}
-
-// UpdateRemoteCreatedAt sets the "remote_created_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsert) UpdateRemoteCreatedAt() *CloudflareTunnelUpsert {
-	u.SetExcluded(cloudflaretunnel.FieldRemoteCreatedAt)
-	return u
-}
-
 // SetSyncAt sets the "sync_at" field.
 func (u *CloudflareTunnelUpsert) SetSyncAt(v time.Time) *CloudflareTunnelUpsert {
 	u.Set(cloudflaretunnel.FieldSyncAt, v)
@@ -519,6 +507,9 @@ func (u *CloudflareTunnelUpsertOne) UpdateNewValues() *CloudflareTunnelUpsertOne
 		}
 		if _, exists := u.create.mutation.ConfigID(); exists {
 			s.SetIgnore(cloudflaretunnel.FieldConfigID)
+		}
+		if _, exists := u.create.mutation.RemoteCreatedAt(); exists {
+			s.SetIgnore(cloudflaretunnel.FieldRemoteCreatedAt)
 		}
 	}))
 	return u
@@ -632,20 +623,6 @@ func (u *CloudflareTunnelUpsertOne) UpdateConnsActiveAt() *CloudflareTunnelUpser
 func (u *CloudflareTunnelUpsertOne) ClearConnsActiveAt() *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.ClearConnsActiveAt()
-	})
-}
-
-// SetRemoteCreatedAt sets the "remote_created_at" field.
-func (u *CloudflareTunnelUpsertOne) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetRemoteCreatedAt(v)
-	})
-}
-
-// UpdateRemoteCreatedAt sets the "remote_created_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertOne) UpdateRemoteCreatedAt() *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateRemoteCreatedAt()
 	})
 }
 
@@ -861,6 +838,9 @@ func (u *CloudflareTunnelUpsertBulk) UpdateNewValues() *CloudflareTunnelUpsertBu
 			if _, exists := b.mutation.ConfigID(); exists {
 				s.SetIgnore(cloudflaretunnel.FieldConfigID)
 			}
+			if _, exists := b.mutation.RemoteCreatedAt(); exists {
+				s.SetIgnore(cloudflaretunnel.FieldRemoteCreatedAt)
+			}
 		}
 	}))
 	return u
@@ -974,20 +954,6 @@ func (u *CloudflareTunnelUpsertBulk) UpdateConnsActiveAt() *CloudflareTunnelUpse
 func (u *CloudflareTunnelUpsertBulk) ClearConnsActiveAt() *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.ClearConnsActiveAt()
-	})
-}
-
-// SetRemoteCreatedAt sets the "remote_created_at" field.
-func (u *CloudflareTunnelUpsertBulk) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetRemoteCreatedAt(v)
-	})
-}
-
-// UpdateRemoteCreatedAt sets the "remote_created_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertBulk) UpdateRemoteCreatedAt() *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateRemoteCreatedAt()
 	})
 }
 

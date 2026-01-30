@@ -32,7 +32,7 @@ type CloudflareTunnel struct {
 	Name string `json:"name,omitempty"`
 	// 隧道状态
 	Status cloudflaretunnel.Status `json:"status,omitempty"`
-	// 隧道连接配置（JSON）
+	// 隧道连接配置
 	Connections json.RawMessage `json:"connections,omitempty"`
 	// 隧道连接活跃时间
 	ConnsActiveAt time.Time `json:"conns_active_at,omitempty"`

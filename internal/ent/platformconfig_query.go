@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/dnsrecord"
+	"vibe_ip/internal/ent/edgeonezone"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/sslrecord"
@@ -33,12 +34,14 @@ type PlatformConfigQuery struct {
 	withSslRecords             *SSLRecordQuery
 	withTunRecords             *TUNRecordQuery
 	withCloudflareTunnels      *CloudflareTunnelQuery
+	withEdgeoneZones           *EdgeOneZoneQuery
 	modifiers                  []func(*sql.Selector)
 	withNamedDNSRecords        map[string]*DNSRecordQuery
 	withNamedCdnRecords        map[string]*CDNRecordQuery
 	withNamedSslRecords        map[string]*SSLRecordQuery
 	withNamedTunRecords        map[string]*TUNRecordQuery
 	withNamedCloudflareTunnels map[string]*CloudflareTunnelQuery
+	withNamedEdgeoneZones      map[string]*EdgeOneZoneQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -178,6 +181,28 @@ func (_q *PlatformConfigQuery) QueryCloudflareTunnels() *CloudflareTunnelQuery {
 			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, selector),
 			sqlgraph.To(cloudflaretunnel.Table, cloudflaretunnel.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.CloudflareTunnelsTable, platformconfig.CloudflareTunnelsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEdgeoneZones chains the current query on the "edgeone_zones" edge.
+func (_q *PlatformConfigQuery) QueryEdgeoneZones() *EdgeOneZoneQuery {
+	query := (&EdgeOneZoneClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, selector),
+			sqlgraph.To(edgeonezone.Table, edgeonezone.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.EdgeoneZonesTable, platformconfig.EdgeoneZonesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -382,6 +407,7 @@ func (_q *PlatformConfigQuery) Clone() *PlatformConfigQuery {
 		withSslRecords:        _q.withSslRecords.Clone(),
 		withTunRecords:        _q.withTunRecords.Clone(),
 		withCloudflareTunnels: _q.withCloudflareTunnels.Clone(),
+		withEdgeoneZones:      _q.withEdgeoneZones.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -441,6 +467,17 @@ func (_q *PlatformConfigQuery) WithCloudflareTunnels(opts ...func(*CloudflareTun
 		opt(query)
 	}
 	_q.withCloudflareTunnels = query
+	return _q
+}
+
+// WithEdgeoneZones tells the query-builder to eager-load the nodes that are connected to
+// the "edgeone_zones" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *PlatformConfigQuery) WithEdgeoneZones(opts ...func(*EdgeOneZoneQuery)) *PlatformConfigQuery {
+	query := (&EdgeOneZoneClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withEdgeoneZones = query
 	return _q
 }
 
@@ -522,12 +559,13 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	var (
 		nodes       = []*PlatformConfig{}
 		_spec       = _q.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			_q.withDNSRecords != nil,
 			_q.withCdnRecords != nil,
 			_q.withSslRecords != nil,
 			_q.withTunRecords != nil,
 			_q.withCloudflareTunnels != nil,
+			_q.withEdgeoneZones != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -611,6 +649,18 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			return nil, err
 		}
 	}
+	if query := _q.withEdgeoneZones; query != nil {
+		if err := _q.loadEdgeoneZones(ctx, query, nodes,
+			func(n *PlatformConfig) { n.Edges.EdgeoneZones = []*EdgeOneZone{} },
+			func(n *PlatformConfig, e *EdgeOneZone) {
+				n.Edges.EdgeoneZones = append(n.Edges.EdgeoneZones, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Config = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range _q.withNamedDNSRecords {
 		if err := _q.loadDNSRecords(ctx, query, nodes,
 			func(n *PlatformConfig) { n.appendNamedDNSRecords(name) },
@@ -664,6 +714,18 @@ func (_q *PlatformConfigQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			func(n *PlatformConfig) { n.appendNamedCloudflareTunnels(name) },
 			func(n *PlatformConfig, e *CloudflareTunnel) {
 				n.appendNamedCloudflareTunnels(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.Config = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedEdgeoneZones {
+		if err := _q.loadEdgeoneZones(ctx, query, nodes,
+			func(n *PlatformConfig) { n.appendNamedEdgeoneZones(name) },
+			func(n *PlatformConfig, e *EdgeOneZone) {
+				n.appendNamedEdgeoneZones(name, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.Config = n
 				}
@@ -809,6 +871,36 @@ func (_q *PlatformConfigQuery) loadCloudflareTunnels(ctx context.Context, query 
 	}
 	query.Where(predicate.CloudflareTunnel(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(platformconfig.CloudflareTunnelsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ConfigID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "config_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *PlatformConfigQuery) loadEdgeoneZones(ctx context.Context, query *EdgeOneZoneQuery, nodes []*PlatformConfig, init func(*PlatformConfig), assign func(*PlatformConfig, *EdgeOneZone)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*PlatformConfig)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(edgeonezone.FieldConfigID)
+	}
+	query.Where(predicate.EdgeOneZone(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(platformconfig.EdgeoneZonesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -985,6 +1077,20 @@ func (_q *PlatformConfigQuery) WithNamedCloudflareTunnels(name string, opts ...f
 		_q.withNamedCloudflareTunnels = make(map[string]*CloudflareTunnelQuery)
 	}
 	_q.withNamedCloudflareTunnels[name] = query
+	return _q
+}
+
+// WithNamedEdgeoneZones tells the query-builder to eager-load the nodes that are connected to the "edgeone_zones"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *PlatformConfigQuery) WithNamedEdgeoneZones(name string, opts ...func(*EdgeOneZoneQuery)) *PlatformConfigQuery {
+	query := (&EdgeOneZoneClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedEdgeoneZones == nil {
+		_q.withNamedEdgeoneZones = make(map[string]*EdgeOneZoneQuery)
+	}
+	_q.withNamedEdgeoneZones[name] = query
 	return _q
 }
 

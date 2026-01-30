@@ -36,6 +36,12 @@ type DevicePortForward func(*sql.Selector)
 // DomainMonitor is the predicate function for domainmonitor builders.
 type DomainMonitor func(*sql.Selector)
 
+// EdgeOneOriginGroup is the predicate function for edgeoneorigingroup builders.
+type EdgeOneOriginGroup func(*sql.Selector)
+
+// EdgeOneZone is the predicate function for edgeonezone builders.
+type EdgeOneZone func(*sql.Selector)
+
 // IpGroup is the predicate function for ipgroup builders.
 type IpGroup func(*sql.Selector)
 

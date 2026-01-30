@@ -124,6 +124,32 @@ func (t *DomainMonitor) ToMap() map[string]any {
 	return m
 }
 
+// ToMap 将 EdgeOneOriginGroup 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *EdgeOneOriginGroup) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["records"] = t.Records
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["references"] = t.References
+	return m
+}
+
+// ToMap 将 EdgeOneZone 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *EdgeOneZone) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+	return m
+}
+
 // ToMap 将 IpGroup 实体转换为 map[string]any。
 // 键为数据库列名（snake_case），值为字段当前值。
 // 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
