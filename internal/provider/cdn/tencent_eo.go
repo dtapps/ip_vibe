@@ -465,3 +465,30 @@ func (p *TencentEOProvider) ParseCustomConfig(config_json json.RawMessage) (err 
 	}
 	return nil
 }
+
+// ZonesRaw 获取所有站点
+func (p *TencentEOProvider) ZonesRaw(ctx context.Context) (zones []*teo.Zone, err error) {
+	request := teo.NewDescribeZonesRequest()
+	request.Offset = common.Int64Ptr(0)
+	request.Limit = common.Int64Ptr(100)
+	request.Order = common.StringPtr("create-time")
+	request.Direction = common.StringPtr("asc")
+	response, err := p.Provider.Client.DescribeZonesWithContext(ctx, request)
+	if err != nil {
+		return nil, fmt.Errorf("接口 DescribeZonesWithContext 失败 %w", err)
+	}
+	return response.Response.Zones, nil
+}
+
+// OriginGroupsRaw 获取所有源站组
+func (p *TencentEOProvider) OriginGroupsRaw(ctx context.Context, zone_id string) (zones []*teo.OriginGroup, err error) {
+	request := teo.NewDescribeOriginGroupRequest()
+	request.ZoneId = common.StringPtr(zone_id)
+	request.Offset = common.Uint64Ptr(0)
+	request.Limit = common.Uint64Ptr(100)
+	response, err := p.Provider.Client.DescribeOriginGroupWithContext(ctx, request)
+	if err != nil {
+		return nil, fmt.Errorf("接口 DescribeOriginGroupWithContext 失败 %w", err)
+	}
+	return response.Response.OriginGroups, nil
+}

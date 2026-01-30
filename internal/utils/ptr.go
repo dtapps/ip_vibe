@@ -1,5 +1,7 @@
 package utils
 
+import "time"
+
 // Uint64ToPtr 将 uint64 转为 *uint64（返回新分配的内存，跨函数安全）
 func Uint64ToPtr(v uint64) *uint64 {
 	p := new(uint64)
@@ -92,6 +94,26 @@ func StringsToPtr(s []string) *[]string {
 func PtrToStrings(p *[]string) []string {
 	if p == nil {
 		return nil
+	}
+	return *p
+}
+
+// StringToTimePtr 将 string 转为 *time.Time，格式为 time.DateTime（nil 安全）
+func StringToTimePtr(s string) *time.Time {
+	if s == "" {
+		return nil
+	}
+	t, err := time.Parse(time.DateTime, s)
+	if err != nil {
+		return nil
+	}
+	return &t
+}
+
+// PtrToTime 将 *time.Time 转为 time.Time，nil 安全（nil 返回 time.Time{}）
+func PtrToTime(p *time.Time) time.Time {
+	if p == nil {
+		return time.Time{}
 	}
 	return *p
 }

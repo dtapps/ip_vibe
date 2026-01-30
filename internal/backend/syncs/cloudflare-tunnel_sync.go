@@ -48,7 +48,7 @@ func (s *CloudflareTunnelSync) SetDebug(debug bool) {
 	s.debug = debug
 }
 
-// GetApiClient 获取Cloudflare Tunnel提供程序
+// 获取Cloudflare Tunnel提供程序
 func (s *CloudflareTunnelSync) GetApiClient(ctx context.Context, platformConfigJSON json.RawMessage) (*tun.CloudfareTUNProvider, error) {
 
 	// 创建Cloudflare Tunnel提供程序选项
@@ -61,19 +61,19 @@ func (s *CloudflareTunnelSync) GetApiClient(ctx context.Context, platformConfigJ
 	tunProviderCfg := tun.NewDefaultCloudfareTUNConfig()
 	err := tunProviderCfg.ParseCustomConfig(platformConfigJSON)
 	if err != nil {
-		return nil, fmt.Errorf("解析Cloudflare隧道配置失败: %w", err)
+		return nil, fmt.Errorf("解析Cloudflare Tunnel配置失败: %w", err)
 	}
 
 	// 创建Cloudflare Tunnel提供程序
 	tunProvider, err := tun.NewCloudfareTUNProviderRaw(ctx, s.logger, tunProviderCfg, tunProviderOpts...)
 	if err != nil {
-		return nil, fmt.Errorf("创建Cloudflare隧道提供程序失败: %w", err)
+		return nil, fmt.Errorf("创建Cloudflare Tunnel提供程序失败: %w", err)
 	}
 
 	return tunProvider, nil
 }
 
-// SyncAllCloudflareTunnels 同步全部账号Cloudflare隧道
+// 同步全部账号Cloudflare隧道
 func (s *CloudflareTunnelSync) SyncAllCloudflareTunnels(ctx context.Context) error {
 	// 查询全部Cloudflare平台
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
@@ -84,7 +84,7 @@ func (s *CloudflareTunnelSync) SyncAllCloudflareTunnels(ctx context.Context) err
 		return fmt.Errorf("查询全部Cloudflare平台失败: %w", err)
 	}
 
-	// 并发同步Cloudflare隧道
+	// 并发同步
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
@@ -96,22 +96,22 @@ func (s *CloudflareTunnelSync) SyncAllCloudflareTunnels(ctx context.Context) err
 
 	// 等待所有goroutine完成
 	if err := eg.Wait(); err != nil {
-		return fmt.Errorf("并发失败: %w", err)
+		return fmt.Errorf("并发同步失败: %w", err)
 	}
 
 	return nil
 }
 
-// SyncThisCloudflareTunnels 同步某个账号Cloudflare隧道
+// 同步某个账号Cloudflare隧道
 func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, config_id int64) error {
-	// 查询Cloudflare平台
+	// 查询Cloudflare平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
 		Where(platformconfig.CapabilityIn(platformconfig.CapabilityAll, platformconfig.CapabilityTun)).
 		First(ctx)
 	if err != nil {
-		return fmt.Errorf("查询Cloudflare平台失败: %w", err)
+		return fmt.Errorf("查询Cloudflare平台配置失败: %w", err)
 	}
 
 	// 判断是否存在 账号ID
@@ -133,15 +133,15 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 
 	// 入库
 	for _, connector := range connectors {
-		// 检查是否已存在
+		// 查询隧道记录
 		firstTunnel, err := s.db.CloudflareTunnel.Query().
 			Where(cloudflaretunnel.TunnelIDEQ(connector.ID)).
 			First(ctx)
 		if err != nil {
 			if !ent.IsNotFound(err) {
-				return fmt.Errorf("查询Cloudflare隧道记录失败: %w", err)
+				return fmt.Errorf("查询隧道记录失败: %w", err)
 			}
-			// 创建记录
+			// 创建隧道记录
 			err = s.db.CloudflareTunnel.Create().
 				SetConfigID(firstPlatformCofing.ID).
 				SetTunnelID(connector.ID).
@@ -153,10 +153,10 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 				SetSyncAt(time.Now()).
 				Exec(ctx)
 			if err != nil {
-				return fmt.Errorf("创建Cloudflare隧道记录失败: %w", err)
+				return fmt.Errorf("创建隧道记录失败: %w", err)
 			}
 		} else {
-			// 更新记录
+			// 更新隧道记录
 			err = s.db.CloudflareTunnel.UpdateOne(firstTunnel).
 				SetName(connector.Name).
 				SetStatus(cloudflaretunnel.Status(connector.Status)).
@@ -165,7 +165,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 				SetSyncAt(time.Now()).
 				Exec(ctx)
 			if err != nil {
-				return fmt.Errorf("更新Cloudflare隧道记录失败: %w", err)
+				return fmt.Errorf("更新隧道记录失败: %w", err)
 			}
 		}
 	}
@@ -173,7 +173,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 	return nil
 }
 
-// SyncAllCloudflareTunnelIngresses 同步全部账号Cloudflare隧道入站规则
+// 同步全部账号Cloudflare隧道入站规则
 func (s *CloudflareTunnelSync) SyncAllCloudflareTunnelIngresses(ctx context.Context) error {
 	// 查询全部Cloudflare平台
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
@@ -202,7 +202,7 @@ func (s *CloudflareTunnelSync) SyncAllCloudflareTunnelIngresses(ctx context.Cont
 	return nil
 }
 
-// SyncThisCloudflareTunnelIngresses 同步某个账号Cloudflare隧道入站规则
+// 同步某个账号Cloudflare隧道入站规则
 func (s *CloudflareTunnelSync) SyncThisCloudflareTunnelIngresses(ctx context.Context, config_id int64) error {
 	// 查询Cloudflare隧道
 	allCloudflareTunnel, err := s.db.CloudflareTunnel.Query().
@@ -281,7 +281,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnelIngresses(ctx context.Con
 	return nil
 }
 
-// SyncThisCloudflareThisTunnelIngresses 同步某个账号Cloudflare某个隧道的入站规则
+// 同步某个账号Cloudflare某个隧道的入站规则
 func (s *CloudflareTunnelSync) SyncThisCloudflareThisTunnelIngresses(ctx context.Context, config_id int64, tunnel_id int64) error {
 	// 查询Cloudflare隧道
 	firstCloudflareTunnel, err := s.db.CloudflareTunnel.Query().

@@ -89,6 +89,7 @@ func (EdgeOneZone) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Time("remote_created_at").
+			Optional().
 			Immutable().
 			Comment("站点创建时间").
 			Annotations(entsql.WithComments(true)),
