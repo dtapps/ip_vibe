@@ -560,8 +560,8 @@ var (
 			},
 		},
 	}
-	// EdgeoneZoneOriginGroupColumns holds the columns for the "edgeone_zone_origin_group" table.
-	EdgeoneZoneOriginGroupColumns = []*schema.Column{
+	// EdgeoneZoneOrigingroupColumns holds the columns for the "edgeone_zone_origingroup" table.
+	EdgeoneZoneOrigingroupColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "EdgeOne 站点源站组序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
@@ -574,16 +574,16 @@ var (
 		{Name: "references", Type: field.TypeJSON, Nullable: true, Comment: "源站组被引用实例列表"},
 		{Name: "edgeone_zone_id", Type: field.TypeInt64, Comment: "关联 EdgeOne 站点序号"},
 	}
-	// EdgeoneZoneOriginGroupTable holds the schema information for the "edgeone_zone_origin_group" table.
-	EdgeoneZoneOriginGroupTable = &schema.Table{
-		Name:       "edgeone_zone_origin_group",
+	// EdgeoneZoneOrigingroupTable holds the schema information for the "edgeone_zone_origingroup" table.
+	EdgeoneZoneOrigingroupTable = &schema.Table{
+		Name:       "edgeone_zone_origingroup",
 		Comment:    "EdgeOne 站点源站组",
-		Columns:    EdgeoneZoneOriginGroupColumns,
-		PrimaryKey: []*schema.Column{EdgeoneZoneOriginGroupColumns[0]},
+		Columns:    EdgeoneZoneOrigingroupColumns,
+		PrimaryKey: []*schema.Column{EdgeoneZoneOrigingroupColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "edgeone_zone_origin_group_edgeone_zone_origin_groups",
-				Columns:    []*schema.Column{EdgeoneZoneOriginGroupColumns[10]},
+				Symbol:     "edgeone_zone_origingroup_edgeone_zone_origingroups",
+				Columns:    []*schema.Column{EdgeoneZoneOrigingroupColumns[10]},
 				RefColumns: []*schema.Column{EdgeoneZoneColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -592,7 +592,7 @@ var (
 			{
 				Name:    "edgeonezoneorigingroup_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{EdgeoneZoneOriginGroupColumns[1]},
+				Columns: []*schema.Column{EdgeoneZoneOrigingroupColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
@@ -600,7 +600,7 @@ var (
 			{
 				Name:    "edgeonezoneorigingroup_edgeone_zone_id",
 				Unique:  false,
-				Columns: []*schema.Column{EdgeoneZoneOriginGroupColumns[10]},
+				Columns: []*schema.Column{EdgeoneZoneOrigingroupColumns[10]},
 			},
 		},
 	}
@@ -1034,7 +1034,7 @@ var (
 		DevicePortForwardTable,
 		DomainMonitorTable,
 		EdgeoneZoneTable,
-		EdgeoneZoneOriginGroupTable,
+		EdgeoneZoneOrigingroupTable,
 		IPGroupTable,
 		IPGroupDeviceTable,
 		PlatformConfigTable,
@@ -1093,9 +1093,9 @@ func init() {
 	EdgeoneZoneTable.Annotation = &entsql.Annotation{
 		Table: "edgeone_zone",
 	}
-	EdgeoneZoneOriginGroupTable.ForeignKeys[0].RefTable = EdgeoneZoneTable
-	EdgeoneZoneOriginGroupTable.Annotation = &entsql.Annotation{
-		Table: "edgeone_zone_origin_group",
+	EdgeoneZoneOrigingroupTable.ForeignKeys[0].RefTable = EdgeoneZoneTable
+	EdgeoneZoneOrigingroupTable.Annotation = &entsql.Annotation{
+		Table: "edgeone_zone_origingroup",
 	}
 	IPGroupTable.Annotation = &entsql.Annotation{
 		Table: "ip_group",

@@ -44,8 +44,8 @@ const (
 	FieldPaused = "paused"
 	// EdgeConfig holds the string denoting the config edge name in mutations.
 	EdgeConfig = "config"
-	// EdgeOriginGroups holds the string denoting the origin_groups edge name in mutations.
-	EdgeOriginGroups = "origin_groups"
+	// EdgeOrigingroups holds the string denoting the origingroups edge name in mutations.
+	EdgeOrigingroups = "origingroups"
 	// Table holds the table name of the edgeonezone in the database.
 	Table = "edgeone_zone"
 	// ConfigTable is the table that holds the config relation/edge.
@@ -55,13 +55,13 @@ const (
 	ConfigInverseTable = "platform_config"
 	// ConfigColumn is the table column denoting the config relation/edge.
 	ConfigColumn = "config_id"
-	// OriginGroupsTable is the table that holds the origin_groups relation/edge.
-	OriginGroupsTable = "edgeone_zone_origin_group"
-	// OriginGroupsInverseTable is the table name for the EdgeOneZoneOriginGroup entity.
+	// OrigingroupsTable is the table that holds the origingroups relation/edge.
+	OrigingroupsTable = "edgeone_zone_origingroup"
+	// OrigingroupsInverseTable is the table name for the EdgeOneZoneOriginGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "edgeonezoneorigingroup" package.
-	OriginGroupsInverseTable = "edgeone_zone_origin_group"
-	// OriginGroupsColumn is the table column denoting the origin_groups relation/edge.
-	OriginGroupsColumn = "edgeone_zone_id"
+	OrigingroupsInverseTable = "edgeone_zone_origingroup"
+	// OrigingroupsColumn is the table column denoting the origingroups relation/edge.
+	OrigingroupsColumn = "edgeone_zone_id"
 )
 
 // Columns holds all SQL columns for edgeonezone fields.
@@ -314,17 +314,17 @@ func ByConfigField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByOriginGroupsCount orders the results by origin_groups count.
-func ByOriginGroupsCount(opts ...sql.OrderTermOption) OrderOption {
+// ByOrigingroupsCount orders the results by origingroups count.
+func ByOrigingroupsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newOriginGroupsStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newOrigingroupsStep(), opts...)
 	}
 }
 
-// ByOriginGroups orders the results by origin_groups terms.
-func ByOriginGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByOrigingroups orders the results by origingroups terms.
+func ByOrigingroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newOriginGroupsStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newOrigingroupsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newConfigStep() *sqlgraph.Step {
@@ -334,10 +334,10 @@ func newConfigStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, ConfigTable, ConfigColumn),
 	)
 }
-func newOriginGroupsStep() *sqlgraph.Step {
+func newOrigingroupsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(OriginGroupsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, OriginGroupsTable, OriginGroupsColumn),
+		sqlgraph.To(OrigingroupsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, OrigingroupsTable, OrigingroupsColumn),
 	)
 }

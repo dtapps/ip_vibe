@@ -153,19 +153,19 @@ func (_c *EdgeOneZoneCreate) SetConfig(v *PlatformConfig) *EdgeOneZoneCreate {
 	return _c.SetConfigID(v.ID)
 }
 
-// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneZoneOriginGroup entity by IDs.
-func (_c *EdgeOneZoneCreate) AddOriginGroupIDs(ids ...int64) *EdgeOneZoneCreate {
-	_c.mutation.AddOriginGroupIDs(ids...)
+// AddOrigingroupIDs adds the "origingroups" edge to the EdgeOneZoneOriginGroup entity by IDs.
+func (_c *EdgeOneZoneCreate) AddOrigingroupIDs(ids ...int64) *EdgeOneZoneCreate {
+	_c.mutation.AddOrigingroupIDs(ids...)
 	return _c
 }
 
-// AddOriginGroups adds the "origin_groups" edges to the EdgeOneZoneOriginGroup entity.
-func (_c *EdgeOneZoneCreate) AddOriginGroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneCreate {
+// AddOrigingroups adds the "origingroups" edges to the EdgeOneZoneOriginGroup entity.
+func (_c *EdgeOneZoneCreate) AddOrigingroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneCreate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _c.AddOriginGroupIDs(ids...)
+	return _c.AddOrigingroupIDs(ids...)
 }
 
 // Mutation returns the EdgeOneZoneMutation object of the builder.
@@ -390,12 +390,12 @@ func (_c *EdgeOneZoneCreate) createSpec() (*EdgeOneZone, *sqlgraph.CreateSpec) {
 		_node.ConfigID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.OriginGroupsIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.OrigingroupsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   edgeonezone.OriginGroupsTable,
-			Columns: []string{edgeonezone.OriginGroupsColumn},
+			Table:   edgeonezone.OrigingroupsTable,
+			Columns: []string{edgeonezone.OrigingroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),

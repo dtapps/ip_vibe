@@ -568,21 +568,21 @@ func HasConfigWith(preds ...predicate.PlatformConfig) predicate.EdgeOneZone {
 	})
 }
 
-// HasOriginGroups applies the HasEdge predicate on the "origin_groups" edge.
-func HasOriginGroups() predicate.EdgeOneZone {
+// HasOrigingroups applies the HasEdge predicate on the "origingroups" edge.
+func HasOrigingroups() predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, OriginGroupsTable, OriginGroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, OrigingroupsTable, OrigingroupsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasOriginGroupsWith applies the HasEdge predicate on the "origin_groups" edge with a given conditions (other predicates).
-func HasOriginGroupsWith(preds ...predicate.EdgeOneZoneOriginGroup) predicate.EdgeOneZone {
+// HasOrigingroupsWith applies the HasEdge predicate on the "origingroups" edge with a given conditions (other predicates).
+func HasOrigingroupsWith(preds ...predicate.EdgeOneZoneOriginGroup) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(func(s *sql.Selector) {
-		step := newOriginGroupsStep()
+		step := newOrigingroupsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

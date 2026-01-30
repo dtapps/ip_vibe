@@ -22,7 +22,7 @@ type EdgeOneZoneOriginGroup struct {
 // Annotations of the EdgeOneZoneOriginGroup.
 func (EdgeOneZoneOriginGroup) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "edgeone_zone_origin_group"},
+		entsql.Annotation{Table: "edgeone_zone_origingroup"},
 		schema.Comment("EdgeOne 站点源站组"),
 		entsql.WithComments(true),
 	}
@@ -84,7 +84,7 @@ func (EdgeOneZoneOriginGroup) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 一对多 EdgeOneZone -> EdgeOneZoneOriginGroup
 		edge.From("edgeone_zone", EdgeOneZone.Type).
-			Ref("origin_groups").
+			Ref("origingroups").
 			Field("edgeone_zone_id").
 			Unique().
 			Required().

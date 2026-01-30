@@ -56,11 +56,11 @@ type EdgeOneZoneEdges struct {
 	// 关联的平台配置
 	Config *PlatformConfig `json:"config,omitempty"`
 	// 关联的EdgeOne站点源站组
-	OriginGroups []*EdgeOneZoneOriginGroup `json:"origin_groups,omitempty"`
+	Origingroups []*EdgeOneZoneOriginGroup `json:"origingroups,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes       [2]bool
-	namedOriginGroups map[string][]*EdgeOneZoneOriginGroup
+	namedOrigingroups map[string][]*EdgeOneZoneOriginGroup
 }
 
 // ConfigOrErr returns the Config value or an error if the edge
@@ -74,13 +74,13 @@ func (e EdgeOneZoneEdges) ConfigOrErr() (*PlatformConfig, error) {
 	return nil, &NotLoadedError{edge: "config"}
 }
 
-// OriginGroupsOrErr returns the OriginGroups value or an error if the edge
+// OrigingroupsOrErr returns the Origingroups value or an error if the edge
 // was not loaded in eager-loading.
-func (e EdgeOneZoneEdges) OriginGroupsOrErr() ([]*EdgeOneZoneOriginGroup, error) {
+func (e EdgeOneZoneEdges) OrigingroupsOrErr() ([]*EdgeOneZoneOriginGroup, error) {
 	if e.loadedTypes[1] {
-		return e.OriginGroups, nil
+		return e.Origingroups, nil
 	}
-	return nil, &NotLoadedError{edge: "origin_groups"}
+	return nil, &NotLoadedError{edge: "origingroups"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -213,9 +213,9 @@ func (_m *EdgeOneZone) QueryConfig() *PlatformConfigQuery {
 	return NewEdgeOneZoneClient(_m.config).QueryConfig(_m)
 }
 
-// QueryOriginGroups queries the "origin_groups" edge of the EdgeOneZone entity.
-func (_m *EdgeOneZone) QueryOriginGroups() *EdgeOneZoneOriginGroupQuery {
-	return NewEdgeOneZoneClient(_m.config).QueryOriginGroups(_m)
+// QueryOrigingroups queries the "origingroups" edge of the EdgeOneZone entity.
+func (_m *EdgeOneZone) QueryOrigingroups() *EdgeOneZoneOriginGroupQuery {
+	return NewEdgeOneZoneClient(_m.config).QueryOrigingroups(_m)
 }
 
 // Update returns a builder for updating this EdgeOneZone.
@@ -283,27 +283,27 @@ func (_m *EdgeOneZone) String() string {
 	return builder.String()
 }
 
-// NamedOriginGroups returns the OriginGroups named value or an error if the edge was not
+// NamedOrigingroups returns the Origingroups named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (_m *EdgeOneZone) NamedOriginGroups(name string) ([]*EdgeOneZoneOriginGroup, error) {
-	if _m.Edges.namedOriginGroups == nil {
+func (_m *EdgeOneZone) NamedOrigingroups(name string) ([]*EdgeOneZoneOriginGroup, error) {
+	if _m.Edges.namedOrigingroups == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := _m.Edges.namedOriginGroups[name]
+	nodes, ok := _m.Edges.namedOrigingroups[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (_m *EdgeOneZone) appendNamedOriginGroups(name string, edges ...*EdgeOneZoneOriginGroup) {
-	if _m.Edges.namedOriginGroups == nil {
-		_m.Edges.namedOriginGroups = make(map[string][]*EdgeOneZoneOriginGroup)
+func (_m *EdgeOneZone) appendNamedOrigingroups(name string, edges ...*EdgeOneZoneOriginGroup) {
+	if _m.Edges.namedOrigingroups == nil {
+		_m.Edges.namedOrigingroups = make(map[string][]*EdgeOneZoneOriginGroup)
 	}
 	if len(edges) == 0 {
-		_m.Edges.namedOriginGroups[name] = []*EdgeOneZoneOriginGroup{}
+		_m.Edges.namedOrigingroups[name] = []*EdgeOneZoneOriginGroup{}
 	} else {
-		_m.Edges.namedOriginGroups[name] = append(_m.Edges.namedOriginGroups[name], edges...)
+		_m.Edges.namedOrigingroups[name] = append(_m.Edges.namedOrigingroups[name], edges...)
 	}
 }
 

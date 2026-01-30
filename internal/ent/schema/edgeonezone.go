@@ -105,7 +105,7 @@ func (EdgeOneZone) Edges() []ent.Edge {
 			Annotations(entsql.WithComments(true)),
 
 		// 一对多 EdgeOneZone -> EdgeOneZoneOriginGroup
-		edge.To("origin_groups", EdgeOneZoneOriginGroup.Type).
+		edge.To("origingroups", EdgeOneZoneOriginGroup.Type).
 			Comment("关联的EdgeOne站点源站组").
 			Annotations(entsql.Annotation{
 				// 级联删除：删除 EdgeOneZone 时，其所有 EdgeOneZoneOriginGroup 记录也应删除

@@ -168,19 +168,19 @@ func (_u *EdgeOneZoneUpdate) ClearPaused() *EdgeOneZoneUpdate {
 	return _u
 }
 
-// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneZoneOriginGroup entity by IDs.
-func (_u *EdgeOneZoneUpdate) AddOriginGroupIDs(ids ...int64) *EdgeOneZoneUpdate {
-	_u.mutation.AddOriginGroupIDs(ids...)
+// AddOrigingroupIDs adds the "origingroups" edge to the EdgeOneZoneOriginGroup entity by IDs.
+func (_u *EdgeOneZoneUpdate) AddOrigingroupIDs(ids ...int64) *EdgeOneZoneUpdate {
+	_u.mutation.AddOrigingroupIDs(ids...)
 	return _u
 }
 
-// AddOriginGroups adds the "origin_groups" edges to the EdgeOneZoneOriginGroup entity.
-func (_u *EdgeOneZoneUpdate) AddOriginGroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdate {
+// AddOrigingroups adds the "origingroups" edges to the EdgeOneZoneOriginGroup entity.
+func (_u *EdgeOneZoneUpdate) AddOrigingroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddOriginGroupIDs(ids...)
+	return _u.AddOrigingroupIDs(ids...)
 }
 
 // Mutation returns the EdgeOneZoneMutation object of the builder.
@@ -188,25 +188,25 @@ func (_u *EdgeOneZoneUpdate) Mutation() *EdgeOneZoneMutation {
 	return _u.mutation
 }
 
-// ClearOriginGroups clears all "origin_groups" edges to the EdgeOneZoneOriginGroup entity.
-func (_u *EdgeOneZoneUpdate) ClearOriginGroups() *EdgeOneZoneUpdate {
-	_u.mutation.ClearOriginGroups()
+// ClearOrigingroups clears all "origingroups" edges to the EdgeOneZoneOriginGroup entity.
+func (_u *EdgeOneZoneUpdate) ClearOrigingroups() *EdgeOneZoneUpdate {
+	_u.mutation.ClearOrigingroups()
 	return _u
 }
 
-// RemoveOriginGroupIDs removes the "origin_groups" edge to EdgeOneZoneOriginGroup entities by IDs.
-func (_u *EdgeOneZoneUpdate) RemoveOriginGroupIDs(ids ...int64) *EdgeOneZoneUpdate {
-	_u.mutation.RemoveOriginGroupIDs(ids...)
+// RemoveOrigingroupIDs removes the "origingroups" edge to EdgeOneZoneOriginGroup entities by IDs.
+func (_u *EdgeOneZoneUpdate) RemoveOrigingroupIDs(ids ...int64) *EdgeOneZoneUpdate {
+	_u.mutation.RemoveOrigingroupIDs(ids...)
 	return _u
 }
 
-// RemoveOriginGroups removes "origin_groups" edges to EdgeOneZoneOriginGroup entities.
-func (_u *EdgeOneZoneUpdate) RemoveOriginGroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdate {
+// RemoveOrigingroups removes "origingroups" edges to EdgeOneZoneOriginGroup entities.
+func (_u *EdgeOneZoneUpdate) RemoveOrigingroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveOriginGroupIDs(ids...)
+	return _u.RemoveOrigingroupIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -341,12 +341,12 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if _u.mutation.PausedCleared() {
 		_spec.ClearField(edgeonezone.FieldPaused, field.TypeBool)
 	}
-	if _u.mutation.OriginGroupsCleared() {
+	if _u.mutation.OrigingroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   edgeonezone.OriginGroupsTable,
-			Columns: []string{edgeonezone.OriginGroupsColumn},
+			Table:   edgeonezone.OrigingroupsTable,
+			Columns: []string{edgeonezone.OrigingroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
@@ -354,12 +354,12 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedOriginGroupsIDs(); len(nodes) > 0 && !_u.mutation.OriginGroupsCleared() {
+	if nodes := _u.mutation.RemovedOrigingroupsIDs(); len(nodes) > 0 && !_u.mutation.OrigingroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   edgeonezone.OriginGroupsTable,
-			Columns: []string{edgeonezone.OriginGroupsColumn},
+			Table:   edgeonezone.OrigingroupsTable,
+			Columns: []string{edgeonezone.OrigingroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
@@ -370,12 +370,12 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.OriginGroupsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OrigingroupsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   edgeonezone.OriginGroupsTable,
-			Columns: []string{edgeonezone.OriginGroupsColumn},
+			Table:   edgeonezone.OrigingroupsTable,
+			Columns: []string{edgeonezone.OrigingroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
@@ -546,19 +546,19 @@ func (_u *EdgeOneZoneUpdateOne) ClearPaused() *EdgeOneZoneUpdateOne {
 	return _u
 }
 
-// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneZoneOriginGroup entity by IDs.
-func (_u *EdgeOneZoneUpdateOne) AddOriginGroupIDs(ids ...int64) *EdgeOneZoneUpdateOne {
-	_u.mutation.AddOriginGroupIDs(ids...)
+// AddOrigingroupIDs adds the "origingroups" edge to the EdgeOneZoneOriginGroup entity by IDs.
+func (_u *EdgeOneZoneUpdateOne) AddOrigingroupIDs(ids ...int64) *EdgeOneZoneUpdateOne {
+	_u.mutation.AddOrigingroupIDs(ids...)
 	return _u
 }
 
-// AddOriginGroups adds the "origin_groups" edges to the EdgeOneZoneOriginGroup entity.
-func (_u *EdgeOneZoneUpdateOne) AddOriginGroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdateOne {
+// AddOrigingroups adds the "origingroups" edges to the EdgeOneZoneOriginGroup entity.
+func (_u *EdgeOneZoneUpdateOne) AddOrigingroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdateOne {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddOriginGroupIDs(ids...)
+	return _u.AddOrigingroupIDs(ids...)
 }
 
 // Mutation returns the EdgeOneZoneMutation object of the builder.
@@ -566,25 +566,25 @@ func (_u *EdgeOneZoneUpdateOne) Mutation() *EdgeOneZoneMutation {
 	return _u.mutation
 }
 
-// ClearOriginGroups clears all "origin_groups" edges to the EdgeOneZoneOriginGroup entity.
-func (_u *EdgeOneZoneUpdateOne) ClearOriginGroups() *EdgeOneZoneUpdateOne {
-	_u.mutation.ClearOriginGroups()
+// ClearOrigingroups clears all "origingroups" edges to the EdgeOneZoneOriginGroup entity.
+func (_u *EdgeOneZoneUpdateOne) ClearOrigingroups() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearOrigingroups()
 	return _u
 }
 
-// RemoveOriginGroupIDs removes the "origin_groups" edge to EdgeOneZoneOriginGroup entities by IDs.
-func (_u *EdgeOneZoneUpdateOne) RemoveOriginGroupIDs(ids ...int64) *EdgeOneZoneUpdateOne {
-	_u.mutation.RemoveOriginGroupIDs(ids...)
+// RemoveOrigingroupIDs removes the "origingroups" edge to EdgeOneZoneOriginGroup entities by IDs.
+func (_u *EdgeOneZoneUpdateOne) RemoveOrigingroupIDs(ids ...int64) *EdgeOneZoneUpdateOne {
+	_u.mutation.RemoveOrigingroupIDs(ids...)
 	return _u
 }
 
-// RemoveOriginGroups removes "origin_groups" edges to EdgeOneZoneOriginGroup entities.
-func (_u *EdgeOneZoneUpdateOne) RemoveOriginGroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdateOne {
+// RemoveOrigingroups removes "origingroups" edges to EdgeOneZoneOriginGroup entities.
+func (_u *EdgeOneZoneUpdateOne) RemoveOrigingroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdateOne {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveOriginGroupIDs(ids...)
+	return _u.RemoveOrigingroupIDs(ids...)
 }
 
 // Where appends a list predicates to the EdgeOneZoneUpdate builder.
@@ -749,12 +749,12 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 	if _u.mutation.PausedCleared() {
 		_spec.ClearField(edgeonezone.FieldPaused, field.TypeBool)
 	}
-	if _u.mutation.OriginGroupsCleared() {
+	if _u.mutation.OrigingroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   edgeonezone.OriginGroupsTable,
-			Columns: []string{edgeonezone.OriginGroupsColumn},
+			Table:   edgeonezone.OrigingroupsTable,
+			Columns: []string{edgeonezone.OrigingroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
@@ -762,12 +762,12 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedOriginGroupsIDs(); len(nodes) > 0 && !_u.mutation.OriginGroupsCleared() {
+	if nodes := _u.mutation.RemovedOrigingroupsIDs(); len(nodes) > 0 && !_u.mutation.OrigingroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   edgeonezone.OriginGroupsTable,
-			Columns: []string{edgeonezone.OriginGroupsColumn},
+			Table:   edgeonezone.OrigingroupsTable,
+			Columns: []string{edgeonezone.OrigingroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
@@ -778,12 +778,12 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.OriginGroupsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OrigingroupsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   edgeonezone.OriginGroupsTable,
-			Columns: []string{edgeonezone.OriginGroupsColumn},
+			Table:   edgeonezone.OrigingroupsTable,
+			Columns: []string{edgeonezone.OrigingroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),

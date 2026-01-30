@@ -2150,15 +2150,15 @@ func (c *EdgeOneZoneClient) QueryConfig(_m *EdgeOneZone) *PlatformConfigQuery {
 	return query
 }
 
-// QueryOriginGroups queries the origin_groups edge of a EdgeOneZone.
-func (c *EdgeOneZoneClient) QueryOriginGroups(_m *EdgeOneZone) *EdgeOneZoneOriginGroupQuery {
+// QueryOrigingroups queries the origingroups edge of a EdgeOneZone.
+func (c *EdgeOneZoneClient) QueryOrigingroups(_m *EdgeOneZone) *EdgeOneZoneOriginGroupQuery {
 	query := (&EdgeOneZoneOriginGroupClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, id),
 			sqlgraph.To(edgeonezoneorigingroup.Table, edgeonezoneorigingroup.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.OriginGroupsTable, edgeonezone.OriginGroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.OrigingroupsTable, edgeonezone.OrigingroupsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil

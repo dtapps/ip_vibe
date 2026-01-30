@@ -9727,30 +9727,30 @@ func (m *DomainMonitorMutation) ResetEdge(name string) error {
 // EdgeOneZoneMutation represents an operation that mutates the EdgeOneZone nodes in the graph.
 type EdgeOneZoneMutation struct {
 	config
-	op                   Op
-	typ                  string
-	id                   *int64
-	created_at           *time.Time
-	updated_at           *time.Time
-	remote_created_at    *time.Time
-	sync_at              *time.Time
-	zone_id              *string
-	name                 *string
-	area                 *edgeonezone.Area
-	_type                *edgeonezone.Type
-	status               *edgeonezone.Status
-	cname_status         *edgeonezone.CnameStatus
-	active_status        *edgeonezone.ActiveStatus
-	paused               *bool
-	clearedFields        map[string]struct{}
-	_config              *int64
-	cleared_config       bool
-	origin_groups        map[int64]struct{}
-	removedorigin_groups map[int64]struct{}
-	clearedorigin_groups bool
-	done                 bool
-	oldValue             func(context.Context) (*EdgeOneZone, error)
-	predicates           []predicate.EdgeOneZone
+	op                  Op
+	typ                 string
+	id                  *int64
+	created_at          *time.Time
+	updated_at          *time.Time
+	remote_created_at   *time.Time
+	sync_at             *time.Time
+	zone_id             *string
+	name                *string
+	area                *edgeonezone.Area
+	_type               *edgeonezone.Type
+	status              *edgeonezone.Status
+	cname_status        *edgeonezone.CnameStatus
+	active_status       *edgeonezone.ActiveStatus
+	paused              *bool
+	clearedFields       map[string]struct{}
+	_config             *int64
+	cleared_config      bool
+	origingroups        map[int64]struct{}
+	removedorigingroups map[int64]struct{}
+	clearedorigingroups bool
+	done                bool
+	oldValue            func(context.Context) (*EdgeOneZone, error)
+	predicates          []predicate.EdgeOneZone
 }
 
 var _ ent.Mutation = (*EdgeOneZoneMutation)(nil)
@@ -10391,58 +10391,58 @@ func (m *EdgeOneZoneMutation) ResetConfig() {
 	m.cleared_config = false
 }
 
-// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneZoneOriginGroup entity by ids.
-func (m *EdgeOneZoneMutation) AddOriginGroupIDs(ids ...int64) {
-	if m.origin_groups == nil {
-		m.origin_groups = make(map[int64]struct{})
+// AddOrigingroupIDs adds the "origingroups" edge to the EdgeOneZoneOriginGroup entity by ids.
+func (m *EdgeOneZoneMutation) AddOrigingroupIDs(ids ...int64) {
+	if m.origingroups == nil {
+		m.origingroups = make(map[int64]struct{})
 	}
 	for i := range ids {
-		m.origin_groups[ids[i]] = struct{}{}
+		m.origingroups[ids[i]] = struct{}{}
 	}
 }
 
-// ClearOriginGroups clears the "origin_groups" edge to the EdgeOneZoneOriginGroup entity.
-func (m *EdgeOneZoneMutation) ClearOriginGroups() {
-	m.clearedorigin_groups = true
+// ClearOrigingroups clears the "origingroups" edge to the EdgeOneZoneOriginGroup entity.
+func (m *EdgeOneZoneMutation) ClearOrigingroups() {
+	m.clearedorigingroups = true
 }
 
-// OriginGroupsCleared reports if the "origin_groups" edge to the EdgeOneZoneOriginGroup entity was cleared.
-func (m *EdgeOneZoneMutation) OriginGroupsCleared() bool {
-	return m.clearedorigin_groups
+// OrigingroupsCleared reports if the "origingroups" edge to the EdgeOneZoneOriginGroup entity was cleared.
+func (m *EdgeOneZoneMutation) OrigingroupsCleared() bool {
+	return m.clearedorigingroups
 }
 
-// RemoveOriginGroupIDs removes the "origin_groups" edge to the EdgeOneZoneOriginGroup entity by IDs.
-func (m *EdgeOneZoneMutation) RemoveOriginGroupIDs(ids ...int64) {
-	if m.removedorigin_groups == nil {
-		m.removedorigin_groups = make(map[int64]struct{})
+// RemoveOrigingroupIDs removes the "origingroups" edge to the EdgeOneZoneOriginGroup entity by IDs.
+func (m *EdgeOneZoneMutation) RemoveOrigingroupIDs(ids ...int64) {
+	if m.removedorigingroups == nil {
+		m.removedorigingroups = make(map[int64]struct{})
 	}
 	for i := range ids {
-		delete(m.origin_groups, ids[i])
-		m.removedorigin_groups[ids[i]] = struct{}{}
+		delete(m.origingroups, ids[i])
+		m.removedorigingroups[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedOriginGroups returns the removed IDs of the "origin_groups" edge to the EdgeOneZoneOriginGroup entity.
-func (m *EdgeOneZoneMutation) RemovedOriginGroupsIDs() (ids []int64) {
-	for id := range m.removedorigin_groups {
+// RemovedOrigingroups returns the removed IDs of the "origingroups" edge to the EdgeOneZoneOriginGroup entity.
+func (m *EdgeOneZoneMutation) RemovedOrigingroupsIDs() (ids []int64) {
+	for id := range m.removedorigingroups {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// OriginGroupsIDs returns the "origin_groups" edge IDs in the mutation.
-func (m *EdgeOneZoneMutation) OriginGroupsIDs() (ids []int64) {
-	for id := range m.origin_groups {
+// OrigingroupsIDs returns the "origingroups" edge IDs in the mutation.
+func (m *EdgeOneZoneMutation) OrigingroupsIDs() (ids []int64) {
+	for id := range m.origingroups {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetOriginGroups resets all changes to the "origin_groups" edge.
-func (m *EdgeOneZoneMutation) ResetOriginGroups() {
-	m.origin_groups = nil
-	m.clearedorigin_groups = false
-	m.removedorigin_groups = nil
+// ResetOrigingroups resets all changes to the "origingroups" edge.
+func (m *EdgeOneZoneMutation) ResetOrigingroups() {
+	m.origingroups = nil
+	m.clearedorigingroups = false
+	m.removedorigingroups = nil
 }
 
 // Where appends a list predicates to the EdgeOneZoneMutation builder.
@@ -10810,8 +10810,8 @@ func (m *EdgeOneZoneMutation) AddedEdges() []string {
 	if m._config != nil {
 		edges = append(edges, edgeonezone.EdgeConfig)
 	}
-	if m.origin_groups != nil {
-		edges = append(edges, edgeonezone.EdgeOriginGroups)
+	if m.origingroups != nil {
+		edges = append(edges, edgeonezone.EdgeOrigingroups)
 	}
 	return edges
 }
@@ -10824,9 +10824,9 @@ func (m *EdgeOneZoneMutation) AddedIDs(name string) []ent.Value {
 		if id := m._config; id != nil {
 			return []ent.Value{*id}
 		}
-	case edgeonezone.EdgeOriginGroups:
-		ids := make([]ent.Value, 0, len(m.origin_groups))
-		for id := range m.origin_groups {
+	case edgeonezone.EdgeOrigingroups:
+		ids := make([]ent.Value, 0, len(m.origingroups))
+		for id := range m.origingroups {
 			ids = append(ids, id)
 		}
 		return ids
@@ -10837,8 +10837,8 @@ func (m *EdgeOneZoneMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EdgeOneZoneMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedorigin_groups != nil {
-		edges = append(edges, edgeonezone.EdgeOriginGroups)
+	if m.removedorigingroups != nil {
+		edges = append(edges, edgeonezone.EdgeOrigingroups)
 	}
 	return edges
 }
@@ -10847,9 +10847,9 @@ func (m *EdgeOneZoneMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *EdgeOneZoneMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case edgeonezone.EdgeOriginGroups:
-		ids := make([]ent.Value, 0, len(m.removedorigin_groups))
-		for id := range m.removedorigin_groups {
+	case edgeonezone.EdgeOrigingroups:
+		ids := make([]ent.Value, 0, len(m.removedorigingroups))
+		for id := range m.removedorigingroups {
 			ids = append(ids, id)
 		}
 		return ids
@@ -10863,8 +10863,8 @@ func (m *EdgeOneZoneMutation) ClearedEdges() []string {
 	if m.cleared_config {
 		edges = append(edges, edgeonezone.EdgeConfig)
 	}
-	if m.clearedorigin_groups {
-		edges = append(edges, edgeonezone.EdgeOriginGroups)
+	if m.clearedorigingroups {
+		edges = append(edges, edgeonezone.EdgeOrigingroups)
 	}
 	return edges
 }
@@ -10875,8 +10875,8 @@ func (m *EdgeOneZoneMutation) EdgeCleared(name string) bool {
 	switch name {
 	case edgeonezone.EdgeConfig:
 		return m.cleared_config
-	case edgeonezone.EdgeOriginGroups:
-		return m.clearedorigin_groups
+	case edgeonezone.EdgeOrigingroups:
+		return m.clearedorigingroups
 	}
 	return false
 }
@@ -10899,8 +10899,8 @@ func (m *EdgeOneZoneMutation) ResetEdge(name string) error {
 	case edgeonezone.EdgeConfig:
 		m.ResetConfig()
 		return nil
-	case edgeonezone.EdgeOriginGroups:
-		m.ResetOriginGroups()
+	case edgeonezone.EdgeOrigingroups:
+		m.ResetOrigingroups()
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZone edge %s", name)
