@@ -55,13 +55,18 @@
 </div>
 
 <div class="ui-panel shadow-2xl">
-    <div class="ui-header border-b border-base-300 px-8 flex justify-between">
-        <h2 class="text-sm font-black italic uppercase tracking-widest opacity-40">
-            {{ if eq $item.Type "full" }}DNS Management{{ else }}Acceleration Domains{{ end }}
-        </h2>
-        <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">
-            TOTAL: {{ $total }}
+    <div class="ui-header border-b border-base-300 px-8 flex justify-between items-center">
+        <div class="flex gap-6">
+            <h2 class="text-sm font-black italic uppercase tracking-widest text-primary">
+                Records
+            </h2>
+            <div class="h-4 w-[1px] bg-base-300"></div>
+            <a href="/edgeone/zone/{{ $item.ID }}/origin-group"
+                class="text-sm font-black italic uppercase tracking-widest opacity-30 hover:opacity-100">
+                Origin Groups
+            </a>
         </div>
+        <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">TOTAL: {{ $total }}</div>
     </div>
 
     <div class="p-4">
