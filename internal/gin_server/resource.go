@@ -312,6 +312,17 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 			}
 			return result
 		},
+		// 将 JSON 转换为 []map[string]any
+		"jsonToSlice": func(data json.RawMessage) []map[string]any {
+			var result []map[string]any
+			if err := json.Unmarshal(data, &result); err != nil {
+				m.logger.Error("[jsonToSlice] 反序列化 JSON 失败",
+					slog.Any("err", err),
+				)
+				return nil
+			}
+			return result
+		},
 		// 将任意类型转换为 JSON 字符串
 		"marshalJSON": func(v any) string {
 			if v == nil || v == "" {

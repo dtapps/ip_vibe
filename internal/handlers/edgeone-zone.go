@@ -83,3 +83,58 @@ func EdgeOneZoneRecord(c *gin.Context) {
 		"edgeone",
 	)
 }
+
+func EdgeOneZoneOriginGroup(c *gin.Context) {
+	// 请求参数
+	var requestParams types.EdgeOneZoneOriginGroupRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 准备页面数据
+	pageData := types.EdgeOneZoneOriginGroupResponse{
+		CommonPageWithItemResponse: types.CommonPageWithItemResponse[ent.EdgeOneZone, ent.EdgeOneZoneOriginGroup, types.EdgeOneZoneOriginGroupRequest]{
+			Item: ent.EdgeOneZone{},
+			CommonPageResponse: types.CommonPageResponse[ent.EdgeOneZoneOriginGroup, types.EdgeOneZoneOriginGroupRequest]{
+				Filter: requestParams,
+				List:   []ent.EdgeOneZoneOriginGroup{},
+			},
+		},
+	}
+
+	// 查询站点
+	firstZone, err := global.GvaEntDb.EdgeOneZone.Query().
+		Where(edgeonezone.IDEQ(requestParams.ID)).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "未查询到站点:"+err.Error())
+		return
+	}
+	pageData.Item = *firstZone
+
+	allRecord, err := firstZone.QueryOrigingroups().
+		OrderByRemoteCreatedAtDesc().
+		Paginate(c, requestParams.Page, requestParams.PageSize)
+	if err == nil {
+		for _, item := range allRecord.Items {
+			pageData.List = append(pageData.List, *item)
+		}
+	}
+
+	pageData.Page = allRecord.Page
+	pageData.PageSize = allRecord.Size
+	pageData.Total = allRecord.Total
+
+	// 渲染模板
+	renderHTMLWithMenu(
+		c,
+		filepath.Join("pages", "edgeone-zone-origin-group.html"),
+		types.BasePageData[types.EdgeOneZoneOriginGroupResponse]{
+			Title: "EdgeOne 站点源组",
+			Data:  pageData,
+		},
+		"edgeone",
+	)
+}

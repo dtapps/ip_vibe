@@ -1,0 +1,115 @@
+{{ define "content" }}
+
+{{/* 初始化局部变量 */}}
+{{ $item := .Data.Item }}
+{{ $list := .Data.List }}
+{{ $total := .Data.Total }}
+{{ $pageSize := .Data.PageSize }}
+{{ $baseWebUrlPath := .CurrentPath }}
+{{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
+
+<div class="ui-panel mb-8 bg-base-100/50">
+</div>
+
+<div class="ui-panel shadow-2xl">
+    <div class="ui-header border-b border-base-300 px-8 flex justify-between items-center">
+        <div class="flex gap-6">
+            <h2 class="text-sm font-black italic uppercase tracking-widest text-primary">Origin Groups</h2>
+            <div class="h-4 w-[1px] bg-base-300"></div>
+            <a href="/edgeones/zones/{{ $item.ID }}/record"
+                class="text-sm font-black italic uppercase tracking-widest opacity-30 hover:opacity-100">Back to
+                Records</a>
+        </div>
+        <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">TOTAL: {{ $total }}</div>
+    </div>
+
+    <div class="p-4">
+        <div class="ui-table-container">
+            <table class="ui-table">
+                <thead>
+                    <tr>
+                        <th class="ui-th">Group Name / ID</th>
+                        <th class="ui-th">Type</th>
+                        <th class="ui-th">Origins (Records)</th>
+                        <th class="ui-th">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range $group := $list }}
+                    <tr class="hover:bg-base-200/50 transition-colors group">
+                        <td class="ui-td">
+                            <div class="font-black text-primary italic">
+                                {{ $group.Name }}
+                            </div>
+                            <div class="text-[10px] font-mono opacity-40">
+                                {{ $group.GroupID }}
+                            </div>
+                        </td>
+                        <td class="ui-td">
+                            <span class="badge badge-sm badge-neutral uppercase italic font-bold">
+                                {{ $group.Type }}
+                            </span>
+                        </td>
+                        <td class="ui-td">
+                            <div class="flex flex-col gap-2 py-2">
+                                {{ $records := jsonToSlice $group.Records }}
+                                {{ range $origin := $records }}
+                                <div
+                                    class="flex flex-col p-2 bg-base-200/50 rounded-xl border border-base-300/50 group/item">
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class='w-1.5 h-1.5 rounded-full {{ if eq (index $origin "Type") "IP_DOMAIN" }}bg-info{{ else }}bg-warning{{ end }}'>
+                                        </div>
+
+                                        <span class="text-sm font-mono font-black text-base-content/90">
+                                            {{ index $origin "Record" }}
+                                        </span>
+                                    </div>
+
+                                    <div class="flex items-center gap-3 mt-1 px-3">
+                                        <span class="text-[9px] font-black uppercase opacity-30 tracking-tighter">
+                                            {{ index $origin "Type" }}
+                                        </span>
+
+                                        {{ if (index $origin "Weight") }}
+                                        <span class="text-[9px] font-black uppercase text-primary italic">
+                                            {{ index $origin "Weight" }}
+                                        </span>
+                                        {{ end }}
+                                    </div>
+                                </div>
+                                {{ else }}
+                                <div class="opacity-20 italic text-[10px] font-black uppercase tracking-widest p-4">
+                                    No Records
+                                </div>
+                                {{ end }}
+                            </div>
+                        </td>
+                        <td class="ui-td">
+                            <button
+                                class="btn btn-xs btn-ghost text-primary opacity-0 group-hover:opacity-100 transition-all"
+                                data-type="origin-group" data-group-id="{{ $group.ID }}" data-zone-id="{{ $item.ID }}"
+                                onclick="handleSync(this)">
+                                Sync Group
+                            </button>
+                        </td>
+                    </tr>
+                    {{ else }}
+                    <tr>
+                        <td colspan="10"
+                            class="py-20 text-center opacity-20 italic font-black uppercase tracking-widest text-xs">
+                            No origin groups found
+                        </td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-8 px-4">
+            {{ template "pagination" (dict "Page" $.Data.Page "Total" $total "PageSize" $.Data.PageSize) }}
+        </div>
+    </div>
+</div>
+
+{{ end }}
