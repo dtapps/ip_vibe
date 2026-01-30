@@ -25,7 +25,7 @@ require (
 	github.com/alibabacloud-go/tea v1.4.0
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/aliyun/credentials-go v1.4.11
-	github.com/baidubce/bce-sdk-go v0.9.258
+	github.com/baidubce/bce-sdk-go v0.9.259
 	github.com/chenyahui/gin-cache v1.10.0
 	github.com/cloudflare/cloudflare-go/v6 v6.6.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
