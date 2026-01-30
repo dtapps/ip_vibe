@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"vibe_ip/internal/backend/task"
+	"vibe_ip/internal/backend/tasks"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/gocron_helper"
@@ -138,14 +138,14 @@ func (s *TaskServiceImpl) StartScheduler(ctx context.Context) error {
 
 	if len(jobs) == 0 {
 		// 启动CDN刷新任务
-		ipUpdate := task.NewIPUpdateTask(
+		ipUpdateTask := tasks.NewIPUpdateTask(
 			s.db,
 			s.logDb,
 			s.cron,
 			s.logger,
 			s.httpTransport,
 		)
-		if err := ipUpdate.StartCdnJob(ctx); err != nil {
+		if err := ipUpdateTask.StartCdnJob(ctx); err != nil {
 			return fmt.Errorf("启动CDN、DNS刷新任务失败: %w", err)
 		}
 	}

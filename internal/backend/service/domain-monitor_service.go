@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"vibe_ip/internal/backend/task"
+	"vibe_ip/internal/backend/tasks"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -352,7 +352,7 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 	}
 
 	// 域名监控任务 (保持 Handler 中创建依赖的原始逻辑，但使用 Service 内部的注入依赖)
-	domainMonitorService := task.NewDomainMonitorTask(
+	domainMonitorTask := tasks.NewDomainMonitorTask(
 		s.db,
 		s.logDb,
 		s.cron,
@@ -361,7 +361,7 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 	)
 
 	// 添加域名监控一次性任务
-	err = domainMonitorService.AddDisposableTask(ctx, firstDomainMonitor)
+	err = domainMonitorTask.AddDisposableTask(ctx, firstDomainMonitor)
 	if err != nil {
 		return fmt.Errorf("添加域名监控一次性任务失败: %w", err)
 	}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
-	"vibe_ip/internal/backend/task"
+	"vibe_ip/internal/backend/tasks"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -40,15 +40,15 @@ type SSLRecordService interface {
 
 // SSLRecordServiceImpl SSL 记录服务实现
 type SSLRecordServiceImpl struct {
-	db           *ent.Client        // 数据库客户端
-	logDb        *ent_log.Client    // 日志数据库客户端
-	logger       *slog.Logger       // 日志记录器
-	sslApplyTask *task.SSLApplyTask // SSL申请任务
-	debug        bool               // 调试模式
+	db           *ent.Client         // 数据库客户端
+	logDb        *ent_log.Client     // 日志数据库客户端
+	logger       *slog.Logger        // 日志记录器
+	sslApplyTask *tasks.SSLApplyTask // SSL申请任务
+	debug        bool                // 调试模式
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例
-func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, sslApplyTask *task.SSLApplyTask) SSLRecordService {
+func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, sslApplyTask *tasks.SSLApplyTask) SSLRecordService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -460,7 +460,7 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) err
 	}
 
 	// 添加SSL申请一次性任务
-	err = s.sslApplyTask.AddDisposableTask(ctx, &task.ExecuteSSLApplyParams{
+	err = s.sslApplyTask.AddDisposableTask(ctx, &tasks.ExecuteSSLApplyParams{
 		Item:     firstSSLRecord,
 		Platform: config.Platform,
 		Params: &ssl_helper.SSLProcessParams{

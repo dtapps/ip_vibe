@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/backend/task"
+	"vibe_ip/internal/backend/tasks"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -33,7 +33,7 @@ func GetSSLRecords(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
@@ -80,7 +80,7 @@ func GetSSLRecordDetail(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
@@ -126,7 +126,7 @@ func ImportSSLRecord(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
@@ -172,7 +172,7 @@ func CreateSSLRecord(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
@@ -220,7 +220,7 @@ func UpdateSSLRecord(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
@@ -268,7 +268,7 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
@@ -316,7 +316,7 @@ func UpdateSSLRecordActive(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
@@ -362,7 +362,7 @@ func BatchUpdateSSLRecordActive(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
@@ -409,7 +409,7 @@ func DeleteSSLRecord(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
@@ -455,7 +455,7 @@ func BatchDeleteSSLRecord(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
@@ -502,7 +502,7 @@ func ApplySSLRecord(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
@@ -551,7 +551,7 @@ func GetSSLRecordHistoryDetail(c *gin.Context) {
 	}
 
 	// 创建SSL申请任务
-	sslApplyTask := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
