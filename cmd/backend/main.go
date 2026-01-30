@@ -11,7 +11,7 @@ import (
 	"sync"
 	"syscall"
 	"time"
-	"vibe_ip/internal/backend/task"
+	"vibe_ip/internal/backend/tasks"
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/gin_middleware"
@@ -166,14 +166,14 @@ func main() {
 	initialize.StartGoCron(ctx, global.GvaGocronSlog)
 
 	// 启动 CDN、DNS 刷新任务
-	ipUpdate := task.NewIPUpdateTask(
+	ipUpdateTask := tasks.NewIPUpdateTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
 	)
-	if err := ipUpdate.StartCdnJob(ctx); err != nil {
+	if err := ipUpdateTask.StartCdnJob(ctx); err != nil {
 		slog.Error("启动CDN、DNS刷新任务失败",
 			slog.Any("err", err),
 		)
@@ -181,14 +181,14 @@ func main() {
 	}
 
 	// 启动 TUN 刷新任务
-	// tunUpdate := task.NewTUNUpdateTask(
+	// tunUpdateTask := tasks.NewTUNUpdateTask(
 	// 	global.GvaEntDb,
 	// 	global.GvaEntLogDb,
 	// 	global.GvaGoCron,
 	// 	global.GvaGocronSlog,
 	// 	global.GvaHttpLog,
 	// )
-	// if err := tunUpdate.StartJob(ctx); err != nil {
+	// if err := tunUpdateTask.StartJob(ctx); err != nil {
 	// 	slog.Error("启动TUN刷新任务失败",
 	// 		slog.Any("err", err),
 	// 	)
@@ -196,14 +196,14 @@ func main() {
 	// }
 
 	// 启动 SSL 申请任务
-	sslApply := task.NewSSLApplyTask(
+	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
 	)
-	if err := sslApply.StartPeriodicTask(ctx); err != nil {
+	if err := sslApplyTask.StartPeriodicTask(ctx); err != nil {
 		slog.Error("启动SSL申请任务失败",
 			slog.Any("err", err),
 		)
@@ -211,14 +211,14 @@ func main() {
 	}
 
 	// 启动 SSL 刷新任务
-	sslRefresh := task.NewSSLRefreshTask(
+	sslRefreshTask := tasks.NewSSLRefreshTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
 	)
-	if err := sslRefresh.StartPeriodicTask(ctx); err != nil {
+	if err := sslRefreshTask.StartPeriodicTask(ctx); err != nil {
 		slog.Error("启动SSL刷新任务失败",
 			slog.Any("err", err),
 		)
@@ -226,14 +226,14 @@ func main() {
 	}
 
 	// 启动域名监控任务
-	domainMonitor := task.NewDomainMonitorTask(
+	domainMonitorTask := tasks.NewDomainMonitorTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
 	)
-	if err := domainMonitor.StartPeriodicTask(ctx); err != nil {
+	if err := domainMonitorTask.StartPeriodicTask(ctx); err != nil {
 		slog.Error("启动域名监控任务失败",
 			slog.Any("err", err),
 		)
@@ -241,14 +241,14 @@ func main() {
 	}
 
 	// 启动 CloudFlare Tunnel同步任务
-	CloudflareTunnelTask := task.NewCloudflareTunnelTask(
+	cloudflareTunnelTask := tasks.NewCloudflareTunnelTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
 	)
-	if err := CloudflareTunnelTask.StartJob(ctx); err != nil {
+	if err := cloudflareTunnelTask.StartJob(ctx); err != nil {
 		slog.Error("启动CloudFlare Tunnel同步任务失败",
 			slog.Any("err", err),
 		)
@@ -256,13 +256,13 @@ func main() {
 	}
 
 	// 启动清除数据任务
-	clearData := task.NewClearDataTask(
+	clearDataTask := tasks.NewClearDataTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 	)
-	if err := clearData.StartPeriodicTask(ctx); err != nil {
+	if err := clearDataTask.StartPeriodicTask(ctx); err != nil {
 		slog.Error("启动清除数据任务失败",
 			slog.Any("err", err),
 		)
