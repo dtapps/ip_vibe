@@ -527,6 +527,7 @@ func (s *EdgeOneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, z
 				SetIdentificationStatus(edgeonezoneaccelerationdomain.IdentificationStatus(utils.PtrToString(accelerationDomain.IdentificationStatus))).
 				SetOwnershipVerification([]byte(gojson.JsonEncodeNoError(accelerationDomain.OwnershipVerification))).
 				SetOriginDetail([]byte(gojson.JsonEncodeNoError(accelerationDomain.OriginDetail))).
+				SetOriginProtocol(edgeonezoneaccelerationdomain.OriginProtocol(utils.PtrToString(accelerationDomain.OriginProtocol))).
 				SetHTTPOriginPort(utils.PtrToUint64(accelerationDomain.HttpOriginPort)).
 				SetHTTPSOriginPort(utils.PtrToUint64(accelerationDomain.HttpsOriginPort)).
 				SetCertificate([]byte(gojson.JsonEncodeNoError(accelerationDomain.Certificate))).
@@ -544,6 +545,7 @@ func (s *EdgeOneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, z
 				SetIdentificationStatus(edgeonezoneaccelerationdomain.IdentificationStatus(utils.PtrToString(accelerationDomain.IdentificationStatus))).
 				SetOwnershipVerification([]byte(gojson.JsonEncodeNoError(accelerationDomain.OwnershipVerification))).
 				SetOriginDetail([]byte(gojson.JsonEncodeNoError(accelerationDomain.OriginDetail))).
+				SetOriginProtocol(edgeonezoneaccelerationdomain.OriginProtocol(utils.PtrToString(accelerationDomain.OriginProtocol))).
 				SetHTTPOriginPort(utils.PtrToUint64(accelerationDomain.HttpOriginPort)).
 				SetHTTPSOriginPort(utils.PtrToUint64(accelerationDomain.HttpsOriginPort)).
 				SetCertificate([]byte(gojson.JsonEncodeNoError(accelerationDomain.Certificate))).
