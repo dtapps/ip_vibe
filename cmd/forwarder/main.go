@@ -9,7 +9,7 @@ import (
 	"time"
 	"vibe_ip/internal/forwarder/forward"
 	"vibe_ip/internal/forwarder/service"
-	"vibe_ip/internal/forwarder/task"
+	"vibe_ip/internal/forwarder/tasks"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_client"
 	"vibe_ip/internal/helper/sys_env"
@@ -84,7 +84,7 @@ func main() {
 	)
 
 	// 配置
-	config := &task.PortForwardTaskConfig{
+	config := &tasks.PortForwardTaskConfig{
 		DeviceCode: sys_env.GvaEnv.DEVICE_CODE,
 		DeviceName: sys_env.GvaEnv.DEVICE_NAME,
 		Version:    global.GvaVersion,
@@ -122,7 +122,7 @@ func main() {
 		grpcClientConn := grpcMgr.GetConn()
 
 		// 创建端口转发实例
-		portForwardTask := task.NewPortForwardGRPCTask(
+		portForwardTask := tasks.NewPortForwardGRPCTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog,
 			portForwardServer,
@@ -142,7 +142,7 @@ func main() {
 		defer portForwardTask.Close()
 
 		// 创建统计上报实例
-		statsReportTask := task.NewStatsReportGRPCTask(
+		statsReportTask := tasks.NewStatsReportGRPCTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog,
 			portForwardServer,

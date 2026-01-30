@@ -1,4 +1,4 @@
-package task
+package tasks
 
 // IPReportTaskConfig 配置
 type IPReportTaskConfig struct {

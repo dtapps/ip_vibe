@@ -12,7 +12,7 @@ import (
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/reporter/service"
-	"vibe_ip/internal/reporter/task"
+	"vibe_ip/internal/reporter/tasks"
 )
 
 var (
@@ -83,7 +83,7 @@ func main() {
 	)
 
 	// 配置
-	config := &task.IPReportTaskConfig{
+	config := &tasks.IPReportTaskConfig{
 		DeviceCode: sys_env.GvaEnv.DEVICE_CODE,
 		DeviceName: sys_env.GvaEnv.DEVICE_NAME,
 		Version:    global.GvaVersion,
@@ -118,7 +118,7 @@ func main() {
 		grpcClientConn := grpcMgr.GetConn()
 
 		// 创建IP上报实例
-		ipReportTask := task.NewIPReportGRPCTask(
+		ipReportTask := tasks.NewIPReportGRPCTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog,
 			ipReportService,

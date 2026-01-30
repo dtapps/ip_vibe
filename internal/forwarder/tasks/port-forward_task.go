@@ -1,4 +1,4 @@
-package task
+package tasks
 
 // PortForwardTaskConfig 配置
 type PortForwardTaskConfig struct {

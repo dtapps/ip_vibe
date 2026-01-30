@@ -1,60 +1,65 @@
-package task
+package tasks
 
 import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net"
 	"sync"
 	"time"
+	"vibe_ip/internal/forwarder/forward"
+	"vibe_ip/internal/forwarder/service"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/gocron_helper"
-	"vibe_ip/internal/reporter/service"
 
 	"github.com/go-co-op/gocron/v2"
+	"github.com/spf13/cast"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// IPReportGRPCTask IP上报任务
-type IPReportGRPCTask struct {
+// PortForwardGRPCTask 端口转发任务
+type PortForwardGRPCTask struct {
 	cron      gocron.Scheduler         // 定时任务调度器
-	job       gocron.Job               // IP上报任务
+	job       gocron.Job               // 端口转发任务
 	taskName  string                   // 任务名称
 	jobHelper *gocron_helper.JobHelper // 任务助手
 	jobOne    sync.Once                // 确保只创建一次任务
 	logger    *slog.Logger             // 日志记录器
-	config    *IPReportTaskConfig      // 配置
+	config    *PortForwardTaskConfig   // 配置
 
-	service *service.IPReportService // IP报告服务
+	service      *service.PortForwardServer // 端口转发服务
+	forwardAgent *forward.Agent             // 端口转发器
 
 	clientBaseMD      metadata.MD                      // gRPC 客户端基础 metadata
 	grpcClient        *grpc.ClientConn                 // gRPC 客户端
 	openServiceClient grpc_generated.OpenServiceClient // gRPC 业务服务
 }
 
-// NewIPReportGRPCTask 创建IP上报实例
-func NewIPReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.IPReportService, grpcClient *grpc.ClientConn) *IPReportGRPCTask {
-	return &IPReportGRPCTask{
+// NewPortForwardGRPCTask 创建端口转发实例
+func NewPortForwardGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent, grpcClient *grpc.ClientConn) *PortForwardGRPCTask {
+	return &PortForwardGRPCTask{
 		cron:              cron,
-		taskName:          "gRPC IP上报",
+		taskName:          "gRPC 端口转发",
 		jobHelper:         gocron_helper.NewJobHelper(cron, logger),
-		logger:            logger.With("component", "ip-report-grpc"),
+		logger:            logger.With("component", "port-forward-grpc"),
 		service:           service,
+		forwardAgent:      forwardAgent,
 		grpcClient:        grpcClient,
 		openServiceClient: grpc_generated.NewOpenServiceClient(grpcClient),
 	}
 }
 
-// Close 关闭IP上报实例，释放资源
-func (s *IPReportGRPCTask) Close() {
+// Close 关闭端口转发实例，释放资源
+func (s *PortForwardGRPCTask) Close() {
 	if s.cron != nil && s.job != nil && s.jobHelper != nil {
 		_ = s.jobHelper.DeleteJob(s.job.ID().String())
 	}
 }
 
 // SetConfig 设置任务配置
-func (s *IPReportGRPCTask) SetConfig(config *IPReportTaskConfig) *IPReportGRPCTask {
+func (s *PortForwardGRPCTask) SetConfig(config *PortForwardTaskConfig) *PortForwardGRPCTask {
 	s.config = config
 	// 设置基础 metadata（相当于HTTP headers）
 	s.clientBaseMD = metadata.Pairs(
@@ -69,7 +74,7 @@ func (s *IPReportGRPCTask) SetConfig(config *IPReportTaskConfig) *IPReportGRPCTa
 }
 
 // StartPeriodicTask 启动周期任务
-func (s *IPReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
+func (s *PortForwardGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
 	// 获取设置
 	getSetting, err := s.openServiceClient.GetSetting(ctx, &emptypb.Empty{})
 	if err != nil {
@@ -80,7 +85,7 @@ func (s *IPReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
 	}
 	// 解析设置的时间
 	jobDuration, isStart, err := gocron_helper.ParseTaskTime(
-		getSetting.IPReportIntervalTime,
+		getSetting.PortForwardReloadTime,
 		time.Minute,
 	)
 	if !isStart {
@@ -116,13 +121,13 @@ func (s *IPReportGRPCTask) StartPeriodicTask(ctx context.Context) (err error) {
 	}
 
 	s.logger.InfoContext(ctx, s.taskName+"任务已启动",
-		slog.String("执行间隔", getSetting.IPReportIntervalTime),
+		slog.String("执行间隔", getSetting.PortForwardReloadTime),
 	)
 	return nil
 }
 
 // RunPeriodicTask 运行任务
-func (s *IPReportGRPCTask) RunPeriodicTask() {
+func (s *PortForwardGRPCTask) RunPeriodicTask() {
 
 	// 创建上下文
 	ctx := context.Background()
@@ -130,10 +135,17 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 	// 日志
 	logger := s.jobHelper.SlogWith(s.logger, s.job.ID().String(), s.job.Name())
 
+	// 检查 forwardAgent 是否初始化
+	if s.forwardAgent == nil {
+		logger.ErrorContext(ctx, "forwardAgent 未初始化")
+		return
+	}
+
 	// 获取设备数据
 	deviceData, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
 	if err != nil {
 		logger.ErrorContext(ctx, "获取设备数据失败",
+			slog.String("设备编号", s.config.DeviceCode),
 			slog.Any("err", err),
 		)
 		return
@@ -143,32 +155,69 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 	logger = logger.With(
 		slog.String("设备编号", deviceData.DeviceCode),
 		slog.String("设备名称", deviceData.DeviceName),
-		slog.String("IPv4地址", deviceData.IPV4Addr),
-		slog.String("IPv6地址", deviceData.IPV6Addr),
 	)
 
-	// 上传数据
-	_ = s.postApi(ctx, logger, deviceData)
+	// 获取数据
+	list, err := s.getApi(ctx, logger, deviceData)
+	if err != nil {
+		return
+	}
+
+	// 转换类型：types.GetPortForwardResponse -> forward.Rule
+	var forwardRules []forward.Rule
+	for _, item := range list {
+
+		// 构建监听地址
+		listenAddr := ":" + string(rune(item.LocalPort))
+
+		// 更准确的构建方式：
+		listenAddr = net.JoinHostPort("", fmt.Sprintf("%d", item.LocalPort))
+
+		// 构建目标地址
+		targetAddr := net.JoinHostPort(item.RemoteHost, fmt.Sprintf("%d", item.RemotePort))
+
+		rule := forward.Rule{
+			ID:         item.ID,    // 唯一标识
+			ListenAddr: listenAddr, // 本地监听地址
+			TargetAddr: targetAddr, // 目标地址
+			Protocols:  item.Protocols,
+		}
+		forwardRules = append(forwardRules, rule)
+	}
+
+	// 同步端口转发规则，热更新
+	s.forwardAgent.Sync(ctx, forwardRules)
+	logger.InfoContext(ctx, "同步端口转发规则，热更新",
+		slog.Int("规则数量", len(forwardRules)),
+	)
 }
 
-// postApi 请求
-func (s *IPReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (err error) {
+// getApi 请求
+func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (list []*PortForwardTaskApiList, err error) {
 
 	// 构建gRPC请求
-	req := &grpc_generated.ReportDeviceIPRequest{
+	req := &grpc_generated.GetDevicePortForwardsRequest{
 		DeviceCode: deviceData.DeviceCode,
-		DeviceName: deviceData.DeviceName,
-		Ipv4Addr:   deviceData.IPV4Addr,
-		Ipv6Addr:   deviceData.IPV6Addr,
 	}
 
 	// 调用gRPC服务
-	resp, err := s.openServiceClient.ReportDeviceIP(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
+	resp, err := s.openServiceClient.GetDevicePortForwards(metadata.NewOutgoingContext(ctx, s.clientBaseMD), req)
 	if err != nil {
 		logger.ErrorContext(ctx, s.taskName+" 调用失败",
 			slog.Any("err", err),
 		)
-		return fmt.Errorf(s.taskName+" 调用失败: %w", err)
+		return nil, fmt.Errorf(s.taskName+" 调用失败: %w", err)
+	}
+
+	// 转换响应
+	for _, rule := range resp.Rules {
+		list = append(list, &PortForwardTaskApiList{
+			ID:         cast.ToString(rule.Id),
+			LocalPort:  cast.ToInt(rule.LocalPort),
+			RemoteHost: rule.RemoteHost,
+			RemotePort: cast.ToInt(rule.RemotePort),
+			Protocols:  rule.Protocols,
+		})
 	}
 
 	// 记录响应
@@ -176,5 +225,5 @@ func (s *IPReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, dev
 		slog.Any("响应", resp.String()),
 	)
 
-	return nil
+	return list, nil
 }
