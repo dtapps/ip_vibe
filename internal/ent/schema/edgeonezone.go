@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -112,11 +113,11 @@ func (EdgeOneZone) Edges() []ent.Edge {
 			Comment("关联的平台配置").
 			Annotations(entsql.WithComments(true)),
 
-		// 一对多 EdgeOneZone -> EdgeOneOriginGroup
-		edge.To("origin_groups", EdgeOneOriginGroup.Type).
-			Comment("关联的EdgeOne源站组").
+		// 一对多 EdgeOneZone -> EdgeOneZoneOriginGroup
+		edge.To("origin_groups", EdgeOneZoneOriginGroup.Type).
+			Comment("关联的EdgeOne站点源站组").
 			Annotations(entsql.Annotation{
-				// 级联删除：删除 EdgeOneZone 时，其所有 EdgeOneOriginGroup 记录也应删除
+				// 级联删除：删除 EdgeOneZone 时，其所有 EdgeOneZoneOriginGroup 记录也应删除
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
 	}
@@ -142,6 +143,6 @@ func (EdgeOneZone) Indexes() []ent.Index {
 // Hooks of the EdgeOneZone.
 func (EdgeOneZone) Hooks() []ent.Hook {
 	return []ent.Hook{
-		// schemahook.EdgeOneZoneLogHook(),
+		schemahook.EdgeOneZoneLogHook(),
 	}
 }

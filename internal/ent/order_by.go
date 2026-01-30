@@ -15,8 +15,8 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
-	"vibe_ip/internal/ent/edgeoneorigingroup"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
@@ -439,7 +439,7 @@ func (q *DomainMonitorQuery) OrderByExpr(expr string) *DomainMonitorQuery {
 // 表达式格式： "field1,field2 ASC; field3 DESC"
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
-func (q *EdgeOneOriginGroupQuery) OrderByExpr(expr string) *EdgeOneOriginGroupQuery {
+func (q *EdgeOneZoneQuery) OrderByExpr(expr string) *EdgeOneZoneQuery {
 	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
@@ -451,7 +451,7 @@ func (q *EdgeOneOriginGroupQuery) OrderByExpr(expr string) *EdgeOneOriginGroupQu
 		var fields []string
 		for _, f := range item.Fields {
 			// 校验字段是否为该实体的有效列
-			if edgeoneorigingroup.ValidColumn(f) {
+			if edgeonezone.ValidColumn(f) {
 				fields = append(fields, f)
 			}
 		}
@@ -471,7 +471,7 @@ func (q *EdgeOneOriginGroupQuery) OrderByExpr(expr string) *EdgeOneOriginGroupQu
 // 表达式格式： "field1,field2 ASC; field3 DESC"
 // 字段名支持 CamelCase（自动转为 snake_case），并会校验是否为有效列。
 // 无效字段将被忽略，至少有一个有效字段时才会应用排序。
-func (q *EdgeOneZoneQuery) OrderByExpr(expr string) *EdgeOneZoneQuery {
+func (q *EdgeOneZoneOriginGroupQuery) OrderByExpr(expr string) *EdgeOneZoneOriginGroupQuery {
 	q.log("OrderByExpr: expr=", expr)
 	if expr == "" {
 		return q
@@ -483,7 +483,7 @@ func (q *EdgeOneZoneQuery) OrderByExpr(expr string) *EdgeOneZoneQuery {
 		var fields []string
 		for _, f := range item.Fields {
 			// 校验字段是否为该实体的有效列
-			if edgeonezone.ValidColumn(f) {
+			if edgeonezoneorigingroup.ValidColumn(f) {
 				fields = append(fields, f)
 			}
 		}

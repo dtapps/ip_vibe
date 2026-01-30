@@ -14,8 +14,8 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
-	"vibe_ip/internal/ent/edgeoneorigingroup"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
@@ -292,30 +292,9 @@ func init() {
 	domainmonitorDescID := domainmonitorFields[0].Descriptor()
 	// domainmonitor.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	domainmonitor.IDValidator = domainmonitorDescID.Validators[0].(func(int64) error)
-	edgeoneorigingroupMixin := schema.EdgeOneOriginGroup{}.Mixin()
-	edgeoneorigingroupMixinFields0 := edgeoneorigingroupMixin[0].Fields()
-	_ = edgeoneorigingroupMixinFields0
-	edgeoneorigingroupFields := schema.EdgeOneOriginGroup{}.Fields()
-	_ = edgeoneorigingroupFields
-	// edgeoneorigingroupDescCreatedAt is the schema descriptor for created_at field.
-	edgeoneorigingroupDescCreatedAt := edgeoneorigingroupMixinFields0[0].Descriptor()
-	// edgeoneorigingroup.DefaultCreatedAt holds the default value on creation for the created_at field.
-	edgeoneorigingroup.DefaultCreatedAt = edgeoneorigingroupDescCreatedAt.Default.(func() time.Time)
-	// edgeoneorigingroupDescUpdatedAt is the schema descriptor for updated_at field.
-	edgeoneorigingroupDescUpdatedAt := edgeoneorigingroupMixinFields0[1].Descriptor()
-	// edgeoneorigingroup.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	edgeoneorigingroup.DefaultUpdatedAt = edgeoneorigingroupDescUpdatedAt.Default.(func() time.Time)
-	// edgeoneorigingroup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	edgeoneorigingroup.UpdateDefaultUpdatedAt = edgeoneorigingroupDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// edgeoneorigingroupDescEdgeoneZoneID is the schema descriptor for edgeone_zone_id field.
-	edgeoneorigingroupDescEdgeoneZoneID := edgeoneorigingroupFields[1].Descriptor()
-	// edgeoneorigingroup.EdgeoneZoneIDValidator is a validator for the "edgeone_zone_id" field. It is called by the builders before save.
-	edgeoneorigingroup.EdgeoneZoneIDValidator = edgeoneorigingroupDescEdgeoneZoneID.Validators[0].(func(int64) error)
-	// edgeoneorigingroupDescID is the schema descriptor for id field.
-	edgeoneorigingroupDescID := edgeoneorigingroupFields[0].Descriptor()
-	// edgeoneorigingroup.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	edgeoneorigingroup.IDValidator = edgeoneorigingroupDescID.Validators[0].(func(int64) error)
 	edgeonezoneMixin := schema.EdgeOneZone{}.Mixin()
+	edgeonezoneHooks := schema.EdgeOneZone{}.Hooks()
+	edgeonezone.Hooks[0] = edgeonezoneHooks[0]
 	edgeonezoneMixinFields0 := edgeonezoneMixin[0].Fields()
 	_ = edgeonezoneMixinFields0
 	edgeonezoneFields := schema.EdgeOneZone{}.Fields()
@@ -338,6 +317,31 @@ func init() {
 	edgeonezoneDescID := edgeonezoneFields[0].Descriptor()
 	// edgeonezone.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	edgeonezone.IDValidator = edgeonezoneDescID.Validators[0].(func(int64) error)
+	edgeonezoneorigingroupMixin := schema.EdgeOneZoneOriginGroup{}.Mixin()
+	edgeonezoneorigingroupHooks := schema.EdgeOneZoneOriginGroup{}.Hooks()
+	edgeonezoneorigingroup.Hooks[0] = edgeonezoneorigingroupHooks[0]
+	edgeonezoneorigingroupMixinFields0 := edgeonezoneorigingroupMixin[0].Fields()
+	_ = edgeonezoneorigingroupMixinFields0
+	edgeonezoneorigingroupFields := schema.EdgeOneZoneOriginGroup{}.Fields()
+	_ = edgeonezoneorigingroupFields
+	// edgeonezoneorigingroupDescCreatedAt is the schema descriptor for created_at field.
+	edgeonezoneorigingroupDescCreatedAt := edgeonezoneorigingroupMixinFields0[0].Descriptor()
+	// edgeonezoneorigingroup.DefaultCreatedAt holds the default value on creation for the created_at field.
+	edgeonezoneorigingroup.DefaultCreatedAt = edgeonezoneorigingroupDescCreatedAt.Default.(func() time.Time)
+	// edgeonezoneorigingroupDescUpdatedAt is the schema descriptor for updated_at field.
+	edgeonezoneorigingroupDescUpdatedAt := edgeonezoneorigingroupMixinFields0[1].Descriptor()
+	// edgeonezoneorigingroup.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	edgeonezoneorigingroup.DefaultUpdatedAt = edgeonezoneorigingroupDescUpdatedAt.Default.(func() time.Time)
+	// edgeonezoneorigingroup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	edgeonezoneorigingroup.UpdateDefaultUpdatedAt = edgeonezoneorigingroupDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// edgeonezoneorigingroupDescEdgeoneZoneID is the schema descriptor for edgeone_zone_id field.
+	edgeonezoneorigingroupDescEdgeoneZoneID := edgeonezoneorigingroupFields[1].Descriptor()
+	// edgeonezoneorigingroup.EdgeoneZoneIDValidator is a validator for the "edgeone_zone_id" field. It is called by the builders before save.
+	edgeonezoneorigingroup.EdgeoneZoneIDValidator = edgeonezoneorigingroupDescEdgeoneZoneID.Validators[0].(func(int64) error)
+	// edgeonezoneorigingroupDescID is the schema descriptor for id field.
+	edgeonezoneorigingroupDescID := edgeonezoneorigingroupFields[0].Descriptor()
+	// edgeonezoneorigingroup.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	edgeonezoneorigingroup.IDValidator = edgeonezoneorigingroupDescID.Validators[0].(func(int64) error)
 	ipgroupMixin := schema.IpGroup{}.Mixin()
 	ipgroupHooks := schema.IpGroup{}.Hooks()
 	ipgroup.Hooks[0] = ipgroupHooks[0]

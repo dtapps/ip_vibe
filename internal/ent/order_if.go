@@ -14,8 +14,8 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
-	"vibe_ip/internal/ent/edgeoneorigingroup"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
@@ -228,26 +228,6 @@ func (q *DomainMonitorQuery) OrderIfs(condition bool, o ...domainmonitor.OrderOp
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
-func (q *EdgeOneOriginGroupQuery) OrderIf(condition bool, o edgeoneorigingroup.OrderOption) *EdgeOneOriginGroupQuery {
-	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
-	if condition {
-		q.Order(o)
-	}
-	return q
-}
-
-// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
-// 如果 condition 为 true，则应用给定的 Order 列表
-func (q *EdgeOneOriginGroupQuery) OrderIfs(condition bool, o ...edgeoneorigingroup.OrderOption) *EdgeOneOriginGroupQuery {
-	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
-	if condition {
-		q.Order(o...)
-	}
-	return q
-}
-
-// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
-// 如果 condition 为 true，则应用给定的 Order 列表
 func (q *EdgeOneZoneQuery) OrderIf(condition bool, o edgeonezone.OrderOption) *EdgeOneZoneQuery {
 	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
 	if condition {
@@ -259,6 +239,26 @@ func (q *EdgeOneZoneQuery) OrderIf(condition bool, o edgeonezone.OrderOption) *E
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *EdgeOneZoneQuery) OrderIfs(condition bool, o ...edgeonezone.OrderOption) *EdgeOneZoneQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EdgeOneZoneOriginGroupQuery) OrderIf(condition bool, o edgeonezoneorigingroup.OrderOption) *EdgeOneZoneOriginGroupQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EdgeOneZoneOriginGroupQuery) OrderIfs(condition bool, o ...edgeonezoneorigingroup.OrderOption) *EdgeOneZoneOriginGroupQuery {
 	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)

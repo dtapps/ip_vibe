@@ -2,6 +2,7 @@ package schema
 
 import (
 	"encoding/json"
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -13,35 +14,35 @@ import (
 	"entgo.io/ent/schema/index"
 )
 
-// EdgeOneOriginGroup holds the schema definition for the EdgeOneOriginGroup entity.
-type EdgeOneOriginGroup struct {
+// EdgeOneZoneOriginGroup holds the schema definition for the EdgeOneZoneOriginGroup entity.
+type EdgeOneZoneOriginGroup struct {
 	ent.Schema
 }
 
-// Annotations of the EdgeOneOriginGroup.
-func (EdgeOneOriginGroup) Annotations() []schema.Annotation {
+// Annotations of the EdgeOneZoneOriginGroup.
+func (EdgeOneZoneOriginGroup) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "edgeone_origin_group"},
-		schema.Comment("EdgeOne 源站组"),
+		entsql.Annotation{Table: "edgeone_zone_origin_group"},
+		schema.Comment("EdgeOne 站点源站组"),
 		entsql.WithComments(true),
 	}
 }
 
-// Mixin of the EdgeOneOriginGroup.
-func (EdgeOneOriginGroup) Mixin() []ent.Mixin {
+// Mixin of the EdgeOneZoneOriginGroup.
+func (EdgeOneZoneOriginGroup) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		schemamixin.AtMixin{},
 	}
 }
 
-// Fields of the EdgeOneOriginGroup.
-func (EdgeOneOriginGroup) Fields() []ent.Field {
+// Fields of the EdgeOneZoneOriginGroup.
+func (EdgeOneZoneOriginGroup) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
 			StorageKey("id"). // 用 id 覆盖 框架的 id
 			Positive().       // 正数
 			Immutable().
-			Comment("EdgeOne 源站组序号").
+			Comment("EdgeOne 站点源站组序号").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("edgeone_zone_id").
@@ -60,7 +61,7 @@ func (EdgeOneOriginGroup) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("type").
-			Values(schematype.GetEdgeOneOriginGroupTypes...).
+			Values(schematype.GetEdgeOneZoneOriginGroupTypes...).
 			Optional().
 			Comment("源站组类型").
 			Annotations(entsql.WithComments(true)),
@@ -87,10 +88,10 @@ func (EdgeOneOriginGroup) Fields() []ent.Field {
 	}
 }
 
-// Edges of the EdgeOneOriginGroup.
-func (EdgeOneOriginGroup) Edges() []ent.Edge {
+// Edges of the EdgeOneZoneOriginGroup.
+func (EdgeOneZoneOriginGroup) Edges() []ent.Edge {
 	return []ent.Edge{
-		// 一对多 EdgeOneZone -> EdgeOneOriginGroup
+		// 一对多 EdgeOneZone -> EdgeOneZoneOriginGroup
 		edge.From("edgeone_zone", EdgeOneZone.Type).
 			Ref("origin_groups").
 			Field("edgeone_zone_id").
@@ -102,8 +103,8 @@ func (EdgeOneOriginGroup) Edges() []ent.Edge {
 	}
 }
 
-// Indexes of the EdgeOneOriginGroup.
-func (EdgeOneOriginGroup) Indexes() []ent.Index {
+// Indexes of the EdgeOneZoneOriginGroup.
+func (EdgeOneZoneOriginGroup) Indexes() []ent.Index {
 	return []ent.Index{
 		// 按创建时间排序
 		index.Fields("created_at").
@@ -115,9 +116,9 @@ func (EdgeOneOriginGroup) Indexes() []ent.Index {
 	}
 }
 
-// Hooks of the EdgeOneOriginGroup.
-func (EdgeOneOriginGroup) Hooks() []ent.Hook {
+// Hooks of the EdgeOneZoneOriginGroup.
+func (EdgeOneZoneOriginGroup) Hooks() []ent.Hook {
 	return []ent.Hook{
-		// schemahook.EdgeOneOriginGroupLogHook(),
+		schemahook.EdgeOneZoneOriginGroupLogHook(),
 	}
 }

@@ -55,12 +55,12 @@ type EdgeOneZone struct {
 type EdgeOneZoneEdges struct {
 	// 关联的平台配置
 	Config *PlatformConfig `json:"config,omitempty"`
-	// 关联的EdgeOne源站组
-	OriginGroups []*EdgeOneOriginGroup `json:"origin_groups,omitempty"`
+	// 关联的EdgeOne站点源站组
+	OriginGroups []*EdgeOneZoneOriginGroup `json:"origin_groups,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes       [2]bool
-	namedOriginGroups map[string][]*EdgeOneOriginGroup
+	namedOriginGroups map[string][]*EdgeOneZoneOriginGroup
 }
 
 // ConfigOrErr returns the Config value or an error if the edge
@@ -76,7 +76,7 @@ func (e EdgeOneZoneEdges) ConfigOrErr() (*PlatformConfig, error) {
 
 // OriginGroupsOrErr returns the OriginGroups value or an error if the edge
 // was not loaded in eager-loading.
-func (e EdgeOneZoneEdges) OriginGroupsOrErr() ([]*EdgeOneOriginGroup, error) {
+func (e EdgeOneZoneEdges) OriginGroupsOrErr() ([]*EdgeOneZoneOriginGroup, error) {
 	if e.loadedTypes[1] {
 		return e.OriginGroups, nil
 	}
@@ -214,7 +214,7 @@ func (_m *EdgeOneZone) QueryConfig() *PlatformConfigQuery {
 }
 
 // QueryOriginGroups queries the "origin_groups" edge of the EdgeOneZone entity.
-func (_m *EdgeOneZone) QueryOriginGroups() *EdgeOneOriginGroupQuery {
+func (_m *EdgeOneZone) QueryOriginGroups() *EdgeOneZoneOriginGroupQuery {
 	return NewEdgeOneZoneClient(_m.config).QueryOriginGroups(_m)
 }
 
@@ -285,7 +285,7 @@ func (_m *EdgeOneZone) String() string {
 
 // NamedOriginGroups returns the OriginGroups named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (_m *EdgeOneZone) NamedOriginGroups(name string) ([]*EdgeOneOriginGroup, error) {
+func (_m *EdgeOneZone) NamedOriginGroups(name string) ([]*EdgeOneZoneOriginGroup, error) {
 	if _m.Edges.namedOriginGroups == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
@@ -296,12 +296,12 @@ func (_m *EdgeOneZone) NamedOriginGroups(name string) ([]*EdgeOneOriginGroup, er
 	return nodes, nil
 }
 
-func (_m *EdgeOneZone) appendNamedOriginGroups(name string, edges ...*EdgeOneOriginGroup) {
+func (_m *EdgeOneZone) appendNamedOriginGroups(name string, edges ...*EdgeOneZoneOriginGroup) {
 	if _m.Edges.namedOriginGroups == nil {
-		_m.Edges.namedOriginGroups = make(map[string][]*EdgeOneOriginGroup)
+		_m.Edges.namedOriginGroups = make(map[string][]*EdgeOneZoneOriginGroup)
 	}
 	if len(edges) == 0 {
-		_m.Edges.namedOriginGroups[name] = []*EdgeOneOriginGroup{}
+		_m.Edges.namedOriginGroups[name] = []*EdgeOneZoneOriginGroup{}
 	} else {
 		_m.Edges.namedOriginGroups[name] = append(_m.Edges.namedOriginGroups[name], edges...)
 	}

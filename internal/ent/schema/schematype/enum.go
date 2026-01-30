@@ -367,7 +367,7 @@ const (
 	LogObjTypeDevicePortForward       string = "DevicePortForward"       // 端口转发
 	LogObjTypeDomainMonitor           string = "DomainMonitor"           // 域名监控
 	LogObjTypeEdgeOneZone             string = "EdgeOneZone"             // EdgeOne站点
-	LogObjTypeEdgeOneOriginGroup      string = "EdgeOneOriginGroup"      // EdgeOne源站组
+	LogObjTypeEdgeOneZoneOriginGroup  string = "EdgeOneZoneOriginGroup"  // EdgeOne站点源站组
 	LogObjTypeIpGroup                 string = "IpGroup"                 // IP组
 	LogObjTypeIpGroupDevice           string = "IpGroupDevice"           // IP组设备
 	LogObjTypePlatformConfig          string = "PlatformConfig"          // 平台配置
@@ -405,7 +405,7 @@ var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeDevicePortForward:       "端口转发",
 	LogObjTypeDomainMonitor:           "域名监控",
 	LogObjTypeEdgeOneZone:             "EdgeOne站点",
-	LogObjTypeEdgeOneOriginGroup:      "EdgeOne源站组",
+	LogObjTypeEdgeOneZoneOriginGroup:  "EdgeOne站点源站组",
 	LogObjTypeIpGroup:                 "IP组",
 	LogObjTypeIpGroupDevice:           "IP组设备",
 	LogObjTypePlatformConfig:          "平台配置",
@@ -440,7 +440,7 @@ var GetLogObjTypes = []string{
 	LogObjTypeDevicePortForward,
 	LogObjTypeDomainMonitor,
 	LogObjTypeEdgeOneZone,
-	LogObjTypeEdgeOneOriginGroup,
+	LogObjTypeEdgeOneZoneOriginGroup,
 	LogObjTypeIpGroup,
 	LogObjTypeIpGroupDevice,
 	LogObjTypePlatformConfig,
@@ -820,18 +820,18 @@ var GetEdgeOneZoneActiveStatuss = []string{
 // --------
 
 const (
-	EdgeOneOriginGroupTypeGENERAL string = "GENERAL" // 通用型
-	EdgeOneOriginGroupTypeHTTP    string = "HTTP"    //  HTTP专用型
+	EdgeOneZoneOriginGroupTypeGENERAL string = "GENERAL" // 通用型
+	EdgeOneZoneOriginGroupTypeHTTP    string = "HTTP"    //  HTTP专用型
 )
 
-// GetEdgeOneOriginGroupTypeDescriptions 源站组类型 说明映射
-var GetEdgeOneOriginGroupTypeDescriptions = map[string]string{
-	EdgeOneOriginGroupTypeGENERAL: "通用型",
-	EdgeOneOriginGroupTypeHTTP:    "HTTP专用型",
+// GetEdgeOneZoneOriginGroupTypeDescriptions 源站组类型 说明映射
+var GetEdgeOneZoneOriginGroupTypeDescriptions = map[string]string{
+	EdgeOneZoneOriginGroupTypeGENERAL: "通用型",
+	EdgeOneZoneOriginGroupTypeHTTP:    "HTTP专用型",
 }
 
-// GetEdgeOneOriginGroupTypes 返回所有 源站组类型
-var GetEdgeOneOriginGroupTypes = []string{
-	EdgeOneOriginGroupTypeGENERAL,
-	EdgeOneOriginGroupTypeHTTP,
+// GetEdgeOneZoneOriginGroupTypes 返回所有 源站组类型
+var GetEdgeOneZoneOriginGroupTypes = []string{
+	EdgeOneZoneOriginGroupTypeGENERAL,
+	EdgeOneZoneOriginGroupTypeHTTP,
 }

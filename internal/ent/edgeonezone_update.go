@@ -7,8 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
-	"vibe_ip/internal/ent/edgeoneorigingroup"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
@@ -168,14 +168,14 @@ func (_u *EdgeOneZoneUpdate) ClearSyncAt() *EdgeOneZoneUpdate {
 	return _u
 }
 
-// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneOriginGroup entity by IDs.
+// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneZoneOriginGroup entity by IDs.
 func (_u *EdgeOneZoneUpdate) AddOriginGroupIDs(ids ...int64) *EdgeOneZoneUpdate {
 	_u.mutation.AddOriginGroupIDs(ids...)
 	return _u
 }
 
-// AddOriginGroups adds the "origin_groups" edges to the EdgeOneOriginGroup entity.
-func (_u *EdgeOneZoneUpdate) AddOriginGroups(v ...*EdgeOneOriginGroup) *EdgeOneZoneUpdate {
+// AddOriginGroups adds the "origin_groups" edges to the EdgeOneZoneOriginGroup entity.
+func (_u *EdgeOneZoneUpdate) AddOriginGroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
@@ -188,20 +188,20 @@ func (_u *EdgeOneZoneUpdate) Mutation() *EdgeOneZoneMutation {
 	return _u.mutation
 }
 
-// ClearOriginGroups clears all "origin_groups" edges to the EdgeOneOriginGroup entity.
+// ClearOriginGroups clears all "origin_groups" edges to the EdgeOneZoneOriginGroup entity.
 func (_u *EdgeOneZoneUpdate) ClearOriginGroups() *EdgeOneZoneUpdate {
 	_u.mutation.ClearOriginGroups()
 	return _u
 }
 
-// RemoveOriginGroupIDs removes the "origin_groups" edge to EdgeOneOriginGroup entities by IDs.
+// RemoveOriginGroupIDs removes the "origin_groups" edge to EdgeOneZoneOriginGroup entities by IDs.
 func (_u *EdgeOneZoneUpdate) RemoveOriginGroupIDs(ids ...int64) *EdgeOneZoneUpdate {
 	_u.mutation.RemoveOriginGroupIDs(ids...)
 	return _u
 }
 
-// RemoveOriginGroups removes "origin_groups" edges to EdgeOneOriginGroup entities.
-func (_u *EdgeOneZoneUpdate) RemoveOriginGroups(v ...*EdgeOneOriginGroup) *EdgeOneZoneUpdate {
+// RemoveOriginGroups removes "origin_groups" edges to EdgeOneZoneOriginGroup entities.
+func (_u *EdgeOneZoneUpdate) RemoveOriginGroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
@@ -211,7 +211,9 @@ func (_u *EdgeOneZoneUpdate) RemoveOriginGroups(v ...*EdgeOneOriginGroup) *EdgeO
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *EdgeOneZoneUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -238,11 +240,15 @@ func (_u *EdgeOneZoneUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *EdgeOneZoneUpdate) defaults() {
+func (_u *EdgeOneZoneUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if edgeonezone.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized edgeonezone.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := edgeonezone.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -340,7 +346,7 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 			Columns: []string{edgeonezone.OriginGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(edgeoneorigingroup.FieldID, field.TypeInt64),
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -353,7 +359,7 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 			Columns: []string{edgeonezone.OriginGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(edgeoneorigingroup.FieldID, field.TypeInt64),
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -369,7 +375,7 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 			Columns: []string{edgeonezone.OriginGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(edgeoneorigingroup.FieldID, field.TypeInt64),
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -537,14 +543,14 @@ func (_u *EdgeOneZoneUpdateOne) ClearSyncAt() *EdgeOneZoneUpdateOne {
 	return _u
 }
 
-// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneOriginGroup entity by IDs.
+// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneZoneOriginGroup entity by IDs.
 func (_u *EdgeOneZoneUpdateOne) AddOriginGroupIDs(ids ...int64) *EdgeOneZoneUpdateOne {
 	_u.mutation.AddOriginGroupIDs(ids...)
 	return _u
 }
 
-// AddOriginGroups adds the "origin_groups" edges to the EdgeOneOriginGroup entity.
-func (_u *EdgeOneZoneUpdateOne) AddOriginGroups(v ...*EdgeOneOriginGroup) *EdgeOneZoneUpdateOne {
+// AddOriginGroups adds the "origin_groups" edges to the EdgeOneZoneOriginGroup entity.
+func (_u *EdgeOneZoneUpdateOne) AddOriginGroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdateOne {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
@@ -557,20 +563,20 @@ func (_u *EdgeOneZoneUpdateOne) Mutation() *EdgeOneZoneMutation {
 	return _u.mutation
 }
 
-// ClearOriginGroups clears all "origin_groups" edges to the EdgeOneOriginGroup entity.
+// ClearOriginGroups clears all "origin_groups" edges to the EdgeOneZoneOriginGroup entity.
 func (_u *EdgeOneZoneUpdateOne) ClearOriginGroups() *EdgeOneZoneUpdateOne {
 	_u.mutation.ClearOriginGroups()
 	return _u
 }
 
-// RemoveOriginGroupIDs removes the "origin_groups" edge to EdgeOneOriginGroup entities by IDs.
+// RemoveOriginGroupIDs removes the "origin_groups" edge to EdgeOneZoneOriginGroup entities by IDs.
 func (_u *EdgeOneZoneUpdateOne) RemoveOriginGroupIDs(ids ...int64) *EdgeOneZoneUpdateOne {
 	_u.mutation.RemoveOriginGroupIDs(ids...)
 	return _u
 }
 
-// RemoveOriginGroups removes "origin_groups" edges to EdgeOneOriginGroup entities.
-func (_u *EdgeOneZoneUpdateOne) RemoveOriginGroups(v ...*EdgeOneOriginGroup) *EdgeOneZoneUpdateOne {
+// RemoveOriginGroups removes "origin_groups" edges to EdgeOneZoneOriginGroup entities.
+func (_u *EdgeOneZoneUpdateOne) RemoveOriginGroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneUpdateOne {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
@@ -593,7 +599,9 @@ func (_u *EdgeOneZoneUpdateOne) Select(field string, fields ...string) *EdgeOneZ
 
 // Save executes the query and returns the updated EdgeOneZone entity.
 func (_u *EdgeOneZoneUpdateOne) Save(ctx context.Context) (*EdgeOneZone, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -620,11 +628,15 @@ func (_u *EdgeOneZoneUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *EdgeOneZoneUpdateOne) defaults() {
+func (_u *EdgeOneZoneUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if edgeonezone.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized edgeonezone.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := edgeonezone.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -739,7 +751,7 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 			Columns: []string{edgeonezone.OriginGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(edgeoneorigingroup.FieldID, field.TypeInt64),
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -752,7 +764,7 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 			Columns: []string{edgeonezone.OriginGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(edgeoneorigingroup.FieldID, field.TypeInt64),
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -768,7 +780,7 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 			Columns: []string{edgeonezone.OriginGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(edgeoneorigingroup.FieldID, field.TypeInt64),
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

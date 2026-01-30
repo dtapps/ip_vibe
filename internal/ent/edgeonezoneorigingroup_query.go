@@ -6,8 +6,8 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"vibe_ip/internal/ent/edgeoneorigingroup"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/predicate"
 
 	"entgo.io/ent"
@@ -16,13 +16,13 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// EdgeOneOriginGroupQuery is the builder for querying EdgeOneOriginGroup entities.
-type EdgeOneOriginGroupQuery struct {
+// EdgeOneZoneOriginGroupQuery is the builder for querying EdgeOneZoneOriginGroup entities.
+type EdgeOneZoneOriginGroupQuery struct {
 	config
 	ctx             *QueryContext
-	order           []edgeoneorigingroup.OrderOption
+	order           []edgeonezoneorigingroup.OrderOption
 	inters          []Interceptor
-	predicates      []predicate.EdgeOneOriginGroup
+	predicates      []predicate.EdgeOneZoneOriginGroup
 	withEdgeoneZone *EdgeOneZoneQuery
 	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -30,39 +30,39 @@ type EdgeOneOriginGroupQuery struct {
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the EdgeOneOriginGroupQuery builder.
-func (_q *EdgeOneOriginGroupQuery) Where(ps ...predicate.EdgeOneOriginGroup) *EdgeOneOriginGroupQuery {
+// Where adds a new predicate for the EdgeOneZoneOriginGroupQuery builder.
+func (_q *EdgeOneZoneOriginGroupQuery) Where(ps ...predicate.EdgeOneZoneOriginGroup) *EdgeOneZoneOriginGroupQuery {
 	_q.predicates = append(_q.predicates, ps...)
 	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *EdgeOneOriginGroupQuery) Limit(limit int) *EdgeOneOriginGroupQuery {
+func (_q *EdgeOneZoneOriginGroupQuery) Limit(limit int) *EdgeOneZoneOriginGroupQuery {
 	_q.ctx.Limit = &limit
 	return _q
 }
 
 // Offset to start from.
-func (_q *EdgeOneOriginGroupQuery) Offset(offset int) *EdgeOneOriginGroupQuery {
+func (_q *EdgeOneZoneOriginGroupQuery) Offset(offset int) *EdgeOneZoneOriginGroupQuery {
 	_q.ctx.Offset = &offset
 	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *EdgeOneOriginGroupQuery) Unique(unique bool) *EdgeOneOriginGroupQuery {
+func (_q *EdgeOneZoneOriginGroupQuery) Unique(unique bool) *EdgeOneZoneOriginGroupQuery {
 	_q.ctx.Unique = &unique
 	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (_q *EdgeOneOriginGroupQuery) Order(o ...edgeoneorigingroup.OrderOption) *EdgeOneOriginGroupQuery {
+func (_q *EdgeOneZoneOriginGroupQuery) Order(o ...edgeonezoneorigingroup.OrderOption) *EdgeOneZoneOriginGroupQuery {
 	_q.order = append(_q.order, o...)
 	return _q
 }
 
 // QueryEdgeoneZone chains the current query on the "edgeone_zone" edge.
-func (_q *EdgeOneOriginGroupQuery) QueryEdgeoneZone() *EdgeOneZoneQuery {
+func (_q *EdgeOneZoneOriginGroupQuery) QueryEdgeoneZone() *EdgeOneZoneQuery {
 	query := (&EdgeOneZoneClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
@@ -73,9 +73,9 @@ func (_q *EdgeOneOriginGroupQuery) QueryEdgeoneZone() *EdgeOneZoneQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(edgeoneorigingroup.Table, edgeoneorigingroup.FieldID, selector),
+			sqlgraph.From(edgeonezoneorigingroup.Table, edgeonezoneorigingroup.FieldID, selector),
 			sqlgraph.To(edgeonezone.Table, edgeonezone.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, edgeoneorigingroup.EdgeoneZoneTable, edgeoneorigingroup.EdgeoneZoneColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, edgeonezoneorigingroup.EdgeoneZoneTable, edgeonezoneorigingroup.EdgeoneZoneColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -83,21 +83,21 @@ func (_q *EdgeOneOriginGroupQuery) QueryEdgeoneZone() *EdgeOneZoneQuery {
 	return query
 }
 
-// First returns the first EdgeOneOriginGroup entity from the query.
-// Returns a *NotFoundError when no EdgeOneOriginGroup was found.
-func (_q *EdgeOneOriginGroupQuery) First(ctx context.Context) (*EdgeOneOriginGroup, error) {
+// First returns the first EdgeOneZoneOriginGroup entity from the query.
+// Returns a *NotFoundError when no EdgeOneZoneOriginGroup was found.
+func (_q *EdgeOneZoneOriginGroupQuery) First(ctx context.Context) (*EdgeOneZoneOriginGroup, error) {
 	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{edgeoneorigingroup.Label}
+		return nil, &NotFoundError{edgeonezoneorigingroup.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *EdgeOneOriginGroupQuery) FirstX(ctx context.Context) *EdgeOneOriginGroup {
+func (_q *EdgeOneZoneOriginGroupQuery) FirstX(ctx context.Context) *EdgeOneZoneOriginGroup {
 	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -105,22 +105,22 @@ func (_q *EdgeOneOriginGroupQuery) FirstX(ctx context.Context) *EdgeOneOriginGro
 	return node
 }
 
-// FirstID returns the first EdgeOneOriginGroup ID from the query.
-// Returns a *NotFoundError when no EdgeOneOriginGroup ID was found.
-func (_q *EdgeOneOriginGroupQuery) FirstID(ctx context.Context) (id int64, err error) {
+// FirstID returns the first EdgeOneZoneOriginGroup ID from the query.
+// Returns a *NotFoundError when no EdgeOneZoneOriginGroup ID was found.
+func (_q *EdgeOneZoneOriginGroupQuery) FirstID(ctx context.Context) (id int64, err error) {
 	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{edgeoneorigingroup.Label}
+		err = &NotFoundError{edgeonezoneorigingroup.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *EdgeOneOriginGroupQuery) FirstIDX(ctx context.Context) int64 {
+func (_q *EdgeOneZoneOriginGroupQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -128,10 +128,10 @@ func (_q *EdgeOneOriginGroupQuery) FirstIDX(ctx context.Context) int64 {
 	return id
 }
 
-// Only returns a single EdgeOneOriginGroup entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one EdgeOneOriginGroup entity is found.
-// Returns a *NotFoundError when no EdgeOneOriginGroup entities are found.
-func (_q *EdgeOneOriginGroupQuery) Only(ctx context.Context) (*EdgeOneOriginGroup, error) {
+// Only returns a single EdgeOneZoneOriginGroup entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one EdgeOneZoneOriginGroup entity is found.
+// Returns a *NotFoundError when no EdgeOneZoneOriginGroup entities are found.
+func (_q *EdgeOneZoneOriginGroupQuery) Only(ctx context.Context) (*EdgeOneZoneOriginGroup, error) {
 	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
@@ -140,14 +140,14 @@ func (_q *EdgeOneOriginGroupQuery) Only(ctx context.Context) (*EdgeOneOriginGrou
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{edgeoneorigingroup.Label}
+		return nil, &NotFoundError{edgeonezoneorigingroup.Label}
 	default:
-		return nil, &NotSingularError{edgeoneorigingroup.Label}
+		return nil, &NotSingularError{edgeonezoneorigingroup.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *EdgeOneOriginGroupQuery) OnlyX(ctx context.Context) *EdgeOneOriginGroup {
+func (_q *EdgeOneZoneOriginGroupQuery) OnlyX(ctx context.Context) *EdgeOneZoneOriginGroup {
 	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -155,10 +155,10 @@ func (_q *EdgeOneOriginGroupQuery) OnlyX(ctx context.Context) *EdgeOneOriginGrou
 	return node
 }
 
-// OnlyID is like Only, but returns the only EdgeOneOriginGroup ID in the query.
-// Returns a *NotSingularError when more than one EdgeOneOriginGroup ID is found.
+// OnlyID is like Only, but returns the only EdgeOneZoneOriginGroup ID in the query.
+// Returns a *NotSingularError when more than one EdgeOneZoneOriginGroup ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *EdgeOneOriginGroupQuery) OnlyID(ctx context.Context) (id int64, err error) {
+func (_q *EdgeOneZoneOriginGroupQuery) OnlyID(ctx context.Context) (id int64, err error) {
 	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
@@ -167,15 +167,15 @@ func (_q *EdgeOneOriginGroupQuery) OnlyID(ctx context.Context) (id int64, err er
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{edgeoneorigingroup.Label}
+		err = &NotFoundError{edgeonezoneorigingroup.Label}
 	default:
-		err = &NotSingularError{edgeoneorigingroup.Label}
+		err = &NotSingularError{edgeonezoneorigingroup.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *EdgeOneOriginGroupQuery) OnlyIDX(ctx context.Context) int64 {
+func (_q *EdgeOneZoneOriginGroupQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -183,18 +183,18 @@ func (_q *EdgeOneOriginGroupQuery) OnlyIDX(ctx context.Context) int64 {
 	return id
 }
 
-// All executes the query and returns a list of EdgeOneOriginGroups.
-func (_q *EdgeOneOriginGroupQuery) All(ctx context.Context) ([]*EdgeOneOriginGroup, error) {
+// All executes the query and returns a list of EdgeOneZoneOriginGroups.
+func (_q *EdgeOneZoneOriginGroupQuery) All(ctx context.Context) ([]*EdgeOneZoneOriginGroup, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*EdgeOneOriginGroup, *EdgeOneOriginGroupQuery]()
-	return withInterceptors[[]*EdgeOneOriginGroup](ctx, _q, qr, _q.inters)
+	qr := querierAll[[]*EdgeOneZoneOriginGroup, *EdgeOneZoneOriginGroupQuery]()
+	return withInterceptors[[]*EdgeOneZoneOriginGroup](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *EdgeOneOriginGroupQuery) AllX(ctx context.Context) []*EdgeOneOriginGroup {
+func (_q *EdgeOneZoneOriginGroupQuery) AllX(ctx context.Context) []*EdgeOneZoneOriginGroup {
 	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
@@ -202,20 +202,20 @@ func (_q *EdgeOneOriginGroupQuery) AllX(ctx context.Context) []*EdgeOneOriginGro
 	return nodes
 }
 
-// IDs executes the query and returns a list of EdgeOneOriginGroup IDs.
-func (_q *EdgeOneOriginGroupQuery) IDs(ctx context.Context) (ids []int64, err error) {
+// IDs executes the query and returns a list of EdgeOneZoneOriginGroup IDs.
+func (_q *EdgeOneZoneOriginGroupQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(edgeoneorigingroup.FieldID).Scan(ctx, &ids); err != nil {
+	if err = _q.Select(edgeonezoneorigingroup.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *EdgeOneOriginGroupQuery) IDsX(ctx context.Context) []int64 {
+func (_q *EdgeOneZoneOriginGroupQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -224,16 +224,16 @@ func (_q *EdgeOneOriginGroupQuery) IDsX(ctx context.Context) []int64 {
 }
 
 // Count returns the count of the given query.
-func (_q *EdgeOneOriginGroupQuery) Count(ctx context.Context) (int, error) {
+func (_q *EdgeOneZoneOriginGroupQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*EdgeOneOriginGroupQuery](), _q.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*EdgeOneZoneOriginGroupQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *EdgeOneOriginGroupQuery) CountX(ctx context.Context) int {
+func (_q *EdgeOneZoneOriginGroupQuery) CountX(ctx context.Context) int {
 	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -242,7 +242,7 @@ func (_q *EdgeOneOriginGroupQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *EdgeOneOriginGroupQuery) Exist(ctx context.Context) (bool, error) {
+func (_q *EdgeOneZoneOriginGroupQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
 	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
@@ -255,7 +255,7 @@ func (_q *EdgeOneOriginGroupQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *EdgeOneOriginGroupQuery) ExistX(ctx context.Context) bool {
+func (_q *EdgeOneZoneOriginGroupQuery) ExistX(ctx context.Context) bool {
 	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -263,18 +263,18 @@ func (_q *EdgeOneOriginGroupQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the EdgeOneOriginGroupQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the EdgeOneZoneOriginGroupQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *EdgeOneOriginGroupQuery) Clone() *EdgeOneOriginGroupQuery {
+func (_q *EdgeOneZoneOriginGroupQuery) Clone() *EdgeOneZoneOriginGroupQuery {
 	if _q == nil {
 		return nil
 	}
-	return &EdgeOneOriginGroupQuery{
+	return &EdgeOneZoneOriginGroupQuery{
 		config:          _q.config,
 		ctx:             _q.ctx.Clone(),
-		order:           append([]edgeoneorigingroup.OrderOption{}, _q.order...),
+		order:           append([]edgeonezoneorigingroup.OrderOption{}, _q.order...),
 		inters:          append([]Interceptor{}, _q.inters...),
-		predicates:      append([]predicate.EdgeOneOriginGroup{}, _q.predicates...),
+		predicates:      append([]predicate.EdgeOneZoneOriginGroup{}, _q.predicates...),
 		withEdgeoneZone: _q.withEdgeoneZone.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
@@ -285,7 +285,7 @@ func (_q *EdgeOneOriginGroupQuery) Clone() *EdgeOneOriginGroupQuery {
 
 // WithEdgeoneZone tells the query-builder to eager-load the nodes that are connected to
 // the "edgeone_zone" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *EdgeOneOriginGroupQuery) WithEdgeoneZone(opts ...func(*EdgeOneZoneQuery)) *EdgeOneOriginGroupQuery {
+func (_q *EdgeOneZoneOriginGroupQuery) WithEdgeoneZone(opts ...func(*EdgeOneZoneQuery)) *EdgeOneZoneOriginGroupQuery {
 	query := (&EdgeOneZoneClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
@@ -304,15 +304,15 @@ func (_q *EdgeOneOriginGroupQuery) WithEdgeoneZone(opts ...func(*EdgeOneZoneQuer
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.EdgeOneOriginGroup.Query().
-//		GroupBy(edgeoneorigingroup.FieldCreatedAt).
+//	client.EdgeOneZoneOriginGroup.Query().
+//		GroupBy(edgeonezoneorigingroup.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *EdgeOneOriginGroupQuery) GroupBy(field string, fields ...string) *EdgeOneOriginGroupGroupBy {
+func (_q *EdgeOneZoneOriginGroupQuery) GroupBy(field string, fields ...string) *EdgeOneZoneOriginGroupGroupBy {
 	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &EdgeOneOriginGroupGroupBy{build: _q}
+	grbuild := &EdgeOneZoneOriginGroupGroupBy{build: _q}
 	grbuild.flds = &_q.ctx.Fields
-	grbuild.label = edgeoneorigingroup.Label
+	grbuild.label = edgeonezoneorigingroup.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -326,23 +326,23 @@ func (_q *EdgeOneOriginGroupQuery) GroupBy(field string, fields ...string) *Edge
 //		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
-//	client.EdgeOneOriginGroup.Query().
-//		Select(edgeoneorigingroup.FieldCreatedAt).
+//	client.EdgeOneZoneOriginGroup.Query().
+//		Select(edgeonezoneorigingroup.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (_q *EdgeOneOriginGroupQuery) Select(fields ...string) *EdgeOneOriginGroupSelect {
+func (_q *EdgeOneZoneOriginGroupQuery) Select(fields ...string) *EdgeOneZoneOriginGroupSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &EdgeOneOriginGroupSelect{EdgeOneOriginGroupQuery: _q}
-	sbuild.label = edgeoneorigingroup.Label
+	sbuild := &EdgeOneZoneOriginGroupSelect{EdgeOneZoneOriginGroupQuery: _q}
+	sbuild.label = edgeonezoneorigingroup.Label
 	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a EdgeOneOriginGroupSelect configured with the given aggregations.
-func (_q *EdgeOneOriginGroupQuery) Aggregate(fns ...AggregateFunc) *EdgeOneOriginGroupSelect {
+// Aggregate returns a EdgeOneZoneOriginGroupSelect configured with the given aggregations.
+func (_q *EdgeOneZoneOriginGroupQuery) Aggregate(fns ...AggregateFunc) *EdgeOneZoneOriginGroupSelect {
 	return _q.Select().Aggregate(fns...)
 }
 
-func (_q *EdgeOneOriginGroupQuery) prepareQuery(ctx context.Context) error {
+func (_q *EdgeOneZoneOriginGroupQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -354,7 +354,7 @@ func (_q *EdgeOneOriginGroupQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range _q.ctx.Fields {
-		if !edgeoneorigingroup.ValidColumn(f) {
+		if !edgeonezoneorigingroup.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -368,19 +368,19 @@ func (_q *EdgeOneOriginGroupQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (_q *EdgeOneOriginGroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EdgeOneOriginGroup, error) {
+func (_q *EdgeOneZoneOriginGroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EdgeOneZoneOriginGroup, error) {
 	var (
-		nodes       = []*EdgeOneOriginGroup{}
+		nodes       = []*EdgeOneZoneOriginGroup{}
 		_spec       = _q.querySpec()
 		loadedTypes = [1]bool{
 			_q.withEdgeoneZone != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*EdgeOneOriginGroup).scanValues(nil, columns)
+		return (*EdgeOneZoneOriginGroup).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &EdgeOneOriginGroup{config: _q.config}
+		node := &EdgeOneZoneOriginGroup{config: _q.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -399,16 +399,16 @@ func (_q *EdgeOneOriginGroupQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	}
 	if query := _q.withEdgeoneZone; query != nil {
 		if err := _q.loadEdgeoneZone(ctx, query, nodes, nil,
-			func(n *EdgeOneOriginGroup, e *EdgeOneZone) { n.Edges.EdgeoneZone = e }); err != nil {
+			func(n *EdgeOneZoneOriginGroup, e *EdgeOneZone) { n.Edges.EdgeoneZone = e }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (_q *EdgeOneOriginGroupQuery) loadEdgeoneZone(ctx context.Context, query *EdgeOneZoneQuery, nodes []*EdgeOneOriginGroup, init func(*EdgeOneOriginGroup), assign func(*EdgeOneOriginGroup, *EdgeOneZone)) error {
+func (_q *EdgeOneZoneOriginGroupQuery) loadEdgeoneZone(ctx context.Context, query *EdgeOneZoneQuery, nodes []*EdgeOneZoneOriginGroup, init func(*EdgeOneZoneOriginGroup), assign func(*EdgeOneZoneOriginGroup, *EdgeOneZone)) error {
 	ids := make([]int64, 0, len(nodes))
-	nodeids := make(map[int64][]*EdgeOneOriginGroup)
+	nodeids := make(map[int64][]*EdgeOneZoneOriginGroup)
 	for i := range nodes {
 		fk := nodes[i].EdgeoneZoneID
 		if _, ok := nodeids[fk]; !ok {
@@ -436,7 +436,7 @@ func (_q *EdgeOneOriginGroupQuery) loadEdgeoneZone(ctx context.Context, query *E
 	return nil
 }
 
-func (_q *EdgeOneOriginGroupQuery) sqlCount(ctx context.Context) (int, error) {
+func (_q *EdgeOneZoneOriginGroupQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
 	if len(_q.modifiers) > 0 {
 		_spec.Modifiers = _q.modifiers
@@ -448,8 +448,8 @@ func (_q *EdgeOneOriginGroupQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (_q *EdgeOneOriginGroupQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(edgeoneorigingroup.Table, edgeoneorigingroup.Columns, sqlgraph.NewFieldSpec(edgeoneorigingroup.FieldID, field.TypeInt64))
+func (_q *EdgeOneZoneOriginGroupQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(edgeonezoneorigingroup.Table, edgeonezoneorigingroup.Columns, sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -458,14 +458,14 @@ func (_q *EdgeOneOriginGroupQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, edgeoneorigingroup.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, edgeonezoneorigingroup.FieldID)
 		for i := range fields {
-			if fields[i] != edgeoneorigingroup.FieldID {
+			if fields[i] != edgeonezoneorigingroup.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
 		if _q.withEdgeoneZone != nil {
-			_spec.Node.AddColumnOnce(edgeoneorigingroup.FieldEdgeoneZoneID)
+			_spec.Node.AddColumnOnce(edgeonezoneorigingroup.FieldEdgeoneZoneID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {
@@ -491,12 +491,12 @@ func (_q *EdgeOneOriginGroupQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *EdgeOneOriginGroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (_q *EdgeOneZoneOriginGroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(_q.driver.Dialect())
-	t1 := builder.Table(edgeoneorigingroup.Table)
+	t1 := builder.Table(edgeonezoneorigingroup.Table)
 	columns := _q.ctx.Fields
 	if len(columns) == 0 {
-		columns = edgeoneorigingroup.Columns
+		columns = edgeonezoneorigingroup.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if _q.sql != nil {
@@ -527,33 +527,33 @@ func (_q *EdgeOneOriginGroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (_q *EdgeOneOriginGroupQuery) Modify(modifiers ...func(s *sql.Selector)) *EdgeOneOriginGroupSelect {
+func (_q *EdgeOneZoneOriginGroupQuery) Modify(modifiers ...func(s *sql.Selector)) *EdgeOneZoneOriginGroupSelect {
 	_q.modifiers = append(_q.modifiers, modifiers...)
 	return _q.Select()
 }
 
-// EdgeOneOriginGroupGroupBy is the group-by builder for EdgeOneOriginGroup entities.
-type EdgeOneOriginGroupGroupBy struct {
+// EdgeOneZoneOriginGroupGroupBy is the group-by builder for EdgeOneZoneOriginGroup entities.
+type EdgeOneZoneOriginGroupGroupBy struct {
 	selector
-	build *EdgeOneOriginGroupQuery
+	build *EdgeOneZoneOriginGroupQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *EdgeOneOriginGroupGroupBy) Aggregate(fns ...AggregateFunc) *EdgeOneOriginGroupGroupBy {
+func (_g *EdgeOneZoneOriginGroupGroupBy) Aggregate(fns ...AggregateFunc) *EdgeOneZoneOriginGroupGroupBy {
 	_g.fns = append(_g.fns, fns...)
 	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *EdgeOneOriginGroupGroupBy) Scan(ctx context.Context, v any) error {
+func (_g *EdgeOneZoneOriginGroupGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
 	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*EdgeOneOriginGroupQuery, *EdgeOneOriginGroupGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*EdgeOneZoneOriginGroupQuery, *EdgeOneZoneOriginGroupGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (_g *EdgeOneOriginGroupGroupBy) sqlScan(ctx context.Context, root *EdgeOneOriginGroupQuery, v any) error {
+func (_g *EdgeOneZoneOriginGroupGroupBy) sqlScan(ctx context.Context, root *EdgeOneZoneOriginGroupQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(_g.fns))
 	for _, fn := range _g.fns {
@@ -580,28 +580,28 @@ func (_g *EdgeOneOriginGroupGroupBy) sqlScan(ctx context.Context, root *EdgeOneO
 	return sql.ScanSlice(rows, v)
 }
 
-// EdgeOneOriginGroupSelect is the builder for selecting fields of EdgeOneOriginGroup entities.
-type EdgeOneOriginGroupSelect struct {
-	*EdgeOneOriginGroupQuery
+// EdgeOneZoneOriginGroupSelect is the builder for selecting fields of EdgeOneZoneOriginGroup entities.
+type EdgeOneZoneOriginGroupSelect struct {
+	*EdgeOneZoneOriginGroupQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *EdgeOneOriginGroupSelect) Aggregate(fns ...AggregateFunc) *EdgeOneOriginGroupSelect {
+func (_s *EdgeOneZoneOriginGroupSelect) Aggregate(fns ...AggregateFunc) *EdgeOneZoneOriginGroupSelect {
 	_s.fns = append(_s.fns, fns...)
 	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *EdgeOneOriginGroupSelect) Scan(ctx context.Context, v any) error {
+func (_s *EdgeOneZoneOriginGroupSelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
 	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*EdgeOneOriginGroupQuery, *EdgeOneOriginGroupSelect](ctx, _s.EdgeOneOriginGroupQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*EdgeOneZoneOriginGroupQuery, *EdgeOneZoneOriginGroupSelect](ctx, _s.EdgeOneZoneOriginGroupQuery, _s, _s.inters, v)
 }
 
-func (_s *EdgeOneOriginGroupSelect) sqlScan(ctx context.Context, root *EdgeOneOriginGroupQuery, v any) error {
+func (_s *EdgeOneZoneOriginGroupSelect) sqlScan(ctx context.Context, root *EdgeOneZoneOriginGroupQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(_s.fns))
 	for _, fn := range _s.fns {
@@ -623,7 +623,7 @@ func (_s *EdgeOneOriginGroupSelect) sqlScan(ctx context.Context, root *EdgeOneOr
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (_s *EdgeOneOriginGroupSelect) Modify(modifiers ...func(s *sql.Selector)) *EdgeOneOriginGroupSelect {
+func (_s *EdgeOneZoneOriginGroupSelect) Modify(modifiers ...func(s *sql.Selector)) *EdgeOneZoneOriginGroupSelect {
 	_s.modifiers = append(_s.modifiers, modifiers...)
 	return _s
 }

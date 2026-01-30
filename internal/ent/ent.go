@@ -18,8 +18,8 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
-	"vibe_ip/internal/ent/edgeoneorigingroup"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
 	"vibe_ip/internal/ent/platformconfig"
@@ -102,8 +102,8 @@ func checkColumn(t, c string) error {
 			devicegroupdevice.Table:       devicegroupdevice.ValidColumn,
 			deviceportforward.Table:       deviceportforward.ValidColumn,
 			domainmonitor.Table:           domainmonitor.ValidColumn,
-			edgeoneorigingroup.Table:      edgeoneorigingroup.ValidColumn,
 			edgeonezone.Table:             edgeonezone.ValidColumn,
+			edgeonezoneorigingroup.Table:  edgeonezoneorigingroup.ValidColumn,
 			ipgroup.Table:                 ipgroup.ValidColumn,
 			ipgroupdevice.Table:           ipgroupdevice.ValidColumn,
 			platformconfig.Table:          platformconfig.ValidColumn,

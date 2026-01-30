@@ -319,37 +319,6 @@ func (q *DomainMonitorQuery) WhereIfFunc(condition bool, predicateFunc func() pr
 
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
-func (q *EdgeOneOriginGroupQuery) WhereIf(condition bool, p predicate.EdgeOneOriginGroup) *EdgeOneOriginGroupQuery {
-	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
-	if condition {
-		q.Where(p)
-	}
-	return q
-}
-
-// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
-// 如果 condition 为 true，则应用给定的 Where 列表
-func (q *EdgeOneOriginGroupQuery) WhereIfs(condition bool, p ...predicate.EdgeOneOriginGroup) *EdgeOneOriginGroupQuery {
-	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
-	if condition {
-		q.Where(p...)
-	}
-	return q
-}
-
-// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
-// conditionFunc 决定是否应用过滤。
-// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
-func (q *EdgeOneOriginGroupQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.EdgeOneOriginGroup) *EdgeOneOriginGroupQuery {
-	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
-	if condition {
-		q.Where(predicateFunc())
-	}
-	return q
-}
-
-// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
-// 如果 condition 为 true，则应用给定的 Where 列表
 func (q *EdgeOneZoneQuery) WhereIf(condition bool, p predicate.EdgeOneZone) *EdgeOneZoneQuery {
 	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {
@@ -372,6 +341,37 @@ func (q *EdgeOneZoneQuery) WhereIfs(condition bool, p ...predicate.EdgeOneZone) 
 // conditionFunc 决定是否应用过滤。
 // predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
 func (q *EdgeOneZoneQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.EdgeOneZone) *EdgeOneZoneQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EdgeOneZoneOriginGroupQuery) WhereIf(condition bool, p predicate.EdgeOneZoneOriginGroup) *EdgeOneZoneOriginGroupQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EdgeOneZoneOriginGroupQuery) WhereIfs(condition bool, p ...predicate.EdgeOneZoneOriginGroup) *EdgeOneZoneOriginGroupQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *EdgeOneZoneOriginGroupQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.EdgeOneZoneOriginGroup) *EdgeOneZoneOriginGroupQuery {
 	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
 	if condition {
 		q.Where(predicateFunc())

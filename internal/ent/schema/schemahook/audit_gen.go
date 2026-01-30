@@ -864,11 +864,11 @@ func DomainMonitorLogHook() ent.Hook {
 
 
 
-// EdgeOneOriginGroupLogHook 为 EdgeOneOriginGroup 自动生成的审计日志钩子
-func EdgeOneOriginGroupLogHook() ent.Hook {
+// EdgeOneZoneLogHook 为 EdgeOneZone 自动生成的审计日志钩子
+func EdgeOneZoneLogHook() ent.Hook {
     return hook.On(
         func(next ent.Mutator) ent.Mutator {
-            return hook.EdgeOneOriginGroupFunc(func(ctx context.Context, m *ent.EdgeOneOriginGroupMutation) (ent.Value, error) {
+            return hook.EdgeOneZoneFunc(func(ctx context.Context, m *ent.EdgeOneZoneMutation) (ent.Value, error) {
                 op := m.Op()
 				opType := op.String()
 				objType := m.Type()
@@ -958,11 +958,11 @@ func EdgeOneOriginGroupLogHook() ent.Hook {
 
 
 
-// EdgeOneZoneLogHook 为 EdgeOneZone 自动生成的审计日志钩子
-func EdgeOneZoneLogHook() ent.Hook {
+// EdgeOneZoneOriginGroupLogHook 为 EdgeOneZoneOriginGroup 自动生成的审计日志钩子
+func EdgeOneZoneOriginGroupLogHook() ent.Hook {
     return hook.On(
         func(next ent.Mutator) ent.Mutator {
-            return hook.EdgeOneZoneFunc(func(ctx context.Context, m *ent.EdgeOneZoneMutation) (ent.Value, error) {
+            return hook.EdgeOneZoneOriginGroupFunc(func(ctx context.Context, m *ent.EdgeOneZoneOriginGroupMutation) (ent.Value, error) {
                 op := m.Op()
 				opType := op.String()
 				objType := m.Type()

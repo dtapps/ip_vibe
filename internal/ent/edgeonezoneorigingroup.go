@@ -7,18 +7,18 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"vibe_ip/internal/ent/edgeoneorigingroup"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 )
 
-// EdgeOne 源站组
-type EdgeOneOriginGroup struct {
+// EdgeOne 站点源站组
+type EdgeOneZoneOriginGroup struct {
 	config `json:"-"`
 	// ID of the ent.
-	// EdgeOne 源站组序号
+	// EdgeOne 站点源站组序号
 	ID int64 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt time.Time `json:"created_at,omitempty"`
@@ -31,7 +31,7 @@ type EdgeOneOriginGroup struct {
 	// 源站组名称
 	Name string `json:"name,omitempty"`
 	// 源站组类型
-	Type edgeoneorigingroup.Type `json:"type,omitempty"`
+	Type edgeonezoneorigingroup.Type `json:"type,omitempty"`
 	// 源站记录信息
 	Records json.RawMessage `json:"records,omitempty"`
 	// 源站组被引用实例列表
@@ -41,13 +41,13 @@ type EdgeOneOriginGroup struct {
 	// 最近一次同步时间
 	SyncAt time.Time `json:"sync_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the EdgeOneOriginGroupQuery when eager-loading is set.
-	Edges        EdgeOneOriginGroupEdges `json:"edges"`
+	// The values are being populated by the EdgeOneZoneOriginGroupQuery when eager-loading is set.
+	Edges        EdgeOneZoneOriginGroupEdges `json:"edges"`
 	selectValues sql.SelectValues
 }
 
-// EdgeOneOriginGroupEdges holds the relations/edges for other nodes in the graph.
-type EdgeOneOriginGroupEdges struct {
+// EdgeOneZoneOriginGroupEdges holds the relations/edges for other nodes in the graph.
+type EdgeOneZoneOriginGroupEdges struct {
 	// 关联的 EdgeOne 站点
 	EdgeoneZone *EdgeOneZone `json:"edgeone_zone,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -57,7 +57,7 @@ type EdgeOneOriginGroupEdges struct {
 
 // EdgeoneZoneOrErr returns the EdgeoneZone value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e EdgeOneOriginGroupEdges) EdgeoneZoneOrErr() (*EdgeOneZone, error) {
+func (e EdgeOneZoneOriginGroupEdges) EdgeoneZoneOrErr() (*EdgeOneZone, error) {
 	if e.EdgeoneZone != nil {
 		return e.EdgeoneZone, nil
 	} else if e.loadedTypes[0] {
@@ -67,17 +67,17 @@ func (e EdgeOneOriginGroupEdges) EdgeoneZoneOrErr() (*EdgeOneZone, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*EdgeOneOriginGroup) scanValues(columns []string) ([]any, error) {
+func (*EdgeOneZoneOriginGroup) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case edgeoneorigingroup.FieldRecords, edgeoneorigingroup.FieldReferences:
+		case edgeonezoneorigingroup.FieldRecords, edgeonezoneorigingroup.FieldReferences:
 			values[i] = new([]byte)
-		case edgeoneorigingroup.FieldID, edgeoneorigingroup.FieldEdgeoneZoneID:
+		case edgeonezoneorigingroup.FieldID, edgeonezoneorigingroup.FieldEdgeoneZoneID:
 			values[i] = new(sql.NullInt64)
-		case edgeoneorigingroup.FieldGroupID, edgeoneorigingroup.FieldName, edgeoneorigingroup.FieldType:
+		case edgeonezoneorigingroup.FieldGroupID, edgeonezoneorigingroup.FieldName, edgeonezoneorigingroup.FieldType:
 			values[i] = new(sql.NullString)
-		case edgeoneorigingroup.FieldCreatedAt, edgeoneorigingroup.FieldUpdatedAt, edgeoneorigingroup.FieldRemoteCreatedAt, edgeoneorigingroup.FieldSyncAt:
+		case edgeonezoneorigingroup.FieldCreatedAt, edgeonezoneorigingroup.FieldUpdatedAt, edgeonezoneorigingroup.FieldRemoteCreatedAt, edgeonezoneorigingroup.FieldSyncAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -87,56 +87,56 @@ func (*EdgeOneOriginGroup) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the EdgeOneOriginGroup fields.
-func (_m *EdgeOneOriginGroup) assignValues(columns []string, values []any) error {
+// to the EdgeOneZoneOriginGroup fields.
+func (_m *EdgeOneZoneOriginGroup) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case edgeoneorigingroup.FieldID:
+		case edgeonezoneorigingroup.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int64(value.Int64)
-		case edgeoneorigingroup.FieldCreatedAt:
+		case edgeonezoneorigingroup.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
 			}
-		case edgeoneorigingroup.FieldUpdatedAt:
+		case edgeonezoneorigingroup.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
 			}
-		case edgeoneorigingroup.FieldEdgeoneZoneID:
+		case edgeonezoneorigingroup.FieldEdgeoneZoneID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field edgeone_zone_id", values[i])
 			} else if value.Valid {
 				_m.EdgeoneZoneID = value.Int64
 			}
-		case edgeoneorigingroup.FieldGroupID:
+		case edgeonezoneorigingroup.FieldGroupID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field group_id", values[i])
 			} else if value.Valid {
 				_m.GroupID = value.String
 			}
-		case edgeoneorigingroup.FieldName:
+		case edgeonezoneorigingroup.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				_m.Name = value.String
 			}
-		case edgeoneorigingroup.FieldType:
+		case edgeonezoneorigingroup.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
-				_m.Type = edgeoneorigingroup.Type(value.String)
+				_m.Type = edgeonezoneorigingroup.Type(value.String)
 			}
-		case edgeoneorigingroup.FieldRecords:
+		case edgeonezoneorigingroup.FieldRecords:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field records", values[i])
 			} else if value != nil && len(*value) > 0 {
@@ -144,7 +144,7 @@ func (_m *EdgeOneOriginGroup) assignValues(columns []string, values []any) error
 					return fmt.Errorf("unmarshal field records: %w", err)
 				}
 			}
-		case edgeoneorigingroup.FieldReferences:
+		case edgeonezoneorigingroup.FieldReferences:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field references", values[i])
 			} else if value != nil && len(*value) > 0 {
@@ -152,13 +152,13 @@ func (_m *EdgeOneOriginGroup) assignValues(columns []string, values []any) error
 					return fmt.Errorf("unmarshal field references: %w", err)
 				}
 			}
-		case edgeoneorigingroup.FieldRemoteCreatedAt:
+		case edgeonezoneorigingroup.FieldRemoteCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field remote_created_at", values[i])
 			} else if value.Valid {
 				_m.RemoteCreatedAt = value.Time
 			}
-		case edgeoneorigingroup.FieldSyncAt:
+		case edgeonezoneorigingroup.FieldSyncAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field sync_at", values[i])
 			} else if value.Valid {
@@ -171,39 +171,39 @@ func (_m *EdgeOneOriginGroup) assignValues(columns []string, values []any) error
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the EdgeOneOriginGroup.
+// Value returns the ent.Value that was dynamically selected and assigned to the EdgeOneZoneOriginGroup.
 // This includes values selected through modifiers, order, etc.
-func (_m *EdgeOneOriginGroup) Value(name string) (ent.Value, error) {
+func (_m *EdgeOneZoneOriginGroup) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QueryEdgeoneZone queries the "edgeone_zone" edge of the EdgeOneOriginGroup entity.
-func (_m *EdgeOneOriginGroup) QueryEdgeoneZone() *EdgeOneZoneQuery {
-	return NewEdgeOneOriginGroupClient(_m.config).QueryEdgeoneZone(_m)
+// QueryEdgeoneZone queries the "edgeone_zone" edge of the EdgeOneZoneOriginGroup entity.
+func (_m *EdgeOneZoneOriginGroup) QueryEdgeoneZone() *EdgeOneZoneQuery {
+	return NewEdgeOneZoneOriginGroupClient(_m.config).QueryEdgeoneZone(_m)
 }
 
-// Update returns a builder for updating this EdgeOneOriginGroup.
-// Note that you need to call EdgeOneOriginGroup.Unwrap() before calling this method if this EdgeOneOriginGroup
+// Update returns a builder for updating this EdgeOneZoneOriginGroup.
+// Note that you need to call EdgeOneZoneOriginGroup.Unwrap() before calling this method if this EdgeOneZoneOriginGroup
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *EdgeOneOriginGroup) Update() *EdgeOneOriginGroupUpdateOne {
-	return NewEdgeOneOriginGroupClient(_m.config).UpdateOne(_m)
+func (_m *EdgeOneZoneOriginGroup) Update() *EdgeOneZoneOriginGroupUpdateOne {
+	return NewEdgeOneZoneOriginGroupClient(_m.config).UpdateOne(_m)
 }
 
-// Unwrap unwraps the EdgeOneOriginGroup entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the EdgeOneZoneOriginGroup entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *EdgeOneOriginGroup) Unwrap() *EdgeOneOriginGroup {
+func (_m *EdgeOneZoneOriginGroup) Unwrap() *EdgeOneZoneOriginGroup {
 	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: EdgeOneOriginGroup is not a transactional entity")
+		panic("ent: EdgeOneZoneOriginGroup is not a transactional entity")
 	}
 	_m.config.driver = _tx.drv
 	return _m
 }
 
 // String implements the fmt.Stringer.
-func (_m *EdgeOneOriginGroup) String() string {
+func (_m *EdgeOneZoneOriginGroup) String() string {
 	var builder strings.Builder
-	builder.WriteString("EdgeOneOriginGroup(")
+	builder.WriteString("EdgeOneZoneOriginGroup(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
@@ -238,5 +238,5 @@ func (_m *EdgeOneOriginGroup) String() string {
 	return builder.String()
 }
 
-// EdgeOneOriginGroups is a parsable slice of EdgeOneOriginGroup.
-type EdgeOneOriginGroups []*EdgeOneOriginGroup
+// EdgeOneZoneOriginGroups is a parsable slice of EdgeOneZoneOriginGroup.
+type EdgeOneZoneOriginGroups []*EdgeOneZoneOriginGroup

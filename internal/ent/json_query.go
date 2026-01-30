@@ -10,7 +10,7 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
-	"vibe_ip/internal/ent/edgeoneorigingroup"
+	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
 	"vibe_ip/internal/ent/tunrecord"
@@ -195,9 +195,9 @@ func (q *DomainMonitorQuery) WhereRequestHeadersContainsIf(condition bool, val a
 
 // WhereRecordsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
-func (q *EdgeOneOriginGroupQuery) WhereRecordsContains(val any) *EdgeOneOriginGroupQuery {
-	return q.Where(predicate.EdgeOneOriginGroup(func(s *sql.Selector) {
-		column := edgeoneorigingroup.FieldRecords
+func (q *EdgeOneZoneOriginGroupQuery) WhereRecordsContains(val any) *EdgeOneZoneOriginGroupQuery {
+	return q.Where(predicate.EdgeOneZoneOriginGroup(func(s *sql.Selector) {
+		column := edgeonezoneorigingroup.FieldRecords
 
 		switch s.Dialect() {
 		case dialect.MySQL:
@@ -215,7 +215,7 @@ func (q *EdgeOneOriginGroupQuery) WhereRecordsContains(val any) *EdgeOneOriginGr
 }
 
 // WhereRecordsContainsIf 只有在 condition 为 true 时才调用 WhereRecordsContains。
-func (q *EdgeOneOriginGroupQuery) WhereRecordsContainsIf(condition bool, val any) *EdgeOneOriginGroupQuery {
+func (q *EdgeOneZoneOriginGroupQuery) WhereRecordsContainsIf(condition bool, val any) *EdgeOneZoneOriginGroupQuery {
 	if condition {
 		return q.WhereRecordsContains(val)
 	}
@@ -224,9 +224,9 @@ func (q *EdgeOneOriginGroupQuery) WhereRecordsContainsIf(condition bool, val any
 
 // WhereReferencesContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
-func (q *EdgeOneOriginGroupQuery) WhereReferencesContains(val any) *EdgeOneOriginGroupQuery {
-	return q.Where(predicate.EdgeOneOriginGroup(func(s *sql.Selector) {
-		column := edgeoneorigingroup.FieldReferences
+func (q *EdgeOneZoneOriginGroupQuery) WhereReferencesContains(val any) *EdgeOneZoneOriginGroupQuery {
+	return q.Where(predicate.EdgeOneZoneOriginGroup(func(s *sql.Selector) {
+		column := edgeonezoneorigingroup.FieldReferences
 
 		switch s.Dialect() {
 		case dialect.MySQL:
@@ -244,7 +244,7 @@ func (q *EdgeOneOriginGroupQuery) WhereReferencesContains(val any) *EdgeOneOrigi
 }
 
 // WhereReferencesContainsIf 只有在 condition 为 true 时才调用 WhereReferencesContains。
-func (q *EdgeOneOriginGroupQuery) WhereReferencesContainsIf(condition bool, val any) *EdgeOneOriginGroupQuery {
+func (q *EdgeOneZoneOriginGroupQuery) WhereReferencesContainsIf(condition bool, val any) *EdgeOneZoneOriginGroupQuery {
 	if condition {
 		return q.WhereReferencesContains(val)
 	}

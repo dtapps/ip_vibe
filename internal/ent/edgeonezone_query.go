@@ -7,8 +7,8 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
-	"vibe_ip/internal/ent/edgeoneorigingroup"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
 
@@ -26,9 +26,9 @@ type EdgeOneZoneQuery struct {
 	inters                []Interceptor
 	predicates            []predicate.EdgeOneZone
 	withConfig            *PlatformConfigQuery
-	withOriginGroups      *EdgeOneOriginGroupQuery
+	withOriginGroups      *EdgeOneZoneOriginGroupQuery
 	modifiers             []func(*sql.Selector)
-	withNamedOriginGroups map[string]*EdgeOneOriginGroupQuery
+	withNamedOriginGroups map[string]*EdgeOneZoneOriginGroupQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -88,8 +88,8 @@ func (_q *EdgeOneZoneQuery) QueryConfig() *PlatformConfigQuery {
 }
 
 // QueryOriginGroups chains the current query on the "origin_groups" edge.
-func (_q *EdgeOneZoneQuery) QueryOriginGroups() *EdgeOneOriginGroupQuery {
-	query := (&EdgeOneOriginGroupClient{config: _q.config}).Query()
+func (_q *EdgeOneZoneQuery) QueryOriginGroups() *EdgeOneZoneOriginGroupQuery {
+	query := (&EdgeOneZoneOriginGroupClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -100,7 +100,7 @@ func (_q *EdgeOneZoneQuery) QueryOriginGroups() *EdgeOneOriginGroupQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, selector),
-			sqlgraph.To(edgeoneorigingroup.Table, edgeoneorigingroup.FieldID),
+			sqlgraph.To(edgeonezoneorigingroup.Table, edgeonezoneorigingroup.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.OriginGroupsTable, edgeonezone.OriginGroupsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
@@ -323,8 +323,8 @@ func (_q *EdgeOneZoneQuery) WithConfig(opts ...func(*PlatformConfigQuery)) *Edge
 
 // WithOriginGroups tells the query-builder to eager-load the nodes that are connected to
 // the "origin_groups" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *EdgeOneZoneQuery) WithOriginGroups(opts ...func(*EdgeOneOriginGroupQuery)) *EdgeOneZoneQuery {
-	query := (&EdgeOneOriginGroupClient{config: _q.config}).Query()
+func (_q *EdgeOneZoneQuery) WithOriginGroups(opts ...func(*EdgeOneZoneOriginGroupQuery)) *EdgeOneZoneQuery {
+	query := (&EdgeOneZoneOriginGroupClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -444,8 +444,8 @@ func (_q *EdgeOneZoneQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	}
 	if query := _q.withOriginGroups; query != nil {
 		if err := _q.loadOriginGroups(ctx, query, nodes,
-			func(n *EdgeOneZone) { n.Edges.OriginGroups = []*EdgeOneOriginGroup{} },
-			func(n *EdgeOneZone, e *EdgeOneOriginGroup) {
+			func(n *EdgeOneZone) { n.Edges.OriginGroups = []*EdgeOneZoneOriginGroup{} },
+			func(n *EdgeOneZone, e *EdgeOneZoneOriginGroup) {
 				n.Edges.OriginGroups = append(n.Edges.OriginGroups, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.EdgeoneZone = n
@@ -457,7 +457,7 @@ func (_q *EdgeOneZoneQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	for name, query := range _q.withNamedOriginGroups {
 		if err := _q.loadOriginGroups(ctx, query, nodes,
 			func(n *EdgeOneZone) { n.appendNamedOriginGroups(name) },
-			func(n *EdgeOneZone, e *EdgeOneOriginGroup) {
+			func(n *EdgeOneZone, e *EdgeOneZoneOriginGroup) {
 				n.appendNamedOriginGroups(name, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.EdgeoneZone = n
@@ -498,7 +498,7 @@ func (_q *EdgeOneZoneQuery) loadConfig(ctx context.Context, query *PlatformConfi
 	}
 	return nil
 }
-func (_q *EdgeOneZoneQuery) loadOriginGroups(ctx context.Context, query *EdgeOneOriginGroupQuery, nodes []*EdgeOneZone, init func(*EdgeOneZone), assign func(*EdgeOneZone, *EdgeOneOriginGroup)) error {
+func (_q *EdgeOneZoneQuery) loadOriginGroups(ctx context.Context, query *EdgeOneZoneOriginGroupQuery, nodes []*EdgeOneZone, init func(*EdgeOneZone), assign func(*EdgeOneZone, *EdgeOneZoneOriginGroup)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int64]*EdgeOneZone)
 	for i := range nodes {
@@ -509,9 +509,9 @@ func (_q *EdgeOneZoneQuery) loadOriginGroups(ctx context.Context, query *EdgeOne
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(edgeoneorigingroup.FieldEdgeoneZoneID)
+		query.ctx.AppendFieldOnce(edgeonezoneorigingroup.FieldEdgeoneZoneID)
 	}
-	query.Where(predicate.EdgeOneOriginGroup(func(s *sql.Selector) {
+	query.Where(predicate.EdgeOneZoneOriginGroup(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(edgeonezone.OriginGroupsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
@@ -627,13 +627,13 @@ func (_q *EdgeOneZoneQuery) Modify(modifiers ...func(s *sql.Selector)) *EdgeOneZ
 
 // WithNamedOriginGroups tells the query-builder to eager-load the nodes that are connected to the "origin_groups"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (_q *EdgeOneZoneQuery) WithNamedOriginGroups(name string, opts ...func(*EdgeOneOriginGroupQuery)) *EdgeOneZoneQuery {
-	query := (&EdgeOneOriginGroupClient{config: _q.config}).Query()
+func (_q *EdgeOneZoneQuery) WithNamedOriginGroups(name string, opts ...func(*EdgeOneZoneOriginGroupQuery)) *EdgeOneZoneQuery {
+	query := (&EdgeOneZoneOriginGroupClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
 	if _q.withNamedOriginGroups == nil {
-		_q.withNamedOriginGroups = make(map[string]*EdgeOneOriginGroupQuery)
+		_q.withNamedOriginGroups = make(map[string]*EdgeOneZoneOriginGroupQuery)
 	}
 	_q.withNamedOriginGroups[name] = query
 	return _q

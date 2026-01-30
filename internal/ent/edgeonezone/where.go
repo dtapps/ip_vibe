@@ -570,7 +570,7 @@ func HasOriginGroups() predicate.EdgeOneZone {
 }
 
 // HasOriginGroupsWith applies the HasEdge predicate on the "origin_groups" edge with a given conditions (other predicates).
-func HasOriginGroupsWith(preds ...predicate.EdgeOneOriginGroup) predicate.EdgeOneZone {
+func HasOriginGroupsWith(preds ...predicate.EdgeOneZoneOriginGroup) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(func(s *sql.Selector) {
 		step := newOriginGroupsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {

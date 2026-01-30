@@ -7,8 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
-	"vibe_ip/internal/ent/edgeoneorigingroup"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/platformconfig"
 
 	"entgo.io/ent/dialect/sql"
@@ -145,14 +145,14 @@ func (_c *EdgeOneZoneCreate) SetConfig(v *PlatformConfig) *EdgeOneZoneCreate {
 	return _c.SetConfigID(v.ID)
 }
 
-// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneOriginGroup entity by IDs.
+// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneZoneOriginGroup entity by IDs.
 func (_c *EdgeOneZoneCreate) AddOriginGroupIDs(ids ...int64) *EdgeOneZoneCreate {
 	_c.mutation.AddOriginGroupIDs(ids...)
 	return _c
 }
 
-// AddOriginGroups adds the "origin_groups" edges to the EdgeOneOriginGroup entity.
-func (_c *EdgeOneZoneCreate) AddOriginGroups(v ...*EdgeOneOriginGroup) *EdgeOneZoneCreate {
+// AddOriginGroups adds the "origin_groups" edges to the EdgeOneZoneOriginGroup entity.
+func (_c *EdgeOneZoneCreate) AddOriginGroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneCreate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
@@ -167,7 +167,9 @@ func (_c *EdgeOneZoneCreate) Mutation() *EdgeOneZoneMutation {
 
 // Save creates the EdgeOneZone in the database.
 func (_c *EdgeOneZoneCreate) Save(ctx context.Context) (*EdgeOneZone, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -194,15 +196,22 @@ func (_c *EdgeOneZoneCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *EdgeOneZoneCreate) defaults() {
+func (_c *EdgeOneZoneCreate) defaults() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if edgeonezone.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized edgeonezone.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := edgeonezone.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if edgeonezone.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized edgeonezone.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := edgeonezone.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -384,7 +393,7 @@ func (_c *EdgeOneZoneCreate) createSpec() (*EdgeOneZone, *sqlgraph.CreateSpec) {
 			Columns: []string{edgeonezone.OriginGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(edgeoneorigingroup.FieldID, field.TypeInt64),
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

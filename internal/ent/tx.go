@@ -34,10 +34,10 @@ type Tx struct {
 	DevicePortForward *DevicePortForwardClient
 	// DomainMonitor is the client for interacting with the DomainMonitor builders.
 	DomainMonitor *DomainMonitorClient
-	// EdgeOneOriginGroup is the client for interacting with the EdgeOneOriginGroup builders.
-	EdgeOneOriginGroup *EdgeOneOriginGroupClient
 	// EdgeOneZone is the client for interacting with the EdgeOneZone builders.
 	EdgeOneZone *EdgeOneZoneClient
+	// EdgeOneZoneOriginGroup is the client for interacting with the EdgeOneZoneOriginGroup builders.
+	EdgeOneZoneOriginGroup *EdgeOneZoneOriginGroupClient
 	// IpGroup is the client for interacting with the IpGroup builders.
 	IpGroup *IpGroupClient
 	// IpGroupDevice is the client for interacting with the IpGroupDevice builders.
@@ -195,8 +195,8 @@ func (tx *Tx) init() {
 	tx.DeviceGroupDevice = NewDeviceGroupDeviceClient(tx.config)
 	tx.DevicePortForward = NewDevicePortForwardClient(tx.config)
 	tx.DomainMonitor = NewDomainMonitorClient(tx.config)
-	tx.EdgeOneOriginGroup = NewEdgeOneOriginGroupClient(tx.config)
 	tx.EdgeOneZone = NewEdgeOneZoneClient(tx.config)
+	tx.EdgeOneZoneOriginGroup = NewEdgeOneZoneOriginGroupClient(tx.config)
 	tx.IpGroup = NewIpGroupClient(tx.config)
 	tx.IpGroupDevice = NewIpGroupDeviceClient(tx.config)
 	tx.PlatformConfig = NewPlatformConfigClient(tx.config)

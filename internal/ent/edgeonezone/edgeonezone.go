@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -55,10 +56,10 @@ const (
 	// ConfigColumn is the table column denoting the config relation/edge.
 	ConfigColumn = "config_id"
 	// OriginGroupsTable is the table that holds the origin_groups relation/edge.
-	OriginGroupsTable = "edgeone_origin_group"
-	// OriginGroupsInverseTable is the table name for the EdgeOneOriginGroup entity.
-	// It exists in this package in order to avoid circular dependency with the "edgeoneorigingroup" package.
-	OriginGroupsInverseTable = "edgeone_origin_group"
+	OriginGroupsTable = "edgeone_zone_origin_group"
+	// OriginGroupsInverseTable is the table name for the EdgeOneZoneOriginGroup entity.
+	// It exists in this package in order to avoid circular dependency with the "edgeonezoneorigingroup" package.
+	OriginGroupsInverseTable = "edgeone_zone_origin_group"
 	// OriginGroupsColumn is the table column denoting the origin_groups relation/edge.
 	OriginGroupsColumn = "edgeone_zone_id"
 )
@@ -91,7 +92,13 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "vibe_ip/internal/ent/runtime"
 var (
+	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
