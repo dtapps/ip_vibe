@@ -19,6 +19,8 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
+	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
@@ -92,26 +94,28 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			cdnrecord.Table:               cdnrecord.ValidColumn,
-			cache.Table:                   cache.ValidColumn,
-			cloudflaretunnel.Table:        cloudflaretunnel.ValidColumn,
-			cloudflaretunnelingress.Table: cloudflaretunnelingress.ValidColumn,
-			dnsrecord.Table:               dnsrecord.ValidColumn,
-			device.Table:                  device.ValidColumn,
-			devicegroup.Table:             devicegroup.ValidColumn,
-			devicegroupdevice.Table:       devicegroupdevice.ValidColumn,
-			deviceportforward.Table:       deviceportforward.ValidColumn,
-			domainmonitor.Table:           domainmonitor.ValidColumn,
-			edgeonezone.Table:             edgeonezone.ValidColumn,
-			edgeonezoneorigingroup.Table:  edgeonezoneorigingroup.ValidColumn,
-			ipgroup.Table:                 ipgroup.ValidColumn,
-			ipgroupdevice.Table:           ipgroupdevice.ValidColumn,
-			platformconfig.Table:          platformconfig.ValidColumn,
-			sslimport.Table:               sslimport.ValidColumn,
-			sslrecord.Table:               sslrecord.ValidColumn,
-			tunrecord.Table:               tunrecord.ValidColumn,
-			webhook.Table:                 webhook.ValidColumn,
-			webhooksubscription.Table:     webhooksubscription.ValidColumn,
+			cdnrecord.Table:                     cdnrecord.ValidColumn,
+			cache.Table:                         cache.ValidColumn,
+			cloudflaretunnel.Table:              cloudflaretunnel.ValidColumn,
+			cloudflaretunnelingress.Table:       cloudflaretunnelingress.ValidColumn,
+			dnsrecord.Table:                     dnsrecord.ValidColumn,
+			device.Table:                        device.ValidColumn,
+			devicegroup.Table:                   devicegroup.ValidColumn,
+			devicegroupdevice.Table:             devicegroupdevice.ValidColumn,
+			deviceportforward.Table:             deviceportforward.ValidColumn,
+			domainmonitor.Table:                 domainmonitor.ValidColumn,
+			edgeonezone.Table:                   edgeonezone.ValidColumn,
+			edgeonezoneaccelerationdomain.Table: edgeonezoneaccelerationdomain.ValidColumn,
+			edgeonezonednsrecord.Table:          edgeonezonednsrecord.ValidColumn,
+			edgeonezoneorigingroup.Table:        edgeonezoneorigingroup.ValidColumn,
+			ipgroup.Table:                       ipgroup.ValidColumn,
+			ipgroupdevice.Table:                 ipgroupdevice.ValidColumn,
+			platformconfig.Table:                platformconfig.ValidColumn,
+			sslimport.Table:                     sslimport.ValidColumn,
+			sslrecord.Table:                     sslrecord.ValidColumn,
+			tunrecord.Table:                     tunrecord.ValidColumn,
+			webhook.Table:                       webhook.ValidColumn,
+			webhooksubscription.Table:           webhooksubscription.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

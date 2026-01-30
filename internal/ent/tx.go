@@ -36,6 +36,10 @@ type Tx struct {
 	DomainMonitor *DomainMonitorClient
 	// EdgeOneZone is the client for interacting with the EdgeOneZone builders.
 	EdgeOneZone *EdgeOneZoneClient
+	// EdgeOneZoneAccelerationDomain is the client for interacting with the EdgeOneZoneAccelerationDomain builders.
+	EdgeOneZoneAccelerationDomain *EdgeOneZoneAccelerationDomainClient
+	// EdgeOneZoneDNSRecord is the client for interacting with the EdgeOneZoneDNSRecord builders.
+	EdgeOneZoneDNSRecord *EdgeOneZoneDNSRecordClient
 	// EdgeOneZoneOriginGroup is the client for interacting with the EdgeOneZoneOriginGroup builders.
 	EdgeOneZoneOriginGroup *EdgeOneZoneOriginGroupClient
 	// IpGroup is the client for interacting with the IpGroup builders.
@@ -196,6 +200,8 @@ func (tx *Tx) init() {
 	tx.DevicePortForward = NewDevicePortForwardClient(tx.config)
 	tx.DomainMonitor = NewDomainMonitorClient(tx.config)
 	tx.EdgeOneZone = NewEdgeOneZoneClient(tx.config)
+	tx.EdgeOneZoneAccelerationDomain = NewEdgeOneZoneAccelerationDomainClient(tx.config)
+	tx.EdgeOneZoneDNSRecord = NewEdgeOneZoneDNSRecordClient(tx.config)
 	tx.EdgeOneZoneOriginGroup = NewEdgeOneZoneOriginGroupClient(tx.config)
 	tx.IpGroup = NewIpGroupClient(tx.config)
 	tx.IpGroupDevice = NewIpGroupDeviceClient(tx.config)

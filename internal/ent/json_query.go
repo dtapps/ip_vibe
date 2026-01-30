@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
+	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/predicate"
@@ -189,6 +190,93 @@ func (q *DomainMonitorQuery) WhereRequestHeadersContains(val any) *DomainMonitor
 func (q *DomainMonitorQuery) WhereRequestHeadersContainsIf(condition bool, val any) *DomainMonitorQuery {
 	if condition {
 		return q.WhereRequestHeadersContains(val)
+	}
+	return q
+}
+
+// WhereOwnershipVerificationContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EdgeOneZoneAccelerationDomainQuery) WhereOwnershipVerificationContains(val any) *EdgeOneZoneAccelerationDomainQuery {
+	return q.Where(predicate.EdgeOneZoneAccelerationDomain(func(s *sql.Selector) {
+		column := edgeonezoneaccelerationdomain.FieldOwnershipVerification
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereOwnershipVerificationContainsIf 只有在 condition 为 true 时才调用 WhereOwnershipVerificationContains。
+func (q *EdgeOneZoneAccelerationDomainQuery) WhereOwnershipVerificationContainsIf(condition bool, val any) *EdgeOneZoneAccelerationDomainQuery {
+	if condition {
+		return q.WhereOwnershipVerificationContains(val)
+	}
+	return q
+}
+
+// WhereOriginDetailContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EdgeOneZoneAccelerationDomainQuery) WhereOriginDetailContains(val any) *EdgeOneZoneAccelerationDomainQuery {
+	return q.Where(predicate.EdgeOneZoneAccelerationDomain(func(s *sql.Selector) {
+		column := edgeonezoneaccelerationdomain.FieldOriginDetail
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereOriginDetailContainsIf 只有在 condition 为 true 时才调用 WhereOriginDetailContains。
+func (q *EdgeOneZoneAccelerationDomainQuery) WhereOriginDetailContainsIf(condition bool, val any) *EdgeOneZoneAccelerationDomainQuery {
+	if condition {
+		return q.WhereOriginDetailContains(val)
+	}
+	return q
+}
+
+// WhereCertificateContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EdgeOneZoneAccelerationDomainQuery) WhereCertificateContains(val any) *EdgeOneZoneAccelerationDomainQuery {
+	return q.Where(predicate.EdgeOneZoneAccelerationDomain(func(s *sql.Selector) {
+		column := edgeonezoneaccelerationdomain.FieldCertificate
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereCertificateContainsIf 只有在 condition 为 true 时才调用 WhereCertificateContains。
+func (q *EdgeOneZoneAccelerationDomainQuery) WhereCertificateContainsIf(condition bool, val any) *EdgeOneZoneAccelerationDomainQuery {
+	if condition {
+		return q.WhereCertificateContains(val)
 	}
 	return q
 }

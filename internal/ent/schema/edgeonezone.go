@@ -56,31 +56,37 @@ func (EdgeOneZone) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
+			Optional().
 			Comment("站点名称").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("area").
 			Values(schematype.GetEdgeOneZoneAreas...).
+			Optional().
 			Comment("加速区域").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("type").
 			Values(schematype.GetEdgeOneZoneTypes...).
+			Optional().
 			Comment("接入类型").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("status").
 			Values(schematype.GetEdgeOneZoneStatuss...).
+			Optional().
 			Comment("状态").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("cname_status").
 			Values(schematype.GetEdgeOneZoneCnameStatuss...).
+			Optional().
 			Comment("CNAME 接入状态").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("active_status").
 			Values(schematype.GetEdgeOneZoneActiveStatuss...).
+			Optional().
 			Comment("展示状态").
 			Annotations(entsql.WithComments(true)),
 
@@ -103,6 +109,22 @@ func (EdgeOneZone) Edges() []ent.Edge {
 			Immutable().
 			Comment("关联的平台配置").
 			Annotations(entsql.WithComments(true)),
+
+		// 一对多 EdgeOneZone -> EdgeOneZoneAccelerationDomain
+		edge.To("accelerationdomains", EdgeOneZoneAccelerationDomain.Type).
+			Comment("关联的EdgeOne站点加速域名").
+			Annotations(entsql.Annotation{
+				// 级联删除：删除 EdgeOneZone 时，其所有 EdgeOneZoneAccelerationDomain 记录也应删除
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
+
+		// 一对多 EdgeOneZone -> EdgeOneZoneDNSRecord
+		edge.To("dnsrecords", EdgeOneZoneDNSRecord.Type).
+			Comment("关联的EdgeOne站点DNS记录").
+			Annotations(entsql.Annotation{
+				// 级联删除：删除 EdgeOneZone 时，其所有 EdgeOneZoneDNSRecord 记录也应删除
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
 
 		// 一对多 EdgeOneZone -> EdgeOneZoneOriginGroup
 		edge.To("origingroups", EdgeOneZoneOriginGroup.Type).

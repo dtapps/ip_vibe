@@ -57,11 +57,13 @@ func (CloudflareTunnel) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
+			Optional().
 			Comment("隧道名称").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("status").
 			Values(schematype.GetCloudflareTunnelStatuss...).
+			Optional().
 			Comment("隧道状态").
 			Annotations(entsql.WithComments(true)),
 

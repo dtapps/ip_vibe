@@ -145,35 +145,37 @@ const DefaultObjType = ObjTypeUnknown
 
 // ObjType values.
 const (
-	ObjTypeUnknown                 ObjType = "Unknown"
-	ObjTypeCache                   ObjType = "Cache"
-	ObjTypeCloudflareTunnel        ObjType = "CloudflareTunnel"
-	ObjTypeCloudflareTunnelIngress ObjType = "CloudflareTunnelIngress"
-	ObjTypeCDNRecord               ObjType = "CDNRecord"
-	ObjTypeDNSRecord               ObjType = "DNSRecord"
-	ObjTypeDevice                  ObjType = "Device"
-	ObjTypeDeviceGroup             ObjType = "DeviceGroup"
-	ObjTypeDeviceGroupDevice       ObjType = "DeviceGroupDevice"
-	ObjTypeDevicePortForward       ObjType = "DevicePortForward"
-	ObjTypeDomainMonitor           ObjType = "DomainMonitor"
-	ObjTypeEdgeOneZone             ObjType = "EdgeOneZone"
-	ObjTypeEdgeOneZoneOriginGroup  ObjType = "EdgeOneZoneOriginGroup"
-	ObjTypeIpGroup                 ObjType = "IpGroup"
-	ObjTypeIpGroupDevice           ObjType = "IpGroupDevice"
-	ObjTypePlatformConfig          ObjType = "PlatformConfig"
-	ObjTypeSSLImport               ObjType = "SSLImport"
-	ObjTypeSSLRecord               ObjType = "SSLRecord"
-	ObjTypeTUNRecord               ObjType = "TUNRecord"
-	ObjTypeWebhook                 ObjType = "Webhook"
-	ObjTypeWebhookSubscription     ObjType = "WebhookSubscription"
-	ObjTypeDeviceIpReport          ObjType = "DeviceIpReport"
-	ObjTypeDomainMonitorHistory    ObjType = "DomainMonitorHistory"
-	ObjTypeHttpLog                 ObjType = "HttpLog"
-	ObjTypeOperationLog            ObjType = "OperationLog"
-	ObjTypePortForwardStats        ObjType = "PortForwardStats"
-	ObjTypeRestyLog                ObjType = "RestyLog"
-	ObjTypeSSLCertificateHistory   ObjType = "SSLCertificateHistory"
-	ObjTypeWebhookHistory          ObjType = "WebhookHistory"
+	ObjTypeUnknown                       ObjType = "Unknown"
+	ObjTypeCache                         ObjType = "Cache"
+	ObjTypeCloudflareTunnel              ObjType = "CloudflareTunnel"
+	ObjTypeCloudflareTunnelIngress       ObjType = "CloudflareTunnelIngress"
+	ObjTypeCDNRecord                     ObjType = "CDNRecord"
+	ObjTypeDNSRecord                     ObjType = "DNSRecord"
+	ObjTypeDevice                        ObjType = "Device"
+	ObjTypeDeviceGroup                   ObjType = "DeviceGroup"
+	ObjTypeDeviceGroupDevice             ObjType = "DeviceGroupDevice"
+	ObjTypeDevicePortForward             ObjType = "DevicePortForward"
+	ObjTypeDomainMonitor                 ObjType = "DomainMonitor"
+	ObjTypeEdgeOneZone                   ObjType = "EdgeOneZone"
+	ObjTypeEdgeOneZoneAccelerationDomain ObjType = "EdgeOneZoneAccelerationDomain"
+	ObjTypeEdgeOneZoneDNSRecord          ObjType = "EdgeOneZoneDNSRecord"
+	ObjTypeEdgeOneZoneOriginGroup        ObjType = "EdgeOneZoneOriginGroup"
+	ObjTypeIpGroup                       ObjType = "IpGroup"
+	ObjTypeIpGroupDevice                 ObjType = "IpGroupDevice"
+	ObjTypePlatformConfig                ObjType = "PlatformConfig"
+	ObjTypeSSLImport                     ObjType = "SSLImport"
+	ObjTypeSSLRecord                     ObjType = "SSLRecord"
+	ObjTypeTUNRecord                     ObjType = "TUNRecord"
+	ObjTypeWebhook                       ObjType = "Webhook"
+	ObjTypeWebhookSubscription           ObjType = "WebhookSubscription"
+	ObjTypeDeviceIpReport                ObjType = "DeviceIpReport"
+	ObjTypeDomainMonitorHistory          ObjType = "DomainMonitorHistory"
+	ObjTypeHttpLog                       ObjType = "HttpLog"
+	ObjTypeOperationLog                  ObjType = "OperationLog"
+	ObjTypePortForwardStats              ObjType = "PortForwardStats"
+	ObjTypeRestyLog                      ObjType = "RestyLog"
+	ObjTypeSSLCertificateHistory         ObjType = "SSLCertificateHistory"
+	ObjTypeWebhookHistory                ObjType = "WebhookHistory"
 )
 
 func (ot ObjType) String() string {
@@ -183,7 +185,7 @@ func (ot ObjType) String() string {
 // ObjTypeValidator is a validator for the "obj_type" field enum values. It is called by the builders before save.
 func ObjTypeValidator(ot ObjType) error {
 	switch ot {
-	case ObjTypeUnknown, ObjTypeCache, ObjTypeCloudflareTunnel, ObjTypeCloudflareTunnelIngress, ObjTypeCDNRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDeviceGroup, ObjTypeDeviceGroupDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeEdgeOneZone, ObjTypeEdgeOneZoneOriginGroup, ObjTypeIpGroup, ObjTypeIpGroupDevice, ObjTypePlatformConfig, ObjTypeSSLImport, ObjTypeSSLRecord, ObjTypeTUNRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIpReport, ObjTypeDomainMonitorHistory, ObjTypeHttpLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSSLCertificateHistory, ObjTypeWebhookHistory:
+	case ObjTypeUnknown, ObjTypeCache, ObjTypeCloudflareTunnel, ObjTypeCloudflareTunnelIngress, ObjTypeCDNRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDeviceGroup, ObjTypeDeviceGroupDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeEdgeOneZone, ObjTypeEdgeOneZoneAccelerationDomain, ObjTypeEdgeOneZoneDNSRecord, ObjTypeEdgeOneZoneOriginGroup, ObjTypeIpGroup, ObjTypeIpGroupDevice, ObjTypePlatformConfig, ObjTypeSSLImport, ObjTypeSSLRecord, ObjTypeTUNRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIpReport, ObjTypeDomainMonitorHistory, ObjTypeHttpLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSSLCertificateHistory, ObjTypeWebhookHistory:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for obj_type field: %q", ot)

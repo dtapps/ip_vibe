@@ -65,12 +65,6 @@ func (_u *EdgeOneZoneOriginGroupUpdate) SetNillableGroupID(v *string) *EdgeOneZo
 	return _u
 }
 
-// ClearGroupID clears the value of the "group_id" field.
-func (_u *EdgeOneZoneOriginGroupUpdate) ClearGroupID() *EdgeOneZoneOriginGroupUpdate {
-	_u.mutation.ClearGroupID()
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *EdgeOneZoneOriginGroupUpdate) SetName(v string) *EdgeOneZoneOriginGroupUpdate {
 	_u.mutation.SetName(v)
@@ -82,6 +76,12 @@ func (_u *EdgeOneZoneOriginGroupUpdate) SetNillableName(v *string) *EdgeOneZoneO
 	if v != nil {
 		_u.SetName(*v)
 	}
+	return _u
+}
+
+// ClearName clears the value of the "name" field.
+func (_u *EdgeOneZoneOriginGroupUpdate) ClearName() *EdgeOneZoneOriginGroupUpdate {
+	_u.mutation.ClearName()
 	return _u
 }
 
@@ -234,11 +234,11 @@ func (_u *EdgeOneZoneOriginGroupUpdate) sqlSave(ctx context.Context) (_node int,
 	if value, ok := _u.mutation.GroupID(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldGroupID, field.TypeString, value)
 	}
-	if _u.mutation.GroupIDCleared() {
-		_spec.ClearField(edgeonezoneorigingroup.FieldGroupID, field.TypeString)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldName, field.TypeString, value)
+	}
+	if _u.mutation.NameCleared() {
+		_spec.ClearField(edgeonezoneorigingroup.FieldName, field.TypeString)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldType, field.TypeEnum, value)
@@ -324,12 +324,6 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) SetNillableGroupID(v *string) *EdgeOn
 	return _u
 }
 
-// ClearGroupID clears the value of the "group_id" field.
-func (_u *EdgeOneZoneOriginGroupUpdateOne) ClearGroupID() *EdgeOneZoneOriginGroupUpdateOne {
-	_u.mutation.ClearGroupID()
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *EdgeOneZoneOriginGroupUpdateOne) SetName(v string) *EdgeOneZoneOriginGroupUpdateOne {
 	_u.mutation.SetName(v)
@@ -341,6 +335,12 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) SetNillableName(v *string) *EdgeOneZo
 	if v != nil {
 		_u.SetName(*v)
 	}
+	return _u
+}
+
+// ClearName clears the value of the "name" field.
+func (_u *EdgeOneZoneOriginGroupUpdateOne) ClearName() *EdgeOneZoneOriginGroupUpdateOne {
+	_u.mutation.ClearName()
 	return _u
 }
 
@@ -523,11 +523,11 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) sqlSave(ctx context.Context) (_node *
 	if value, ok := _u.mutation.GroupID(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldGroupID, field.TypeString, value)
 	}
-	if _u.mutation.GroupIDCleared() {
-		_spec.ClearField(edgeonezoneorigingroup.FieldGroupID, field.TypeString)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldName, field.TypeString, value)
+	}
+	if _u.mutation.NameCleared() {
+		_spec.ClearField(edgeonezoneorigingroup.FieldName, field.TypeString)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldType, field.TypeEnum, value)

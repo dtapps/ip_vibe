@@ -99,9 +99,25 @@ func (_c *CloudflareTunnelCreate) SetName(v string) *CloudflareTunnelCreate {
 	return _c
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_c *CloudflareTunnelCreate) SetNillableName(v *string) *CloudflareTunnelCreate {
+	if v != nil {
+		_c.SetName(*v)
+	}
+	return _c
+}
+
 // SetStatus sets the "status" field.
 func (_c *CloudflareTunnelCreate) SetStatus(v cloudflaretunnel.Status) *CloudflareTunnelCreate {
 	_c.mutation.SetStatus(v)
+	return _c
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_c *CloudflareTunnelCreate) SetNillableStatus(v *cloudflaretunnel.Status) *CloudflareTunnelCreate {
+	if v != nil {
+		_c.SetStatus(*v)
+	}
 	return _c
 }
 
@@ -223,12 +239,6 @@ func (_c *CloudflareTunnelCreate) check() error {
 	}
 	if _, ok := _c.mutation.TunnelID(); !ok {
 		return &ValidationError{Name: "tunnel_id", err: errors.New(`ent: missing required field "CloudflareTunnel.tunnel_id"`)}
-	}
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "CloudflareTunnel.name"`)}
-	}
-	if _, ok := _c.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "CloudflareTunnel.status"`)}
 	}
 	if v, ok := _c.mutation.Status(); ok {
 		if err := cloudflaretunnel.StatusValidator(v); err != nil {
@@ -439,6 +449,12 @@ func (u *CloudflareTunnelUpsert) UpdateName() *CloudflareTunnelUpsert {
 	return u
 }
 
+// ClearName clears the value of the "name" field.
+func (u *CloudflareTunnelUpsert) ClearName() *CloudflareTunnelUpsert {
+	u.SetNull(cloudflaretunnel.FieldName)
+	return u
+}
+
 // SetStatus sets the "status" field.
 func (u *CloudflareTunnelUpsert) SetStatus(v cloudflaretunnel.Status) *CloudflareTunnelUpsert {
 	u.Set(cloudflaretunnel.FieldStatus, v)
@@ -448,6 +464,12 @@ func (u *CloudflareTunnelUpsert) SetStatus(v cloudflaretunnel.Status) *Cloudflar
 // UpdateStatus sets the "status" field to the value that was provided on create.
 func (u *CloudflareTunnelUpsert) UpdateStatus() *CloudflareTunnelUpsert {
 	u.SetExcluded(cloudflaretunnel.FieldStatus)
+	return u
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *CloudflareTunnelUpsert) ClearStatus() *CloudflareTunnelUpsert {
+	u.SetNull(cloudflaretunnel.FieldStatus)
 	return u
 }
 
@@ -596,6 +618,13 @@ func (u *CloudflareTunnelUpsertOne) UpdateName() *CloudflareTunnelUpsertOne {
 	})
 }
 
+// ClearName clears the value of the "name" field.
+func (u *CloudflareTunnelUpsertOne) ClearName() *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearName()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *CloudflareTunnelUpsertOne) SetStatus(v cloudflaretunnel.Status) *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
@@ -607,6 +636,13 @@ func (u *CloudflareTunnelUpsertOne) SetStatus(v cloudflaretunnel.Status) *Cloudf
 func (u *CloudflareTunnelUpsertOne) UpdateStatus() *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *CloudflareTunnelUpsertOne) ClearStatus() *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearStatus()
 	})
 }
 
@@ -927,6 +963,13 @@ func (u *CloudflareTunnelUpsertBulk) UpdateName() *CloudflareTunnelUpsertBulk {
 	})
 }
 
+// ClearName clears the value of the "name" field.
+func (u *CloudflareTunnelUpsertBulk) ClearName() *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearName()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *CloudflareTunnelUpsertBulk) SetStatus(v cloudflaretunnel.Status) *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
@@ -938,6 +981,13 @@ func (u *CloudflareTunnelUpsertBulk) SetStatus(v cloudflaretunnel.Status) *Cloud
 func (u *CloudflareTunnelUpsertBulk) UpdateStatus() *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *CloudflareTunnelUpsertBulk) ClearStatus() *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearStatus()
 	})
 }
 

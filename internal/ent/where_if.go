@@ -350,6 +350,68 @@ func (q *EdgeOneZoneQuery) WhereIfFunc(condition bool, predicateFunc func() pred
 
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EdgeOneZoneAccelerationDomainQuery) WhereIf(condition bool, p predicate.EdgeOneZoneAccelerationDomain) *EdgeOneZoneAccelerationDomainQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EdgeOneZoneAccelerationDomainQuery) WhereIfs(condition bool, p ...predicate.EdgeOneZoneAccelerationDomain) *EdgeOneZoneAccelerationDomainQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *EdgeOneZoneAccelerationDomainQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.EdgeOneZoneAccelerationDomain) *EdgeOneZoneAccelerationDomainQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EdgeOneZoneDNSRecordQuery) WhereIf(condition bool, p predicate.EdgeOneZoneDNSRecord) *EdgeOneZoneDNSRecordQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EdgeOneZoneDNSRecordQuery) WhereIfs(condition bool, p ...predicate.EdgeOneZoneDNSRecord) *EdgeOneZoneDNSRecordQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *EdgeOneZoneDNSRecordQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.EdgeOneZoneDNSRecord) *EdgeOneZoneDNSRecordQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
 func (q *EdgeOneZoneOriginGroupQuery) WhereIf(condition bool, p predicate.EdgeOneZoneOriginGroup) *EdgeOneZoneOriginGroupQuery {
 	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {

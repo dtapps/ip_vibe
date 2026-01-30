@@ -135,6 +135,34 @@ func (t *EdgeOneZone) ToMap() map[string]any {
 	return m
 }
 
+// ToMap 将 EdgeOneZoneAccelerationDomain 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *EdgeOneZoneAccelerationDomain) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["ownership_verification"] = t.OwnershipVerification
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["origin_detail"] = t.OriginDetail
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["certificate"] = t.Certificate
+	return m
+}
+
+// ToMap 将 EdgeOneZoneDNSRecord 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *EdgeOneZoneDNSRecord) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+	return m
+}
+
 // ToMap 将 EdgeOneZoneOriginGroup 实体转换为 map[string]any。
 // 键为数据库列名（snake_case），值为字段当前值。
 // 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。

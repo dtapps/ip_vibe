@@ -39,6 +39,12 @@ type DomainMonitor func(*sql.Selector)
 // EdgeOneZone is the predicate function for edgeonezone builders.
 type EdgeOneZone func(*sql.Selector)
 
+// EdgeOneZoneAccelerationDomain is the predicate function for edgeonezoneaccelerationdomain builders.
+type EdgeOneZoneAccelerationDomain func(*sql.Selector)
+
+// EdgeOneZoneDNSRecord is the predicate function for edgeonezonednsrecord builders.
+type EdgeOneZoneDNSRecord func(*sql.Selector)
+
 // EdgeOneZoneOriginGroup is the predicate function for edgeonezoneorigingroup builders.
 type EdgeOneZoneOriginGroup func(*sql.Selector)
 

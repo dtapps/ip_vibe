@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
+	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/platformconfig"
 
@@ -98,9 +100,25 @@ func (_c *EdgeOneZoneCreate) SetName(v string) *EdgeOneZoneCreate {
 	return _c
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_c *EdgeOneZoneCreate) SetNillableName(v *string) *EdgeOneZoneCreate {
+	if v != nil {
+		_c.SetName(*v)
+	}
+	return _c
+}
+
 // SetArea sets the "area" field.
 func (_c *EdgeOneZoneCreate) SetArea(v edgeonezone.Area) *EdgeOneZoneCreate {
 	_c.mutation.SetArea(v)
+	return _c
+}
+
+// SetNillableArea sets the "area" field if the given value is not nil.
+func (_c *EdgeOneZoneCreate) SetNillableArea(v *edgeonezone.Area) *EdgeOneZoneCreate {
+	if v != nil {
+		_c.SetArea(*v)
+	}
 	return _c
 }
 
@@ -110,9 +128,25 @@ func (_c *EdgeOneZoneCreate) SetType(v edgeonezone.Type) *EdgeOneZoneCreate {
 	return _c
 }
 
+// SetNillableType sets the "type" field if the given value is not nil.
+func (_c *EdgeOneZoneCreate) SetNillableType(v *edgeonezone.Type) *EdgeOneZoneCreate {
+	if v != nil {
+		_c.SetType(*v)
+	}
+	return _c
+}
+
 // SetStatus sets the "status" field.
 func (_c *EdgeOneZoneCreate) SetStatus(v edgeonezone.Status) *EdgeOneZoneCreate {
 	_c.mutation.SetStatus(v)
+	return _c
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_c *EdgeOneZoneCreate) SetNillableStatus(v *edgeonezone.Status) *EdgeOneZoneCreate {
+	if v != nil {
+		_c.SetStatus(*v)
+	}
 	return _c
 }
 
@@ -122,9 +156,25 @@ func (_c *EdgeOneZoneCreate) SetCnameStatus(v edgeonezone.CnameStatus) *EdgeOneZ
 	return _c
 }
 
+// SetNillableCnameStatus sets the "cname_status" field if the given value is not nil.
+func (_c *EdgeOneZoneCreate) SetNillableCnameStatus(v *edgeonezone.CnameStatus) *EdgeOneZoneCreate {
+	if v != nil {
+		_c.SetCnameStatus(*v)
+	}
+	return _c
+}
+
 // SetActiveStatus sets the "active_status" field.
 func (_c *EdgeOneZoneCreate) SetActiveStatus(v edgeonezone.ActiveStatus) *EdgeOneZoneCreate {
 	_c.mutation.SetActiveStatus(v)
+	return _c
+}
+
+// SetNillableActiveStatus sets the "active_status" field if the given value is not nil.
+func (_c *EdgeOneZoneCreate) SetNillableActiveStatus(v *edgeonezone.ActiveStatus) *EdgeOneZoneCreate {
+	if v != nil {
+		_c.SetActiveStatus(*v)
+	}
 	return _c
 }
 
@@ -151,6 +201,36 @@ func (_c *EdgeOneZoneCreate) SetID(v int64) *EdgeOneZoneCreate {
 // SetConfig sets the "config" edge to the PlatformConfig entity.
 func (_c *EdgeOneZoneCreate) SetConfig(v *PlatformConfig) *EdgeOneZoneCreate {
 	return _c.SetConfigID(v.ID)
+}
+
+// AddAccelerationdomainIDs adds the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity by IDs.
+func (_c *EdgeOneZoneCreate) AddAccelerationdomainIDs(ids ...int64) *EdgeOneZoneCreate {
+	_c.mutation.AddAccelerationdomainIDs(ids...)
+	return _c
+}
+
+// AddAccelerationdomains adds the "accelerationdomains" edges to the EdgeOneZoneAccelerationDomain entity.
+func (_c *EdgeOneZoneCreate) AddAccelerationdomains(v ...*EdgeOneZoneAccelerationDomain) *EdgeOneZoneCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddAccelerationdomainIDs(ids...)
+}
+
+// AddDnsrecordIDs adds the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity by IDs.
+func (_c *EdgeOneZoneCreate) AddDnsrecordIDs(ids ...int64) *EdgeOneZoneCreate {
+	_c.mutation.AddDnsrecordIDs(ids...)
+	return _c
+}
+
+// AddDnsrecords adds the "dnsrecords" edges to the EdgeOneZoneDNSRecord entity.
+func (_c *EdgeOneZoneCreate) AddDnsrecords(v ...*EdgeOneZoneDNSRecord) *EdgeOneZoneCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddDnsrecordIDs(ids...)
 }
 
 // AddOrigingroupIDs adds the "origingroups" edge to the EdgeOneZoneOriginGroup entity by IDs.
@@ -241,43 +321,25 @@ func (_c *EdgeOneZoneCreate) check() error {
 	if _, ok := _c.mutation.ZoneID(); !ok {
 		return &ValidationError{Name: "zone_id", err: errors.New(`ent: missing required field "EdgeOneZone.zone_id"`)}
 	}
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "EdgeOneZone.name"`)}
-	}
-	if _, ok := _c.mutation.Area(); !ok {
-		return &ValidationError{Name: "area", err: errors.New(`ent: missing required field "EdgeOneZone.area"`)}
-	}
 	if v, ok := _c.mutation.Area(); ok {
 		if err := edgeonezone.AreaValidator(v); err != nil {
 			return &ValidationError{Name: "area", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.area": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "EdgeOneZone.type"`)}
 	}
 	if v, ok := _c.mutation.GetType(); ok {
 		if err := edgeonezone.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.type": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "EdgeOneZone.status"`)}
-	}
 	if v, ok := _c.mutation.Status(); ok {
 		if err := edgeonezone.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.status": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.CnameStatus(); !ok {
-		return &ValidationError{Name: "cname_status", err: errors.New(`ent: missing required field "EdgeOneZone.cname_status"`)}
-	}
 	if v, ok := _c.mutation.CnameStatus(); ok {
 		if err := edgeonezone.CnameStatusValidator(v); err != nil {
 			return &ValidationError{Name: "cname_status", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.cname_status": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.ActiveStatus(); !ok {
-		return &ValidationError{Name: "active_status", err: errors.New(`ent: missing required field "EdgeOneZone.active_status"`)}
 	}
 	if v, ok := _c.mutation.ActiveStatus(); ok {
 		if err := edgeonezone.ActiveStatusValidator(v); err != nil {
@@ -390,6 +452,38 @@ func (_c *EdgeOneZoneCreate) createSpec() (*EdgeOneZone, *sqlgraph.CreateSpec) {
 		_node.ConfigID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := _c.mutation.AccelerationdomainsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.AccelerationdomainsTable,
+			Columns: []string{edgeonezone.AccelerationdomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneaccelerationdomain.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.DnsrecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.DnsrecordsTable,
+			Columns: []string{edgeonezone.DnsrecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezonednsrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := _c.mutation.OrigingroupsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -500,6 +594,12 @@ func (u *EdgeOneZoneUpsert) UpdateName() *EdgeOneZoneUpsert {
 	return u
 }
 
+// ClearName clears the value of the "name" field.
+func (u *EdgeOneZoneUpsert) ClearName() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldName)
+	return u
+}
+
 // SetArea sets the "area" field.
 func (u *EdgeOneZoneUpsert) SetArea(v edgeonezone.Area) *EdgeOneZoneUpsert {
 	u.Set(edgeonezone.FieldArea, v)
@@ -509,6 +609,12 @@ func (u *EdgeOneZoneUpsert) SetArea(v edgeonezone.Area) *EdgeOneZoneUpsert {
 // UpdateArea sets the "area" field to the value that was provided on create.
 func (u *EdgeOneZoneUpsert) UpdateArea() *EdgeOneZoneUpsert {
 	u.SetExcluded(edgeonezone.FieldArea)
+	return u
+}
+
+// ClearArea clears the value of the "area" field.
+func (u *EdgeOneZoneUpsert) ClearArea() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldArea)
 	return u
 }
 
@@ -524,6 +630,12 @@ func (u *EdgeOneZoneUpsert) UpdateType() *EdgeOneZoneUpsert {
 	return u
 }
 
+// ClearType clears the value of the "type" field.
+func (u *EdgeOneZoneUpsert) ClearType() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldType)
+	return u
+}
+
 // SetStatus sets the "status" field.
 func (u *EdgeOneZoneUpsert) SetStatus(v edgeonezone.Status) *EdgeOneZoneUpsert {
 	u.Set(edgeonezone.FieldStatus, v)
@@ -533,6 +645,12 @@ func (u *EdgeOneZoneUpsert) SetStatus(v edgeonezone.Status) *EdgeOneZoneUpsert {
 // UpdateStatus sets the "status" field to the value that was provided on create.
 func (u *EdgeOneZoneUpsert) UpdateStatus() *EdgeOneZoneUpsert {
 	u.SetExcluded(edgeonezone.FieldStatus)
+	return u
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *EdgeOneZoneUpsert) ClearStatus() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldStatus)
 	return u
 }
 
@@ -548,6 +666,12 @@ func (u *EdgeOneZoneUpsert) UpdateCnameStatus() *EdgeOneZoneUpsert {
 	return u
 }
 
+// ClearCnameStatus clears the value of the "cname_status" field.
+func (u *EdgeOneZoneUpsert) ClearCnameStatus() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldCnameStatus)
+	return u
+}
+
 // SetActiveStatus sets the "active_status" field.
 func (u *EdgeOneZoneUpsert) SetActiveStatus(v edgeonezone.ActiveStatus) *EdgeOneZoneUpsert {
 	u.Set(edgeonezone.FieldActiveStatus, v)
@@ -557,6 +681,12 @@ func (u *EdgeOneZoneUpsert) SetActiveStatus(v edgeonezone.ActiveStatus) *EdgeOne
 // UpdateActiveStatus sets the "active_status" field to the value that was provided on create.
 func (u *EdgeOneZoneUpsert) UpdateActiveStatus() *EdgeOneZoneUpsert {
 	u.SetExcluded(edgeonezone.FieldActiveStatus)
+	return u
+}
+
+// ClearActiveStatus clears the value of the "active_status" field.
+func (u *EdgeOneZoneUpsert) ClearActiveStatus() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldActiveStatus)
 	return u
 }
 
@@ -687,6 +817,13 @@ func (u *EdgeOneZoneUpsertOne) UpdateName() *EdgeOneZoneUpsertOne {
 	})
 }
 
+// ClearName clears the value of the "name" field.
+func (u *EdgeOneZoneUpsertOne) ClearName() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearName()
+	})
+}
+
 // SetArea sets the "area" field.
 func (u *EdgeOneZoneUpsertOne) SetArea(v edgeonezone.Area) *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
@@ -698,6 +835,13 @@ func (u *EdgeOneZoneUpsertOne) SetArea(v edgeonezone.Area) *EdgeOneZoneUpsertOne
 func (u *EdgeOneZoneUpsertOne) UpdateArea() *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.UpdateArea()
+	})
+}
+
+// ClearArea clears the value of the "area" field.
+func (u *EdgeOneZoneUpsertOne) ClearArea() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearArea()
 	})
 }
 
@@ -715,6 +859,13 @@ func (u *EdgeOneZoneUpsertOne) UpdateType() *EdgeOneZoneUpsertOne {
 	})
 }
 
+// ClearType clears the value of the "type" field.
+func (u *EdgeOneZoneUpsertOne) ClearType() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearType()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *EdgeOneZoneUpsertOne) SetStatus(v edgeonezone.Status) *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
@@ -726,6 +877,13 @@ func (u *EdgeOneZoneUpsertOne) SetStatus(v edgeonezone.Status) *EdgeOneZoneUpser
 func (u *EdgeOneZoneUpsertOne) UpdateStatus() *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *EdgeOneZoneUpsertOne) ClearStatus() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearStatus()
 	})
 }
 
@@ -743,6 +901,13 @@ func (u *EdgeOneZoneUpsertOne) UpdateCnameStatus() *EdgeOneZoneUpsertOne {
 	})
 }
 
+// ClearCnameStatus clears the value of the "cname_status" field.
+func (u *EdgeOneZoneUpsertOne) ClearCnameStatus() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearCnameStatus()
+	})
+}
+
 // SetActiveStatus sets the "active_status" field.
 func (u *EdgeOneZoneUpsertOne) SetActiveStatus(v edgeonezone.ActiveStatus) *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
@@ -754,6 +919,13 @@ func (u *EdgeOneZoneUpsertOne) SetActiveStatus(v edgeonezone.ActiveStatus) *Edge
 func (u *EdgeOneZoneUpsertOne) UpdateActiveStatus() *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.UpdateActiveStatus()
+	})
+}
+
+// ClearActiveStatus clears the value of the "active_status" field.
+func (u *EdgeOneZoneUpsertOne) ClearActiveStatus() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearActiveStatus()
 	})
 }
 
@@ -1053,6 +1225,13 @@ func (u *EdgeOneZoneUpsertBulk) UpdateName() *EdgeOneZoneUpsertBulk {
 	})
 }
 
+// ClearName clears the value of the "name" field.
+func (u *EdgeOneZoneUpsertBulk) ClearName() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearName()
+	})
+}
+
 // SetArea sets the "area" field.
 func (u *EdgeOneZoneUpsertBulk) SetArea(v edgeonezone.Area) *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
@@ -1064,6 +1243,13 @@ func (u *EdgeOneZoneUpsertBulk) SetArea(v edgeonezone.Area) *EdgeOneZoneUpsertBu
 func (u *EdgeOneZoneUpsertBulk) UpdateArea() *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.UpdateArea()
+	})
+}
+
+// ClearArea clears the value of the "area" field.
+func (u *EdgeOneZoneUpsertBulk) ClearArea() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearArea()
 	})
 }
 
@@ -1081,6 +1267,13 @@ func (u *EdgeOneZoneUpsertBulk) UpdateType() *EdgeOneZoneUpsertBulk {
 	})
 }
 
+// ClearType clears the value of the "type" field.
+func (u *EdgeOneZoneUpsertBulk) ClearType() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearType()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *EdgeOneZoneUpsertBulk) SetStatus(v edgeonezone.Status) *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
@@ -1092,6 +1285,13 @@ func (u *EdgeOneZoneUpsertBulk) SetStatus(v edgeonezone.Status) *EdgeOneZoneUpse
 func (u *EdgeOneZoneUpsertBulk) UpdateStatus() *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *EdgeOneZoneUpsertBulk) ClearStatus() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearStatus()
 	})
 }
 
@@ -1109,6 +1309,13 @@ func (u *EdgeOneZoneUpsertBulk) UpdateCnameStatus() *EdgeOneZoneUpsertBulk {
 	})
 }
 
+// ClearCnameStatus clears the value of the "cname_status" field.
+func (u *EdgeOneZoneUpsertBulk) ClearCnameStatus() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearCnameStatus()
+	})
+}
+
 // SetActiveStatus sets the "active_status" field.
 func (u *EdgeOneZoneUpsertBulk) SetActiveStatus(v edgeonezone.ActiveStatus) *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
@@ -1120,6 +1327,13 @@ func (u *EdgeOneZoneUpsertBulk) SetActiveStatus(v edgeonezone.ActiveStatus) *Edg
 func (u *EdgeOneZoneUpsertBulk) UpdateActiveStatus() *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.UpdateActiveStatus()
+	})
+}
+
+// ClearActiveStatus clears the value of the "active_status" field.
+func (u *EdgeOneZoneUpsertBulk) ClearActiveStatus() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearActiveStatus()
 	})
 }
 

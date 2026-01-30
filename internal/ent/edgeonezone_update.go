@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
+	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/predicate"
 
@@ -78,6 +80,12 @@ func (_u *EdgeOneZoneUpdate) SetNillableName(v *string) *EdgeOneZoneUpdate {
 	return _u
 }
 
+// ClearName clears the value of the "name" field.
+func (_u *EdgeOneZoneUpdate) ClearName() *EdgeOneZoneUpdate {
+	_u.mutation.ClearName()
+	return _u
+}
+
 // SetArea sets the "area" field.
 func (_u *EdgeOneZoneUpdate) SetArea(v edgeonezone.Area) *EdgeOneZoneUpdate {
 	_u.mutation.SetArea(v)
@@ -89,6 +97,12 @@ func (_u *EdgeOneZoneUpdate) SetNillableArea(v *edgeonezone.Area) *EdgeOneZoneUp
 	if v != nil {
 		_u.SetArea(*v)
 	}
+	return _u
+}
+
+// ClearArea clears the value of the "area" field.
+func (_u *EdgeOneZoneUpdate) ClearArea() *EdgeOneZoneUpdate {
+	_u.mutation.ClearArea()
 	return _u
 }
 
@@ -106,6 +120,12 @@ func (_u *EdgeOneZoneUpdate) SetNillableType(v *edgeonezone.Type) *EdgeOneZoneUp
 	return _u
 }
 
+// ClearType clears the value of the "type" field.
+func (_u *EdgeOneZoneUpdate) ClearType() *EdgeOneZoneUpdate {
+	_u.mutation.ClearType()
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *EdgeOneZoneUpdate) SetStatus(v edgeonezone.Status) *EdgeOneZoneUpdate {
 	_u.mutation.SetStatus(v)
@@ -117,6 +137,12 @@ func (_u *EdgeOneZoneUpdate) SetNillableStatus(v *edgeonezone.Status) *EdgeOneZo
 	if v != nil {
 		_u.SetStatus(*v)
 	}
+	return _u
+}
+
+// ClearStatus clears the value of the "status" field.
+func (_u *EdgeOneZoneUpdate) ClearStatus() *EdgeOneZoneUpdate {
+	_u.mutation.ClearStatus()
 	return _u
 }
 
@@ -134,6 +160,12 @@ func (_u *EdgeOneZoneUpdate) SetNillableCnameStatus(v *edgeonezone.CnameStatus) 
 	return _u
 }
 
+// ClearCnameStatus clears the value of the "cname_status" field.
+func (_u *EdgeOneZoneUpdate) ClearCnameStatus() *EdgeOneZoneUpdate {
+	_u.mutation.ClearCnameStatus()
+	return _u
+}
+
 // SetActiveStatus sets the "active_status" field.
 func (_u *EdgeOneZoneUpdate) SetActiveStatus(v edgeonezone.ActiveStatus) *EdgeOneZoneUpdate {
 	_u.mutation.SetActiveStatus(v)
@@ -145,6 +177,12 @@ func (_u *EdgeOneZoneUpdate) SetNillableActiveStatus(v *edgeonezone.ActiveStatus
 	if v != nil {
 		_u.SetActiveStatus(*v)
 	}
+	return _u
+}
+
+// ClearActiveStatus clears the value of the "active_status" field.
+func (_u *EdgeOneZoneUpdate) ClearActiveStatus() *EdgeOneZoneUpdate {
+	_u.mutation.ClearActiveStatus()
 	return _u
 }
 
@@ -168,6 +206,36 @@ func (_u *EdgeOneZoneUpdate) ClearPaused() *EdgeOneZoneUpdate {
 	return _u
 }
 
+// AddAccelerationdomainIDs adds the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity by IDs.
+func (_u *EdgeOneZoneUpdate) AddAccelerationdomainIDs(ids ...int64) *EdgeOneZoneUpdate {
+	_u.mutation.AddAccelerationdomainIDs(ids...)
+	return _u
+}
+
+// AddAccelerationdomains adds the "accelerationdomains" edges to the EdgeOneZoneAccelerationDomain entity.
+func (_u *EdgeOneZoneUpdate) AddAccelerationdomains(v ...*EdgeOneZoneAccelerationDomain) *EdgeOneZoneUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddAccelerationdomainIDs(ids...)
+}
+
+// AddDnsrecordIDs adds the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity by IDs.
+func (_u *EdgeOneZoneUpdate) AddDnsrecordIDs(ids ...int64) *EdgeOneZoneUpdate {
+	_u.mutation.AddDnsrecordIDs(ids...)
+	return _u
+}
+
+// AddDnsrecords adds the "dnsrecords" edges to the EdgeOneZoneDNSRecord entity.
+func (_u *EdgeOneZoneUpdate) AddDnsrecords(v ...*EdgeOneZoneDNSRecord) *EdgeOneZoneUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddDnsrecordIDs(ids...)
+}
+
 // AddOrigingroupIDs adds the "origingroups" edge to the EdgeOneZoneOriginGroup entity by IDs.
 func (_u *EdgeOneZoneUpdate) AddOrigingroupIDs(ids ...int64) *EdgeOneZoneUpdate {
 	_u.mutation.AddOrigingroupIDs(ids...)
@@ -186,6 +254,48 @@ func (_u *EdgeOneZoneUpdate) AddOrigingroups(v ...*EdgeOneZoneOriginGroup) *Edge
 // Mutation returns the EdgeOneZoneMutation object of the builder.
 func (_u *EdgeOneZoneUpdate) Mutation() *EdgeOneZoneMutation {
 	return _u.mutation
+}
+
+// ClearAccelerationdomains clears all "accelerationdomains" edges to the EdgeOneZoneAccelerationDomain entity.
+func (_u *EdgeOneZoneUpdate) ClearAccelerationdomains() *EdgeOneZoneUpdate {
+	_u.mutation.ClearAccelerationdomains()
+	return _u
+}
+
+// RemoveAccelerationdomainIDs removes the "accelerationdomains" edge to EdgeOneZoneAccelerationDomain entities by IDs.
+func (_u *EdgeOneZoneUpdate) RemoveAccelerationdomainIDs(ids ...int64) *EdgeOneZoneUpdate {
+	_u.mutation.RemoveAccelerationdomainIDs(ids...)
+	return _u
+}
+
+// RemoveAccelerationdomains removes "accelerationdomains" edges to EdgeOneZoneAccelerationDomain entities.
+func (_u *EdgeOneZoneUpdate) RemoveAccelerationdomains(v ...*EdgeOneZoneAccelerationDomain) *EdgeOneZoneUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveAccelerationdomainIDs(ids...)
+}
+
+// ClearDnsrecords clears all "dnsrecords" edges to the EdgeOneZoneDNSRecord entity.
+func (_u *EdgeOneZoneUpdate) ClearDnsrecords() *EdgeOneZoneUpdate {
+	_u.mutation.ClearDnsrecords()
+	return _u
+}
+
+// RemoveDnsrecordIDs removes the "dnsrecords" edge to EdgeOneZoneDNSRecord entities by IDs.
+func (_u *EdgeOneZoneUpdate) RemoveDnsrecordIDs(ids ...int64) *EdgeOneZoneUpdate {
+	_u.mutation.RemoveDnsrecordIDs(ids...)
+	return _u
+}
+
+// RemoveDnsrecords removes "dnsrecords" edges to EdgeOneZoneDNSRecord entities.
+func (_u *EdgeOneZoneUpdate) RemoveDnsrecords(v ...*EdgeOneZoneDNSRecord) *EdgeOneZoneUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveDnsrecordIDs(ids...)
 }
 
 // ClearOrigingroups clears all "origingroups" edges to the EdgeOneZoneOriginGroup entity.
@@ -320,26 +430,134 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezone.FieldName, field.TypeString, value)
 	}
+	if _u.mutation.NameCleared() {
+		_spec.ClearField(edgeonezone.FieldName, field.TypeString)
+	}
 	if value, ok := _u.mutation.Area(); ok {
 		_spec.SetField(edgeonezone.FieldArea, field.TypeEnum, value)
+	}
+	if _u.mutation.AreaCleared() {
+		_spec.ClearField(edgeonezone.FieldArea, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(edgeonezone.FieldType, field.TypeEnum, value)
 	}
+	if _u.mutation.TypeCleared() {
+		_spec.ClearField(edgeonezone.FieldType, field.TypeEnum)
+	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(edgeonezone.FieldStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(edgeonezone.FieldStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.CnameStatus(); ok {
 		_spec.SetField(edgeonezone.FieldCnameStatus, field.TypeEnum, value)
 	}
+	if _u.mutation.CnameStatusCleared() {
+		_spec.ClearField(edgeonezone.FieldCnameStatus, field.TypeEnum)
+	}
 	if value, ok := _u.mutation.ActiveStatus(); ok {
 		_spec.SetField(edgeonezone.FieldActiveStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.ActiveStatusCleared() {
+		_spec.ClearField(edgeonezone.FieldActiveStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.Paused(); ok {
 		_spec.SetField(edgeonezone.FieldPaused, field.TypeBool, value)
 	}
 	if _u.mutation.PausedCleared() {
 		_spec.ClearField(edgeonezone.FieldPaused, field.TypeBool)
+	}
+	if _u.mutation.AccelerationdomainsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.AccelerationdomainsTable,
+			Columns: []string{edgeonezone.AccelerationdomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneaccelerationdomain.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedAccelerationdomainsIDs(); len(nodes) > 0 && !_u.mutation.AccelerationdomainsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.AccelerationdomainsTable,
+			Columns: []string{edgeonezone.AccelerationdomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneaccelerationdomain.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AccelerationdomainsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.AccelerationdomainsTable,
+			Columns: []string{edgeonezone.AccelerationdomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneaccelerationdomain.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.DnsrecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.DnsrecordsTable,
+			Columns: []string{edgeonezone.DnsrecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezonednsrecord.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedDnsrecordsIDs(); len(nodes) > 0 && !_u.mutation.DnsrecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.DnsrecordsTable,
+			Columns: []string{edgeonezone.DnsrecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezonednsrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DnsrecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.DnsrecordsTable,
+			Columns: []string{edgeonezone.DnsrecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezonednsrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.OrigingroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -456,6 +674,12 @@ func (_u *EdgeOneZoneUpdateOne) SetNillableName(v *string) *EdgeOneZoneUpdateOne
 	return _u
 }
 
+// ClearName clears the value of the "name" field.
+func (_u *EdgeOneZoneUpdateOne) ClearName() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearName()
+	return _u
+}
+
 // SetArea sets the "area" field.
 func (_u *EdgeOneZoneUpdateOne) SetArea(v edgeonezone.Area) *EdgeOneZoneUpdateOne {
 	_u.mutation.SetArea(v)
@@ -467,6 +691,12 @@ func (_u *EdgeOneZoneUpdateOne) SetNillableArea(v *edgeonezone.Area) *EdgeOneZon
 	if v != nil {
 		_u.SetArea(*v)
 	}
+	return _u
+}
+
+// ClearArea clears the value of the "area" field.
+func (_u *EdgeOneZoneUpdateOne) ClearArea() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearArea()
 	return _u
 }
 
@@ -484,6 +714,12 @@ func (_u *EdgeOneZoneUpdateOne) SetNillableType(v *edgeonezone.Type) *EdgeOneZon
 	return _u
 }
 
+// ClearType clears the value of the "type" field.
+func (_u *EdgeOneZoneUpdateOne) ClearType() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearType()
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *EdgeOneZoneUpdateOne) SetStatus(v edgeonezone.Status) *EdgeOneZoneUpdateOne {
 	_u.mutation.SetStatus(v)
@@ -495,6 +731,12 @@ func (_u *EdgeOneZoneUpdateOne) SetNillableStatus(v *edgeonezone.Status) *EdgeOn
 	if v != nil {
 		_u.SetStatus(*v)
 	}
+	return _u
+}
+
+// ClearStatus clears the value of the "status" field.
+func (_u *EdgeOneZoneUpdateOne) ClearStatus() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearStatus()
 	return _u
 }
 
@@ -512,6 +754,12 @@ func (_u *EdgeOneZoneUpdateOne) SetNillableCnameStatus(v *edgeonezone.CnameStatu
 	return _u
 }
 
+// ClearCnameStatus clears the value of the "cname_status" field.
+func (_u *EdgeOneZoneUpdateOne) ClearCnameStatus() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearCnameStatus()
+	return _u
+}
+
 // SetActiveStatus sets the "active_status" field.
 func (_u *EdgeOneZoneUpdateOne) SetActiveStatus(v edgeonezone.ActiveStatus) *EdgeOneZoneUpdateOne {
 	_u.mutation.SetActiveStatus(v)
@@ -523,6 +771,12 @@ func (_u *EdgeOneZoneUpdateOne) SetNillableActiveStatus(v *edgeonezone.ActiveSta
 	if v != nil {
 		_u.SetActiveStatus(*v)
 	}
+	return _u
+}
+
+// ClearActiveStatus clears the value of the "active_status" field.
+func (_u *EdgeOneZoneUpdateOne) ClearActiveStatus() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearActiveStatus()
 	return _u
 }
 
@@ -546,6 +800,36 @@ func (_u *EdgeOneZoneUpdateOne) ClearPaused() *EdgeOneZoneUpdateOne {
 	return _u
 }
 
+// AddAccelerationdomainIDs adds the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity by IDs.
+func (_u *EdgeOneZoneUpdateOne) AddAccelerationdomainIDs(ids ...int64) *EdgeOneZoneUpdateOne {
+	_u.mutation.AddAccelerationdomainIDs(ids...)
+	return _u
+}
+
+// AddAccelerationdomains adds the "accelerationdomains" edges to the EdgeOneZoneAccelerationDomain entity.
+func (_u *EdgeOneZoneUpdateOne) AddAccelerationdomains(v ...*EdgeOneZoneAccelerationDomain) *EdgeOneZoneUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddAccelerationdomainIDs(ids...)
+}
+
+// AddDnsrecordIDs adds the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity by IDs.
+func (_u *EdgeOneZoneUpdateOne) AddDnsrecordIDs(ids ...int64) *EdgeOneZoneUpdateOne {
+	_u.mutation.AddDnsrecordIDs(ids...)
+	return _u
+}
+
+// AddDnsrecords adds the "dnsrecords" edges to the EdgeOneZoneDNSRecord entity.
+func (_u *EdgeOneZoneUpdateOne) AddDnsrecords(v ...*EdgeOneZoneDNSRecord) *EdgeOneZoneUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddDnsrecordIDs(ids...)
+}
+
 // AddOrigingroupIDs adds the "origingroups" edge to the EdgeOneZoneOriginGroup entity by IDs.
 func (_u *EdgeOneZoneUpdateOne) AddOrigingroupIDs(ids ...int64) *EdgeOneZoneUpdateOne {
 	_u.mutation.AddOrigingroupIDs(ids...)
@@ -564,6 +848,48 @@ func (_u *EdgeOneZoneUpdateOne) AddOrigingroups(v ...*EdgeOneZoneOriginGroup) *E
 // Mutation returns the EdgeOneZoneMutation object of the builder.
 func (_u *EdgeOneZoneUpdateOne) Mutation() *EdgeOneZoneMutation {
 	return _u.mutation
+}
+
+// ClearAccelerationdomains clears all "accelerationdomains" edges to the EdgeOneZoneAccelerationDomain entity.
+func (_u *EdgeOneZoneUpdateOne) ClearAccelerationdomains() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearAccelerationdomains()
+	return _u
+}
+
+// RemoveAccelerationdomainIDs removes the "accelerationdomains" edge to EdgeOneZoneAccelerationDomain entities by IDs.
+func (_u *EdgeOneZoneUpdateOne) RemoveAccelerationdomainIDs(ids ...int64) *EdgeOneZoneUpdateOne {
+	_u.mutation.RemoveAccelerationdomainIDs(ids...)
+	return _u
+}
+
+// RemoveAccelerationdomains removes "accelerationdomains" edges to EdgeOneZoneAccelerationDomain entities.
+func (_u *EdgeOneZoneUpdateOne) RemoveAccelerationdomains(v ...*EdgeOneZoneAccelerationDomain) *EdgeOneZoneUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveAccelerationdomainIDs(ids...)
+}
+
+// ClearDnsrecords clears all "dnsrecords" edges to the EdgeOneZoneDNSRecord entity.
+func (_u *EdgeOneZoneUpdateOne) ClearDnsrecords() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearDnsrecords()
+	return _u
+}
+
+// RemoveDnsrecordIDs removes the "dnsrecords" edge to EdgeOneZoneDNSRecord entities by IDs.
+func (_u *EdgeOneZoneUpdateOne) RemoveDnsrecordIDs(ids ...int64) *EdgeOneZoneUpdateOne {
+	_u.mutation.RemoveDnsrecordIDs(ids...)
+	return _u
+}
+
+// RemoveDnsrecords removes "dnsrecords" edges to EdgeOneZoneDNSRecord entities.
+func (_u *EdgeOneZoneUpdateOne) RemoveDnsrecords(v ...*EdgeOneZoneDNSRecord) *EdgeOneZoneUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveDnsrecordIDs(ids...)
 }
 
 // ClearOrigingroups clears all "origingroups" edges to the EdgeOneZoneOriginGroup entity.
@@ -728,26 +1054,134 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezone.FieldName, field.TypeString, value)
 	}
+	if _u.mutation.NameCleared() {
+		_spec.ClearField(edgeonezone.FieldName, field.TypeString)
+	}
 	if value, ok := _u.mutation.Area(); ok {
 		_spec.SetField(edgeonezone.FieldArea, field.TypeEnum, value)
+	}
+	if _u.mutation.AreaCleared() {
+		_spec.ClearField(edgeonezone.FieldArea, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(edgeonezone.FieldType, field.TypeEnum, value)
 	}
+	if _u.mutation.TypeCleared() {
+		_spec.ClearField(edgeonezone.FieldType, field.TypeEnum)
+	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(edgeonezone.FieldStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(edgeonezone.FieldStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.CnameStatus(); ok {
 		_spec.SetField(edgeonezone.FieldCnameStatus, field.TypeEnum, value)
 	}
+	if _u.mutation.CnameStatusCleared() {
+		_spec.ClearField(edgeonezone.FieldCnameStatus, field.TypeEnum)
+	}
 	if value, ok := _u.mutation.ActiveStatus(); ok {
 		_spec.SetField(edgeonezone.FieldActiveStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.ActiveStatusCleared() {
+		_spec.ClearField(edgeonezone.FieldActiveStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.Paused(); ok {
 		_spec.SetField(edgeonezone.FieldPaused, field.TypeBool, value)
 	}
 	if _u.mutation.PausedCleared() {
 		_spec.ClearField(edgeonezone.FieldPaused, field.TypeBool)
+	}
+	if _u.mutation.AccelerationdomainsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.AccelerationdomainsTable,
+			Columns: []string{edgeonezone.AccelerationdomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneaccelerationdomain.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedAccelerationdomainsIDs(); len(nodes) > 0 && !_u.mutation.AccelerationdomainsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.AccelerationdomainsTable,
+			Columns: []string{edgeonezone.AccelerationdomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneaccelerationdomain.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AccelerationdomainsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.AccelerationdomainsTable,
+			Columns: []string{edgeonezone.AccelerationdomainsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneaccelerationdomain.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.DnsrecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.DnsrecordsTable,
+			Columns: []string{edgeonezone.DnsrecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezonednsrecord.FieldID, field.TypeInt64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedDnsrecordsIDs(); len(nodes) > 0 && !_u.mutation.DnsrecordsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.DnsrecordsTable,
+			Columns: []string{edgeonezone.DnsrecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezonednsrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.DnsrecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   edgeonezone.DnsrecordsTable,
+			Columns: []string{edgeonezone.DnsrecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(edgeonezonednsrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _u.mutation.OrigingroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -57,6 +57,7 @@ func (CloudflareTunnelIngress) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("service").
+			Optional().
 			Comment("服务").
 			Annotations(entsql.WithComments(true)),
 

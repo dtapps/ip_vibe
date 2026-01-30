@@ -106,6 +106,14 @@ func (_c *CloudflareTunnelIngressCreate) SetService(v string) *CloudflareTunnelI
 	return _c
 }
 
+// SetNillableService sets the "service" field if the given value is not nil.
+func (_c *CloudflareTunnelIngressCreate) SetNillableService(v *string) *CloudflareTunnelIngressCreate {
+	if v != nil {
+		_c.SetService(*v)
+	}
+	return _c
+}
+
 // SetPath sets the "path" field.
 func (_c *CloudflareTunnelIngressCreate) SetPath(v string) *CloudflareTunnelIngressCreate {
 	_c.mutation.SetPath(v)
@@ -206,9 +214,6 @@ func (_c *CloudflareTunnelIngressCreate) check() error {
 		if err := cloudflaretunnelingress.CloudflareTunnelIDValidator(v); err != nil {
 			return &ValidationError{Name: "cloudflare_tunnel_id", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnelIngress.cloudflare_tunnel_id": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.Service(); !ok {
-		return &ValidationError{Name: "service", err: errors.New(`ent: missing required field "CloudflareTunnelIngress.service"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := cloudflaretunnelingress.IDValidator(v); err != nil {
@@ -400,6 +405,12 @@ func (u *CloudflareTunnelIngressUpsert) UpdateService() *CloudflareTunnelIngress
 	return u
 }
 
+// ClearService clears the value of the "service" field.
+func (u *CloudflareTunnelIngressUpsert) ClearService() *CloudflareTunnelIngressUpsert {
+	u.SetNull(cloudflaretunnelingress.FieldService)
+	return u
+}
+
 // SetPath sets the "path" field.
 func (u *CloudflareTunnelIngressUpsert) SetPath(v string) *CloudflareTunnelIngressUpsert {
 	u.Set(cloudflaretunnelingress.FieldPath, v)
@@ -549,6 +560,13 @@ func (u *CloudflareTunnelIngressUpsertOne) SetService(v string) *CloudflareTunne
 func (u *CloudflareTunnelIngressUpsertOne) UpdateService() *CloudflareTunnelIngressUpsertOne {
 	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
 		s.UpdateService()
+	})
+}
+
+// ClearService clears the value of the "service" field.
+func (u *CloudflareTunnelIngressUpsertOne) ClearService() *CloudflareTunnelIngressUpsertOne {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.ClearService()
 	})
 }
 
@@ -873,6 +891,13 @@ func (u *CloudflareTunnelIngressUpsertBulk) SetService(v string) *CloudflareTunn
 func (u *CloudflareTunnelIngressUpsertBulk) UpdateService() *CloudflareTunnelIngressUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
 		s.UpdateService()
+	})
+}
+
+// ClearService clears the value of the "service" field.
+func (u *CloudflareTunnelIngressUpsertBulk) ClearService() *CloudflareTunnelIngressUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.ClearService()
 	})
 }
 

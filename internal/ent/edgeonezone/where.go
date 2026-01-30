@@ -415,6 +415,16 @@ func NameHasSuffix(v string) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldHasSuffix(FieldName, v))
 }
 
+// NameIsNil applies the IsNil predicate on the "name" field.
+func NameIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldName))
+}
+
+// NameNotNil applies the NotNil predicate on the "name" field.
+func NameNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldName))
+}
+
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldEqualFold(FieldName, v))
@@ -445,6 +455,16 @@ func AreaNotIn(vs ...Area) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldNotIn(FieldArea, vs...))
 }
 
+// AreaIsNil applies the IsNil predicate on the "area" field.
+func AreaIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldArea))
+}
+
+// AreaNotNil applies the NotNil predicate on the "area" field.
+func AreaNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldArea))
+}
+
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldEQ(FieldType, v))
@@ -463,6 +483,16 @@ func TypeIn(vs ...Type) predicate.EdgeOneZone {
 // TypeNotIn applies the NotIn predicate on the "type" field.
 func TypeNotIn(vs ...Type) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldNotIn(FieldType, vs...))
+}
+
+// TypeIsNil applies the IsNil predicate on the "type" field.
+func TypeIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldType))
+}
+
+// TypeNotNil applies the NotNil predicate on the "type" field.
+func TypeNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldType))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
@@ -485,6 +515,16 @@ func StatusNotIn(vs ...Status) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldNotIn(FieldStatus, vs...))
 }
 
+// StatusIsNil applies the IsNil predicate on the "status" field.
+func StatusIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldStatus))
+}
+
+// StatusNotNil applies the NotNil predicate on the "status" field.
+func StatusNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldStatus))
+}
+
 // CnameStatusEQ applies the EQ predicate on the "cname_status" field.
 func CnameStatusEQ(v CnameStatus) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldEQ(FieldCnameStatus, v))
@@ -505,6 +545,16 @@ func CnameStatusNotIn(vs ...CnameStatus) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldNotIn(FieldCnameStatus, vs...))
 }
 
+// CnameStatusIsNil applies the IsNil predicate on the "cname_status" field.
+func CnameStatusIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldCnameStatus))
+}
+
+// CnameStatusNotNil applies the NotNil predicate on the "cname_status" field.
+func CnameStatusNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldCnameStatus))
+}
+
 // ActiveStatusEQ applies the EQ predicate on the "active_status" field.
 func ActiveStatusEQ(v ActiveStatus) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldEQ(FieldActiveStatus, v))
@@ -523,6 +573,16 @@ func ActiveStatusIn(vs ...ActiveStatus) predicate.EdgeOneZone {
 // ActiveStatusNotIn applies the NotIn predicate on the "active_status" field.
 func ActiveStatusNotIn(vs ...ActiveStatus) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldNotIn(FieldActiveStatus, vs...))
+}
+
+// ActiveStatusIsNil applies the IsNil predicate on the "active_status" field.
+func ActiveStatusIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldActiveStatus))
+}
+
+// ActiveStatusNotNil applies the NotNil predicate on the "active_status" field.
+func ActiveStatusNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldActiveStatus))
 }
 
 // PausedEQ applies the EQ predicate on the "paused" field.
@@ -560,6 +620,52 @@ func HasConfig() predicate.EdgeOneZone {
 func HasConfigWith(preds ...predicate.PlatformConfig) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(func(s *sql.Selector) {
 		step := newConfigStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAccelerationdomains applies the HasEdge predicate on the "accelerationdomains" edge.
+func HasAccelerationdomains() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AccelerationdomainsTable, AccelerationdomainsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAccelerationdomainsWith applies the HasEdge predicate on the "accelerationdomains" edge with a given conditions (other predicates).
+func HasAccelerationdomainsWith(preds ...predicate.EdgeOneZoneAccelerationDomain) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(func(s *sql.Selector) {
+		step := newAccelerationdomainsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasDnsrecords applies the HasEdge predicate on the "dnsrecords" edge.
+func HasDnsrecords() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DnsrecordsTable, DnsrecordsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDnsrecordsWith applies the HasEdge predicate on the "dnsrecords" edge with a given conditions (other predicates).
+func HasDnsrecordsWith(preds ...predicate.EdgeOneZoneDNSRecord) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(func(s *sql.Selector) {
+		step := newDnsrecordsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

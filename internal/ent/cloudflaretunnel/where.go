@@ -415,6 +415,16 @@ func NameHasSuffix(v string) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldHasSuffix(FieldName, v))
 }
 
+// NameIsNil applies the IsNil predicate on the "name" field.
+func NameIsNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldName))
+}
+
+// NameNotNil applies the NotNil predicate on the "name" field.
+func NameNotNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldName))
+}
+
 // NameEqualFold applies the EqualFold predicate on the "name" field.
 func NameEqualFold(v string) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldEqualFold(FieldName, v))
@@ -443,6 +453,16 @@ func StatusIn(vs ...Status) predicate.CloudflareTunnel {
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...Status) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// StatusIsNil applies the IsNil predicate on the "status" field.
+func StatusIsNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldStatus))
+}
+
+// StatusNotNil applies the NotNil predicate on the "status" field.
+func StatusNotNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldStatus))
 }
 
 // ConnectionsIsNil applies the IsNil predicate on the "connections" field.

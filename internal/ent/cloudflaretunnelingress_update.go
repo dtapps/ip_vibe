@@ -85,6 +85,12 @@ func (_u *CloudflareTunnelIngressUpdate) SetNillableService(v *string) *Cloudfla
 	return _u
 }
 
+// ClearService clears the value of the "service" field.
+func (_u *CloudflareTunnelIngressUpdate) ClearService() *CloudflareTunnelIngressUpdate {
+	_u.mutation.ClearService()
+	return _u
+}
+
 // SetPath sets the "path" field.
 func (_u *CloudflareTunnelIngressUpdate) SetPath(v string) *CloudflareTunnelIngressUpdate {
 	_u.mutation.SetPath(v)
@@ -217,6 +223,9 @@ func (_u *CloudflareTunnelIngressUpdate) sqlSave(ctx context.Context) (_node int
 	if value, ok := _u.mutation.Service(); ok {
 		_spec.SetField(cloudflaretunnelingress.FieldService, field.TypeString, value)
 	}
+	if _u.mutation.ServiceCleared() {
+		_spec.ClearField(cloudflaretunnelingress.FieldService, field.TypeString)
+	}
 	if value, ok := _u.mutation.Path(); ok {
 		_spec.SetField(cloudflaretunnelingress.FieldPath, field.TypeString, value)
 	}
@@ -307,6 +316,12 @@ func (_u *CloudflareTunnelIngressUpdateOne) SetNillableService(v *string) *Cloud
 	if v != nil {
 		_u.SetService(*v)
 	}
+	return _u
+}
+
+// ClearService clears the value of the "service" field.
+func (_u *CloudflareTunnelIngressUpdateOne) ClearService() *CloudflareTunnelIngressUpdateOne {
+	_u.mutation.ClearService()
 	return _u
 }
 
@@ -471,6 +486,9 @@ func (_u *CloudflareTunnelIngressUpdateOne) sqlSave(ctx context.Context) (_node 
 	}
 	if value, ok := _u.mutation.Service(); ok {
 		_spec.SetField(cloudflaretunnelingress.FieldService, field.TypeString, value)
+	}
+	if _u.mutation.ServiceCleared() {
+		_spec.ClearField(cloudflaretunnelingress.FieldService, field.TypeString)
 	}
 	if value, ok := _u.mutation.Path(); ok {
 		_spec.SetField(cloudflaretunnelingress.FieldPath, field.TypeString, value)

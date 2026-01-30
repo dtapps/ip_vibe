@@ -92,17 +92,17 @@ func (_c *EdgeOneZoneOriginGroupCreate) SetGroupID(v string) *EdgeOneZoneOriginG
 	return _c
 }
 
-// SetNillableGroupID sets the "group_id" field if the given value is not nil.
-func (_c *EdgeOneZoneOriginGroupCreate) SetNillableGroupID(v *string) *EdgeOneZoneOriginGroupCreate {
-	if v != nil {
-		_c.SetGroupID(*v)
-	}
-	return _c
-}
-
 // SetName sets the "name" field.
 func (_c *EdgeOneZoneOriginGroupCreate) SetName(v string) *EdgeOneZoneOriginGroupCreate {
 	_c.mutation.SetName(v)
+	return _c
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_c *EdgeOneZoneOriginGroupCreate) SetNillableName(v *string) *EdgeOneZoneOriginGroupCreate {
+	if v != nil {
+		_c.SetName(*v)
+	}
 	return _c
 }
 
@@ -213,8 +213,8 @@ func (_c *EdgeOneZoneOriginGroupCreate) check() error {
 			return &ValidationError{Name: "edgeone_zone_id", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZoneOriginGroup.edgeone_zone_id": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "EdgeOneZoneOriginGroup.name"`)}
+	if _, ok := _c.mutation.GroupID(); !ok {
+		return &ValidationError{Name: "group_id", err: errors.New(`ent: missing required field "EdgeOneZoneOriginGroup.group_id"`)}
 	}
 	if v, ok := _c.mutation.GetType(); ok {
 		if err := edgeonezoneorigingroup.TypeValidator(v); err != nil {
@@ -397,12 +397,6 @@ func (u *EdgeOneZoneOriginGroupUpsert) UpdateGroupID() *EdgeOneZoneOriginGroupUp
 	return u
 }
 
-// ClearGroupID clears the value of the "group_id" field.
-func (u *EdgeOneZoneOriginGroupUpsert) ClearGroupID() *EdgeOneZoneOriginGroupUpsert {
-	u.SetNull(edgeonezoneorigingroup.FieldGroupID)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *EdgeOneZoneOriginGroupUpsert) SetName(v string) *EdgeOneZoneOriginGroupUpsert {
 	u.Set(edgeonezoneorigingroup.FieldName, v)
@@ -412,6 +406,12 @@ func (u *EdgeOneZoneOriginGroupUpsert) SetName(v string) *EdgeOneZoneOriginGroup
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *EdgeOneZoneOriginGroupUpsert) UpdateName() *EdgeOneZoneOriginGroupUpsert {
 	u.SetExcluded(edgeonezoneorigingroup.FieldName)
+	return u
+}
+
+// ClearName clears the value of the "name" field.
+func (u *EdgeOneZoneOriginGroupUpsert) ClearName() *EdgeOneZoneOriginGroupUpsert {
+	u.SetNull(edgeonezoneorigingroup.FieldName)
 	return u
 }
 
@@ -564,13 +564,6 @@ func (u *EdgeOneZoneOriginGroupUpsertOne) UpdateGroupID() *EdgeOneZoneOriginGrou
 	})
 }
 
-// ClearGroupID clears the value of the "group_id" field.
-func (u *EdgeOneZoneOriginGroupUpsertOne) ClearGroupID() *EdgeOneZoneOriginGroupUpsertOne {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.ClearGroupID()
-	})
-}
-
 // SetName sets the "name" field.
 func (u *EdgeOneZoneOriginGroupUpsertOne) SetName(v string) *EdgeOneZoneOriginGroupUpsertOne {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
@@ -582,6 +575,13 @@ func (u *EdgeOneZoneOriginGroupUpsertOne) SetName(v string) *EdgeOneZoneOriginGr
 func (u *EdgeOneZoneOriginGroupUpsertOne) UpdateName() *EdgeOneZoneOriginGroupUpsertOne {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.UpdateName()
+	})
+}
+
+// ClearName clears the value of the "name" field.
+func (u *EdgeOneZoneOriginGroupUpsertOne) ClearName() *EdgeOneZoneOriginGroupUpsertOne {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.ClearName()
 	})
 }
 
@@ -909,13 +909,6 @@ func (u *EdgeOneZoneOriginGroupUpsertBulk) UpdateGroupID() *EdgeOneZoneOriginGro
 	})
 }
 
-// ClearGroupID clears the value of the "group_id" field.
-func (u *EdgeOneZoneOriginGroupUpsertBulk) ClearGroupID() *EdgeOneZoneOriginGroupUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.ClearGroupID()
-	})
-}
-
 // SetName sets the "name" field.
 func (u *EdgeOneZoneOriginGroupUpsertBulk) SetName(v string) *EdgeOneZoneOriginGroupUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
@@ -927,6 +920,13 @@ func (u *EdgeOneZoneOriginGroupUpsertBulk) SetName(v string) *EdgeOneZoneOriginG
 func (u *EdgeOneZoneOriginGroupUpsertBulk) UpdateName() *EdgeOneZoneOriginGroupUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.UpdateName()
+	})
+}
+
+// ClearName clears the value of the "name" field.
+func (u *EdgeOneZoneOriginGroupUpsertBulk) ClearName() *EdgeOneZoneOriginGroupUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.ClearName()
 	})
 }
 

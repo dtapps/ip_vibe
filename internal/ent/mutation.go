@@ -20,6 +20,8 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
+	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
@@ -44,26 +46,28 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeCDNRecord               = "CDNRecord"
-	TypeCache                   = "Cache"
-	TypeCloudflareTunnel        = "CloudflareTunnel"
-	TypeCloudflareTunnelIngress = "CloudflareTunnelIngress"
-	TypeDNSRecord               = "DNSRecord"
-	TypeDevice                  = "Device"
-	TypeDeviceGroup             = "DeviceGroup"
-	TypeDeviceGroupDevice       = "DeviceGroupDevice"
-	TypeDevicePortForward       = "DevicePortForward"
-	TypeDomainMonitor           = "DomainMonitor"
-	TypeEdgeOneZone             = "EdgeOneZone"
-	TypeEdgeOneZoneOriginGroup  = "EdgeOneZoneOriginGroup"
-	TypeIpGroup                 = "IpGroup"
-	TypeIpGroupDevice           = "IpGroupDevice"
-	TypePlatformConfig          = "PlatformConfig"
-	TypeSSLImport               = "SSLImport"
-	TypeSSLRecord               = "SSLRecord"
-	TypeTUNRecord               = "TUNRecord"
-	TypeWebhook                 = "Webhook"
-	TypeWebhookSubscription     = "WebhookSubscription"
+	TypeCDNRecord                     = "CDNRecord"
+	TypeCache                         = "Cache"
+	TypeCloudflareTunnel              = "CloudflareTunnel"
+	TypeCloudflareTunnelIngress       = "CloudflareTunnelIngress"
+	TypeDNSRecord                     = "DNSRecord"
+	TypeDevice                        = "Device"
+	TypeDeviceGroup                   = "DeviceGroup"
+	TypeDeviceGroupDevice             = "DeviceGroupDevice"
+	TypeDevicePortForward             = "DevicePortForward"
+	TypeDomainMonitor                 = "DomainMonitor"
+	TypeEdgeOneZone                   = "EdgeOneZone"
+	TypeEdgeOneZoneAccelerationDomain = "EdgeOneZoneAccelerationDomain"
+	TypeEdgeOneZoneDNSRecord          = "EdgeOneZoneDNSRecord"
+	TypeEdgeOneZoneOriginGroup        = "EdgeOneZoneOriginGroup"
+	TypeIpGroup                       = "IpGroup"
+	TypeIpGroupDevice                 = "IpGroupDevice"
+	TypePlatformConfig                = "PlatformConfig"
+	TypeSSLImport                     = "SSLImport"
+	TypeSSLRecord                     = "SSLRecord"
+	TypeTUNRecord                     = "TUNRecord"
+	TypeWebhook                       = "Webhook"
+	TypeWebhookSubscription           = "WebhookSubscription"
 )
 
 // CDNRecordMutation represents an operation that mutates the CDNRecord nodes in the graph.
@@ -2318,9 +2322,22 @@ func (m *CloudflareTunnelMutation) OldName(ctx context.Context) (v string, err e
 	return oldValue.Name, nil
 }
 
+// ClearName clears the value of the "name" field.
+func (m *CloudflareTunnelMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[cloudflaretunnel.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) NameCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldName]
+	return ok
+}
+
 // ResetName resets all changes to the "name" field.
 func (m *CloudflareTunnelMutation) ResetName() {
 	m.name = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldName)
 }
 
 // SetStatus sets the "status" field.
@@ -2354,9 +2371,22 @@ func (m *CloudflareTunnelMutation) OldStatus(ctx context.Context) (v cloudflaret
 	return oldValue.Status, nil
 }
 
+// ClearStatus clears the value of the "status" field.
+func (m *CloudflareTunnelMutation) ClearStatus() {
+	m.status = nil
+	m.clearedFields[cloudflaretunnel.FieldStatus] = struct{}{}
+}
+
+// StatusCleared returns if the "status" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) StatusCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldStatus]
+	return ok
+}
+
 // ResetStatus resets all changes to the "status" field.
 func (m *CloudflareTunnelMutation) ResetStatus() {
 	m.status = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldStatus)
 }
 
 // SetConnections sets the "connections" field.
@@ -2794,6 +2824,12 @@ func (m *CloudflareTunnelMutation) ClearedFields() []string {
 	if m.FieldCleared(cloudflaretunnel.FieldSyncAt) {
 		fields = append(fields, cloudflaretunnel.FieldSyncAt)
 	}
+	if m.FieldCleared(cloudflaretunnel.FieldName) {
+		fields = append(fields, cloudflaretunnel.FieldName)
+	}
+	if m.FieldCleared(cloudflaretunnel.FieldStatus) {
+		fields = append(fields, cloudflaretunnel.FieldStatus)
+	}
 	if m.FieldCleared(cloudflaretunnel.FieldConnections) {
 		fields = append(fields, cloudflaretunnel.FieldConnections)
 	}
@@ -2819,6 +2855,12 @@ func (m *CloudflareTunnelMutation) ClearField(name string) error {
 		return nil
 	case cloudflaretunnel.FieldSyncAt:
 		m.ClearSyncAt()
+		return nil
+	case cloudflaretunnel.FieldName:
+		m.ClearName()
+		return nil
+	case cloudflaretunnel.FieldStatus:
+		m.ClearStatus()
 		return nil
 	case cloudflaretunnel.FieldConnections:
 		m.ClearConnections()
@@ -3383,9 +3425,22 @@ func (m *CloudflareTunnelIngressMutation) OldService(ctx context.Context) (v str
 	return oldValue.Service, nil
 }
 
+// ClearService clears the value of the "service" field.
+func (m *CloudflareTunnelIngressMutation) ClearService() {
+	m.service = nil
+	m.clearedFields[cloudflaretunnelingress.FieldService] = struct{}{}
+}
+
+// ServiceCleared returns if the "service" field was cleared in this mutation.
+func (m *CloudflareTunnelIngressMutation) ServiceCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnelingress.FieldService]
+	return ok
+}
+
 // ResetService resets all changes to the "service" field.
 func (m *CloudflareTunnelIngressMutation) ResetService() {
 	m.service = nil
+	delete(m.clearedFields, cloudflaretunnelingress.FieldService)
 }
 
 // SetPath sets the "path" field.
@@ -3758,6 +3813,9 @@ func (m *CloudflareTunnelIngressMutation) ClearedFields() []string {
 	if m.FieldCleared(cloudflaretunnelingress.FieldHostname) {
 		fields = append(fields, cloudflaretunnelingress.FieldHostname)
 	}
+	if m.FieldCleared(cloudflaretunnelingress.FieldService) {
+		fields = append(fields, cloudflaretunnelingress.FieldService)
+	}
 	if m.FieldCleared(cloudflaretunnelingress.FieldPath) {
 		fields = append(fields, cloudflaretunnelingress.FieldPath)
 	}
@@ -3786,6 +3844,9 @@ func (m *CloudflareTunnelIngressMutation) ClearField(name string) error {
 		return nil
 	case cloudflaretunnelingress.FieldHostname:
 		m.ClearHostname()
+		return nil
+	case cloudflaretunnelingress.FieldService:
+		m.ClearService()
 		return nil
 	case cloudflaretunnelingress.FieldPath:
 		m.ClearPath()
@@ -9727,30 +9788,36 @@ func (m *DomainMonitorMutation) ResetEdge(name string) error {
 // EdgeOneZoneMutation represents an operation that mutates the EdgeOneZone nodes in the graph.
 type EdgeOneZoneMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *int64
-	created_at          *time.Time
-	updated_at          *time.Time
-	remote_created_at   *time.Time
-	sync_at             *time.Time
-	zone_id             *string
-	name                *string
-	area                *edgeonezone.Area
-	_type               *edgeonezone.Type
-	status              *edgeonezone.Status
-	cname_status        *edgeonezone.CnameStatus
-	active_status       *edgeonezone.ActiveStatus
-	paused              *bool
-	clearedFields       map[string]struct{}
-	_config             *int64
-	cleared_config      bool
-	origingroups        map[int64]struct{}
-	removedorigingroups map[int64]struct{}
-	clearedorigingroups bool
-	done                bool
-	oldValue            func(context.Context) (*EdgeOneZone, error)
-	predicates          []predicate.EdgeOneZone
+	op                         Op
+	typ                        string
+	id                         *int64
+	created_at                 *time.Time
+	updated_at                 *time.Time
+	remote_created_at          *time.Time
+	sync_at                    *time.Time
+	zone_id                    *string
+	name                       *string
+	area                       *edgeonezone.Area
+	_type                      *edgeonezone.Type
+	status                     *edgeonezone.Status
+	cname_status               *edgeonezone.CnameStatus
+	active_status              *edgeonezone.ActiveStatus
+	paused                     *bool
+	clearedFields              map[string]struct{}
+	_config                    *int64
+	cleared_config             bool
+	accelerationdomains        map[int64]struct{}
+	removedaccelerationdomains map[int64]struct{}
+	clearedaccelerationdomains bool
+	dnsrecords                 map[int64]struct{}
+	removeddnsrecords          map[int64]struct{}
+	cleareddnsrecords          bool
+	origingroups               map[int64]struct{}
+	removedorigingroups        map[int64]struct{}
+	clearedorigingroups        bool
+	done                       bool
+	oldValue                   func(context.Context) (*EdgeOneZone, error)
+	predicates                 []predicate.EdgeOneZone
 }
 
 var _ ent.Mutation = (*EdgeOneZoneMutation)(nil)
@@ -10130,9 +10197,22 @@ func (m *EdgeOneZoneMutation) OldName(ctx context.Context) (v string, err error)
 	return oldValue.Name, nil
 }
 
+// ClearName clears the value of the "name" field.
+func (m *EdgeOneZoneMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[edgeonezone.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) NameCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldName]
+	return ok
+}
+
 // ResetName resets all changes to the "name" field.
 func (m *EdgeOneZoneMutation) ResetName() {
 	m.name = nil
+	delete(m.clearedFields, edgeonezone.FieldName)
 }
 
 // SetArea sets the "area" field.
@@ -10166,9 +10246,22 @@ func (m *EdgeOneZoneMutation) OldArea(ctx context.Context) (v edgeonezone.Area, 
 	return oldValue.Area, nil
 }
 
+// ClearArea clears the value of the "area" field.
+func (m *EdgeOneZoneMutation) ClearArea() {
+	m.area = nil
+	m.clearedFields[edgeonezone.FieldArea] = struct{}{}
+}
+
+// AreaCleared returns if the "area" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) AreaCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldArea]
+	return ok
+}
+
 // ResetArea resets all changes to the "area" field.
 func (m *EdgeOneZoneMutation) ResetArea() {
 	m.area = nil
+	delete(m.clearedFields, edgeonezone.FieldArea)
 }
 
 // SetType sets the "type" field.
@@ -10202,9 +10295,22 @@ func (m *EdgeOneZoneMutation) OldType(ctx context.Context) (v edgeonezone.Type, 
 	return oldValue.Type, nil
 }
 
+// ClearType clears the value of the "type" field.
+func (m *EdgeOneZoneMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[edgeonezone.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldType]
+	return ok
+}
+
 // ResetType resets all changes to the "type" field.
 func (m *EdgeOneZoneMutation) ResetType() {
 	m._type = nil
+	delete(m.clearedFields, edgeonezone.FieldType)
 }
 
 // SetStatus sets the "status" field.
@@ -10238,9 +10344,22 @@ func (m *EdgeOneZoneMutation) OldStatus(ctx context.Context) (v edgeonezone.Stat
 	return oldValue.Status, nil
 }
 
+// ClearStatus clears the value of the "status" field.
+func (m *EdgeOneZoneMutation) ClearStatus() {
+	m.status = nil
+	m.clearedFields[edgeonezone.FieldStatus] = struct{}{}
+}
+
+// StatusCleared returns if the "status" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) StatusCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldStatus]
+	return ok
+}
+
 // ResetStatus resets all changes to the "status" field.
 func (m *EdgeOneZoneMutation) ResetStatus() {
 	m.status = nil
+	delete(m.clearedFields, edgeonezone.FieldStatus)
 }
 
 // SetCnameStatus sets the "cname_status" field.
@@ -10274,9 +10393,22 @@ func (m *EdgeOneZoneMutation) OldCnameStatus(ctx context.Context) (v edgeonezone
 	return oldValue.CnameStatus, nil
 }
 
+// ClearCnameStatus clears the value of the "cname_status" field.
+func (m *EdgeOneZoneMutation) ClearCnameStatus() {
+	m.cname_status = nil
+	m.clearedFields[edgeonezone.FieldCnameStatus] = struct{}{}
+}
+
+// CnameStatusCleared returns if the "cname_status" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) CnameStatusCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldCnameStatus]
+	return ok
+}
+
 // ResetCnameStatus resets all changes to the "cname_status" field.
 func (m *EdgeOneZoneMutation) ResetCnameStatus() {
 	m.cname_status = nil
+	delete(m.clearedFields, edgeonezone.FieldCnameStatus)
 }
 
 // SetActiveStatus sets the "active_status" field.
@@ -10310,9 +10442,22 @@ func (m *EdgeOneZoneMutation) OldActiveStatus(ctx context.Context) (v edgeonezon
 	return oldValue.ActiveStatus, nil
 }
 
+// ClearActiveStatus clears the value of the "active_status" field.
+func (m *EdgeOneZoneMutation) ClearActiveStatus() {
+	m.active_status = nil
+	m.clearedFields[edgeonezone.FieldActiveStatus] = struct{}{}
+}
+
+// ActiveStatusCleared returns if the "active_status" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) ActiveStatusCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldActiveStatus]
+	return ok
+}
+
 // ResetActiveStatus resets all changes to the "active_status" field.
 func (m *EdgeOneZoneMutation) ResetActiveStatus() {
 	m.active_status = nil
+	delete(m.clearedFields, edgeonezone.FieldActiveStatus)
 }
 
 // SetPaused sets the "paused" field.
@@ -10389,6 +10534,114 @@ func (m *EdgeOneZoneMutation) ConfigIDs() (ids []int64) {
 func (m *EdgeOneZoneMutation) ResetConfig() {
 	m._config = nil
 	m.cleared_config = false
+}
+
+// AddAccelerationdomainIDs adds the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity by ids.
+func (m *EdgeOneZoneMutation) AddAccelerationdomainIDs(ids ...int64) {
+	if m.accelerationdomains == nil {
+		m.accelerationdomains = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.accelerationdomains[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAccelerationdomains clears the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity.
+func (m *EdgeOneZoneMutation) ClearAccelerationdomains() {
+	m.clearedaccelerationdomains = true
+}
+
+// AccelerationdomainsCleared reports if the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity was cleared.
+func (m *EdgeOneZoneMutation) AccelerationdomainsCleared() bool {
+	return m.clearedaccelerationdomains
+}
+
+// RemoveAccelerationdomainIDs removes the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity by IDs.
+func (m *EdgeOneZoneMutation) RemoveAccelerationdomainIDs(ids ...int64) {
+	if m.removedaccelerationdomains == nil {
+		m.removedaccelerationdomains = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.accelerationdomains, ids[i])
+		m.removedaccelerationdomains[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAccelerationdomains returns the removed IDs of the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity.
+func (m *EdgeOneZoneMutation) RemovedAccelerationdomainsIDs() (ids []int64) {
+	for id := range m.removedaccelerationdomains {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AccelerationdomainsIDs returns the "accelerationdomains" edge IDs in the mutation.
+func (m *EdgeOneZoneMutation) AccelerationdomainsIDs() (ids []int64) {
+	for id := range m.accelerationdomains {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAccelerationdomains resets all changes to the "accelerationdomains" edge.
+func (m *EdgeOneZoneMutation) ResetAccelerationdomains() {
+	m.accelerationdomains = nil
+	m.clearedaccelerationdomains = false
+	m.removedaccelerationdomains = nil
+}
+
+// AddDnsrecordIDs adds the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity by ids.
+func (m *EdgeOneZoneMutation) AddDnsrecordIDs(ids ...int64) {
+	if m.dnsrecords == nil {
+		m.dnsrecords = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.dnsrecords[ids[i]] = struct{}{}
+	}
+}
+
+// ClearDnsrecords clears the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity.
+func (m *EdgeOneZoneMutation) ClearDnsrecords() {
+	m.cleareddnsrecords = true
+}
+
+// DnsrecordsCleared reports if the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity was cleared.
+func (m *EdgeOneZoneMutation) DnsrecordsCleared() bool {
+	return m.cleareddnsrecords
+}
+
+// RemoveDnsrecordIDs removes the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity by IDs.
+func (m *EdgeOneZoneMutation) RemoveDnsrecordIDs(ids ...int64) {
+	if m.removeddnsrecords == nil {
+		m.removeddnsrecords = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.dnsrecords, ids[i])
+		m.removeddnsrecords[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDnsrecords returns the removed IDs of the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity.
+func (m *EdgeOneZoneMutation) RemovedDnsrecordsIDs() (ids []int64) {
+	for id := range m.removeddnsrecords {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DnsrecordsIDs returns the "dnsrecords" edge IDs in the mutation.
+func (m *EdgeOneZoneMutation) DnsrecordsIDs() (ids []int64) {
+	for id := range m.dnsrecords {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDnsrecords resets all changes to the "dnsrecords" edge.
+func (m *EdgeOneZoneMutation) ResetDnsrecords() {
+	m.dnsrecords = nil
+	m.cleareddnsrecords = false
+	m.removeddnsrecords = nil
 }
 
 // AddOrigingroupIDs adds the "origingroups" edge to the EdgeOneZoneOriginGroup entity by ids.
@@ -10727,6 +10980,24 @@ func (m *EdgeOneZoneMutation) ClearedFields() []string {
 	if m.FieldCleared(edgeonezone.FieldSyncAt) {
 		fields = append(fields, edgeonezone.FieldSyncAt)
 	}
+	if m.FieldCleared(edgeonezone.FieldName) {
+		fields = append(fields, edgeonezone.FieldName)
+	}
+	if m.FieldCleared(edgeonezone.FieldArea) {
+		fields = append(fields, edgeonezone.FieldArea)
+	}
+	if m.FieldCleared(edgeonezone.FieldType) {
+		fields = append(fields, edgeonezone.FieldType)
+	}
+	if m.FieldCleared(edgeonezone.FieldStatus) {
+		fields = append(fields, edgeonezone.FieldStatus)
+	}
+	if m.FieldCleared(edgeonezone.FieldCnameStatus) {
+		fields = append(fields, edgeonezone.FieldCnameStatus)
+	}
+	if m.FieldCleared(edgeonezone.FieldActiveStatus) {
+		fields = append(fields, edgeonezone.FieldActiveStatus)
+	}
 	if m.FieldCleared(edgeonezone.FieldPaused) {
 		fields = append(fields, edgeonezone.FieldPaused)
 	}
@@ -10749,6 +11020,24 @@ func (m *EdgeOneZoneMutation) ClearField(name string) error {
 		return nil
 	case edgeonezone.FieldSyncAt:
 		m.ClearSyncAt()
+		return nil
+	case edgeonezone.FieldName:
+		m.ClearName()
+		return nil
+	case edgeonezone.FieldArea:
+		m.ClearArea()
+		return nil
+	case edgeonezone.FieldType:
+		m.ClearType()
+		return nil
+	case edgeonezone.FieldStatus:
+		m.ClearStatus()
+		return nil
+	case edgeonezone.FieldCnameStatus:
+		m.ClearCnameStatus()
+		return nil
+	case edgeonezone.FieldActiveStatus:
+		m.ClearActiveStatus()
 		return nil
 	case edgeonezone.FieldPaused:
 		m.ClearPaused()
@@ -10806,9 +11095,15 @@ func (m *EdgeOneZoneMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EdgeOneZoneMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m._config != nil {
 		edges = append(edges, edgeonezone.EdgeConfig)
+	}
+	if m.accelerationdomains != nil {
+		edges = append(edges, edgeonezone.EdgeAccelerationdomains)
+	}
+	if m.dnsrecords != nil {
+		edges = append(edges, edgeonezone.EdgeDnsrecords)
 	}
 	if m.origingroups != nil {
 		edges = append(edges, edgeonezone.EdgeOrigingroups)
@@ -10824,6 +11119,18 @@ func (m *EdgeOneZoneMutation) AddedIDs(name string) []ent.Value {
 		if id := m._config; id != nil {
 			return []ent.Value{*id}
 		}
+	case edgeonezone.EdgeAccelerationdomains:
+		ids := make([]ent.Value, 0, len(m.accelerationdomains))
+		for id := range m.accelerationdomains {
+			ids = append(ids, id)
+		}
+		return ids
+	case edgeonezone.EdgeDnsrecords:
+		ids := make([]ent.Value, 0, len(m.dnsrecords))
+		for id := range m.dnsrecords {
+			ids = append(ids, id)
+		}
+		return ids
 	case edgeonezone.EdgeOrigingroups:
 		ids := make([]ent.Value, 0, len(m.origingroups))
 		for id := range m.origingroups {
@@ -10836,7 +11143,13 @@ func (m *EdgeOneZoneMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EdgeOneZoneMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
+	if m.removedaccelerationdomains != nil {
+		edges = append(edges, edgeonezone.EdgeAccelerationdomains)
+	}
+	if m.removeddnsrecords != nil {
+		edges = append(edges, edgeonezone.EdgeDnsrecords)
+	}
 	if m.removedorigingroups != nil {
 		edges = append(edges, edgeonezone.EdgeOrigingroups)
 	}
@@ -10847,6 +11160,18 @@ func (m *EdgeOneZoneMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *EdgeOneZoneMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case edgeonezone.EdgeAccelerationdomains:
+		ids := make([]ent.Value, 0, len(m.removedaccelerationdomains))
+		for id := range m.removedaccelerationdomains {
+			ids = append(ids, id)
+		}
+		return ids
+	case edgeonezone.EdgeDnsrecords:
+		ids := make([]ent.Value, 0, len(m.removeddnsrecords))
+		for id := range m.removeddnsrecords {
+			ids = append(ids, id)
+		}
+		return ids
 	case edgeonezone.EdgeOrigingroups:
 		ids := make([]ent.Value, 0, len(m.removedorigingroups))
 		for id := range m.removedorigingroups {
@@ -10859,9 +11184,15 @@ func (m *EdgeOneZoneMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EdgeOneZoneMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.cleared_config {
 		edges = append(edges, edgeonezone.EdgeConfig)
+	}
+	if m.clearedaccelerationdomains {
+		edges = append(edges, edgeonezone.EdgeAccelerationdomains)
+	}
+	if m.cleareddnsrecords {
+		edges = append(edges, edgeonezone.EdgeDnsrecords)
 	}
 	if m.clearedorigingroups {
 		edges = append(edges, edgeonezone.EdgeOrigingroups)
@@ -10875,6 +11206,10 @@ func (m *EdgeOneZoneMutation) EdgeCleared(name string) bool {
 	switch name {
 	case edgeonezone.EdgeConfig:
 		return m.cleared_config
+	case edgeonezone.EdgeAccelerationdomains:
+		return m.clearedaccelerationdomains
+	case edgeonezone.EdgeDnsrecords:
+		return m.cleareddnsrecords
 	case edgeonezone.EdgeOrigingroups:
 		return m.clearedorigingroups
 	}
@@ -10899,11 +11234,2952 @@ func (m *EdgeOneZoneMutation) ResetEdge(name string) error {
 	case edgeonezone.EdgeConfig:
 		m.ResetConfig()
 		return nil
+	case edgeonezone.EdgeAccelerationdomains:
+		m.ResetAccelerationdomains()
+		return nil
+	case edgeonezone.EdgeDnsrecords:
+		m.ResetDnsrecords()
+		return nil
 	case edgeonezone.EdgeOrigingroups:
 		m.ResetOrigingroups()
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZone edge %s", name)
+}
+
+// EdgeOneZoneAccelerationDomainMutation represents an operation that mutates the EdgeOneZoneAccelerationDomain nodes in the graph.
+type EdgeOneZoneAccelerationDomainMutation struct {
+	config
+	op                           Op
+	typ                          string
+	id                           *int64
+	created_at                   *time.Time
+	updated_at                   *time.Time
+	remote_created_at            *time.Time
+	sync_at                      *time.Time
+	domain_name                  *string
+	domain_status                *edgeonezoneaccelerationdomain.DomainStatus
+	cname                        *string
+	ipv6_status                  *edgeonezoneaccelerationdomain.Ipv6Status
+	identification_status        *edgeonezoneaccelerationdomain.IdentificationStatus
+	ownership_verification       *json.RawMessage
+	appendownership_verification json.RawMessage
+	origin_detail                *json.RawMessage
+	appendorigin_detail          json.RawMessage
+	origin_protocol              *edgeonezoneaccelerationdomain.OriginProtocol
+	http_origin_port             *int
+	addhttp_origin_port          *int
+	https_origin_port            *int
+	addhttps_origin_port         *int
+	certificate                  *json.RawMessage
+	appendcertificate            json.RawMessage
+	clearedFields                map[string]struct{}
+	edgeone_zone                 *int64
+	clearededgeone_zone          bool
+	done                         bool
+	oldValue                     func(context.Context) (*EdgeOneZoneAccelerationDomain, error)
+	predicates                   []predicate.EdgeOneZoneAccelerationDomain
+}
+
+var _ ent.Mutation = (*EdgeOneZoneAccelerationDomainMutation)(nil)
+
+// edgeonezoneaccelerationdomainOption allows management of the mutation configuration using functional options.
+type edgeonezoneaccelerationdomainOption func(*EdgeOneZoneAccelerationDomainMutation)
+
+// newEdgeOneZoneAccelerationDomainMutation creates new mutation for the EdgeOneZoneAccelerationDomain entity.
+func newEdgeOneZoneAccelerationDomainMutation(c config, op Op, opts ...edgeonezoneaccelerationdomainOption) *EdgeOneZoneAccelerationDomainMutation {
+	m := &EdgeOneZoneAccelerationDomainMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEdgeOneZoneAccelerationDomain,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEdgeOneZoneAccelerationDomainID sets the ID field of the mutation.
+func withEdgeOneZoneAccelerationDomainID(id int64) edgeonezoneaccelerationdomainOption {
+	return func(m *EdgeOneZoneAccelerationDomainMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *EdgeOneZoneAccelerationDomain
+		)
+		m.oldValue = func(ctx context.Context) (*EdgeOneZoneAccelerationDomain, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().EdgeOneZoneAccelerationDomain.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEdgeOneZoneAccelerationDomain sets the old EdgeOneZoneAccelerationDomain of the mutation.
+func withEdgeOneZoneAccelerationDomain(node *EdgeOneZoneAccelerationDomain) edgeonezoneaccelerationdomainOption {
+	return func(m *EdgeOneZoneAccelerationDomainMutation) {
+		m.oldValue = func(context.Context) (*EdgeOneZoneAccelerationDomain, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EdgeOneZoneAccelerationDomainMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EdgeOneZoneAccelerationDomainMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of EdgeOneZoneAccelerationDomain entities.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *EdgeOneZoneAccelerationDomainMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().EdgeOneZoneAccelerationDomain.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetRemoteCreatedAt(t time.Time) {
+	m.remote_created_at = &t
+}
+
+// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) RemoteCreatedAt() (r time.Time, exists bool) {
+	v := m.remote_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
+	}
+	return oldValue.RemoteCreatedAt, nil
+}
+
+// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearRemoteCreatedAt() {
+	m.remote_created_at = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldRemoteCreatedAt] = struct{}{}
+}
+
+// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) RemoteCreatedAtCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldRemoteCreatedAt]
+	return ok
+}
+
+// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetRemoteCreatedAt() {
+	m.remote_created_at = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldRemoteCreatedAt)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
+}
+
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncAt returns the old "sync_at" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
+	}
+	return oldValue.SyncAt, nil
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldSyncAt] = struct{}{}
+}
+
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldSyncAt]
+	return ok
+}
+
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldSyncAt)
+}
+
+// SetEdgeoneZoneID sets the "edgeone_zone_id" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetEdgeoneZoneID(i int64) {
+	m.edgeone_zone = &i
+}
+
+// EdgeoneZoneID returns the value of the "edgeone_zone_id" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) EdgeoneZoneID() (r int64, exists bool) {
+	v := m.edgeone_zone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEdgeoneZoneID returns the old "edgeone_zone_id" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldEdgeoneZoneID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEdgeoneZoneID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEdgeoneZoneID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEdgeoneZoneID: %w", err)
+	}
+	return oldValue.EdgeoneZoneID, nil
+}
+
+// ResetEdgeoneZoneID resets all changes to the "edgeone_zone_id" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetEdgeoneZoneID() {
+	m.edgeone_zone = nil
+}
+
+// SetDomainName sets the "domain_name" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetDomainName(s string) {
+	m.domain_name = &s
+}
+
+// DomainName returns the value of the "domain_name" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) DomainName() (r string, exists bool) {
+	v := m.domain_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomainName returns the old "domain_name" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldDomainName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDomainName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDomainName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomainName: %w", err)
+	}
+	return oldValue.DomainName, nil
+}
+
+// ResetDomainName resets all changes to the "domain_name" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetDomainName() {
+	m.domain_name = nil
+}
+
+// SetDomainStatus sets the "domain_status" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetDomainStatus(es edgeonezoneaccelerationdomain.DomainStatus) {
+	m.domain_status = &es
+}
+
+// DomainStatus returns the value of the "domain_status" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) DomainStatus() (r edgeonezoneaccelerationdomain.DomainStatus, exists bool) {
+	v := m.domain_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomainStatus returns the old "domain_status" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldDomainStatus(ctx context.Context) (v edgeonezoneaccelerationdomain.DomainStatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDomainStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDomainStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomainStatus: %w", err)
+	}
+	return oldValue.DomainStatus, nil
+}
+
+// ClearDomainStatus clears the value of the "domain_status" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearDomainStatus() {
+	m.domain_status = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldDomainStatus] = struct{}{}
+}
+
+// DomainStatusCleared returns if the "domain_status" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) DomainStatusCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldDomainStatus]
+	return ok
+}
+
+// ResetDomainStatus resets all changes to the "domain_status" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetDomainStatus() {
+	m.domain_status = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldDomainStatus)
+}
+
+// SetCname sets the "cname" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetCname(s string) {
+	m.cname = &s
+}
+
+// Cname returns the value of the "cname" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) Cname() (r string, exists bool) {
+	v := m.cname
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCname returns the old "cname" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldCname(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCname is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCname requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCname: %w", err)
+	}
+	return oldValue.Cname, nil
+}
+
+// ClearCname clears the value of the "cname" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearCname() {
+	m.cname = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldCname] = struct{}{}
+}
+
+// CnameCleared returns if the "cname" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) CnameCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldCname]
+	return ok
+}
+
+// ResetCname resets all changes to the "cname" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetCname() {
+	m.cname = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldCname)
+}
+
+// SetIpv6Status sets the "ipv6_status" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetIpv6Status(e edgeonezoneaccelerationdomain.Ipv6Status) {
+	m.ipv6_status = &e
+}
+
+// Ipv6Status returns the value of the "ipv6_status" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) Ipv6Status() (r edgeonezoneaccelerationdomain.Ipv6Status, exists bool) {
+	v := m.ipv6_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIpv6Status returns the old "ipv6_status" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldIpv6Status(ctx context.Context) (v edgeonezoneaccelerationdomain.Ipv6Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIpv6Status is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIpv6Status requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIpv6Status: %w", err)
+	}
+	return oldValue.Ipv6Status, nil
+}
+
+// ClearIpv6Status clears the value of the "ipv6_status" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearIpv6Status() {
+	m.ipv6_status = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldIpv6Status] = struct{}{}
+}
+
+// Ipv6StatusCleared returns if the "ipv6_status" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) Ipv6StatusCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldIpv6Status]
+	return ok
+}
+
+// ResetIpv6Status resets all changes to the "ipv6_status" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetIpv6Status() {
+	m.ipv6_status = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldIpv6Status)
+}
+
+// SetIdentificationStatus sets the "identification_status" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetIdentificationStatus(es edgeonezoneaccelerationdomain.IdentificationStatus) {
+	m.identification_status = &es
+}
+
+// IdentificationStatus returns the value of the "identification_status" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) IdentificationStatus() (r edgeonezoneaccelerationdomain.IdentificationStatus, exists bool) {
+	v := m.identification_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIdentificationStatus returns the old "identification_status" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldIdentificationStatus(ctx context.Context) (v edgeonezoneaccelerationdomain.IdentificationStatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIdentificationStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIdentificationStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIdentificationStatus: %w", err)
+	}
+	return oldValue.IdentificationStatus, nil
+}
+
+// ClearIdentificationStatus clears the value of the "identification_status" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearIdentificationStatus() {
+	m.identification_status = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldIdentificationStatus] = struct{}{}
+}
+
+// IdentificationStatusCleared returns if the "identification_status" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) IdentificationStatusCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldIdentificationStatus]
+	return ok
+}
+
+// ResetIdentificationStatus resets all changes to the "identification_status" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetIdentificationStatus() {
+	m.identification_status = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldIdentificationStatus)
+}
+
+// SetOwnershipVerification sets the "ownership_verification" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetOwnershipVerification(jm json.RawMessage) {
+	m.ownership_verification = &jm
+	m.appendownership_verification = nil
+}
+
+// OwnershipVerification returns the value of the "ownership_verification" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) OwnershipVerification() (r json.RawMessage, exists bool) {
+	v := m.ownership_verification
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOwnershipVerification returns the old "ownership_verification" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldOwnershipVerification(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOwnershipVerification is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOwnershipVerification requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOwnershipVerification: %w", err)
+	}
+	return oldValue.OwnershipVerification, nil
+}
+
+// AppendOwnershipVerification adds jm to the "ownership_verification" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendOwnershipVerification(jm json.RawMessage) {
+	m.appendownership_verification = append(m.appendownership_verification, jm...)
+}
+
+// AppendedOwnershipVerification returns the list of values that were appended to the "ownership_verification" field in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendedOwnershipVerification() (json.RawMessage, bool) {
+	if len(m.appendownership_verification) == 0 {
+		return nil, false
+	}
+	return m.appendownership_verification, true
+}
+
+// ClearOwnershipVerification clears the value of the "ownership_verification" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearOwnershipVerification() {
+	m.ownership_verification = nil
+	m.appendownership_verification = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldOwnershipVerification] = struct{}{}
+}
+
+// OwnershipVerificationCleared returns if the "ownership_verification" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) OwnershipVerificationCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldOwnershipVerification]
+	return ok
+}
+
+// ResetOwnershipVerification resets all changes to the "ownership_verification" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetOwnershipVerification() {
+	m.ownership_verification = nil
+	m.appendownership_verification = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldOwnershipVerification)
+}
+
+// SetOriginDetail sets the "origin_detail" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetOriginDetail(jm json.RawMessage) {
+	m.origin_detail = &jm
+	m.appendorigin_detail = nil
+}
+
+// OriginDetail returns the value of the "origin_detail" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) OriginDetail() (r json.RawMessage, exists bool) {
+	v := m.origin_detail
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOriginDetail returns the old "origin_detail" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldOriginDetail(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOriginDetail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOriginDetail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOriginDetail: %w", err)
+	}
+	return oldValue.OriginDetail, nil
+}
+
+// AppendOriginDetail adds jm to the "origin_detail" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendOriginDetail(jm json.RawMessage) {
+	m.appendorigin_detail = append(m.appendorigin_detail, jm...)
+}
+
+// AppendedOriginDetail returns the list of values that were appended to the "origin_detail" field in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendedOriginDetail() (json.RawMessage, bool) {
+	if len(m.appendorigin_detail) == 0 {
+		return nil, false
+	}
+	return m.appendorigin_detail, true
+}
+
+// ClearOriginDetail clears the value of the "origin_detail" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearOriginDetail() {
+	m.origin_detail = nil
+	m.appendorigin_detail = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldOriginDetail] = struct{}{}
+}
+
+// OriginDetailCleared returns if the "origin_detail" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) OriginDetailCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldOriginDetail]
+	return ok
+}
+
+// ResetOriginDetail resets all changes to the "origin_detail" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetOriginDetail() {
+	m.origin_detail = nil
+	m.appendorigin_detail = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldOriginDetail)
+}
+
+// SetOriginProtocol sets the "origin_protocol" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetOriginProtocol(ep edgeonezoneaccelerationdomain.OriginProtocol) {
+	m.origin_protocol = &ep
+}
+
+// OriginProtocol returns the value of the "origin_protocol" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) OriginProtocol() (r edgeonezoneaccelerationdomain.OriginProtocol, exists bool) {
+	v := m.origin_protocol
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOriginProtocol returns the old "origin_protocol" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldOriginProtocol(ctx context.Context) (v edgeonezoneaccelerationdomain.OriginProtocol, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOriginProtocol is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOriginProtocol requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOriginProtocol: %w", err)
+	}
+	return oldValue.OriginProtocol, nil
+}
+
+// ClearOriginProtocol clears the value of the "origin_protocol" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearOriginProtocol() {
+	m.origin_protocol = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldOriginProtocol] = struct{}{}
+}
+
+// OriginProtocolCleared returns if the "origin_protocol" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) OriginProtocolCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldOriginProtocol]
+	return ok
+}
+
+// ResetOriginProtocol resets all changes to the "origin_protocol" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetOriginProtocol() {
+	m.origin_protocol = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldOriginProtocol)
+}
+
+// SetHTTPOriginPort sets the "http_origin_port" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetHTTPOriginPort(i int) {
+	m.http_origin_port = &i
+	m.addhttp_origin_port = nil
+}
+
+// HTTPOriginPort returns the value of the "http_origin_port" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) HTTPOriginPort() (r int, exists bool) {
+	v := m.http_origin_port
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHTTPOriginPort returns the old "http_origin_port" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldHTTPOriginPort(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHTTPOriginPort is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHTTPOriginPort requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHTTPOriginPort: %w", err)
+	}
+	return oldValue.HTTPOriginPort, nil
+}
+
+// AddHTTPOriginPort adds i to the "http_origin_port" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) AddHTTPOriginPort(i int) {
+	if m.addhttp_origin_port != nil {
+		*m.addhttp_origin_port += i
+	} else {
+		m.addhttp_origin_port = &i
+	}
+}
+
+// AddedHTTPOriginPort returns the value that was added to the "http_origin_port" field in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) AddedHTTPOriginPort() (r int, exists bool) {
+	v := m.addhttp_origin_port
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearHTTPOriginPort clears the value of the "http_origin_port" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearHTTPOriginPort() {
+	m.http_origin_port = nil
+	m.addhttp_origin_port = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldHTTPOriginPort] = struct{}{}
+}
+
+// HTTPOriginPortCleared returns if the "http_origin_port" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) HTTPOriginPortCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldHTTPOriginPort]
+	return ok
+}
+
+// ResetHTTPOriginPort resets all changes to the "http_origin_port" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetHTTPOriginPort() {
+	m.http_origin_port = nil
+	m.addhttp_origin_port = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldHTTPOriginPort)
+}
+
+// SetHTTPSOriginPort sets the "https_origin_port" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetHTTPSOriginPort(i int) {
+	m.https_origin_port = &i
+	m.addhttps_origin_port = nil
+}
+
+// HTTPSOriginPort returns the value of the "https_origin_port" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) HTTPSOriginPort() (r int, exists bool) {
+	v := m.https_origin_port
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHTTPSOriginPort returns the old "https_origin_port" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldHTTPSOriginPort(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHTTPSOriginPort is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHTTPSOriginPort requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHTTPSOriginPort: %w", err)
+	}
+	return oldValue.HTTPSOriginPort, nil
+}
+
+// AddHTTPSOriginPort adds i to the "https_origin_port" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) AddHTTPSOriginPort(i int) {
+	if m.addhttps_origin_port != nil {
+		*m.addhttps_origin_port += i
+	} else {
+		m.addhttps_origin_port = &i
+	}
+}
+
+// AddedHTTPSOriginPort returns the value that was added to the "https_origin_port" field in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) AddedHTTPSOriginPort() (r int, exists bool) {
+	v := m.addhttps_origin_port
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearHTTPSOriginPort clears the value of the "https_origin_port" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearHTTPSOriginPort() {
+	m.https_origin_port = nil
+	m.addhttps_origin_port = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldHTTPSOriginPort] = struct{}{}
+}
+
+// HTTPSOriginPortCleared returns if the "https_origin_port" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) HTTPSOriginPortCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldHTTPSOriginPort]
+	return ok
+}
+
+// ResetHTTPSOriginPort resets all changes to the "https_origin_port" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetHTTPSOriginPort() {
+	m.https_origin_port = nil
+	m.addhttps_origin_port = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldHTTPSOriginPort)
+}
+
+// SetCertificate sets the "certificate" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetCertificate(jm json.RawMessage) {
+	m.certificate = &jm
+	m.appendcertificate = nil
+}
+
+// Certificate returns the value of the "certificate" field in the mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) Certificate() (r json.RawMessage, exists bool) {
+	v := m.certificate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCertificate returns the old "certificate" field's value of the EdgeOneZoneAccelerationDomain entity.
+// If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldCertificate(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCertificate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCertificate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCertificate: %w", err)
+	}
+	return oldValue.Certificate, nil
+}
+
+// AppendCertificate adds jm to the "certificate" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendCertificate(jm json.RawMessage) {
+	m.appendcertificate = append(m.appendcertificate, jm...)
+}
+
+// AppendedCertificate returns the list of values that were appended to the "certificate" field in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendedCertificate() (json.RawMessage, bool) {
+	if len(m.appendcertificate) == 0 {
+		return nil, false
+	}
+	return m.appendcertificate, true
+}
+
+// ClearCertificate clears the value of the "certificate" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearCertificate() {
+	m.certificate = nil
+	m.appendcertificate = nil
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldCertificate] = struct{}{}
+}
+
+// CertificateCleared returns if the "certificate" field was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) CertificateCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneaccelerationdomain.FieldCertificate]
+	return ok
+}
+
+// ResetCertificate resets all changes to the "certificate" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetCertificate() {
+	m.certificate = nil
+	m.appendcertificate = nil
+	delete(m.clearedFields, edgeonezoneaccelerationdomain.FieldCertificate)
+}
+
+// ClearEdgeoneZone clears the "edgeone_zone" edge to the EdgeOneZone entity.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearEdgeoneZone() {
+	m.clearededgeone_zone = true
+	m.clearedFields[edgeonezoneaccelerationdomain.FieldEdgeoneZoneID] = struct{}{}
+}
+
+// EdgeoneZoneCleared reports if the "edgeone_zone" edge to the EdgeOneZone entity was cleared.
+func (m *EdgeOneZoneAccelerationDomainMutation) EdgeoneZoneCleared() bool {
+	return m.clearededgeone_zone
+}
+
+// EdgeoneZoneIDs returns the "edgeone_zone" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EdgeoneZoneID instead. It exists only for internal usage by the builders.
+func (m *EdgeOneZoneAccelerationDomainMutation) EdgeoneZoneIDs() (ids []int64) {
+	if id := m.edgeone_zone; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEdgeoneZone resets all changes to the "edgeone_zone" edge.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetEdgeoneZone() {
+	m.edgeone_zone = nil
+	m.clearededgeone_zone = false
+}
+
+// Where appends a list predicates to the EdgeOneZoneAccelerationDomainMutation builder.
+func (m *EdgeOneZoneAccelerationDomainMutation) Where(ps ...predicate.EdgeOneZoneAccelerationDomain) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the EdgeOneZoneAccelerationDomainMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *EdgeOneZoneAccelerationDomainMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.EdgeOneZoneAccelerationDomain, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *EdgeOneZoneAccelerationDomainMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (EdgeOneZoneAccelerationDomain).
+func (m *EdgeOneZoneAccelerationDomainMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EdgeOneZoneAccelerationDomainMutation) Fields() []string {
+	fields := make([]string, 0, 16)
+	if m.created_at != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldUpdatedAt)
+	}
+	if m.remote_created_at != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldRemoteCreatedAt)
+	}
+	if m.sync_at != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldSyncAt)
+	}
+	if m.edgeone_zone != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldEdgeoneZoneID)
+	}
+	if m.domain_name != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldDomainName)
+	}
+	if m.domain_status != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldDomainStatus)
+	}
+	if m.cname != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldCname)
+	}
+	if m.ipv6_status != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldIpv6Status)
+	}
+	if m.identification_status != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldIdentificationStatus)
+	}
+	if m.ownership_verification != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldOwnershipVerification)
+	}
+	if m.origin_detail != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldOriginDetail)
+	}
+	if m.origin_protocol != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldOriginProtocol)
+	}
+	if m.http_origin_port != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldHTTPOriginPort)
+	}
+	if m.https_origin_port != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldHTTPSOriginPort)
+	}
+	if m.certificate != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldCertificate)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EdgeOneZoneAccelerationDomainMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case edgeonezoneaccelerationdomain.FieldCreatedAt:
+		return m.CreatedAt()
+	case edgeonezoneaccelerationdomain.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case edgeonezoneaccelerationdomain.FieldRemoteCreatedAt:
+		return m.RemoteCreatedAt()
+	case edgeonezoneaccelerationdomain.FieldSyncAt:
+		return m.SyncAt()
+	case edgeonezoneaccelerationdomain.FieldEdgeoneZoneID:
+		return m.EdgeoneZoneID()
+	case edgeonezoneaccelerationdomain.FieldDomainName:
+		return m.DomainName()
+	case edgeonezoneaccelerationdomain.FieldDomainStatus:
+		return m.DomainStatus()
+	case edgeonezoneaccelerationdomain.FieldCname:
+		return m.Cname()
+	case edgeonezoneaccelerationdomain.FieldIpv6Status:
+		return m.Ipv6Status()
+	case edgeonezoneaccelerationdomain.FieldIdentificationStatus:
+		return m.IdentificationStatus()
+	case edgeonezoneaccelerationdomain.FieldOwnershipVerification:
+		return m.OwnershipVerification()
+	case edgeonezoneaccelerationdomain.FieldOriginDetail:
+		return m.OriginDetail()
+	case edgeonezoneaccelerationdomain.FieldOriginProtocol:
+		return m.OriginProtocol()
+	case edgeonezoneaccelerationdomain.FieldHTTPOriginPort:
+		return m.HTTPOriginPort()
+	case edgeonezoneaccelerationdomain.FieldHTTPSOriginPort:
+		return m.HTTPSOriginPort()
+	case edgeonezoneaccelerationdomain.FieldCertificate:
+		return m.Certificate()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EdgeOneZoneAccelerationDomainMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case edgeonezoneaccelerationdomain.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case edgeonezoneaccelerationdomain.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case edgeonezoneaccelerationdomain.FieldRemoteCreatedAt:
+		return m.OldRemoteCreatedAt(ctx)
+	case edgeonezoneaccelerationdomain.FieldSyncAt:
+		return m.OldSyncAt(ctx)
+	case edgeonezoneaccelerationdomain.FieldEdgeoneZoneID:
+		return m.OldEdgeoneZoneID(ctx)
+	case edgeonezoneaccelerationdomain.FieldDomainName:
+		return m.OldDomainName(ctx)
+	case edgeonezoneaccelerationdomain.FieldDomainStatus:
+		return m.OldDomainStatus(ctx)
+	case edgeonezoneaccelerationdomain.FieldCname:
+		return m.OldCname(ctx)
+	case edgeonezoneaccelerationdomain.FieldIpv6Status:
+		return m.OldIpv6Status(ctx)
+	case edgeonezoneaccelerationdomain.FieldIdentificationStatus:
+		return m.OldIdentificationStatus(ctx)
+	case edgeonezoneaccelerationdomain.FieldOwnershipVerification:
+		return m.OldOwnershipVerification(ctx)
+	case edgeonezoneaccelerationdomain.FieldOriginDetail:
+		return m.OldOriginDetail(ctx)
+	case edgeonezoneaccelerationdomain.FieldOriginProtocol:
+		return m.OldOriginProtocol(ctx)
+	case edgeonezoneaccelerationdomain.FieldHTTPOriginPort:
+		return m.OldHTTPOriginPort(ctx)
+	case edgeonezoneaccelerationdomain.FieldHTTPSOriginPort:
+		return m.OldHTTPSOriginPort(ctx)
+	case edgeonezoneaccelerationdomain.FieldCertificate:
+		return m.OldCertificate(ctx)
+	}
+	return nil, fmt.Errorf("unknown EdgeOneZoneAccelerationDomain field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EdgeOneZoneAccelerationDomainMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case edgeonezoneaccelerationdomain.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldRemoteCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteCreatedAt(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldSyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncAt(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldEdgeoneZoneID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEdgeoneZoneID(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldDomainName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomainName(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldDomainStatus:
+		v, ok := value.(edgeonezoneaccelerationdomain.DomainStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomainStatus(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldCname:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCname(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldIpv6Status:
+		v, ok := value.(edgeonezoneaccelerationdomain.Ipv6Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIpv6Status(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldIdentificationStatus:
+		v, ok := value.(edgeonezoneaccelerationdomain.IdentificationStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIdentificationStatus(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldOwnershipVerification:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOwnershipVerification(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldOriginDetail:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOriginDetail(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldOriginProtocol:
+		v, ok := value.(edgeonezoneaccelerationdomain.OriginProtocol)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOriginProtocol(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldHTTPOriginPort:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHTTPOriginPort(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldHTTPSOriginPort:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHTTPSOriginPort(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldCertificate:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCertificate(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneAccelerationDomain field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) AddedFields() []string {
+	var fields []string
+	if m.addhttp_origin_port != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldHTTPOriginPort)
+	}
+	if m.addhttps_origin_port != nil {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldHTTPSOriginPort)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EdgeOneZoneAccelerationDomainMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case edgeonezoneaccelerationdomain.FieldHTTPOriginPort:
+		return m.AddedHTTPOriginPort()
+	case edgeonezoneaccelerationdomain.FieldHTTPSOriginPort:
+		return m.AddedHTTPSOriginPort()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EdgeOneZoneAccelerationDomainMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case edgeonezoneaccelerationdomain.FieldHTTPOriginPort:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddHTTPOriginPort(v)
+		return nil
+	case edgeonezoneaccelerationdomain.FieldHTTPSOriginPort:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddHTTPSOriginPort(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneAccelerationDomain numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldRemoteCreatedAt) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldRemoteCreatedAt)
+	}
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldSyncAt) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldSyncAt)
+	}
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldDomainStatus) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldDomainStatus)
+	}
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldCname) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldCname)
+	}
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldIpv6Status) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldIpv6Status)
+	}
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldIdentificationStatus) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldIdentificationStatus)
+	}
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldOwnershipVerification) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldOwnershipVerification)
+	}
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldOriginDetail) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldOriginDetail)
+	}
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldOriginProtocol) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldOriginProtocol)
+	}
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldHTTPOriginPort) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldHTTPOriginPort)
+	}
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldHTTPSOriginPort)
+	}
+	if m.FieldCleared(edgeonezoneaccelerationdomain.FieldCertificate) {
+		fields = append(fields, edgeonezoneaccelerationdomain.FieldCertificate)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearField(name string) error {
+	switch name {
+	case edgeonezoneaccelerationdomain.FieldRemoteCreatedAt:
+		m.ClearRemoteCreatedAt()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldSyncAt:
+		m.ClearSyncAt()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldDomainStatus:
+		m.ClearDomainStatus()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldCname:
+		m.ClearCname()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldIpv6Status:
+		m.ClearIpv6Status()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldIdentificationStatus:
+		m.ClearIdentificationStatus()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldOwnershipVerification:
+		m.ClearOwnershipVerification()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldOriginDetail:
+		m.ClearOriginDetail()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldOriginProtocol:
+		m.ClearOriginProtocol()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldHTTPOriginPort:
+		m.ClearHTTPOriginPort()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldHTTPSOriginPort:
+		m.ClearHTTPSOriginPort()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldCertificate:
+		m.ClearCertificate()
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneAccelerationDomain nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetField(name string) error {
+	switch name {
+	case edgeonezoneaccelerationdomain.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldRemoteCreatedAt:
+		m.ResetRemoteCreatedAt()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldSyncAt:
+		m.ResetSyncAt()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldEdgeoneZoneID:
+		m.ResetEdgeoneZoneID()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldDomainName:
+		m.ResetDomainName()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldDomainStatus:
+		m.ResetDomainStatus()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldCname:
+		m.ResetCname()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldIpv6Status:
+		m.ResetIpv6Status()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldIdentificationStatus:
+		m.ResetIdentificationStatus()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldOwnershipVerification:
+		m.ResetOwnershipVerification()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldOriginDetail:
+		m.ResetOriginDetail()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldOriginProtocol:
+		m.ResetOriginProtocol()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldHTTPOriginPort:
+		m.ResetHTTPOriginPort()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldHTTPSOriginPort:
+		m.ResetHTTPSOriginPort()
+		return nil
+	case edgeonezoneaccelerationdomain.FieldCertificate:
+		m.ResetCertificate()
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneAccelerationDomain field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.edgeone_zone != nil {
+		edges = append(edges, edgeonezoneaccelerationdomain.EdgeEdgeoneZone)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case edgeonezoneaccelerationdomain.EdgeEdgeoneZone:
+		if id := m.edgeone_zone; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearededgeone_zone {
+		edges = append(edges, edgeonezoneaccelerationdomain.EdgeEdgeoneZone)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EdgeOneZoneAccelerationDomainMutation) EdgeCleared(name string) bool {
+	switch name {
+	case edgeonezoneaccelerationdomain.EdgeEdgeoneZone:
+		return m.clearededgeone_zone
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EdgeOneZoneAccelerationDomainMutation) ClearEdge(name string) error {
+	switch name {
+	case edgeonezoneaccelerationdomain.EdgeEdgeoneZone:
+		m.ClearEdgeoneZone()
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneAccelerationDomain unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EdgeOneZoneAccelerationDomainMutation) ResetEdge(name string) error {
+	switch name {
+	case edgeonezoneaccelerationdomain.EdgeEdgeoneZone:
+		m.ResetEdgeoneZone()
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneAccelerationDomain edge %s", name)
+}
+
+// EdgeOneZoneDNSRecordMutation represents an operation that mutates the EdgeOneZoneDNSRecord nodes in the graph.
+type EdgeOneZoneDNSRecordMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *int64
+	created_at          *time.Time
+	updated_at          *time.Time
+	remote_created_at   *time.Time
+	sync_at             *time.Time
+	recordId            *string
+	name                *string
+	_type               *edgeonezonednsrecord.Type
+	location            *string
+	content             *string
+	ttl                 *int
+	addttl              *int
+	weight              *int
+	addweight           *int
+	priority            *int
+	addpriority         *int
+	status              *edgeonezonednsrecord.Status
+	clearedFields       map[string]struct{}
+	edgeone_zone        *int64
+	clearededgeone_zone bool
+	done                bool
+	oldValue            func(context.Context) (*EdgeOneZoneDNSRecord, error)
+	predicates          []predicate.EdgeOneZoneDNSRecord
+}
+
+var _ ent.Mutation = (*EdgeOneZoneDNSRecordMutation)(nil)
+
+// edgeonezonednsrecordOption allows management of the mutation configuration using functional options.
+type edgeonezonednsrecordOption func(*EdgeOneZoneDNSRecordMutation)
+
+// newEdgeOneZoneDNSRecordMutation creates new mutation for the EdgeOneZoneDNSRecord entity.
+func newEdgeOneZoneDNSRecordMutation(c config, op Op, opts ...edgeonezonednsrecordOption) *EdgeOneZoneDNSRecordMutation {
+	m := &EdgeOneZoneDNSRecordMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEdgeOneZoneDNSRecord,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEdgeOneZoneDNSRecordID sets the ID field of the mutation.
+func withEdgeOneZoneDNSRecordID(id int64) edgeonezonednsrecordOption {
+	return func(m *EdgeOneZoneDNSRecordMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *EdgeOneZoneDNSRecord
+		)
+		m.oldValue = func(ctx context.Context) (*EdgeOneZoneDNSRecord, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().EdgeOneZoneDNSRecord.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEdgeOneZoneDNSRecord sets the old EdgeOneZoneDNSRecord of the mutation.
+func withEdgeOneZoneDNSRecord(node *EdgeOneZoneDNSRecord) edgeonezonednsrecordOption {
+	return func(m *EdgeOneZoneDNSRecordMutation) {
+		m.oldValue = func(context.Context) (*EdgeOneZoneDNSRecord, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EdgeOneZoneDNSRecordMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EdgeOneZoneDNSRecordMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of EdgeOneZoneDNSRecord entities.
+func (m *EdgeOneZoneDNSRecordMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *EdgeOneZoneDNSRecordMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().EdgeOneZoneDNSRecord.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetRemoteCreatedAt(t time.Time) {
+	m.remote_created_at = &t
+}
+
+// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) RemoteCreatedAt() (r time.Time, exists bool) {
+	v := m.remote_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
+	}
+	return oldValue.RemoteCreatedAt, nil
+}
+
+// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
+func (m *EdgeOneZoneDNSRecordMutation) ClearRemoteCreatedAt() {
+	m.remote_created_at = nil
+	m.clearedFields[edgeonezonednsrecord.FieldRemoteCreatedAt] = struct{}{}
+}
+
+// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) RemoteCreatedAtCleared() bool {
+	_, ok := m.clearedFields[edgeonezonednsrecord.FieldRemoteCreatedAt]
+	return ok
+}
+
+// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetRemoteCreatedAt() {
+	m.remote_created_at = nil
+	delete(m.clearedFields, edgeonezonednsrecord.FieldRemoteCreatedAt)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
+}
+
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncAt returns the old "sync_at" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
+	}
+	return oldValue.SyncAt, nil
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *EdgeOneZoneDNSRecordMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[edgeonezonednsrecord.FieldSyncAt] = struct{}{}
+}
+
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[edgeonezonednsrecord.FieldSyncAt]
+	return ok
+}
+
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, edgeonezonednsrecord.FieldSyncAt)
+}
+
+// SetEdgeoneZoneID sets the "edgeone_zone_id" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetEdgeoneZoneID(i int64) {
+	m.edgeone_zone = &i
+}
+
+// EdgeoneZoneID returns the value of the "edgeone_zone_id" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) EdgeoneZoneID() (r int64, exists bool) {
+	v := m.edgeone_zone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEdgeoneZoneID returns the old "edgeone_zone_id" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldEdgeoneZoneID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEdgeoneZoneID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEdgeoneZoneID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEdgeoneZoneID: %w", err)
+	}
+	return oldValue.EdgeoneZoneID, nil
+}
+
+// ResetEdgeoneZoneID resets all changes to the "edgeone_zone_id" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetEdgeoneZoneID() {
+	m.edgeone_zone = nil
+}
+
+// SetRecordId sets the "recordId" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetRecordId(s string) {
+	m.recordId = &s
+}
+
+// RecordId returns the value of the "recordId" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) RecordId() (r string, exists bool) {
+	v := m.recordId
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordId returns the old "recordId" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldRecordId(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordId is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordId requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordId: %w", err)
+	}
+	return oldValue.RecordId, nil
+}
+
+// ResetRecordId resets all changes to the "recordId" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetRecordId() {
+	m.recordId = nil
+}
+
+// SetName sets the "name" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ClearName clears the value of the "name" field.
+func (m *EdgeOneZoneDNSRecordMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[edgeonezonednsrecord.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) NameCleared() bool {
+	_, ok := m.clearedFields[edgeonezonednsrecord.FieldName]
+	return ok
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetName() {
+	m.name = nil
+	delete(m.clearedFields, edgeonezonednsrecord.FieldName)
+}
+
+// SetType sets the "type" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetType(e edgeonezonednsrecord.Type) {
+	m._type = &e
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) GetType() (r edgeonezonednsrecord.Type, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldType(ctx context.Context) (v edgeonezonednsrecord.Type, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ClearType clears the value of the "type" field.
+func (m *EdgeOneZoneDNSRecordMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[edgeonezonednsrecord.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[edgeonezonednsrecord.FieldType]
+	return ok
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetType() {
+	m._type = nil
+	delete(m.clearedFields, edgeonezonednsrecord.FieldType)
+}
+
+// SetLocation sets the "location" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetLocation(s string) {
+	m.location = &s
+}
+
+// Location returns the value of the "location" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) Location() (r string, exists bool) {
+	v := m.location
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocation returns the old "location" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldLocation(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLocation is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLocation requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocation: %w", err)
+	}
+	return oldValue.Location, nil
+}
+
+// ClearLocation clears the value of the "location" field.
+func (m *EdgeOneZoneDNSRecordMutation) ClearLocation() {
+	m.location = nil
+	m.clearedFields[edgeonezonednsrecord.FieldLocation] = struct{}{}
+}
+
+// LocationCleared returns if the "location" field was cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) LocationCleared() bool {
+	_, ok := m.clearedFields[edgeonezonednsrecord.FieldLocation]
+	return ok
+}
+
+// ResetLocation resets all changes to the "location" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetLocation() {
+	m.location = nil
+	delete(m.clearedFields, edgeonezonednsrecord.FieldLocation)
+}
+
+// SetContent sets the "content" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetContent(s string) {
+	m.content = &s
+}
+
+// Content returns the value of the "content" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) Content() (r string, exists bool) {
+	v := m.content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContent returns the old "content" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
+	}
+	return oldValue.Content, nil
+}
+
+// ClearContent clears the value of the "content" field.
+func (m *EdgeOneZoneDNSRecordMutation) ClearContent() {
+	m.content = nil
+	m.clearedFields[edgeonezonednsrecord.FieldContent] = struct{}{}
+}
+
+// ContentCleared returns if the "content" field was cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) ContentCleared() bool {
+	_, ok := m.clearedFields[edgeonezonednsrecord.FieldContent]
+	return ok
+}
+
+// ResetContent resets all changes to the "content" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetContent() {
+	m.content = nil
+	delete(m.clearedFields, edgeonezonednsrecord.FieldContent)
+}
+
+// SetTTL sets the "ttl" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetTTL(i int) {
+	m.ttl = &i
+	m.addttl = nil
+}
+
+// TTL returns the value of the "ttl" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) TTL() (r int, exists bool) {
+	v := m.ttl
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTTL returns the old "ttl" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldTTL(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTTL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTTL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTTL: %w", err)
+	}
+	return oldValue.TTL, nil
+}
+
+// AddTTL adds i to the "ttl" field.
+func (m *EdgeOneZoneDNSRecordMutation) AddTTL(i int) {
+	if m.addttl != nil {
+		*m.addttl += i
+	} else {
+		m.addttl = &i
+	}
+}
+
+// AddedTTL returns the value that was added to the "ttl" field in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) AddedTTL() (r int, exists bool) {
+	v := m.addttl
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTTL clears the value of the "ttl" field.
+func (m *EdgeOneZoneDNSRecordMutation) ClearTTL() {
+	m.ttl = nil
+	m.addttl = nil
+	m.clearedFields[edgeonezonednsrecord.FieldTTL] = struct{}{}
+}
+
+// TTLCleared returns if the "ttl" field was cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) TTLCleared() bool {
+	_, ok := m.clearedFields[edgeonezonednsrecord.FieldTTL]
+	return ok
+}
+
+// ResetTTL resets all changes to the "ttl" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetTTL() {
+	m.ttl = nil
+	m.addttl = nil
+	delete(m.clearedFields, edgeonezonednsrecord.FieldTTL)
+}
+
+// SetWeight sets the "weight" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetWeight(i int) {
+	m.weight = &i
+	m.addweight = nil
+}
+
+// Weight returns the value of the "weight" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) Weight() (r int, exists bool) {
+	v := m.weight
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWeight returns the old "weight" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldWeight(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWeight is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWeight requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWeight: %w", err)
+	}
+	return oldValue.Weight, nil
+}
+
+// AddWeight adds i to the "weight" field.
+func (m *EdgeOneZoneDNSRecordMutation) AddWeight(i int) {
+	if m.addweight != nil {
+		*m.addweight += i
+	} else {
+		m.addweight = &i
+	}
+}
+
+// AddedWeight returns the value that was added to the "weight" field in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) AddedWeight() (r int, exists bool) {
+	v := m.addweight
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearWeight clears the value of the "weight" field.
+func (m *EdgeOneZoneDNSRecordMutation) ClearWeight() {
+	m.weight = nil
+	m.addweight = nil
+	m.clearedFields[edgeonezonednsrecord.FieldWeight] = struct{}{}
+}
+
+// WeightCleared returns if the "weight" field was cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) WeightCleared() bool {
+	_, ok := m.clearedFields[edgeonezonednsrecord.FieldWeight]
+	return ok
+}
+
+// ResetWeight resets all changes to the "weight" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetWeight() {
+	m.weight = nil
+	m.addweight = nil
+	delete(m.clearedFields, edgeonezonednsrecord.FieldWeight)
+}
+
+// SetPriority sets the "priority" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetPriority(i int) {
+	m.priority = &i
+	m.addpriority = nil
+}
+
+// Priority returns the value of the "priority" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) Priority() (r int, exists bool) {
+	v := m.priority
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPriority returns the old "priority" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldPriority(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPriority is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPriority requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPriority: %w", err)
+	}
+	return oldValue.Priority, nil
+}
+
+// AddPriority adds i to the "priority" field.
+func (m *EdgeOneZoneDNSRecordMutation) AddPriority(i int) {
+	if m.addpriority != nil {
+		*m.addpriority += i
+	} else {
+		m.addpriority = &i
+	}
+}
+
+// AddedPriority returns the value that was added to the "priority" field in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) AddedPriority() (r int, exists bool) {
+	v := m.addpriority
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPriority clears the value of the "priority" field.
+func (m *EdgeOneZoneDNSRecordMutation) ClearPriority() {
+	m.priority = nil
+	m.addpriority = nil
+	m.clearedFields[edgeonezonednsrecord.FieldPriority] = struct{}{}
+}
+
+// PriorityCleared returns if the "priority" field was cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) PriorityCleared() bool {
+	_, ok := m.clearedFields[edgeonezonednsrecord.FieldPriority]
+	return ok
+}
+
+// ResetPriority resets all changes to the "priority" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetPriority() {
+	m.priority = nil
+	m.addpriority = nil
+	delete(m.clearedFields, edgeonezonednsrecord.FieldPriority)
+}
+
+// SetStatus sets the "status" field.
+func (m *EdgeOneZoneDNSRecordMutation) SetStatus(e edgeonezonednsrecord.Status) {
+	m.status = &e
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *EdgeOneZoneDNSRecordMutation) Status() (r edgeonezonednsrecord.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the EdgeOneZoneDNSRecord entity.
+// If the EdgeOneZoneDNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneDNSRecordMutation) OldStatus(ctx context.Context) (v edgeonezonednsrecord.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ClearStatus clears the value of the "status" field.
+func (m *EdgeOneZoneDNSRecordMutation) ClearStatus() {
+	m.status = nil
+	m.clearedFields[edgeonezonednsrecord.FieldStatus] = struct{}{}
+}
+
+// StatusCleared returns if the "status" field was cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) StatusCleared() bool {
+	_, ok := m.clearedFields[edgeonezonednsrecord.FieldStatus]
+	return ok
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *EdgeOneZoneDNSRecordMutation) ResetStatus() {
+	m.status = nil
+	delete(m.clearedFields, edgeonezonednsrecord.FieldStatus)
+}
+
+// ClearEdgeoneZone clears the "edgeone_zone" edge to the EdgeOneZone entity.
+func (m *EdgeOneZoneDNSRecordMutation) ClearEdgeoneZone() {
+	m.clearededgeone_zone = true
+	m.clearedFields[edgeonezonednsrecord.FieldEdgeoneZoneID] = struct{}{}
+}
+
+// EdgeoneZoneCleared reports if the "edgeone_zone" edge to the EdgeOneZone entity was cleared.
+func (m *EdgeOneZoneDNSRecordMutation) EdgeoneZoneCleared() bool {
+	return m.clearededgeone_zone
+}
+
+// EdgeoneZoneIDs returns the "edgeone_zone" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EdgeoneZoneID instead. It exists only for internal usage by the builders.
+func (m *EdgeOneZoneDNSRecordMutation) EdgeoneZoneIDs() (ids []int64) {
+	if id := m.edgeone_zone; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEdgeoneZone resets all changes to the "edgeone_zone" edge.
+func (m *EdgeOneZoneDNSRecordMutation) ResetEdgeoneZone() {
+	m.edgeone_zone = nil
+	m.clearededgeone_zone = false
+}
+
+// Where appends a list predicates to the EdgeOneZoneDNSRecordMutation builder.
+func (m *EdgeOneZoneDNSRecordMutation) Where(ps ...predicate.EdgeOneZoneDNSRecord) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the EdgeOneZoneDNSRecordMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *EdgeOneZoneDNSRecordMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.EdgeOneZoneDNSRecord, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *EdgeOneZoneDNSRecordMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *EdgeOneZoneDNSRecordMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (EdgeOneZoneDNSRecord).
+func (m *EdgeOneZoneDNSRecordMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EdgeOneZoneDNSRecordMutation) Fields() []string {
+	fields := make([]string, 0, 14)
+	if m.created_at != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldUpdatedAt)
+	}
+	if m.remote_created_at != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldRemoteCreatedAt)
+	}
+	if m.sync_at != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldSyncAt)
+	}
+	if m.edgeone_zone != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldEdgeoneZoneID)
+	}
+	if m.recordId != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldRecordId)
+	}
+	if m.name != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldName)
+	}
+	if m._type != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldType)
+	}
+	if m.location != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldLocation)
+	}
+	if m.content != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldContent)
+	}
+	if m.ttl != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldTTL)
+	}
+	if m.weight != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldWeight)
+	}
+	if m.priority != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldPriority)
+	}
+	if m.status != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldStatus)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EdgeOneZoneDNSRecordMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case edgeonezonednsrecord.FieldCreatedAt:
+		return m.CreatedAt()
+	case edgeonezonednsrecord.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case edgeonezonednsrecord.FieldRemoteCreatedAt:
+		return m.RemoteCreatedAt()
+	case edgeonezonednsrecord.FieldSyncAt:
+		return m.SyncAt()
+	case edgeonezonednsrecord.FieldEdgeoneZoneID:
+		return m.EdgeoneZoneID()
+	case edgeonezonednsrecord.FieldRecordId:
+		return m.RecordId()
+	case edgeonezonednsrecord.FieldName:
+		return m.Name()
+	case edgeonezonednsrecord.FieldType:
+		return m.GetType()
+	case edgeonezonednsrecord.FieldLocation:
+		return m.Location()
+	case edgeonezonednsrecord.FieldContent:
+		return m.Content()
+	case edgeonezonednsrecord.FieldTTL:
+		return m.TTL()
+	case edgeonezonednsrecord.FieldWeight:
+		return m.Weight()
+	case edgeonezonednsrecord.FieldPriority:
+		return m.Priority()
+	case edgeonezonednsrecord.FieldStatus:
+		return m.Status()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EdgeOneZoneDNSRecordMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case edgeonezonednsrecord.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case edgeonezonednsrecord.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case edgeonezonednsrecord.FieldRemoteCreatedAt:
+		return m.OldRemoteCreatedAt(ctx)
+	case edgeonezonednsrecord.FieldSyncAt:
+		return m.OldSyncAt(ctx)
+	case edgeonezonednsrecord.FieldEdgeoneZoneID:
+		return m.OldEdgeoneZoneID(ctx)
+	case edgeonezonednsrecord.FieldRecordId:
+		return m.OldRecordId(ctx)
+	case edgeonezonednsrecord.FieldName:
+		return m.OldName(ctx)
+	case edgeonezonednsrecord.FieldType:
+		return m.OldType(ctx)
+	case edgeonezonednsrecord.FieldLocation:
+		return m.OldLocation(ctx)
+	case edgeonezonednsrecord.FieldContent:
+		return m.OldContent(ctx)
+	case edgeonezonednsrecord.FieldTTL:
+		return m.OldTTL(ctx)
+	case edgeonezonednsrecord.FieldWeight:
+		return m.OldWeight(ctx)
+	case edgeonezonednsrecord.FieldPriority:
+		return m.OldPriority(ctx)
+	case edgeonezonednsrecord.FieldStatus:
+		return m.OldStatus(ctx)
+	}
+	return nil, fmt.Errorf("unknown EdgeOneZoneDNSRecord field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EdgeOneZoneDNSRecordMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case edgeonezonednsrecord.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case edgeonezonednsrecord.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case edgeonezonednsrecord.FieldRemoteCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteCreatedAt(v)
+		return nil
+	case edgeonezonednsrecord.FieldSyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncAt(v)
+		return nil
+	case edgeonezonednsrecord.FieldEdgeoneZoneID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEdgeoneZoneID(v)
+		return nil
+	case edgeonezonednsrecord.FieldRecordId:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordId(v)
+		return nil
+	case edgeonezonednsrecord.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case edgeonezonednsrecord.FieldType:
+		v, ok := value.(edgeonezonednsrecord.Type)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	case edgeonezonednsrecord.FieldLocation:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocation(v)
+		return nil
+	case edgeonezonednsrecord.FieldContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContent(v)
+		return nil
+	case edgeonezonednsrecord.FieldTTL:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTTL(v)
+		return nil
+	case edgeonezonednsrecord.FieldWeight:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWeight(v)
+		return nil
+	case edgeonezonednsrecord.FieldPriority:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPriority(v)
+		return nil
+	case edgeonezonednsrecord.FieldStatus:
+		v, ok := value.(edgeonezonednsrecord.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneDNSRecord field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) AddedFields() []string {
+	var fields []string
+	if m.addttl != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldTTL)
+	}
+	if m.addweight != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldWeight)
+	}
+	if m.addpriority != nil {
+		fields = append(fields, edgeonezonednsrecord.FieldPriority)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EdgeOneZoneDNSRecordMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case edgeonezonednsrecord.FieldTTL:
+		return m.AddedTTL()
+	case edgeonezonednsrecord.FieldWeight:
+		return m.AddedWeight()
+	case edgeonezonednsrecord.FieldPriority:
+		return m.AddedPriority()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EdgeOneZoneDNSRecordMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case edgeonezonednsrecord.FieldTTL:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTTL(v)
+		return nil
+	case edgeonezonednsrecord.FieldWeight:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddWeight(v)
+		return nil
+	case edgeonezonednsrecord.FieldPriority:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPriority(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneDNSRecord numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EdgeOneZoneDNSRecordMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(edgeonezonednsrecord.FieldRemoteCreatedAt) {
+		fields = append(fields, edgeonezonednsrecord.FieldRemoteCreatedAt)
+	}
+	if m.FieldCleared(edgeonezonednsrecord.FieldSyncAt) {
+		fields = append(fields, edgeonezonednsrecord.FieldSyncAt)
+	}
+	if m.FieldCleared(edgeonezonednsrecord.FieldName) {
+		fields = append(fields, edgeonezonednsrecord.FieldName)
+	}
+	if m.FieldCleared(edgeonezonednsrecord.FieldType) {
+		fields = append(fields, edgeonezonednsrecord.FieldType)
+	}
+	if m.FieldCleared(edgeonezonednsrecord.FieldLocation) {
+		fields = append(fields, edgeonezonednsrecord.FieldLocation)
+	}
+	if m.FieldCleared(edgeonezonednsrecord.FieldContent) {
+		fields = append(fields, edgeonezonednsrecord.FieldContent)
+	}
+	if m.FieldCleared(edgeonezonednsrecord.FieldTTL) {
+		fields = append(fields, edgeonezonednsrecord.FieldTTL)
+	}
+	if m.FieldCleared(edgeonezonednsrecord.FieldWeight) {
+		fields = append(fields, edgeonezonednsrecord.FieldWeight)
+	}
+	if m.FieldCleared(edgeonezonednsrecord.FieldPriority) {
+		fields = append(fields, edgeonezonednsrecord.FieldPriority)
+	}
+	if m.FieldCleared(edgeonezonednsrecord.FieldStatus) {
+		fields = append(fields, edgeonezonednsrecord.FieldStatus)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EdgeOneZoneDNSRecordMutation) ClearField(name string) error {
+	switch name {
+	case edgeonezonednsrecord.FieldRemoteCreatedAt:
+		m.ClearRemoteCreatedAt()
+		return nil
+	case edgeonezonednsrecord.FieldSyncAt:
+		m.ClearSyncAt()
+		return nil
+	case edgeonezonednsrecord.FieldName:
+		m.ClearName()
+		return nil
+	case edgeonezonednsrecord.FieldType:
+		m.ClearType()
+		return nil
+	case edgeonezonednsrecord.FieldLocation:
+		m.ClearLocation()
+		return nil
+	case edgeonezonednsrecord.FieldContent:
+		m.ClearContent()
+		return nil
+	case edgeonezonednsrecord.FieldTTL:
+		m.ClearTTL()
+		return nil
+	case edgeonezonednsrecord.FieldWeight:
+		m.ClearWeight()
+		return nil
+	case edgeonezonednsrecord.FieldPriority:
+		m.ClearPriority()
+		return nil
+	case edgeonezonednsrecord.FieldStatus:
+		m.ClearStatus()
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneDNSRecord nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EdgeOneZoneDNSRecordMutation) ResetField(name string) error {
+	switch name {
+	case edgeonezonednsrecord.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case edgeonezonednsrecord.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case edgeonezonednsrecord.FieldRemoteCreatedAt:
+		m.ResetRemoteCreatedAt()
+		return nil
+	case edgeonezonednsrecord.FieldSyncAt:
+		m.ResetSyncAt()
+		return nil
+	case edgeonezonednsrecord.FieldEdgeoneZoneID:
+		m.ResetEdgeoneZoneID()
+		return nil
+	case edgeonezonednsrecord.FieldRecordId:
+		m.ResetRecordId()
+		return nil
+	case edgeonezonednsrecord.FieldName:
+		m.ResetName()
+		return nil
+	case edgeonezonednsrecord.FieldType:
+		m.ResetType()
+		return nil
+	case edgeonezonednsrecord.FieldLocation:
+		m.ResetLocation()
+		return nil
+	case edgeonezonednsrecord.FieldContent:
+		m.ResetContent()
+		return nil
+	case edgeonezonednsrecord.FieldTTL:
+		m.ResetTTL()
+		return nil
+	case edgeonezonednsrecord.FieldWeight:
+		m.ResetWeight()
+		return nil
+	case edgeonezonednsrecord.FieldPriority:
+		m.ResetPriority()
+		return nil
+	case edgeonezonednsrecord.FieldStatus:
+		m.ResetStatus()
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneDNSRecord field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.edgeone_zone != nil {
+		edges = append(edges, edgeonezonednsrecord.EdgeEdgeoneZone)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case edgeonezonednsrecord.EdgeEdgeoneZone:
+		if id := m.edgeone_zone; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearededgeone_zone {
+		edges = append(edges, edgeonezonednsrecord.EdgeEdgeoneZone)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EdgeOneZoneDNSRecordMutation) EdgeCleared(name string) bool {
+	switch name {
+	case edgeonezonednsrecord.EdgeEdgeoneZone:
+		return m.clearededgeone_zone
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EdgeOneZoneDNSRecordMutation) ClearEdge(name string) error {
+	switch name {
+	case edgeonezonednsrecord.EdgeEdgeoneZone:
+		m.ClearEdgeoneZone()
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneDNSRecord unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EdgeOneZoneDNSRecordMutation) ResetEdge(name string) error {
+	switch name {
+	case edgeonezonednsrecord.EdgeEdgeoneZone:
+		m.ResetEdgeoneZone()
+		return nil
+	}
+	return fmt.Errorf("unknown EdgeOneZoneDNSRecord edge %s", name)
 }
 
 // EdgeOneZoneOriginGroupMutation represents an operation that mutates the EdgeOneZoneOriginGroup nodes in the graph.
@@ -11272,22 +14548,9 @@ func (m *EdgeOneZoneOriginGroupMutation) OldGroupID(ctx context.Context) (v stri
 	return oldValue.GroupID, nil
 }
 
-// ClearGroupID clears the value of the "group_id" field.
-func (m *EdgeOneZoneOriginGroupMutation) ClearGroupID() {
-	m.group_id = nil
-	m.clearedFields[edgeonezoneorigingroup.FieldGroupID] = struct{}{}
-}
-
-// GroupIDCleared returns if the "group_id" field was cleared in this mutation.
-func (m *EdgeOneZoneOriginGroupMutation) GroupIDCleared() bool {
-	_, ok := m.clearedFields[edgeonezoneorigingroup.FieldGroupID]
-	return ok
-}
-
 // ResetGroupID resets all changes to the "group_id" field.
 func (m *EdgeOneZoneOriginGroupMutation) ResetGroupID() {
 	m.group_id = nil
-	delete(m.clearedFields, edgeonezoneorigingroup.FieldGroupID)
 }
 
 // SetName sets the "name" field.
@@ -11321,9 +14584,22 @@ func (m *EdgeOneZoneOriginGroupMutation) OldName(ctx context.Context) (v string,
 	return oldValue.Name, nil
 }
 
+// ClearName clears the value of the "name" field.
+func (m *EdgeOneZoneOriginGroupMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[edgeonezoneorigingroup.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *EdgeOneZoneOriginGroupMutation) NameCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneorigingroup.FieldName]
+	return ok
+}
+
 // ResetName resets all changes to the "name" field.
 func (m *EdgeOneZoneOriginGroupMutation) ResetName() {
 	m.name = nil
+	delete(m.clearedFields, edgeonezoneorigingroup.FieldName)
 }
 
 // SetType sets the "type" field.
@@ -11772,8 +15048,8 @@ func (m *EdgeOneZoneOriginGroupMutation) ClearedFields() []string {
 	if m.FieldCleared(edgeonezoneorigingroup.FieldSyncAt) {
 		fields = append(fields, edgeonezoneorigingroup.FieldSyncAt)
 	}
-	if m.FieldCleared(edgeonezoneorigingroup.FieldGroupID) {
-		fields = append(fields, edgeonezoneorigingroup.FieldGroupID)
+	if m.FieldCleared(edgeonezoneorigingroup.FieldName) {
+		fields = append(fields, edgeonezoneorigingroup.FieldName)
 	}
 	if m.FieldCleared(edgeonezoneorigingroup.FieldType) {
 		fields = append(fields, edgeonezoneorigingroup.FieldType)
@@ -11804,8 +15080,8 @@ func (m *EdgeOneZoneOriginGroupMutation) ClearField(name string) error {
 	case edgeonezoneorigingroup.FieldSyncAt:
 		m.ClearSyncAt()
 		return nil
-	case edgeonezoneorigingroup.FieldGroupID:
-		m.ClearGroupID()
+	case edgeonezoneorigingroup.FieldName:
+		m.ClearName()
 		return nil
 	case edgeonezoneorigingroup.FieldType:
 		m.ClearType()

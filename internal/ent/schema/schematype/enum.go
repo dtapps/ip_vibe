@@ -356,26 +356,28 @@ const (
 
 	// ent/mutation.go
 
-	LogObjTypeCDNRecord               string = "CDNRecord"               // CDN记录
-	LogObjTypeCache                   string = "Cache"                   // 缓存
-	LogObjTypeCloudflareTunnel        string = "CloudflareTunnel"        // Cloudflare隧道
-	LogObjTypeCloudflareTunnelIngress string = "CloudflareTunnelIngress" // Cloudflare隧道入站规则
-	LogObjTypeDNSRecord               string = "DNSRecord"               // DNS记录
-	LogObjTypeDevice                  string = "Device"                  // 设备
-	LogObjTypeDeviceGroup             string = "DeviceGroup"             // 设备组
-	LogObjTypeDeviceGroupDevice       string = "DeviceGroupDevice"       // 设备组设备
-	LogObjTypeDevicePortForward       string = "DevicePortForward"       // 端口转发
-	LogObjTypeDomainMonitor           string = "DomainMonitor"           // 域名监控
-	LogObjTypeEdgeOneZone             string = "EdgeOneZone"             // EdgeOne站点
-	LogObjTypeEdgeOneZoneOriginGroup  string = "EdgeOneZoneOriginGroup"  // EdgeOne站点源站组
-	LogObjTypeIpGroup                 string = "IpGroup"                 // IP组
-	LogObjTypeIpGroupDevice           string = "IpGroupDevice"           // IP组设备
-	LogObjTypePlatformConfig          string = "PlatformConfig"          // 平台配置
-	LogObjTypeSSLImport               string = "SSLImport"               // SSL导入
-	LogObjTypeSSLRecord               string = "SSLRecord"               // SSL记录
-	LogObjTypeTUNRecord               string = "TUNRecord"               // TUN记录
-	LogObjTypeWebhook                 string = "Webhook"                 // 通知
-	LogObjTypeWebhookSubscription     string = "WebhookSubscription"     // 通知订阅
+	LogObjTypeCDNRecord                     string = "CDNRecord"                     // CDN记录
+	LogObjTypeCache                         string = "Cache"                         // 缓存
+	LogObjTypeCloudflareTunnel              string = "CloudflareTunnel"              // Cloudflare隧道
+	LogObjTypeCloudflareTunnelIngress       string = "CloudflareTunnelIngress"       // Cloudflare隧道入站规则
+	LogObjTypeDNSRecord                     string = "DNSRecord"                     // DNS记录
+	LogObjTypeDevice                        string = "Device"                        // 设备
+	LogObjTypeDeviceGroup                   string = "DeviceGroup"                   // 设备组
+	LogObjTypeDeviceGroupDevice             string = "DeviceGroupDevice"             // 设备组设备
+	LogObjTypeDevicePortForward             string = "DevicePortForward"             // 端口转发
+	LogObjTypeDomainMonitor                 string = "DomainMonitor"                 // 域名监控
+	LogObjTypeEdgeOneZone                   string = "EdgeOneZone"                   // EdgeOne站点
+	LogObjTypeEdgeOneZoneAccelerationDomain string = "EdgeOneZoneAccelerationDomain" // EdgeOne加速域名
+	LogObjTypeEdgeOneZoneDNSRecord          string = "EdgeOneZoneDNSRecord"          // EdgeOneDNS记录
+	LogObjTypeEdgeOneZoneOriginGroup        string = "EdgeOneZoneOriginGroup"        // EdgeOne站点源站组
+	LogObjTypeIpGroup                       string = "IpGroup"                       // IP组
+	LogObjTypeIpGroupDevice                 string = "IpGroupDevice"                 // IP组设备
+	LogObjTypePlatformConfig                string = "PlatformConfig"                // 平台配置
+	LogObjTypeSSLImport                     string = "SSLImport"                     // SSL导入
+	LogObjTypeSSLRecord                     string = "SSLRecord"                     // SSL记录
+	LogObjTypeTUNRecord                     string = "TUNRecord"                     // TUN记录
+	LogObjTypeWebhook                       string = "Webhook"                       // 通知
+	LogObjTypeWebhookSubscription           string = "WebhookSubscription"           // 通知订阅
 
 	// ent_log/mutation.go
 
@@ -394,26 +396,28 @@ const (
 var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeUnknown: "未知",
 
-	LogObjTypeCache:                   "缓存",
-	LogObjTypeCloudflareTunnel:        "Cloudflare隧道",
-	LogObjTypeCloudflareTunnelIngress: "Cloudflare隧道入站规则",
-	LogObjTypeCDNRecord:               "CDN记录",
-	LogObjTypeDNSRecord:               "DNS记录",
-	LogObjTypeDevice:                  "设备",
-	LogObjTypeDeviceGroup:             "设备组",
-	LogObjTypeDeviceGroupDevice:       "设备组设备",
-	LogObjTypeDevicePortForward:       "端口转发",
-	LogObjTypeDomainMonitor:           "域名监控",
-	LogObjTypeEdgeOneZone:             "EdgeOne站点",
-	LogObjTypeEdgeOneZoneOriginGroup:  "EdgeOne站点源站组",
-	LogObjTypeIpGroup:                 "IP组",
-	LogObjTypeIpGroupDevice:           "IP组设备",
-	LogObjTypePlatformConfig:          "平台配置",
-	LogObjTypeSSLImport:               "SSL导入",
-	LogObjTypeSSLRecord:               "SSL记录",
-	LogObjTypeTUNRecord:               "TUN记录",
-	LogObjTypeWebhook:                 "通知",
-	LogObjTypeWebhookSubscription:     "通知订阅",
+	LogObjTypeCache:                         "缓存",
+	LogObjTypeCloudflareTunnel:              "Cloudflare隧道",
+	LogObjTypeCloudflareTunnelIngress:       "Cloudflare隧道入站规则",
+	LogObjTypeCDNRecord:                     "CDN记录",
+	LogObjTypeDNSRecord:                     "DNS记录",
+	LogObjTypeDevice:                        "设备",
+	LogObjTypeDeviceGroup:                   "设备组",
+	LogObjTypeDeviceGroupDevice:             "设备组设备",
+	LogObjTypeDevicePortForward:             "端口转发",
+	LogObjTypeDomainMonitor:                 "域名监控",
+	LogObjTypeEdgeOneZone:                   "EdgeOne站点",
+	LogObjTypeEdgeOneZoneAccelerationDomain: "EdgeOne加速域名",
+	LogObjTypeEdgeOneZoneDNSRecord:          "EdgeOneDNS记录",
+	LogObjTypeEdgeOneZoneOriginGroup:        "EdgeOne站点源站组",
+	LogObjTypeIpGroup:                       "IP组",
+	LogObjTypeIpGroupDevice:                 "IP组设备",
+	LogObjTypePlatformConfig:                "平台配置",
+	LogObjTypeSSLImport:                     "SSL导入",
+	LogObjTypeSSLRecord:                     "SSL记录",
+	LogObjTypeTUNRecord:                     "TUN记录",
+	LogObjTypeWebhook:                       "通知",
+	LogObjTypeWebhookSubscription:           "通知订阅",
 
 	LogObjTypeDeviceIpReport:        "设备IP记录",
 	LogObjTypeDomainMonitorHistory:  "域名监控历史记录",
@@ -440,6 +444,8 @@ var GetLogObjTypes = []string{
 	LogObjTypeDevicePortForward,
 	LogObjTypeDomainMonitor,
 	LogObjTypeEdgeOneZone,
+	LogObjTypeEdgeOneZoneAccelerationDomain,
+	LogObjTypeEdgeOneZoneDNSRecord,
 	LogObjTypeEdgeOneZoneOriginGroup,
 	LogObjTypeIpGroup,
 	LogObjTypeIpGroupDevice,
@@ -820,18 +826,157 @@ var GetEdgeOneZoneActiveStatuss = []string{
 // --------
 
 const (
-	EdgeOneZoneOriginGroupTypeGENERAL string = "GENERAL" // 通用型
-	EdgeOneZoneOriginGroupTypeHTTP    string = "HTTP"    //  HTTP专用型
+	EdgeOneZoneAccelerationDomainDomainStatusOnline    string = "online"    // 已生效
+	EdgeOneZoneAccelerationDomainDomainStatusProcess   string = "process"   // 部署中
+	EdgeOneZoneAccelerationDomainDomainStatusOffline   string = "offline"   // 已停用
+	EdgeOneZoneAccelerationDomainDomainStatusForbidden string = "forbidden" // 已封禁
+	EdgeOneZoneAccelerationDomainDomainStatusInit      string = "init"      // 未生效，待激活站点
+)
+
+// GetEdgeOneZoneAccelerationDomainDomainStatusDescriptions 加速域名状态 说明映射
+var GetEdgeOneZoneAccelerationDomainDomainStatusDescriptions = map[string]string{
+	EdgeOneZoneAccelerationDomainDomainStatusOnline:    "已生效",
+	EdgeOneZoneAccelerationDomainDomainStatusProcess:   "部署中",
+	EdgeOneZoneAccelerationDomainDomainStatusOffline:   "已停用",
+	EdgeOneZoneAccelerationDomainDomainStatusForbidden: "已封禁",
+	EdgeOneZoneAccelerationDomainDomainStatusInit:      "未生效，待激活站点",
+}
+
+// GetEdgeOneZoneAccelerationDomainDomainStatuss 返回所有 加速域名状态
+var GetEdgeOneZoneAccelerationDomainDomainStatuss = []string{
+	EdgeOneZoneAccelerationDomainDomainStatusOnline,
+	EdgeOneZoneAccelerationDomainDomainStatusProcess,
+	EdgeOneZoneAccelerationDomainDomainStatusOffline,
+	EdgeOneZoneAccelerationDomainDomainStatusForbidden,
+	EdgeOneZoneAccelerationDomainDomainStatusInit,
+}
+
+const (
+	EdgeOneZoneAccelerationDomainIPv6StatusFollow string = "follow" // 遵循站点
+	EdgeOneZoneAccelerationDomainIPv6StatusOn     string = "on"     // 开启
+	EdgeOneZoneAccelerationDomainIPv6StatusOff    string = "off"    // 关闭
+)
+
+// GetEdgeOneZoneAccelerationDomainIPv6StatusDescriptions IPv6 状态 说明映射
+var GetEdgeOneZoneAccelerationDomainIPv6StatusDescriptions = map[string]string{
+	EdgeOneZoneAccelerationDomainIPv6StatusFollow: "遵循站点",
+	EdgeOneZoneAccelerationDomainIPv6StatusOn:     "开启",
+	EdgeOneZoneAccelerationDomainIPv6StatusOff:    "关闭",
+}
+
+// GetEdgeOneZoneAccelerationDomainIPv6Statuss 返回所有 IPv6 状态
+var GetEdgeOneZoneAccelerationDomainIPv6Statuss = []string{
+	EdgeOneZoneAccelerationDomainIPv6StatusFollow,
+	EdgeOneZoneAccelerationDomainIPv6StatusOn,
+	EdgeOneZoneAccelerationDomainIPv6StatusOff,
+}
+
+const (
+	EdgeOneZoneAccelerationDomainIdentificationStatusPending  string = "pending"  // 待验证
+	EdgeOneZoneAccelerationDomainIdentificationStatusFinished string = "finished" // 已完成验证
+)
+
+// GetEdgeOneZoneAccelerationDomainIdentificationStatusDescriptions 加速域名归属权验证状态 说明映射
+var GetEdgeOneZoneAccelerationDomainIdentificationStatusDescriptions = map[string]string{
+	EdgeOneZoneAccelerationDomainIdentificationStatusPending:  "待验证",
+	EdgeOneZoneAccelerationDomainIdentificationStatusFinished: "已完成验证",
+}
+
+// GetEdgeOneZoneAccelerationDomainIdentificationStatuss 返回所有 加速域名归属权验证状态
+var GetEdgeOneZoneAccelerationDomainIdentificationStatuss = []string{
+	EdgeOneZoneAccelerationDomainIdentificationStatusPending,
+	EdgeOneZoneAccelerationDomainIdentificationStatusFinished,
+}
+
+const (
+	EdgeOneZoneAccelerationDomainOriginProtocolFollow string = "FOLLOW" // 协议跟随
+	EdgeOneZoneAccelerationDomainOriginProtocolHttp   string = "HTTP"   // HTTP协议回源
+	EdgeOneZoneAccelerationDomainOriginProtocolHttps  string = "HTTPS"  // HTTPS协议回源
+)
+
+// GetEdgeOneZoneAccelerationDomainOriginProtocolDescriptions 回源协议 说明映射
+var GetEdgeOneZoneAccelerationDomainOriginProtocolDescriptions = map[string]string{
+	EdgeOneZoneAccelerationDomainOriginProtocolFollow: "协议跟随",
+	EdgeOneZoneAccelerationDomainOriginProtocolHttp:   "HTTP协议回源",
+	EdgeOneZoneAccelerationDomainOriginProtocolHttps:  "HTTPS协议回源",
+}
+
+// GetEdgeOneZoneAccelerationDomainOriginProtocols 返回所有 回源协议
+var GetEdgeOneZoneAccelerationDomainOriginProtocols = []string{
+	EdgeOneZoneAccelerationDomainOriginProtocolFollow,
+	EdgeOneZoneAccelerationDomainOriginProtocolHttp,
+	EdgeOneZoneAccelerationDomainOriginProtocolHttps,
+}
+
+// --------
+
+const (
+	EdgeOneZoneDNSRecordTypeA     string = "A"     // A
+	EdgeOneZoneDNSRecordTypeAAAA  string = "AAAA"  // AAAA
+	EdgeOneZoneDNSRecordTypeMX    string = "MX"    // MX
+	EdgeOneZoneDNSRecordTypeCNAME string = "CNAME" // CNAME
+	EdgeOneZoneDNSRecordTypeTXT   string = "TXT"   // TXT
+	EdgeOneZoneDNSRecordTypeNS    string = "NS"    // NS
+	EdgeOneZoneDNSRecordTypeCAA   string = "CAA"   // CAA
+	EdgeOneZoneDNSRecordTypeSRV   string = "SRV"   // SRV
+)
+
+// GetEdgeOneZoneDNSRecordTypeDescriptions DNS 记录类型 说明映射
+var GetEdgeOneZoneDNSRecordTypeDescriptions = map[string]string{
+	EdgeOneZoneDNSRecordTypeA:     "A",
+	EdgeOneZoneDNSRecordTypeAAAA:  "AAAA",
+	EdgeOneZoneDNSRecordTypeMX:    "MX",
+	EdgeOneZoneDNSRecordTypeCNAME: "CNAME",
+	EdgeOneZoneDNSRecordTypeTXT:   "TXT",
+	EdgeOneZoneDNSRecordTypeNS:    "NS",
+	EdgeOneZoneDNSRecordTypeCAA:   "CAA",
+	EdgeOneZoneDNSRecordTypeSRV:   "SRV",
+}
+
+// GetEdgeOneZoneDNSRecordTypes 返回所有 DNS 记录类型
+var GetEdgeOneZoneDNSRecordTypes = []string{
+	EdgeOneZoneDNSRecordTypeA,
+	EdgeOneZoneDNSRecordTypeAAAA,
+	EdgeOneZoneDNSRecordTypeMX,
+	EdgeOneZoneDNSRecordTypeCNAME,
+	EdgeOneZoneDNSRecordTypeTXT,
+	EdgeOneZoneDNSRecordTypeNS,
+	EdgeOneZoneDNSRecordTypeCAA,
+	EdgeOneZoneDNSRecordTypeSRV,
+}
+
+const (
+	EdgeOneZoneDNSRecordStatusEnable  string = "enable"  // 已生效
+	EdgeOneZoneDNSRecordStatusDisable string = "disable" // 已停用
+)
+
+// GetEdgeOneZoneDNSRecordStatusDescriptions DNS 记录类型 说明映射
+var GetEdgeOneZoneDNSRecordStatusDescriptions = map[string]string{
+	EdgeOneZoneDNSRecordStatusEnable:  "已生效",
+	EdgeOneZoneDNSRecordStatusDisable: "已停用",
+}
+
+// GetEdgeOneZoneDNSRecordStatuss 返回所有 DNS 记录类型
+var GetEdgeOneZoneDNSRecordStatuss = []string{
+	EdgeOneZoneDNSRecordStatusEnable,
+	EdgeOneZoneDNSRecordStatusDisable,
+}
+
+// --------
+
+const (
+	EdgeOneZoneOriginGroupTypeGeneral string = "GENERAL" // 通用型
+	EdgeOneZoneOriginGroupTypeHttp    string = "HTTP"    //  HTTP专用型
 )
 
 // GetEdgeOneZoneOriginGroupTypeDescriptions 源站组类型 说明映射
 var GetEdgeOneZoneOriginGroupTypeDescriptions = map[string]string{
-	EdgeOneZoneOriginGroupTypeGENERAL: "通用型",
-	EdgeOneZoneOriginGroupTypeHTTP:    "HTTP专用型",
+	EdgeOneZoneOriginGroupTypeGeneral: "通用型",
+	EdgeOneZoneOriginGroupTypeHttp:    "HTTP专用型",
 }
 
 // GetEdgeOneZoneOriginGroupTypes 返回所有 源站组类型
 var GetEdgeOneZoneOriginGroupTypes = []string{
-	EdgeOneZoneOriginGroupTypeGENERAL,
-	EdgeOneZoneOriginGroupTypeHTTP,
+	EdgeOneZoneOriginGroupTypeGeneral,
+	EdgeOneZoneOriginGroupTypeHttp,
 }

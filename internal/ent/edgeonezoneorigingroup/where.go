@@ -345,16 +345,6 @@ func GroupIDHasSuffix(v string) predicate.EdgeOneZoneOriginGroup {
 	return predicate.EdgeOneZoneOriginGroup(sql.FieldHasSuffix(FieldGroupID, v))
 }
 
-// GroupIDIsNil applies the IsNil predicate on the "group_id" field.
-func GroupIDIsNil() predicate.EdgeOneZoneOriginGroup {
-	return predicate.EdgeOneZoneOriginGroup(sql.FieldIsNull(FieldGroupID))
-}
-
-// GroupIDNotNil applies the NotNil predicate on the "group_id" field.
-func GroupIDNotNil() predicate.EdgeOneZoneOriginGroup {
-	return predicate.EdgeOneZoneOriginGroup(sql.FieldNotNull(FieldGroupID))
-}
-
 // GroupIDEqualFold applies the EqualFold predicate on the "group_id" field.
 func GroupIDEqualFold(v string) predicate.EdgeOneZoneOriginGroup {
 	return predicate.EdgeOneZoneOriginGroup(sql.FieldEqualFold(FieldGroupID, v))
@@ -418,6 +408,16 @@ func NameHasPrefix(v string) predicate.EdgeOneZoneOriginGroup {
 // NameHasSuffix applies the HasSuffix predicate on the "name" field.
 func NameHasSuffix(v string) predicate.EdgeOneZoneOriginGroup {
 	return predicate.EdgeOneZoneOriginGroup(sql.FieldHasSuffix(FieldName, v))
+}
+
+// NameIsNil applies the IsNil predicate on the "name" field.
+func NameIsNil() predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldIsNull(FieldName))
+}
+
+// NameNotNil applies the NotNil predicate on the "name" field.
+func NameNotNil() predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldNotNull(FieldName))
 }
 
 // NameEqualFold applies the EqualFold predicate on the "name" field.

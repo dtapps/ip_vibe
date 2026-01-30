@@ -14,6 +14,8 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
+	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/platformconfig"
@@ -225,6 +227,44 @@ func (q *EdgeOneZoneQuery) Last(ctx context.Context) (*EdgeOneZone, error) {
 // Find 获取所有匹配的记录。
 // 行为类比 GORM 的 Find(ctx, &dest)，此处直接返回 []*T。
 func (q *EdgeOneZoneQuery) Find(ctx context.Context) ([]*EdgeOneZone, error) {
+	return q.All(ctx)
+}
+
+// Take 获取任意一条记录（不保证顺序），等价于 LIMIT 1。
+// 行为与 GORM 的 Take(ctx) 一致：不添加 ORDER，仅限制结果为 1 行。
+func (q *EdgeOneZoneAccelerationDomainQuery) Take(ctx context.Context) (*EdgeOneZoneAccelerationDomain, error) {
+	return q.Limit(1).First(ctx)
+}
+
+// Last 获取最后一条记录，按主键降序排列（ORDER BY id DESC LIMIT 1）。
+// 行为与 GORM 的 Last(ctx) 一致。
+// 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
+func (q *EdgeOneZoneAccelerationDomainQuery) Last(ctx context.Context) (*EdgeOneZoneAccelerationDomain, error) {
+	return q.Order(edgeonezoneaccelerationdomain.ByID(sql.OrderDesc())).First(ctx)
+}
+
+// Find 获取所有匹配的记录。
+// 行为类比 GORM 的 Find(ctx, &dest)，此处直接返回 []*T。
+func (q *EdgeOneZoneAccelerationDomainQuery) Find(ctx context.Context) ([]*EdgeOneZoneAccelerationDomain, error) {
+	return q.All(ctx)
+}
+
+// Take 获取任意一条记录（不保证顺序），等价于 LIMIT 1。
+// 行为与 GORM 的 Take(ctx) 一致：不添加 ORDER，仅限制结果为 1 行。
+func (q *EdgeOneZoneDNSRecordQuery) Take(ctx context.Context) (*EdgeOneZoneDNSRecord, error) {
+	return q.Limit(1).First(ctx)
+}
+
+// Last 获取最后一条记录，按主键降序排列（ORDER BY id DESC LIMIT 1）。
+// 行为与 GORM 的 Last(ctx) 一致。
+// 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
+func (q *EdgeOneZoneDNSRecordQuery) Last(ctx context.Context) (*EdgeOneZoneDNSRecord, error) {
+	return q.Order(edgeonezonednsrecord.ByID(sql.OrderDesc())).First(ctx)
+}
+
+// Find 获取所有匹配的记录。
+// 行为类比 GORM 的 Find(ctx, &dest)，此处直接返回 []*T。
+func (q *EdgeOneZoneDNSRecordQuery) Find(ctx context.Context) ([]*EdgeOneZoneDNSRecord, error) {
 	return q.All(ctx)
 }
 

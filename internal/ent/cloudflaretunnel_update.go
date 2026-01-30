@@ -80,6 +80,12 @@ func (_u *CloudflareTunnelUpdate) SetNillableName(v *string) *CloudflareTunnelUp
 	return _u
 }
 
+// ClearName clears the value of the "name" field.
+func (_u *CloudflareTunnelUpdate) ClearName() *CloudflareTunnelUpdate {
+	_u.mutation.ClearName()
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *CloudflareTunnelUpdate) SetStatus(v cloudflaretunnel.Status) *CloudflareTunnelUpdate {
 	_u.mutation.SetStatus(v)
@@ -91,6 +97,12 @@ func (_u *CloudflareTunnelUpdate) SetNillableStatus(v *cloudflaretunnel.Status) 
 	if v != nil {
 		_u.SetStatus(*v)
 	}
+	return _u
+}
+
+// ClearStatus clears the value of the "status" field.
+func (_u *CloudflareTunnelUpdate) ClearStatus() *CloudflareTunnelUpdate {
+	_u.mutation.ClearStatus()
 	return _u
 }
 
@@ -264,8 +276,14 @@ func (_u *CloudflareTunnelUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(cloudflaretunnel.FieldName, field.TypeString, value)
 	}
+	if _u.mutation.NameCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldName, field.TypeString)
+	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(cloudflaretunnel.FieldStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.Connections(); ok {
 		_spec.SetField(cloudflaretunnel.FieldConnections, field.TypeJSON, value)
@@ -399,6 +417,12 @@ func (_u *CloudflareTunnelUpdateOne) SetNillableName(v *string) *CloudflareTunne
 	return _u
 }
 
+// ClearName clears the value of the "name" field.
+func (_u *CloudflareTunnelUpdateOne) ClearName() *CloudflareTunnelUpdateOne {
+	_u.mutation.ClearName()
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *CloudflareTunnelUpdateOne) SetStatus(v cloudflaretunnel.Status) *CloudflareTunnelUpdateOne {
 	_u.mutation.SetStatus(v)
@@ -410,6 +434,12 @@ func (_u *CloudflareTunnelUpdateOne) SetNillableStatus(v *cloudflaretunnel.Statu
 	if v != nil {
 		_u.SetStatus(*v)
 	}
+	return _u
+}
+
+// ClearStatus clears the value of the "status" field.
+func (_u *CloudflareTunnelUpdateOne) ClearStatus() *CloudflareTunnelUpdateOne {
+	_u.mutation.ClearStatus()
 	return _u
 }
 
@@ -613,8 +643,14 @@ func (_u *CloudflareTunnelUpdateOne) sqlSave(ctx context.Context) (_node *Cloudf
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(cloudflaretunnel.FieldName, field.TypeString, value)
 	}
+	if _u.mutation.NameCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldName, field.TypeString)
+	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(cloudflaretunnel.FieldStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.Connections(); ok {
 		_spec.SetField(cloudflaretunnel.FieldConnections, field.TypeJSON, value)

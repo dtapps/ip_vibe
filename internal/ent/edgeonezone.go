@@ -55,12 +55,18 @@ type EdgeOneZone struct {
 type EdgeOneZoneEdges struct {
 	// 关联的平台配置
 	Config *PlatformConfig `json:"config,omitempty"`
+	// 关联的EdgeOne站点加速域名
+	Accelerationdomains []*EdgeOneZoneAccelerationDomain `json:"accelerationdomains,omitempty"`
+	// 关联的EdgeOne站点DNS记录
+	Dnsrecords []*EdgeOneZoneDNSRecord `json:"dnsrecords,omitempty"`
 	// 关联的EdgeOne站点源站组
 	Origingroups []*EdgeOneZoneOriginGroup `json:"origingroups,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes       [2]bool
-	namedOrigingroups map[string][]*EdgeOneZoneOriginGroup
+	loadedTypes              [4]bool
+	namedAccelerationdomains map[string][]*EdgeOneZoneAccelerationDomain
+	namedDnsrecords          map[string][]*EdgeOneZoneDNSRecord
+	namedOrigingroups        map[string][]*EdgeOneZoneOriginGroup
 }
 
 // ConfigOrErr returns the Config value or an error if the edge
@@ -74,10 +80,28 @@ func (e EdgeOneZoneEdges) ConfigOrErr() (*PlatformConfig, error) {
 	return nil, &NotLoadedError{edge: "config"}
 }
 
+// AccelerationdomainsOrErr returns the Accelerationdomains value or an error if the edge
+// was not loaded in eager-loading.
+func (e EdgeOneZoneEdges) AccelerationdomainsOrErr() ([]*EdgeOneZoneAccelerationDomain, error) {
+	if e.loadedTypes[1] {
+		return e.Accelerationdomains, nil
+	}
+	return nil, &NotLoadedError{edge: "accelerationdomains"}
+}
+
+// DnsrecordsOrErr returns the Dnsrecords value or an error if the edge
+// was not loaded in eager-loading.
+func (e EdgeOneZoneEdges) DnsrecordsOrErr() ([]*EdgeOneZoneDNSRecord, error) {
+	if e.loadedTypes[2] {
+		return e.Dnsrecords, nil
+	}
+	return nil, &NotLoadedError{edge: "dnsrecords"}
+}
+
 // OrigingroupsOrErr returns the Origingroups value or an error if the edge
 // was not loaded in eager-loading.
 func (e EdgeOneZoneEdges) OrigingroupsOrErr() ([]*EdgeOneZoneOriginGroup, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[3] {
 		return e.Origingroups, nil
 	}
 	return nil, &NotLoadedError{edge: "origingroups"}
@@ -213,6 +237,16 @@ func (_m *EdgeOneZone) QueryConfig() *PlatformConfigQuery {
 	return NewEdgeOneZoneClient(_m.config).QueryConfig(_m)
 }
 
+// QueryAccelerationdomains queries the "accelerationdomains" edge of the EdgeOneZone entity.
+func (_m *EdgeOneZone) QueryAccelerationdomains() *EdgeOneZoneAccelerationDomainQuery {
+	return NewEdgeOneZoneClient(_m.config).QueryAccelerationdomains(_m)
+}
+
+// QueryDnsrecords queries the "dnsrecords" edge of the EdgeOneZone entity.
+func (_m *EdgeOneZone) QueryDnsrecords() *EdgeOneZoneDNSRecordQuery {
+	return NewEdgeOneZoneClient(_m.config).QueryDnsrecords(_m)
+}
+
 // QueryOrigingroups queries the "origingroups" edge of the EdgeOneZone entity.
 func (_m *EdgeOneZone) QueryOrigingroups() *EdgeOneZoneOriginGroupQuery {
 	return NewEdgeOneZoneClient(_m.config).QueryOrigingroups(_m)
@@ -281,6 +315,54 @@ func (_m *EdgeOneZone) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.Paused))
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedAccelerationdomains returns the Accelerationdomains named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *EdgeOneZone) NamedAccelerationdomains(name string) ([]*EdgeOneZoneAccelerationDomain, error) {
+	if _m.Edges.namedAccelerationdomains == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedAccelerationdomains[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *EdgeOneZone) appendNamedAccelerationdomains(name string, edges ...*EdgeOneZoneAccelerationDomain) {
+	if _m.Edges.namedAccelerationdomains == nil {
+		_m.Edges.namedAccelerationdomains = make(map[string][]*EdgeOneZoneAccelerationDomain)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedAccelerationdomains[name] = []*EdgeOneZoneAccelerationDomain{}
+	} else {
+		_m.Edges.namedAccelerationdomains[name] = append(_m.Edges.namedAccelerationdomains[name], edges...)
+	}
+}
+
+// NamedDnsrecords returns the Dnsrecords named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *EdgeOneZone) NamedDnsrecords(name string) ([]*EdgeOneZoneDNSRecord, error) {
+	if _m.Edges.namedDnsrecords == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedDnsrecords[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *EdgeOneZone) appendNamedDnsrecords(name string, edges ...*EdgeOneZoneDNSRecord) {
+	if _m.Edges.namedDnsrecords == nil {
+		_m.Edges.namedDnsrecords = make(map[string][]*EdgeOneZoneDNSRecord)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedDnsrecords[name] = []*EdgeOneZoneDNSRecord{}
+	} else {
+		_m.Edges.namedDnsrecords[name] = append(_m.Edges.namedDnsrecords[name], edges...)
+	}
 }
 
 // NamedOrigingroups returns the Origingroups named value or an error if the edge was not

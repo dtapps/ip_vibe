@@ -425,6 +425,16 @@ func ServiceHasSuffix(v string) predicate.CloudflareTunnelIngress {
 	return predicate.CloudflareTunnelIngress(sql.FieldHasSuffix(FieldService, v))
 }
 
+// ServiceIsNil applies the IsNil predicate on the "service" field.
+func ServiceIsNil() predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldIsNull(FieldService))
+}
+
+// ServiceNotNil applies the NotNil predicate on the "service" field.
+func ServiceNotNil() predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldNotNull(FieldService))
+}
+
 // ServiceEqualFold applies the EqualFold predicate on the "service" field.
 func ServiceEqualFold(v string) predicate.CloudflareTunnelIngress {
 	return predicate.CloudflareTunnelIngress(sql.FieldEqualFold(FieldService, v))

@@ -15,6 +15,8 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
+	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
@@ -317,6 +319,52 @@ func init() {
 	edgeonezoneDescID := edgeonezoneFields[0].Descriptor()
 	// edgeonezone.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	edgeonezone.IDValidator = edgeonezoneDescID.Validators[0].(func(int64) error)
+	edgeonezoneaccelerationdomainMixin := schema.EdgeOneZoneAccelerationDomain{}.Mixin()
+	edgeonezoneaccelerationdomainMixinFields0 := edgeonezoneaccelerationdomainMixin[0].Fields()
+	_ = edgeonezoneaccelerationdomainMixinFields0
+	edgeonezoneaccelerationdomainFields := schema.EdgeOneZoneAccelerationDomain{}.Fields()
+	_ = edgeonezoneaccelerationdomainFields
+	// edgeonezoneaccelerationdomainDescCreatedAt is the schema descriptor for created_at field.
+	edgeonezoneaccelerationdomainDescCreatedAt := edgeonezoneaccelerationdomainMixinFields0[0].Descriptor()
+	// edgeonezoneaccelerationdomain.DefaultCreatedAt holds the default value on creation for the created_at field.
+	edgeonezoneaccelerationdomain.DefaultCreatedAt = edgeonezoneaccelerationdomainDescCreatedAt.Default.(func() time.Time)
+	// edgeonezoneaccelerationdomainDescUpdatedAt is the schema descriptor for updated_at field.
+	edgeonezoneaccelerationdomainDescUpdatedAt := edgeonezoneaccelerationdomainMixinFields0[1].Descriptor()
+	// edgeonezoneaccelerationdomain.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	edgeonezoneaccelerationdomain.DefaultUpdatedAt = edgeonezoneaccelerationdomainDescUpdatedAt.Default.(func() time.Time)
+	// edgeonezoneaccelerationdomain.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	edgeonezoneaccelerationdomain.UpdateDefaultUpdatedAt = edgeonezoneaccelerationdomainDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// edgeonezoneaccelerationdomainDescEdgeoneZoneID is the schema descriptor for edgeone_zone_id field.
+	edgeonezoneaccelerationdomainDescEdgeoneZoneID := edgeonezoneaccelerationdomainFields[1].Descriptor()
+	// edgeonezoneaccelerationdomain.EdgeoneZoneIDValidator is a validator for the "edgeone_zone_id" field. It is called by the builders before save.
+	edgeonezoneaccelerationdomain.EdgeoneZoneIDValidator = edgeonezoneaccelerationdomainDescEdgeoneZoneID.Validators[0].(func(int64) error)
+	// edgeonezoneaccelerationdomainDescID is the schema descriptor for id field.
+	edgeonezoneaccelerationdomainDescID := edgeonezoneaccelerationdomainFields[0].Descriptor()
+	// edgeonezoneaccelerationdomain.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	edgeonezoneaccelerationdomain.IDValidator = edgeonezoneaccelerationdomainDescID.Validators[0].(func(int64) error)
+	edgeonezonednsrecordMixin := schema.EdgeOneZoneDNSRecord{}.Mixin()
+	edgeonezonednsrecordMixinFields0 := edgeonezonednsrecordMixin[0].Fields()
+	_ = edgeonezonednsrecordMixinFields0
+	edgeonezonednsrecordFields := schema.EdgeOneZoneDNSRecord{}.Fields()
+	_ = edgeonezonednsrecordFields
+	// edgeonezonednsrecordDescCreatedAt is the schema descriptor for created_at field.
+	edgeonezonednsrecordDescCreatedAt := edgeonezonednsrecordMixinFields0[0].Descriptor()
+	// edgeonezonednsrecord.DefaultCreatedAt holds the default value on creation for the created_at field.
+	edgeonezonednsrecord.DefaultCreatedAt = edgeonezonednsrecordDescCreatedAt.Default.(func() time.Time)
+	// edgeonezonednsrecordDescUpdatedAt is the schema descriptor for updated_at field.
+	edgeonezonednsrecordDescUpdatedAt := edgeonezonednsrecordMixinFields0[1].Descriptor()
+	// edgeonezonednsrecord.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	edgeonezonednsrecord.DefaultUpdatedAt = edgeonezonednsrecordDescUpdatedAt.Default.(func() time.Time)
+	// edgeonezonednsrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	edgeonezonednsrecord.UpdateDefaultUpdatedAt = edgeonezonednsrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// edgeonezonednsrecordDescEdgeoneZoneID is the schema descriptor for edgeone_zone_id field.
+	edgeonezonednsrecordDescEdgeoneZoneID := edgeonezonednsrecordFields[1].Descriptor()
+	// edgeonezonednsrecord.EdgeoneZoneIDValidator is a validator for the "edgeone_zone_id" field. It is called by the builders before save.
+	edgeonezonednsrecord.EdgeoneZoneIDValidator = edgeonezonednsrecordDescEdgeoneZoneID.Validators[0].(func(int64) error)
+	// edgeonezonednsrecordDescID is the schema descriptor for id field.
+	edgeonezonednsrecordDescID := edgeonezonednsrecordFields[0].Descriptor()
+	// edgeonezonednsrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	edgeonezonednsrecord.IDValidator = edgeonezonednsrecordDescID.Validators[0].(func(int64) error)
 	edgeonezoneorigingroupMixin := schema.EdgeOneZoneOriginGroup{}.Mixin()
 	edgeonezoneorigingroupHooks := schema.EdgeOneZoneOriginGroup{}.Hooks()
 	edgeonezoneorigingroup.Hooks[0] = edgeonezoneorigingroupHooks[0]

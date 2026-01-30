@@ -122,8 +122,8 @@ var (
 		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
 		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "tunnel_id", Type: field.TypeString, Comment: "Cloudflare 隧道ID"},
-		{Name: "name", Type: field.TypeString, Comment: "隧道名称"},
-		{Name: "status", Type: field.TypeEnum, Comment: "隧道状态", Enums: []string{"inactive", "degraded", "healthy", "down"}},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "隧道名称"},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "隧道状态", Enums: []string{"inactive", "degraded", "healthy", "down"}},
 		{Name: "connections", Type: field.TypeJSON, Nullable: true, Comment: "隧道连接配置"},
 		{Name: "conns_active_at", Type: field.TypeTime, Nullable: true, Comment: "隧道连接活跃时间"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
@@ -171,7 +171,7 @@ var (
 		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
 		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "hostname", Type: field.TypeString, Nullable: true, Comment: "主机名"},
-		{Name: "service", Type: field.TypeString, Comment: "服务"},
+		{Name: "service", Type: field.TypeString, Nullable: true, Comment: "服务"},
 		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "路径"},
 		{Name: "origin_request", Type: field.TypeJSON, Nullable: true, Comment: "入站请求配置"},
 		{Name: "cloudflare_tunnel_id", Type: field.TypeInt64, Comment: "关联 Cloudflare 隧道序号"},
@@ -516,12 +516,12 @@ var (
 		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
 		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "zone_id", Type: field.TypeString, Comment: "站点ID"},
-		{Name: "name", Type: field.TypeString, Comment: "站点名称"},
-		{Name: "area", Type: field.TypeEnum, Comment: "加速区域", Enums: []string{"global", "mainland", "overseas"}},
-		{Name: "type", Type: field.TypeEnum, Comment: "接入类型", Enums: []string{"full", "partial", "noDomainAccess", "dnsPodAccess", "pages"}},
-		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"active", "pending", "moved", "deactivated", "initializing"}},
-		{Name: "cname_status", Type: field.TypeEnum, Comment: "CNAME 接入状态", Enums: []string{"finished", "pending"}},
-		{Name: "active_status", Type: field.TypeEnum, Comment: "展示状态", Enums: []string{"active", "inactive", "paused"}},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "站点名称"},
+		{Name: "area", Type: field.TypeEnum, Nullable: true, Comment: "加速区域", Enums: []string{"global", "mainland", "overseas"}},
+		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "接入类型", Enums: []string{"full", "partial", "noDomainAccess", "dnsPodAccess", "pages"}},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"active", "pending", "moved", "deactivated", "initializing"}},
+		{Name: "cname_status", Type: field.TypeEnum, Nullable: true, Comment: "CNAME 接入状态", Enums: []string{"finished", "pending"}},
+		{Name: "active_status", Type: field.TypeEnum, Nullable: true, Comment: "展示状态", Enums: []string{"active", "inactive", "paused"}},
 		{Name: "paused", Type: field.TypeBool, Nullable: true, Comment: "是否关闭"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
@@ -560,6 +560,104 @@ var (
 			},
 		},
 	}
+	// EdgeoneZoneAccelerationdomainColumns holds the columns for the "edgeone_zone_accelerationdomain" table.
+	EdgeoneZoneAccelerationdomainColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "EdgeOne 站点加速域名序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
+		{Name: "domain_name", Type: field.TypeString, Comment: "加速域名名称"},
+		{Name: "domain_status", Type: field.TypeEnum, Nullable: true, Comment: "加速域名状态", Enums: []string{"online", "process", "offline", "forbidden", "init"}},
+		{Name: "cname", Type: field.TypeString, Nullable: true, Comment: "CNAME 地址"},
+		{Name: "ipv6_status", Type: field.TypeEnum, Nullable: true, Comment: "IPv6 状态", Enums: []string{"follow", "on", "off"}},
+		{Name: "identification_status", Type: field.TypeEnum, Nullable: true, Comment: "加速域名归属权验证状态", Enums: []string{"pending", "finished"}},
+		{Name: "ownership_verification", Type: field.TypeJSON, Nullable: true, Comment: "加速域名需进行归属权验证才能继续提供服务时，该对象会携带对应验证方式所需要的信息"},
+		{Name: "origin_detail", Type: field.TypeJSON, Nullable: true, Comment: "源站信息"},
+		{Name: "origin_protocol", Type: field.TypeEnum, Nullable: true, Comment: "回源协议", Enums: []string{"FOLLOW", "HTTP", "HTTPS"}},
+		{Name: "http_origin_port", Type: field.TypeInt, Nullable: true, Comment: "HTTP 回源端口"},
+		{Name: "https_origin_port", Type: field.TypeInt, Nullable: true, Comment: "HTTPS 回源端口"},
+		{Name: "certificate", Type: field.TypeJSON, Nullable: true, Comment: "加速域名证书信息"},
+		{Name: "edgeone_zone_id", Type: field.TypeInt64, Comment: "关联 EdgeOne 站点序号"},
+	}
+	// EdgeoneZoneAccelerationdomainTable holds the schema information for the "edgeone_zone_accelerationdomain" table.
+	EdgeoneZoneAccelerationdomainTable = &schema.Table{
+		Name:       "edgeone_zone_accelerationdomain",
+		Comment:    "EdgeOne 站点加速域名",
+		Columns:    EdgeoneZoneAccelerationdomainColumns,
+		PrimaryKey: []*schema.Column{EdgeoneZoneAccelerationdomainColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "edgeone_zone_accelerationdomain_edgeone_zone_accelerationdomains",
+				Columns:    []*schema.Column{EdgeoneZoneAccelerationdomainColumns[16]},
+				RefColumns: []*schema.Column{EdgeoneZoneColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "edgeonezoneaccelerationdomain_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneAccelerationdomainColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "edgeonezoneaccelerationdomain_edgeone_zone_id",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneAccelerationdomainColumns[16]},
+			},
+		},
+	}
+	// EdgeoneZoneDnsrecordColumns holds the columns for the "edgeone_zone_dnsrecord" table.
+	EdgeoneZoneDnsrecordColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "EdgeOne 站点DNS记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
+		{Name: "record_id", Type: field.TypeString, Comment: "DNS 记录 ID"},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "DNS 记录名"},
+		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "DNS 记录类型", Enums: []string{"A", "AAAA", "MX", "CNAME", "TXT", "NS", "CAA", "SRV"}},
+		{Name: "location", Type: field.TypeString, Nullable: true, Comment: "DNS 记录解析线路"},
+		{Name: "content", Type: field.TypeString, Nullable: true, Comment: "DNS 记录内容"},
+		{Name: "ttl", Type: field.TypeInt, Nullable: true, Comment: "缓存时间"},
+		{Name: "weight", Type: field.TypeInt, Nullable: true, Comment: "DNS 记录权重"},
+		{Name: "priority", Type: field.TypeInt, Nullable: true, Comment: "MX 记录优先级"},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "DNS 记录解析状态", Enums: []string{"enable", "disable"}},
+		{Name: "edgeone_zone_id", Type: field.TypeInt64, Comment: "关联 EdgeOne 站点序号"},
+	}
+	// EdgeoneZoneDnsrecordTable holds the schema information for the "edgeone_zone_dnsrecord" table.
+	EdgeoneZoneDnsrecordTable = &schema.Table{
+		Name:       "edgeone_zone_dnsrecord",
+		Comment:    "EdgeOne 站点DNS记录",
+		Columns:    EdgeoneZoneDnsrecordColumns,
+		PrimaryKey: []*schema.Column{EdgeoneZoneDnsrecordColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "edgeone_zone_dnsrecord_edgeone_zone_dnsrecords",
+				Columns:    []*schema.Column{EdgeoneZoneDnsrecordColumns[14]},
+				RefColumns: []*schema.Column{EdgeoneZoneColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "edgeonezonednsrecord_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneDnsrecordColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "edgeonezonednsrecord_edgeone_zone_id",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneDnsrecordColumns[14]},
+			},
+		},
+	}
 	// EdgeoneZoneOrigingroupColumns holds the columns for the "edgeone_zone_origingroup" table.
 	EdgeoneZoneOrigingroupColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "EdgeOne 站点源站组序号"},
@@ -567,8 +665,8 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
 		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
-		{Name: "group_id", Type: field.TypeString, Nullable: true, Comment: "源站组ID"},
-		{Name: "name", Type: field.TypeString, Comment: "源站组名称"},
+		{Name: "group_id", Type: field.TypeString, Comment: "源站组ID"},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "源站组名称"},
 		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "源站组类型", Enums: []string{"GENERAL", "HTTP"}},
 		{Name: "records", Type: field.TypeJSON, Nullable: true, Comment: "源站记录信息"},
 		{Name: "references", Type: field.TypeJSON, Nullable: true, Comment: "源站组被引用实例列表"},
@@ -1034,6 +1132,8 @@ var (
 		DevicePortForwardTable,
 		DomainMonitorTable,
 		EdgeoneZoneTable,
+		EdgeoneZoneAccelerationdomainTable,
+		EdgeoneZoneDnsrecordTable,
 		EdgeoneZoneOrigingroupTable,
 		IPGroupTable,
 		IPGroupDeviceTable,
@@ -1092,6 +1192,14 @@ func init() {
 	EdgeoneZoneTable.ForeignKeys[0].RefTable = PlatformConfigTable
 	EdgeoneZoneTable.Annotation = &entsql.Annotation{
 		Table: "edgeone_zone",
+	}
+	EdgeoneZoneAccelerationdomainTable.ForeignKeys[0].RefTable = EdgeoneZoneTable
+	EdgeoneZoneAccelerationdomainTable.Annotation = &entsql.Annotation{
+		Table: "edgeone_zone_accelerationdomain",
+	}
+	EdgeoneZoneDnsrecordTable.ForeignKeys[0].RefTable = EdgeoneZoneTable
+	EdgeoneZoneDnsrecordTable.Annotation = &entsql.Annotation{
+		Table: "edgeone_zone_dnsrecord",
 	}
 	EdgeoneZoneOrigingroupTable.ForeignKeys[0].RefTable = EdgeoneZoneTable
 	EdgeoneZoneOrigingroupTable.Annotation = &entsql.Annotation{

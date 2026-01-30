@@ -15,6 +15,8 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
+	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
@@ -239,6 +241,46 @@ func (q *EdgeOneZoneQuery) OrderIf(condition bool, o edgeonezone.OrderOption) *E
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *EdgeOneZoneQuery) OrderIfs(condition bool, o ...edgeonezone.OrderOption) *EdgeOneZoneQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderIf(condition bool, o edgeonezoneaccelerationdomain.OrderOption) *EdgeOneZoneAccelerationDomainQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderIfs(condition bool, o ...edgeonezoneaccelerationdomain.OrderOption) *EdgeOneZoneAccelerationDomainQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EdgeOneZoneDNSRecordQuery) OrderIf(condition bool, o edgeonezonednsrecord.OrderOption) *EdgeOneZoneDNSRecordQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EdgeOneZoneDNSRecordQuery) OrderIfs(condition bool, o ...edgeonezonednsrecord.OrderOption) *EdgeOneZoneDNSRecordQuery {
 	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)

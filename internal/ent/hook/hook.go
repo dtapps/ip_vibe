@@ -140,6 +140,30 @@ func (f EdgeOneZoneFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EdgeOneZoneMutation", m)
 }
 
+// The EdgeOneZoneAccelerationDomainFunc type is an adapter to allow the use of ordinary
+// function as EdgeOneZoneAccelerationDomain mutator.
+type EdgeOneZoneAccelerationDomainFunc func(context.Context, *ent.EdgeOneZoneAccelerationDomainMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EdgeOneZoneAccelerationDomainFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EdgeOneZoneAccelerationDomainMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EdgeOneZoneAccelerationDomainMutation", m)
+}
+
+// The EdgeOneZoneDNSRecordFunc type is an adapter to allow the use of ordinary
+// function as EdgeOneZoneDNSRecord mutator.
+type EdgeOneZoneDNSRecordFunc func(context.Context, *ent.EdgeOneZoneDNSRecordMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EdgeOneZoneDNSRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EdgeOneZoneDNSRecordMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EdgeOneZoneDNSRecordMutation", m)
+}
+
 // The EdgeOneZoneOriginGroupFunc type is an adapter to allow the use of ordinary
 // function as EdgeOneZoneOriginGroup mutator.
 type EdgeOneZoneOriginGroupFunc func(context.Context, *ent.EdgeOneZoneOriginGroupMutation) (ent.Value, error)

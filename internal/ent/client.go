@@ -22,6 +22,8 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
+	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
@@ -67,6 +69,10 @@ type Client struct {
 	DomainMonitor *DomainMonitorClient
 	// EdgeOneZone is the client for interacting with the EdgeOneZone builders.
 	EdgeOneZone *EdgeOneZoneClient
+	// EdgeOneZoneAccelerationDomain is the client for interacting with the EdgeOneZoneAccelerationDomain builders.
+	EdgeOneZoneAccelerationDomain *EdgeOneZoneAccelerationDomainClient
+	// EdgeOneZoneDNSRecord is the client for interacting with the EdgeOneZoneDNSRecord builders.
+	EdgeOneZoneDNSRecord *EdgeOneZoneDNSRecordClient
 	// EdgeOneZoneOriginGroup is the client for interacting with the EdgeOneZoneOriginGroup builders.
 	EdgeOneZoneOriginGroup *EdgeOneZoneOriginGroupClient
 	// IpGroup is the client for interacting with the IpGroup builders.
@@ -107,6 +113,8 @@ func (c *Client) init() {
 	c.DevicePortForward = NewDevicePortForwardClient(c.config)
 	c.DomainMonitor = NewDomainMonitorClient(c.config)
 	c.EdgeOneZone = NewEdgeOneZoneClient(c.config)
+	c.EdgeOneZoneAccelerationDomain = NewEdgeOneZoneAccelerationDomainClient(c.config)
+	c.EdgeOneZoneDNSRecord = NewEdgeOneZoneDNSRecordClient(c.config)
 	c.EdgeOneZoneOriginGroup = NewEdgeOneZoneOriginGroupClient(c.config)
 	c.IpGroup = NewIpGroupClient(c.config)
 	c.IpGroupDevice = NewIpGroupDeviceClient(c.config)
@@ -206,28 +214,30 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                     ctx,
-		config:                  cfg,
-		CDNRecord:               NewCDNRecordClient(cfg),
-		Cache:                   NewCacheClient(cfg),
-		CloudflareTunnel:        NewCloudflareTunnelClient(cfg),
-		CloudflareTunnelIngress: NewCloudflareTunnelIngressClient(cfg),
-		DNSRecord:               NewDNSRecordClient(cfg),
-		Device:                  NewDeviceClient(cfg),
-		DeviceGroup:             NewDeviceGroupClient(cfg),
-		DeviceGroupDevice:       NewDeviceGroupDeviceClient(cfg),
-		DevicePortForward:       NewDevicePortForwardClient(cfg),
-		DomainMonitor:           NewDomainMonitorClient(cfg),
-		EdgeOneZone:             NewEdgeOneZoneClient(cfg),
-		EdgeOneZoneOriginGroup:  NewEdgeOneZoneOriginGroupClient(cfg),
-		IpGroup:                 NewIpGroupClient(cfg),
-		IpGroupDevice:           NewIpGroupDeviceClient(cfg),
-		PlatformConfig:          NewPlatformConfigClient(cfg),
-		SSLImport:               NewSSLImportClient(cfg),
-		SSLRecord:               NewSSLRecordClient(cfg),
-		TUNRecord:               NewTUNRecordClient(cfg),
-		Webhook:                 NewWebhookClient(cfg),
-		WebhookSubscription:     NewWebhookSubscriptionClient(cfg),
+		ctx:                           ctx,
+		config:                        cfg,
+		CDNRecord:                     NewCDNRecordClient(cfg),
+		Cache:                         NewCacheClient(cfg),
+		CloudflareTunnel:              NewCloudflareTunnelClient(cfg),
+		CloudflareTunnelIngress:       NewCloudflareTunnelIngressClient(cfg),
+		DNSRecord:                     NewDNSRecordClient(cfg),
+		Device:                        NewDeviceClient(cfg),
+		DeviceGroup:                   NewDeviceGroupClient(cfg),
+		DeviceGroupDevice:             NewDeviceGroupDeviceClient(cfg),
+		DevicePortForward:             NewDevicePortForwardClient(cfg),
+		DomainMonitor:                 NewDomainMonitorClient(cfg),
+		EdgeOneZone:                   NewEdgeOneZoneClient(cfg),
+		EdgeOneZoneAccelerationDomain: NewEdgeOneZoneAccelerationDomainClient(cfg),
+		EdgeOneZoneDNSRecord:          NewEdgeOneZoneDNSRecordClient(cfg),
+		EdgeOneZoneOriginGroup:        NewEdgeOneZoneOriginGroupClient(cfg),
+		IpGroup:                       NewIpGroupClient(cfg),
+		IpGroupDevice:                 NewIpGroupDeviceClient(cfg),
+		PlatformConfig:                NewPlatformConfigClient(cfg),
+		SSLImport:                     NewSSLImportClient(cfg),
+		SSLRecord:                     NewSSLRecordClient(cfg),
+		TUNRecord:                     NewTUNRecordClient(cfg),
+		Webhook:                       NewWebhookClient(cfg),
+		WebhookSubscription:           NewWebhookSubscriptionClient(cfg),
 	}, nil
 }
 
@@ -245,28 +255,30 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                     ctx,
-		config:                  cfg,
-		CDNRecord:               NewCDNRecordClient(cfg),
-		Cache:                   NewCacheClient(cfg),
-		CloudflareTunnel:        NewCloudflareTunnelClient(cfg),
-		CloudflareTunnelIngress: NewCloudflareTunnelIngressClient(cfg),
-		DNSRecord:               NewDNSRecordClient(cfg),
-		Device:                  NewDeviceClient(cfg),
-		DeviceGroup:             NewDeviceGroupClient(cfg),
-		DeviceGroupDevice:       NewDeviceGroupDeviceClient(cfg),
-		DevicePortForward:       NewDevicePortForwardClient(cfg),
-		DomainMonitor:           NewDomainMonitorClient(cfg),
-		EdgeOneZone:             NewEdgeOneZoneClient(cfg),
-		EdgeOneZoneOriginGroup:  NewEdgeOneZoneOriginGroupClient(cfg),
-		IpGroup:                 NewIpGroupClient(cfg),
-		IpGroupDevice:           NewIpGroupDeviceClient(cfg),
-		PlatformConfig:          NewPlatformConfigClient(cfg),
-		SSLImport:               NewSSLImportClient(cfg),
-		SSLRecord:               NewSSLRecordClient(cfg),
-		TUNRecord:               NewTUNRecordClient(cfg),
-		Webhook:                 NewWebhookClient(cfg),
-		WebhookSubscription:     NewWebhookSubscriptionClient(cfg),
+		ctx:                           ctx,
+		config:                        cfg,
+		CDNRecord:                     NewCDNRecordClient(cfg),
+		Cache:                         NewCacheClient(cfg),
+		CloudflareTunnel:              NewCloudflareTunnelClient(cfg),
+		CloudflareTunnelIngress:       NewCloudflareTunnelIngressClient(cfg),
+		DNSRecord:                     NewDNSRecordClient(cfg),
+		Device:                        NewDeviceClient(cfg),
+		DeviceGroup:                   NewDeviceGroupClient(cfg),
+		DeviceGroupDevice:             NewDeviceGroupDeviceClient(cfg),
+		DevicePortForward:             NewDevicePortForwardClient(cfg),
+		DomainMonitor:                 NewDomainMonitorClient(cfg),
+		EdgeOneZone:                   NewEdgeOneZoneClient(cfg),
+		EdgeOneZoneAccelerationDomain: NewEdgeOneZoneAccelerationDomainClient(cfg),
+		EdgeOneZoneDNSRecord:          NewEdgeOneZoneDNSRecordClient(cfg),
+		EdgeOneZoneOriginGroup:        NewEdgeOneZoneOriginGroupClient(cfg),
+		IpGroup:                       NewIpGroupClient(cfg),
+		IpGroupDevice:                 NewIpGroupDeviceClient(cfg),
+		PlatformConfig:                NewPlatformConfigClient(cfg),
+		SSLImport:                     NewSSLImportClient(cfg),
+		SSLRecord:                     NewSSLRecordClient(cfg),
+		TUNRecord:                     NewTUNRecordClient(cfg),
+		Webhook:                       NewWebhookClient(cfg),
+		WebhookSubscription:           NewWebhookSubscriptionClient(cfg),
 	}, nil
 }
 
@@ -298,9 +310,10 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
 		c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward,
-		c.DomainMonitor, c.EdgeOneZone, c.EdgeOneZoneOriginGroup, c.IpGroup,
-		c.IpGroupDevice, c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord,
-		c.Webhook, c.WebhookSubscription,
+		c.DomainMonitor, c.EdgeOneZone, c.EdgeOneZoneAccelerationDomain,
+		c.EdgeOneZoneDNSRecord, c.EdgeOneZoneOriginGroup, c.IpGroup, c.IpGroupDevice,
+		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord, c.Webhook,
+		c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -312,9 +325,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
 		c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward,
-		c.DomainMonitor, c.EdgeOneZone, c.EdgeOneZoneOriginGroup, c.IpGroup,
-		c.IpGroupDevice, c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord,
-		c.Webhook, c.WebhookSubscription,
+		c.DomainMonitor, c.EdgeOneZone, c.EdgeOneZoneAccelerationDomain,
+		c.EdgeOneZoneDNSRecord, c.EdgeOneZoneOriginGroup, c.IpGroup, c.IpGroupDevice,
+		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord, c.Webhook,
+		c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -345,6 +359,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.DomainMonitor.mutate(ctx, m)
 	case *EdgeOneZoneMutation:
 		return c.EdgeOneZone.mutate(ctx, m)
+	case *EdgeOneZoneAccelerationDomainMutation:
+		return c.EdgeOneZoneAccelerationDomain.mutate(ctx, m)
+	case *EdgeOneZoneDNSRecordMutation:
+		return c.EdgeOneZoneDNSRecord.mutate(ctx, m)
 	case *EdgeOneZoneOriginGroupMutation:
 		return c.EdgeOneZoneOriginGroup.mutate(ctx, m)
 	case *IpGroupMutation:
@@ -2150,6 +2168,38 @@ func (c *EdgeOneZoneClient) QueryConfig(_m *EdgeOneZone) *PlatformConfigQuery {
 	return query
 }
 
+// QueryAccelerationdomains queries the accelerationdomains edge of a EdgeOneZone.
+func (c *EdgeOneZoneClient) QueryAccelerationdomains(_m *EdgeOneZone) *EdgeOneZoneAccelerationDomainQuery {
+	query := (&EdgeOneZoneAccelerationDomainClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, id),
+			sqlgraph.To(edgeonezoneaccelerationdomain.Table, edgeonezoneaccelerationdomain.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.AccelerationdomainsTable, edgeonezone.AccelerationdomainsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDnsrecords queries the dnsrecords edge of a EdgeOneZone.
+func (c *EdgeOneZoneClient) QueryDnsrecords(_m *EdgeOneZone) *EdgeOneZoneDNSRecordQuery {
+	query := (&EdgeOneZoneDNSRecordClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, id),
+			sqlgraph.To(edgeonezonednsrecord.Table, edgeonezonednsrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.DnsrecordsTable, edgeonezone.DnsrecordsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryOrigingroups queries the origingroups edge of a EdgeOneZone.
 func (c *EdgeOneZoneClient) QueryOrigingroups(_m *EdgeOneZone) *EdgeOneZoneOriginGroupQuery {
 	query := (&EdgeOneZoneOriginGroupClient{config: c.config}).Query()
@@ -2189,6 +2239,304 @@ func (c *EdgeOneZoneClient) mutate(ctx context.Context, m *EdgeOneZoneMutation) 
 		return (&EdgeOneZoneDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown EdgeOneZone mutation op: %q", m.Op())
+	}
+}
+
+// EdgeOneZoneAccelerationDomainClient is a client for the EdgeOneZoneAccelerationDomain schema.
+type EdgeOneZoneAccelerationDomainClient struct {
+	config
+}
+
+// NewEdgeOneZoneAccelerationDomainClient returns a client for the EdgeOneZoneAccelerationDomain from the given config.
+func NewEdgeOneZoneAccelerationDomainClient(c config) *EdgeOneZoneAccelerationDomainClient {
+	return &EdgeOneZoneAccelerationDomainClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `edgeonezoneaccelerationdomain.Hooks(f(g(h())))`.
+func (c *EdgeOneZoneAccelerationDomainClient) Use(hooks ...Hook) {
+	c.hooks.EdgeOneZoneAccelerationDomain = append(c.hooks.EdgeOneZoneAccelerationDomain, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `edgeonezoneaccelerationdomain.Intercept(f(g(h())))`.
+func (c *EdgeOneZoneAccelerationDomainClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EdgeOneZoneAccelerationDomain = append(c.inters.EdgeOneZoneAccelerationDomain, interceptors...)
+}
+
+// Create returns a builder for creating a EdgeOneZoneAccelerationDomain entity.
+func (c *EdgeOneZoneAccelerationDomainClient) Create() *EdgeOneZoneAccelerationDomainCreate {
+	mutation := newEdgeOneZoneAccelerationDomainMutation(c.config, OpCreate)
+	return &EdgeOneZoneAccelerationDomainCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EdgeOneZoneAccelerationDomain entities.
+func (c *EdgeOneZoneAccelerationDomainClient) CreateBulk(builders ...*EdgeOneZoneAccelerationDomainCreate) *EdgeOneZoneAccelerationDomainCreateBulk {
+	return &EdgeOneZoneAccelerationDomainCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EdgeOneZoneAccelerationDomainClient) MapCreateBulk(slice any, setFunc func(*EdgeOneZoneAccelerationDomainCreate, int)) *EdgeOneZoneAccelerationDomainCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EdgeOneZoneAccelerationDomainCreateBulk{err: fmt.Errorf("calling to EdgeOneZoneAccelerationDomainClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EdgeOneZoneAccelerationDomainCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EdgeOneZoneAccelerationDomainCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EdgeOneZoneAccelerationDomain.
+func (c *EdgeOneZoneAccelerationDomainClient) Update() *EdgeOneZoneAccelerationDomainUpdate {
+	mutation := newEdgeOneZoneAccelerationDomainMutation(c.config, OpUpdate)
+	return &EdgeOneZoneAccelerationDomainUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EdgeOneZoneAccelerationDomainClient) UpdateOne(_m *EdgeOneZoneAccelerationDomain) *EdgeOneZoneAccelerationDomainUpdateOne {
+	mutation := newEdgeOneZoneAccelerationDomainMutation(c.config, OpUpdateOne, withEdgeOneZoneAccelerationDomain(_m))
+	return &EdgeOneZoneAccelerationDomainUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EdgeOneZoneAccelerationDomainClient) UpdateOneID(id int64) *EdgeOneZoneAccelerationDomainUpdateOne {
+	mutation := newEdgeOneZoneAccelerationDomainMutation(c.config, OpUpdateOne, withEdgeOneZoneAccelerationDomainID(id))
+	return &EdgeOneZoneAccelerationDomainUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EdgeOneZoneAccelerationDomain.
+func (c *EdgeOneZoneAccelerationDomainClient) Delete() *EdgeOneZoneAccelerationDomainDelete {
+	mutation := newEdgeOneZoneAccelerationDomainMutation(c.config, OpDelete)
+	return &EdgeOneZoneAccelerationDomainDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EdgeOneZoneAccelerationDomainClient) DeleteOne(_m *EdgeOneZoneAccelerationDomain) *EdgeOneZoneAccelerationDomainDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EdgeOneZoneAccelerationDomainClient) DeleteOneID(id int64) *EdgeOneZoneAccelerationDomainDeleteOne {
+	builder := c.Delete().Where(edgeonezoneaccelerationdomain.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EdgeOneZoneAccelerationDomainDeleteOne{builder}
+}
+
+// Query returns a query builder for EdgeOneZoneAccelerationDomain.
+func (c *EdgeOneZoneAccelerationDomainClient) Query() *EdgeOneZoneAccelerationDomainQuery {
+	return &EdgeOneZoneAccelerationDomainQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEdgeOneZoneAccelerationDomain},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EdgeOneZoneAccelerationDomain entity by its id.
+func (c *EdgeOneZoneAccelerationDomainClient) Get(ctx context.Context, id int64) (*EdgeOneZoneAccelerationDomain, error) {
+	return c.Query().Where(edgeonezoneaccelerationdomain.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EdgeOneZoneAccelerationDomainClient) GetX(ctx context.Context, id int64) *EdgeOneZoneAccelerationDomain {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEdgeoneZone queries the edgeone_zone edge of a EdgeOneZoneAccelerationDomain.
+func (c *EdgeOneZoneAccelerationDomainClient) QueryEdgeoneZone(_m *EdgeOneZoneAccelerationDomain) *EdgeOneZoneQuery {
+	query := (&EdgeOneZoneClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(edgeonezoneaccelerationdomain.Table, edgeonezoneaccelerationdomain.FieldID, id),
+			sqlgraph.To(edgeonezone.Table, edgeonezone.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, edgeonezoneaccelerationdomain.EdgeoneZoneTable, edgeonezoneaccelerationdomain.EdgeoneZoneColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EdgeOneZoneAccelerationDomainClient) Hooks() []Hook {
+	return c.hooks.EdgeOneZoneAccelerationDomain
+}
+
+// Interceptors returns the client interceptors.
+func (c *EdgeOneZoneAccelerationDomainClient) Interceptors() []Interceptor {
+	return c.inters.EdgeOneZoneAccelerationDomain
+}
+
+func (c *EdgeOneZoneAccelerationDomainClient) mutate(ctx context.Context, m *EdgeOneZoneAccelerationDomainMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EdgeOneZoneAccelerationDomainCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EdgeOneZoneAccelerationDomainUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EdgeOneZoneAccelerationDomainUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EdgeOneZoneAccelerationDomainDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EdgeOneZoneAccelerationDomain mutation op: %q", m.Op())
+	}
+}
+
+// EdgeOneZoneDNSRecordClient is a client for the EdgeOneZoneDNSRecord schema.
+type EdgeOneZoneDNSRecordClient struct {
+	config
+}
+
+// NewEdgeOneZoneDNSRecordClient returns a client for the EdgeOneZoneDNSRecord from the given config.
+func NewEdgeOneZoneDNSRecordClient(c config) *EdgeOneZoneDNSRecordClient {
+	return &EdgeOneZoneDNSRecordClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `edgeonezonednsrecord.Hooks(f(g(h())))`.
+func (c *EdgeOneZoneDNSRecordClient) Use(hooks ...Hook) {
+	c.hooks.EdgeOneZoneDNSRecord = append(c.hooks.EdgeOneZoneDNSRecord, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `edgeonezonednsrecord.Intercept(f(g(h())))`.
+func (c *EdgeOneZoneDNSRecordClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EdgeOneZoneDNSRecord = append(c.inters.EdgeOneZoneDNSRecord, interceptors...)
+}
+
+// Create returns a builder for creating a EdgeOneZoneDNSRecord entity.
+func (c *EdgeOneZoneDNSRecordClient) Create() *EdgeOneZoneDNSRecordCreate {
+	mutation := newEdgeOneZoneDNSRecordMutation(c.config, OpCreate)
+	return &EdgeOneZoneDNSRecordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EdgeOneZoneDNSRecord entities.
+func (c *EdgeOneZoneDNSRecordClient) CreateBulk(builders ...*EdgeOneZoneDNSRecordCreate) *EdgeOneZoneDNSRecordCreateBulk {
+	return &EdgeOneZoneDNSRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EdgeOneZoneDNSRecordClient) MapCreateBulk(slice any, setFunc func(*EdgeOneZoneDNSRecordCreate, int)) *EdgeOneZoneDNSRecordCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EdgeOneZoneDNSRecordCreateBulk{err: fmt.Errorf("calling to EdgeOneZoneDNSRecordClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EdgeOneZoneDNSRecordCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EdgeOneZoneDNSRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EdgeOneZoneDNSRecord.
+func (c *EdgeOneZoneDNSRecordClient) Update() *EdgeOneZoneDNSRecordUpdate {
+	mutation := newEdgeOneZoneDNSRecordMutation(c.config, OpUpdate)
+	return &EdgeOneZoneDNSRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EdgeOneZoneDNSRecordClient) UpdateOne(_m *EdgeOneZoneDNSRecord) *EdgeOneZoneDNSRecordUpdateOne {
+	mutation := newEdgeOneZoneDNSRecordMutation(c.config, OpUpdateOne, withEdgeOneZoneDNSRecord(_m))
+	return &EdgeOneZoneDNSRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EdgeOneZoneDNSRecordClient) UpdateOneID(id int64) *EdgeOneZoneDNSRecordUpdateOne {
+	mutation := newEdgeOneZoneDNSRecordMutation(c.config, OpUpdateOne, withEdgeOneZoneDNSRecordID(id))
+	return &EdgeOneZoneDNSRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EdgeOneZoneDNSRecord.
+func (c *EdgeOneZoneDNSRecordClient) Delete() *EdgeOneZoneDNSRecordDelete {
+	mutation := newEdgeOneZoneDNSRecordMutation(c.config, OpDelete)
+	return &EdgeOneZoneDNSRecordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EdgeOneZoneDNSRecordClient) DeleteOne(_m *EdgeOneZoneDNSRecord) *EdgeOneZoneDNSRecordDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EdgeOneZoneDNSRecordClient) DeleteOneID(id int64) *EdgeOneZoneDNSRecordDeleteOne {
+	builder := c.Delete().Where(edgeonezonednsrecord.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EdgeOneZoneDNSRecordDeleteOne{builder}
+}
+
+// Query returns a query builder for EdgeOneZoneDNSRecord.
+func (c *EdgeOneZoneDNSRecordClient) Query() *EdgeOneZoneDNSRecordQuery {
+	return &EdgeOneZoneDNSRecordQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEdgeOneZoneDNSRecord},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EdgeOneZoneDNSRecord entity by its id.
+func (c *EdgeOneZoneDNSRecordClient) Get(ctx context.Context, id int64) (*EdgeOneZoneDNSRecord, error) {
+	return c.Query().Where(edgeonezonednsrecord.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EdgeOneZoneDNSRecordClient) GetX(ctx context.Context, id int64) *EdgeOneZoneDNSRecord {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEdgeoneZone queries the edgeone_zone edge of a EdgeOneZoneDNSRecord.
+func (c *EdgeOneZoneDNSRecordClient) QueryEdgeoneZone(_m *EdgeOneZoneDNSRecord) *EdgeOneZoneQuery {
+	query := (&EdgeOneZoneClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(edgeonezonednsrecord.Table, edgeonezonednsrecord.FieldID, id),
+			sqlgraph.To(edgeonezone.Table, edgeonezone.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, edgeonezonednsrecord.EdgeoneZoneTable, edgeonezonednsrecord.EdgeoneZoneColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EdgeOneZoneDNSRecordClient) Hooks() []Hook {
+	return c.hooks.EdgeOneZoneDNSRecord
+}
+
+// Interceptors returns the client interceptors.
+func (c *EdgeOneZoneDNSRecordClient) Interceptors() []Interceptor {
+	return c.inters.EdgeOneZoneDNSRecord
+}
+
+func (c *EdgeOneZoneDNSRecordClient) mutate(ctx context.Context, m *EdgeOneZoneDNSRecordMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EdgeOneZoneDNSRecordCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EdgeOneZoneDNSRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EdgeOneZoneDNSRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EdgeOneZoneDNSRecordDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EdgeOneZoneDNSRecord mutation op: %q", m.Op())
 	}
 }
 
@@ -3625,14 +3973,16 @@ type (
 	hooks struct {
 		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, DNSRecord, Device,
 		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor, EdgeOneZone,
-		EdgeOneZoneOriginGroup, IpGroup, IpGroupDevice, PlatformConfig, SSLImport,
-		SSLRecord, TUNRecord, Webhook, WebhookSubscription []ent.Hook
+		EdgeOneZoneAccelerationDomain, EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup,
+		IpGroup, IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, TUNRecord,
+		Webhook, WebhookSubscription []ent.Hook
 	}
 	inters struct {
 		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, DNSRecord, Device,
 		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor, EdgeOneZone,
-		EdgeOneZoneOriginGroup, IpGroup, IpGroupDevice, PlatformConfig, SSLImport,
-		SSLRecord, TUNRecord, Webhook, WebhookSubscription []ent.Interceptor
+		EdgeOneZoneAccelerationDomain, EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup,
+		IpGroup, IpGroupDevice, PlatformConfig, SSLImport, SSLRecord, TUNRecord,
+		Webhook, WebhookSubscription []ent.Interceptor
 	}
 )
 

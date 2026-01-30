@@ -14,6 +14,8 @@ import (
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/edgeonezone"
+	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
+	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/ipgroup"
 	"vibe_ip/internal/ent/ipgroupdevice"
@@ -2498,6 +2500,756 @@ func (q *EdgeOneZoneQuery) OrderByPausedDesc() *EdgeOneZoneQuery {
 //	    All(ctx)
 func (q *EdgeOneZoneQuery) OrderByPausedAsc() *EdgeOneZoneQuery {
 	return q.Order(Asc(edgeonezone.FieldPaused))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByIDDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByIDAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldID))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByCreatedAtDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByCreatedAtAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldCreatedAt))
+}
+
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByUpdatedAtDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByUpdatedAtAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldUpdatedAt))
+}
+
+// OrderByRemoteCreatedAtDesc 按字段 remote_created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByRemoteCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByRemoteCreatedAtDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldRemoteCreatedAt))
+}
+
+// OrderByRemoteCreatedAtAsc 按字段 remote_created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByRemoteCreatedAtAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByRemoteCreatedAtAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldRemoteCreatedAt))
+}
+
+// OrderBySyncAtDesc 按字段 sync_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderBySyncAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderBySyncAtDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldSyncAt))
+}
+
+// OrderBySyncAtAsc 按字段 sync_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderBySyncAtAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderBySyncAtAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldSyncAt))
+}
+
+// OrderByDomainNameDesc 按字段 domain_name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByDomainNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByDomainNameDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldDomainName))
+}
+
+// OrderByDomainNameAsc 按字段 domain_name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByDomainNameAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByDomainNameAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldDomainName))
+}
+
+// OrderByDomainStatusDesc 按字段 domain_status 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByDomainStatusDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByDomainStatusDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldDomainStatus))
+}
+
+// OrderByDomainStatusAsc 按字段 domain_status 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByDomainStatusAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByDomainStatusAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldDomainStatus))
+}
+
+// OrderByCnameDesc 按字段 cname 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByCnameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByCnameDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldCname))
+}
+
+// OrderByCnameAsc 按字段 cname 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByCnameAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByCnameAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldCname))
+}
+
+// OrderByIpv6StatusDesc 按字段 ipv6_status 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByIpv6StatusDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByIpv6StatusDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldIpv6Status))
+}
+
+// OrderByIpv6StatusAsc 按字段 ipv6_status 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByIpv6StatusAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByIpv6StatusAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldIpv6Status))
+}
+
+// OrderByIdentificationStatusDesc 按字段 identification_status 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByIdentificationStatusDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByIdentificationStatusDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldIdentificationStatus))
+}
+
+// OrderByIdentificationStatusAsc 按字段 identification_status 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByIdentificationStatusAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByIdentificationStatusAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldIdentificationStatus))
+}
+
+// OrderByOwnershipVerificationDesc 按字段 ownership_verification 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByOwnershipVerificationDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByOwnershipVerificationDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldOwnershipVerification))
+}
+
+// OrderByOwnershipVerificationAsc 按字段 ownership_verification 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByOwnershipVerificationAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByOwnershipVerificationAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldOwnershipVerification))
+}
+
+// OrderByOriginDetailDesc 按字段 origin_detail 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByOriginDetailDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByOriginDetailDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldOriginDetail))
+}
+
+// OrderByOriginDetailAsc 按字段 origin_detail 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByOriginDetailAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByOriginDetailAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldOriginDetail))
+}
+
+// OrderByOriginProtocolDesc 按字段 origin_protocol 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByOriginProtocolDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByOriginProtocolDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldOriginProtocol))
+}
+
+// OrderByOriginProtocolAsc 按字段 origin_protocol 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByOriginProtocolAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByOriginProtocolAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldOriginProtocol))
+}
+
+// OrderByHTTPOriginPortDesc 按字段 http_origin_port 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByHTTPOriginPortDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByHTTPOriginPortDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldHTTPOriginPort))
+}
+
+// OrderByHTTPOriginPortAsc 按字段 http_origin_port 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByHTTPOriginPortAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByHTTPOriginPortAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldHTTPOriginPort))
+}
+
+// OrderByHTTPSOriginPortDesc 按字段 https_origin_port 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByHTTPSOriginPortDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByHTTPSOriginPortDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort))
+}
+
+// OrderByHTTPSOriginPortAsc 按字段 https_origin_port 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByHTTPSOriginPortAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByHTTPSOriginPortAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldHTTPSOriginPort))
+}
+
+// OrderByCertificateDesc 按字段 certificate 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByCertificateDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByCertificateDesc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Desc(edgeonezoneaccelerationdomain.FieldCertificate))
+}
+
+// OrderByCertificateAsc 按字段 certificate 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAccelerationDomainQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAccelerationDomain.Query().
+//	    OrderByCertificateAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAccelerationDomainQuery) OrderByCertificateAsc() *EdgeOneZoneAccelerationDomainQuery {
+	return q.Order(Asc(edgeonezoneaccelerationdomain.FieldCertificate))
+}
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByIDDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByIDAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldID))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByCreatedAtDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByCreatedAtAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldCreatedAt))
+}
+
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByUpdatedAtDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByUpdatedAtAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldUpdatedAt))
+}
+
+// OrderByRemoteCreatedAtDesc 按字段 remote_created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByRemoteCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByRemoteCreatedAtDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldRemoteCreatedAt))
+}
+
+// OrderByRemoteCreatedAtAsc 按字段 remote_created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByRemoteCreatedAtAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByRemoteCreatedAtAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldRemoteCreatedAt))
+}
+
+// OrderBySyncAtDesc 按字段 sync_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderBySyncAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderBySyncAtDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldSyncAt))
+}
+
+// OrderBySyncAtAsc 按字段 sync_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderBySyncAtAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderBySyncAtAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldSyncAt))
+}
+
+// OrderByRecordIdDesc 按字段 recordId 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByRecordIdDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByRecordIdDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldRecordId))
+}
+
+// OrderByRecordIdAsc 按字段 recordId 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByRecordIdAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByRecordIdAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldRecordId))
+}
+
+// OrderByNameDesc 按字段 name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByNameDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldName))
+}
+
+// OrderByNameAsc 按字段 name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByNameAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByNameAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldName))
+}
+
+// OrderByTypeDesc 按字段 type 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByTypeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByTypeDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldType))
+}
+
+// OrderByTypeAsc 按字段 type 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByTypeAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByTypeAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldType))
+}
+
+// OrderByLocationDesc 按字段 location 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByLocationDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByLocationDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldLocation))
+}
+
+// OrderByLocationAsc 按字段 location 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByLocationAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByLocationAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldLocation))
+}
+
+// OrderByContentDesc 按字段 content 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByContentDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByContentDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldContent))
+}
+
+// OrderByContentAsc 按字段 content 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByContentAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByContentAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldContent))
+}
+
+// OrderByTTLDesc 按字段 ttl 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByTTLDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByTTLDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldTTL))
+}
+
+// OrderByTTLAsc 按字段 ttl 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByTTLAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByTTLAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldTTL))
+}
+
+// OrderByWeightDesc 按字段 weight 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByWeightDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByWeightDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldWeight))
+}
+
+// OrderByWeightAsc 按字段 weight 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByWeightAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByWeightAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldWeight))
+}
+
+// OrderByPriorityDesc 按字段 priority 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByPriorityDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByPriorityDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldPriority))
+}
+
+// OrderByPriorityAsc 按字段 priority 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByPriorityAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByPriorityAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldPriority))
+}
+
+// OrderByStatusDesc 按字段 status 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByStatusDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByStatusDesc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Desc(edgeonezonednsrecord.FieldStatus))
+}
+
+// OrderByStatusAsc 按字段 status 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneDNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneDNSRecord.Query().
+//	    OrderByStatusAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneDNSRecordQuery) OrderByStatusAsc() *EdgeOneZoneDNSRecordQuery {
+	return q.Order(Asc(edgeonezonednsrecord.FieldStatus))
 }
 
 // OrderByIDDesc 按主键 ID 降序排列查询结果。
