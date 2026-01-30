@@ -65,6 +65,16 @@ func UpdatedAt(v time.Time) predicate.CloudflareTunnelIngress {
 	return predicate.CloudflareTunnelIngress(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// RemoteCreatedAt applies equality check predicate on the "remote_created_at" field. It's identical to RemoteCreatedAtEQ.
+func RemoteCreatedAt(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldEQ(FieldRemoteCreatedAt, v))
+}
+
+// SyncAt applies equality check predicate on the "sync_at" field. It's identical to SyncAtEQ.
+func SyncAt(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldEQ(FieldSyncAt, v))
+}
+
 // CloudflareTunnelID applies equality check predicate on the "cloudflare_tunnel_id" field. It's identical to CloudflareTunnelIDEQ.
 func CloudflareTunnelID(v int64) predicate.CloudflareTunnelIngress {
 	return predicate.CloudflareTunnelIngress(sql.FieldEQ(FieldCloudflareTunnelID, v))
@@ -83,11 +93,6 @@ func Service(v string) predicate.CloudflareTunnelIngress {
 // Path applies equality check predicate on the "path" field. It's identical to PathEQ.
 func Path(v string) predicate.CloudflareTunnelIngress {
 	return predicate.CloudflareTunnelIngress(sql.FieldEQ(FieldPath, v))
-}
-
-// SyncAt applies equality check predicate on the "sync_at" field. It's identical to SyncAtEQ.
-func SyncAt(v time.Time) predicate.CloudflareTunnelIngress {
-	return predicate.CloudflareTunnelIngress(sql.FieldEQ(FieldSyncAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -168,6 +173,106 @@ func UpdatedAtLT(v time.Time) predicate.CloudflareTunnelIngress {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.CloudflareTunnelIngress {
 	return predicate.CloudflareTunnelIngress(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// RemoteCreatedAtEQ applies the EQ predicate on the "remote_created_at" field.
+func RemoteCreatedAtEQ(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldEQ(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtNEQ applies the NEQ predicate on the "remote_created_at" field.
+func RemoteCreatedAtNEQ(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldNEQ(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtIn applies the In predicate on the "remote_created_at" field.
+func RemoteCreatedAtIn(vs ...time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldIn(FieldRemoteCreatedAt, vs...))
+}
+
+// RemoteCreatedAtNotIn applies the NotIn predicate on the "remote_created_at" field.
+func RemoteCreatedAtNotIn(vs ...time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldNotIn(FieldRemoteCreatedAt, vs...))
+}
+
+// RemoteCreatedAtGT applies the GT predicate on the "remote_created_at" field.
+func RemoteCreatedAtGT(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldGT(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtGTE applies the GTE predicate on the "remote_created_at" field.
+func RemoteCreatedAtGTE(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldGTE(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtLT applies the LT predicate on the "remote_created_at" field.
+func RemoteCreatedAtLT(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldLT(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtLTE applies the LTE predicate on the "remote_created_at" field.
+func RemoteCreatedAtLTE(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldLTE(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtIsNil applies the IsNil predicate on the "remote_created_at" field.
+func RemoteCreatedAtIsNil() predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldIsNull(FieldRemoteCreatedAt))
+}
+
+// RemoteCreatedAtNotNil applies the NotNil predicate on the "remote_created_at" field.
+func RemoteCreatedAtNotNil() predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldNotNull(FieldRemoteCreatedAt))
+}
+
+// SyncAtEQ applies the EQ predicate on the "sync_at" field.
+func SyncAtEQ(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldEQ(FieldSyncAt, v))
+}
+
+// SyncAtNEQ applies the NEQ predicate on the "sync_at" field.
+func SyncAtNEQ(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldNEQ(FieldSyncAt, v))
+}
+
+// SyncAtIn applies the In predicate on the "sync_at" field.
+func SyncAtIn(vs ...time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldIn(FieldSyncAt, vs...))
+}
+
+// SyncAtNotIn applies the NotIn predicate on the "sync_at" field.
+func SyncAtNotIn(vs ...time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldNotIn(FieldSyncAt, vs...))
+}
+
+// SyncAtGT applies the GT predicate on the "sync_at" field.
+func SyncAtGT(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldGT(FieldSyncAt, v))
+}
+
+// SyncAtGTE applies the GTE predicate on the "sync_at" field.
+func SyncAtGTE(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldGTE(FieldSyncAt, v))
+}
+
+// SyncAtLT applies the LT predicate on the "sync_at" field.
+func SyncAtLT(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldLT(FieldSyncAt, v))
+}
+
+// SyncAtLTE applies the LTE predicate on the "sync_at" field.
+func SyncAtLTE(v time.Time) predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldLTE(FieldSyncAt, v))
+}
+
+// SyncAtIsNil applies the IsNil predicate on the "sync_at" field.
+func SyncAtIsNil() predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldIsNull(FieldSyncAt))
+}
+
+// SyncAtNotNil applies the NotNil predicate on the "sync_at" field.
+func SyncAtNotNil() predicate.CloudflareTunnelIngress {
+	return predicate.CloudflareTunnelIngress(sql.FieldNotNull(FieldSyncAt))
 }
 
 // CloudflareTunnelIDEQ applies the EQ predicate on the "cloudflare_tunnel_id" field.
@@ -413,56 +518,6 @@ func OriginRequestIsNil() predicate.CloudflareTunnelIngress {
 // OriginRequestNotNil applies the NotNil predicate on the "origin_request" field.
 func OriginRequestNotNil() predicate.CloudflareTunnelIngress {
 	return predicate.CloudflareTunnelIngress(sql.FieldNotNull(FieldOriginRequest))
-}
-
-// SyncAtEQ applies the EQ predicate on the "sync_at" field.
-func SyncAtEQ(v time.Time) predicate.CloudflareTunnelIngress {
-	return predicate.CloudflareTunnelIngress(sql.FieldEQ(FieldSyncAt, v))
-}
-
-// SyncAtNEQ applies the NEQ predicate on the "sync_at" field.
-func SyncAtNEQ(v time.Time) predicate.CloudflareTunnelIngress {
-	return predicate.CloudflareTunnelIngress(sql.FieldNEQ(FieldSyncAt, v))
-}
-
-// SyncAtIn applies the In predicate on the "sync_at" field.
-func SyncAtIn(vs ...time.Time) predicate.CloudflareTunnelIngress {
-	return predicate.CloudflareTunnelIngress(sql.FieldIn(FieldSyncAt, vs...))
-}
-
-// SyncAtNotIn applies the NotIn predicate on the "sync_at" field.
-func SyncAtNotIn(vs ...time.Time) predicate.CloudflareTunnelIngress {
-	return predicate.CloudflareTunnelIngress(sql.FieldNotIn(FieldSyncAt, vs...))
-}
-
-// SyncAtGT applies the GT predicate on the "sync_at" field.
-func SyncAtGT(v time.Time) predicate.CloudflareTunnelIngress {
-	return predicate.CloudflareTunnelIngress(sql.FieldGT(FieldSyncAt, v))
-}
-
-// SyncAtGTE applies the GTE predicate on the "sync_at" field.
-func SyncAtGTE(v time.Time) predicate.CloudflareTunnelIngress {
-	return predicate.CloudflareTunnelIngress(sql.FieldGTE(FieldSyncAt, v))
-}
-
-// SyncAtLT applies the LT predicate on the "sync_at" field.
-func SyncAtLT(v time.Time) predicate.CloudflareTunnelIngress {
-	return predicate.CloudflareTunnelIngress(sql.FieldLT(FieldSyncAt, v))
-}
-
-// SyncAtLTE applies the LTE predicate on the "sync_at" field.
-func SyncAtLTE(v time.Time) predicate.CloudflareTunnelIngress {
-	return predicate.CloudflareTunnelIngress(sql.FieldLTE(FieldSyncAt, v))
-}
-
-// SyncAtIsNil applies the IsNil predicate on the "sync_at" field.
-func SyncAtIsNil() predicate.CloudflareTunnelIngress {
-	return predicate.CloudflareTunnelIngress(sql.FieldIsNull(FieldSyncAt))
-}
-
-// SyncAtNotNil applies the NotNil predicate on the "sync_at" field.
-func SyncAtNotNil() predicate.CloudflareTunnelIngress {
-	return predicate.CloudflareTunnelIngress(sql.FieldNotNull(FieldSyncAt))
 }
 
 // HasCloudflareTunnel applies the HasEdge predicate on the "cloudflare_tunnel" edge.

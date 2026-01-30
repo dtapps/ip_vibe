@@ -32,6 +32,7 @@ func (EdgeOneZoneOriginGroup) Annotations() []schema.Annotation {
 func (EdgeOneZoneOriginGroup) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		schemamixin.AtMixin{},
+		schemamixin.SyncAtMixin{},
 	}
 }
 
@@ -74,17 +75,6 @@ func (EdgeOneZoneOriginGroup) Fields() []ent.Field {
 		field.JSON("references", json.RawMessage{}).
 			Optional().
 			Comment("源站组被引用实例列表").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("remote_created_at").
-			Optional().
-			Immutable().
-			Comment("源站组创建时间").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("sync_at").
-			Optional().
-			Comment("最近一次同步时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

@@ -32,6 +32,7 @@ func (CloudflareTunnel) Annotations() []schema.Annotation {
 func (CloudflareTunnel) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		schemamixin.AtMixin{},
+		schemamixin.SyncAtMixin{},
 	}
 }
 
@@ -72,16 +73,6 @@ func (CloudflareTunnel) Fields() []ent.Field {
 		field.Time("conns_active_at").
 			Optional().
 			Comment("隧道连接活跃时间").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("remote_created_at").
-			Immutable().
-			Comment("隧道创建时间").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("sync_at").
-			Optional().
-			Comment("最近一次同步时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

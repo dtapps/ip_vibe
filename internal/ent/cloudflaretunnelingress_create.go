@@ -52,6 +52,34 @@ func (_c *CloudflareTunnelIngressCreate) SetNillableUpdatedAt(v *time.Time) *Clo
 	return _c
 }
 
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (_c *CloudflareTunnelIngressCreate) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelIngressCreate {
+	_c.mutation.SetRemoteCreatedAt(v)
+	return _c
+}
+
+// SetNillableRemoteCreatedAt sets the "remote_created_at" field if the given value is not nil.
+func (_c *CloudflareTunnelIngressCreate) SetNillableRemoteCreatedAt(v *time.Time) *CloudflareTunnelIngressCreate {
+	if v != nil {
+		_c.SetRemoteCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (_c *CloudflareTunnelIngressCreate) SetSyncAt(v time.Time) *CloudflareTunnelIngressCreate {
+	_c.mutation.SetSyncAt(v)
+	return _c
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_c *CloudflareTunnelIngressCreate) SetNillableSyncAt(v *time.Time) *CloudflareTunnelIngressCreate {
+	if v != nil {
+		_c.SetSyncAt(*v)
+	}
+	return _c
+}
+
 // SetCloudflareTunnelID sets the "cloudflare_tunnel_id" field.
 func (_c *CloudflareTunnelIngressCreate) SetCloudflareTunnelID(v int64) *CloudflareTunnelIngressCreate {
 	_c.mutation.SetCloudflareTunnelID(v)
@@ -95,20 +123,6 @@ func (_c *CloudflareTunnelIngressCreate) SetNillablePath(v *string) *CloudflareT
 // SetOriginRequest sets the "origin_request" field.
 func (_c *CloudflareTunnelIngressCreate) SetOriginRequest(v json.RawMessage) *CloudflareTunnelIngressCreate {
 	_c.mutation.SetOriginRequest(v)
-	return _c
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (_c *CloudflareTunnelIngressCreate) SetSyncAt(v time.Time) *CloudflareTunnelIngressCreate {
-	_c.mutation.SetSyncAt(v)
-	return _c
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_c *CloudflareTunnelIngressCreate) SetNillableSyncAt(v *time.Time) *CloudflareTunnelIngressCreate {
-	if v != nil {
-		_c.SetSyncAt(*v)
-	}
 	return _c
 }
 
@@ -245,6 +259,14 @@ func (_c *CloudflareTunnelIngressCreate) createSpec() (*CloudflareTunnelIngress,
 		_spec.SetField(cloudflaretunnelingress.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
+	if value, ok := _c.mutation.RemoteCreatedAt(); ok {
+		_spec.SetField(cloudflaretunnelingress.FieldRemoteCreatedAt, field.TypeTime, value)
+		_node.RemoteCreatedAt = value
+	}
+	if value, ok := _c.mutation.SyncAt(); ok {
+		_spec.SetField(cloudflaretunnelingress.FieldSyncAt, field.TypeTime, value)
+		_node.SyncAt = value
+	}
 	if value, ok := _c.mutation.Hostname(); ok {
 		_spec.SetField(cloudflaretunnelingress.FieldHostname, field.TypeString, value)
 		_node.Hostname = value
@@ -260,10 +282,6 @@ func (_c *CloudflareTunnelIngressCreate) createSpec() (*CloudflareTunnelIngress,
 	if value, ok := _c.mutation.OriginRequest(); ok {
 		_spec.SetField(cloudflaretunnelingress.FieldOriginRequest, field.TypeJSON, value)
 		_node.OriginRequest = value
-	}
-	if value, ok := _c.mutation.SyncAt(); ok {
-		_spec.SetField(cloudflaretunnelingress.FieldSyncAt, field.TypeTime, value)
-		_node.SyncAt = value
 	}
 	if nodes := _c.mutation.CloudflareTunnelIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -334,6 +352,24 @@ type (
 	}
 )
 
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsert) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpsert {
+	u.Set(cloudflaretunnelingress.FieldSyncAt, v)
+	return u
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelIngressUpsert) UpdateSyncAt() *CloudflareTunnelIngressUpsert {
+	u.SetExcluded(cloudflaretunnelingress.FieldSyncAt)
+	return u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsert) ClearSyncAt() *CloudflareTunnelIngressUpsert {
+	u.SetNull(cloudflaretunnelingress.FieldSyncAt)
+	return u
+}
+
 // SetHostname sets the "hostname" field.
 func (u *CloudflareTunnelIngressUpsert) SetHostname(v string) *CloudflareTunnelIngressUpsert {
 	u.Set(cloudflaretunnelingress.FieldHostname, v)
@@ -400,24 +436,6 @@ func (u *CloudflareTunnelIngressUpsert) ClearOriginRequest() *CloudflareTunnelIn
 	return u
 }
 
-// SetSyncAt sets the "sync_at" field.
-func (u *CloudflareTunnelIngressUpsert) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpsert {
-	u.Set(cloudflaretunnelingress.FieldSyncAt, v)
-	return u
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *CloudflareTunnelIngressUpsert) UpdateSyncAt() *CloudflareTunnelIngressUpsert {
-	u.SetExcluded(cloudflaretunnelingress.FieldSyncAt)
-	return u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *CloudflareTunnelIngressUpsert) ClearSyncAt() *CloudflareTunnelIngressUpsert {
-	u.SetNull(cloudflaretunnelingress.FieldSyncAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -440,6 +458,9 @@ func (u *CloudflareTunnelIngressUpsertOne) UpdateNewValues() *CloudflareTunnelIn
 		}
 		if _, exists := u.create.mutation.UpdatedAt(); exists {
 			s.SetIgnore(cloudflaretunnelingress.FieldUpdatedAt)
+		}
+		if _, exists := u.create.mutation.RemoteCreatedAt(); exists {
+			s.SetIgnore(cloudflaretunnelingress.FieldRemoteCreatedAt)
 		}
 		if _, exists := u.create.mutation.CloudflareTunnelID(); exists {
 			s.SetIgnore(cloudflaretunnelingress.FieldCloudflareTunnelID)
@@ -473,6 +494,27 @@ func (u *CloudflareTunnelIngressUpsertOne) Update(set func(*CloudflareTunnelIngr
 		set(&CloudflareTunnelIngressUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsertOne) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpsertOne {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.SetSyncAt(v)
+	})
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelIngressUpsertOne) UpdateSyncAt() *CloudflareTunnelIngressUpsertOne {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.UpdateSyncAt()
+	})
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsertOne) ClearSyncAt() *CloudflareTunnelIngressUpsertOne {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.ClearSyncAt()
+	})
 }
 
 // SetHostname sets the "hostname" field.
@@ -549,27 +591,6 @@ func (u *CloudflareTunnelIngressUpsertOne) UpdateOriginRequest() *CloudflareTunn
 func (u *CloudflareTunnelIngressUpsertOne) ClearOriginRequest() *CloudflareTunnelIngressUpsertOne {
 	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
 		s.ClearOriginRequest()
-	})
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (u *CloudflareTunnelIngressUpsertOne) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpsertOne {
-	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
-		s.SetSyncAt(v)
-	})
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *CloudflareTunnelIngressUpsertOne) UpdateSyncAt() *CloudflareTunnelIngressUpsertOne {
-	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
-		s.UpdateSyncAt()
-	})
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *CloudflareTunnelIngressUpsertOne) ClearSyncAt() *CloudflareTunnelIngressUpsertOne {
-	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
-		s.ClearSyncAt()
 	})
 }
 
@@ -761,6 +782,9 @@ func (u *CloudflareTunnelIngressUpsertBulk) UpdateNewValues() *CloudflareTunnelI
 			if _, exists := b.mutation.UpdatedAt(); exists {
 				s.SetIgnore(cloudflaretunnelingress.FieldUpdatedAt)
 			}
+			if _, exists := b.mutation.RemoteCreatedAt(); exists {
+				s.SetIgnore(cloudflaretunnelingress.FieldRemoteCreatedAt)
+			}
 			if _, exists := b.mutation.CloudflareTunnelID(); exists {
 				s.SetIgnore(cloudflaretunnelingress.FieldCloudflareTunnelID)
 			}
@@ -794,6 +818,27 @@ func (u *CloudflareTunnelIngressUpsertBulk) Update(set func(*CloudflareTunnelIng
 		set(&CloudflareTunnelIngressUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsertBulk) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.SetSyncAt(v)
+	})
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelIngressUpsertBulk) UpdateSyncAt() *CloudflareTunnelIngressUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.UpdateSyncAt()
+	})
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelIngressUpsertBulk) ClearSyncAt() *CloudflareTunnelIngressUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
+		s.ClearSyncAt()
+	})
 }
 
 // SetHostname sets the "hostname" field.
@@ -870,27 +915,6 @@ func (u *CloudflareTunnelIngressUpsertBulk) UpdateOriginRequest() *CloudflareTun
 func (u *CloudflareTunnelIngressUpsertBulk) ClearOriginRequest() *CloudflareTunnelIngressUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
 		s.ClearOriginRequest()
-	})
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (u *CloudflareTunnelIngressUpsertBulk) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
-		s.SetSyncAt(v)
-	})
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *CloudflareTunnelIngressUpsertBulk) UpdateSyncAt() *CloudflareTunnelIngressUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
-		s.UpdateSyncAt()
-	})
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *CloudflareTunnelIngressUpsertBulk) ClearSyncAt() *CloudflareTunnelIngressUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
-		s.ClearSyncAt()
 	})
 }
 

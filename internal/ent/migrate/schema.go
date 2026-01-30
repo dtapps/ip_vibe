@@ -119,13 +119,13 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "Cloudflare 隧道序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "tunnel_id", Type: field.TypeString, Comment: "Cloudflare 隧道ID"},
 		{Name: "name", Type: field.TypeString, Comment: "隧道名称"},
 		{Name: "status", Type: field.TypeEnum, Comment: "隧道状态", Enums: []string{"inactive", "degraded", "healthy", "down"}},
 		{Name: "connections", Type: field.TypeJSON, Nullable: true, Comment: "隧道连接配置"},
 		{Name: "conns_active_at", Type: field.TypeTime, Nullable: true, Comment: "隧道连接活跃时间"},
-		{Name: "remote_created_at", Type: field.TypeTime, Comment: "隧道创建时间"},
-		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
 	// CloudflareTunnelTable holds the schema information for the "cloudflare_tunnel" table.
@@ -159,7 +159,7 @@ var (
 			{
 				Name:    "cloudflaretunnel_tunnel_id",
 				Unique:  false,
-				Columns: []*schema.Column{CloudflareTunnelColumns[3]},
+				Columns: []*schema.Column{CloudflareTunnelColumns[5]},
 			},
 		},
 	}
@@ -168,11 +168,12 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "Cloudflare 隧道入站规则序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "hostname", Type: field.TypeString, Nullable: true, Comment: "主机名"},
 		{Name: "service", Type: field.TypeString, Comment: "服务"},
 		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "路径"},
 		{Name: "origin_request", Type: field.TypeJSON, Nullable: true, Comment: "入站请求配置"},
-		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "cloudflare_tunnel_id", Type: field.TypeInt64, Comment: "关联 Cloudflare 隧道序号"},
 	}
 	// CloudflareTunnelIngressTable holds the schema information for the "cloudflare_tunnel_ingress" table.
@@ -184,7 +185,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cloudflare_tunnel_ingress_cloudflare_tunnel_ingresses",
-				Columns:    []*schema.Column{CloudflareTunnelIngressColumns[8]},
+				Columns:    []*schema.Column{CloudflareTunnelIngressColumns[9]},
 				RefColumns: []*schema.Column{CloudflareTunnelColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -201,7 +202,7 @@ var (
 			{
 				Name:    "cloudflaretunnelingress_cloudflare_tunnel_id",
 				Unique:  false,
-				Columns: []*schema.Column{CloudflareTunnelIngressColumns[8]},
+				Columns: []*schema.Column{CloudflareTunnelIngressColumns[9]},
 			},
 		},
 	}
@@ -512,6 +513,8 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "EdgeOne 站点序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "zone_id", Type: field.TypeString, Comment: "站点ID"},
 		{Name: "name", Type: field.TypeString, Comment: "站点名称"},
 		{Name: "area", Type: field.TypeEnum, Comment: "加速区域", Enums: []string{"global", "mainland", "overseas"}},
@@ -520,8 +523,6 @@ var (
 		{Name: "cname_status", Type: field.TypeEnum, Comment: "CNAME 接入状态", Enums: []string{"finished", "pending"}},
 		{Name: "active_status", Type: field.TypeEnum, Comment: "展示状态", Enums: []string{"active", "inactive", "paused"}},
 		{Name: "paused", Type: field.TypeBool, Nullable: true, Comment: "是否关闭"},
-		{Name: "remote_created_at", Type: field.TypeTime, Comment: "站点创建时间"},
-		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
 	// EdgeoneZoneTable holds the schema information for the "edgeone_zone" table.
@@ -555,7 +556,7 @@ var (
 			{
 				Name:    "edgeonezone_zone_id",
 				Unique:  false,
-				Columns: []*schema.Column{EdgeoneZoneColumns[3]},
+				Columns: []*schema.Column{EdgeoneZoneColumns[5]},
 			},
 		},
 	}
@@ -564,13 +565,13 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "EdgeOne 站点源站组序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "group_id", Type: field.TypeString, Nullable: true, Comment: "源站组ID"},
 		{Name: "name", Type: field.TypeString, Comment: "源站组名称"},
 		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "源站组类型", Enums: []string{"GENERAL", "HTTP"}},
 		{Name: "records", Type: field.TypeJSON, Nullable: true, Comment: "源站记录信息"},
 		{Name: "references", Type: field.TypeJSON, Nullable: true, Comment: "源站组被引用实例列表"},
-		{Name: "remote_created_at", Type: field.TypeTime, Comment: "源站组创建时间"},
-		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "edgeone_zone_id", Type: field.TypeInt64, Comment: "关联 EdgeOne 站点序号"},
 	}
 	// EdgeoneZoneOriginGroupTable holds the schema information for the "edgeone_zone_origin_group" table.

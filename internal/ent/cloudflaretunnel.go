@@ -24,6 +24,10 @@ type CloudflareTunnel struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 更新时间
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// 远程创建时间
+	RemoteCreatedAt time.Time `json:"remote_created_at,omitempty"`
+	// 最近一次同步时间
+	SyncAt time.Time `json:"sync_at,omitempty"`
 	// 平台配置序号
 	ConfigID int64 `json:"config_id,omitempty"`
 	// Cloudflare 隧道ID
@@ -36,10 +40,6 @@ type CloudflareTunnel struct {
 	Connections json.RawMessage `json:"connections,omitempty"`
 	// 隧道连接活跃时间
 	ConnsActiveAt time.Time `json:"conns_active_at,omitempty"`
-	// 隧道创建时间
-	RemoteCreatedAt time.Time `json:"remote_created_at,omitempty"`
-	// 最近一次同步时间
-	SyncAt time.Time `json:"sync_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CloudflareTunnelQuery when eager-loading is set.
 	Edges        CloudflareTunnelEdges `json:"edges"`
@@ -89,7 +89,7 @@ func (*CloudflareTunnel) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case cloudflaretunnel.FieldTunnelID, cloudflaretunnel.FieldName, cloudflaretunnel.FieldStatus:
 			values[i] = new(sql.NullString)
-		case cloudflaretunnel.FieldCreatedAt, cloudflaretunnel.FieldUpdatedAt, cloudflaretunnel.FieldConnsActiveAt, cloudflaretunnel.FieldRemoteCreatedAt, cloudflaretunnel.FieldSyncAt:
+		case cloudflaretunnel.FieldCreatedAt, cloudflaretunnel.FieldUpdatedAt, cloudflaretunnel.FieldRemoteCreatedAt, cloudflaretunnel.FieldSyncAt, cloudflaretunnel.FieldConnsActiveAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -123,6 +123,18 @@ func (_m *CloudflareTunnel) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
+			}
+		case cloudflaretunnel.FieldRemoteCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field remote_created_at", values[i])
+			} else if value.Valid {
+				_m.RemoteCreatedAt = value.Time
+			}
+		case cloudflaretunnel.FieldSyncAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field sync_at", values[i])
+			} else if value.Valid {
+				_m.SyncAt = value.Time
 			}
 		case cloudflaretunnel.FieldConfigID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -161,18 +173,6 @@ func (_m *CloudflareTunnel) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field conns_active_at", values[i])
 			} else if value.Valid {
 				_m.ConnsActiveAt = value.Time
-			}
-		case cloudflaretunnel.FieldRemoteCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field remote_created_at", values[i])
-			} else if value.Valid {
-				_m.RemoteCreatedAt = value.Time
-			}
-		case cloudflaretunnel.FieldSyncAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field sync_at", values[i])
-			} else if value.Valid {
-				_m.SyncAt = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -226,6 +226,12 @@ func (_m *CloudflareTunnel) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
+	builder.WriteString("remote_created_at=")
+	builder.WriteString(_m.RemoteCreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("sync_at=")
+	builder.WriteString(_m.SyncAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("config_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ConfigID))
 	builder.WriteString(", ")
@@ -243,12 +249,6 @@ func (_m *CloudflareTunnel) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("conns_active_at=")
 	builder.WriteString(_m.ConnsActiveAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("remote_created_at=")
-	builder.WriteString(_m.RemoteCreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("sync_at=")
-	builder.WriteString(_m.SyncAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

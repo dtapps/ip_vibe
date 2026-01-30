@@ -53,6 +53,34 @@ func (_c *CloudflareTunnelCreate) SetNillableUpdatedAt(v *time.Time) *Cloudflare
 	return _c
 }
 
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (_c *CloudflareTunnelCreate) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelCreate {
+	_c.mutation.SetRemoteCreatedAt(v)
+	return _c
+}
+
+// SetNillableRemoteCreatedAt sets the "remote_created_at" field if the given value is not nil.
+func (_c *CloudflareTunnelCreate) SetNillableRemoteCreatedAt(v *time.Time) *CloudflareTunnelCreate {
+	if v != nil {
+		_c.SetRemoteCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (_c *CloudflareTunnelCreate) SetSyncAt(v time.Time) *CloudflareTunnelCreate {
+	_c.mutation.SetSyncAt(v)
+	return _c
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_c *CloudflareTunnelCreate) SetNillableSyncAt(v *time.Time) *CloudflareTunnelCreate {
+	if v != nil {
+		_c.SetSyncAt(*v)
+	}
+	return _c
+}
+
 // SetConfigID sets the "config_id" field.
 func (_c *CloudflareTunnelCreate) SetConfigID(v int64) *CloudflareTunnelCreate {
 	_c.mutation.SetConfigID(v)
@@ -93,26 +121,6 @@ func (_c *CloudflareTunnelCreate) SetConnsActiveAt(v time.Time) *CloudflareTunne
 func (_c *CloudflareTunnelCreate) SetNillableConnsActiveAt(v *time.Time) *CloudflareTunnelCreate {
 	if v != nil {
 		_c.SetConnsActiveAt(*v)
-	}
-	return _c
-}
-
-// SetRemoteCreatedAt sets the "remote_created_at" field.
-func (_c *CloudflareTunnelCreate) SetRemoteCreatedAt(v time.Time) *CloudflareTunnelCreate {
-	_c.mutation.SetRemoteCreatedAt(v)
-	return _c
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (_c *CloudflareTunnelCreate) SetSyncAt(v time.Time) *CloudflareTunnelCreate {
-	_c.mutation.SetSyncAt(v)
-	return _c
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_c *CloudflareTunnelCreate) SetNillableSyncAt(v *time.Time) *CloudflareTunnelCreate {
-	if v != nil {
-		_c.SetSyncAt(*v)
 	}
 	return _c
 }
@@ -227,9 +235,6 @@ func (_c *CloudflareTunnelCreate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnel.status": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.RemoteCreatedAt(); !ok {
-		return &ValidationError{Name: "remote_created_at", err: errors.New(`ent: missing required field "CloudflareTunnel.remote_created_at"`)}
-	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := cloudflaretunnel.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnel.id": %w`, err)}
@@ -279,6 +284,14 @@ func (_c *CloudflareTunnelCreate) createSpec() (*CloudflareTunnel, *sqlgraph.Cre
 		_spec.SetField(cloudflaretunnel.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
+	if value, ok := _c.mutation.RemoteCreatedAt(); ok {
+		_spec.SetField(cloudflaretunnel.FieldRemoteCreatedAt, field.TypeTime, value)
+		_node.RemoteCreatedAt = value
+	}
+	if value, ok := _c.mutation.SyncAt(); ok {
+		_spec.SetField(cloudflaretunnel.FieldSyncAt, field.TypeTime, value)
+		_node.SyncAt = value
+	}
 	if value, ok := _c.mutation.TunnelID(); ok {
 		_spec.SetField(cloudflaretunnel.FieldTunnelID, field.TypeString, value)
 		_node.TunnelID = value
@@ -298,14 +311,6 @@ func (_c *CloudflareTunnelCreate) createSpec() (*CloudflareTunnel, *sqlgraph.Cre
 	if value, ok := _c.mutation.ConnsActiveAt(); ok {
 		_spec.SetField(cloudflaretunnel.FieldConnsActiveAt, field.TypeTime, value)
 		_node.ConnsActiveAt = value
-	}
-	if value, ok := _c.mutation.RemoteCreatedAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldRemoteCreatedAt, field.TypeTime, value)
-		_node.RemoteCreatedAt = value
-	}
-	if value, ok := _c.mutation.SyncAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldSyncAt, field.TypeTime, value)
-		_node.SyncAt = value
 	}
 	if nodes := _c.mutation.ConfigIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -392,6 +397,24 @@ type (
 	}
 )
 
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelUpsert) SetSyncAt(v time.Time) *CloudflareTunnelUpsert {
+	u.Set(cloudflaretunnel.FieldSyncAt, v)
+	return u
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsert) UpdateSyncAt() *CloudflareTunnelUpsert {
+	u.SetExcluded(cloudflaretunnel.FieldSyncAt)
+	return u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelUpsert) ClearSyncAt() *CloudflareTunnelUpsert {
+	u.SetNull(cloudflaretunnel.FieldSyncAt)
+	return u
+}
+
 // SetTunnelID sets the "tunnel_id" field.
 func (u *CloudflareTunnelUpsert) SetTunnelID(v string) *CloudflareTunnelUpsert {
 	u.Set(cloudflaretunnel.FieldTunnelID, v)
@@ -464,24 +487,6 @@ func (u *CloudflareTunnelUpsert) ClearConnsActiveAt() *CloudflareTunnelUpsert {
 	return u
 }
 
-// SetSyncAt sets the "sync_at" field.
-func (u *CloudflareTunnelUpsert) SetSyncAt(v time.Time) *CloudflareTunnelUpsert {
-	u.Set(cloudflaretunnel.FieldSyncAt, v)
-	return u
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsert) UpdateSyncAt() *CloudflareTunnelUpsert {
-	u.SetExcluded(cloudflaretunnel.FieldSyncAt)
-	return u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *CloudflareTunnelUpsert) ClearSyncAt() *CloudflareTunnelUpsert {
-	u.SetNull(cloudflaretunnel.FieldSyncAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -505,11 +510,11 @@ func (u *CloudflareTunnelUpsertOne) UpdateNewValues() *CloudflareTunnelUpsertOne
 		if _, exists := u.create.mutation.UpdatedAt(); exists {
 			s.SetIgnore(cloudflaretunnel.FieldUpdatedAt)
 		}
-		if _, exists := u.create.mutation.ConfigID(); exists {
-			s.SetIgnore(cloudflaretunnel.FieldConfigID)
-		}
 		if _, exists := u.create.mutation.RemoteCreatedAt(); exists {
 			s.SetIgnore(cloudflaretunnel.FieldRemoteCreatedAt)
+		}
+		if _, exists := u.create.mutation.ConfigID(); exists {
+			s.SetIgnore(cloudflaretunnel.FieldConfigID)
 		}
 	}))
 	return u
@@ -540,6 +545,27 @@ func (u *CloudflareTunnelUpsertOne) Update(set func(*CloudflareTunnelUpsert)) *C
 		set(&CloudflareTunnelUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelUpsertOne) SetSyncAt(v time.Time) *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.SetSyncAt(v)
+	})
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertOne) UpdateSyncAt() *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.UpdateSyncAt()
+	})
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelUpsertOne) ClearSyncAt() *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearSyncAt()
+	})
 }
 
 // SetTunnelID sets the "tunnel_id" field.
@@ -623,27 +649,6 @@ func (u *CloudflareTunnelUpsertOne) UpdateConnsActiveAt() *CloudflareTunnelUpser
 func (u *CloudflareTunnelUpsertOne) ClearConnsActiveAt() *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.ClearConnsActiveAt()
-	})
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (u *CloudflareTunnelUpsertOne) SetSyncAt(v time.Time) *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetSyncAt(v)
-	})
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertOne) UpdateSyncAt() *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateSyncAt()
-	})
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *CloudflareTunnelUpsertOne) ClearSyncAt() *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearSyncAt()
 	})
 }
 
@@ -835,11 +840,11 @@ func (u *CloudflareTunnelUpsertBulk) UpdateNewValues() *CloudflareTunnelUpsertBu
 			if _, exists := b.mutation.UpdatedAt(); exists {
 				s.SetIgnore(cloudflaretunnel.FieldUpdatedAt)
 			}
-			if _, exists := b.mutation.ConfigID(); exists {
-				s.SetIgnore(cloudflaretunnel.FieldConfigID)
-			}
 			if _, exists := b.mutation.RemoteCreatedAt(); exists {
 				s.SetIgnore(cloudflaretunnel.FieldRemoteCreatedAt)
+			}
+			if _, exists := b.mutation.ConfigID(); exists {
+				s.SetIgnore(cloudflaretunnel.FieldConfigID)
 			}
 		}
 	}))
@@ -871,6 +876,27 @@ func (u *CloudflareTunnelUpsertBulk) Update(set func(*CloudflareTunnelUpsert)) *
 		set(&CloudflareTunnelUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (u *CloudflareTunnelUpsertBulk) SetSyncAt(v time.Time) *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.SetSyncAt(v)
+	})
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertBulk) UpdateSyncAt() *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.UpdateSyncAt()
+	})
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *CloudflareTunnelUpsertBulk) ClearSyncAt() *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearSyncAt()
+	})
 }
 
 // SetTunnelID sets the "tunnel_id" field.
@@ -954,27 +980,6 @@ func (u *CloudflareTunnelUpsertBulk) UpdateConnsActiveAt() *CloudflareTunnelUpse
 func (u *CloudflareTunnelUpsertBulk) ClearConnsActiveAt() *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.ClearConnsActiveAt()
-	})
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (u *CloudflareTunnelUpsertBulk) SetSyncAt(v time.Time) *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetSyncAt(v)
-	})
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertBulk) UpdateSyncAt() *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateSyncAt()
-	})
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *CloudflareTunnelUpsertBulk) ClearSyncAt() *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearSyncAt()
 	})
 }
 

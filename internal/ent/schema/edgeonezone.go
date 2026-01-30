@@ -31,6 +31,7 @@ func (EdgeOneZone) Annotations() []schema.Annotation {
 func (EdgeOneZone) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		schemamixin.AtMixin{},
+		schemamixin.SyncAtMixin{},
 	}
 }
 
@@ -86,17 +87,6 @@ func (EdgeOneZone) Fields() []ent.Field {
 		field.Bool("paused").
 			Optional().
 			Comment("是否关闭").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("remote_created_at").
-			Optional().
-			Immutable().
-			Comment("站点创建时间").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("sync_at").
-			Optional().
-			Comment("最近一次同步时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

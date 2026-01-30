@@ -32,6 +32,26 @@ func (_u *CloudflareTunnelUpdate) Where(ps ...predicate.CloudflareTunnel) *Cloud
 	return _u
 }
 
+// SetSyncAt sets the "sync_at" field.
+func (_u *CloudflareTunnelUpdate) SetSyncAt(v time.Time) *CloudflareTunnelUpdate {
+	_u.mutation.SetSyncAt(v)
+	return _u
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_u *CloudflareTunnelUpdate) SetNillableSyncAt(v *time.Time) *CloudflareTunnelUpdate {
+	if v != nil {
+		_u.SetSyncAt(*v)
+	}
+	return _u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (_u *CloudflareTunnelUpdate) ClearSyncAt() *CloudflareTunnelUpdate {
+	_u.mutation.ClearSyncAt()
+	return _u
+}
+
 // SetTunnelID sets the "tunnel_id" field.
 func (_u *CloudflareTunnelUpdate) SetTunnelID(v string) *CloudflareTunnelUpdate {
 	_u.mutation.SetTunnelID(v)
@@ -109,26 +129,6 @@ func (_u *CloudflareTunnelUpdate) SetNillableConnsActiveAt(v *time.Time) *Cloudf
 // ClearConnsActiveAt clears the value of the "conns_active_at" field.
 func (_u *CloudflareTunnelUpdate) ClearConnsActiveAt() *CloudflareTunnelUpdate {
 	_u.mutation.ClearConnsActiveAt()
-	return _u
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (_u *CloudflareTunnelUpdate) SetSyncAt(v time.Time) *CloudflareTunnelUpdate {
-	_u.mutation.SetSyncAt(v)
-	return _u
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdate) SetNillableSyncAt(v *time.Time) *CloudflareTunnelUpdate {
-	if v != nil {
-		_u.SetSyncAt(*v)
-	}
-	return _u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (_u *CloudflareTunnelUpdate) ClearSyncAt() *CloudflareTunnelUpdate {
-	_u.mutation.ClearSyncAt()
 	return _u
 }
 
@@ -249,6 +249,15 @@ func (_u *CloudflareTunnelUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(cloudflaretunnel.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if _u.mutation.RemoteCreatedAtCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldRemoteCreatedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.SyncAt(); ok {
+		_spec.SetField(cloudflaretunnel.FieldSyncAt, field.TypeTime, value)
+	}
+	if _u.mutation.SyncAtCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldSyncAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.TunnelID(); ok {
 		_spec.SetField(cloudflaretunnel.FieldTunnelID, field.TypeString, value)
 	}
@@ -274,12 +283,6 @@ func (_u *CloudflareTunnelUpdate) sqlSave(ctx context.Context) (_node int, err e
 	}
 	if _u.mutation.ConnsActiveAtCleared() {
 		_spec.ClearField(cloudflaretunnel.FieldConnsActiveAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.SyncAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldSyncAt, field.TypeTime, value)
-	}
-	if _u.mutation.SyncAtCleared() {
-		_spec.ClearField(cloudflaretunnel.FieldSyncAt, field.TypeTime)
 	}
 	if _u.mutation.IngressesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -346,6 +349,26 @@ type CloudflareTunnelUpdateOne struct {
 	hooks     []Hook
 	mutation  *CloudflareTunnelMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (_u *CloudflareTunnelUpdateOne) SetSyncAt(v time.Time) *CloudflareTunnelUpdateOne {
+	_u.mutation.SetSyncAt(v)
+	return _u
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_u *CloudflareTunnelUpdateOne) SetNillableSyncAt(v *time.Time) *CloudflareTunnelUpdateOne {
+	if v != nil {
+		_u.SetSyncAt(*v)
+	}
+	return _u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (_u *CloudflareTunnelUpdateOne) ClearSyncAt() *CloudflareTunnelUpdateOne {
+	_u.mutation.ClearSyncAt()
+	return _u
 }
 
 // SetTunnelID sets the "tunnel_id" field.
@@ -425,26 +448,6 @@ func (_u *CloudflareTunnelUpdateOne) SetNillableConnsActiveAt(v *time.Time) *Clo
 // ClearConnsActiveAt clears the value of the "conns_active_at" field.
 func (_u *CloudflareTunnelUpdateOne) ClearConnsActiveAt() *CloudflareTunnelUpdateOne {
 	_u.mutation.ClearConnsActiveAt()
-	return _u
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (_u *CloudflareTunnelUpdateOne) SetSyncAt(v time.Time) *CloudflareTunnelUpdateOne {
-	_u.mutation.SetSyncAt(v)
-	return _u
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdateOne) SetNillableSyncAt(v *time.Time) *CloudflareTunnelUpdateOne {
-	if v != nil {
-		_u.SetSyncAt(*v)
-	}
-	return _u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (_u *CloudflareTunnelUpdateOne) ClearSyncAt() *CloudflareTunnelUpdateOne {
-	_u.mutation.ClearSyncAt()
 	return _u
 }
 
@@ -595,6 +598,15 @@ func (_u *CloudflareTunnelUpdateOne) sqlSave(ctx context.Context) (_node *Cloudf
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(cloudflaretunnel.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if _u.mutation.RemoteCreatedAtCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldRemoteCreatedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.SyncAt(); ok {
+		_spec.SetField(cloudflaretunnel.FieldSyncAt, field.TypeTime, value)
+	}
+	if _u.mutation.SyncAtCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldSyncAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.TunnelID(); ok {
 		_spec.SetField(cloudflaretunnel.FieldTunnelID, field.TypeString, value)
 	}
@@ -620,12 +632,6 @@ func (_u *CloudflareTunnelUpdateOne) sqlSave(ctx context.Context) (_node *Cloudf
 	}
 	if _u.mutation.ConnsActiveAtCleared() {
 		_spec.ClearField(cloudflaretunnel.FieldConnsActiveAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.SyncAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldSyncAt, field.TypeTime, value)
-	}
-	if _u.mutation.SyncAtCleared() {
-		_spec.ClearField(cloudflaretunnel.FieldSyncAt, field.TypeTime)
 	}
 	if _u.mutation.IngressesCleared() {
 		edge := &sqlgraph.EdgeSpec{

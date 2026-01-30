@@ -137,6 +137,7 @@ func (s *EdgeOneSync) SyncThisZones(ctx context.Context, config_id int64) (err e
 			}
 			// 创建站点记录
 			err = s.db.EdgeOneZone.Create().
+				SetSyncAt(time.Now()).
 				SetConfigID(firstPlatformCofing.ID).
 				SetZoneID(utils.PtrToString(zone.ZoneId)).
 				SetName(utils.PtrToString(zone.ZoneName)).
@@ -146,7 +147,6 @@ func (s *EdgeOneSync) SyncThisZones(ctx context.Context, config_id int64) (err e
 				SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus))).
 				SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus))).
 				SetPaused(utils.PtrToBool(zone.Paused)).
-				SetSyncAt(time.Now()).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建站点记录失败: %w", err)
@@ -154,6 +154,7 @@ func (s *EdgeOneSync) SyncThisZones(ctx context.Context, config_id int64) (err e
 		} else {
 			// 更新站点记录
 			err = s.db.EdgeOneZone.UpdateOne(firstZone).
+				SetSyncAt(time.Now()).
 				SetName(utils.PtrToString(zone.ZoneName)).
 				SetArea(edgeonezone.Area(utils.PtrToString(zone.Area))).
 				SetType(edgeonezone.Type(utils.PtrToString(zone.Type))).
@@ -161,7 +162,6 @@ func (s *EdgeOneSync) SyncThisZones(ctx context.Context, config_id int64) (err e
 				SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus))).
 				SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus))).
 				SetPaused(utils.PtrToBool(zone.Paused)).
-				SetSyncAt(time.Now()).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新站点记录失败: %w", err)
@@ -210,6 +210,7 @@ func (s *EdgeOneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id
 			}
 			// 创建站点记录
 			err = s.db.EdgeOneZone.Create().
+				SetSyncAt(time.Now()).
 				SetConfigID(firstPlatformCofing.ID).
 				SetZoneID(utils.PtrToString(zone.ZoneId)).
 				SetName(utils.PtrToString(zone.ZoneName)).
@@ -219,7 +220,6 @@ func (s *EdgeOneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id
 				SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus))).
 				SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus))).
 				SetPaused(utils.PtrToBool(zone.Paused)).
-				SetSyncAt(time.Now()).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建站点记录失败: %w", err)
@@ -227,6 +227,7 @@ func (s *EdgeOneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id
 		} else {
 			// 更新站点记录
 			err = s.db.EdgeOneZone.UpdateOne(firstZone).
+				SetSyncAt(time.Now()).
 				SetName(utils.PtrToString(zone.ZoneName)).
 				SetArea(edgeonezone.Area(utils.PtrToString(zone.Area))).
 				SetType(edgeonezone.Type(utils.PtrToString(zone.Type))).
@@ -234,7 +235,6 @@ func (s *EdgeOneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id
 				SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus))).
 				SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus))).
 				SetPaused(utils.PtrToBool(zone.Paused)).
-				SetSyncAt(time.Now()).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新站点记录失败: %w", err)
@@ -338,14 +338,14 @@ func (s *EdgeOneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id int
 			}
 			// 创建源站组记录
 			err = s.db.EdgeOneZoneOriginGroup.Create().
+				SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(originGroup.CreateTime)).Time).
+				SetSyncAt(time.Now()).
 				SetEdgeoneZoneID(firstEdgeOneZone.ID).
 				SetGroupID(utils.PtrToString(originGroup.GroupId)).
 				SetName(utils.PtrToString(originGroup.Name)).
 				SetType(edgeonezoneorigingroup.Type(utils.PtrToString(originGroup.Type))).
 				SetRecords([]byte(gojson.JsonEncodeNoError(originGroup.Records))).
 				SetReferences([]byte(gojson.JsonEncodeNoError(originGroup.References))).
-				SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(originGroup.CreateTime)).Time).
-				SetSyncAt(time.Now()).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建源站组记录失败: %w", err)
@@ -353,11 +353,11 @@ func (s *EdgeOneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id int
 		} else {
 			// 更新源站组记录
 			err = s.db.EdgeOneZoneOriginGroup.UpdateOne(firstOriginGroup).
+				SetSyncAt(time.Now()).
 				SetName(utils.PtrToString(originGroup.Name)).
 				SetType(edgeonezoneorigingroup.Type(utils.PtrToString(originGroup.Type))).
 				SetRecords([]byte(gojson.JsonEncodeNoError(originGroup.Records))).
 				SetReferences([]byte(gojson.JsonEncodeNoError(originGroup.References))).
-				SetSyncAt(time.Now()).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新源站组记录失败: %w", err)

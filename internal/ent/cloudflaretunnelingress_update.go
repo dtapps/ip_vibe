@@ -31,6 +31,26 @@ func (_u *CloudflareTunnelIngressUpdate) Where(ps ...predicate.CloudflareTunnelI
 	return _u
 }
 
+// SetSyncAt sets the "sync_at" field.
+func (_u *CloudflareTunnelIngressUpdate) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpdate {
+	_u.mutation.SetSyncAt(v)
+	return _u
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_u *CloudflareTunnelIngressUpdate) SetNillableSyncAt(v *time.Time) *CloudflareTunnelIngressUpdate {
+	if v != nil {
+		_u.SetSyncAt(*v)
+	}
+	return _u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (_u *CloudflareTunnelIngressUpdate) ClearSyncAt() *CloudflareTunnelIngressUpdate {
+	_u.mutation.ClearSyncAt()
+	return _u
+}
+
 // SetHostname sets the "hostname" field.
 func (_u *CloudflareTunnelIngressUpdate) SetHostname(v string) *CloudflareTunnelIngressUpdate {
 	_u.mutation.SetHostname(v)
@@ -100,26 +120,6 @@ func (_u *CloudflareTunnelIngressUpdate) AppendOriginRequest(v json.RawMessage) 
 // ClearOriginRequest clears the value of the "origin_request" field.
 func (_u *CloudflareTunnelIngressUpdate) ClearOriginRequest() *CloudflareTunnelIngressUpdate {
 	_u.mutation.ClearOriginRequest()
-	return _u
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (_u *CloudflareTunnelIngressUpdate) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpdate {
-	_u.mutation.SetSyncAt(v)
-	return _u
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_u *CloudflareTunnelIngressUpdate) SetNillableSyncAt(v *time.Time) *CloudflareTunnelIngressUpdate {
-	if v != nil {
-		_u.SetSyncAt(*v)
-	}
-	return _u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (_u *CloudflareTunnelIngressUpdate) ClearSyncAt() *CloudflareTunnelIngressUpdate {
-	_u.mutation.ClearSyncAt()
 	return _u
 }
 
@@ -199,6 +199,15 @@ func (_u *CloudflareTunnelIngressUpdate) sqlSave(ctx context.Context) (_node int
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(cloudflaretunnelingress.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if _u.mutation.RemoteCreatedAtCleared() {
+		_spec.ClearField(cloudflaretunnelingress.FieldRemoteCreatedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.SyncAt(); ok {
+		_spec.SetField(cloudflaretunnelingress.FieldSyncAt, field.TypeTime, value)
+	}
+	if _u.mutation.SyncAtCleared() {
+		_spec.ClearField(cloudflaretunnelingress.FieldSyncAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.Hostname(); ok {
 		_spec.SetField(cloudflaretunnelingress.FieldHostname, field.TypeString, value)
 	}
@@ -225,12 +234,6 @@ func (_u *CloudflareTunnelIngressUpdate) sqlSave(ctx context.Context) (_node int
 	if _u.mutation.OriginRequestCleared() {
 		_spec.ClearField(cloudflaretunnelingress.FieldOriginRequest, field.TypeJSON)
 	}
-	if value, ok := _u.mutation.SyncAt(); ok {
-		_spec.SetField(cloudflaretunnelingress.FieldSyncAt, field.TypeTime, value)
-	}
-	if _u.mutation.SyncAtCleared() {
-		_spec.ClearField(cloudflaretunnelingress.FieldSyncAt, field.TypeTime)
-	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -251,6 +254,26 @@ type CloudflareTunnelIngressUpdateOne struct {
 	hooks     []Hook
 	mutation  *CloudflareTunnelIngressMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (_u *CloudflareTunnelIngressUpdateOne) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpdateOne {
+	_u.mutation.SetSyncAt(v)
+	return _u
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_u *CloudflareTunnelIngressUpdateOne) SetNillableSyncAt(v *time.Time) *CloudflareTunnelIngressUpdateOne {
+	if v != nil {
+		_u.SetSyncAt(*v)
+	}
+	return _u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (_u *CloudflareTunnelIngressUpdateOne) ClearSyncAt() *CloudflareTunnelIngressUpdateOne {
+	_u.mutation.ClearSyncAt()
+	return _u
 }
 
 // SetHostname sets the "hostname" field.
@@ -322,26 +345,6 @@ func (_u *CloudflareTunnelIngressUpdateOne) AppendOriginRequest(v json.RawMessag
 // ClearOriginRequest clears the value of the "origin_request" field.
 func (_u *CloudflareTunnelIngressUpdateOne) ClearOriginRequest() *CloudflareTunnelIngressUpdateOne {
 	_u.mutation.ClearOriginRequest()
-	return _u
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (_u *CloudflareTunnelIngressUpdateOne) SetSyncAt(v time.Time) *CloudflareTunnelIngressUpdateOne {
-	_u.mutation.SetSyncAt(v)
-	return _u
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_u *CloudflareTunnelIngressUpdateOne) SetNillableSyncAt(v *time.Time) *CloudflareTunnelIngressUpdateOne {
-	if v != nil {
-		_u.SetSyncAt(*v)
-	}
-	return _u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (_u *CloudflareTunnelIngressUpdateOne) ClearSyncAt() *CloudflareTunnelIngressUpdateOne {
-	_u.mutation.ClearSyncAt()
 	return _u
 }
 
@@ -451,6 +454,15 @@ func (_u *CloudflareTunnelIngressUpdateOne) sqlSave(ctx context.Context) (_node 
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(cloudflaretunnelingress.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if _u.mutation.RemoteCreatedAtCleared() {
+		_spec.ClearField(cloudflaretunnelingress.FieldRemoteCreatedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.SyncAt(); ok {
+		_spec.SetField(cloudflaretunnelingress.FieldSyncAt, field.TypeTime, value)
+	}
+	if _u.mutation.SyncAtCleared() {
+		_spec.ClearField(cloudflaretunnelingress.FieldSyncAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.Hostname(); ok {
 		_spec.SetField(cloudflaretunnelingress.FieldHostname, field.TypeString, value)
 	}
@@ -476,12 +488,6 @@ func (_u *CloudflareTunnelIngressUpdateOne) sqlSave(ctx context.Context) (_node 
 	}
 	if _u.mutation.OriginRequestCleared() {
 		_spec.ClearField(cloudflaretunnelingress.FieldOriginRequest, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.SyncAt(); ok {
-		_spec.SetField(cloudflaretunnelingress.FieldSyncAt, field.TypeTime, value)
-	}
-	if _u.mutation.SyncAtCleared() {
-		_spec.ClearField(cloudflaretunnelingress.FieldSyncAt, field.TypeTime)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &CloudflareTunnelIngress{config: _u.config}

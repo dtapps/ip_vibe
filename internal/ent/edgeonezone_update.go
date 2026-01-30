@@ -30,6 +30,26 @@ func (_u *EdgeOneZoneUpdate) Where(ps ...predicate.EdgeOneZone) *EdgeOneZoneUpda
 	return _u
 }
 
+// SetSyncAt sets the "sync_at" field.
+func (_u *EdgeOneZoneUpdate) SetSyncAt(v time.Time) *EdgeOneZoneUpdate {
+	_u.mutation.SetSyncAt(v)
+	return _u
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_u *EdgeOneZoneUpdate) SetNillableSyncAt(v *time.Time) *EdgeOneZoneUpdate {
+	if v != nil {
+		_u.SetSyncAt(*v)
+	}
+	return _u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (_u *EdgeOneZoneUpdate) ClearSyncAt() *EdgeOneZoneUpdate {
+	_u.mutation.ClearSyncAt()
+	return _u
+}
+
 // SetZoneID sets the "zone_id" field.
 func (_u *EdgeOneZoneUpdate) SetZoneID(v string) *EdgeOneZoneUpdate {
 	_u.mutation.SetZoneID(v)
@@ -145,26 +165,6 @@ func (_u *EdgeOneZoneUpdate) SetNillablePaused(v *bool) *EdgeOneZoneUpdate {
 // ClearPaused clears the value of the "paused" field.
 func (_u *EdgeOneZoneUpdate) ClearPaused() *EdgeOneZoneUpdate {
 	_u.mutation.ClearPaused()
-	return _u
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (_u *EdgeOneZoneUpdate) SetSyncAt(v time.Time) *EdgeOneZoneUpdate {
-	_u.mutation.SetSyncAt(v)
-	return _u
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_u *EdgeOneZoneUpdate) SetNillableSyncAt(v *time.Time) *EdgeOneZoneUpdate {
-	if v != nil {
-		_u.SetSyncAt(*v)
-	}
-	return _u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (_u *EdgeOneZoneUpdate) ClearSyncAt() *EdgeOneZoneUpdate {
-	_u.mutation.ClearSyncAt()
 	return _u
 }
 
@@ -305,6 +305,15 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(edgeonezone.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if _u.mutation.RemoteCreatedAtCleared() {
+		_spec.ClearField(edgeonezone.FieldRemoteCreatedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.SyncAt(); ok {
+		_spec.SetField(edgeonezone.FieldSyncAt, field.TypeTime, value)
+	}
+	if _u.mutation.SyncAtCleared() {
+		_spec.ClearField(edgeonezone.FieldSyncAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.ZoneID(); ok {
 		_spec.SetField(edgeonezone.FieldZoneID, field.TypeString, value)
 	}
@@ -331,12 +340,6 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	}
 	if _u.mutation.PausedCleared() {
 		_spec.ClearField(edgeonezone.FieldPaused, field.TypeBool)
-	}
-	if value, ok := _u.mutation.SyncAt(); ok {
-		_spec.SetField(edgeonezone.FieldSyncAt, field.TypeTime, value)
-	}
-	if _u.mutation.SyncAtCleared() {
-		_spec.ClearField(edgeonezone.FieldSyncAt, field.TypeTime)
 	}
 	if _u.mutation.OriginGroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -403,6 +406,26 @@ type EdgeOneZoneUpdateOne struct {
 	hooks     []Hook
 	mutation  *EdgeOneZoneMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (_u *EdgeOneZoneUpdateOne) SetSyncAt(v time.Time) *EdgeOneZoneUpdateOne {
+	_u.mutation.SetSyncAt(v)
+	return _u
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_u *EdgeOneZoneUpdateOne) SetNillableSyncAt(v *time.Time) *EdgeOneZoneUpdateOne {
+	if v != nil {
+		_u.SetSyncAt(*v)
+	}
+	return _u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (_u *EdgeOneZoneUpdateOne) ClearSyncAt() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearSyncAt()
+	return _u
 }
 
 // SetZoneID sets the "zone_id" field.
@@ -520,26 +543,6 @@ func (_u *EdgeOneZoneUpdateOne) SetNillablePaused(v *bool) *EdgeOneZoneUpdateOne
 // ClearPaused clears the value of the "paused" field.
 func (_u *EdgeOneZoneUpdateOne) ClearPaused() *EdgeOneZoneUpdateOne {
 	_u.mutation.ClearPaused()
-	return _u
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (_u *EdgeOneZoneUpdateOne) SetSyncAt(v time.Time) *EdgeOneZoneUpdateOne {
-	_u.mutation.SetSyncAt(v)
-	return _u
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_u *EdgeOneZoneUpdateOne) SetNillableSyncAt(v *time.Time) *EdgeOneZoneUpdateOne {
-	if v != nil {
-		_u.SetSyncAt(*v)
-	}
-	return _u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (_u *EdgeOneZoneUpdateOne) ClearSyncAt() *EdgeOneZoneUpdateOne {
-	_u.mutation.ClearSyncAt()
 	return _u
 }
 
@@ -710,6 +713,15 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(edgeonezone.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if _u.mutation.RemoteCreatedAtCleared() {
+		_spec.ClearField(edgeonezone.FieldRemoteCreatedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.SyncAt(); ok {
+		_spec.SetField(edgeonezone.FieldSyncAt, field.TypeTime, value)
+	}
+	if _u.mutation.SyncAtCleared() {
+		_spec.ClearField(edgeonezone.FieldSyncAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.ZoneID(); ok {
 		_spec.SetField(edgeonezone.FieldZoneID, field.TypeString, value)
 	}
@@ -736,12 +748,6 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 	}
 	if _u.mutation.PausedCleared() {
 		_spec.ClearField(edgeonezone.FieldPaused, field.TypeBool)
-	}
-	if value, ok := _u.mutation.SyncAt(); ok {
-		_spec.SetField(edgeonezone.FieldSyncAt, field.TypeTime, value)
-	}
-	if _u.mutation.SyncAtCleared() {
-		_spec.ClearField(edgeonezone.FieldSyncAt, field.TypeTime)
 	}
 	if _u.mutation.OriginGroupsCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -23,6 +23,10 @@ type EdgeOneZone struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 更新时间
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// 远程创建时间
+	RemoteCreatedAt time.Time `json:"remote_created_at,omitempty"`
+	// 最近一次同步时间
+	SyncAt time.Time `json:"sync_at,omitempty"`
 	// 平台配置序号
 	ConfigID int64 `json:"config_id,omitempty"`
 	// 站点ID
@@ -41,10 +45,6 @@ type EdgeOneZone struct {
 	ActiveStatus edgeonezone.ActiveStatus `json:"active_status,omitempty"`
 	// 是否关闭
 	Paused bool `json:"paused,omitempty"`
-	// 站点创建时间
-	RemoteCreatedAt time.Time `json:"remote_created_at,omitempty"`
-	// 最近一次同步时间
-	SyncAt time.Time `json:"sync_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EdgeOneZoneQuery when eager-loading is set.
 	Edges        EdgeOneZoneEdges `json:"edges"`
@@ -129,6 +129,18 @@ func (_m *EdgeOneZone) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
 			}
+		case edgeonezone.FieldRemoteCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field remote_created_at", values[i])
+			} else if value.Valid {
+				_m.RemoteCreatedAt = value.Time
+			}
+		case edgeonezone.FieldSyncAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field sync_at", values[i])
+			} else if value.Valid {
+				_m.SyncAt = value.Time
+			}
 		case edgeonezone.FieldConfigID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field config_id", values[i])
@@ -183,18 +195,6 @@ func (_m *EdgeOneZone) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Paused = value.Bool
 			}
-		case edgeonezone.FieldRemoteCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field remote_created_at", values[i])
-			} else if value.Valid {
-				_m.RemoteCreatedAt = value.Time
-			}
-		case edgeonezone.FieldSyncAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field sync_at", values[i])
-			} else if value.Valid {
-				_m.SyncAt = value.Time
-			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -247,6 +247,12 @@ func (_m *EdgeOneZone) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
+	builder.WriteString("remote_created_at=")
+	builder.WriteString(_m.RemoteCreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("sync_at=")
+	builder.WriteString(_m.SyncAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("config_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ConfigID))
 	builder.WriteString(", ")
@@ -273,12 +279,6 @@ func (_m *EdgeOneZone) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("paused=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Paused))
-	builder.WriteString(", ")
-	builder.WriteString("remote_created_at=")
-	builder.WriteString(_m.RemoteCreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("sync_at=")
-	builder.WriteString(_m.SyncAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

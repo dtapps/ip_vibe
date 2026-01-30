@@ -31,6 +31,26 @@ func (_u *EdgeOneZoneOriginGroupUpdate) Where(ps ...predicate.EdgeOneZoneOriginG
 	return _u
 }
 
+// SetSyncAt sets the "sync_at" field.
+func (_u *EdgeOneZoneOriginGroupUpdate) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupUpdate {
+	_u.mutation.SetSyncAt(v)
+	return _u
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_u *EdgeOneZoneOriginGroupUpdate) SetNillableSyncAt(v *time.Time) *EdgeOneZoneOriginGroupUpdate {
+	if v != nil {
+		_u.SetSyncAt(*v)
+	}
+	return _u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (_u *EdgeOneZoneOriginGroupUpdate) ClearSyncAt() *EdgeOneZoneOriginGroupUpdate {
+	_u.mutation.ClearSyncAt()
+	return _u
+}
+
 // SetGroupID sets the "group_id" field.
 func (_u *EdgeOneZoneOriginGroupUpdate) SetGroupID(v string) *EdgeOneZoneOriginGroupUpdate {
 	_u.mutation.SetGroupID(v)
@@ -121,26 +141,6 @@ func (_u *EdgeOneZoneOriginGroupUpdate) ClearReferences() *EdgeOneZoneOriginGrou
 	return _u
 }
 
-// SetSyncAt sets the "sync_at" field.
-func (_u *EdgeOneZoneOriginGroupUpdate) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupUpdate {
-	_u.mutation.SetSyncAt(v)
-	return _u
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_u *EdgeOneZoneOriginGroupUpdate) SetNillableSyncAt(v *time.Time) *EdgeOneZoneOriginGroupUpdate {
-	if v != nil {
-		_u.SetSyncAt(*v)
-	}
-	return _u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (_u *EdgeOneZoneOriginGroupUpdate) ClearSyncAt() *EdgeOneZoneOriginGroupUpdate {
-	_u.mutation.ClearSyncAt()
-	return _u
-}
-
 // Mutation returns the EdgeOneZoneOriginGroupMutation object of the builder.
 func (_u *EdgeOneZoneOriginGroupUpdate) Mutation() *EdgeOneZoneOriginGroupMutation {
 	return _u.mutation
@@ -222,6 +222,15 @@ func (_u *EdgeOneZoneOriginGroupUpdate) sqlSave(ctx context.Context) (_node int,
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if _u.mutation.RemoteCreatedAtCleared() {
+		_spec.ClearField(edgeonezoneorigingroup.FieldRemoteCreatedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.SyncAt(); ok {
+		_spec.SetField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime, value)
+	}
+	if _u.mutation.SyncAtCleared() {
+		_spec.ClearField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.GroupID(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldGroupID, field.TypeString, value)
 	}
@@ -259,12 +268,6 @@ func (_u *EdgeOneZoneOriginGroupUpdate) sqlSave(ctx context.Context) (_node int,
 	if _u.mutation.ReferencesCleared() {
 		_spec.ClearField(edgeonezoneorigingroup.FieldReferences, field.TypeJSON)
 	}
-	if value, ok := _u.mutation.SyncAt(); ok {
-		_spec.SetField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime, value)
-	}
-	if _u.mutation.SyncAtCleared() {
-		_spec.ClearField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime)
-	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -285,6 +288,26 @@ type EdgeOneZoneOriginGroupUpdateOne struct {
 	hooks     []Hook
 	mutation  *EdgeOneZoneOriginGroupMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (_u *EdgeOneZoneOriginGroupUpdateOne) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupUpdateOne {
+	_u.mutation.SetSyncAt(v)
+	return _u
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_u *EdgeOneZoneOriginGroupUpdateOne) SetNillableSyncAt(v *time.Time) *EdgeOneZoneOriginGroupUpdateOne {
+	if v != nil {
+		_u.SetSyncAt(*v)
+	}
+	return _u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (_u *EdgeOneZoneOriginGroupUpdateOne) ClearSyncAt() *EdgeOneZoneOriginGroupUpdateOne {
+	_u.mutation.ClearSyncAt()
+	return _u
 }
 
 // SetGroupID sets the "group_id" field.
@@ -374,26 +397,6 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) AppendReferences(v json.RawMessage) *
 // ClearReferences clears the value of the "references" field.
 func (_u *EdgeOneZoneOriginGroupUpdateOne) ClearReferences() *EdgeOneZoneOriginGroupUpdateOne {
 	_u.mutation.ClearReferences()
-	return _u
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (_u *EdgeOneZoneOriginGroupUpdateOne) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupUpdateOne {
-	_u.mutation.SetSyncAt(v)
-	return _u
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_u *EdgeOneZoneOriginGroupUpdateOne) SetNillableSyncAt(v *time.Time) *EdgeOneZoneOriginGroupUpdateOne {
-	if v != nil {
-		_u.SetSyncAt(*v)
-	}
-	return _u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (_u *EdgeOneZoneOriginGroupUpdateOne) ClearSyncAt() *EdgeOneZoneOriginGroupUpdateOne {
-	_u.mutation.ClearSyncAt()
 	return _u
 }
 
@@ -508,6 +511,15 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) sqlSave(ctx context.Context) (_node *
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if _u.mutation.RemoteCreatedAtCleared() {
+		_spec.ClearField(edgeonezoneorigingroup.FieldRemoteCreatedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.SyncAt(); ok {
+		_spec.SetField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime, value)
+	}
+	if _u.mutation.SyncAtCleared() {
+		_spec.ClearField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime)
+	}
 	if value, ok := _u.mutation.GroupID(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldGroupID, field.TypeString, value)
 	}
@@ -544,12 +556,6 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) sqlSave(ctx context.Context) (_node *
 	}
 	if _u.mutation.ReferencesCleared() {
 		_spec.ClearField(edgeonezoneorigingroup.FieldReferences, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.SyncAt(); ok {
-		_spec.SetField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime, value)
-	}
-	if _u.mutation.SyncAtCleared() {
-		_spec.ClearField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &EdgeOneZoneOriginGroup{config: _u.config}

@@ -52,6 +52,34 @@ func (_c *EdgeOneZoneCreate) SetNillableUpdatedAt(v *time.Time) *EdgeOneZoneCrea
 	return _c
 }
 
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (_c *EdgeOneZoneCreate) SetRemoteCreatedAt(v time.Time) *EdgeOneZoneCreate {
+	_c.mutation.SetRemoteCreatedAt(v)
+	return _c
+}
+
+// SetNillableRemoteCreatedAt sets the "remote_created_at" field if the given value is not nil.
+func (_c *EdgeOneZoneCreate) SetNillableRemoteCreatedAt(v *time.Time) *EdgeOneZoneCreate {
+	if v != nil {
+		_c.SetRemoteCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (_c *EdgeOneZoneCreate) SetSyncAt(v time.Time) *EdgeOneZoneCreate {
+	_c.mutation.SetSyncAt(v)
+	return _c
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_c *EdgeOneZoneCreate) SetNillableSyncAt(v *time.Time) *EdgeOneZoneCreate {
+	if v != nil {
+		_c.SetSyncAt(*v)
+	}
+	return _c
+}
+
 // SetConfigID sets the "config_id" field.
 func (_c *EdgeOneZoneCreate) SetConfigID(v int64) *EdgeOneZoneCreate {
 	_c.mutation.SetConfigID(v)
@@ -110,26 +138,6 @@ func (_c *EdgeOneZoneCreate) SetPaused(v bool) *EdgeOneZoneCreate {
 func (_c *EdgeOneZoneCreate) SetNillablePaused(v *bool) *EdgeOneZoneCreate {
 	if v != nil {
 		_c.SetPaused(*v)
-	}
-	return _c
-}
-
-// SetRemoteCreatedAt sets the "remote_created_at" field.
-func (_c *EdgeOneZoneCreate) SetRemoteCreatedAt(v time.Time) *EdgeOneZoneCreate {
-	_c.mutation.SetRemoteCreatedAt(v)
-	return _c
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (_c *EdgeOneZoneCreate) SetSyncAt(v time.Time) *EdgeOneZoneCreate {
-	_c.mutation.SetSyncAt(v)
-	return _c
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_c *EdgeOneZoneCreate) SetNillableSyncAt(v *time.Time) *EdgeOneZoneCreate {
-	if v != nil {
-		_c.SetSyncAt(*v)
 	}
 	return _c
 }
@@ -276,9 +284,6 @@ func (_c *EdgeOneZoneCreate) check() error {
 			return &ValidationError{Name: "active_status", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.active_status": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.RemoteCreatedAt(); !ok {
-		return &ValidationError{Name: "remote_created_at", err: errors.New(`ent: missing required field "EdgeOneZone.remote_created_at"`)}
-	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := edgeonezone.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.id": %w`, err)}
@@ -328,6 +333,14 @@ func (_c *EdgeOneZoneCreate) createSpec() (*EdgeOneZone, *sqlgraph.CreateSpec) {
 		_spec.SetField(edgeonezone.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
+	if value, ok := _c.mutation.RemoteCreatedAt(); ok {
+		_spec.SetField(edgeonezone.FieldRemoteCreatedAt, field.TypeTime, value)
+		_node.RemoteCreatedAt = value
+	}
+	if value, ok := _c.mutation.SyncAt(); ok {
+		_spec.SetField(edgeonezone.FieldSyncAt, field.TypeTime, value)
+		_node.SyncAt = value
+	}
 	if value, ok := _c.mutation.ZoneID(); ok {
 		_spec.SetField(edgeonezone.FieldZoneID, field.TypeString, value)
 		_node.ZoneID = value
@@ -359,14 +372,6 @@ func (_c *EdgeOneZoneCreate) createSpec() (*EdgeOneZone, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Paused(); ok {
 		_spec.SetField(edgeonezone.FieldPaused, field.TypeBool, value)
 		_node.Paused = value
-	}
-	if value, ok := _c.mutation.RemoteCreatedAt(); ok {
-		_spec.SetField(edgeonezone.FieldRemoteCreatedAt, field.TypeTime, value)
-		_node.RemoteCreatedAt = value
-	}
-	if value, ok := _c.mutation.SyncAt(); ok {
-		_spec.SetField(edgeonezone.FieldSyncAt, field.TypeTime, value)
-		_node.SyncAt = value
 	}
 	if nodes := _c.mutation.ConfigIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -452,6 +457,24 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetSyncAt sets the "sync_at" field.
+func (u *EdgeOneZoneUpsert) SetSyncAt(v time.Time) *EdgeOneZoneUpsert {
+	u.Set(edgeonezone.FieldSyncAt, v)
+	return u
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsert) UpdateSyncAt() *EdgeOneZoneUpsert {
+	u.SetExcluded(edgeonezone.FieldSyncAt)
+	return u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *EdgeOneZoneUpsert) ClearSyncAt() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldSyncAt)
+	return u
+}
 
 // SetZoneID sets the "zone_id" field.
 func (u *EdgeOneZoneUpsert) SetZoneID(v string) *EdgeOneZoneUpsert {
@@ -555,24 +578,6 @@ func (u *EdgeOneZoneUpsert) ClearPaused() *EdgeOneZoneUpsert {
 	return u
 }
 
-// SetSyncAt sets the "sync_at" field.
-func (u *EdgeOneZoneUpsert) SetSyncAt(v time.Time) *EdgeOneZoneUpsert {
-	u.Set(edgeonezone.FieldSyncAt, v)
-	return u
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *EdgeOneZoneUpsert) UpdateSyncAt() *EdgeOneZoneUpsert {
-	u.SetExcluded(edgeonezone.FieldSyncAt)
-	return u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *EdgeOneZoneUpsert) ClearSyncAt() *EdgeOneZoneUpsert {
-	u.SetNull(edgeonezone.FieldSyncAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -596,11 +601,11 @@ func (u *EdgeOneZoneUpsertOne) UpdateNewValues() *EdgeOneZoneUpsertOne {
 		if _, exists := u.create.mutation.UpdatedAt(); exists {
 			s.SetIgnore(edgeonezone.FieldUpdatedAt)
 		}
-		if _, exists := u.create.mutation.ConfigID(); exists {
-			s.SetIgnore(edgeonezone.FieldConfigID)
-		}
 		if _, exists := u.create.mutation.RemoteCreatedAt(); exists {
 			s.SetIgnore(edgeonezone.FieldRemoteCreatedAt)
+		}
+		if _, exists := u.create.mutation.ConfigID(); exists {
+			s.SetIgnore(edgeonezone.FieldConfigID)
 		}
 	}))
 	return u
@@ -631,6 +636,27 @@ func (u *EdgeOneZoneUpsertOne) Update(set func(*EdgeOneZoneUpsert)) *EdgeOneZone
 		set(&EdgeOneZoneUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (u *EdgeOneZoneUpsertOne) SetSyncAt(v time.Time) *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetSyncAt(v)
+	})
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertOne) UpdateSyncAt() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateSyncAt()
+	})
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *EdgeOneZoneUpsertOne) ClearSyncAt() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearSyncAt()
+	})
 }
 
 // SetZoneID sets the "zone_id" field.
@@ -749,27 +775,6 @@ func (u *EdgeOneZoneUpsertOne) UpdatePaused() *EdgeOneZoneUpsertOne {
 func (u *EdgeOneZoneUpsertOne) ClearPaused() *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.ClearPaused()
-	})
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (u *EdgeOneZoneUpsertOne) SetSyncAt(v time.Time) *EdgeOneZoneUpsertOne {
-	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.SetSyncAt(v)
-	})
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *EdgeOneZoneUpsertOne) UpdateSyncAt() *EdgeOneZoneUpsertOne {
-	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.UpdateSyncAt()
-	})
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *EdgeOneZoneUpsertOne) ClearSyncAt() *EdgeOneZoneUpsertOne {
-	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.ClearSyncAt()
 	})
 }
 
@@ -961,11 +966,11 @@ func (u *EdgeOneZoneUpsertBulk) UpdateNewValues() *EdgeOneZoneUpsertBulk {
 			if _, exists := b.mutation.UpdatedAt(); exists {
 				s.SetIgnore(edgeonezone.FieldUpdatedAt)
 			}
-			if _, exists := b.mutation.ConfigID(); exists {
-				s.SetIgnore(edgeonezone.FieldConfigID)
-			}
 			if _, exists := b.mutation.RemoteCreatedAt(); exists {
 				s.SetIgnore(edgeonezone.FieldRemoteCreatedAt)
+			}
+			if _, exists := b.mutation.ConfigID(); exists {
+				s.SetIgnore(edgeonezone.FieldConfigID)
 			}
 		}
 	}))
@@ -997,6 +1002,27 @@ func (u *EdgeOneZoneUpsertBulk) Update(set func(*EdgeOneZoneUpsert)) *EdgeOneZon
 		set(&EdgeOneZoneUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (u *EdgeOneZoneUpsertBulk) SetSyncAt(v time.Time) *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetSyncAt(v)
+	})
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertBulk) UpdateSyncAt() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateSyncAt()
+	})
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *EdgeOneZoneUpsertBulk) ClearSyncAt() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearSyncAt()
+	})
 }
 
 // SetZoneID sets the "zone_id" field.
@@ -1115,27 +1141,6 @@ func (u *EdgeOneZoneUpsertBulk) UpdatePaused() *EdgeOneZoneUpsertBulk {
 func (u *EdgeOneZoneUpsertBulk) ClearPaused() *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.ClearPaused()
-	})
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (u *EdgeOneZoneUpsertBulk) SetSyncAt(v time.Time) *EdgeOneZoneUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.SetSyncAt(v)
-	})
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *EdgeOneZoneUpsertBulk) UpdateSyncAt() *EdgeOneZoneUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.UpdateSyncAt()
-	})
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *EdgeOneZoneUpsertBulk) ClearSyncAt() *EdgeOneZoneUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.ClearSyncAt()
 	})
 }
 

@@ -143,14 +143,14 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 			}
 			// 创建隧道记录
 			err = s.db.CloudflareTunnel.Create().
+				SetRemoteCreatedAt(connector.CreatedAt).
+				SetSyncAt(time.Now()).
 				SetConfigID(firstPlatformCofing.ID).
 				SetTunnelID(connector.ID).
 				SetName(connector.Name).
 				SetStatus(cloudflaretunnel.Status(connector.Status)).
 				SetConnections([]byte(gojson.JsonEncodeNoError(connector.Connections))).
 				SetConnsActiveAt(connector.ConnsActiveAt).
-				SetRemoteCreatedAt(connector.CreatedAt).
-				SetSyncAt(time.Now()).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建隧道记录失败: %w", err)
@@ -158,11 +158,11 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 		} else {
 			// 更新隧道记录
 			err = s.db.CloudflareTunnel.UpdateOne(firstTunnel).
+				SetSyncAt(time.Now()).
 				SetName(connector.Name).
 				SetStatus(cloudflaretunnel.Status(connector.Status)).
 				SetConnections([]byte(gojson.JsonEncodeNoError(connector.Connections))).
 				SetConnsActiveAt(connector.ConnsActiveAt).
-				SetSyncAt(time.Now()).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新隧道记录失败: %w", err)
@@ -253,12 +253,12 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnelIngresses(ctx context.Con
 			for _, ingress := range ingresses {
 				createBulkList = append(createBulkList,
 					s.db.CloudflareTunnelIngress.Create().
+						SetSyncAt(time.Now()).
 						SetCloudflareTunnelID(itemCloudflareTunnel.ID).
 						SetHostname(ingress.Hostname).
 						SetService(ingress.Service).
 						SetPath(ingress.Path).
-						SetOriginRequest([]byte(gojson.JsonEncodeNoError(ingress.OriginRequest))).
-						SetSyncAt(time.Now()),
+						SetOriginRequest([]byte(gojson.JsonEncodeNoError(ingress.OriginRequest))),
 				)
 			}
 			if len(createBulkList) > 0 {
@@ -326,12 +326,12 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareThisTunnelIngresses(ctx context
 	for _, ingress := range ingresses {
 		createBulkList = append(createBulkList,
 			s.db.CloudflareTunnelIngress.Create().
+				SetSyncAt(time.Now()).
 				SetCloudflareTunnelID(firstCloudflareTunnel.ID).
 				SetHostname(ingress.Hostname).
 				SetService(ingress.Service).
 				SetPath(ingress.Path).
-				SetOriginRequest([]byte(gojson.JsonEncodeNoError(ingress.OriginRequest))).
-				SetSyncAt(time.Now()),
+				SetOriginRequest([]byte(gojson.JsonEncodeNoError(ingress.OriginRequest))),
 		)
 	}
 	if len(createBulkList) > 0 {

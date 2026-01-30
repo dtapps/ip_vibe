@@ -65,6 +65,16 @@ func UpdatedAt(v time.Time) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// RemoteCreatedAt applies equality check predicate on the "remote_created_at" field. It's identical to RemoteCreatedAtEQ.
+func RemoteCreatedAt(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldEQ(FieldRemoteCreatedAt, v))
+}
+
+// SyncAt applies equality check predicate on the "sync_at" field. It's identical to SyncAtEQ.
+func SyncAt(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldEQ(FieldSyncAt, v))
+}
+
 // ConfigID applies equality check predicate on the "config_id" field. It's identical to ConfigIDEQ.
 func ConfigID(v int64) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldEQ(FieldConfigID, v))
@@ -83,16 +93,6 @@ func Name(v string) predicate.EdgeOneZone {
 // Paused applies equality check predicate on the "paused" field. It's identical to PausedEQ.
 func Paused(v bool) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldEQ(FieldPaused, v))
-}
-
-// RemoteCreatedAt applies equality check predicate on the "remote_created_at" field. It's identical to RemoteCreatedAtEQ.
-func RemoteCreatedAt(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldEQ(FieldRemoteCreatedAt, v))
-}
-
-// SyncAt applies equality check predicate on the "sync_at" field. It's identical to SyncAtEQ.
-func SyncAt(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldEQ(FieldSyncAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -173,6 +173,106 @@ func UpdatedAtLT(v time.Time) predicate.EdgeOneZone {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// RemoteCreatedAtEQ applies the EQ predicate on the "remote_created_at" field.
+func RemoteCreatedAtEQ(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldEQ(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtNEQ applies the NEQ predicate on the "remote_created_at" field.
+func RemoteCreatedAtNEQ(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNEQ(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtIn applies the In predicate on the "remote_created_at" field.
+func RemoteCreatedAtIn(vs ...time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIn(FieldRemoteCreatedAt, vs...))
+}
+
+// RemoteCreatedAtNotIn applies the NotIn predicate on the "remote_created_at" field.
+func RemoteCreatedAtNotIn(vs ...time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotIn(FieldRemoteCreatedAt, vs...))
+}
+
+// RemoteCreatedAtGT applies the GT predicate on the "remote_created_at" field.
+func RemoteCreatedAtGT(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldGT(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtGTE applies the GTE predicate on the "remote_created_at" field.
+func RemoteCreatedAtGTE(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldGTE(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtLT applies the LT predicate on the "remote_created_at" field.
+func RemoteCreatedAtLT(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldLT(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtLTE applies the LTE predicate on the "remote_created_at" field.
+func RemoteCreatedAtLTE(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldLTE(FieldRemoteCreatedAt, v))
+}
+
+// RemoteCreatedAtIsNil applies the IsNil predicate on the "remote_created_at" field.
+func RemoteCreatedAtIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldRemoteCreatedAt))
+}
+
+// RemoteCreatedAtNotNil applies the NotNil predicate on the "remote_created_at" field.
+func RemoteCreatedAtNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldRemoteCreatedAt))
+}
+
+// SyncAtEQ applies the EQ predicate on the "sync_at" field.
+func SyncAtEQ(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldEQ(FieldSyncAt, v))
+}
+
+// SyncAtNEQ applies the NEQ predicate on the "sync_at" field.
+func SyncAtNEQ(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNEQ(FieldSyncAt, v))
+}
+
+// SyncAtIn applies the In predicate on the "sync_at" field.
+func SyncAtIn(vs ...time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIn(FieldSyncAt, vs...))
+}
+
+// SyncAtNotIn applies the NotIn predicate on the "sync_at" field.
+func SyncAtNotIn(vs ...time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotIn(FieldSyncAt, vs...))
+}
+
+// SyncAtGT applies the GT predicate on the "sync_at" field.
+func SyncAtGT(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldGT(FieldSyncAt, v))
+}
+
+// SyncAtGTE applies the GTE predicate on the "sync_at" field.
+func SyncAtGTE(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldGTE(FieldSyncAt, v))
+}
+
+// SyncAtLT applies the LT predicate on the "sync_at" field.
+func SyncAtLT(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldLT(FieldSyncAt, v))
+}
+
+// SyncAtLTE applies the LTE predicate on the "sync_at" field.
+func SyncAtLTE(v time.Time) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldLTE(FieldSyncAt, v))
+}
+
+// SyncAtIsNil applies the IsNil predicate on the "sync_at" field.
+func SyncAtIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldSyncAt))
+}
+
+// SyncAtNotNil applies the NotNil predicate on the "sync_at" field.
+func SyncAtNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldSyncAt))
 }
 
 // ConfigIDEQ applies the EQ predicate on the "config_id" field.
@@ -443,96 +543,6 @@ func PausedIsNil() predicate.EdgeOneZone {
 // PausedNotNil applies the NotNil predicate on the "paused" field.
 func PausedNotNil() predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldNotNull(FieldPaused))
-}
-
-// RemoteCreatedAtEQ applies the EQ predicate on the "remote_created_at" field.
-func RemoteCreatedAtEQ(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldEQ(FieldRemoteCreatedAt, v))
-}
-
-// RemoteCreatedAtNEQ applies the NEQ predicate on the "remote_created_at" field.
-func RemoteCreatedAtNEQ(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldNEQ(FieldRemoteCreatedAt, v))
-}
-
-// RemoteCreatedAtIn applies the In predicate on the "remote_created_at" field.
-func RemoteCreatedAtIn(vs ...time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldIn(FieldRemoteCreatedAt, vs...))
-}
-
-// RemoteCreatedAtNotIn applies the NotIn predicate on the "remote_created_at" field.
-func RemoteCreatedAtNotIn(vs ...time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldNotIn(FieldRemoteCreatedAt, vs...))
-}
-
-// RemoteCreatedAtGT applies the GT predicate on the "remote_created_at" field.
-func RemoteCreatedAtGT(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldGT(FieldRemoteCreatedAt, v))
-}
-
-// RemoteCreatedAtGTE applies the GTE predicate on the "remote_created_at" field.
-func RemoteCreatedAtGTE(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldGTE(FieldRemoteCreatedAt, v))
-}
-
-// RemoteCreatedAtLT applies the LT predicate on the "remote_created_at" field.
-func RemoteCreatedAtLT(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldLT(FieldRemoteCreatedAt, v))
-}
-
-// RemoteCreatedAtLTE applies the LTE predicate on the "remote_created_at" field.
-func RemoteCreatedAtLTE(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldLTE(FieldRemoteCreatedAt, v))
-}
-
-// SyncAtEQ applies the EQ predicate on the "sync_at" field.
-func SyncAtEQ(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldEQ(FieldSyncAt, v))
-}
-
-// SyncAtNEQ applies the NEQ predicate on the "sync_at" field.
-func SyncAtNEQ(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldNEQ(FieldSyncAt, v))
-}
-
-// SyncAtIn applies the In predicate on the "sync_at" field.
-func SyncAtIn(vs ...time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldIn(FieldSyncAt, vs...))
-}
-
-// SyncAtNotIn applies the NotIn predicate on the "sync_at" field.
-func SyncAtNotIn(vs ...time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldNotIn(FieldSyncAt, vs...))
-}
-
-// SyncAtGT applies the GT predicate on the "sync_at" field.
-func SyncAtGT(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldGT(FieldSyncAt, v))
-}
-
-// SyncAtGTE applies the GTE predicate on the "sync_at" field.
-func SyncAtGTE(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldGTE(FieldSyncAt, v))
-}
-
-// SyncAtLT applies the LT predicate on the "sync_at" field.
-func SyncAtLT(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldLT(FieldSyncAt, v))
-}
-
-// SyncAtLTE applies the LTE predicate on the "sync_at" field.
-func SyncAtLTE(v time.Time) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldLTE(FieldSyncAt, v))
-}
-
-// SyncAtIsNil applies the IsNil predicate on the "sync_at" field.
-func SyncAtIsNil() predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldIsNull(FieldSyncAt))
-}
-
-// SyncAtNotNil applies the NotNil predicate on the "sync_at" field.
-func SyncAtNotNil() predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldNotNull(FieldSyncAt))
 }
 
 // HasConfig applies the HasEdge predicate on the "config" edge.

@@ -43,3 +43,22 @@ func (AtLogMixin) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 	}
 }
+
+type SyncAtMixin struct {
+	mixin.Schema
+}
+
+func (SyncAtMixin) Fields() []ent.Field {
+	return []ent.Field{
+		field.Time("remote_created_at").
+			Optional().
+			Immutable().
+			Comment("远程创建时间").
+			Annotations(entsql.WithComments(true)),
+
+		field.Time("sync_at").
+			Optional().
+			Comment("最近一次同步时间").
+			Annotations(entsql.WithComments(true)),
+	}
+}

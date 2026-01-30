@@ -31,6 +31,7 @@ func (CloudflareTunnelIngress) Annotations() []schema.Annotation {
 func (CloudflareTunnelIngress) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		schemamixin.AtMixin{},
+		schemamixin.SyncAtMixin{},
 	}
 }
 
@@ -67,11 +68,6 @@ func (CloudflareTunnelIngress) Fields() []ent.Field {
 		field.JSON("origin_request", json.RawMessage{}).
 			Optional().
 			Comment("入站请求配置").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("sync_at").
-			Optional().
-			Comment("最近一次同步时间").
 			Annotations(entsql.WithComments(true)),
 	}
 }

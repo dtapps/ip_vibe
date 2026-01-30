@@ -1922,14 +1922,14 @@ type CloudflareTunnelMutation struct {
 	id                *int64
 	created_at        *time.Time
 	updated_at        *time.Time
+	remote_created_at *time.Time
+	sync_at           *time.Time
 	tunnel_id         *string
 	name              *string
 	status            *cloudflaretunnel.Status
 	connections       *json.RawMessage
 	appendconnections json.RawMessage
 	conns_active_at   *time.Time
-	remote_created_at *time.Time
-	sync_at           *time.Time
 	clearedFields     map[string]struct{}
 	_config           *int64
 	cleared_config    bool
@@ -2115,6 +2115,104 @@ func (m *CloudflareTunnelMutation) OldUpdatedAt(ctx context.Context) (v time.Tim
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *CloudflareTunnelMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+}
+
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (m *CloudflareTunnelMutation) SetRemoteCreatedAt(t time.Time) {
+	m.remote_created_at = &t
+}
+
+// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
+func (m *CloudflareTunnelMutation) RemoteCreatedAt() (r time.Time, exists bool) {
+	v := m.remote_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
+	}
+	return oldValue.RemoteCreatedAt, nil
+}
+
+// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
+func (m *CloudflareTunnelMutation) ClearRemoteCreatedAt() {
+	m.remote_created_at = nil
+	m.clearedFields[cloudflaretunnel.FieldRemoteCreatedAt] = struct{}{}
+}
+
+// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) RemoteCreatedAtCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldRemoteCreatedAt]
+	return ok
+}
+
+// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
+func (m *CloudflareTunnelMutation) ResetRemoteCreatedAt() {
+	m.remote_created_at = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldRemoteCreatedAt)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (m *CloudflareTunnelMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
+}
+
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *CloudflareTunnelMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncAt returns the old "sync_at" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
+	}
+	return oldValue.SyncAt, nil
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *CloudflareTunnelMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[cloudflaretunnel.FieldSyncAt] = struct{}{}
+}
+
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldSyncAt]
+	return ok
+}
+
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *CloudflareTunnelMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldSyncAt)
 }
 
 // SetConfigID sets the "config_id" field.
@@ -2375,91 +2473,6 @@ func (m *CloudflareTunnelMutation) ResetConnsActiveAt() {
 	delete(m.clearedFields, cloudflaretunnel.FieldConnsActiveAt)
 }
 
-// SetRemoteCreatedAt sets the "remote_created_at" field.
-func (m *CloudflareTunnelMutation) SetRemoteCreatedAt(t time.Time) {
-	m.remote_created_at = &t
-}
-
-// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
-func (m *CloudflareTunnelMutation) RemoteCreatedAt() (r time.Time, exists bool) {
-	v := m.remote_created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the CloudflareTunnel entity.
-// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareTunnelMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
-	}
-	return oldValue.RemoteCreatedAt, nil
-}
-
-// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
-func (m *CloudflareTunnelMutation) ResetRemoteCreatedAt() {
-	m.remote_created_at = nil
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (m *CloudflareTunnelMutation) SetSyncAt(t time.Time) {
-	m.sync_at = &t
-}
-
-// SyncAt returns the value of the "sync_at" field in the mutation.
-func (m *CloudflareTunnelMutation) SyncAt() (r time.Time, exists bool) {
-	v := m.sync_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSyncAt returns the old "sync_at" field's value of the CloudflareTunnel entity.
-// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareTunnelMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSyncAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
-	}
-	return oldValue.SyncAt, nil
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (m *CloudflareTunnelMutation) ClearSyncAt() {
-	m.sync_at = nil
-	m.clearedFields[cloudflaretunnel.FieldSyncAt] = struct{}{}
-}
-
-// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
-func (m *CloudflareTunnelMutation) SyncAtCleared() bool {
-	_, ok := m.clearedFields[cloudflaretunnel.FieldSyncAt]
-	return ok
-}
-
-// ResetSyncAt resets all changes to the "sync_at" field.
-func (m *CloudflareTunnelMutation) ResetSyncAt() {
-	m.sync_at = nil
-	delete(m.clearedFields, cloudflaretunnel.FieldSyncAt)
-}
-
 // ClearConfig clears the "config" edge to the PlatformConfig entity.
 func (m *CloudflareTunnelMutation) ClearConfig() {
 	m.cleared_config = true
@@ -2582,6 +2595,12 @@ func (m *CloudflareTunnelMutation) Fields() []string {
 	if m.updated_at != nil {
 		fields = append(fields, cloudflaretunnel.FieldUpdatedAt)
 	}
+	if m.remote_created_at != nil {
+		fields = append(fields, cloudflaretunnel.FieldRemoteCreatedAt)
+	}
+	if m.sync_at != nil {
+		fields = append(fields, cloudflaretunnel.FieldSyncAt)
+	}
 	if m._config != nil {
 		fields = append(fields, cloudflaretunnel.FieldConfigID)
 	}
@@ -2600,12 +2619,6 @@ func (m *CloudflareTunnelMutation) Fields() []string {
 	if m.conns_active_at != nil {
 		fields = append(fields, cloudflaretunnel.FieldConnsActiveAt)
 	}
-	if m.remote_created_at != nil {
-		fields = append(fields, cloudflaretunnel.FieldRemoteCreatedAt)
-	}
-	if m.sync_at != nil {
-		fields = append(fields, cloudflaretunnel.FieldSyncAt)
-	}
 	return fields
 }
 
@@ -2618,6 +2631,10 @@ func (m *CloudflareTunnelMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case cloudflaretunnel.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case cloudflaretunnel.FieldRemoteCreatedAt:
+		return m.RemoteCreatedAt()
+	case cloudflaretunnel.FieldSyncAt:
+		return m.SyncAt()
 	case cloudflaretunnel.FieldConfigID:
 		return m.ConfigID()
 	case cloudflaretunnel.FieldTunnelID:
@@ -2630,10 +2647,6 @@ func (m *CloudflareTunnelMutation) Field(name string) (ent.Value, bool) {
 		return m.Connections()
 	case cloudflaretunnel.FieldConnsActiveAt:
 		return m.ConnsActiveAt()
-	case cloudflaretunnel.FieldRemoteCreatedAt:
-		return m.RemoteCreatedAt()
-	case cloudflaretunnel.FieldSyncAt:
-		return m.SyncAt()
 	}
 	return nil, false
 }
@@ -2647,6 +2660,10 @@ func (m *CloudflareTunnelMutation) OldField(ctx context.Context, name string) (e
 		return m.OldCreatedAt(ctx)
 	case cloudflaretunnel.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case cloudflaretunnel.FieldRemoteCreatedAt:
+		return m.OldRemoteCreatedAt(ctx)
+	case cloudflaretunnel.FieldSyncAt:
+		return m.OldSyncAt(ctx)
 	case cloudflaretunnel.FieldConfigID:
 		return m.OldConfigID(ctx)
 	case cloudflaretunnel.FieldTunnelID:
@@ -2659,10 +2676,6 @@ func (m *CloudflareTunnelMutation) OldField(ctx context.Context, name string) (e
 		return m.OldConnections(ctx)
 	case cloudflaretunnel.FieldConnsActiveAt:
 		return m.OldConnsActiveAt(ctx)
-	case cloudflaretunnel.FieldRemoteCreatedAt:
-		return m.OldRemoteCreatedAt(ctx)
-	case cloudflaretunnel.FieldSyncAt:
-		return m.OldSyncAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown CloudflareTunnel field %s", name)
 }
@@ -2685,6 +2698,20 @@ func (m *CloudflareTunnelMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case cloudflaretunnel.FieldRemoteCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteCreatedAt(v)
+		return nil
+	case cloudflaretunnel.FieldSyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncAt(v)
 		return nil
 	case cloudflaretunnel.FieldConfigID:
 		v, ok := value.(int64)
@@ -2728,20 +2755,6 @@ func (m *CloudflareTunnelMutation) SetField(name string, value ent.Value) error 
 		}
 		m.SetConnsActiveAt(v)
 		return nil
-	case cloudflaretunnel.FieldRemoteCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRemoteCreatedAt(v)
-		return nil
-	case cloudflaretunnel.FieldSyncAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSyncAt(v)
-		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnel field %s", name)
 }
@@ -2775,14 +2788,17 @@ func (m *CloudflareTunnelMutation) AddField(name string, value ent.Value) error 
 // mutation.
 func (m *CloudflareTunnelMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(cloudflaretunnel.FieldRemoteCreatedAt) {
+		fields = append(fields, cloudflaretunnel.FieldRemoteCreatedAt)
+	}
+	if m.FieldCleared(cloudflaretunnel.FieldSyncAt) {
+		fields = append(fields, cloudflaretunnel.FieldSyncAt)
+	}
 	if m.FieldCleared(cloudflaretunnel.FieldConnections) {
 		fields = append(fields, cloudflaretunnel.FieldConnections)
 	}
 	if m.FieldCleared(cloudflaretunnel.FieldConnsActiveAt) {
 		fields = append(fields, cloudflaretunnel.FieldConnsActiveAt)
-	}
-	if m.FieldCleared(cloudflaretunnel.FieldSyncAt) {
-		fields = append(fields, cloudflaretunnel.FieldSyncAt)
 	}
 	return fields
 }
@@ -2798,14 +2814,17 @@ func (m *CloudflareTunnelMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *CloudflareTunnelMutation) ClearField(name string) error {
 	switch name {
+	case cloudflaretunnel.FieldRemoteCreatedAt:
+		m.ClearRemoteCreatedAt()
+		return nil
+	case cloudflaretunnel.FieldSyncAt:
+		m.ClearSyncAt()
+		return nil
 	case cloudflaretunnel.FieldConnections:
 		m.ClearConnections()
 		return nil
 	case cloudflaretunnel.FieldConnsActiveAt:
 		m.ClearConnsActiveAt()
-		return nil
-	case cloudflaretunnel.FieldSyncAt:
-		m.ClearSyncAt()
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnel nullable field %s", name)
@@ -2820,6 +2839,12 @@ func (m *CloudflareTunnelMutation) ResetField(name string) error {
 		return nil
 	case cloudflaretunnel.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case cloudflaretunnel.FieldRemoteCreatedAt:
+		m.ResetRemoteCreatedAt()
+		return nil
+	case cloudflaretunnel.FieldSyncAt:
+		m.ResetSyncAt()
 		return nil
 	case cloudflaretunnel.FieldConfigID:
 		m.ResetConfigID()
@@ -2838,12 +2863,6 @@ func (m *CloudflareTunnelMutation) ResetField(name string) error {
 		return nil
 	case cloudflaretunnel.FieldConnsActiveAt:
 		m.ResetConnsActiveAt()
-		return nil
-	case cloudflaretunnel.FieldRemoteCreatedAt:
-		m.ResetRemoteCreatedAt()
-		return nil
-	case cloudflaretunnel.FieldSyncAt:
-		m.ResetSyncAt()
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnel field %s", name)
@@ -2959,12 +2978,13 @@ type CloudflareTunnelIngressMutation struct {
 	id                       *int64
 	created_at               *time.Time
 	updated_at               *time.Time
+	remote_created_at        *time.Time
+	sync_at                  *time.Time
 	hostname                 *string
 	service                  *string
 	_path                    *string
 	origin_request           *json.RawMessage
 	appendorigin_request     json.RawMessage
-	sync_at                  *time.Time
 	clearedFields            map[string]struct{}
 	cloudflare_tunnel        *int64
 	clearedcloudflare_tunnel bool
@@ -3147,6 +3167,104 @@ func (m *CloudflareTunnelIngressMutation) OldUpdatedAt(ctx context.Context) (v t
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *CloudflareTunnelIngressMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+}
+
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (m *CloudflareTunnelIngressMutation) SetRemoteCreatedAt(t time.Time) {
+	m.remote_created_at = &t
+}
+
+// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
+func (m *CloudflareTunnelIngressMutation) RemoteCreatedAt() (r time.Time, exists bool) {
+	v := m.remote_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the CloudflareTunnelIngress entity.
+// If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelIngressMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
+	}
+	return oldValue.RemoteCreatedAt, nil
+}
+
+// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
+func (m *CloudflareTunnelIngressMutation) ClearRemoteCreatedAt() {
+	m.remote_created_at = nil
+	m.clearedFields[cloudflaretunnelingress.FieldRemoteCreatedAt] = struct{}{}
+}
+
+// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
+func (m *CloudflareTunnelIngressMutation) RemoteCreatedAtCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnelingress.FieldRemoteCreatedAt]
+	return ok
+}
+
+// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
+func (m *CloudflareTunnelIngressMutation) ResetRemoteCreatedAt() {
+	m.remote_created_at = nil
+	delete(m.clearedFields, cloudflaretunnelingress.FieldRemoteCreatedAt)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (m *CloudflareTunnelIngressMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
+}
+
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *CloudflareTunnelIngressMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncAt returns the old "sync_at" field's value of the CloudflareTunnelIngress entity.
+// If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelIngressMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
+	}
+	return oldValue.SyncAt, nil
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *CloudflareTunnelIngressMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[cloudflaretunnelingress.FieldSyncAt] = struct{}{}
+}
+
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *CloudflareTunnelIngressMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnelingress.FieldSyncAt]
+	return ok
+}
+
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *CloudflareTunnelIngressMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, cloudflaretunnelingress.FieldSyncAt)
 }
 
 // SetCloudflareTunnelID sets the "cloudflare_tunnel_id" field.
@@ -3384,55 +3502,6 @@ func (m *CloudflareTunnelIngressMutation) ResetOriginRequest() {
 	delete(m.clearedFields, cloudflaretunnelingress.FieldOriginRequest)
 }
 
-// SetSyncAt sets the "sync_at" field.
-func (m *CloudflareTunnelIngressMutation) SetSyncAt(t time.Time) {
-	m.sync_at = &t
-}
-
-// SyncAt returns the value of the "sync_at" field in the mutation.
-func (m *CloudflareTunnelIngressMutation) SyncAt() (r time.Time, exists bool) {
-	v := m.sync_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSyncAt returns the old "sync_at" field's value of the CloudflareTunnelIngress entity.
-// If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareTunnelIngressMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSyncAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
-	}
-	return oldValue.SyncAt, nil
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (m *CloudflareTunnelIngressMutation) ClearSyncAt() {
-	m.sync_at = nil
-	m.clearedFields[cloudflaretunnelingress.FieldSyncAt] = struct{}{}
-}
-
-// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
-func (m *CloudflareTunnelIngressMutation) SyncAtCleared() bool {
-	_, ok := m.clearedFields[cloudflaretunnelingress.FieldSyncAt]
-	return ok
-}
-
-// ResetSyncAt resets all changes to the "sync_at" field.
-func (m *CloudflareTunnelIngressMutation) ResetSyncAt() {
-	m.sync_at = nil
-	delete(m.clearedFields, cloudflaretunnelingress.FieldSyncAt)
-}
-
 // ClearCloudflareTunnel clears the "cloudflare_tunnel" edge to the CloudflareTunnel entity.
 func (m *CloudflareTunnelIngressMutation) ClearCloudflareTunnel() {
 	m.clearedcloudflare_tunnel = true
@@ -3494,12 +3563,18 @@ func (m *CloudflareTunnelIngressMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CloudflareTunnelIngressMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, cloudflaretunnelingress.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, cloudflaretunnelingress.FieldUpdatedAt)
+	}
+	if m.remote_created_at != nil {
+		fields = append(fields, cloudflaretunnelingress.FieldRemoteCreatedAt)
+	}
+	if m.sync_at != nil {
+		fields = append(fields, cloudflaretunnelingress.FieldSyncAt)
 	}
 	if m.cloudflare_tunnel != nil {
 		fields = append(fields, cloudflaretunnelingress.FieldCloudflareTunnelID)
@@ -3516,9 +3591,6 @@ func (m *CloudflareTunnelIngressMutation) Fields() []string {
 	if m.origin_request != nil {
 		fields = append(fields, cloudflaretunnelingress.FieldOriginRequest)
 	}
-	if m.sync_at != nil {
-		fields = append(fields, cloudflaretunnelingress.FieldSyncAt)
-	}
 	return fields
 }
 
@@ -3531,6 +3603,10 @@ func (m *CloudflareTunnelIngressMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case cloudflaretunnelingress.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case cloudflaretunnelingress.FieldRemoteCreatedAt:
+		return m.RemoteCreatedAt()
+	case cloudflaretunnelingress.FieldSyncAt:
+		return m.SyncAt()
 	case cloudflaretunnelingress.FieldCloudflareTunnelID:
 		return m.CloudflareTunnelID()
 	case cloudflaretunnelingress.FieldHostname:
@@ -3541,8 +3617,6 @@ func (m *CloudflareTunnelIngressMutation) Field(name string) (ent.Value, bool) {
 		return m.Path()
 	case cloudflaretunnelingress.FieldOriginRequest:
 		return m.OriginRequest()
-	case cloudflaretunnelingress.FieldSyncAt:
-		return m.SyncAt()
 	}
 	return nil, false
 }
@@ -3556,6 +3630,10 @@ func (m *CloudflareTunnelIngressMutation) OldField(ctx context.Context, name str
 		return m.OldCreatedAt(ctx)
 	case cloudflaretunnelingress.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case cloudflaretunnelingress.FieldRemoteCreatedAt:
+		return m.OldRemoteCreatedAt(ctx)
+	case cloudflaretunnelingress.FieldSyncAt:
+		return m.OldSyncAt(ctx)
 	case cloudflaretunnelingress.FieldCloudflareTunnelID:
 		return m.OldCloudflareTunnelID(ctx)
 	case cloudflaretunnelingress.FieldHostname:
@@ -3566,8 +3644,6 @@ func (m *CloudflareTunnelIngressMutation) OldField(ctx context.Context, name str
 		return m.OldPath(ctx)
 	case cloudflaretunnelingress.FieldOriginRequest:
 		return m.OldOriginRequest(ctx)
-	case cloudflaretunnelingress.FieldSyncAt:
-		return m.OldSyncAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown CloudflareTunnelIngress field %s", name)
 }
@@ -3590,6 +3666,20 @@ func (m *CloudflareTunnelIngressMutation) SetField(name string, value ent.Value)
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case cloudflaretunnelingress.FieldRemoteCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteCreatedAt(v)
+		return nil
+	case cloudflaretunnelingress.FieldSyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncAt(v)
 		return nil
 	case cloudflaretunnelingress.FieldCloudflareTunnelID:
 		v, ok := value.(int64)
@@ -3626,13 +3716,6 @@ func (m *CloudflareTunnelIngressMutation) SetField(name string, value ent.Value)
 		}
 		m.SetOriginRequest(v)
 		return nil
-	case cloudflaretunnelingress.FieldSyncAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSyncAt(v)
-		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnelIngress field %s", name)
 }
@@ -3666,6 +3749,12 @@ func (m *CloudflareTunnelIngressMutation) AddField(name string, value ent.Value)
 // mutation.
 func (m *CloudflareTunnelIngressMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(cloudflaretunnelingress.FieldRemoteCreatedAt) {
+		fields = append(fields, cloudflaretunnelingress.FieldRemoteCreatedAt)
+	}
+	if m.FieldCleared(cloudflaretunnelingress.FieldSyncAt) {
+		fields = append(fields, cloudflaretunnelingress.FieldSyncAt)
+	}
 	if m.FieldCleared(cloudflaretunnelingress.FieldHostname) {
 		fields = append(fields, cloudflaretunnelingress.FieldHostname)
 	}
@@ -3674,9 +3763,6 @@ func (m *CloudflareTunnelIngressMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(cloudflaretunnelingress.FieldOriginRequest) {
 		fields = append(fields, cloudflaretunnelingress.FieldOriginRequest)
-	}
-	if m.FieldCleared(cloudflaretunnelingress.FieldSyncAt) {
-		fields = append(fields, cloudflaretunnelingress.FieldSyncAt)
 	}
 	return fields
 }
@@ -3692,6 +3778,12 @@ func (m *CloudflareTunnelIngressMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *CloudflareTunnelIngressMutation) ClearField(name string) error {
 	switch name {
+	case cloudflaretunnelingress.FieldRemoteCreatedAt:
+		m.ClearRemoteCreatedAt()
+		return nil
+	case cloudflaretunnelingress.FieldSyncAt:
+		m.ClearSyncAt()
+		return nil
 	case cloudflaretunnelingress.FieldHostname:
 		m.ClearHostname()
 		return nil
@@ -3700,9 +3792,6 @@ func (m *CloudflareTunnelIngressMutation) ClearField(name string) error {
 		return nil
 	case cloudflaretunnelingress.FieldOriginRequest:
 		m.ClearOriginRequest()
-		return nil
-	case cloudflaretunnelingress.FieldSyncAt:
-		m.ClearSyncAt()
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnelIngress nullable field %s", name)
@@ -3718,6 +3807,12 @@ func (m *CloudflareTunnelIngressMutation) ResetField(name string) error {
 	case cloudflaretunnelingress.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
+	case cloudflaretunnelingress.FieldRemoteCreatedAt:
+		m.ResetRemoteCreatedAt()
+		return nil
+	case cloudflaretunnelingress.FieldSyncAt:
+		m.ResetSyncAt()
+		return nil
 	case cloudflaretunnelingress.FieldCloudflareTunnelID:
 		m.ResetCloudflareTunnelID()
 		return nil
@@ -3732,9 +3827,6 @@ func (m *CloudflareTunnelIngressMutation) ResetField(name string) error {
 		return nil
 	case cloudflaretunnelingress.FieldOriginRequest:
 		m.ResetOriginRequest()
-		return nil
-	case cloudflaretunnelingress.FieldSyncAt:
-		m.ResetSyncAt()
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnelIngress field %s", name)
@@ -9640,6 +9732,8 @@ type EdgeOneZoneMutation struct {
 	id                   *int64
 	created_at           *time.Time
 	updated_at           *time.Time
+	remote_created_at    *time.Time
+	sync_at              *time.Time
 	zone_id              *string
 	name                 *string
 	area                 *edgeonezone.Area
@@ -9648,8 +9742,6 @@ type EdgeOneZoneMutation struct {
 	cname_status         *edgeonezone.CnameStatus
 	active_status        *edgeonezone.ActiveStatus
 	paused               *bool
-	remote_created_at    *time.Time
-	sync_at              *time.Time
 	clearedFields        map[string]struct{}
 	_config              *int64
 	cleared_config       bool
@@ -9835,6 +9927,104 @@ func (m *EdgeOneZoneMutation) OldUpdatedAt(ctx context.Context) (v time.Time, er
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *EdgeOneZoneMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+}
+
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (m *EdgeOneZoneMutation) SetRemoteCreatedAt(t time.Time) {
+	m.remote_created_at = &t
+}
+
+// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
+func (m *EdgeOneZoneMutation) RemoteCreatedAt() (r time.Time, exists bool) {
+	v := m.remote_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the EdgeOneZone entity.
+// If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
+	}
+	return oldValue.RemoteCreatedAt, nil
+}
+
+// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
+func (m *EdgeOneZoneMutation) ClearRemoteCreatedAt() {
+	m.remote_created_at = nil
+	m.clearedFields[edgeonezone.FieldRemoteCreatedAt] = struct{}{}
+}
+
+// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) RemoteCreatedAtCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldRemoteCreatedAt]
+	return ok
+}
+
+// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
+func (m *EdgeOneZoneMutation) ResetRemoteCreatedAt() {
+	m.remote_created_at = nil
+	delete(m.clearedFields, edgeonezone.FieldRemoteCreatedAt)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (m *EdgeOneZoneMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
+}
+
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *EdgeOneZoneMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncAt returns the old "sync_at" field's value of the EdgeOneZone entity.
+// If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
+	}
+	return oldValue.SyncAt, nil
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *EdgeOneZoneMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[edgeonezone.FieldSyncAt] = struct{}{}
+}
+
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldSyncAt]
+	return ok
+}
+
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *EdgeOneZoneMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, edgeonezone.FieldSyncAt)
 }
 
 // SetConfigID sets the "config_id" field.
@@ -10174,91 +10364,6 @@ func (m *EdgeOneZoneMutation) ResetPaused() {
 	delete(m.clearedFields, edgeonezone.FieldPaused)
 }
 
-// SetRemoteCreatedAt sets the "remote_created_at" field.
-func (m *EdgeOneZoneMutation) SetRemoteCreatedAt(t time.Time) {
-	m.remote_created_at = &t
-}
-
-// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
-func (m *EdgeOneZoneMutation) RemoteCreatedAt() (r time.Time, exists bool) {
-	v := m.remote_created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the EdgeOneZone entity.
-// If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
-	}
-	return oldValue.RemoteCreatedAt, nil
-}
-
-// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
-func (m *EdgeOneZoneMutation) ResetRemoteCreatedAt() {
-	m.remote_created_at = nil
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (m *EdgeOneZoneMutation) SetSyncAt(t time.Time) {
-	m.sync_at = &t
-}
-
-// SyncAt returns the value of the "sync_at" field in the mutation.
-func (m *EdgeOneZoneMutation) SyncAt() (r time.Time, exists bool) {
-	v := m.sync_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSyncAt returns the old "sync_at" field's value of the EdgeOneZone entity.
-// If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSyncAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
-	}
-	return oldValue.SyncAt, nil
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (m *EdgeOneZoneMutation) ClearSyncAt() {
-	m.sync_at = nil
-	m.clearedFields[edgeonezone.FieldSyncAt] = struct{}{}
-}
-
-// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
-func (m *EdgeOneZoneMutation) SyncAtCleared() bool {
-	_, ok := m.clearedFields[edgeonezone.FieldSyncAt]
-	return ok
-}
-
-// ResetSyncAt resets all changes to the "sync_at" field.
-func (m *EdgeOneZoneMutation) ResetSyncAt() {
-	m.sync_at = nil
-	delete(m.clearedFields, edgeonezone.FieldSyncAt)
-}
-
 // ClearConfig clears the "config" edge to the PlatformConfig entity.
 func (m *EdgeOneZoneMutation) ClearConfig() {
 	m.cleared_config = true
@@ -10381,6 +10486,12 @@ func (m *EdgeOneZoneMutation) Fields() []string {
 	if m.updated_at != nil {
 		fields = append(fields, edgeonezone.FieldUpdatedAt)
 	}
+	if m.remote_created_at != nil {
+		fields = append(fields, edgeonezone.FieldRemoteCreatedAt)
+	}
+	if m.sync_at != nil {
+		fields = append(fields, edgeonezone.FieldSyncAt)
+	}
 	if m._config != nil {
 		fields = append(fields, edgeonezone.FieldConfigID)
 	}
@@ -10408,12 +10519,6 @@ func (m *EdgeOneZoneMutation) Fields() []string {
 	if m.paused != nil {
 		fields = append(fields, edgeonezone.FieldPaused)
 	}
-	if m.remote_created_at != nil {
-		fields = append(fields, edgeonezone.FieldRemoteCreatedAt)
-	}
-	if m.sync_at != nil {
-		fields = append(fields, edgeonezone.FieldSyncAt)
-	}
 	return fields
 }
 
@@ -10426,6 +10531,10 @@ func (m *EdgeOneZoneMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case edgeonezone.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case edgeonezone.FieldRemoteCreatedAt:
+		return m.RemoteCreatedAt()
+	case edgeonezone.FieldSyncAt:
+		return m.SyncAt()
 	case edgeonezone.FieldConfigID:
 		return m.ConfigID()
 	case edgeonezone.FieldZoneID:
@@ -10444,10 +10553,6 @@ func (m *EdgeOneZoneMutation) Field(name string) (ent.Value, bool) {
 		return m.ActiveStatus()
 	case edgeonezone.FieldPaused:
 		return m.Paused()
-	case edgeonezone.FieldRemoteCreatedAt:
-		return m.RemoteCreatedAt()
-	case edgeonezone.FieldSyncAt:
-		return m.SyncAt()
 	}
 	return nil, false
 }
@@ -10461,6 +10566,10 @@ func (m *EdgeOneZoneMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldCreatedAt(ctx)
 	case edgeonezone.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case edgeonezone.FieldRemoteCreatedAt:
+		return m.OldRemoteCreatedAt(ctx)
+	case edgeonezone.FieldSyncAt:
+		return m.OldSyncAt(ctx)
 	case edgeonezone.FieldConfigID:
 		return m.OldConfigID(ctx)
 	case edgeonezone.FieldZoneID:
@@ -10479,10 +10588,6 @@ func (m *EdgeOneZoneMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldActiveStatus(ctx)
 	case edgeonezone.FieldPaused:
 		return m.OldPaused(ctx)
-	case edgeonezone.FieldRemoteCreatedAt:
-		return m.OldRemoteCreatedAt(ctx)
-	case edgeonezone.FieldSyncAt:
-		return m.OldSyncAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown EdgeOneZone field %s", name)
 }
@@ -10505,6 +10610,20 @@ func (m *EdgeOneZoneMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case edgeonezone.FieldRemoteCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteCreatedAt(v)
+		return nil
+	case edgeonezone.FieldSyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncAt(v)
 		return nil
 	case edgeonezone.FieldConfigID:
 		v, ok := value.(int64)
@@ -10569,20 +10688,6 @@ func (m *EdgeOneZoneMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPaused(v)
 		return nil
-	case edgeonezone.FieldRemoteCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRemoteCreatedAt(v)
-		return nil
-	case edgeonezone.FieldSyncAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSyncAt(v)
-		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZone field %s", name)
 }
@@ -10616,11 +10721,14 @@ func (m *EdgeOneZoneMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *EdgeOneZoneMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(edgeonezone.FieldPaused) {
-		fields = append(fields, edgeonezone.FieldPaused)
+	if m.FieldCleared(edgeonezone.FieldRemoteCreatedAt) {
+		fields = append(fields, edgeonezone.FieldRemoteCreatedAt)
 	}
 	if m.FieldCleared(edgeonezone.FieldSyncAt) {
 		fields = append(fields, edgeonezone.FieldSyncAt)
+	}
+	if m.FieldCleared(edgeonezone.FieldPaused) {
+		fields = append(fields, edgeonezone.FieldPaused)
 	}
 	return fields
 }
@@ -10636,11 +10744,14 @@ func (m *EdgeOneZoneMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *EdgeOneZoneMutation) ClearField(name string) error {
 	switch name {
-	case edgeonezone.FieldPaused:
-		m.ClearPaused()
+	case edgeonezone.FieldRemoteCreatedAt:
+		m.ClearRemoteCreatedAt()
 		return nil
 	case edgeonezone.FieldSyncAt:
 		m.ClearSyncAt()
+		return nil
+	case edgeonezone.FieldPaused:
+		m.ClearPaused()
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZone nullable field %s", name)
@@ -10655,6 +10766,12 @@ func (m *EdgeOneZoneMutation) ResetField(name string) error {
 		return nil
 	case edgeonezone.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case edgeonezone.FieldRemoteCreatedAt:
+		m.ResetRemoteCreatedAt()
+		return nil
+	case edgeonezone.FieldSyncAt:
+		m.ResetSyncAt()
 		return nil
 	case edgeonezone.FieldConfigID:
 		m.ResetConfigID()
@@ -10682,12 +10799,6 @@ func (m *EdgeOneZoneMutation) ResetField(name string) error {
 		return nil
 	case edgeonezone.FieldPaused:
 		m.ResetPaused()
-		return nil
-	case edgeonezone.FieldRemoteCreatedAt:
-		m.ResetRemoteCreatedAt()
-		return nil
-	case edgeonezone.FieldSyncAt:
-		m.ResetSyncAt()
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZone field %s", name)
@@ -10803,6 +10914,8 @@ type EdgeOneZoneOriginGroupMutation struct {
 	id                  *int64
 	created_at          *time.Time
 	updated_at          *time.Time
+	remote_created_at   *time.Time
+	sync_at             *time.Time
 	group_id            *string
 	name                *string
 	_type               *edgeonezoneorigingroup.Type
@@ -10810,8 +10923,6 @@ type EdgeOneZoneOriginGroupMutation struct {
 	appendrecords       json.RawMessage
 	references          *json.RawMessage
 	appendreferences    json.RawMessage
-	remote_created_at   *time.Time
-	sync_at             *time.Time
 	clearedFields       map[string]struct{}
 	edgeone_zone        *int64
 	clearededgeone_zone bool
@@ -10994,6 +11105,104 @@ func (m *EdgeOneZoneOriginGroupMutation) OldUpdatedAt(ctx context.Context) (v ti
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *EdgeOneZoneOriginGroupMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+}
+
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (m *EdgeOneZoneOriginGroupMutation) SetRemoteCreatedAt(t time.Time) {
+	m.remote_created_at = &t
+}
+
+// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
+func (m *EdgeOneZoneOriginGroupMutation) RemoteCreatedAt() (r time.Time, exists bool) {
+	v := m.remote_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the EdgeOneZoneOriginGroup entity.
+// If the EdgeOneZoneOriginGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneOriginGroupMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
+	}
+	return oldValue.RemoteCreatedAt, nil
+}
+
+// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
+func (m *EdgeOneZoneOriginGroupMutation) ClearRemoteCreatedAt() {
+	m.remote_created_at = nil
+	m.clearedFields[edgeonezoneorigingroup.FieldRemoteCreatedAt] = struct{}{}
+}
+
+// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
+func (m *EdgeOneZoneOriginGroupMutation) RemoteCreatedAtCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneorigingroup.FieldRemoteCreatedAt]
+	return ok
+}
+
+// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
+func (m *EdgeOneZoneOriginGroupMutation) ResetRemoteCreatedAt() {
+	m.remote_created_at = nil
+	delete(m.clearedFields, edgeonezoneorigingroup.FieldRemoteCreatedAt)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (m *EdgeOneZoneOriginGroupMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
+}
+
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *EdgeOneZoneOriginGroupMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncAt returns the old "sync_at" field's value of the EdgeOneZoneOriginGroup entity.
+// If the EdgeOneZoneOriginGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneOriginGroupMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
+	}
+	return oldValue.SyncAt, nil
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *EdgeOneZoneOriginGroupMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[edgeonezoneorigingroup.FieldSyncAt] = struct{}{}
+}
+
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *EdgeOneZoneOriginGroupMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneorigingroup.FieldSyncAt]
+	return ok
+}
+
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *EdgeOneZoneOriginGroupMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, edgeonezoneorigingroup.FieldSyncAt)
 }
 
 // SetEdgeoneZoneID sets the "edgeone_zone_id" field.
@@ -11296,91 +11505,6 @@ func (m *EdgeOneZoneOriginGroupMutation) ResetReferences() {
 	delete(m.clearedFields, edgeonezoneorigingroup.FieldReferences)
 }
 
-// SetRemoteCreatedAt sets the "remote_created_at" field.
-func (m *EdgeOneZoneOriginGroupMutation) SetRemoteCreatedAt(t time.Time) {
-	m.remote_created_at = &t
-}
-
-// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
-func (m *EdgeOneZoneOriginGroupMutation) RemoteCreatedAt() (r time.Time, exists bool) {
-	v := m.remote_created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the EdgeOneZoneOriginGroup entity.
-// If the EdgeOneZoneOriginGroup object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneOriginGroupMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
-	}
-	return oldValue.RemoteCreatedAt, nil
-}
-
-// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
-func (m *EdgeOneZoneOriginGroupMutation) ResetRemoteCreatedAt() {
-	m.remote_created_at = nil
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (m *EdgeOneZoneOriginGroupMutation) SetSyncAt(t time.Time) {
-	m.sync_at = &t
-}
-
-// SyncAt returns the value of the "sync_at" field in the mutation.
-func (m *EdgeOneZoneOriginGroupMutation) SyncAt() (r time.Time, exists bool) {
-	v := m.sync_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSyncAt returns the old "sync_at" field's value of the EdgeOneZoneOriginGroup entity.
-// If the EdgeOneZoneOriginGroup object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneOriginGroupMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSyncAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
-	}
-	return oldValue.SyncAt, nil
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (m *EdgeOneZoneOriginGroupMutation) ClearSyncAt() {
-	m.sync_at = nil
-	m.clearedFields[edgeonezoneorigingroup.FieldSyncAt] = struct{}{}
-}
-
-// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
-func (m *EdgeOneZoneOriginGroupMutation) SyncAtCleared() bool {
-	_, ok := m.clearedFields[edgeonezoneorigingroup.FieldSyncAt]
-	return ok
-}
-
-// ResetSyncAt resets all changes to the "sync_at" field.
-func (m *EdgeOneZoneOriginGroupMutation) ResetSyncAt() {
-	m.sync_at = nil
-	delete(m.clearedFields, edgeonezoneorigingroup.FieldSyncAt)
-}
-
 // ClearEdgeoneZone clears the "edgeone_zone" edge to the EdgeOneZone entity.
 func (m *EdgeOneZoneOriginGroupMutation) ClearEdgeoneZone() {
 	m.clearededgeone_zone = true
@@ -11449,6 +11573,12 @@ func (m *EdgeOneZoneOriginGroupMutation) Fields() []string {
 	if m.updated_at != nil {
 		fields = append(fields, edgeonezoneorigingroup.FieldUpdatedAt)
 	}
+	if m.remote_created_at != nil {
+		fields = append(fields, edgeonezoneorigingroup.FieldRemoteCreatedAt)
+	}
+	if m.sync_at != nil {
+		fields = append(fields, edgeonezoneorigingroup.FieldSyncAt)
+	}
 	if m.edgeone_zone != nil {
 		fields = append(fields, edgeonezoneorigingroup.FieldEdgeoneZoneID)
 	}
@@ -11467,12 +11597,6 @@ func (m *EdgeOneZoneOriginGroupMutation) Fields() []string {
 	if m.references != nil {
 		fields = append(fields, edgeonezoneorigingroup.FieldReferences)
 	}
-	if m.remote_created_at != nil {
-		fields = append(fields, edgeonezoneorigingroup.FieldRemoteCreatedAt)
-	}
-	if m.sync_at != nil {
-		fields = append(fields, edgeonezoneorigingroup.FieldSyncAt)
-	}
 	return fields
 }
 
@@ -11485,6 +11609,10 @@ func (m *EdgeOneZoneOriginGroupMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case edgeonezoneorigingroup.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case edgeonezoneorigingroup.FieldRemoteCreatedAt:
+		return m.RemoteCreatedAt()
+	case edgeonezoneorigingroup.FieldSyncAt:
+		return m.SyncAt()
 	case edgeonezoneorigingroup.FieldEdgeoneZoneID:
 		return m.EdgeoneZoneID()
 	case edgeonezoneorigingroup.FieldGroupID:
@@ -11497,10 +11625,6 @@ func (m *EdgeOneZoneOriginGroupMutation) Field(name string) (ent.Value, bool) {
 		return m.Records()
 	case edgeonezoneorigingroup.FieldReferences:
 		return m.References()
-	case edgeonezoneorigingroup.FieldRemoteCreatedAt:
-		return m.RemoteCreatedAt()
-	case edgeonezoneorigingroup.FieldSyncAt:
-		return m.SyncAt()
 	}
 	return nil, false
 }
@@ -11514,6 +11638,10 @@ func (m *EdgeOneZoneOriginGroupMutation) OldField(ctx context.Context, name stri
 		return m.OldCreatedAt(ctx)
 	case edgeonezoneorigingroup.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case edgeonezoneorigingroup.FieldRemoteCreatedAt:
+		return m.OldRemoteCreatedAt(ctx)
+	case edgeonezoneorigingroup.FieldSyncAt:
+		return m.OldSyncAt(ctx)
 	case edgeonezoneorigingroup.FieldEdgeoneZoneID:
 		return m.OldEdgeoneZoneID(ctx)
 	case edgeonezoneorigingroup.FieldGroupID:
@@ -11526,10 +11654,6 @@ func (m *EdgeOneZoneOriginGroupMutation) OldField(ctx context.Context, name stri
 		return m.OldRecords(ctx)
 	case edgeonezoneorigingroup.FieldReferences:
 		return m.OldReferences(ctx)
-	case edgeonezoneorigingroup.FieldRemoteCreatedAt:
-		return m.OldRemoteCreatedAt(ctx)
-	case edgeonezoneorigingroup.FieldSyncAt:
-		return m.OldSyncAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown EdgeOneZoneOriginGroup field %s", name)
 }
@@ -11552,6 +11676,20 @@ func (m *EdgeOneZoneOriginGroupMutation) SetField(name string, value ent.Value) 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case edgeonezoneorigingroup.FieldRemoteCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteCreatedAt(v)
+		return nil
+	case edgeonezoneorigingroup.FieldSyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncAt(v)
 		return nil
 	case edgeonezoneorigingroup.FieldEdgeoneZoneID:
 		v, ok := value.(int64)
@@ -11595,20 +11733,6 @@ func (m *EdgeOneZoneOriginGroupMutation) SetField(name string, value ent.Value) 
 		}
 		m.SetReferences(v)
 		return nil
-	case edgeonezoneorigingroup.FieldRemoteCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRemoteCreatedAt(v)
-		return nil
-	case edgeonezoneorigingroup.FieldSyncAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSyncAt(v)
-		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZoneOriginGroup field %s", name)
 }
@@ -11642,6 +11766,12 @@ func (m *EdgeOneZoneOriginGroupMutation) AddField(name string, value ent.Value) 
 // mutation.
 func (m *EdgeOneZoneOriginGroupMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(edgeonezoneorigingroup.FieldRemoteCreatedAt) {
+		fields = append(fields, edgeonezoneorigingroup.FieldRemoteCreatedAt)
+	}
+	if m.FieldCleared(edgeonezoneorigingroup.FieldSyncAt) {
+		fields = append(fields, edgeonezoneorigingroup.FieldSyncAt)
+	}
 	if m.FieldCleared(edgeonezoneorigingroup.FieldGroupID) {
 		fields = append(fields, edgeonezoneorigingroup.FieldGroupID)
 	}
@@ -11653,9 +11783,6 @@ func (m *EdgeOneZoneOriginGroupMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(edgeonezoneorigingroup.FieldReferences) {
 		fields = append(fields, edgeonezoneorigingroup.FieldReferences)
-	}
-	if m.FieldCleared(edgeonezoneorigingroup.FieldSyncAt) {
-		fields = append(fields, edgeonezoneorigingroup.FieldSyncAt)
 	}
 	return fields
 }
@@ -11671,6 +11798,12 @@ func (m *EdgeOneZoneOriginGroupMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *EdgeOneZoneOriginGroupMutation) ClearField(name string) error {
 	switch name {
+	case edgeonezoneorigingroup.FieldRemoteCreatedAt:
+		m.ClearRemoteCreatedAt()
+		return nil
+	case edgeonezoneorigingroup.FieldSyncAt:
+		m.ClearSyncAt()
+		return nil
 	case edgeonezoneorigingroup.FieldGroupID:
 		m.ClearGroupID()
 		return nil
@@ -11682,9 +11815,6 @@ func (m *EdgeOneZoneOriginGroupMutation) ClearField(name string) error {
 		return nil
 	case edgeonezoneorigingroup.FieldReferences:
 		m.ClearReferences()
-		return nil
-	case edgeonezoneorigingroup.FieldSyncAt:
-		m.ClearSyncAt()
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZoneOriginGroup nullable field %s", name)
@@ -11699,6 +11829,12 @@ func (m *EdgeOneZoneOriginGroupMutation) ResetField(name string) error {
 		return nil
 	case edgeonezoneorigingroup.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case edgeonezoneorigingroup.FieldRemoteCreatedAt:
+		m.ResetRemoteCreatedAt()
+		return nil
+	case edgeonezoneorigingroup.FieldSyncAt:
+		m.ResetSyncAt()
 		return nil
 	case edgeonezoneorigingroup.FieldEdgeoneZoneID:
 		m.ResetEdgeoneZoneID()
@@ -11717,12 +11853,6 @@ func (m *EdgeOneZoneOriginGroupMutation) ResetField(name string) error {
 		return nil
 	case edgeonezoneorigingroup.FieldReferences:
 		m.ResetReferences()
-		return nil
-	case edgeonezoneorigingroup.FieldRemoteCreatedAt:
-		m.ResetRemoteCreatedAt()
-		return nil
-	case edgeonezoneorigingroup.FieldSyncAt:
-		m.ResetSyncAt()
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZoneOriginGroup field %s", name)

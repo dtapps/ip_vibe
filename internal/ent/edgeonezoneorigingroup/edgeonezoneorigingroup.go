@@ -20,6 +20,10 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldRemoteCreatedAt holds the string denoting the remote_created_at field in the database.
+	FieldRemoteCreatedAt = "remote_created_at"
+	// FieldSyncAt holds the string denoting the sync_at field in the database.
+	FieldSyncAt = "sync_at"
 	// FieldEdgeoneZoneID holds the string denoting the edgeone_zone_id field in the database.
 	FieldEdgeoneZoneID = "edgeone_zone_id"
 	// FieldGroupID holds the string denoting the group_id field in the database.
@@ -32,10 +36,6 @@ const (
 	FieldRecords = "records"
 	// FieldReferences holds the string denoting the references field in the database.
 	FieldReferences = "references"
-	// FieldRemoteCreatedAt holds the string denoting the remote_created_at field in the database.
-	FieldRemoteCreatedAt = "remote_created_at"
-	// FieldSyncAt holds the string denoting the sync_at field in the database.
-	FieldSyncAt = "sync_at"
 	// EdgeEdgeoneZone holds the string denoting the edgeone_zone edge name in mutations.
 	EdgeEdgeoneZone = "edgeone_zone"
 	// Table holds the table name of the edgeonezoneorigingroup in the database.
@@ -54,14 +54,14 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldRemoteCreatedAt,
+	FieldSyncAt,
 	FieldEdgeoneZoneID,
 	FieldGroupID,
 	FieldName,
 	FieldType,
 	FieldRecords,
 	FieldReferences,
-	FieldRemoteCreatedAt,
-	FieldSyncAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -134,6 +134,16 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
+// ByRemoteCreatedAt orders the results by the remote_created_at field.
+func ByRemoteCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemoteCreatedAt, opts...).ToFunc()
+}
+
+// BySyncAt orders the results by the sync_at field.
+func BySyncAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSyncAt, opts...).ToFunc()
+}
+
 // ByEdgeoneZoneID orders the results by the edgeone_zone_id field.
 func ByEdgeoneZoneID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEdgeoneZoneID, opts...).ToFunc()
@@ -152,16 +162,6 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
-}
-
-// ByRemoteCreatedAt orders the results by the remote_created_at field.
-func ByRemoteCreatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRemoteCreatedAt, opts...).ToFunc()
-}
-
-// BySyncAt orders the results by the sync_at field.
-func BySyncAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSyncAt, opts...).ToFunc()
 }
 
 // ByEdgeoneZoneField orders the results by edgeone_zone field.

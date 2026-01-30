@@ -19,6 +19,10 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldRemoteCreatedAt holds the string denoting the remote_created_at field in the database.
+	FieldRemoteCreatedAt = "remote_created_at"
+	// FieldSyncAt holds the string denoting the sync_at field in the database.
+	FieldSyncAt = "sync_at"
 	// FieldCloudflareTunnelID holds the string denoting the cloudflare_tunnel_id field in the database.
 	FieldCloudflareTunnelID = "cloudflare_tunnel_id"
 	// FieldHostname holds the string denoting the hostname field in the database.
@@ -29,8 +33,6 @@ const (
 	FieldPath = "path"
 	// FieldOriginRequest holds the string denoting the origin_request field in the database.
 	FieldOriginRequest = "origin_request"
-	// FieldSyncAt holds the string denoting the sync_at field in the database.
-	FieldSyncAt = "sync_at"
 	// EdgeCloudflareTunnel holds the string denoting the cloudflare_tunnel edge name in mutations.
 	EdgeCloudflareTunnel = "cloudflare_tunnel"
 	// Table holds the table name of the cloudflaretunnelingress in the database.
@@ -49,12 +51,13 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldRemoteCreatedAt,
+	FieldSyncAt,
 	FieldCloudflareTunnelID,
 	FieldHostname,
 	FieldService,
 	FieldPath,
 	FieldOriginRequest,
-	FieldSyncAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -104,6 +107,16 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
+// ByRemoteCreatedAt orders the results by the remote_created_at field.
+func ByRemoteCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemoteCreatedAt, opts...).ToFunc()
+}
+
+// BySyncAt orders the results by the sync_at field.
+func BySyncAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSyncAt, opts...).ToFunc()
+}
+
 // ByCloudflareTunnelID orders the results by the cloudflare_tunnel_id field.
 func ByCloudflareTunnelID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCloudflareTunnelID, opts...).ToFunc()
@@ -122,11 +135,6 @@ func ByService(opts ...sql.OrderTermOption) OrderOption {
 // ByPath orders the results by the path field.
 func ByPath(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPath, opts...).ToFunc()
-}
-
-// BySyncAt orders the results by the sync_at field.
-func BySyncAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSyncAt, opts...).ToFunc()
 }
 
 // ByCloudflareTunnelField orders the results by cloudflare_tunnel field.

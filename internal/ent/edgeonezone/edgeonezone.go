@@ -20,6 +20,10 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldRemoteCreatedAt holds the string denoting the remote_created_at field in the database.
+	FieldRemoteCreatedAt = "remote_created_at"
+	// FieldSyncAt holds the string denoting the sync_at field in the database.
+	FieldSyncAt = "sync_at"
 	// FieldConfigID holds the string denoting the config_id field in the database.
 	FieldConfigID = "config_id"
 	// FieldZoneID holds the string denoting the zone_id field in the database.
@@ -38,10 +42,6 @@ const (
 	FieldActiveStatus = "active_status"
 	// FieldPaused holds the string denoting the paused field in the database.
 	FieldPaused = "paused"
-	// FieldRemoteCreatedAt holds the string denoting the remote_created_at field in the database.
-	FieldRemoteCreatedAt = "remote_created_at"
-	// FieldSyncAt holds the string denoting the sync_at field in the database.
-	FieldSyncAt = "sync_at"
 	// EdgeConfig holds the string denoting the config edge name in mutations.
 	EdgeConfig = "config"
 	// EdgeOriginGroups holds the string denoting the origin_groups edge name in mutations.
@@ -69,6 +69,8 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldRemoteCreatedAt,
+	FieldSyncAt,
 	FieldConfigID,
 	FieldZoneID,
 	FieldName,
@@ -78,8 +80,6 @@ var Columns = []string{
 	FieldCnameStatus,
 	FieldActiveStatus,
 	FieldPaused,
-	FieldRemoteCreatedAt,
-	FieldSyncAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -252,6 +252,16 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
+// ByRemoteCreatedAt orders the results by the remote_created_at field.
+func ByRemoteCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemoteCreatedAt, opts...).ToFunc()
+}
+
+// BySyncAt orders the results by the sync_at field.
+func BySyncAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSyncAt, opts...).ToFunc()
+}
+
 // ByConfigID orders the results by the config_id field.
 func ByConfigID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldConfigID, opts...).ToFunc()
@@ -295,16 +305,6 @@ func ByActiveStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByPaused orders the results by the paused field.
 func ByPaused(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPaused, opts...).ToFunc()
-}
-
-// ByRemoteCreatedAt orders the results by the remote_created_at field.
-func ByRemoteCreatedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRemoteCreatedAt, opts...).ToFunc()
-}
-
-// BySyncAt orders the results by the sync_at field.
-func BySyncAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSyncAt, opts...).ToFunc()
 }
 
 // ByConfigField orders the results by config field.

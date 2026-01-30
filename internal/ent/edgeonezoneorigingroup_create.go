@@ -52,6 +52,34 @@ func (_c *EdgeOneZoneOriginGroupCreate) SetNillableUpdatedAt(v *time.Time) *Edge
 	return _c
 }
 
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (_c *EdgeOneZoneOriginGroupCreate) SetRemoteCreatedAt(v time.Time) *EdgeOneZoneOriginGroupCreate {
+	_c.mutation.SetRemoteCreatedAt(v)
+	return _c
+}
+
+// SetNillableRemoteCreatedAt sets the "remote_created_at" field if the given value is not nil.
+func (_c *EdgeOneZoneOriginGroupCreate) SetNillableRemoteCreatedAt(v *time.Time) *EdgeOneZoneOriginGroupCreate {
+	if v != nil {
+		_c.SetRemoteCreatedAt(*v)
+	}
+	return _c
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (_c *EdgeOneZoneOriginGroupCreate) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupCreate {
+	_c.mutation.SetSyncAt(v)
+	return _c
+}
+
+// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
+func (_c *EdgeOneZoneOriginGroupCreate) SetNillableSyncAt(v *time.Time) *EdgeOneZoneOriginGroupCreate {
+	if v != nil {
+		_c.SetSyncAt(*v)
+	}
+	return _c
+}
+
 // SetEdgeoneZoneID sets the "edgeone_zone_id" field.
 func (_c *EdgeOneZoneOriginGroupCreate) SetEdgeoneZoneID(v int64) *EdgeOneZoneOriginGroupCreate {
 	_c.mutation.SetEdgeoneZoneID(v)
@@ -101,26 +129,6 @@ func (_c *EdgeOneZoneOriginGroupCreate) SetRecords(v json.RawMessage) *EdgeOneZo
 // SetReferences sets the "references" field.
 func (_c *EdgeOneZoneOriginGroupCreate) SetReferences(v json.RawMessage) *EdgeOneZoneOriginGroupCreate {
 	_c.mutation.SetReferences(v)
-	return _c
-}
-
-// SetRemoteCreatedAt sets the "remote_created_at" field.
-func (_c *EdgeOneZoneOriginGroupCreate) SetRemoteCreatedAt(v time.Time) *EdgeOneZoneOriginGroupCreate {
-	_c.mutation.SetRemoteCreatedAt(v)
-	return _c
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (_c *EdgeOneZoneOriginGroupCreate) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupCreate {
-	_c.mutation.SetSyncAt(v)
-	return _c
-}
-
-// SetNillableSyncAt sets the "sync_at" field if the given value is not nil.
-func (_c *EdgeOneZoneOriginGroupCreate) SetNillableSyncAt(v *time.Time) *EdgeOneZoneOriginGroupCreate {
-	if v != nil {
-		_c.SetSyncAt(*v)
-	}
 	return _c
 }
 
@@ -213,9 +221,6 @@ func (_c *EdgeOneZoneOriginGroupCreate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZoneOriginGroup.type": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.RemoteCreatedAt(); !ok {
-		return &ValidationError{Name: "remote_created_at", err: errors.New(`ent: missing required field "EdgeOneZoneOriginGroup.remote_created_at"`)}
-	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := edgeonezoneorigingroup.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZoneOriginGroup.id": %w`, err)}
@@ -265,6 +270,14 @@ func (_c *EdgeOneZoneOriginGroupCreate) createSpec() (*EdgeOneZoneOriginGroup, *
 		_spec.SetField(edgeonezoneorigingroup.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
+	if value, ok := _c.mutation.RemoteCreatedAt(); ok {
+		_spec.SetField(edgeonezoneorigingroup.FieldRemoteCreatedAt, field.TypeTime, value)
+		_node.RemoteCreatedAt = value
+	}
+	if value, ok := _c.mutation.SyncAt(); ok {
+		_spec.SetField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime, value)
+		_node.SyncAt = value
+	}
 	if value, ok := _c.mutation.GroupID(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldGroupID, field.TypeString, value)
 		_node.GroupID = value
@@ -284,14 +297,6 @@ func (_c *EdgeOneZoneOriginGroupCreate) createSpec() (*EdgeOneZoneOriginGroup, *
 	if value, ok := _c.mutation.References(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldReferences, field.TypeJSON, value)
 		_node.References = value
-	}
-	if value, ok := _c.mutation.RemoteCreatedAt(); ok {
-		_spec.SetField(edgeonezoneorigingroup.FieldRemoteCreatedAt, field.TypeTime, value)
-		_node.RemoteCreatedAt = value
-	}
-	if value, ok := _c.mutation.SyncAt(); ok {
-		_spec.SetField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime, value)
-		_node.SyncAt = value
 	}
 	if nodes := _c.mutation.EdgeoneZoneIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -361,6 +366,24 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetSyncAt sets the "sync_at" field.
+func (u *EdgeOneZoneOriginGroupUpsert) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupUpsert {
+	u.Set(edgeonezoneorigingroup.FieldSyncAt, v)
+	return u
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *EdgeOneZoneOriginGroupUpsert) UpdateSyncAt() *EdgeOneZoneOriginGroupUpsert {
+	u.SetExcluded(edgeonezoneorigingroup.FieldSyncAt)
+	return u
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *EdgeOneZoneOriginGroupUpsert) ClearSyncAt() *EdgeOneZoneOriginGroupUpsert {
+	u.SetNull(edgeonezoneorigingroup.FieldSyncAt)
+	return u
+}
 
 // SetGroupID sets the "group_id" field.
 func (u *EdgeOneZoneOriginGroupUpsert) SetGroupID(v string) *EdgeOneZoneOriginGroupUpsert {
@@ -446,24 +469,6 @@ func (u *EdgeOneZoneOriginGroupUpsert) ClearReferences() *EdgeOneZoneOriginGroup
 	return u
 }
 
-// SetSyncAt sets the "sync_at" field.
-func (u *EdgeOneZoneOriginGroupUpsert) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupUpsert {
-	u.Set(edgeonezoneorigingroup.FieldSyncAt, v)
-	return u
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *EdgeOneZoneOriginGroupUpsert) UpdateSyncAt() *EdgeOneZoneOriginGroupUpsert {
-	u.SetExcluded(edgeonezoneorigingroup.FieldSyncAt)
-	return u
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *EdgeOneZoneOriginGroupUpsert) ClearSyncAt() *EdgeOneZoneOriginGroupUpsert {
-	u.SetNull(edgeonezoneorigingroup.FieldSyncAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -487,11 +492,11 @@ func (u *EdgeOneZoneOriginGroupUpsertOne) UpdateNewValues() *EdgeOneZoneOriginGr
 		if _, exists := u.create.mutation.UpdatedAt(); exists {
 			s.SetIgnore(edgeonezoneorigingroup.FieldUpdatedAt)
 		}
-		if _, exists := u.create.mutation.EdgeoneZoneID(); exists {
-			s.SetIgnore(edgeonezoneorigingroup.FieldEdgeoneZoneID)
-		}
 		if _, exists := u.create.mutation.RemoteCreatedAt(); exists {
 			s.SetIgnore(edgeonezoneorigingroup.FieldRemoteCreatedAt)
+		}
+		if _, exists := u.create.mutation.EdgeoneZoneID(); exists {
+			s.SetIgnore(edgeonezoneorigingroup.FieldEdgeoneZoneID)
 		}
 	}))
 	return u
@@ -522,6 +527,27 @@ func (u *EdgeOneZoneOriginGroupUpsertOne) Update(set func(*EdgeOneZoneOriginGrou
 		set(&EdgeOneZoneOriginGroupUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (u *EdgeOneZoneOriginGroupUpsertOne) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupUpsertOne {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.SetSyncAt(v)
+	})
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *EdgeOneZoneOriginGroupUpsertOne) UpdateSyncAt() *EdgeOneZoneOriginGroupUpsertOne {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.UpdateSyncAt()
+	})
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *EdgeOneZoneOriginGroupUpsertOne) ClearSyncAt() *EdgeOneZoneOriginGroupUpsertOne {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.ClearSyncAt()
+	})
 }
 
 // SetGroupID sets the "group_id" field.
@@ -619,27 +645,6 @@ func (u *EdgeOneZoneOriginGroupUpsertOne) UpdateReferences() *EdgeOneZoneOriginG
 func (u *EdgeOneZoneOriginGroupUpsertOne) ClearReferences() *EdgeOneZoneOriginGroupUpsertOne {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.ClearReferences()
-	})
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (u *EdgeOneZoneOriginGroupUpsertOne) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupUpsertOne {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.SetSyncAt(v)
-	})
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *EdgeOneZoneOriginGroupUpsertOne) UpdateSyncAt() *EdgeOneZoneOriginGroupUpsertOne {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.UpdateSyncAt()
-	})
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *EdgeOneZoneOriginGroupUpsertOne) ClearSyncAt() *EdgeOneZoneOriginGroupUpsertOne {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.ClearSyncAt()
 	})
 }
 
@@ -831,11 +836,11 @@ func (u *EdgeOneZoneOriginGroupUpsertBulk) UpdateNewValues() *EdgeOneZoneOriginG
 			if _, exists := b.mutation.UpdatedAt(); exists {
 				s.SetIgnore(edgeonezoneorigingroup.FieldUpdatedAt)
 			}
-			if _, exists := b.mutation.EdgeoneZoneID(); exists {
-				s.SetIgnore(edgeonezoneorigingroup.FieldEdgeoneZoneID)
-			}
 			if _, exists := b.mutation.RemoteCreatedAt(); exists {
 				s.SetIgnore(edgeonezoneorigingroup.FieldRemoteCreatedAt)
+			}
+			if _, exists := b.mutation.EdgeoneZoneID(); exists {
+				s.SetIgnore(edgeonezoneorigingroup.FieldEdgeoneZoneID)
 			}
 		}
 	}))
@@ -867,6 +872,27 @@ func (u *EdgeOneZoneOriginGroupUpsertBulk) Update(set func(*EdgeOneZoneOriginGro
 		set(&EdgeOneZoneOriginGroupUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (u *EdgeOneZoneOriginGroupUpsertBulk) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.SetSyncAt(v)
+	})
+}
+
+// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
+func (u *EdgeOneZoneOriginGroupUpsertBulk) UpdateSyncAt() *EdgeOneZoneOriginGroupUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.UpdateSyncAt()
+	})
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (u *EdgeOneZoneOriginGroupUpsertBulk) ClearSyncAt() *EdgeOneZoneOriginGroupUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.ClearSyncAt()
+	})
 }
 
 // SetGroupID sets the "group_id" field.
@@ -964,27 +990,6 @@ func (u *EdgeOneZoneOriginGroupUpsertBulk) UpdateReferences() *EdgeOneZoneOrigin
 func (u *EdgeOneZoneOriginGroupUpsertBulk) ClearReferences() *EdgeOneZoneOriginGroupUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.ClearReferences()
-	})
-}
-
-// SetSyncAt sets the "sync_at" field.
-func (u *EdgeOneZoneOriginGroupUpsertBulk) SetSyncAt(v time.Time) *EdgeOneZoneOriginGroupUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.SetSyncAt(v)
-	})
-}
-
-// UpdateSyncAt sets the "sync_at" field to the value that was provided on create.
-func (u *EdgeOneZoneOriginGroupUpsertBulk) UpdateSyncAt() *EdgeOneZoneOriginGroupUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.UpdateSyncAt()
-	})
-}
-
-// ClearSyncAt clears the value of the "sync_at" field.
-func (u *EdgeOneZoneOriginGroupUpsertBulk) ClearSyncAt() *EdgeOneZoneOriginGroupUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.ClearSyncAt()
 	})
 }
 
