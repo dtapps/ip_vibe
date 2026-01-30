@@ -45,7 +45,7 @@ func EdgeOneZoneRecord(c *gin.Context) {
 
 	if firstZone.Type == edgeonezone.TypeFull {
 		allRecord, err := firstZone.QueryDnsrecords().
-			OrderByCreatedAtAsc().
+			OrderByRemoteCreatedAtDesc().
 			Paginate(c, requestParams.Page, requestParams.PageSize)
 		if err == nil {
 			for _, item := range allRecord.Items {
@@ -59,7 +59,7 @@ func EdgeOneZoneRecord(c *gin.Context) {
 	}
 	if firstZone.Type == edgeonezone.TypePartial {
 		allRecord, err := firstZone.QueryAccelerationdomains().
-			OrderByCreatedAtAsc().
+			OrderByRemoteCreatedAtDesc().
 			Paginate(c, requestParams.Page, requestParams.PageSize)
 		if err == nil {
 			for _, item := range allRecord.Items {
