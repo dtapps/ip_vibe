@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/backend/syncs"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -24,8 +25,8 @@ import (
 //	@Router			/cloudflare-tunnels/sync-all [post]
 func SyncAllCloudflareTunnels(c *gin.Context) {
 
-	// 创建服务
-	service := service.NewCloudflareTunnelService(
+	// 创建Cloudflare Tunnel同步
+	cloudflareTunnelSync := syncs.NewCloudflareTunnelSync(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
@@ -33,14 +34,14 @@ func SyncAllCloudflareTunnels(c *gin.Context) {
 	)
 
 	// 调用 同步全部账号Cloudflare隧道
-	err := service.SyncAllCloudflareTunnels(c)
+	err := cloudflareTunnelSync.SyncAllCloudflareTunnels(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
 
 	// 调用 同步全部账号Cloudflare隧道入站规则
-	err = service.SyncAllCloudflareTunnelIngresses(c)
+	err = cloudflareTunnelSync.SyncAllCloudflareTunnelIngresses(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -70,8 +71,8 @@ func SyncThisCloudflareTunnels(c *gin.Context) {
 		return
 	}
 
-	// 创建服务
-	service := service.NewCloudflareTunnelService(
+	// 创建Cloudflare Tunnel同步
+	cloudflareTunnelSync := syncs.NewCloudflareTunnelSync(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
@@ -79,14 +80,14 @@ func SyncThisCloudflareTunnels(c *gin.Context) {
 	)
 
 	// 调用 同步某个账号Cloudflare隧道
-	err := service.SyncThisCloudflareTunnels(c, requestParams.ConfigID)
+	err := cloudflareTunnelSync.SyncThisCloudflareTunnels(c, requestParams.ConfigID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
 
 	// 调用 同步某个账号Cloudflare隧道入站规则
-	err = service.SyncThisCloudflareTunnelIngresses(c, requestParams.ConfigID)
+	err = cloudflareTunnelSync.SyncThisCloudflareTunnelIngresses(c, requestParams.ConfigID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -116,8 +117,8 @@ func SyncThisCloudflareTunnelIngresses(c *gin.Context) {
 		return
 	}
 
-	// 创建服务
-	service := service.NewCloudflareTunnelService(
+	// 创建Cloudflare Tunnel同步
+	cloudflareTunnelSync := syncs.NewCloudflareTunnelSync(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
@@ -125,7 +126,7 @@ func SyncThisCloudflareTunnelIngresses(c *gin.Context) {
 	)
 
 	// 调用 同步某个账号Cloudflare隧道入站规则
-	err := service.SyncThisCloudflareTunnelIngresses(c, requestParams.ConfigID)
+	err := cloudflareTunnelSync.SyncThisCloudflareTunnelIngresses(c, requestParams.ConfigID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -157,8 +158,8 @@ func SyncThisCloudflareThisTunnelIngress(c *gin.Context) {
 		return
 	}
 
-	// 创建服务
-	service := service.NewCloudflareTunnelService(
+	// 创建Cloudflare Tunnel同步
+	cloudflareTunnelSync := syncs.NewCloudflareTunnelSync(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
@@ -166,7 +167,7 @@ func SyncThisCloudflareThisTunnelIngress(c *gin.Context) {
 	)
 
 	// 调用 同步某个账号Cloudflare隧道入站规则
-	err := service.SyncThisCloudflareThisTunnelIngresses(c, requestParams.ConfigID, requestParams.TunnelID)
+	err := cloudflareTunnelSync.SyncThisCloudflareThisTunnelIngresses(c, requestParams.ConfigID, requestParams.TunnelID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

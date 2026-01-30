@@ -240,6 +240,21 @@ func main() {
 		panic(err)
 	}
 
+	// 启动 CloudFlare Tunnel同步任务
+	CloudflareTunnelTask := task.NewCloudflareTunnelTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+	)
+	if err := CloudflareTunnelTask.StartJob(ctx); err != nil {
+		slog.Error("启动CloudFlare Tunnel同步任务失败",
+			slog.Any("err", err),
+		)
+		panic(err)
+	}
+
 	// 启动清除数据任务
 	clearData := task.NewClearDataTask(
 		global.GvaEntDb,

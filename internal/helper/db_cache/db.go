@@ -29,6 +29,8 @@ type Setting struct {
 	SSLApplyTaskTime string `json:"ssl_apply_task_time"`
 	// SSL刷新任务时间（时，默认 12-24 小时，范围时用-分隔）
 	SSLRefreshTaskTime string `json:"ssl_refresh_task_time"`
+	// CloudFlare Tunnel同步任务时间（时，默认 12-24 小时，范围时用-分隔）
+	CloudflareTunnelSyncTaskTime string `json:"cloudflare_tunnel_sync_task_time"`
 
 	// HTTP请求日志记录时间（天，默认 90 天）
 	HTTPRequestLogRecordTime int64 `json:"http_request_log_record_time"`
@@ -52,6 +54,8 @@ const (
 	KeyTUNRefreshTime           = "conf:tun_refresh_task_time"
 	KeySSLApplyTime             = "conf:ssl_apply_task_time"
 	KeySSLRefreshTime           = "conf:ssl_refresh_task_time"
+	KeyCloudflareTunnelSyncTime = "conf:cloudflare_tunnel_sync_task_time"
+
 	KeyHTTPRequestLogRecordTime = "conf:http_request_log_record_time"
 	KeyHistoryDataRetainTime    = "conf:history_data_retain_time"
 	KeyStatisticDataRetainTime  = "conf:statistic_data_retain_time"
@@ -86,6 +90,8 @@ func InitSetting(ctx context.Context, db *ent.Client) {
 	GvaSetting.TUNRefreshTaskTime = getVal(KeyTUNRefreshTime, "10-12")
 	GvaSetting.SSLApplyTaskTime = getVal(KeySSLApplyTime, "8-10")
 	GvaSetting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "12-24")
+	GvaSetting.CloudflareTunnelSyncTaskTime = getVal(KeyCloudflareTunnelSyncTime, "12-24")
+
 	GvaSetting.HTTPRequestLogRecordTime = cast.ToInt64(getVal(KeyHTTPRequestLogRecordTime, "90"))
 	GvaSetting.HistoryDataRetainTime = cast.ToInt64(getVal(KeyHistoryDataRetainTime, "365"))
 	GvaSetting.StatisticDataRetainTime = cast.ToInt64(getVal(KeyStatisticDataRetainTime, "365"))
@@ -121,6 +127,8 @@ func GetSetting(ctx context.Context, db *ent.Client) *Setting {
 	setting.TUNRefreshTaskTime = getVal(KeyTUNRefreshTime, "10-12")
 	setting.SSLApplyTaskTime = getVal(KeySSLApplyTime, "8-10")
 	setting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "12-24")
+	setting.CloudflareTunnelSyncTaskTime = getVal(KeyCloudflareTunnelSyncTime, "12-24")
+
 	setting.HTTPRequestLogRecordTime = cast.ToInt64(getVal(KeyHTTPRequestLogRecordTime, "90"))
 	setting.HistoryDataRetainTime = cast.ToInt64(getVal(KeyHistoryDataRetainTime, "365"))
 	setting.StatisticDataRetainTime = cast.ToInt64(getVal(KeyStatisticDataRetainTime, "365"))
@@ -141,6 +149,8 @@ func UpdateSetting(ctx context.Context, db *ent.Client, newSetting *Setting) err
 		KeyTUNRefreshTime:           newSetting.TUNRefreshTaskTime,
 		KeySSLApplyTime:             newSetting.SSLApplyTaskTime,
 		KeySSLRefreshTime:           newSetting.SSLRefreshTaskTime,
+		KeyCloudflareTunnelSyncTime: newSetting.CloudflareTunnelSyncTaskTime,
+
 		KeyHTTPRequestLogRecordTime: newSetting.HTTPRequestLogRecordTime,
 		KeyHistoryDataRetainTime:    newSetting.HistoryDataRetainTime,
 		KeyStatisticDataRetainTime:  newSetting.StatisticDataRetainTime,
