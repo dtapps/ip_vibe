@@ -1,0 +1,129 @@
+{{ define "content" }}
+
+{{ $item := .Data.Item }}
+{{ $filter := .Data.Filter }}
+{{ $list := .Data.List }}
+{{ $page := .Data.Page }}
+{{ $total := .Data.Total }}
+{{ $pageSize := .Data.PageSize }}
+{{ $baseWebUrlPath := .CurrentPath }}
+{{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
+
+<div class="ui-panel mb-8 bg-base-100/50">
+    <div class="p-8 flex justify-between items-end">
+        <div class="flex items-center gap-6">
+            <div
+                class="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center text-primary border border-primary/20 shadow-inner">
+                {{ template "icons" (dict "Name" "i-lucide-globe" "Class" "w-10 h-10") }}
+            </div>
+            <div>
+                <div class="flex items-center gap-3">
+                    <h1 class="text-4xl font-black italic tracking-tighter uppercase text-base-content">
+                        {{ $item.Name }}</h1>
+                    <span class="badge badge-primary font-black italic">{{ $item.Type }}</span>
+                </div>
+                <div class="flex items-center gap-4 mt-2 opacity-50 font-bold uppercase text-[10px] tracking-widest">
+                    <span>ID: {{ $item.ZoneID }}</span>
+                    <span class="w-1 h-1 bg-base-content rounded-full"></span>
+                    <span>Area: {{ $item.Area }}</span>
+                    <span class="w-1 h-1 bg-base-content rounded-full"></span>
+                    <span class="text-success">{{ $item.Status }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2">
+            <button class="btn btn-sm btn-ghost gap-2 italic font-black uppercase" onclick="history.back()">
+                {{ template "icons" (dict "Name" "i-lucide-arrow-left" "Class" "w-4 h-4") }} Back
+            </button>
+            <button class="btn btn-sm btn-primary italic font-black uppercase" data-config-id="{{ $item.ConfigID }}"
+                data-zone-id="{{ $item.ID }}" data-type="zone" onclick="handleSync(this)">
+                {{ template "icons" (dict "Name" "i-lucide-refresh-cw" "Class" "w-3 h-3") }} Sync Site
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="ui-panel shadow-2xl">
+    <div class="ui-header border-b border-base-300 px-8 flex justify-between">
+        <h2 class="text-sm font-black italic uppercase tracking-widest opacity-40">
+            {{ if eq $item.Type "full" }}DNS Management{{ else }}Acceleration Domains{{ end }}
+        </h2>
+        <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">TOTAL: {{ .Data.Total }}</div>
+    </div>
+
+    <div class="p-4">
+        <div class="ui-table-container">
+            <table class="ui-table">
+                <thead>
+                    {{ if eq $item.Type "full" }}
+                    <tr>
+                        <th class="ui-th">Name</th>
+                        <th class="ui-th">Type</th>
+                        <th class="ui-th">Line</th>
+                        <th class="ui-th">Value</th>
+                        <th class="ui-th">TTL/Weight</th>
+                        <th class="ui-th">Status</th>
+                    </tr>
+                    {{ else }}
+                    <tr>
+                        <th class="ui-th">Domain</th>
+                        <th class="ui-th">CNAME</th>
+                        <th class="ui-th">Protocol</th>
+                        <th class="ui-th">Origin</th>
+                        <th class="ui-th">Status</th>
+                    </tr>
+                    {{ end }}
+                </thead>
+                <tbody>
+                    {{ range $record := $list }}
+                    <tr class="hover:bg-base-200/50 transition-colors group">
+                        {{ if eq $item.Type "full" }}
+                        <td class="ui-td font-black text-primary italic">{{ $record.Name }}</td>
+                        <td class="ui-td"><span class="badge badge-sm badge-neutral font-mono">{{ $record.Type }}</span>
+                        </td>
+                        <td class="ui-td text-[10px] font-bold opacity-60">{{ $record.Location }}</td>
+                        <td class="ui-td font-mono text-xs opacity-80 max-w-xs truncate">{{ $record.Content }}</td>
+                        <td class="ui-td text-[10px] opacity-40 font-bold">T:{{ $record.TTL }} / W:{{ $record.Weight }}
+                        </td>
+                        <td class="ui-td">
+                            <div
+                                class='badge badge-sm {{ if eq $record.Status " enable" }}badge-success{{ else }}badge-ghost opacity-50{{ end }} italic font-black uppercase'>
+                                {{ $record.Status }}
+                            </div>
+                        </td>
+                        {{ else }}
+                        <td class="ui-td font-black text-primary italic">{{ $record.DomainName }}</td>
+                        <td class="ui-td font-mono text-[10px] opacity-40">{{ $record.Cname }}</td>
+                        <td class="ui-td uppercase text-[10px] font-bold italic">{{ $record.OriginProtocol }}</td>
+                        <td class="ui-td text-xs opacity-60"></td>
+                        <td class="ui-td">
+                            <span class="badge badge-sm badge-success italic font-black uppercase">
+                                {{ $record.DomainStatus }}
+                            </span>
+                        </td>
+                        {{ end }}
+                    </tr>
+                    {{ else }}
+                    <tr>
+                        <td colspan="10" class="py-20 text-center">
+                            <div class="flex flex-col items-center opacity-20">
+                                {{ template "icons" (dict "Name" "i-lucide-ghost" "Class" "w-12 h-12 mb-4") }}
+                                <p class="italic font-black uppercase tracking-widest text-xs">
+                                    No records found under this site
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-8 px-4">
+            {{ template "pagination" .Data }}
+        </div>
+    </div>
+</div>
+
+{{ end }}

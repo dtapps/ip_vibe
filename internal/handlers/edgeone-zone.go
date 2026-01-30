@@ -35,7 +35,7 @@ func EdgeOneZoneRecord(c *gin.Context) {
 
 	// 查询站点
 	firstZone, err := global.GvaEntDb.EdgeOneZone.Query().
-		Where(edgeonezone.ConfigID(requestParams.ID)).
+		Where(edgeonezone.IDEQ(requestParams.ID)).
 		First(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, "未查询到站点:"+err.Error())

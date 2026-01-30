@@ -1,4 +1,5 @@
 {{ define "content" }}
+
 {{ $filter := .Data.Filter }}
 {{ $list := .Data.List }}
 {{ $page := .Data.Page }}
@@ -57,7 +58,8 @@
             <div class="p-8">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {{ range $zone := $config.Zones }}
-                    <div class="group relative bg-base-200/30 rounded-[2rem] p-6 border border-base-300/50 hover:border-primary/40 hover:bg-base-100 hover:shadow-2xl transition-all duration-500 cursor-pointer"
+                    <a href="{{ $baseWebUrlPath }}/zone/{{ $zone.ID }}/record"
+                        class="group relative bg-base-200/30 rounded-[2rem] p-6 border border-base-300/50 hover:border-primary/40 hover:bg-base-100 hover:shadow-2xl transition-all duration-500 cursor-pointer"
                         onclick="openZoneWorkspace('{{$zone.ID}}', '{{$zone.Name}}', '{{$zone.Type}}')">
 
                         <div class="flex justify-between items-start mb-4">
@@ -118,7 +120,7 @@
                                 {{ template "icons" (dict "Name" "i-lucide-arrow-right" "Class" "w-4 h-4") }}
                             </div>
                         </div>
-                    </div>
+                    </a>
                     {{ end }}
 
                     <button
