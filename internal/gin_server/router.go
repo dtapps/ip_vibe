@@ -97,6 +97,7 @@ func (m *GinServerManager) setupWebRouter() {
 
 	// EdgeOne 管理页面 - 提供HTML页面并渲染数据
 	r.GET("/edgeone", handlers.EdgeOne)
+	r.GET("/edgeone/zone/:id/record", handlers.EdgeOneZoneRecord)
 
 	// 未匹配到任何路由
 	r.NoRoute(func(c *gin.Context) {

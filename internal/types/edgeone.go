@@ -7,5 +7,5 @@ type EdgeOneRequest struct {
 
 // EdgeOne页面 响应结构
 type EdgeOneResponse struct {
-	CommonPageResponse[GetEdgeOneResponse, EdgeOneRequest] // TUN记录列表
+	CommonPageResponse[GetEdgeOneResponse, EdgeOneRequest]
 }

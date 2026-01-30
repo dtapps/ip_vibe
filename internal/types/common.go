@@ -50,12 +50,18 @@ type CommonPageRequest struct {
 }
 
 // 公共 页面分页 响应结构
-type CommonPageResponse[LT any, FT any] struct {
-	Filter   FT    `json:"filter"`    // 筛选参数
-	List     []LT  `json:"list"`      // 通知列表
-	Page     int   `json:"page"`      // 当前页码
-	PageSize int   `json:"page_size"` // 每页数量
-	Total    int64 `json:"total"`     // 总数量
+type CommonPageResponse[ListT any, FilterT any] struct {
+	Filter   FilterT `json:"filter"`    // 筛选参数
+	List     []ListT `json:"list"`      // 通知列表
+	Page     int     `json:"page"`      // 当前页码
+	PageSize int     `json:"page_size"` // 每页数量
+	Total    int64   `json:"total"`     // 总数量
+}
+
+// 公共 页面分页带单个项 响应结构
+type CommonPageWithItemResponse[ItemT any, ListT any, FilterT any] struct {
+	Item ItemT `json:"item"` // 单个项
+	CommonPageResponse[ListT, FilterT]
 }
 
 type NullableBool struct {
