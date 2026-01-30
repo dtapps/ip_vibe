@@ -73,12 +73,13 @@ func EdgeOneZoneRecord(c *gin.Context) {
 	}
 
 	// 渲染模板
-	renderHTML(
+	renderHTMLWithMenu(
 		c,
 		filepath.Join("pages", "edgeone-zone-record.html"),
 		types.BasePageData[types.EdgeOneZoneRecordResponse]{
 			Title: "EdgeOne 站点记录",
 			Data:  pageData,
 		},
+		"edgeone",
 	)
 }

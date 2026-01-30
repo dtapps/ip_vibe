@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/sys_env"
@@ -22,6 +21,7 @@ import (
 	"github.com/dromara/carbon/v2"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/spf13/cast"
+	"github.com/tidwall/gjson"
 )
 
 type EnumDefinition struct {
@@ -290,12 +290,40 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 		"equalFold": func(s, t string) bool {
 			return strings.EqualFold(s, t)
 		},
+		// 从 JSON 中提取字段
+		"jsonGet": func(data json.RawMessage, path string) any {
+			result := gjson.GetBytes(data, path)
+			if !result.Exists() {
+				m.logger.Debug("[jsonGet] 字段不存在",
+					slog.String("path", path),
+				)
+				return nil
+			}
+			return result.Value()
+		},
+		// 将 JSON 转换为 map[string]any
+		"jsonToMap": func(data json.RawMessage) map[string]any {
+			var result map[string]any
+			if err := json.Unmarshal(data, &result); err != nil {
+				m.logger.Error("[jsonToMap] 反序列化 JSON 失败",
+					slog.Any("err", err),
+				)
+				return nil
+			}
+			return result
+		},
 		// 将任意类型转换为 JSON 字符串
 		"marshalJSON": func(v any) string {
 			if v == nil || v == "" {
 				return ""
 			}
-			b, _ := json.Marshal(v)
+			b, err := json.Marshal(v)
+			if err != nil {
+				m.logger.Error("[marshalJSON] 序列化 JSON 失败",
+					slog.Any("err", err),
+				)
+				return ""
+			}
 			return string(b)
 		},
 	}

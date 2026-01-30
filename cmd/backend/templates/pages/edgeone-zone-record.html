@@ -19,15 +19,24 @@
             <div>
                 <div class="flex items-center gap-3">
                     <h1 class="text-4xl font-black italic tracking-tighter uppercase text-base-content">
-                        {{ $item.Name }}</h1>
-                    <span class="badge badge-primary font-black italic">{{ $item.Type }}</span>
+                        {{ $item.Name }}
+                    </h1>
+                    <span class="badge badge-primary font-black italic">
+                        {{ $item.Type }}
+                    </span>
                 </div>
                 <div class="flex items-center gap-4 mt-2 opacity-50 font-bold uppercase text-[10px] tracking-widest">
-                    <span>ID: {{ $item.ZoneID }}</span>
+                    <span>
+                        ID: {{ $item.ZoneID }}
+                    </span>
                     <span class="w-1 h-1 bg-base-content rounded-full"></span>
-                    <span>Area: {{ $item.Area }}</span>
+                    <span>
+                        Area: {{ $item.Area }}
+                    </span>
                     <span class="w-1 h-1 bg-base-content rounded-full"></span>
-                    <span class="text-success">{{ $item.Status }}</span>
+                    <span class="text-success">
+                        {{ $item.Status }}
+                    </span>
                 </div>
             </div>
         </div>
@@ -49,7 +58,9 @@
         <h2 class="text-sm font-black italic uppercase tracking-widest opacity-40">
             {{ if eq $item.Type "full" }}DNS Management{{ else }}Acceleration Domains{{ end }}
         </h2>
-        <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">TOTAL: {{ .Data.Total }}</div>
+        <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">
+            TOTAL: {{ $total }}
+        </div>
     </div>
 
     <div class="p-4">
@@ -71,6 +82,7 @@
                         <th class="ui-th">CNAME</th>
                         <th class="ui-th">Protocol</th>
                         <th class="ui-th">Origin</th>
+                        <th class="ui-th">IPv6Status</th>
                         <th class="ui-th">Status</th>
                     </tr>
                     {{ end }}
@@ -79,12 +91,22 @@
                     {{ range $record := $list }}
                     <tr class="hover:bg-base-200/50 transition-colors group">
                         {{ if eq $item.Type "full" }}
-                        <td class="ui-td font-black text-primary italic">{{ $record.Name }}</td>
-                        <td class="ui-td"><span class="badge badge-sm badge-neutral font-mono">{{ $record.Type }}</span>
+                        <td class="ui-td font-black text-primary italic">
+                            {{ $record.Name }}
                         </td>
-                        <td class="ui-td text-[10px] font-bold opacity-60">{{ $record.Location }}</td>
-                        <td class="ui-td font-mono text-xs opacity-80 max-w-xs truncate">{{ $record.Content }}</td>
-                        <td class="ui-td text-[10px] opacity-40 font-bold">T:{{ $record.TTL }} / W:{{ $record.Weight }}
+                        <td class="ui-td">
+                            <span class="badge badge-sm badge-neutral font-mono">
+                                {{ $record.Type }}
+                            </span>
+                        </td>
+                        <td class="ui-td text-[10px] font-bold opacity-60">
+                            {{ $record.Location }}
+                        </td>
+                        <td class="ui-td font-mono text-xs opacity-80 max-w-xs truncate">
+                            {{ $record.Content }}
+                        </td>
+                        <td class="ui-td text-[10px] opacity-40 font-bold">
+                            T:{{ $record.TTL }} / W:{{ $record.Weight }}
                         </td>
                         <td class="ui-td">
                             <div
@@ -93,10 +115,28 @@
                             </div>
                         </td>
                         {{ else }}
-                        <td class="ui-td font-black text-primary italic">{{ $record.DomainName }}</td>
-                        <td class="ui-td font-mono text-[10px] opacity-40">{{ $record.Cname }}</td>
-                        <td class="ui-td uppercase text-[10px] font-bold italic">{{ $record.OriginProtocol }}</td>
-                        <td class="ui-td text-xs opacity-60"></td>
+                        <td class="ui-td font-black text-primary italic">
+                            {{ $record.DomainName }}
+                        </td>
+                        <td class="ui-td font-mono text-[10px] opacity-40">
+                            {{ $record.Cname }}
+                        </td>
+                        <td class="ui-td uppercase text-[10px] font-bold italic">
+                            {{ $record.OriginProtocol }}
+                        </td>
+                        <td class="ui-td text-xs opacity-60">
+                            {{ $originType := jsonGet $record.OriginDetail "OriginType" }}
+                            {{ if eq $originType "ORIGIN_GROUP" }}
+                            {{ jsonGet $record.OriginDetail "OriginGroupName" }}
+                            {{ else if eq $originType "IP_DOMAIN" }}
+                            {{ jsonGet $record.OriginDetail "Origin" }}
+                            {{ else }}
+                            {{ $originType }}
+                            {{ end }}
+                        </td>
+                        <td class="ui-td uppercase text-[10px] font-bold italic">
+                            {{ $record.Ipv6Status }}
+                        </td>
                         <td class="ui-td">
                             <span class="badge badge-sm badge-success italic font-black uppercase">
                                 {{ $record.DomainStatus }}
@@ -121,7 +161,7 @@
         </div>
 
         <div class="mt-8 px-4">
-            {{ template "pagination" .Data }}
+            {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
         </div>
     </div>
 </div>
