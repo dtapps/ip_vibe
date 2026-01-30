@@ -55,10 +55,10 @@ const (
 	// ConfigColumn is the table column denoting the config relation/edge.
 	ConfigColumn = "config_id"
 	// OriginGroupsTable is the table that holds the origin_groups relation/edge.
-	OriginGroupsTable = "edge_one_origin_group"
+	OriginGroupsTable = "edgeone_origin_group"
 	// OriginGroupsInverseTable is the table name for the EdgeOneOriginGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "edgeoneorigingroup" package.
-	OriginGroupsInverseTable = "edge_one_origin_group"
+	OriginGroupsInverseTable = "edgeone_origin_group"
 	// OriginGroupsColumn is the table column denoting the origin_groups relation/edge.
 	OriginGroupsColumn = "edgeone_zone_id"
 )

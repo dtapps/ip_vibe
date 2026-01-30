@@ -21,7 +21,7 @@ type EdgeOneOriginGroup struct {
 // Annotations of the EdgeOneOriginGroup.
 func (EdgeOneOriginGroup) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "edge_one_origin_group"},
+		entsql.Annotation{Table: "edgeone_origin_group"},
 		schema.Comment("EdgeOne 源站组"),
 		entsql.WithComments(true),
 	}
