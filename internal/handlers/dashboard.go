@@ -109,7 +109,12 @@ func Dashboard(c *gin.Context) {
 			Href:  "/device",
 		},
 		{
-			Title: "IP 组",
+			Title: "设备分组",
+			Icon:  "i-lucide-folder-plus",
+			Href:  "/device-group",
+		},
+		{
+			Title: "IP 分组",
 			Icon:  "i-lucide-folder-plus",
 			Href:  "/ip-group",
 		},
