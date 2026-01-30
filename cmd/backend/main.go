@@ -255,6 +255,21 @@ func main() {
 		panic(err)
 	}
 
+	// 启动 EdgeOne同步任务
+	edgeOneTask := tasks.NewEdgeOneTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+	)
+	if err := edgeOneTask.StartJob(ctx); err != nil {
+		slog.Error("启动EdgeOne同步任务失败",
+			slog.Any("err", err),
+		)
+		panic(err)
+	}
+
 	// 启动清除数据任务
 	clearDataTask := tasks.NewClearDataTask(
 		global.GvaEntDb,
