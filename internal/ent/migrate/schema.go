@@ -161,6 +161,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{CloudflareTunnelColumns[5]},
 			},
+			{
+				Name:    "cloudflaretunnel_config_id_tunnel_id",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareTunnelColumns[10], CloudflareTunnelColumns[5]},
+			},
 		},
 	}
 	// CloudflareTunnelIngressColumns holds the columns for the "cloudflare_tunnel_ingress" table.
@@ -558,6 +563,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EdgeoneZoneColumns[5]},
 			},
+			{
+				Name:    "edgeonezone_config_id_zone_id",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneColumns[13], EdgeoneZoneColumns[5]},
+			},
 		},
 	}
 	// EdgeoneZoneAccelerationdomainColumns holds the columns for the "edgeone_zone_accelerationdomain" table.
@@ -613,6 +623,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EdgeoneZoneAccelerationdomainColumns[5]},
 			},
+			{
+				Name:    "edgeonezoneaccelerationdomain_edgeone_zone_id_domain_name",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneAccelerationdomainColumns[16], EdgeoneZoneAccelerationdomainColumns[5]},
+			},
 		},
 	}
 	// EdgeoneZoneDnsrecordColumns holds the columns for the "edgeone_zone_dnsrecord" table.
@@ -666,6 +681,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EdgeoneZoneDnsrecordColumns[5]},
 			},
+			{
+				Name:    "edgeonezonednsrecord_edgeone_zone_id_record_id",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneDnsrecordColumns[14], EdgeoneZoneDnsrecordColumns[5]},
+			},
 		},
 	}
 	// EdgeoneZoneOrigingroupColumns holds the columns for the "edgeone_zone_origingroup" table.
@@ -714,6 +734,11 @@ var (
 				Name:    "edgeonezoneorigingroup_group_id",
 				Unique:  false,
 				Columns: []*schema.Column{EdgeoneZoneOrigingroupColumns[5]},
+			},
+			{
+				Name:    "edgeonezoneorigingroup_edgeone_zone_id_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneOrigingroupColumns[10], EdgeoneZoneOrigingroupColumns[5]},
 			},
 		},
 	}
@@ -764,6 +789,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EsaSiteColumns[7]},
 			},
+			{
+				Name:    "esasite_config_id_site_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteColumns[10], EsaSiteColumns[7]},
+			},
 		},
 	}
 	// EsaSiteOriginpoolColumns holds the columns for the "esa_site_originpool" table.
@@ -813,6 +843,11 @@ var (
 				Name:    "esasiteoriginpool_pool_id",
 				Unique:  false,
 				Columns: []*schema.Column{EsaSiteOriginpoolColumns[5]},
+			},
+			{
+				Name:    "esasiteoriginpool_esa_site_id_pool_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteOriginpoolColumns[11], EsaSiteOriginpoolColumns[5]},
 			},
 		},
 	}
@@ -869,6 +904,11 @@ var (
 				Name:    "esasiterecord_record_id",
 				Unique:  false,
 				Columns: []*schema.Column{EsaSiteRecordColumns[8]},
+			},
+			{
+				Name:    "esasiterecord_esa_site_id_record_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteRecordColumns[17], EsaSiteRecordColumns[8]},
 			},
 		},
 	}

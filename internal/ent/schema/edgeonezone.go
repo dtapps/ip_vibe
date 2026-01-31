@@ -150,6 +150,10 @@ func (EdgeOneZone) Indexes() []ent.Index {
 		// 按站点ID排序
 		index.Fields("zone_id").
 			Annotations(entsql.WithComments(true)),
+
+		// 按平台配置序号+站点ID排序
+		index.Fields("config_id", "zone_id").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

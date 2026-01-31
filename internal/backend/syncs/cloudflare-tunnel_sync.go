@@ -135,6 +135,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 	for _, connector := range connectors {
 		// 查询隧道记录
 		firstTunnel, err := s.db.CloudflareTunnel.Query().
+			Where(cloudflaretunnel.ConfigIDEQ(config_id)).
 			Where(cloudflaretunnel.TunnelIDEQ(connector.ID)).
 			First(ctx)
 		if err != nil {

@@ -147,6 +147,10 @@ func (EsaSiteRecord) Indexes() []ent.Index {
 		// 按记录ID排序
 		index.Fields("record_id").
 			Annotations(entsql.WithComments(true)),
+
+		// 按站点ID+记录ID排序
+		index.Fields("esa_site_id", "record_id").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

@@ -116,6 +116,10 @@ func (CloudflareTunnel) Indexes() []ent.Index {
 		// 按隧道ID排序
 		index.Fields("tunnel_id").
 			Annotations(entsql.WithComments(true)),
+
+		// 按平台配置序号+隧道ID排序
+		index.Fields("config_id", "tunnel_id").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

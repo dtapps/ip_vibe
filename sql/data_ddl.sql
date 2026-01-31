@@ -98,6 +98,7 @@ CREATE TABLE "cloudflare_tunnel" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMEN
 CREATE INDEX `cloudflaretunnel_created_at` ON `cloudflare_tunnel` (`created_at` DESC);
 CREATE INDEX `cloudflaretunnel_config_id` ON `cloudflare_tunnel` (`config_id`);
 CREATE INDEX `cloudflaretunnel_tunnel_id` ON `cloudflare_tunnel` (`tunnel_id`);
+CREATE INDEX `cloudflaretunnel_config_id_tunnel_id` ON `cloudflare_tunnel` (`config_id`, `tunnel_id`);
 
 
 -- cloudflare_tunnel_ingress definition
@@ -147,6 +148,7 @@ CREATE TABLE "edgeone_zone" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `c
 CREATE INDEX `edgeonezone_created_at` ON `edgeone_zone` (`created_at` DESC);
 CREATE INDEX `edgeonezone_config_id` ON `edgeone_zone` (`config_id`);
 CREATE INDEX `edgeonezone_zone_id` ON `edgeone_zone` (`zone_id`);
+CREATE INDEX `edgeonezone_config_id_zone_id` ON `edgeone_zone` (`config_id`, `zone_id`);
 
 
 -- edgeone_zone_accelerationdomain definition
@@ -156,6 +158,7 @@ CREATE TABLE `edgeone_zone_accelerationdomain` (`id` integer NOT NULL PRIMARY KE
 CREATE INDEX `edgeonezoneaccelerationdomain_created_at` ON `edgeone_zone_accelerationdomain` (`created_at` DESC);
 CREATE INDEX `edgeonezoneaccelerationdomain_edgeone_zone_id` ON `edgeone_zone_accelerationdomain` (`edgeone_zone_id`);
 CREATE INDEX `edgeonezoneaccelerationdomain_domain_name` ON `edgeone_zone_accelerationdomain` (`domain_name`);
+CREATE INDEX `edgeonezoneaccelerationdomain_edgeone_zone_id_domain_name` ON `edgeone_zone_accelerationdomain` (`edgeone_zone_id`, `domain_name`);
 
 
 -- edgeone_zone_dnsrecord definition
@@ -165,6 +168,7 @@ CREATE TABLE `edgeone_zone_dnsrecord` (`id` integer NOT NULL PRIMARY KEY AUTOINC
 CREATE INDEX `edgeonezonednsrecord_created_at` ON `edgeone_zone_dnsrecord` (`created_at` DESC);
 CREATE INDEX `edgeonezonednsrecord_edgeone_zone_id` ON `edgeone_zone_dnsrecord` (`edgeone_zone_id`);
 CREATE INDEX `edgeonezonednsrecord_record_id` ON `edgeone_zone_dnsrecord` (`record_id`);
+CREATE INDEX `edgeonezonednsrecord_edgeone_zone_id_record_id` ON `edgeone_zone_dnsrecord` (`edgeone_zone_id`, `record_id`);
 
 
 -- edgeone_zone_origingroup definition
@@ -174,6 +178,7 @@ CREATE TABLE "edgeone_zone_origingroup" (`id` integer NOT NULL PRIMARY KEY AUTOI
 CREATE INDEX `edgeonezoneorigingroup_created_at` ON `edgeone_zone_origingroup` (`created_at` DESC);
 CREATE INDEX `edgeonezoneorigingroup_edgeone_zone_id` ON `edgeone_zone_origingroup` (`edgeone_zone_id`);
 CREATE INDEX `edgeonezoneorigingroup_group_id` ON `edgeone_zone_origingroup` (`group_id`);
+CREATE INDEX `edgeonezoneorigingroup_edgeone_zone_id_group_id` ON `edgeone_zone_origingroup` (`edgeone_zone_id`, `group_id`);
 
 
 -- esa_site definition
@@ -183,6 +188,7 @@ CREATE TABLE `esa_site` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `creat
 CREATE INDEX `esasite_created_at` ON `esa_site` (`created_at` DESC);
 CREATE INDEX `esasite_config_id` ON `esa_site` (`config_id`);
 CREATE INDEX `esasite_site_id` ON `esa_site` (`site_id`);
+CREATE INDEX `esasite_config_id_site_id` ON `esa_site` (`config_id`, `site_id`);
 
 
 -- esa_site_originpool definition
@@ -192,6 +198,7 @@ CREATE TABLE `esa_site_originpool` (`id` integer NOT NULL PRIMARY KEY AUTOINCREM
 CREATE INDEX `esasiteoriginpool_created_at` ON `esa_site_originpool` (`created_at` DESC);
 CREATE INDEX `esasiteoriginpool_esa_site_id` ON `esa_site_originpool` (`esa_site_id`);
 CREATE INDEX `esasiteoriginpool_pool_id` ON `esa_site_originpool` (`pool_id`);
+CREATE INDEX `esasiteoriginpool_esa_site_id_pool_id` ON `esa_site_originpool` (`esa_site_id`, `pool_id`);
 
 
 -- esa_site_record definition
@@ -201,6 +208,7 @@ CREATE TABLE `esa_site_record` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,
 CREATE INDEX `esasiterecord_created_at` ON `esa_site_record` (`created_at` DESC);
 CREATE INDEX `esasiterecord_esa_site_id` ON `esa_site_record` (`esa_site_id`);
 CREATE INDEX `esasiterecord_record_id` ON `esa_site_record` (`record_id`);
+CREATE INDEX `esasiterecord_esa_site_id_record_id` ON `esa_site_record` (`esa_site_id`, `record_id`);
 
 
 -- ip_group_device definition

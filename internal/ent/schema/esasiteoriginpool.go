@@ -111,6 +111,10 @@ func (EsaSiteOriginPool) Indexes() []ent.Index {
 		// 按源地址池ID排序
 		index.Fields("pool_id").
 			Annotations(entsql.WithComments(true)),
+
+		// 按站点ID+源地址池ID排序
+		index.Fields("esa_site_id", "pool_id").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 
