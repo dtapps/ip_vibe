@@ -139,40 +139,52 @@ func (s *ESASync) SyncThisSites(ctx context.Context, config_id int64) (err error
 				return fmt.Errorf("查询站点记录失败: %w", err)
 			}
 			// 创建站点记录
-			err = s.db.EsaSite.Create().
-				SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(site.CreateTime)).Time).
-				SetSyncAt(time.Now()).
-				SetConfigID(firstPlatformCofing.ID).
-				SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType))).
-				SetCnameZone(tea.StringValue(site.CnameZone)).
-				SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage))).
-				SetInstanceID(tea.StringValue(site.InstanceId)).
-				SetNameServerList(tea.StringValue(site.NameServerList)).
-				SetPlanName(tea.StringValue(site.PlanName)).
-				SetPlanSpecName(tea.StringValue(site.PlanSpecName)).
-				SetSiteID(tea.Int64Value(site.SiteId)).
-				SetSiteName(tea.StringValue(site.SiteName)).
-				SetStatus(esasite.Status(tea.StringValue(site.Status))).
-				SetOfflineReason(tea.StringValue(site.OfflineReason)).
-				Exec(ctx)
+			createOne := s.db.EsaSite.Create()
+			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(site.CreateTime)).Time)
+			createOne.SetSyncAt(time.Now())
+			createOne.SetConfigID(firstPlatformCofing.ID)
+			if tea.StringValue(site.AccessType) != "" {
+				createOne.SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType)))
+			}
+			createOne.SetCnameZone(tea.StringValue(site.CnameZone))
+			if tea.StringValue(site.Coverage) != "" {
+				createOne.SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage)))
+			}
+			createOne.SetInstanceID(tea.StringValue(site.InstanceId))
+			createOne.SetNameServerList(tea.StringValue(site.NameServerList))
+			createOne.SetPlanName(tea.StringValue(site.PlanName))
+			createOne.SetPlanSpecName(tea.StringValue(site.PlanSpecName))
+			createOne.SetSiteID(tea.Int64Value(site.SiteId))
+			createOne.SetSiteName(tea.StringValue(site.SiteName))
+			if tea.StringValue(site.Status) != "" {
+				createOne.SetStatus(esasite.Status(tea.StringValue(site.Status)))
+			}
+			createOne.SetOfflineReason(tea.StringValue(site.OfflineReason))
+			err = createOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建站点记录失败: %w", err)
 			}
 		} else {
 			// 更新站点记录
-			err = s.db.EsaSite.UpdateOne(firstSite).
-				SetSyncAt(time.Now()).
-				SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType))).
-				SetCnameZone(tea.StringValue(site.CnameZone)).
-				SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage))).
-				SetInstanceID(tea.StringValue(site.InstanceId)).
-				SetNameServerList(tea.StringValue(site.NameServerList)).
-				SetPlanName(tea.StringValue(site.PlanName)).
-				SetPlanSpecName(tea.StringValue(site.PlanSpecName)).
-				SetSiteName(tea.StringValue(site.SiteName)).
-				SetStatus(esasite.Status(tea.StringValue(site.Status))).
-				SetOfflineReason(tea.StringValue(site.OfflineReason)).
-				Exec(ctx)
+			updateOne := s.db.EsaSite.UpdateOne(firstSite)
+			updateOne.SetSyncAt(time.Now())
+			if tea.StringValue(site.AccessType) != "" {
+				updateOne.SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType)))
+			}
+			updateOne.SetCnameZone(tea.StringValue(site.CnameZone))
+			if tea.StringValue(site.Coverage) != "" {
+				updateOne.SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage)))
+			}
+			updateOne.SetInstanceID(tea.StringValue(site.InstanceId))
+			updateOne.SetNameServerList(tea.StringValue(site.NameServerList))
+			updateOne.SetPlanName(tea.StringValue(site.PlanName))
+			updateOne.SetPlanSpecName(tea.StringValue(site.PlanSpecName))
+			updateOne.SetSiteName(tea.StringValue(site.SiteName))
+			if tea.StringValue(site.Status) != "" {
+				updateOne.SetStatus(esasite.Status(tea.StringValue(site.Status)))
+			}
+			updateOne.SetOfflineReason(tea.StringValue(site.OfflineReason))
+			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新站点记录失败: %w", err)
 			}
@@ -220,40 +232,52 @@ func (s *ESASync) SyncThisSite(ctx context.Context, config_id int64, site_id int
 				return fmt.Errorf("查询站点记录失败: %w", err)
 			}
 			// 创建站点记录
-			err = s.db.EsaSite.Create().
-				SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(site.CreateTime)).Time).
-				SetSyncAt(time.Now()).
-				SetConfigID(firstPlatformCofing.ID).
-				SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType))).
-				SetCnameZone(tea.StringValue(site.CnameZone)).
-				SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage))).
-				SetInstanceID(tea.StringValue(site.InstanceId)).
-				SetNameServerList(tea.StringValue(site.NameServerList)).
-				SetPlanName(tea.StringValue(site.PlanName)).
-				SetPlanSpecName(tea.StringValue(site.PlanSpecName)).
-				SetSiteID(tea.Int64Value(site.SiteId)).
-				SetSiteName(tea.StringValue(site.SiteName)).
-				SetStatus(esasite.Status(tea.StringValue(site.Status))).
-				SetOfflineReason(tea.StringValue(site.OfflineReason)).
-				Exec(ctx)
+			createOne := s.db.EsaSite.Create()
+			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(site.CreateTime)).Time)
+			createOne.SetSyncAt(time.Now())
+			createOne.SetConfigID(firstPlatformCofing.ID)
+			if tea.StringValue(site.AccessType) != "" {
+				createOne.SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType)))
+			}
+			createOne.SetCnameZone(tea.StringValue(site.CnameZone))
+			if tea.StringValue(site.Coverage) != "" {
+				createOne.SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage)))
+			}
+			createOne.SetInstanceID(tea.StringValue(site.InstanceId))
+			createOne.SetNameServerList(tea.StringValue(site.NameServerList))
+			createOne.SetPlanName(tea.StringValue(site.PlanName))
+			createOne.SetPlanSpecName(tea.StringValue(site.PlanSpecName))
+			createOne.SetSiteID(tea.Int64Value(site.SiteId))
+			createOne.SetSiteName(tea.StringValue(site.SiteName))
+			if tea.StringValue(site.Status) != "" {
+				createOne.SetStatus(esasite.Status(tea.StringValue(site.Status)))
+			}
+			createOne.SetOfflineReason(tea.StringValue(site.OfflineReason))
+			err = createOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建站点记录失败: %w", err)
 			}
 		} else {
 			// 更新站点记录
-			err = s.db.EsaSite.UpdateOne(firstSite).
-				SetSyncAt(time.Now()).
-				SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType))).
-				SetCnameZone(tea.StringValue(site.CnameZone)).
-				SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage))).
-				SetInstanceID(tea.StringValue(site.InstanceId)).
-				SetNameServerList(tea.StringValue(site.NameServerList)).
-				SetPlanName(tea.StringValue(site.PlanName)).
-				SetPlanSpecName(tea.StringValue(site.PlanSpecName)).
-				SetSiteName(tea.StringValue(site.SiteName)).
-				SetStatus(esasite.Status(tea.StringValue(site.Status))).
-				SetOfflineReason(tea.StringValue(site.OfflineReason)).
-				Exec(ctx)
+			updateOne := s.db.EsaSite.UpdateOne(firstSite)
+			updateOne.SetSyncAt(time.Now())
+			if tea.StringValue(site.AccessType) != "" {
+				updateOne.SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType)))
+			}
+			updateOne.SetCnameZone(tea.StringValue(site.CnameZone))
+			if tea.StringValue(site.Coverage) != "" {
+				updateOne.SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage)))
+			}
+			updateOne.SetInstanceID(tea.StringValue(site.InstanceId))
+			updateOne.SetNameServerList(tea.StringValue(site.NameServerList))
+			updateOne.SetPlanName(tea.StringValue(site.PlanName))
+			updateOne.SetPlanSpecName(tea.StringValue(site.PlanSpecName))
+			updateOne.SetSiteName(tea.StringValue(site.SiteName))
+			if tea.StringValue(site.Status) != "" {
+				updateOne.SetStatus(esasite.Status(tea.StringValue(site.Status)))
+			}
+			updateOne.SetOfflineReason(tea.StringValue(site.OfflineReason))
+			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新站点记录失败: %w", err)
 			}
@@ -355,28 +379,29 @@ func (s *ESASync) SyncThisSiteOriginPool(ctx context.Context, config_id int64, s
 				return fmt.Errorf("查询源地址池记录失败: %w", err)
 			}
 			// 创建源地址池记录
-			err = s.db.EsaSiteOriginPool.Create().
-				SetSyncAt(time.Now()).
-				SetPoolID(tea.Int64Value(originPool.Id)).
-				SetName(tea.StringValue(originPool.Name)).
-				SetRecordName(tea.StringValue(originPool.RecordName)).
-				SetReferences([]byte(gojson.JsonEncodeNoError(originPool.References))).
-				SetReferenceLBCount(tea.Int32Value(originPool.ReferenceLBCount)).
-				SetOrigins([]byte(gojson.JsonEncodeNoError(originPool.Origins))).
-				Exec(ctx)
+			createOne := s.db.EsaSiteOriginPool.Create()
+			createOne.SetSyncAt(time.Now())
+			createOne.SetEsaSiteID(firstEsaSite.ID)
+			createOne.SetPoolID(tea.Int64Value(originPool.Id))
+			createOne.SetName(tea.StringValue(originPool.Name))
+			createOne.SetRecordName(tea.StringValue(originPool.RecordName))
+			createOne.SetReferences([]byte(gojson.JsonEncodeNoError(originPool.References)))
+			createOne.SetReferenceLBCount(tea.Int32Value(originPool.ReferenceLBCount))
+			createOne.SetOrigins([]byte(gojson.JsonEncodeNoError(originPool.Origins)))
+			err = createOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建源地址池记录失败: %w", err)
 			}
 		} else {
 			// 更新源地址池记录
-			err = s.db.EsaSiteOriginPool.UpdateOne(firstOriginPool).
-				SetSyncAt(time.Now()).
-				SetName(tea.StringValue(originPool.Name)).
-				SetRecordName(tea.StringValue(originPool.RecordName)).
-				SetReferences([]byte(gojson.JsonEncodeNoError(originPool.References))).
-				SetReferenceLBCount(tea.Int32Value(originPool.ReferenceLBCount)).
-				SetOrigins([]byte(gojson.JsonEncodeNoError(originPool.Origins))).
-				Exec(ctx)
+			updateOne := s.db.EsaSiteOriginPool.UpdateOne(firstOriginPool)
+			updateOne.SetSyncAt(time.Now())
+			updateOne.SetName(tea.StringValue(originPool.Name))
+			updateOne.SetRecordName(tea.StringValue(originPool.RecordName))
+			updateOne.SetReferences([]byte(gojson.JsonEncodeNoError(originPool.References)))
+			updateOne.SetReferenceLBCount(tea.Int32Value(originPool.ReferenceLBCount))
+			updateOne.SetOrigins([]byte(gojson.JsonEncodeNoError(originPool.Origins)))
+			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新源地址池记录失败: %w", err)
 			}
@@ -478,42 +503,58 @@ func (s *ESASync) SyncThisSiteRecord(ctx context.Context, config_id int64, site_
 				return fmt.Errorf("查询解析记录记录失败: %w", err)
 			}
 			// 创建解析记录记录
-			err = s.db.EsaSiteRecord.Create().
-				SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(record.CreateTime)).Time).
-				SetSyncAt(time.Now()).
-				SetEsaSiteID(firstEsaSite.ID).
-				SetBizName(esasiterecord.BizName(tea.StringValue(record.BizName))).
-				SetData([]byte(gojson.JsonEncodeNoError(record.Data))).
-				SetProxied(tea.BoolValue(record.Proxied)).
-				SetRecordID(tea.Int64Value(record.RecordId)).
-				SetRecordSourceType(esasiterecord.RecordSourceType(tea.StringValue(record.RecordSourceType))).
-				SetRecordName(tea.StringValue(record.RecordName)).
-				SetRecordType(esasiterecord.RecordType(tea.StringValue(record.RecordType))).
-				SetTTL(tea.Int64Value(record.Ttl)).
-				SetRecordCname(tea.StringValue(record.RecordCname)).
-				SetComment(tea.StringValue(record.Comment)).
-				SetAuthConf([]byte(gojson.JsonEncodeNoError(record.AuthConf))).
-				SetHostPolicy(esasiterecord.HostPolicy(tea.StringValue(record.HostPolicy))).
-				Exec(ctx)
+			createOne := s.db.EsaSiteRecord.Create()
+			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(record.CreateTime)).Time)
+			createOne.SetSyncAt(time.Now())
+			createOne.SetEsaSiteID(firstEsaSite.ID)
+			if tea.StringValue(record.BizName) != "" {
+				createOne.SetBizName(esasiterecord.BizName(tea.StringValue(record.BizName)))
+			}
+			createOne.SetData([]byte(gojson.JsonEncodeNoError(record.Data)))
+			createOne.SetProxied(tea.BoolValue(record.Proxied))
+			createOne.SetRecordID(tea.Int64Value(record.RecordId))
+			if tea.StringValue(record.RecordSourceType) != "" {
+				createOne.SetRecordSourceType(esasiterecord.RecordSourceType(tea.StringValue(record.RecordSourceType)))
+			}
+			createOne.SetRecordName(tea.StringValue(record.RecordName))
+			if tea.StringValue(record.RecordType) != "" {
+				createOne.SetRecordType(esasiterecord.RecordType(tea.StringValue(record.RecordType)))
+			}
+			createOne.SetTTL(tea.Int64Value(record.Ttl))
+			createOne.SetRecordCname(tea.StringValue(record.RecordCname))
+			createOne.SetComment(tea.StringValue(record.Comment))
+			createOne.SetAuthConf([]byte(gojson.JsonEncodeNoError(record.AuthConf)))
+			if tea.StringValue(record.HostPolicy) != "" {
+				createOne.SetHostPolicy(esasiterecord.HostPolicy(tea.StringValue(record.HostPolicy)))
+			}
+			err = createOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建解析记录记录失败: %w", err)
 			}
 		} else {
 			// 更新解析记录记录
-			err = s.db.EsaSiteRecord.UpdateOne(firstRecord).
-				SetSyncAt(time.Now()).
-				SetBizName(esasiterecord.BizName(tea.StringValue(record.BizName))).
-				SetData([]byte(gojson.JsonEncodeNoError(record.Data))).
-				SetProxied(tea.BoolValue(record.Proxied)).
-				SetRecordSourceType(esasiterecord.RecordSourceType(tea.StringValue(record.RecordSourceType))).
-				SetRecordName(tea.StringValue(record.RecordName)).
-				SetRecordType(esasiterecord.RecordType(tea.StringValue(record.RecordType))).
-				SetTTL(tea.Int64Value(record.Ttl)).
-				SetRecordCname(tea.StringValue(record.RecordCname)).
-				SetComment(tea.StringValue(record.Comment)).
-				SetAuthConf([]byte(gojson.JsonEncodeNoError(record.AuthConf))).
-				SetHostPolicy(esasiterecord.HostPolicy(tea.StringValue(record.HostPolicy))).
-				Exec(ctx)
+			updateOne := s.db.EsaSiteRecord.UpdateOne(firstRecord)
+			updateOne.SetSyncAt(time.Now())
+			if tea.StringValue(record.BizName) != "" {
+				updateOne.SetBizName(esasiterecord.BizName(tea.StringValue(record.BizName)))
+			}
+			updateOne.SetData([]byte(gojson.JsonEncodeNoError(record.Data)))
+			updateOne.SetProxied(tea.BoolValue(record.Proxied))
+			if tea.StringValue(record.RecordSourceType) != "" {
+				updateOne.SetRecordSourceType(esasiterecord.RecordSourceType(tea.StringValue(record.RecordSourceType)))
+			}
+			updateOne.SetRecordName(tea.StringValue(record.RecordName))
+			if tea.StringValue(record.RecordType) != "" {
+				updateOne.SetRecordType(esasiterecord.RecordType(tea.StringValue(record.RecordType)))
+			}
+			updateOne.SetTTL(tea.Int64Value(record.Ttl))
+			updateOne.SetRecordCname(tea.StringValue(record.RecordCname))
+			updateOne.SetComment(tea.StringValue(record.Comment))
+			updateOne.SetAuthConf([]byte(gojson.JsonEncodeNoError(record.AuthConf)))
+			if tea.StringValue(record.HostPolicy) != "" {
+				updateOne.SetHostPolicy(esasiterecord.HostPolicy(tea.StringValue(record.HostPolicy)))
+			}
+			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新解析记录记录失败: %w", err)
 			}
