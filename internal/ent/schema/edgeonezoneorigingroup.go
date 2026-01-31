@@ -53,6 +53,7 @@ func (EdgeOneZoneOriginGroup) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("group_id").
+			Immutable().
 			Comment("源站组ID").
 			Annotations(entsql.WithComments(true)),
 

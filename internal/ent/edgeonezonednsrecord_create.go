@@ -477,18 +477,6 @@ func (u *EdgeOneZoneDNSRecordUpsert) ClearSyncAt() *EdgeOneZoneDNSRecordUpsert {
 	return u
 }
 
-// SetRecordID sets the "record_id" field.
-func (u *EdgeOneZoneDNSRecordUpsert) SetRecordID(v string) *EdgeOneZoneDNSRecordUpsert {
-	u.Set(edgeonezonednsrecord.FieldRecordID, v)
-	return u
-}
-
-// UpdateRecordID sets the "record_id" field to the value that was provided on create.
-func (u *EdgeOneZoneDNSRecordUpsert) UpdateRecordID() *EdgeOneZoneDNSRecordUpsert {
-	u.SetExcluded(edgeonezonednsrecord.FieldRecordID)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *EdgeOneZoneDNSRecordUpsert) SetName(v string) *EdgeOneZoneDNSRecordUpsert {
 	u.Set(edgeonezonednsrecord.FieldName, v)
@@ -680,6 +668,9 @@ func (u *EdgeOneZoneDNSRecordUpsertOne) UpdateNewValues() *EdgeOneZoneDNSRecordU
 		if _, exists := u.create.mutation.EdgeoneZoneID(); exists {
 			s.SetIgnore(edgeonezonednsrecord.FieldEdgeoneZoneID)
 		}
+		if _, exists := u.create.mutation.RecordID(); exists {
+			s.SetIgnore(edgeonezonednsrecord.FieldRecordID)
+		}
 	}))
 	return u
 }
@@ -729,20 +720,6 @@ func (u *EdgeOneZoneDNSRecordUpsertOne) UpdateSyncAt() *EdgeOneZoneDNSRecordUpse
 func (u *EdgeOneZoneDNSRecordUpsertOne) ClearSyncAt() *EdgeOneZoneDNSRecordUpsertOne {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetRecordID sets the "record_id" field.
-func (u *EdgeOneZoneDNSRecordUpsertOne) SetRecordID(v string) *EdgeOneZoneDNSRecordUpsertOne {
-	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
-		s.SetRecordID(v)
-	})
-}
-
-// UpdateRecordID sets the "record_id" field to the value that was provided on create.
-func (u *EdgeOneZoneDNSRecordUpsertOne) UpdateRecordID() *EdgeOneZoneDNSRecordUpsertOne {
-	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
-		s.UpdateRecordID()
 	})
 }
 
@@ -1129,6 +1106,9 @@ func (u *EdgeOneZoneDNSRecordUpsertBulk) UpdateNewValues() *EdgeOneZoneDNSRecord
 			if _, exists := b.mutation.EdgeoneZoneID(); exists {
 				s.SetIgnore(edgeonezonednsrecord.FieldEdgeoneZoneID)
 			}
+			if _, exists := b.mutation.RecordID(); exists {
+				s.SetIgnore(edgeonezonednsrecord.FieldRecordID)
+			}
 		}
 	}))
 	return u
@@ -1179,20 +1159,6 @@ func (u *EdgeOneZoneDNSRecordUpsertBulk) UpdateSyncAt() *EdgeOneZoneDNSRecordUps
 func (u *EdgeOneZoneDNSRecordUpsertBulk) ClearSyncAt() *EdgeOneZoneDNSRecordUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetRecordID sets the "record_id" field.
-func (u *EdgeOneZoneDNSRecordUpsertBulk) SetRecordID(v string) *EdgeOneZoneDNSRecordUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
-		s.SetRecordID(v)
-	})
-}
-
-// UpdateRecordID sets the "record_id" field to the value that was provided on create.
-func (u *EdgeOneZoneDNSRecordUpsertBulk) UpdateRecordID() *EdgeOneZoneDNSRecordUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneDNSRecordUpsert) {
-		s.UpdateRecordID()
 	})
 }
 

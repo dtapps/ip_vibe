@@ -1075,23 +1075,6 @@ var GetEsaSiteRecordBizNames = []string{
 }
 
 const (
-	EsaSiteRecordProxiedTrue  string = "true"  // 开启代理
-	EsaSiteRecordProxiedFalse string = "false" // 关闭代理加速
-)
-
-// GetEsaSiteRecordProxiedDescriptions 记录是否开启代理加速 说明映射
-var GetEsaSiteRecordProxiedDescriptions = map[string]string{
-	EsaSiteRecordProxiedTrue:  "开启代理",
-	EsaSiteRecordProxiedFalse: "关闭代理加速",
-}
-
-// GetEsaSiteRecordProxieds 返回所有 记录是否开启代理加速
-var GetEsaSiteRecordProxieds = []string{
-	EsaSiteRecordProxiedTrue,
-	EsaSiteRecordProxiedFalse,
-}
-
-const (
 	EsaSiteRecordRecordSourceTypeOss    string = "OSS"    // OSS 源站
 	EsaSiteRecordRecordSourceTypeS3     string = "S3"     // S3 源站
 	EsaSiteRecordRecordSourceTypeLb     string = "LB"     // 负载均衡器源站

@@ -80,8 +80,13 @@ func EsaSiteID(v int64) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldEQ(FieldEsaSiteID, v))
 }
 
+// Proxied applies equality check predicate on the "proxied" field. It's identical to ProxiedEQ.
+func Proxied(v bool) predicate.EsaSiteRecord {
+	return predicate.EsaSiteRecord(sql.FieldEQ(FieldProxied, v))
+}
+
 // RecordID applies equality check predicate on the "record_id" field. It's identical to RecordIDEQ.
-func RecordID(v string) predicate.EsaSiteRecord {
+func RecordID(v int64) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldEQ(FieldRecordID, v))
 }
 
@@ -346,23 +351,13 @@ func DataNotNil() predicate.EsaSiteRecord {
 }
 
 // ProxiedEQ applies the EQ predicate on the "proxied" field.
-func ProxiedEQ(v Proxied) predicate.EsaSiteRecord {
+func ProxiedEQ(v bool) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldEQ(FieldProxied, v))
 }
 
 // ProxiedNEQ applies the NEQ predicate on the "proxied" field.
-func ProxiedNEQ(v Proxied) predicate.EsaSiteRecord {
+func ProxiedNEQ(v bool) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldNEQ(FieldProxied, v))
-}
-
-// ProxiedIn applies the In predicate on the "proxied" field.
-func ProxiedIn(vs ...Proxied) predicate.EsaSiteRecord {
-	return predicate.EsaSiteRecord(sql.FieldIn(FieldProxied, vs...))
-}
-
-// ProxiedNotIn applies the NotIn predicate on the "proxied" field.
-func ProxiedNotIn(vs ...Proxied) predicate.EsaSiteRecord {
-	return predicate.EsaSiteRecord(sql.FieldNotIn(FieldProxied, vs...))
 }
 
 // ProxiedIsNil applies the IsNil predicate on the "proxied" field.
@@ -376,68 +371,43 @@ func ProxiedNotNil() predicate.EsaSiteRecord {
 }
 
 // RecordIDEQ applies the EQ predicate on the "record_id" field.
-func RecordIDEQ(v string) predicate.EsaSiteRecord {
+func RecordIDEQ(v int64) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldEQ(FieldRecordID, v))
 }
 
 // RecordIDNEQ applies the NEQ predicate on the "record_id" field.
-func RecordIDNEQ(v string) predicate.EsaSiteRecord {
+func RecordIDNEQ(v int64) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldNEQ(FieldRecordID, v))
 }
 
 // RecordIDIn applies the In predicate on the "record_id" field.
-func RecordIDIn(vs ...string) predicate.EsaSiteRecord {
+func RecordIDIn(vs ...int64) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldIn(FieldRecordID, vs...))
 }
 
 // RecordIDNotIn applies the NotIn predicate on the "record_id" field.
-func RecordIDNotIn(vs ...string) predicate.EsaSiteRecord {
+func RecordIDNotIn(vs ...int64) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldNotIn(FieldRecordID, vs...))
 }
 
 // RecordIDGT applies the GT predicate on the "record_id" field.
-func RecordIDGT(v string) predicate.EsaSiteRecord {
+func RecordIDGT(v int64) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldGT(FieldRecordID, v))
 }
 
 // RecordIDGTE applies the GTE predicate on the "record_id" field.
-func RecordIDGTE(v string) predicate.EsaSiteRecord {
+func RecordIDGTE(v int64) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldGTE(FieldRecordID, v))
 }
 
 // RecordIDLT applies the LT predicate on the "record_id" field.
-func RecordIDLT(v string) predicate.EsaSiteRecord {
+func RecordIDLT(v int64) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldLT(FieldRecordID, v))
 }
 
 // RecordIDLTE applies the LTE predicate on the "record_id" field.
-func RecordIDLTE(v string) predicate.EsaSiteRecord {
+func RecordIDLTE(v int64) predicate.EsaSiteRecord {
 	return predicate.EsaSiteRecord(sql.FieldLTE(FieldRecordID, v))
-}
-
-// RecordIDContains applies the Contains predicate on the "record_id" field.
-func RecordIDContains(v string) predicate.EsaSiteRecord {
-	return predicate.EsaSiteRecord(sql.FieldContains(FieldRecordID, v))
-}
-
-// RecordIDHasPrefix applies the HasPrefix predicate on the "record_id" field.
-func RecordIDHasPrefix(v string) predicate.EsaSiteRecord {
-	return predicate.EsaSiteRecord(sql.FieldHasPrefix(FieldRecordID, v))
-}
-
-// RecordIDHasSuffix applies the HasSuffix predicate on the "record_id" field.
-func RecordIDHasSuffix(v string) predicate.EsaSiteRecord {
-	return predicate.EsaSiteRecord(sql.FieldHasSuffix(FieldRecordID, v))
-}
-
-// RecordIDEqualFold applies the EqualFold predicate on the "record_id" field.
-func RecordIDEqualFold(v string) predicate.EsaSiteRecord {
-	return predicate.EsaSiteRecord(sql.FieldEqualFold(FieldRecordID, v))
-}
-
-// RecordIDContainsFold applies the ContainsFold predicate on the "record_id" field.
-func RecordIDContainsFold(v string) predicate.EsaSiteRecord {
-	return predicate.EsaSiteRecord(sql.FieldContainsFold(FieldRecordID, v))
 }
 
 // RecordSourceTypeEQ applies the EQ predicate on the "record_source_type" field.

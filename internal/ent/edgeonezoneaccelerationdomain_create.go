@@ -500,18 +500,6 @@ func (u *EdgeOneZoneAccelerationDomainUpsert) ClearSyncAt() *EdgeOneZoneAccelera
 	return u
 }
 
-// SetDomainName sets the "domain_name" field.
-func (u *EdgeOneZoneAccelerationDomainUpsert) SetDomainName(v string) *EdgeOneZoneAccelerationDomainUpsert {
-	u.Set(edgeonezoneaccelerationdomain.FieldDomainName, v)
-	return u
-}
-
-// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
-func (u *EdgeOneZoneAccelerationDomainUpsert) UpdateDomainName() *EdgeOneZoneAccelerationDomainUpsert {
-	u.SetExcluded(edgeonezoneaccelerationdomain.FieldDomainName)
-	return u
-}
-
 // SetDomainStatus sets the "domain_status" field.
 func (u *EdgeOneZoneAccelerationDomainUpsert) SetDomainStatus(v edgeonezoneaccelerationdomain.DomainStatus) *EdgeOneZoneAccelerationDomainUpsert {
 	u.Set(edgeonezoneaccelerationdomain.FieldDomainStatus, v)
@@ -733,6 +721,9 @@ func (u *EdgeOneZoneAccelerationDomainUpsertOne) UpdateNewValues() *EdgeOneZoneA
 		if _, exists := u.create.mutation.EdgeoneZoneID(); exists {
 			s.SetIgnore(edgeonezoneaccelerationdomain.FieldEdgeoneZoneID)
 		}
+		if _, exists := u.create.mutation.DomainName(); exists {
+			s.SetIgnore(edgeonezoneaccelerationdomain.FieldDomainName)
+		}
 	}))
 	return u
 }
@@ -782,20 +773,6 @@ func (u *EdgeOneZoneAccelerationDomainUpsertOne) UpdateSyncAt() *EdgeOneZoneAcce
 func (u *EdgeOneZoneAccelerationDomainUpsertOne) ClearSyncAt() *EdgeOneZoneAccelerationDomainUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetDomainName sets the "domain_name" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertOne) SetDomainName(v string) *EdgeOneZoneAccelerationDomainUpsertOne {
-	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
-		s.SetDomainName(v)
-	})
-}
-
-// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
-func (u *EdgeOneZoneAccelerationDomainUpsertOne) UpdateDomainName() *EdgeOneZoneAccelerationDomainUpsertOne {
-	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
-		s.UpdateDomainName()
 	})
 }
 
@@ -1217,6 +1194,9 @@ func (u *EdgeOneZoneAccelerationDomainUpsertBulk) UpdateNewValues() *EdgeOneZone
 			if _, exists := b.mutation.EdgeoneZoneID(); exists {
 				s.SetIgnore(edgeonezoneaccelerationdomain.FieldEdgeoneZoneID)
 			}
+			if _, exists := b.mutation.DomainName(); exists {
+				s.SetIgnore(edgeonezoneaccelerationdomain.FieldDomainName)
+			}
 		}
 	}))
 	return u
@@ -1267,20 +1247,6 @@ func (u *EdgeOneZoneAccelerationDomainUpsertBulk) UpdateSyncAt() *EdgeOneZoneAcc
 func (u *EdgeOneZoneAccelerationDomainUpsertBulk) ClearSyncAt() *EdgeOneZoneAccelerationDomainUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetDomainName sets the "domain_name" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertBulk) SetDomainName(v string) *EdgeOneZoneAccelerationDomainUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
-		s.SetDomainName(v)
-	})
-}
-
-// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
-func (u *EdgeOneZoneAccelerationDomainUpsertBulk) UpdateDomainName() *EdgeOneZoneAccelerationDomainUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
-		s.UpdateDomainName()
 	})
 }
 

@@ -52,6 +52,7 @@ func (EsaSiteOriginPool) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("pool_id").
+			Immutable().
 			Comment("源地址池ID").
 			Annotations(entsql.WithComments(true)),
 

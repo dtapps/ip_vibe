@@ -63,13 +63,13 @@ func (EsaSiteRecord) Fields() []ent.Field {
 			Comment("记录的具体 DNS 信息").
 			Annotations(entsql.WithComments(true)),
 
-		field.Enum("proxied").
-			Values(schematype.GetEsaSiteRecordProxieds...).
+		field.Bool("proxied").
 			Optional().
 			Comment("记录是否开启代理加速").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("record_id").
+		field.Int64("record_id").
+			Immutable().
 			Comment("记录 ID").
 			Annotations(entsql.WithComments(true)),
 

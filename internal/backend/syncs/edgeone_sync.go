@@ -205,6 +205,7 @@ func (s *EdgeOneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id
 		}
 		// 查询站点记录
 		firstZone, err := s.db.EdgeOneZone.Query().
+			Where(edgeonezone.ConfigIDEQ(config_id)).
 			Where(edgeonezone.ZoneIDEQ(utils.PtrToString(zone.ZoneId))).
 			First(ctx)
 		if err != nil {

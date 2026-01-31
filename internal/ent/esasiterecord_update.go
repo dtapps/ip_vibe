@@ -90,13 +90,13 @@ func (_u *EsaSiteRecordUpdate) ClearData() *EsaSiteRecordUpdate {
 }
 
 // SetProxied sets the "proxied" field.
-func (_u *EsaSiteRecordUpdate) SetProxied(v esasiterecord.Proxied) *EsaSiteRecordUpdate {
+func (_u *EsaSiteRecordUpdate) SetProxied(v bool) *EsaSiteRecordUpdate {
 	_u.mutation.SetProxied(v)
 	return _u
 }
 
 // SetNillableProxied sets the "proxied" field if the given value is not nil.
-func (_u *EsaSiteRecordUpdate) SetNillableProxied(v *esasiterecord.Proxied) *EsaSiteRecordUpdate {
+func (_u *EsaSiteRecordUpdate) SetNillableProxied(v *bool) *EsaSiteRecordUpdate {
 	if v != nil {
 		_u.SetProxied(*v)
 	}
@@ -106,20 +106,6 @@ func (_u *EsaSiteRecordUpdate) SetNillableProxied(v *esasiterecord.Proxied) *Esa
 // ClearProxied clears the value of the "proxied" field.
 func (_u *EsaSiteRecordUpdate) ClearProxied() *EsaSiteRecordUpdate {
 	_u.mutation.ClearProxied()
-	return _u
-}
-
-// SetRecordID sets the "record_id" field.
-func (_u *EsaSiteRecordUpdate) SetRecordID(v string) *EsaSiteRecordUpdate {
-	_u.mutation.SetRecordID(v)
-	return _u
-}
-
-// SetNillableRecordID sets the "record_id" field if the given value is not nil.
-func (_u *EsaSiteRecordUpdate) SetNillableRecordID(v *string) *EsaSiteRecordUpdate {
-	if v != nil {
-		_u.SetRecordID(*v)
-	}
 	return _u
 }
 
@@ -342,11 +328,6 @@ func (_u *EsaSiteRecordUpdate) check() error {
 			return &ValidationError{Name: "biz_name", err: fmt.Errorf(`ent: validator failed for field "EsaSiteRecord.biz_name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Proxied(); ok {
-		if err := esasiterecord.ProxiedValidator(v); err != nil {
-			return &ValidationError{Name: "proxied", err: fmt.Errorf(`ent: validator failed for field "EsaSiteRecord.proxied": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.RecordSourceType(); ok {
 		if err := esasiterecord.RecordSourceTypeValidator(v); err != nil {
 			return &ValidationError{Name: "record_source_type", err: fmt.Errorf(`ent: validator failed for field "EsaSiteRecord.record_source_type": %w`, err)}
@@ -416,13 +397,10 @@ func (_u *EsaSiteRecordUpdate) sqlSave(ctx context.Context) (_node int, err erro
 		_spec.ClearField(esasiterecord.FieldData, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.Proxied(); ok {
-		_spec.SetField(esasiterecord.FieldProxied, field.TypeEnum, value)
+		_spec.SetField(esasiterecord.FieldProxied, field.TypeBool, value)
 	}
 	if _u.mutation.ProxiedCleared() {
-		_spec.ClearField(esasiterecord.FieldProxied, field.TypeEnum)
-	}
-	if value, ok := _u.mutation.RecordID(); ok {
-		_spec.SetField(esasiterecord.FieldRecordID, field.TypeString, value)
+		_spec.ClearField(esasiterecord.FieldProxied, field.TypeBool)
 	}
 	if value, ok := _u.mutation.RecordSourceType(); ok {
 		_spec.SetField(esasiterecord.FieldRecordSourceType, field.TypeEnum, value)
@@ -561,13 +539,13 @@ func (_u *EsaSiteRecordUpdateOne) ClearData() *EsaSiteRecordUpdateOne {
 }
 
 // SetProxied sets the "proxied" field.
-func (_u *EsaSiteRecordUpdateOne) SetProxied(v esasiterecord.Proxied) *EsaSiteRecordUpdateOne {
+func (_u *EsaSiteRecordUpdateOne) SetProxied(v bool) *EsaSiteRecordUpdateOne {
 	_u.mutation.SetProxied(v)
 	return _u
 }
 
 // SetNillableProxied sets the "proxied" field if the given value is not nil.
-func (_u *EsaSiteRecordUpdateOne) SetNillableProxied(v *esasiterecord.Proxied) *EsaSiteRecordUpdateOne {
+func (_u *EsaSiteRecordUpdateOne) SetNillableProxied(v *bool) *EsaSiteRecordUpdateOne {
 	if v != nil {
 		_u.SetProxied(*v)
 	}
@@ -577,20 +555,6 @@ func (_u *EsaSiteRecordUpdateOne) SetNillableProxied(v *esasiterecord.Proxied) *
 // ClearProxied clears the value of the "proxied" field.
 func (_u *EsaSiteRecordUpdateOne) ClearProxied() *EsaSiteRecordUpdateOne {
 	_u.mutation.ClearProxied()
-	return _u
-}
-
-// SetRecordID sets the "record_id" field.
-func (_u *EsaSiteRecordUpdateOne) SetRecordID(v string) *EsaSiteRecordUpdateOne {
-	_u.mutation.SetRecordID(v)
-	return _u
-}
-
-// SetNillableRecordID sets the "record_id" field if the given value is not nil.
-func (_u *EsaSiteRecordUpdateOne) SetNillableRecordID(v *string) *EsaSiteRecordUpdateOne {
-	if v != nil {
-		_u.SetRecordID(*v)
-	}
 	return _u
 }
 
@@ -826,11 +790,6 @@ func (_u *EsaSiteRecordUpdateOne) check() error {
 			return &ValidationError{Name: "biz_name", err: fmt.Errorf(`ent: validator failed for field "EsaSiteRecord.biz_name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Proxied(); ok {
-		if err := esasiterecord.ProxiedValidator(v); err != nil {
-			return &ValidationError{Name: "proxied", err: fmt.Errorf(`ent: validator failed for field "EsaSiteRecord.proxied": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.RecordSourceType(); ok {
 		if err := esasiterecord.RecordSourceTypeValidator(v); err != nil {
 			return &ValidationError{Name: "record_source_type", err: fmt.Errorf(`ent: validator failed for field "EsaSiteRecord.record_source_type": %w`, err)}
@@ -917,13 +876,10 @@ func (_u *EsaSiteRecordUpdateOne) sqlSave(ctx context.Context) (_node *EsaSiteRe
 		_spec.ClearField(esasiterecord.FieldData, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.Proxied(); ok {
-		_spec.SetField(esasiterecord.FieldProxied, field.TypeEnum, value)
+		_spec.SetField(esasiterecord.FieldProxied, field.TypeBool, value)
 	}
 	if _u.mutation.ProxiedCleared() {
-		_spec.ClearField(esasiterecord.FieldProxied, field.TypeEnum)
-	}
-	if value, ok := _u.mutation.RecordID(); ok {
-		_spec.SetField(esasiterecord.FieldRecordID, field.TypeString, value)
+		_spec.ClearField(esasiterecord.FieldProxied, field.TypeBool)
 	}
 	if value, ok := _u.mutation.RecordSourceType(); ok {
 		_spec.SetField(esasiterecord.FieldRecordSourceType, field.TypeEnum, value)

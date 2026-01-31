@@ -52,6 +52,7 @@ func (EdgeOneZoneDNSRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("record_id").
+			Immutable().
 			Comment("DNS 记录 ID").
 			Annotations(entsql.WithComments(true)),
 

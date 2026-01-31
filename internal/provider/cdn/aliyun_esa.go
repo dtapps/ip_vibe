@@ -717,3 +717,42 @@ func (p *AliyunESAProvider) ParseCustomConfig(config_json json.RawMessage) (err 
 	}
 	return nil
 }
+
+// SitesRaw 获取所有站点
+func (p *AliyunESAProvider) SitesRaw(ctx context.Context) (sites []*esa20240910.ListSitesResponseBodySites, err error) {
+	request := &esa20240910.ListSitesRequest{}
+	request.OrderBy = tea.String("gmtCreate")
+	request.PageNumber = tea.Int32(1)
+	request.PageSize = tea.Int32(500)
+	response, err := p.Provider.Client.ListSitesWithContext(ctx, request, p.Provider.Runtime)
+	if err != nil {
+		return nil, fmt.Errorf("接口 ListSitesWithContext 失败 %w", err)
+	}
+	return response.Body.Sites, nil
+}
+
+// OriginPoolsRaw 获取所有源地址池
+func (p *AliyunESAProvider) OriginPoolsRaw(ctx context.Context, site_id int64) (pools []*esa20240910.ListOriginPoolsResponseBodyOriginPools, err error) {
+	request := &esa20240910.ListOriginPoolsRequest{}
+	request.PageNumber = tea.Int32(1)
+	request.PageSize = tea.Int32(500)
+	request.SiteId = tea.Int64(site_id)
+	response, err := p.Provider.Client.ListOriginPoolsWithContext(ctx, request, p.Provider.Runtime)
+	if err != nil {
+		return nil, fmt.Errorf("接口 ListOriginPoolsWithContext 失败 %w", err)
+	}
+	return response.Body.OriginPools, nil
+}
+
+// RecordsRaw 获取所有解析记录
+func (p *AliyunESAProvider) RecordsRaw(ctx context.Context, site_id int64) (records []*esa20240910.ListRecordsResponseBodyRecords, err error) {
+	request := &esa20240910.ListRecordsRequest{}
+	request.SiteId = tea.Int64(site_id)
+	request.PageNumber = tea.Int32(1)
+	request.PageSize = tea.Int32(500)
+	response, err := p.Provider.Client.ListRecordsWithContext(ctx, request, p.Provider.Runtime)
+	if err != nil {
+		return nil, fmt.Errorf("接口 ListRecordsWithContext 失败 %w", err)
+	}
+	return response.Body.Records, nil
+}

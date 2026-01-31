@@ -52,6 +52,7 @@ func (EdgeOneZone) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("zone_id").
+			Immutable().
 			Comment("站点ID").
 			Annotations(entsql.WithComments(true)),
 

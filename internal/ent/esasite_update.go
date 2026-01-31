@@ -91,27 +91,6 @@ func (_u *EsaSiteUpdate) ClearCoverage() *EsaSiteUpdate {
 	return _u
 }
 
-// SetSiteID sets the "site_id" field.
-func (_u *EsaSiteUpdate) SetSiteID(v int64) *EsaSiteUpdate {
-	_u.mutation.ResetSiteID()
-	_u.mutation.SetSiteID(v)
-	return _u
-}
-
-// SetNillableSiteID sets the "site_id" field if the given value is not nil.
-func (_u *EsaSiteUpdate) SetNillableSiteID(v *int64) *EsaSiteUpdate {
-	if v != nil {
-		_u.SetSiteID(*v)
-	}
-	return _u
-}
-
-// AddSiteID adds value to the "site_id" field.
-func (_u *EsaSiteUpdate) AddSiteID(v int64) *EsaSiteUpdate {
-	_u.mutation.AddSiteID(v)
-	return _u
-}
-
 // SetSiteName sets the "site_name" field.
 func (_u *EsaSiteUpdate) SetSiteName(v string) *EsaSiteUpdate {
 	_u.mutation.SetSiteName(v)
@@ -336,12 +315,6 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.CoverageCleared() {
 		_spec.ClearField(esasite.FieldCoverage, field.TypeEnum)
 	}
-	if value, ok := _u.mutation.SiteID(); ok {
-		_spec.SetField(esasite.FieldSiteID, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedSiteID(); ok {
-		_spec.AddField(esasite.FieldSiteID, field.TypeInt64, value)
-	}
 	if value, ok := _u.mutation.SiteName(); ok {
 		_spec.SetField(esasite.FieldSiteName, field.TypeString, value)
 	}
@@ -523,27 +496,6 @@ func (_u *EsaSiteUpdateOne) SetNillableCoverage(v *esasite.Coverage) *EsaSiteUpd
 // ClearCoverage clears the value of the "coverage" field.
 func (_u *EsaSiteUpdateOne) ClearCoverage() *EsaSiteUpdateOne {
 	_u.mutation.ClearCoverage()
-	return _u
-}
-
-// SetSiteID sets the "site_id" field.
-func (_u *EsaSiteUpdateOne) SetSiteID(v int64) *EsaSiteUpdateOne {
-	_u.mutation.ResetSiteID()
-	_u.mutation.SetSiteID(v)
-	return _u
-}
-
-// SetNillableSiteID sets the "site_id" field if the given value is not nil.
-func (_u *EsaSiteUpdateOne) SetNillableSiteID(v *int64) *EsaSiteUpdateOne {
-	if v != nil {
-		_u.SetSiteID(*v)
-	}
-	return _u
-}
-
-// AddSiteID adds value to the "site_id" field.
-func (_u *EsaSiteUpdateOne) AddSiteID(v int64) *EsaSiteUpdateOne {
-	_u.mutation.AddSiteID(v)
 	return _u
 }
 
@@ -800,12 +752,6 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 	}
 	if _u.mutation.CoverageCleared() {
 		_spec.ClearField(esasite.FieldCoverage, field.TypeEnum)
-	}
-	if value, ok := _u.mutation.SiteID(); ok {
-		_spec.SetField(esasite.FieldSiteID, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedSiteID(); ok {
-		_spec.AddField(esasite.FieldSiteID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.SiteName(); ok {
 		_spec.SetField(esasite.FieldSiteName, field.TypeString, value)

@@ -52,20 +52,6 @@ func (_u *CloudflareTunnelUpdate) ClearSyncAt() *CloudflareTunnelUpdate {
 	return _u
 }
 
-// SetTunnelID sets the "tunnel_id" field.
-func (_u *CloudflareTunnelUpdate) SetTunnelID(v string) *CloudflareTunnelUpdate {
-	_u.mutation.SetTunnelID(v)
-	return _u
-}
-
-// SetNillableTunnelID sets the "tunnel_id" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdate) SetNillableTunnelID(v *string) *CloudflareTunnelUpdate {
-	if v != nil {
-		_u.SetTunnelID(*v)
-	}
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *CloudflareTunnelUpdate) SetName(v string) *CloudflareTunnelUpdate {
 	_u.mutation.SetName(v)
@@ -270,9 +256,6 @@ func (_u *CloudflareTunnelUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(cloudflaretunnel.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.TunnelID(); ok {
-		_spec.SetField(cloudflaretunnel.FieldTunnelID, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(cloudflaretunnel.FieldName, field.TypeString, value)
 	}
@@ -386,20 +369,6 @@ func (_u *CloudflareTunnelUpdateOne) SetNillableSyncAt(v *time.Time) *Cloudflare
 // ClearSyncAt clears the value of the "sync_at" field.
 func (_u *CloudflareTunnelUpdateOne) ClearSyncAt() *CloudflareTunnelUpdateOne {
 	_u.mutation.ClearSyncAt()
-	return _u
-}
-
-// SetTunnelID sets the "tunnel_id" field.
-func (_u *CloudflareTunnelUpdateOne) SetTunnelID(v string) *CloudflareTunnelUpdateOne {
-	_u.mutation.SetTunnelID(v)
-	return _u
-}
-
-// SetNillableTunnelID sets the "tunnel_id" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdateOne) SetNillableTunnelID(v *string) *CloudflareTunnelUpdateOne {
-	if v != nil {
-		_u.SetTunnelID(*v)
-	}
 	return _u
 }
 
@@ -636,9 +605,6 @@ func (_u *CloudflareTunnelUpdateOne) sqlSave(ctx context.Context) (_node *Cloudf
 	}
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(cloudflaretunnel.FieldSyncAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.TunnelID(); ok {
-		_spec.SetField(cloudflaretunnel.FieldTunnelID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(cloudflaretunnel.FieldName, field.TypeString, value)

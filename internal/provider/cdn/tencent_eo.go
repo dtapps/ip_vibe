@@ -481,7 +481,7 @@ func (p *TencentEOProvider) ZonesRaw(ctx context.Context) (zones []*teo.Zone, er
 }
 
 // OriginGroupsRaw 获取所有源站组
-func (p *TencentEOProvider) OriginGroupsRaw(ctx context.Context, zone_id string) (zones []*teo.OriginGroup, err error) {
+func (p *TencentEOProvider) OriginGroupsRaw(ctx context.Context, zone_id string) (groups []*teo.OriginGroup, err error) {
 	request := teo.NewDescribeOriginGroupRequest()
 	request.ZoneId = common.StringPtr(zone_id)
 	request.Offset = common.Uint64Ptr(0)
@@ -494,7 +494,7 @@ func (p *TencentEOProvider) OriginGroupsRaw(ctx context.Context, zone_id string)
 }
 
 // DnsRecordsRaw 获取所有DNS记录
-func (p *TencentEOProvider) DnsRecordsRaw(ctx context.Context, zone_id string) (zones []*teo.DnsRecord, err error) {
+func (p *TencentEOProvider) DnsRecordsRaw(ctx context.Context, zone_id string) (records []*teo.DnsRecord, err error) {
 	request := teo.NewDescribeDnsRecordsRequest()
 	request.ZoneId = common.StringPtr(zone_id)
 	request.Offset = common.Int64Ptr(0)
@@ -509,7 +509,7 @@ func (p *TencentEOProvider) DnsRecordsRaw(ctx context.Context, zone_id string) (
 }
 
 // AccelerationDomainsRaw 获取所有加速域名
-func (p *TencentEOProvider) AccelerationDomainsRaw(ctx context.Context, zone_id string) (zones []*teo.AccelerationDomain, err error) {
+func (p *TencentEOProvider) AccelerationDomainsRaw(ctx context.Context, zone_id string) (records []*teo.AccelerationDomain, err error) {
 	request := teo.NewDescribeAccelerationDomainsRequest()
 	request.ZoneId = common.StringPtr(zone_id)
 	request.Offset = common.Int64Ptr(0)

@@ -53,6 +53,7 @@ func (EdgeOneZoneAccelerationDomain) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("domain_name").
+			Immutable().
 			Comment("加速域名名称").
 			Annotations(entsql.WithComments(true)),
 

@@ -385,18 +385,6 @@ func (u *EdgeOneZoneOriginGroupUpsert) ClearSyncAt() *EdgeOneZoneOriginGroupUpse
 	return u
 }
 
-// SetGroupID sets the "group_id" field.
-func (u *EdgeOneZoneOriginGroupUpsert) SetGroupID(v string) *EdgeOneZoneOriginGroupUpsert {
-	u.Set(edgeonezoneorigingroup.FieldGroupID, v)
-	return u
-}
-
-// UpdateGroupID sets the "group_id" field to the value that was provided on create.
-func (u *EdgeOneZoneOriginGroupUpsert) UpdateGroupID() *EdgeOneZoneOriginGroupUpsert {
-	u.SetExcluded(edgeonezoneorigingroup.FieldGroupID)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *EdgeOneZoneOriginGroupUpsert) SetName(v string) *EdgeOneZoneOriginGroupUpsert {
 	u.Set(edgeonezoneorigingroup.FieldName, v)
@@ -498,6 +486,9 @@ func (u *EdgeOneZoneOriginGroupUpsertOne) UpdateNewValues() *EdgeOneZoneOriginGr
 		if _, exists := u.create.mutation.EdgeoneZoneID(); exists {
 			s.SetIgnore(edgeonezoneorigingroup.FieldEdgeoneZoneID)
 		}
+		if _, exists := u.create.mutation.GroupID(); exists {
+			s.SetIgnore(edgeonezoneorigingroup.FieldGroupID)
+		}
 	}))
 	return u
 }
@@ -547,20 +538,6 @@ func (u *EdgeOneZoneOriginGroupUpsertOne) UpdateSyncAt() *EdgeOneZoneOriginGroup
 func (u *EdgeOneZoneOriginGroupUpsertOne) ClearSyncAt() *EdgeOneZoneOriginGroupUpsertOne {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetGroupID sets the "group_id" field.
-func (u *EdgeOneZoneOriginGroupUpsertOne) SetGroupID(v string) *EdgeOneZoneOriginGroupUpsertOne {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.SetGroupID(v)
-	})
-}
-
-// UpdateGroupID sets the "group_id" field to the value that was provided on create.
-func (u *EdgeOneZoneOriginGroupUpsertOne) UpdateGroupID() *EdgeOneZoneOriginGroupUpsertOne {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.UpdateGroupID()
 	})
 }
 
@@ -842,6 +819,9 @@ func (u *EdgeOneZoneOriginGroupUpsertBulk) UpdateNewValues() *EdgeOneZoneOriginG
 			if _, exists := b.mutation.EdgeoneZoneID(); exists {
 				s.SetIgnore(edgeonezoneorigingroup.FieldEdgeoneZoneID)
 			}
+			if _, exists := b.mutation.GroupID(); exists {
+				s.SetIgnore(edgeonezoneorigingroup.FieldGroupID)
+			}
 		}
 	}))
 	return u
@@ -892,20 +872,6 @@ func (u *EdgeOneZoneOriginGroupUpsertBulk) UpdateSyncAt() *EdgeOneZoneOriginGrou
 func (u *EdgeOneZoneOriginGroupUpsertBulk) ClearSyncAt() *EdgeOneZoneOriginGroupUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetGroupID sets the "group_id" field.
-func (u *EdgeOneZoneOriginGroupUpsertBulk) SetGroupID(v string) *EdgeOneZoneOriginGroupUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.SetGroupID(v)
-	})
-}
-
-// UpdateGroupID sets the "group_id" field to the value that was provided on create.
-func (u *EdgeOneZoneOriginGroupUpsertBulk) UpdateGroupID() *EdgeOneZoneOriginGroupUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
-		s.UpdateGroupID()
 	})
 }
 

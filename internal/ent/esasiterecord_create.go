@@ -107,13 +107,13 @@ func (_c *EsaSiteRecordCreate) SetData(v json.RawMessage) *EsaSiteRecordCreate {
 }
 
 // SetProxied sets the "proxied" field.
-func (_c *EsaSiteRecordCreate) SetProxied(v esasiterecord.Proxied) *EsaSiteRecordCreate {
+func (_c *EsaSiteRecordCreate) SetProxied(v bool) *EsaSiteRecordCreate {
 	_c.mutation.SetProxied(v)
 	return _c
 }
 
 // SetNillableProxied sets the "proxied" field if the given value is not nil.
-func (_c *EsaSiteRecordCreate) SetNillableProxied(v *esasiterecord.Proxied) *EsaSiteRecordCreate {
+func (_c *EsaSiteRecordCreate) SetNillableProxied(v *bool) *EsaSiteRecordCreate {
 	if v != nil {
 		_c.SetProxied(*v)
 	}
@@ -121,7 +121,7 @@ func (_c *EsaSiteRecordCreate) SetNillableProxied(v *esasiterecord.Proxied) *Esa
 }
 
 // SetRecordID sets the "record_id" field.
-func (_c *EsaSiteRecordCreate) SetRecordID(v string) *EsaSiteRecordCreate {
+func (_c *EsaSiteRecordCreate) SetRecordID(v int64) *EsaSiteRecordCreate {
 	_c.mutation.SetRecordID(v)
 	return _c
 }
@@ -316,11 +316,6 @@ func (_c *EsaSiteRecordCreate) check() error {
 			return &ValidationError{Name: "biz_name", err: fmt.Errorf(`ent: validator failed for field "EsaSiteRecord.biz_name": %w`, err)}
 		}
 	}
-	if v, ok := _c.mutation.Proxied(); ok {
-		if err := esasiterecord.ProxiedValidator(v); err != nil {
-			return &ValidationError{Name: "proxied", err: fmt.Errorf(`ent: validator failed for field "EsaSiteRecord.proxied": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.RecordID(); !ok {
 		return &ValidationError{Name: "record_id", err: errors.New(`ent: missing required field "EsaSiteRecord.record_id"`)}
 	}
@@ -405,11 +400,11 @@ func (_c *EsaSiteRecordCreate) createSpec() (*EsaSiteRecord, *sqlgraph.CreateSpe
 		_node.Data = value
 	}
 	if value, ok := _c.mutation.Proxied(); ok {
-		_spec.SetField(esasiterecord.FieldProxied, field.TypeEnum, value)
+		_spec.SetField(esasiterecord.FieldProxied, field.TypeBool, value)
 		_node.Proxied = value
 	}
 	if value, ok := _c.mutation.RecordID(); ok {
-		_spec.SetField(esasiterecord.FieldRecordID, field.TypeString, value)
+		_spec.SetField(esasiterecord.FieldRecordID, field.TypeInt64, value)
 		_node.RecordID = value
 	}
 	if value, ok := _c.mutation.RecordSourceType(); ok {
@@ -568,7 +563,7 @@ func (u *EsaSiteRecordUpsert) ClearData() *EsaSiteRecordUpsert {
 }
 
 // SetProxied sets the "proxied" field.
-func (u *EsaSiteRecordUpsert) SetProxied(v esasiterecord.Proxied) *EsaSiteRecordUpsert {
+func (u *EsaSiteRecordUpsert) SetProxied(v bool) *EsaSiteRecordUpsert {
 	u.Set(esasiterecord.FieldProxied, v)
 	return u
 }
@@ -582,18 +577,6 @@ func (u *EsaSiteRecordUpsert) UpdateProxied() *EsaSiteRecordUpsert {
 // ClearProxied clears the value of the "proxied" field.
 func (u *EsaSiteRecordUpsert) ClearProxied() *EsaSiteRecordUpsert {
 	u.SetNull(esasiterecord.FieldProxied)
-	return u
-}
-
-// SetRecordID sets the "record_id" field.
-func (u *EsaSiteRecordUpsert) SetRecordID(v string) *EsaSiteRecordUpsert {
-	u.Set(esasiterecord.FieldRecordID, v)
-	return u
-}
-
-// UpdateRecordID sets the "record_id" field to the value that was provided on create.
-func (u *EsaSiteRecordUpsert) UpdateRecordID() *EsaSiteRecordUpsert {
-	u.SetExcluded(esasiterecord.FieldRecordID)
 	return u
 }
 
@@ -776,6 +759,9 @@ func (u *EsaSiteRecordUpsertOne) UpdateNewValues() *EsaSiteRecordUpsertOne {
 		if _, exists := u.create.mutation.EsaSiteID(); exists {
 			s.SetIgnore(esasiterecord.FieldEsaSiteID)
 		}
+		if _, exists := u.create.mutation.RecordID(); exists {
+			s.SetIgnore(esasiterecord.FieldRecordID)
+		}
 	}))
 	return u
 }
@@ -871,7 +857,7 @@ func (u *EsaSiteRecordUpsertOne) ClearData() *EsaSiteRecordUpsertOne {
 }
 
 // SetProxied sets the "proxied" field.
-func (u *EsaSiteRecordUpsertOne) SetProxied(v esasiterecord.Proxied) *EsaSiteRecordUpsertOne {
+func (u *EsaSiteRecordUpsertOne) SetProxied(v bool) *EsaSiteRecordUpsertOne {
 	return u.Update(func(s *EsaSiteRecordUpsert) {
 		s.SetProxied(v)
 	})
@@ -888,20 +874,6 @@ func (u *EsaSiteRecordUpsertOne) UpdateProxied() *EsaSiteRecordUpsertOne {
 func (u *EsaSiteRecordUpsertOne) ClearProxied() *EsaSiteRecordUpsertOne {
 	return u.Update(func(s *EsaSiteRecordUpsert) {
 		s.ClearProxied()
-	})
-}
-
-// SetRecordID sets the "record_id" field.
-func (u *EsaSiteRecordUpsertOne) SetRecordID(v string) *EsaSiteRecordUpsertOne {
-	return u.Update(func(s *EsaSiteRecordUpsert) {
-		s.SetRecordID(v)
-	})
-}
-
-// UpdateRecordID sets the "record_id" field to the value that was provided on create.
-func (u *EsaSiteRecordUpsertOne) UpdateRecordID() *EsaSiteRecordUpsertOne {
-	return u.Update(func(s *EsaSiteRecordUpsert) {
-		s.UpdateRecordID()
 	})
 }
 
@@ -1274,6 +1246,9 @@ func (u *EsaSiteRecordUpsertBulk) UpdateNewValues() *EsaSiteRecordUpsertBulk {
 			if _, exists := b.mutation.EsaSiteID(); exists {
 				s.SetIgnore(esasiterecord.FieldEsaSiteID)
 			}
+			if _, exists := b.mutation.RecordID(); exists {
+				s.SetIgnore(esasiterecord.FieldRecordID)
+			}
 		}
 	}))
 	return u
@@ -1370,7 +1345,7 @@ func (u *EsaSiteRecordUpsertBulk) ClearData() *EsaSiteRecordUpsertBulk {
 }
 
 // SetProxied sets the "proxied" field.
-func (u *EsaSiteRecordUpsertBulk) SetProxied(v esasiterecord.Proxied) *EsaSiteRecordUpsertBulk {
+func (u *EsaSiteRecordUpsertBulk) SetProxied(v bool) *EsaSiteRecordUpsertBulk {
 	return u.Update(func(s *EsaSiteRecordUpsert) {
 		s.SetProxied(v)
 	})
@@ -1387,20 +1362,6 @@ func (u *EsaSiteRecordUpsertBulk) UpdateProxied() *EsaSiteRecordUpsertBulk {
 func (u *EsaSiteRecordUpsertBulk) ClearProxied() *EsaSiteRecordUpsertBulk {
 	return u.Update(func(s *EsaSiteRecordUpsert) {
 		s.ClearProxied()
-	})
-}
-
-// SetRecordID sets the "record_id" field.
-func (u *EsaSiteRecordUpsertBulk) SetRecordID(v string) *EsaSiteRecordUpsertBulk {
-	return u.Update(func(s *EsaSiteRecordUpsert) {
-		s.SetRecordID(v)
-	})
-}
-
-// UpdateRecordID sets the "record_id" field to the value that was provided on create.
-func (u *EsaSiteRecordUpsertBulk) UpdateRecordID() *EsaSiteRecordUpsertBulk {
-	return u.Update(func(s *EsaSiteRecordUpsert) {
-		s.UpdateRecordID()
 	})
 }
 

@@ -570,18 +570,6 @@ func (u *EdgeOneZoneUpsert) ClearSyncAt() *EdgeOneZoneUpsert {
 	return u
 }
 
-// SetZoneID sets the "zone_id" field.
-func (u *EdgeOneZoneUpsert) SetZoneID(v string) *EdgeOneZoneUpsert {
-	u.Set(edgeonezone.FieldZoneID, v)
-	return u
-}
-
-// UpdateZoneID sets the "zone_id" field to the value that was provided on create.
-func (u *EdgeOneZoneUpsert) UpdateZoneID() *EdgeOneZoneUpsert {
-	u.SetExcluded(edgeonezone.FieldZoneID)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *EdgeOneZoneUpsert) SetName(v string) *EdgeOneZoneUpsert {
 	u.Set(edgeonezone.FieldName, v)
@@ -737,6 +725,9 @@ func (u *EdgeOneZoneUpsertOne) UpdateNewValues() *EdgeOneZoneUpsertOne {
 		if _, exists := u.create.mutation.ConfigID(); exists {
 			s.SetIgnore(edgeonezone.FieldConfigID)
 		}
+		if _, exists := u.create.mutation.ZoneID(); exists {
+			s.SetIgnore(edgeonezone.FieldZoneID)
+		}
 	}))
 	return u
 }
@@ -786,20 +777,6 @@ func (u *EdgeOneZoneUpsertOne) UpdateSyncAt() *EdgeOneZoneUpsertOne {
 func (u *EdgeOneZoneUpsertOne) ClearSyncAt() *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetZoneID sets the "zone_id" field.
-func (u *EdgeOneZoneUpsertOne) SetZoneID(v string) *EdgeOneZoneUpsertOne {
-	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.SetZoneID(v)
-	})
-}
-
-// UpdateZoneID sets the "zone_id" field to the value that was provided on create.
-func (u *EdgeOneZoneUpsertOne) UpdateZoneID() *EdgeOneZoneUpsertOne {
-	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.UpdateZoneID()
 	})
 }
 
@@ -1144,6 +1121,9 @@ func (u *EdgeOneZoneUpsertBulk) UpdateNewValues() *EdgeOneZoneUpsertBulk {
 			if _, exists := b.mutation.ConfigID(); exists {
 				s.SetIgnore(edgeonezone.FieldConfigID)
 			}
+			if _, exists := b.mutation.ZoneID(); exists {
+				s.SetIgnore(edgeonezone.FieldZoneID)
+			}
 		}
 	}))
 	return u
@@ -1194,20 +1174,6 @@ func (u *EdgeOneZoneUpsertBulk) UpdateSyncAt() *EdgeOneZoneUpsertBulk {
 func (u *EdgeOneZoneUpsertBulk) ClearSyncAt() *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetZoneID sets the "zone_id" field.
-func (u *EdgeOneZoneUpsertBulk) SetZoneID(v string) *EdgeOneZoneUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.SetZoneID(v)
-	})
-}
-
-// UpdateZoneID sets the "zone_id" field to the value that was provided on create.
-func (u *EdgeOneZoneUpsertBulk) UpdateZoneID() *EdgeOneZoneUpsertBulk {
-	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.UpdateZoneID()
 	})
 }
 

@@ -51,27 +51,6 @@ func (_u *EsaSiteOriginPoolUpdate) ClearSyncAt() *EsaSiteOriginPoolUpdate {
 	return _u
 }
 
-// SetPoolID sets the "pool_id" field.
-func (_u *EsaSiteOriginPoolUpdate) SetPoolID(v int64) *EsaSiteOriginPoolUpdate {
-	_u.mutation.ResetPoolID()
-	_u.mutation.SetPoolID(v)
-	return _u
-}
-
-// SetNillablePoolID sets the "pool_id" field if the given value is not nil.
-func (_u *EsaSiteOriginPoolUpdate) SetNillablePoolID(v *int64) *EsaSiteOriginPoolUpdate {
-	if v != nil {
-		_u.SetPoolID(*v)
-	}
-	return _u
-}
-
-// AddPoolID adds value to the "pool_id" field.
-func (_u *EsaSiteOriginPoolUpdate) AddPoolID(v int64) *EsaSiteOriginPoolUpdate {
-	_u.mutation.AddPoolID(v)
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *EsaSiteOriginPoolUpdate) SetName(v string) *EsaSiteOriginPoolUpdate {
 	_u.mutation.SetName(v)
@@ -253,12 +232,6 @@ func (_u *EsaSiteOriginPoolUpdate) sqlSave(ctx context.Context) (_node int, err 
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(esasiteoriginpool.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.PoolID(); ok {
-		_spec.SetField(esasiteoriginpool.FieldPoolID, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedPoolID(); ok {
-		_spec.AddField(esasiteoriginpool.FieldPoolID, field.TypeInt64, value)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(esasiteoriginpool.FieldName, field.TypeString, value)
 	}
@@ -338,27 +311,6 @@ func (_u *EsaSiteOriginPoolUpdateOne) SetNillableSyncAt(v *time.Time) *EsaSiteOr
 // ClearSyncAt clears the value of the "sync_at" field.
 func (_u *EsaSiteOriginPoolUpdateOne) ClearSyncAt() *EsaSiteOriginPoolUpdateOne {
 	_u.mutation.ClearSyncAt()
-	return _u
-}
-
-// SetPoolID sets the "pool_id" field.
-func (_u *EsaSiteOriginPoolUpdateOne) SetPoolID(v int64) *EsaSiteOriginPoolUpdateOne {
-	_u.mutation.ResetPoolID()
-	_u.mutation.SetPoolID(v)
-	return _u
-}
-
-// SetNillablePoolID sets the "pool_id" field if the given value is not nil.
-func (_u *EsaSiteOriginPoolUpdateOne) SetNillablePoolID(v *int64) *EsaSiteOriginPoolUpdateOne {
-	if v != nil {
-		_u.SetPoolID(*v)
-	}
-	return _u
-}
-
-// AddPoolID adds value to the "pool_id" field.
-func (_u *EsaSiteOriginPoolUpdateOne) AddPoolID(v int64) *EsaSiteOriginPoolUpdateOne {
-	_u.mutation.AddPoolID(v)
 	return _u
 }
 
@@ -572,12 +524,6 @@ func (_u *EsaSiteOriginPoolUpdateOne) sqlSave(ctx context.Context) (_node *EsaSi
 	}
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(esasiteoriginpool.FieldSyncAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.PoolID(); ok {
-		_spec.SetField(esasiteoriginpool.FieldPoolID, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedPoolID(); ok {
-		_spec.AddField(esasiteoriginpool.FieldPoolID, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(esasiteoriginpool.FieldName, field.TypeString, value)

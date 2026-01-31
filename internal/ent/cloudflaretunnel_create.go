@@ -425,18 +425,6 @@ func (u *CloudflareTunnelUpsert) ClearSyncAt() *CloudflareTunnelUpsert {
 	return u
 }
 
-// SetTunnelID sets the "tunnel_id" field.
-func (u *CloudflareTunnelUpsert) SetTunnelID(v string) *CloudflareTunnelUpsert {
-	u.Set(cloudflaretunnel.FieldTunnelID, v)
-	return u
-}
-
-// UpdateTunnelID sets the "tunnel_id" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsert) UpdateTunnelID() *CloudflareTunnelUpsert {
-	u.SetExcluded(cloudflaretunnel.FieldTunnelID)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *CloudflareTunnelUpsert) SetName(v string) *CloudflareTunnelUpsert {
 	u.Set(cloudflaretunnel.FieldName, v)
@@ -538,6 +526,9 @@ func (u *CloudflareTunnelUpsertOne) UpdateNewValues() *CloudflareTunnelUpsertOne
 		if _, exists := u.create.mutation.ConfigID(); exists {
 			s.SetIgnore(cloudflaretunnel.FieldConfigID)
 		}
+		if _, exists := u.create.mutation.TunnelID(); exists {
+			s.SetIgnore(cloudflaretunnel.FieldTunnelID)
+		}
 	}))
 	return u
 }
@@ -587,20 +578,6 @@ func (u *CloudflareTunnelUpsertOne) UpdateSyncAt() *CloudflareTunnelUpsertOne {
 func (u *CloudflareTunnelUpsertOne) ClearSyncAt() *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetTunnelID sets the "tunnel_id" field.
-func (u *CloudflareTunnelUpsertOne) SetTunnelID(v string) *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetTunnelID(v)
-	})
-}
-
-// UpdateTunnelID sets the "tunnel_id" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertOne) UpdateTunnelID() *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateTunnelID()
 	})
 }
 
@@ -882,6 +859,9 @@ func (u *CloudflareTunnelUpsertBulk) UpdateNewValues() *CloudflareTunnelUpsertBu
 			if _, exists := b.mutation.ConfigID(); exists {
 				s.SetIgnore(cloudflaretunnel.FieldConfigID)
 			}
+			if _, exists := b.mutation.TunnelID(); exists {
+				s.SetIgnore(cloudflaretunnel.FieldTunnelID)
+			}
 		}
 	}))
 	return u
@@ -932,20 +912,6 @@ func (u *CloudflareTunnelUpsertBulk) UpdateSyncAt() *CloudflareTunnelUpsertBulk 
 func (u *CloudflareTunnelUpsertBulk) ClearSyncAt() *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetTunnelID sets the "tunnel_id" field.
-func (u *CloudflareTunnelUpsertBulk) SetTunnelID(v string) *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetTunnelID(v)
-	})
-}
-
-// UpdateTunnelID sets the "tunnel_id" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertBulk) UpdateTunnelID() *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateTunnelID()
 	})
 }
 

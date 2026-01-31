@@ -398,24 +398,6 @@ func (u *EsaSiteOriginPoolUpsert) ClearSyncAt() *EsaSiteOriginPoolUpsert {
 	return u
 }
 
-// SetPoolID sets the "pool_id" field.
-func (u *EsaSiteOriginPoolUpsert) SetPoolID(v int64) *EsaSiteOriginPoolUpsert {
-	u.Set(esasiteoriginpool.FieldPoolID, v)
-	return u
-}
-
-// UpdatePoolID sets the "pool_id" field to the value that was provided on create.
-func (u *EsaSiteOriginPoolUpsert) UpdatePoolID() *EsaSiteOriginPoolUpsert {
-	u.SetExcluded(esasiteoriginpool.FieldPoolID)
-	return u
-}
-
-// AddPoolID adds v to the "pool_id" field.
-func (u *EsaSiteOriginPoolUpsert) AddPoolID(v int64) *EsaSiteOriginPoolUpsert {
-	u.Add(esasiteoriginpool.FieldPoolID, v)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *EsaSiteOriginPoolUpsert) SetName(v string) *EsaSiteOriginPoolUpsert {
 	u.Set(esasiteoriginpool.FieldName, v)
@@ -535,6 +517,9 @@ func (u *EsaSiteOriginPoolUpsertOne) UpdateNewValues() *EsaSiteOriginPoolUpsertO
 		if _, exists := u.create.mutation.EsaSiteID(); exists {
 			s.SetIgnore(esasiteoriginpool.FieldEsaSiteID)
 		}
+		if _, exists := u.create.mutation.PoolID(); exists {
+			s.SetIgnore(esasiteoriginpool.FieldPoolID)
+		}
 	}))
 	return u
 }
@@ -584,27 +569,6 @@ func (u *EsaSiteOriginPoolUpsertOne) UpdateSyncAt() *EsaSiteOriginPoolUpsertOne 
 func (u *EsaSiteOriginPoolUpsertOne) ClearSyncAt() *EsaSiteOriginPoolUpsertOne {
 	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetPoolID sets the "pool_id" field.
-func (u *EsaSiteOriginPoolUpsertOne) SetPoolID(v int64) *EsaSiteOriginPoolUpsertOne {
-	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
-		s.SetPoolID(v)
-	})
-}
-
-// AddPoolID adds v to the "pool_id" field.
-func (u *EsaSiteOriginPoolUpsertOne) AddPoolID(v int64) *EsaSiteOriginPoolUpsertOne {
-	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
-		s.AddPoolID(v)
-	})
-}
-
-// UpdatePoolID sets the "pool_id" field to the value that was provided on create.
-func (u *EsaSiteOriginPoolUpsertOne) UpdatePoolID() *EsaSiteOriginPoolUpsertOne {
-	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
-		s.UpdatePoolID()
 	})
 }
 
@@ -907,6 +871,9 @@ func (u *EsaSiteOriginPoolUpsertBulk) UpdateNewValues() *EsaSiteOriginPoolUpsert
 			if _, exists := b.mutation.EsaSiteID(); exists {
 				s.SetIgnore(esasiteoriginpool.FieldEsaSiteID)
 			}
+			if _, exists := b.mutation.PoolID(); exists {
+				s.SetIgnore(esasiteoriginpool.FieldPoolID)
+			}
 		}
 	}))
 	return u
@@ -957,27 +924,6 @@ func (u *EsaSiteOriginPoolUpsertBulk) UpdateSyncAt() *EsaSiteOriginPoolUpsertBul
 func (u *EsaSiteOriginPoolUpsertBulk) ClearSyncAt() *EsaSiteOriginPoolUpsertBulk {
 	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
 		s.ClearSyncAt()
-	})
-}
-
-// SetPoolID sets the "pool_id" field.
-func (u *EsaSiteOriginPoolUpsertBulk) SetPoolID(v int64) *EsaSiteOriginPoolUpsertBulk {
-	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
-		s.SetPoolID(v)
-	})
-}
-
-// AddPoolID adds v to the "pool_id" field.
-func (u *EsaSiteOriginPoolUpsertBulk) AddPoolID(v int64) *EsaSiteOriginPoolUpsertBulk {
-	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
-		s.AddPoolID(v)
-	})
-}
-
-// UpdatePoolID sets the "pool_id" field to the value that was provided on create.
-func (u *EsaSiteOriginPoolUpsertBulk) UpdatePoolID() *EsaSiteOriginPoolUpsertBulk {
-	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
-		s.UpdatePoolID()
 	})
 }
 

@@ -64,6 +64,7 @@ func (EsaSite) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("site_id").
+			Immutable().
 			Comment("站点 ID").
 			Annotations(entsql.WithComments(true)),
 

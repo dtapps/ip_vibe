@@ -510,24 +510,6 @@ func (u *EsaSiteUpsert) ClearCoverage() *EsaSiteUpsert {
 	return u
 }
 
-// SetSiteID sets the "site_id" field.
-func (u *EsaSiteUpsert) SetSiteID(v int64) *EsaSiteUpsert {
-	u.Set(esasite.FieldSiteID, v)
-	return u
-}
-
-// UpdateSiteID sets the "site_id" field to the value that was provided on create.
-func (u *EsaSiteUpsert) UpdateSiteID() *EsaSiteUpsert {
-	u.SetExcluded(esasite.FieldSiteID)
-	return u
-}
-
-// AddSiteID adds v to the "site_id" field.
-func (u *EsaSiteUpsert) AddSiteID(v int64) *EsaSiteUpsert {
-	u.Add(esasite.FieldSiteID, v)
-	return u
-}
-
 // SetSiteName sets the "site_name" field.
 func (u *EsaSiteUpsert) SetSiteName(v string) *EsaSiteUpsert {
 	u.Set(esasite.FieldSiteName, v)
@@ -592,6 +574,9 @@ func (u *EsaSiteUpsertOne) UpdateNewValues() *EsaSiteUpsertOne {
 		}
 		if _, exists := u.create.mutation.ConfigID(); exists {
 			s.SetIgnore(esasite.FieldConfigID)
+		}
+		if _, exists := u.create.mutation.SiteID(); exists {
+			s.SetIgnore(esasite.FieldSiteID)
 		}
 	}))
 	return u
@@ -684,27 +669,6 @@ func (u *EsaSiteUpsertOne) UpdateCoverage() *EsaSiteUpsertOne {
 func (u *EsaSiteUpsertOne) ClearCoverage() *EsaSiteUpsertOne {
 	return u.Update(func(s *EsaSiteUpsert) {
 		s.ClearCoverage()
-	})
-}
-
-// SetSiteID sets the "site_id" field.
-func (u *EsaSiteUpsertOne) SetSiteID(v int64) *EsaSiteUpsertOne {
-	return u.Update(func(s *EsaSiteUpsert) {
-		s.SetSiteID(v)
-	})
-}
-
-// AddSiteID adds v to the "site_id" field.
-func (u *EsaSiteUpsertOne) AddSiteID(v int64) *EsaSiteUpsertOne {
-	return u.Update(func(s *EsaSiteUpsert) {
-		s.AddSiteID(v)
-	})
-}
-
-// UpdateSiteID sets the "site_id" field to the value that was provided on create.
-func (u *EsaSiteUpsertOne) UpdateSiteID() *EsaSiteUpsertOne {
-	return u.Update(func(s *EsaSiteUpsert) {
-		s.UpdateSiteID()
 	})
 }
 
@@ -944,6 +908,9 @@ func (u *EsaSiteUpsertBulk) UpdateNewValues() *EsaSiteUpsertBulk {
 			if _, exists := b.mutation.ConfigID(); exists {
 				s.SetIgnore(esasite.FieldConfigID)
 			}
+			if _, exists := b.mutation.SiteID(); exists {
+				s.SetIgnore(esasite.FieldSiteID)
+			}
 		}
 	}))
 	return u
@@ -1036,27 +1003,6 @@ func (u *EsaSiteUpsertBulk) UpdateCoverage() *EsaSiteUpsertBulk {
 func (u *EsaSiteUpsertBulk) ClearCoverage() *EsaSiteUpsertBulk {
 	return u.Update(func(s *EsaSiteUpsert) {
 		s.ClearCoverage()
-	})
-}
-
-// SetSiteID sets the "site_id" field.
-func (u *EsaSiteUpsertBulk) SetSiteID(v int64) *EsaSiteUpsertBulk {
-	return u.Update(func(s *EsaSiteUpsert) {
-		s.SetSiteID(v)
-	})
-}
-
-// AddSiteID adds v to the "site_id" field.
-func (u *EsaSiteUpsertBulk) AddSiteID(v int64) *EsaSiteUpsertBulk {
-	return u.Update(func(s *EsaSiteUpsert) {
-		s.AddSiteID(v)
-	})
-}
-
-// UpdateSiteID sets the "site_id" field to the value that was provided on create.
-func (u *EsaSiteUpsertBulk) UpdateSiteID() *EsaSiteUpsertBulk {
-	return u.Update(func(s *EsaSiteUpsert) {
-		s.UpdateSiteID()
 	})
 }
 

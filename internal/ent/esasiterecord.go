@@ -35,9 +35,9 @@ type EsaSiteRecord struct {
 	// 记录的具体 DNS 信息
 	Data json.RawMessage `json:"data,omitempty"`
 	// 记录是否开启代理加速
-	Proxied esasiterecord.Proxied `json:"proxied,omitempty"`
+	Proxied bool `json:"proxied,omitempty"`
 	// 记录 ID
-	RecordID string `json:"record_id,omitempty"`
+	RecordID int64 `json:"record_id,omitempty"`
 	// CNAME 记录的源站类型
 	RecordSourceType esasiterecord.RecordSourceType `json:"record_source_type,omitempty"`
 	// 记录名称
@@ -87,9 +87,11 @@ func (*EsaSiteRecord) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case esasiterecord.FieldData, esasiterecord.FieldAuthConf:
 			values[i] = new([]byte)
-		case esasiterecord.FieldID, esasiterecord.FieldEsaSiteID, esasiterecord.FieldTTL:
+		case esasiterecord.FieldProxied:
+			values[i] = new(sql.NullBool)
+		case esasiterecord.FieldID, esasiterecord.FieldEsaSiteID, esasiterecord.FieldRecordID, esasiterecord.FieldTTL:
 			values[i] = new(sql.NullInt64)
-		case esasiterecord.FieldBizName, esasiterecord.FieldProxied, esasiterecord.FieldRecordID, esasiterecord.FieldRecordSourceType, esasiterecord.FieldRecordName, esasiterecord.FieldRecordType, esasiterecord.FieldRecordCname, esasiterecord.FieldComment, esasiterecord.FieldHostPolicy:
+		case esasiterecord.FieldBizName, esasiterecord.FieldRecordSourceType, esasiterecord.FieldRecordName, esasiterecord.FieldRecordType, esasiterecord.FieldRecordCname, esasiterecord.FieldComment, esasiterecord.FieldHostPolicy:
 			values[i] = new(sql.NullString)
 		case esasiterecord.FieldCreatedAt, esasiterecord.FieldUpdatedAt, esasiterecord.FieldRemoteCreatedAt, esasiterecord.FieldSyncAt:
 			values[i] = new(sql.NullTime)
@@ -159,16 +161,16 @@ func (_m *EsaSiteRecord) assignValues(columns []string, values []any) error {
 				}
 			}
 		case esasiterecord.FieldProxied:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field proxied", values[i])
 			} else if value.Valid {
-				_m.Proxied = esasiterecord.Proxied(value.String)
+				_m.Proxied = value.Bool
 			}
 		case esasiterecord.FieldRecordID:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field record_id", values[i])
 			} else if value.Valid {
-				_m.RecordID = value.String
+				_m.RecordID = value.Int64
 			}
 		case esasiterecord.FieldRecordSourceType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -286,7 +288,7 @@ func (_m *EsaSiteRecord) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.Proxied))
 	builder.WriteString(", ")
 	builder.WriteString("record_id=")
-	builder.WriteString(_m.RecordID)
+	builder.WriteString(fmt.Sprintf("%v", _m.RecordID))
 	builder.WriteString(", ")
 	builder.WriteString("record_source_type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.RecordSourceType))

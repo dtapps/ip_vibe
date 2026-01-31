@@ -138,29 +138,6 @@ func BizNameValidator(bn BizName) error {
 	}
 }
 
-// Proxied defines the type for the "proxied" enum field.
-type Proxied string
-
-// Proxied values.
-const (
-	ProxiedTrue  Proxied = "true"
-	ProxiedFalse Proxied = "false"
-)
-
-func (pr Proxied) String() string {
-	return string(pr)
-}
-
-// ProxiedValidator is a validator for the "proxied" field enum values. It is called by the builders before save.
-func ProxiedValidator(pr Proxied) error {
-	switch pr {
-	case ProxiedTrue, ProxiedFalse:
-		return nil
-	default:
-		return fmt.Errorf("esasiterecord: invalid enum value for proxied field: %q", pr)
-	}
-}
-
 // RecordSourceType defines the type for the "record_source_type" enum field.
 type RecordSourceType string
 

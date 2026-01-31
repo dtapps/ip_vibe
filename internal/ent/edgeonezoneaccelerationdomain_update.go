@@ -51,20 +51,6 @@ func (_u *EdgeOneZoneAccelerationDomainUpdate) ClearSyncAt() *EdgeOneZoneAcceler
 	return _u
 }
 
-// SetDomainName sets the "domain_name" field.
-func (_u *EdgeOneZoneAccelerationDomainUpdate) SetDomainName(v string) *EdgeOneZoneAccelerationDomainUpdate {
-	_u.mutation.SetDomainName(v)
-	return _u
-}
-
-// SetNillableDomainName sets the "domain_name" field if the given value is not nil.
-func (_u *EdgeOneZoneAccelerationDomainUpdate) SetNillableDomainName(v *string) *EdgeOneZoneAccelerationDomainUpdate {
-	if v != nil {
-		_u.SetDomainName(*v)
-	}
-	return _u
-}
-
 // SetDomainStatus sets the "domain_status" field.
 func (_u *EdgeOneZoneAccelerationDomainUpdate) SetDomainStatus(v edgeonezoneaccelerationdomain.DomainStatus) *EdgeOneZoneAccelerationDomainUpdate {
 	_u.mutation.SetDomainStatus(v)
@@ -378,9 +364,6 @@ func (_u *EdgeOneZoneAccelerationDomainUpdate) sqlSave(ctx context.Context) (_no
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezoneaccelerationdomain.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.DomainName(); ok {
-		_spec.SetField(edgeonezoneaccelerationdomain.FieldDomainName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.DomainStatus(); ok {
 		_spec.SetField(edgeonezoneaccelerationdomain.FieldDomainStatus, field.TypeEnum, value)
 	}
@@ -501,20 +484,6 @@ func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetNillableSyncAt(v *time.Time
 // ClearSyncAt clears the value of the "sync_at" field.
 func (_u *EdgeOneZoneAccelerationDomainUpdateOne) ClearSyncAt() *EdgeOneZoneAccelerationDomainUpdateOne {
 	_u.mutation.ClearSyncAt()
-	return _u
-}
-
-// SetDomainName sets the "domain_name" field.
-func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetDomainName(v string) *EdgeOneZoneAccelerationDomainUpdateOne {
-	_u.mutation.SetDomainName(v)
-	return _u
-}
-
-// SetNillableDomainName sets the "domain_name" field if the given value is not nil.
-func (_u *EdgeOneZoneAccelerationDomainUpdateOne) SetNillableDomainName(v *string) *EdgeOneZoneAccelerationDomainUpdateOne {
-	if v != nil {
-		_u.SetDomainName(*v)
-	}
 	return _u
 }
 
@@ -860,9 +829,6 @@ func (_u *EdgeOneZoneAccelerationDomainUpdateOne) sqlSave(ctx context.Context) (
 	}
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezoneaccelerationdomain.FieldSyncAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.DomainName(); ok {
-		_spec.SetField(edgeonezoneaccelerationdomain.FieldDomainName, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.DomainStatus(); ok {
 		_spec.SetField(edgeonezoneaccelerationdomain.FieldDomainStatus, field.TypeEnum, value)

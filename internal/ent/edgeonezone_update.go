@@ -52,20 +52,6 @@ func (_u *EdgeOneZoneUpdate) ClearSyncAt() *EdgeOneZoneUpdate {
 	return _u
 }
 
-// SetZoneID sets the "zone_id" field.
-func (_u *EdgeOneZoneUpdate) SetZoneID(v string) *EdgeOneZoneUpdate {
-	_u.mutation.SetZoneID(v)
-	return _u
-}
-
-// SetNillableZoneID sets the "zone_id" field if the given value is not nil.
-func (_u *EdgeOneZoneUpdate) SetNillableZoneID(v *string) *EdgeOneZoneUpdate {
-	if v != nil {
-		_u.SetZoneID(*v)
-	}
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *EdgeOneZoneUpdate) SetName(v string) *EdgeOneZoneUpdate {
 	_u.mutation.SetName(v)
@@ -424,9 +410,6 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezone.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.ZoneID(); ok {
-		_spec.SetField(edgeonezone.FieldZoneID, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezone.FieldName, field.TypeString, value)
 	}
@@ -643,20 +626,6 @@ func (_u *EdgeOneZoneUpdateOne) SetNillableSyncAt(v *time.Time) *EdgeOneZoneUpda
 // ClearSyncAt clears the value of the "sync_at" field.
 func (_u *EdgeOneZoneUpdateOne) ClearSyncAt() *EdgeOneZoneUpdateOne {
 	_u.mutation.ClearSyncAt()
-	return _u
-}
-
-// SetZoneID sets the "zone_id" field.
-func (_u *EdgeOneZoneUpdateOne) SetZoneID(v string) *EdgeOneZoneUpdateOne {
-	_u.mutation.SetZoneID(v)
-	return _u
-}
-
-// SetNillableZoneID sets the "zone_id" field if the given value is not nil.
-func (_u *EdgeOneZoneUpdateOne) SetNillableZoneID(v *string) *EdgeOneZoneUpdateOne {
-	if v != nil {
-		_u.SetZoneID(*v)
-	}
 	return _u
 }
 
@@ -1047,9 +1016,6 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 	}
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezone.FieldSyncAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.ZoneID(); ok {
-		_spec.SetField(edgeonezone.FieldZoneID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezone.FieldName, field.TypeString, value)

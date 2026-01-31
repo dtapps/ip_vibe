@@ -53,6 +53,7 @@ func (CloudflareTunnel) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("tunnel_id").
+			Immutable().
 			Comment("Cloudflare 隧道ID").
 			Annotations(entsql.WithComments(true)),
 

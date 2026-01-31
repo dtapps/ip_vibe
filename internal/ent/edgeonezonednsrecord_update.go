@@ -49,20 +49,6 @@ func (_u *EdgeOneZoneDNSRecordUpdate) ClearSyncAt() *EdgeOneZoneDNSRecordUpdate 
 	return _u
 }
 
-// SetRecordID sets the "record_id" field.
-func (_u *EdgeOneZoneDNSRecordUpdate) SetRecordID(v string) *EdgeOneZoneDNSRecordUpdate {
-	_u.mutation.SetRecordID(v)
-	return _u
-}
-
-// SetNillableRecordID sets the "record_id" field if the given value is not nil.
-func (_u *EdgeOneZoneDNSRecordUpdate) SetNillableRecordID(v *string) *EdgeOneZoneDNSRecordUpdate {
-	if v != nil {
-		_u.SetRecordID(*v)
-	}
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *EdgeOneZoneDNSRecordUpdate) SetName(v string) *EdgeOneZoneDNSRecordUpdate {
 	_u.mutation.SetName(v)
@@ -339,9 +325,6 @@ func (_u *EdgeOneZoneDNSRecordUpdate) sqlSave(ctx context.Context) (_node int, e
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezonednsrecord.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.RecordID(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldRecordID, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezonednsrecord.FieldName, field.TypeString, value)
 	}
@@ -438,20 +421,6 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillableSyncAt(v *time.Time) *EdgeOn
 // ClearSyncAt clears the value of the "sync_at" field.
 func (_u *EdgeOneZoneDNSRecordUpdateOne) ClearSyncAt() *EdgeOneZoneDNSRecordUpdateOne {
 	_u.mutation.ClearSyncAt()
-	return _u
-}
-
-// SetRecordID sets the "record_id" field.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) SetRecordID(v string) *EdgeOneZoneDNSRecordUpdateOne {
-	_u.mutation.SetRecordID(v)
-	return _u
-}
-
-// SetNillableRecordID sets the "record_id" field if the given value is not nil.
-func (_u *EdgeOneZoneDNSRecordUpdateOne) SetNillableRecordID(v *string) *EdgeOneZoneDNSRecordUpdateOne {
-	if v != nil {
-		_u.SetRecordID(*v)
-	}
 	return _u
 }
 
@@ -760,9 +729,6 @@ func (_u *EdgeOneZoneDNSRecordUpdateOne) sqlSave(ctx context.Context) (_node *Ed
 	}
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezonednsrecord.FieldSyncAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.RecordID(); ok {
-		_spec.SetField(edgeonezonednsrecord.FieldRecordID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezonednsrecord.FieldName, field.TypeString, value)

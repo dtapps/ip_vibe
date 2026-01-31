@@ -51,20 +51,6 @@ func (_u *EdgeOneZoneOriginGroupUpdate) ClearSyncAt() *EdgeOneZoneOriginGroupUpd
 	return _u
 }
 
-// SetGroupID sets the "group_id" field.
-func (_u *EdgeOneZoneOriginGroupUpdate) SetGroupID(v string) *EdgeOneZoneOriginGroupUpdate {
-	_u.mutation.SetGroupID(v)
-	return _u
-}
-
-// SetNillableGroupID sets the "group_id" field if the given value is not nil.
-func (_u *EdgeOneZoneOriginGroupUpdate) SetNillableGroupID(v *string) *EdgeOneZoneOriginGroupUpdate {
-	if v != nil {
-		_u.SetGroupID(*v)
-	}
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *EdgeOneZoneOriginGroupUpdate) SetName(v string) *EdgeOneZoneOriginGroupUpdate {
 	_u.mutation.SetName(v)
@@ -231,9 +217,6 @@ func (_u *EdgeOneZoneOriginGroupUpdate) sqlSave(ctx context.Context) (_node int,
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.GroupID(); ok {
-		_spec.SetField(edgeonezoneorigingroup.FieldGroupID, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldName, field.TypeString, value)
 	}
@@ -307,20 +290,6 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) SetNillableSyncAt(v *time.Time) *Edge
 // ClearSyncAt clears the value of the "sync_at" field.
 func (_u *EdgeOneZoneOriginGroupUpdateOne) ClearSyncAt() *EdgeOneZoneOriginGroupUpdateOne {
 	_u.mutation.ClearSyncAt()
-	return _u
-}
-
-// SetGroupID sets the "group_id" field.
-func (_u *EdgeOneZoneOriginGroupUpdateOne) SetGroupID(v string) *EdgeOneZoneOriginGroupUpdateOne {
-	_u.mutation.SetGroupID(v)
-	return _u
-}
-
-// SetNillableGroupID sets the "group_id" field if the given value is not nil.
-func (_u *EdgeOneZoneOriginGroupUpdateOne) SetNillableGroupID(v *string) *EdgeOneZoneOriginGroupUpdateOne {
-	if v != nil {
-		_u.SetGroupID(*v)
-	}
 	return _u
 }
 
@@ -519,9 +488,6 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) sqlSave(ctx context.Context) (_node *
 	}
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezoneorigingroup.FieldSyncAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.GroupID(); ok {
-		_spec.SetField(edgeonezoneorigingroup.FieldGroupID, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(edgeonezoneorigingroup.FieldName, field.TypeString, value)

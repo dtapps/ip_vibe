@@ -17552,8 +17552,9 @@ type EsaSiteRecordMutation struct {
 	biz_name           *esasiterecord.BizName
 	data               *json.RawMessage
 	appenddata         json.RawMessage
-	proxied            *esasiterecord.Proxied
-	record_id          *string
+	proxied            *bool
+	record_id          *int64
+	addrecord_id       *int64
 	record_source_type *esasiterecord.RecordSourceType
 	record_name        *string
 	record_type        *esasiterecord.RecordType
@@ -17997,12 +17998,12 @@ func (m *EsaSiteRecordMutation) ResetData() {
 }
 
 // SetProxied sets the "proxied" field.
-func (m *EsaSiteRecordMutation) SetProxied(e esasiterecord.Proxied) {
-	m.proxied = &e
+func (m *EsaSiteRecordMutation) SetProxied(b bool) {
+	m.proxied = &b
 }
 
 // Proxied returns the value of the "proxied" field in the mutation.
-func (m *EsaSiteRecordMutation) Proxied() (r esasiterecord.Proxied, exists bool) {
+func (m *EsaSiteRecordMutation) Proxied() (r bool, exists bool) {
 	v := m.proxied
 	if v == nil {
 		return
@@ -18013,7 +18014,7 @@ func (m *EsaSiteRecordMutation) Proxied() (r esasiterecord.Proxied, exists bool)
 // OldProxied returns the old "proxied" field's value of the EsaSiteRecord entity.
 // If the EsaSiteRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EsaSiteRecordMutation) OldProxied(ctx context.Context) (v esasiterecord.Proxied, err error) {
+func (m *EsaSiteRecordMutation) OldProxied(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldProxied is only allowed on UpdateOne operations")
 	}
@@ -18046,12 +18047,13 @@ func (m *EsaSiteRecordMutation) ResetProxied() {
 }
 
 // SetRecordID sets the "record_id" field.
-func (m *EsaSiteRecordMutation) SetRecordID(s string) {
-	m.record_id = &s
+func (m *EsaSiteRecordMutation) SetRecordID(i int64) {
+	m.record_id = &i
+	m.addrecord_id = nil
 }
 
 // RecordID returns the value of the "record_id" field in the mutation.
-func (m *EsaSiteRecordMutation) RecordID() (r string, exists bool) {
+func (m *EsaSiteRecordMutation) RecordID() (r int64, exists bool) {
 	v := m.record_id
 	if v == nil {
 		return
@@ -18062,7 +18064,7 @@ func (m *EsaSiteRecordMutation) RecordID() (r string, exists bool) {
 // OldRecordID returns the old "record_id" field's value of the EsaSiteRecord entity.
 // If the EsaSiteRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EsaSiteRecordMutation) OldRecordID(ctx context.Context) (v string, err error) {
+func (m *EsaSiteRecordMutation) OldRecordID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRecordID is only allowed on UpdateOne operations")
 	}
@@ -18076,9 +18078,28 @@ func (m *EsaSiteRecordMutation) OldRecordID(ctx context.Context) (v string, err 
 	return oldValue.RecordID, nil
 }
 
+// AddRecordID adds i to the "record_id" field.
+func (m *EsaSiteRecordMutation) AddRecordID(i int64) {
+	if m.addrecord_id != nil {
+		*m.addrecord_id += i
+	} else {
+		m.addrecord_id = &i
+	}
+}
+
+// AddedRecordID returns the value that was added to the "record_id" field in this mutation.
+func (m *EsaSiteRecordMutation) AddedRecordID() (r int64, exists bool) {
+	v := m.addrecord_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ResetRecordID resets all changes to the "record_id" field.
 func (m *EsaSiteRecordMutation) ResetRecordID() {
 	m.record_id = nil
+	m.addrecord_id = nil
 }
 
 // SetRecordSourceType sets the "record_source_type" field.
@@ -18767,14 +18788,14 @@ func (m *EsaSiteRecordMutation) SetField(name string, value ent.Value) error {
 		m.SetData(v)
 		return nil
 	case esasiterecord.FieldProxied:
-		v, ok := value.(esasiterecord.Proxied)
+		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetProxied(v)
 		return nil
 	case esasiterecord.FieldRecordID:
-		v, ok := value.(string)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -18844,6 +18865,9 @@ func (m *EsaSiteRecordMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *EsaSiteRecordMutation) AddedFields() []string {
 	var fields []string
+	if m.addrecord_id != nil {
+		fields = append(fields, esasiterecord.FieldRecordID)
+	}
 	if m.addttl != nil {
 		fields = append(fields, esasiterecord.FieldTTL)
 	}
@@ -18855,6 +18879,8 @@ func (m *EsaSiteRecordMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *EsaSiteRecordMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case esasiterecord.FieldRecordID:
+		return m.AddedRecordID()
 	case esasiterecord.FieldTTL:
 		return m.AddedTTL()
 	}
@@ -18866,6 +18892,13 @@ func (m *EsaSiteRecordMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *EsaSiteRecordMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case esasiterecord.FieldRecordID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRecordID(v)
+		return nil
 	case esasiterecord.FieldTTL:
 		v, ok := value.(int64)
 		if !ok {
