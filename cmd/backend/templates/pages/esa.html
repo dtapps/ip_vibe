@@ -63,20 +63,13 @@
 
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black uppercase italic opacity-40">Access Type</span>
+                                <span class="text-[9px] font-black uppercase italic opacity-40">
+                                    接入方式
+                                </span>
                                 <span
                                     class='badge badge-sm font-bold italic uppercase {{ if eq $site.AccessType "NS"}}badge-primary{{ else }}badge-ghost border-base-300{{ end }}'>
-                                    {{ $site.AccessType }}
+                                    {{ fieldEnumLabel "esa_site_access_type" $site.AccessType }}
                                 </span>
-                            </div>
-
-                            <div class="flex flex-col items-end gap-1">
-                                {{ if gt $site.RecordCount 0 }}
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[9px] font-bold opacity-30">DNS</span>
-                                    <div class="w-1.5 h-1.5 rounded-full bg-info"></div>
-                                </div>
-                                {{ end }}
                             </div>
                         </div>
 
@@ -88,7 +81,7 @@
                         <div class="grid grid-cols-3 gap-2 py-4 border-y border-base-300/30">
                             <div class="text-center border-x border-base-300/30">
                                 <div class="text-[9px] font-black opacity-20 uppercase">
-                                    Records
+                                    DNS记录
                                 </div>
                                 <div class="text-sm font-mono font-bold">
                                     {{ $site.RecordCount }}
@@ -96,7 +89,7 @@
                             </div>
                             <div class="text-center">
                                 <div class="text-[9px] font-black opacity-20 uppercase">
-                                    Origins
+                                    源地址池
                                 </div>
                                 <div class="text-sm font-mono font-bold">
                                     {{ $site.OriginpoolCount }}
@@ -109,7 +102,7 @@
                                 <span class="text-[8px] font-black opacity-20 uppercase">Site Status</span>
                                 <span
                                     class='text-[10px] font-bold uppercase {{ if eq $site.Status "active"}}text-success{{ else }}text-warning{{ end }}'>
-                                    {{ $site.Status }}
+                                    {{ fieldEnumLabel "esa_site_status" $site.Status }}
                                 </span>
                             </div>
                             <div
@@ -123,7 +116,9 @@
                     <button
                         class="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-base-300/50 rounded-[2rem] min-h-[220px] opacity-30 hover:opacity-100 hover:border-primary hover:text-primary transition-all">
                         {{ template "icons" (dict "Name" "i-lucide-plus-circle" "Class" "w-8 h-8") }}
-                        <span class="text-xs font-black uppercase italic tracking-widest">New Zone</span>
+                        <span class="text-xs font-black uppercase italic tracking-widest">
+                            创建新站点
+                        </span>
                     </button>
                 </div>
             </div>

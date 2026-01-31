@@ -21,7 +21,7 @@
                         {{ $item.ZoneName }}
                     </h1>
                     <span class="badge badge-primary font-black italic">
-                        {{ $item.Type }}
+                        {{ fieldEnumLabel "edgeone_zone_type" $item.Type }}
                     </span>
                 </div>
                 <div class="flex items-center gap-4 mt-2 opacity-50 font-bold uppercase text-[10px] tracking-widest">
@@ -30,11 +30,11 @@
                     </span>
                     <span class="w-1 h-1 bg-base-content rounded-full"></span>
                     <span>
-                        Area: {{ $item.Area }}
+                        Area: {{ fieldEnumLabel "edgeone_zone_area" $item.Area }}
                     </span>
                     <span class="w-1 h-1 bg-base-content rounded-full"></span>
                     <span class="text-success">
-                        {{ $item.Status }}
+                        {{ fieldEnumLabel "edgeone_zone_status" $item.Status }}
                     </span>
                 </div>
             </div>
@@ -56,12 +56,16 @@
     <div class="ui-header border-b border-base-300 px-8 flex justify-between items-center">
         <div class="flex gap-6">
             <a href="/edgeone/zone/{{ $item.ID }}/record"
-                class="text-sm font-black italic uppercase tracking-widest opacity-30 hover:opacity-100">
-                Records
+                class="text-sm font-black uppercase tracking-widest opacity-30 hover:opacity-100">
+                {{ if eq $item.Type "full" }}
+                DNS记录
+                {{ else }}
+                加速域名
+                {{ end }}
             </a>
             <div class="h-4 w-[1px] bg-base-300"></div>
-            <h2 class="text-sm font-black italic uppercase tracking-widest text-primary">
-                Origin Groups
+            <h2 class="text-sm font-black uppercase tracking-widest text-primary">
+                源站组
             </h2>
         </div>
         <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">TOTAL: {{ $total }}</div>
@@ -72,11 +76,11 @@
             <table class="ui-table">
                 <thead>
                     <tr>
-                        <th class="ui-th">Group Name / ID</th>
-                        <th class="ui-th">Type</th>
-                        <th class="ui-th">Origins (Records)</th>
-                        <th class="ui-th">References (Records)</th>
-                        <th class="ui-th">Action</th>
+                        <th class="ui-th">源站组</th>
+                        <th class="ui-th">类型</th>
+                        <th class="ui-th">源 (DNS记录)</th>
+                        <th class="ui-th">引用 (DNS记录)</th>
+                        <th class="ui-th">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -92,7 +96,7 @@
                         </td>
                         <td class="ui-td">
                             <span class="badge badge-sm badge-neutral uppercase italic font-bold">
-                                {{ $group.Type }}
+                                {{ fieldEnumLabel "edgeone_zone_origingroup_type" $group.Type }}
                             </span>
                         </td>
                         <td class="ui-td">
@@ -125,7 +129,7 @@
                                 </div>
                                 {{ else }}
                                 <div class="opacity-20 italic text-[10px] font-black uppercase tracking-widest p-4">
-                                    No Records
+                                    暂无记录
                                 </div>
                                 {{ end }}
                             </div>
@@ -144,7 +148,7 @@
                                 </div>
                                 {{ else }}
                                 <div class="opacity-20 italic text-[10px] font-black uppercase tracking-widest p-4">
-                                    No Records
+                                    暂无记录
                                 </div>
                                 {{ end }}
                             </div>
@@ -162,7 +166,7 @@
                     <tr>
                         <td colspan="10"
                             class="py-20 text-center opacity-20 italic font-black uppercase tracking-widest text-xs">
-                            No origin groups found
+                            暂无源站组记录
                         </td>
                     </tr>
                     {{ end }}

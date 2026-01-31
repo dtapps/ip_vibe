@@ -98,7 +98,7 @@ func (s *CloudflareTunnelTask) StartJob(ctx context.Context) (err error) {
 		jobDuration,
 		gocron.NewTask(s.RunTunTask), // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
-		gocron.WithName("CloudFlare Tunnel同步"),               // 任务名称
+		gocron.WithName("CloudFlare Tunnel Sync"),            // 任务名称
 		gocron.WithEventListeners(
 			s.jobHelper.PanicPeriodicListener(),
 			s.jobHelper.BeforePeriodicListener(),

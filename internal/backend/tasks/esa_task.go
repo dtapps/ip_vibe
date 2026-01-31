@@ -73,9 +73,9 @@ func (s *ESATask) setLogger(logger *slog.Logger) *ESATask {
 	return s
 }
 
-// 启动CloudFlare Tunnel同步任务
+// 启动ESA同步任务
 func (s *ESATask) StartJob(ctx context.Context) (err error) {
-	// 判断是否存在CloudFlare Tunnel同步任务
+	// 判断是否存在ESA同步任务
 	if s.job != nil {
 		return nil
 	}
@@ -98,7 +98,7 @@ func (s *ESATask) StartJob(ctx context.Context) (err error) {
 		jobDuration,
 		gocron.NewTask(s.RunTunTask), // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
-		gocron.WithName("ESA同步"),                             // 任务名称
+		gocron.WithName("ESA Sync"),                          // 任务名称
 		gocron.WithEventListeners(
 			s.jobHelper.PanicPeriodicListener(),
 			s.jobHelper.BeforePeriodicListener(),
@@ -111,7 +111,7 @@ func (s *ESATask) StartJob(ctx context.Context) (err error) {
 	return nil
 }
 
-// 运行CloudFlare Tunnel同步任务
+// 运行ESA同步任务
 func (s *ESATask) RunTunTask() {
 
 	// 创建上下文

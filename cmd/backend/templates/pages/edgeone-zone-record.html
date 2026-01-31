@@ -23,7 +23,7 @@
                         {{ $item.ZoneName}}
                     </h1>
                     <span class="badge badge-primary font-black italic">
-                        {{ $item.Type }}
+                        {{ fieldEnumLabel "edgeone_zone_type" $item.Type }}
                     </span>
                 </div>
                 <div class="flex items-center gap-4 mt-2 opacity-50 font-bold uppercase text-[10px] tracking-widest">
@@ -32,11 +32,11 @@
                     </span>
                     <span class="w-1 h-1 bg-base-content rounded-full"></span>
                     <span>
-                        Area: {{ $item.Area }}
+                        Area: {{ fieldEnumLabel "edgeone_zone_area" $item.Area }}
                     </span>
                     <span class="w-1 h-1 bg-base-content rounded-full"></span>
                     <span class="text-success">
-                        {{ $item.Status }}
+                        {{ fieldEnumLabel "edgeone_zone_status" $item.Status }}
                     </span>
                 </div>
             </div>
@@ -57,13 +57,17 @@
 <div class="ui-panel shadow-2xl">
     <div class="ui-header border-b border-base-300 px-8 flex justify-between items-center">
         <div class="flex gap-6">
-            <h2 class="text-sm font-black italic uppercase tracking-widest text-primary">
-                Records
+            <h2 class="text-sm font-black uppercase tracking-widest text-primary">
+                {{ if eq $item.Type "full" }}
+                DNS记录
+                {{ else }}
+                加速域名
+                {{ end }}
             </h2>
             <div class="h-4 w-[1px] bg-base-300"></div>
             <a href="/edgeone/zone/{{ $item.ID }}/origin-group"
-                class="text-sm font-black italic uppercase tracking-widest opacity-30 hover:opacity-100">
-                Origin Groups
+                class="text-sm font-black uppercase tracking-widest opacity-30 hover:opacity-100">
+                源站组
             </a>
         </div>
         <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">TOTAL: {{ $total }}</div>
@@ -75,21 +79,20 @@
                 <thead>
                     {{ if eq $item.Type "full" }}
                     <tr>
-                        <th class="ui-th">Name</th>
-                        <th class="ui-th">Type</th>
-                        <th class="ui-th">Line</th>
-                        <th class="ui-th">Value</th>
+                        <th class="ui-th">主机记录</th>
+                        <th class="ui-th">记录类型</th>
+                        <th class="ui-th">记录值/源站</th>
                         <th class="ui-th">TTL/Weight</th>
-                        <th class="ui-th">Status</th>
+                        <th class="ui-th">状态</th>
                     </tr>
                     {{ else }}
                     <tr>
-                        <th class="ui-th">Domain</th>
+                        <th class="ui-th">加速域名</th>
                         <th class="ui-th">CNAME</th>
-                        <th class="ui-th">Protocol</th>
-                        <th class="ui-th">Origin</th>
-                        <th class="ui-th">IPv6Status</th>
-                        <th class="ui-th">Status</th>
+                        <th class="ui-th">回源协议</th>
+                        <th class="ui-th">源站</th>
+                        <th class="ui-th">IPv6状态</th>
+                        <th class="ui-th">状态</th>
                     </tr>
                     {{ end }}
                 </thead>
@@ -102,11 +105,8 @@
                         </td>
                         <td class="ui-td">
                             <span class="badge badge-sm badge-neutral font-mono">
-                                {{ $record.Type }}
+                                {{ fieldEnumLabel "edgeone_zone_dnsrecord_type" $record.Type }}
                             </span>
-                        </td>
-                        <td class="ui-td text-[10px] font-bold opacity-60">
-                            {{ $record.Location }}
                         </td>
                         <td class="ui-td font-mono text-xs opacity-80 max-w-xs truncate">
                             {{ $record.Content }}
@@ -117,7 +117,7 @@
                         <td class="ui-td">
                             <div
                                 class='badge badge-sm {{ if eq $record.Status "enable" }}badge-success{{ else }}badge-ghost opacity-50{{ end }} italic font-black uppercase'>
-                                {{ $record.Status }}
+                                {{ fieldEnumLabel "edgeone_zone_dnsrecord_status" $record.Status }}
                             </div>
                         </td>
                         {{ else }}
@@ -128,7 +128,8 @@
                             {{ $record.Cname }}
                         </td>
                         <td class="ui-td uppercase text-[10px] font-bold italic">
-                            {{ $record.OriginProtocol }}
+                            {{ fieldEnumLabel "edgeone_zone_accelerationdomain_origin_protocol" $record.OriginProtocol
+                            }}
                         </td>
                         <td class="ui-td text-xs opacity-60">
                             {{ $originType := jsonGet $record.OriginDetail "OriginType" }}
@@ -141,11 +142,12 @@
                             {{ end }}
                         </td>
                         <td class="ui-td uppercase text-[10px] font-bold italic">
-                            {{ $record.Ipv6Status }}
+                            {{ fieldEnumLabel "edgeone_zone_accelerationdomain_ipv6_status" $record.Ipv6Status }}
                         </td>
                         <td class="ui-td">
                             <span class="badge badge-sm badge-success italic font-black uppercase">
-                                {{ $record.DomainStatus }}
+                                {{ fieldEnumLabel "edgeone_zone_accelerationdomain_domain_status" $record.DomainStatus
+                                }}
                             </span>
                         </td>
                         {{ end }}
@@ -156,7 +158,7 @@
                             <div class="flex flex-col items-center opacity-20">
                                 {{ template "icons" (dict "Name" "i-lucide-ghost" "Class" "w-12 h-12 mb-4") }}
                                 <p class="italic font-black uppercase tracking-widest text-xs">
-                                    No records found under this site
+                                    暂无DNS记录
                                 </p>
                             </div>
                         </td>
