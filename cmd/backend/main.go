@@ -270,6 +270,21 @@ func main() {
 		panic(err)
 	}
 
+	// 启动 ESA同步任务
+	esaTask := tasks.NewESATask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+	)
+	if err := esaTask.StartJob(ctx); err != nil {
+		slog.Error("启动ESA同步任务失败",
+			slog.Any("err", err),
+		)
+		panic(err)
+	}
+
 	// 启动清除数据任务
 	clearDataTask := tasks.NewClearDataTask(
 		global.GvaEntDb,
