@@ -30,7 +30,7 @@ type EsaSiteOriginPool struct {
 	SyncAt time.Time `json:"sync_at,omitempty"`
 	// 关联 ESA 站点序号
 	EsaSiteID int64 `json:"esa_site_id,omitempty"`
-	// 源站池ID
+	// 源地址池ID
 	PoolID int64 `json:"pool_id,omitempty"`
 	// 源地址池名称
 	Name string `json:"name,omitempty"`

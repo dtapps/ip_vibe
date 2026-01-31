@@ -137,6 +137,10 @@ func (EdgeOneZoneAccelerationDomain) Indexes() []ent.Index {
 		// 按站点ID排序
 		index.Fields("edgeone_zone_id").
 			Annotations(entsql.WithComments(true)),
+
+		// 按加速域名名称排序
+		index.Fields("domain_name").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

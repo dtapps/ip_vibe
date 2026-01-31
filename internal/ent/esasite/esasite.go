@@ -59,10 +59,10 @@ const (
 	// RecordsColumn is the table column denoting the records relation/edge.
 	RecordsColumn = "esa_site_id"
 	// OriginpoolsTable is the table that holds the originpools relation/edge.
-	OriginpoolsTable = "esa_site_origingroup"
+	OriginpoolsTable = "esa_site_originpool"
 	// OriginpoolsInverseTable is the table name for the EsaSiteOriginPool entity.
 	// It exists in this package in order to avoid circular dependency with the "esasiteoriginpool" package.
-	OriginpoolsInverseTable = "esa_site_origingroup"
+	OriginpoolsInverseTable = "esa_site_originpool"
 	// OriginpoolsColumn is the table column denoting the originpools relation/edge.
 	OriginpoolsColumn = "esa_site_id"
 )

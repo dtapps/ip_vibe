@@ -21,7 +21,7 @@ type EsaSiteOriginPool struct {
 // Annotations of the EsaSiteOriginPool.
 func (EsaSiteOriginPool) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "esa_site_origingroup"},
+		entsql.Annotation{Table: "esa_site_originpool"},
 		schema.Comment("ESA 站点源地址池"),
 		entsql.WithComments(true),
 	}
@@ -52,7 +52,7 @@ func (EsaSiteOriginPool) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("pool_id").
-			Comment("源站池ID").
+			Comment("源地址池ID").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
@@ -106,6 +106,10 @@ func (EsaSiteOriginPool) Indexes() []ent.Index {
 
 		// 按站点ID排序
 		index.Fields("esa_site_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按源地址池ID排序
+		index.Fields("pool_id").
 			Annotations(entsql.WithComments(true)),
 	}
 }

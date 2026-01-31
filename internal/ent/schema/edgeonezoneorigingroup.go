@@ -104,6 +104,10 @@ func (EdgeOneZoneOriginGroup) Indexes() []ent.Index {
 		// 按站点ID排序
 		index.Fields("edgeone_zone_id").
 			Annotations(entsql.WithComments(true)),
+
+		// 按源站组ID排序
+		index.Fields("group_id").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

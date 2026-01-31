@@ -40,9 +40,9 @@ const (
 	// EdgeEsaSite holds the string denoting the esa_site edge name in mutations.
 	EdgeEsaSite = "esa_site"
 	// Table holds the table name of the esasiteoriginpool in the database.
-	Table = "esa_site_origingroup"
+	Table = "esa_site_originpool"
 	// EsaSiteTable is the table that holds the esa_site relation/edge.
-	EsaSiteTable = "esa_site_origingroup"
+	EsaSiteTable = "esa_site_originpool"
 	// EsaSiteInverseTable is the table name for the EsaSite entity.
 	// It exists in this package in order to avoid circular dependency with the "esasite" package.
 	EsaSiteInverseTable = "esa_site"

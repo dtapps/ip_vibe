@@ -124,6 +124,10 @@ func (EdgeOneZoneDNSRecord) Indexes() []ent.Index {
 		// 按站点ID排序
 		index.Fields("edgeone_zone_id").
 			Annotations(entsql.WithComments(true)),
+
+		// 按DNS记录ID排序
+		index.Fields("record_id").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

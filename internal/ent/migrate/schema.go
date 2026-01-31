@@ -608,6 +608,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EdgeoneZoneAccelerationdomainColumns[16]},
 			},
+			{
+				Name:    "edgeonezoneaccelerationdomain_domain_name",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneAccelerationdomainColumns[5]},
+			},
 		},
 	}
 	// EdgeoneZoneDnsrecordColumns holds the columns for the "edgeone_zone_dnsrecord" table.
@@ -656,6 +661,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{EdgeoneZoneDnsrecordColumns[14]},
 			},
+			{
+				Name:    "edgeonezonednsrecord_record_id",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneDnsrecordColumns[5]},
+			},
 		},
 	}
 	// EdgeoneZoneOrigingroupColumns holds the columns for the "edgeone_zone_origingroup" table.
@@ -699,6 +709,11 @@ var (
 				Name:    "edgeonezoneorigingroup_edgeone_zone_id",
 				Unique:  false,
 				Columns: []*schema.Column{EdgeoneZoneOrigingroupColumns[10]},
+			},
+			{
+				Name:    "edgeonezoneorigingroup_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneOrigingroupColumns[5]},
 			},
 		},
 	}
@@ -751,14 +766,14 @@ var (
 			},
 		},
 	}
-	// EsaSiteOrigingroupColumns holds the columns for the "esa_site_origingroup" table.
-	EsaSiteOrigingroupColumns = []*schema.Column{
+	// EsaSiteOriginpoolColumns holds the columns for the "esa_site_originpool" table.
+	EsaSiteOriginpoolColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "ESA 站点源地址池序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
 		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
-		{Name: "pool_id", Type: field.TypeInt64, Comment: "源站池ID"},
+		{Name: "pool_id", Type: field.TypeInt64, Comment: "源地址池ID"},
 		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "源地址池名称"},
 		{Name: "record_name", Type: field.TypeString, Nullable: true, Comment: "源地址池分配的域名"},
 		{Name: "enabled", Type: field.TypeBool, Nullable: true, Comment: "源地址池是否启用"},
@@ -766,16 +781,16 @@ var (
 		{Name: "origins", Type: field.TypeJSON, Nullable: true, Comment: "源地址池里添加的源站信息"},
 		{Name: "esa_site_id", Type: field.TypeInt64, Comment: "关联 ESA 站点序号"},
 	}
-	// EsaSiteOrigingroupTable holds the schema information for the "esa_site_origingroup" table.
-	EsaSiteOrigingroupTable = &schema.Table{
-		Name:       "esa_site_origingroup",
+	// EsaSiteOriginpoolTable holds the schema information for the "esa_site_originpool" table.
+	EsaSiteOriginpoolTable = &schema.Table{
+		Name:       "esa_site_originpool",
 		Comment:    "ESA 站点源地址池",
-		Columns:    EsaSiteOrigingroupColumns,
-		PrimaryKey: []*schema.Column{EsaSiteOrigingroupColumns[0]},
+		Columns:    EsaSiteOriginpoolColumns,
+		PrimaryKey: []*schema.Column{EsaSiteOriginpoolColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "esa_site_origingroup_esa_site_originpools",
-				Columns:    []*schema.Column{EsaSiteOrigingroupColumns[11]},
+				Symbol:     "esa_site_originpool_esa_site_originpools",
+				Columns:    []*schema.Column{EsaSiteOriginpoolColumns[11]},
 				RefColumns: []*schema.Column{EsaSiteColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -784,7 +799,7 @@ var (
 			{
 				Name:    "esasiteoriginpool_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{EsaSiteOrigingroupColumns[1]},
+				Columns: []*schema.Column{EsaSiteOriginpoolColumns[1]},
 				Annotation: &entsql.IndexAnnotation{
 					Desc: true,
 				},
@@ -792,7 +807,12 @@ var (
 			{
 				Name:    "esasiteoriginpool_esa_site_id",
 				Unique:  false,
-				Columns: []*schema.Column{EsaSiteOrigingroupColumns[11]},
+				Columns: []*schema.Column{EsaSiteOriginpoolColumns[11]},
+			},
+			{
+				Name:    "esasiteoriginpool_pool_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteOriginpoolColumns[5]},
 			},
 		},
 	}
@@ -844,6 +864,11 @@ var (
 				Name:    "esasiterecord_esa_site_id",
 				Unique:  false,
 				Columns: []*schema.Column{EsaSiteRecordColumns[17]},
+			},
+			{
+				Name:    "esasiterecord_record_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteRecordColumns[8]},
 			},
 		},
 	}
@@ -1281,7 +1306,7 @@ var (
 		EdgeoneZoneDnsrecordTable,
 		EdgeoneZoneOrigingroupTable,
 		EsaSiteTable,
-		EsaSiteOrigingroupTable,
+		EsaSiteOriginpoolTable,
 		EsaSiteRecordTable,
 		IPGroupTable,
 		IPGroupDeviceTable,
@@ -1357,9 +1382,9 @@ func init() {
 	EsaSiteTable.Annotation = &entsql.Annotation{
 		Table: "esa_site",
 	}
-	EsaSiteOrigingroupTable.ForeignKeys[0].RefTable = EsaSiteTable
-	EsaSiteOrigingroupTable.Annotation = &entsql.Annotation{
-		Table: "esa_site_origingroup",
+	EsaSiteOriginpoolTable.ForeignKeys[0].RefTable = EsaSiteTable
+	EsaSiteOriginpoolTable.Annotation = &entsql.Annotation{
+		Table: "esa_site_originpool",
 	}
 	EsaSiteRecordTable.ForeignKeys[0].RefTable = EsaSiteTable
 	EsaSiteRecordTable.Annotation = &entsql.Annotation{
