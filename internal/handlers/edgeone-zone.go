@@ -114,18 +114,18 @@ func EdgeOneZoneOriginGroup(c *gin.Context) {
 	}
 	pageData.Item = *firstZone
 
-	allRecord, err := firstZone.QueryOrigingroups().
+	allOrigingroup, err := firstZone.QueryOrigingroups().
 		OrderByRemoteCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
-		for _, item := range allRecord.Items {
+		for _, item := range allOrigingroup.Items {
 			pageData.List = append(pageData.List, *item)
 		}
 	}
 
-	pageData.Page = allRecord.Page
-	pageData.PageSize = allRecord.Size
-	pageData.Total = allRecord.Total
+	pageData.Page = allOrigingroup.Page
+	pageData.PageSize = allOrigingroup.Size
+	pageData.Total = allOrigingroup.Total
 
 	// 渲染模板
 	renderHTMLWithMenu(

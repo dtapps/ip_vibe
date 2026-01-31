@@ -100,6 +100,11 @@ func (m *GinServerManager) setupWebRouter() {
 	r.GET("/edgeone/zone/:id/record", handlers.EdgeOneZoneRecord)
 	r.GET("/edgeone/zone/:id/origin-group", handlers.EdgeOneZoneOriginGroup)
 
+	// ESA 管理页面 - 提供HTML页面并渲染数据
+	r.GET("/esa", handlers.ESA)
+	r.GET("/esa/site/:id/record", handlers.ESASiteRecord)
+	r.GET("/esa/site/:id/origin-pool", handlers.ESASiteOriginPool)
+
 	// 未匹配到任何路由
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, handlers.APIResponse{

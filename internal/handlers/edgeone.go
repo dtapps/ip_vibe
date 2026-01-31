@@ -29,12 +29,12 @@ func EdgeOne(c *gin.Context) {
 	}
 
 	// 查询全部EdgeOne配置
-	allEdgeOneConfig, err := global.GvaEntDb.PlatformConfig.Query().
+	allPlatformConfig, err := global.GvaEntDb.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
 		OrderByCreatedAtAsc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
-		for _, item := range allEdgeOneConfig.Items {
+		for _, item := range allPlatformConfig.Items {
 			zones := make([]types.GetEdgeOneZone, 0)
 			// 查询隧道列表
 			allZone, err := global.GvaEntDb.EdgeOneZone.Query().
@@ -76,9 +76,9 @@ func EdgeOne(c *gin.Context) {
 		}
 	}
 
-	pageData.Page = allEdgeOneConfig.Page
-	pageData.PageSize = allEdgeOneConfig.Size
-	pageData.Total = allEdgeOneConfig.Total
+	pageData.Page = allPlatformConfig.Page
+	pageData.PageSize = allPlatformConfig.Size
+	pageData.Total = allPlatformConfig.Total
 
 	// 渲染模板
 	renderHTML(
