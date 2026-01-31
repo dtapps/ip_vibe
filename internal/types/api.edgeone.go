@@ -10,7 +10,7 @@ type GetEdgeOneZone struct {
 	RemoteCreatedAt time.Time `json:"remote_created_at"` // 远程创建时间
 	SyncAt          time.Time `json:"sync_at"`           // 最近一次同步时间
 	ZoneID          string    `json:"zone_id"`           // 站点ID
-	Name            string    `json:"name"`              // 站点名称
+	ZoneName        string    `json:"zone_name"`         // 站点名称
 	Area            string    `json:"area"`              // 加速区域
 	Type            string    `json:"type"`              // 接入类型
 	Status          string    `json:"status"`            // 状态

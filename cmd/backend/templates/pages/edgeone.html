@@ -60,13 +60,13 @@
                     {{ range $zone := $config.Zones }}
                     <a href="{{ $baseWebUrlPath }}/zone/{{ $zone.ID }}/record"
                         class="group relative bg-base-200/30 rounded-[2rem] p-6 border border-base-300/50 hover:border-primary/40 hover:bg-base-100 hover:shadow-2xl transition-all duration-500 cursor-pointer"
-                        onclick="openZoneWorkspace('{{$zone.ID}}', '{{$zone.Name}}', '{{$zone.Type}}')">
+                        onclick="openZoneWorkspace('{{$zone.ID}}', '{{$zone.ZoneName}}', '{{$zone.Type}}')">
 
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex flex-col gap-1">
                                 <span class="text-[9px] font-black uppercase italic opacity-40">Access Type</span>
-                                <span class="badge badge-sm font-bold italic uppercase {{ if eq $zone.Type " full"
-                                    }}badge-primary{{ else }}badge-ghost border-base-300{{ end }}">
+                                <span
+                                    class='badge badge-sm font-bold italic uppercase {{ if eq $zone.Type "full"}}badge-primary{{ else }}badge-ghost border-base-300{{ end }}'>
                                     {{ $zone.Type }}
                                 </span>
                             </div>
@@ -89,29 +89,41 @@
 
                         <h3
                             class="text-xl font-black italic tracking-tighter uppercase truncate mb-6 group-hover:text-primary transition-colors">
-                            {{ or $zone.Name $zone.ZoneID }}
+                            {{ or $zone.ZoneName $zone.ZoneID }}
                         </h3>
 
                         <div class="grid grid-cols-3 gap-2 py-4 border-y border-base-300/30">
                             <div class="text-center">
-                                <div class="text-[9px] font-black opacity-20 uppercase">Domains</div>
-                                <div class="text-sm font-mono font-bold">{{ $zone.AccelerationdomainCount }}</div>
+                                <div class="text-[9px] font-black opacity-20 uppercase">
+                                    Domains
+                                </div>
+                                <div class="text-sm font-mono font-bold">
+                                    {{ $zone.AccelerationdomainCount }}
+                                </div>
                             </div>
                             <div class="text-center border-x border-base-300/30">
-                                <div class="text-[9px] font-black opacity-20 uppercase">Records</div>
-                                <div class="text-sm font-mono font-bold">{{ $zone.DnsrecordCount }}</div>
+                                <div class="text-[9px] font-black opacity-20 uppercase">
+                                    Records
+                                </div>
+                                <div class="text-sm font-mono font-bold">
+                                    {{ $zone.DnsrecordCount }}
+                                </div>
                             </div>
                             <div class="text-center">
-                                <div class="text-[9px] font-black opacity-20 uppercase">Origins</div>
-                                <div class="text-sm font-mono font-bold">{{ $zone.OrigingroupCount }}</div>
+                                <div class="text-[9px] font-black opacity-20 uppercase">
+                                    Origins
+                                </div>
+                                <div class="text-sm font-mono font-bold">
+                                    {{ $zone.OrigingroupCount }}
+                                </div>
                             </div>
                         </div>
 
                         <div class="mt-4 flex justify-between items-center">
                             <div class="flex flex-col">
                                 <span class="text-[8px] font-black opacity-20 uppercase">Zone Status</span>
-                                <span class="text-[10px] font-bold uppercase {{ if eq $zone.Status " active"
-                                    }}text-success{{ else }}text-warning{{ end }}">
+                                <span
+                                    class='text-[10px] font-bold uppercase {{ if eq $zone.Status "active"}}text-success{{ else }}text-warning{{ end }}'>
                                     {{ $zone.Status }}
                                 </span>
                             </div>

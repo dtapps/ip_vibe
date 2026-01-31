@@ -20,7 +20,7 @@
             <div>
                 <div class="flex items-center gap-3">
                     <h1 class="text-4xl font-black italic tracking-tighter uppercase text-base-content">
-                        {{ $item.Name }}
+                        {{ $item.ZoneName}}
                     </h1>
                     <span class="badge badge-primary font-black italic">
                         {{ $item.Type }}
@@ -116,7 +116,7 @@
                         </td>
                         <td class="ui-td">
                             <div
-                                class='badge badge-sm {{ if eq $record.Status " enable" }}badge-success{{ else }}badge-ghost opacity-50{{ end }} italic font-black uppercase'>
+                                class='badge badge-sm {{ if eq $record.Status "enable" }}badge-success{{ else }}badge-ghost opacity-50{{ end }} italic font-black uppercase'>
                                 {{ $record.Status }}
                             </div>
                         </td>

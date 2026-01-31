@@ -42,7 +42,7 @@ func EdgeOne(c *gin.Context) {
 				WithAccelerationdomains().
 				WithDnsrecords().
 				WithOrigingroups().
-				OrderByNameAsc().
+				OrderByZoneNameAsc().
 				All(c)
 			if err == nil {
 				for _, zone := range allZone {
@@ -51,7 +51,7 @@ func EdgeOne(c *gin.Context) {
 						RemoteCreatedAt: zone.RemoteCreatedAt,
 						SyncAt:          zone.SyncAt,
 						ZoneID:          zone.ZoneID,
-						Name:            zone.Name,
+						ZoneName:        zone.ZoneName,
 						Area:            zone.Area.String(),
 						Type:            zone.Type.String(),
 						Status:          zone.Status.String(),
