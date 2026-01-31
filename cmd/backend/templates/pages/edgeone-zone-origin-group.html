@@ -75,6 +75,7 @@
                         <th class="ui-th">Group Name / ID</th>
                         <th class="ui-th">Type</th>
                         <th class="ui-th">Origins (Records)</th>
+                        <th class="ui-th">References (Records)</th>
                         <th class="ui-th">Action</th>
                     </tr>
                 </thead>
@@ -97,29 +98,48 @@
                         <td class="ui-td">
                             <div class="flex flex-col gap-2 py-2">
                                 {{ $records := jsonToSlice $group.Records }}
-                                {{ range $origin := $records }}
+                                {{ range $record := $records }}
                                 <div
                                     class="flex flex-col p-2 bg-base-200/50 rounded-xl border border-base-300/50 group/item">
                                     <div class="flex items-center gap-2">
                                         <div
-                                            class='w-1.5 h-1.5 rounded-full {{ if eq (index $origin "Type") "IP_DOMAIN" }}bg-info{{ else }}bg-warning{{ end }}'>
+                                            class='w-1.5 h-1.5 rounded-full {{ if eq (index $record "Type") "IP_DOMAIN" }}bg-info{{ else }}bg-warning{{ end }}'>
                                         </div>
 
                                         <span class="text-sm font-mono font-black text-base-content/90">
-                                            {{ index $origin "Record" }}
+                                            {{ index $record "Record" }}
                                         </span>
                                     </div>
 
                                     <div class="flex items-center gap-3 mt-1 px-3">
                                         <span class="text-[9px] font-black uppercase opacity-30 tracking-tighter">
-                                            {{ index $origin "Type" }}
+                                            {{ index $record "Type" }}
                                         </span>
 
-                                        {{ if (index $origin "Weight") }}
+                                        {{ if (index $record "Weight") }}
                                         <span class="text-[9px] font-black uppercase text-primary italic">
-                                            {{ index $origin "Weight" }}
+                                            {{ index $record "Weight" }}
                                         </span>
                                         {{ end }}
+                                    </div>
+                                </div>
+                                {{ else }}
+                                <div class="opacity-20 italic text-[10px] font-black uppercase tracking-widest p-4">
+                                    No Records
+                                </div>
+                                {{ end }}
+                            </div>
+                        </td>
+                        <td class="ui-td">
+                            <div class="flex flex-col gap-2 py-2">
+                                {{ $references := jsonToSlice $group.References }}
+                                {{ range $reference := $references }}
+                                <div
+                                    class="flex flex-col p-2 bg-base-200/50 rounded-xl border border-base-300/50 group/item">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-sm font-mono font-black text-base-content/90">
+                                            {{ index $reference "InstanceName" }}
+                                        </span>
                                     </div>
                                 </div>
                                 {{ else }}

@@ -75,6 +75,7 @@
                         <th class="ui-th">Pool Name / ID</th>
                         <th class="ui-th">Status</th>
                         <th class="ui-th">Origins (Records)</th>
+                        <th class="ui-th">References (Records)</th>
                         <th class="ui-th">Action</th>
                     </tr>
                 </thead>
@@ -120,6 +121,25 @@
                                             {{ index $origin "Weight" }}
                                         </span>
                                         {{ end }}
+                                    </div>
+                                </div>
+                                {{ else }}
+                                <div class="opacity-20 italic text-[10px] font-black uppercase tracking-widest p-4">
+                                    No Records
+                                </div>
+                                {{ end }}
+                            </div>
+                        </td>
+                        <td class="ui-td">
+                            <div class="flex flex-col gap-2 py-2">
+                                {{ $references := jsonToSlice $pool.References }}
+                                {{ range $reference := $references }}
+                                <div
+                                    class="flex flex-col p-2 bg-base-200/50 rounded-xl border border-base-300/50 group/item">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-sm font-mono font-black text-base-content/90">
+                                            {{ index $reference "Name" }}
+                                        </span>
                                     </div>
                                 </div>
                                 {{ else }}
