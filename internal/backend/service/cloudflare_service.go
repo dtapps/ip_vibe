@@ -137,7 +137,6 @@ func (s *CloudflareServiceImpl) GetCloudflareDomains(ctx context.Context, config
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
-		Where(platformconfig.CapabilityIn(platformconfig.CapabilityAll, platformconfig.CapabilityTun)).
 		First(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("查询Cloudflare平台失败: %w", err)

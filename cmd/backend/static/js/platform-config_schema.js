@@ -15,7 +15,7 @@ const PLATFORM_SCHEMA = {
         label: "域名ID",
         type: "text",
         placeholder: "your-zone-id",
-        required: true,
+        required: false,
       },
       [
         {
@@ -23,7 +23,7 @@ const PLATFORM_SCHEMA = {
           label: "域名名称",
           type: "text",
           placeholder: "example.com",
-          required: true,
+          required: false,
           pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
           title: "格式错误",
         },
@@ -32,14 +32,14 @@ const PLATFORM_SCHEMA = {
           label: "邮箱",
           type: "email",
           placeholder: "your@email.com",
-          required: true,
+          required: false,
         },
         {
           id: "account_id",
           label: "账号ID",
           type: "text",
           placeholder: "your-account-id",
-          required: true,
+          required: false,
         },
       ],
     ],
@@ -189,7 +189,7 @@ const PLATFORM_SCHEMA = {
         label: "域名ID",
         type: "text",
         placeholder: "zone-...",
-        required: true,
+        required: false,
       },
       [
         {
@@ -197,7 +197,7 @@ const PLATFORM_SCHEMA = {
           label: "域名名称",
           type: "text",
           placeholder: "example.com",
-          required: true,
+          required: false,
           pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
           title: "格式错误",
         },
@@ -206,9 +206,26 @@ const PLATFORM_SCHEMA = {
           label: "邮箱",
           type: "email",
           placeholder: "your@email.com",
-          required: true,
+          required: false,
         },
       ],
+      {
+        id: "region_type",
+        label: "区域类型",
+        type: "select",
+        placeholder: "请选择区域类型",
+        required: false,
+        options: [
+          {
+            value: "cn",
+            label: "国内",
+          },
+          {
+            value: "intl",
+            label: "国际",
+          },
+        ],
+      },
     ],
   },
   aliyun_dns: {
@@ -307,7 +324,7 @@ const PLATFORM_SCHEMA = {
         label: "域名ID",
         type: "number",
         placeholder: "请输入域名ID",
-        required: true,
+        required: false,
       },
       [
         {
@@ -315,7 +332,7 @@ const PLATFORM_SCHEMA = {
           label: "域名名称",
           type: "text",
           placeholder: "example.com",
-          required: true,
+          required: false,
           pattern: "^(([a-zA-Z0-9][\\-a-zA-Z0-9]{0,62})\\.)+([a-zA-Z]{2,63})$",
           title: "格式错误",
         },
@@ -324,9 +341,26 @@ const PLATFORM_SCHEMA = {
           label: "邮箱",
           type: "email",
           placeholder: "your@email.com",
-          required: true,
+          required: false,
         },
       ],
+      {
+        id: "region_type",
+        label: "区域类型",
+        type: "select",
+        placeholder: "请选择区域类型",
+        required: false,
+        options: [
+          {
+            value: "cn",
+            label: "国内",
+          },
+          {
+            value: "intl",
+            label: "国际",
+          },
+        ],
+      },
     ],
   },
   baidu_dns: {

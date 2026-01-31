@@ -78,7 +78,6 @@ func (s *CloudflareTunnelSync) SyncAllCloudflareTunnels(ctx context.Context) err
 	// 查询全部Cloudflare平台
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
-		Where(platformconfig.CapabilityIn(platformconfig.CapabilityAll, platformconfig.CapabilityTun)).
 		IDs(ctx)
 	if err != nil {
 		return fmt.Errorf("查询全部Cloudflare平台失败: %w", err)
@@ -108,7 +107,6 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
-		Where(platformconfig.CapabilityIn(platformconfig.CapabilityAll, platformconfig.CapabilityTun)).
 		First(ctx)
 	if err != nil {
 		return fmt.Errorf("查询Cloudflare平台配置失败: %w", err)
@@ -187,7 +185,6 @@ func (s *CloudflareTunnelSync) SyncAllCloudflareTunnelIngresses(ctx context.Cont
 	// 查询全部Cloudflare平台
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
-		Where(platformconfig.CapabilityIn(platformconfig.CapabilityAll, platformconfig.CapabilityTun)).
 		IDs(ctx)
 	if err != nil {
 		return fmt.Errorf("查询全部Cloudflare平台失败: %w", err)
