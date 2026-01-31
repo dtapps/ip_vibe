@@ -17,11 +17,12 @@ import (
 
 // TencentEOConfig 腾讯云 EO 配置
 type TencentEOConfig struct {
-	Endpoint   string `json:"endpoint,omitempty"` // 接口地址
-	SecretID   string `json:"secret_id"`          // 密钥ID
-	SecretKey  string `json:"secret_key"`         // 密钥Key
-	ZoneID     string `json:"zone_id"`            // 区域ID
-	DomainName string `json:"domain_name"`        // 主域名
+	Endpoint   string `json:"endpoint,omitempty"`    // 接口地址
+	RegionType string `json:"region_type,omitempty"` // 区域类型
+	SecretID   string `json:"secret_id"`             // 密钥ID
+	SecretKey  string `json:"secret_key"`            // 密钥Key
+	ZoneID     string `json:"zone_id"`               // 区域ID
+	DomainName string `json:"domain_name"`           // 主域名
 }
 
 // Validate 验证腾讯云 EO 配置
@@ -45,6 +46,8 @@ func (cfg *TencentEOConfig) Validate() error {
 }
 
 // NewDefaultTencentEOConfig 创建默认的腾讯云 EO 配置
+// https://cloud.tencent.com/document/product/1552/80723
+// https://www.tencentcloud.com/zh/document/product/1145/50456
 func NewDefaultTencentEOConfig() *TencentEOConfig {
 	return &TencentEOConfig{
 		Endpoint: "teo.tencentcloudapi.com",
@@ -125,6 +128,15 @@ func NewTencentEOProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Tenc
 	p.Provider.Cfg = profile.NewClientProfile()
 	p.Provider.Cfg.HttpProfile.Endpoint = p.cfg.Endpoint // 指定域名
 	p.Provider.Cfg.NetworkFailureMaxRetries = 3          // 定义最大重试次数
+
+	// 区域类型
+	if strings.EqualFold(p.cfg.RegionType, "intl") {
+		p.Provider.Cfg.HttpProfile.Endpoint = "teo.intl.tencentcloudapi.com"
+	} else if strings.EqualFold(p.cfg.RegionType, "cn") {
+		p.Provider.Cfg.HttpProfile.Endpoint = "teo.tencentcloudapi.com"
+	} else {
+		p.Provider.Cfg.HttpProfile.Endpoint = "teo.tencentcloudapi.com"
+	}
 
 	// 开启日志
 	p.Provider.Cfg.Debug = sys_env.GvaEnv.DEBUG

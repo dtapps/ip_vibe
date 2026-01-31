@@ -23,11 +23,12 @@ import (
 
 // AliyunESAConfig 阿里云 ESA 配置
 type AliyunESAConfig struct {
-	Endpoint        string `json:"endpoint,omitempty"` // 接口地址
-	AccessKeyID     string `json:"access_key_id"`      // 访问密钥ID
-	AccessKeySecret string `json:"access_key_secret"`  // 访问密钥Key
-	SiteID          int64  `json:"site_id"`            // 站点ID
-	DomainName      string `json:"domain_name"`        // 主域名
+	Endpoint        string `json:"endpoint,omitempty"`    // 接口地址
+	RegionType      string `json:"region_type,omitempty"` // 区域类型
+	AccessKeyID     string `json:"access_key_id"`         // 访问密钥ID
+	AccessKeySecret string `json:"access_key_secret"`     // 访问密钥Key
+	SiteID          int64  `json:"site_id"`               // 站点ID
+	DomainName      string `json:"domain_name"`           // 主域名
 }
 
 // Validate 验证阿里云 ESA 配置
@@ -51,6 +52,8 @@ func (cfg *AliyunESAConfig) Validate() error {
 }
 
 // NewDefaultAliyunESAConfig 创建默认的阿里云 ESA 配置
+// https://help.aliyun.com/zh/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint
+// https://www.alibabacloud.com/help/zh/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint
 func NewDefaultAliyunESAConfig() *AliyunESAConfig {
 	return &AliyunESAConfig{
 		Endpoint: "esa.cn-hangzhou.aliyuncs.com",
@@ -136,6 +139,15 @@ func NewAliyunESAProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 	p.Provider.Cfg = &openapi.Config{
 		Credential: p.Provider.Auth,
 		Endpoint:   tea.String(p.cfg.Endpoint),
+	}
+
+	// 区域类型
+	if strings.EqualFold(p.cfg.RegionType, "intl") {
+		p.Provider.Cfg.Endpoint = tea.String("esa.cn-hangzhou.aliyuncs.com")
+	} else if strings.EqualFold(p.cfg.RegionType, "cn") {
+		p.Provider.Cfg.Endpoint = tea.String("esa.cn-hangzhou.aliyuncs.com")
+	} else {
+		p.Provider.Cfg.Endpoint = tea.String("esa.cn-hangzhou.aliyuncs.com")
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
