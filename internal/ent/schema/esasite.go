@@ -57,10 +57,35 @@ func (EsaSite) Fields() []ent.Field {
 			Comment("站点接入类型").
 			Annotations(entsql.WithComments(true)),
 
+		field.String("cname_zone").
+			Optional().
+			Comment("站点的 CNAME 后缀").
+			Annotations(entsql.WithComments(true)),
+
 		field.Enum("coverage").
 			Values(schematype.GetEsaSiteCoverages...).
 			Optional().
 			Comment("站点加速区域").
+			Annotations(entsql.WithComments(true)),
+
+		field.String("instance_id").
+			Optional().
+			Comment("站点绑定的套餐实例 ID").
+			Annotations(entsql.WithComments(true)),
+
+		field.String("name_server_list").
+			Optional().
+			Comment("站点分配的 NS 列表。使用半角逗号（,）分隔").
+			Annotations(entsql.WithComments(true)),
+
+		field.String("plan_name").
+			Optional().
+			Comment("套餐名称").
+			Annotations(entsql.WithComments(true)),
+
+		field.String("plan_spec_name").
+			Optional().
+			Comment("站点套餐的规格名称").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("site_id").
@@ -77,6 +102,11 @@ func (EsaSite) Fields() []ent.Field {
 			Values(schematype.GetEsaSiteStatuss...).
 			Optional().
 			Comment("站点状态").
+			Annotations(entsql.WithComments(true)),
+
+		field.String("offline_reason").
+			Optional().
+			Comment("站点停用原因").
 			Annotations(entsql.WithComments(true)),
 	}
 }

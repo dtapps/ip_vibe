@@ -750,10 +750,16 @@ var (
 		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
 		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "access_type", Type: field.TypeEnum, Nullable: true, Comment: "站点接入类型", Enums: []string{"NS", "CNAME"}},
+		{Name: "cname_zone", Type: field.TypeString, Nullable: true, Comment: "站点的 CNAME 后缀"},
 		{Name: "coverage", Type: field.TypeEnum, Nullable: true, Comment: "站点加速区域", Enums: []string{"domestic", "global", "overseas"}},
+		{Name: "instance_id", Type: field.TypeString, Nullable: true, Comment: "站点绑定的套餐实例 ID"},
+		{Name: "name_server_list", Type: field.TypeString, Nullable: true, Comment: "站点分配的 NS 列表。使用半角逗号（,）分隔"},
+		{Name: "plan_name", Type: field.TypeString, Nullable: true, Comment: "套餐名称"},
+		{Name: "plan_spec_name", Type: field.TypeString, Nullable: true, Comment: "站点套餐的规格名称"},
 		{Name: "site_id", Type: field.TypeInt64, Comment: "站点 ID"},
 		{Name: "site_name", Type: field.TypeString, Nullable: true, Comment: "站点名称"},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "站点状态", Enums: []string{"pending", "active", "offline", "moved"}},
+		{Name: "offline_reason", Type: field.TypeString, Nullable: true, Comment: "站点停用原因"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
 	// EsaSiteTable holds the schema information for the "esa_site" table.
@@ -765,7 +771,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "esa_site_platform_config_esa_zones",
-				Columns:    []*schema.Column{EsaSiteColumns[10]},
+				Columns:    []*schema.Column{EsaSiteColumns[16]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -782,17 +788,17 @@ var (
 			{
 				Name:    "esasite_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{EsaSiteColumns[10]},
+				Columns: []*schema.Column{EsaSiteColumns[16]},
 			},
 			{
 				Name:    "esasite_site_id",
 				Unique:  false,
-				Columns: []*schema.Column{EsaSiteColumns[7]},
+				Columns: []*schema.Column{EsaSiteColumns[12]},
 			},
 			{
 				Name:    "esasite_config_id_site_id",
 				Unique:  false,
-				Columns: []*schema.Column{EsaSiteColumns[10], EsaSiteColumns[7]},
+				Columns: []*schema.Column{EsaSiteColumns[16], EsaSiteColumns[12]},
 			},
 		},
 	}
@@ -808,6 +814,7 @@ var (
 		{Name: "record_name", Type: field.TypeString, Nullable: true, Comment: "源地址池分配的域名"},
 		{Name: "enabled", Type: field.TypeBool, Nullable: true, Comment: "源地址池是否启用"},
 		{Name: "references", Type: field.TypeJSON, Nullable: true, Comment: "源地址池被引用信息"},
+		{Name: "reference_l_b_count", Type: field.TypeInt32, Nullable: true, Comment: "被多少个负载均衡器引用"},
 		{Name: "origins", Type: field.TypeJSON, Nullable: true, Comment: "源地址池里添加的源站信息"},
 		{Name: "esa_site_id", Type: field.TypeInt64, Comment: "关联 ESA 站点序号"},
 	}
@@ -820,7 +827,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "esa_site_originpool_esa_site_originpools",
-				Columns:    []*schema.Column{EsaSiteOriginpoolColumns[11]},
+				Columns:    []*schema.Column{EsaSiteOriginpoolColumns[12]},
 				RefColumns: []*schema.Column{EsaSiteColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -837,7 +844,7 @@ var (
 			{
 				Name:    "esasiteoriginpool_esa_site_id",
 				Unique:  false,
-				Columns: []*schema.Column{EsaSiteOriginpoolColumns[11]},
+				Columns: []*schema.Column{EsaSiteOriginpoolColumns[12]},
 			},
 			{
 				Name:    "esasiteoriginpool_pool_id",
@@ -847,7 +854,7 @@ var (
 			{
 				Name:    "esasiteoriginpool_esa_site_id_pool_id",
 				Unique:  false,
-				Columns: []*schema.Column{EsaSiteOriginpoolColumns[11], EsaSiteOriginpoolColumns[5]},
+				Columns: []*schema.Column{EsaSiteOriginpoolColumns[12], EsaSiteOriginpoolColumns[5]},
 			},
 		},
 	}

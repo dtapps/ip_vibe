@@ -129,6 +129,33 @@ func (_u *EsaSiteOriginPoolUpdate) ClearReferences() *EsaSiteOriginPoolUpdate {
 	return _u
 }
 
+// SetReferenceLBCount sets the "reference_l_b_count" field.
+func (_u *EsaSiteOriginPoolUpdate) SetReferenceLBCount(v int32) *EsaSiteOriginPoolUpdate {
+	_u.mutation.ResetReferenceLBCount()
+	_u.mutation.SetReferenceLBCount(v)
+	return _u
+}
+
+// SetNillableReferenceLBCount sets the "reference_l_b_count" field if the given value is not nil.
+func (_u *EsaSiteOriginPoolUpdate) SetNillableReferenceLBCount(v *int32) *EsaSiteOriginPoolUpdate {
+	if v != nil {
+		_u.SetReferenceLBCount(*v)
+	}
+	return _u
+}
+
+// AddReferenceLBCount adds value to the "reference_l_b_count" field.
+func (_u *EsaSiteOriginPoolUpdate) AddReferenceLBCount(v int32) *EsaSiteOriginPoolUpdate {
+	_u.mutation.AddReferenceLBCount(v)
+	return _u
+}
+
+// ClearReferenceLBCount clears the value of the "reference_l_b_count" field.
+func (_u *EsaSiteOriginPoolUpdate) ClearReferenceLBCount() *EsaSiteOriginPoolUpdate {
+	_u.mutation.ClearReferenceLBCount()
+	return _u
+}
+
 // SetOrigins sets the "origins" field.
 func (_u *EsaSiteOriginPoolUpdate) SetOrigins(v json.RawMessage) *EsaSiteOriginPoolUpdate {
 	_u.mutation.SetOrigins(v)
@@ -261,6 +288,15 @@ func (_u *EsaSiteOriginPoolUpdate) sqlSave(ctx context.Context) (_node int, err 
 	if _u.mutation.ReferencesCleared() {
 		_spec.ClearField(esasiteoriginpool.FieldReferences, field.TypeJSON)
 	}
+	if value, ok := _u.mutation.ReferenceLBCount(); ok {
+		_spec.SetField(esasiteoriginpool.FieldReferenceLBCount, field.TypeInt32, value)
+	}
+	if value, ok := _u.mutation.AddedReferenceLBCount(); ok {
+		_spec.AddField(esasiteoriginpool.FieldReferenceLBCount, field.TypeInt32, value)
+	}
+	if _u.mutation.ReferenceLBCountCleared() {
+		_spec.ClearField(esasiteoriginpool.FieldReferenceLBCount, field.TypeInt32)
+	}
 	if value, ok := _u.mutation.Origins(); ok {
 		_spec.SetField(esasiteoriginpool.FieldOrigins, field.TypeJSON, value)
 	}
@@ -389,6 +425,33 @@ func (_u *EsaSiteOriginPoolUpdateOne) AppendReferences(v json.RawMessage) *EsaSi
 // ClearReferences clears the value of the "references" field.
 func (_u *EsaSiteOriginPoolUpdateOne) ClearReferences() *EsaSiteOriginPoolUpdateOne {
 	_u.mutation.ClearReferences()
+	return _u
+}
+
+// SetReferenceLBCount sets the "reference_l_b_count" field.
+func (_u *EsaSiteOriginPoolUpdateOne) SetReferenceLBCount(v int32) *EsaSiteOriginPoolUpdateOne {
+	_u.mutation.ResetReferenceLBCount()
+	_u.mutation.SetReferenceLBCount(v)
+	return _u
+}
+
+// SetNillableReferenceLBCount sets the "reference_l_b_count" field if the given value is not nil.
+func (_u *EsaSiteOriginPoolUpdateOne) SetNillableReferenceLBCount(v *int32) *EsaSiteOriginPoolUpdateOne {
+	if v != nil {
+		_u.SetReferenceLBCount(*v)
+	}
+	return _u
+}
+
+// AddReferenceLBCount adds value to the "reference_l_b_count" field.
+func (_u *EsaSiteOriginPoolUpdateOne) AddReferenceLBCount(v int32) *EsaSiteOriginPoolUpdateOne {
+	_u.mutation.AddReferenceLBCount(v)
+	return _u
+}
+
+// ClearReferenceLBCount clears the value of the "reference_l_b_count" field.
+func (_u *EsaSiteOriginPoolUpdateOne) ClearReferenceLBCount() *EsaSiteOriginPoolUpdateOne {
+	_u.mutation.ClearReferenceLBCount()
 	return _u
 }
 
@@ -553,6 +616,15 @@ func (_u *EsaSiteOriginPoolUpdateOne) sqlSave(ctx context.Context) (_node *EsaSi
 	}
 	if _u.mutation.ReferencesCleared() {
 		_spec.ClearField(esasiteoriginpool.FieldReferences, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.ReferenceLBCount(); ok {
+		_spec.SetField(esasiteoriginpool.FieldReferenceLBCount, field.TypeInt32, value)
+	}
+	if value, ok := _u.mutation.AddedReferenceLBCount(); ok {
+		_spec.AddField(esasiteoriginpool.FieldReferenceLBCount, field.TypeInt32, value)
+	}
+	if _u.mutation.ReferenceLBCountCleared() {
+		_spec.ClearField(esasiteoriginpool.FieldReferenceLBCount, field.TypeInt32)
 	}
 	if value, ok := _u.mutation.Origins(); ok {
 		_spec.SetField(esasiteoriginpool.FieldOrigins, field.TypeJSON, value)

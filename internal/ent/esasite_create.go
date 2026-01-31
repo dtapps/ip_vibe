@@ -101,6 +101,20 @@ func (_c *EsaSiteCreate) SetNillableAccessType(v *esasite.AccessType) *EsaSiteCr
 	return _c
 }
 
+// SetCnameZone sets the "cname_zone" field.
+func (_c *EsaSiteCreate) SetCnameZone(v string) *EsaSiteCreate {
+	_c.mutation.SetCnameZone(v)
+	return _c
+}
+
+// SetNillableCnameZone sets the "cname_zone" field if the given value is not nil.
+func (_c *EsaSiteCreate) SetNillableCnameZone(v *string) *EsaSiteCreate {
+	if v != nil {
+		_c.SetCnameZone(*v)
+	}
+	return _c
+}
+
 // SetCoverage sets the "coverage" field.
 func (_c *EsaSiteCreate) SetCoverage(v esasite.Coverage) *EsaSiteCreate {
 	_c.mutation.SetCoverage(v)
@@ -111,6 +125,62 @@ func (_c *EsaSiteCreate) SetCoverage(v esasite.Coverage) *EsaSiteCreate {
 func (_c *EsaSiteCreate) SetNillableCoverage(v *esasite.Coverage) *EsaSiteCreate {
 	if v != nil {
 		_c.SetCoverage(*v)
+	}
+	return _c
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (_c *EsaSiteCreate) SetInstanceID(v string) *EsaSiteCreate {
+	_c.mutation.SetInstanceID(v)
+	return _c
+}
+
+// SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
+func (_c *EsaSiteCreate) SetNillableInstanceID(v *string) *EsaSiteCreate {
+	if v != nil {
+		_c.SetInstanceID(*v)
+	}
+	return _c
+}
+
+// SetNameServerList sets the "name_server_list" field.
+func (_c *EsaSiteCreate) SetNameServerList(v string) *EsaSiteCreate {
+	_c.mutation.SetNameServerList(v)
+	return _c
+}
+
+// SetNillableNameServerList sets the "name_server_list" field if the given value is not nil.
+func (_c *EsaSiteCreate) SetNillableNameServerList(v *string) *EsaSiteCreate {
+	if v != nil {
+		_c.SetNameServerList(*v)
+	}
+	return _c
+}
+
+// SetPlanName sets the "plan_name" field.
+func (_c *EsaSiteCreate) SetPlanName(v string) *EsaSiteCreate {
+	_c.mutation.SetPlanName(v)
+	return _c
+}
+
+// SetNillablePlanName sets the "plan_name" field if the given value is not nil.
+func (_c *EsaSiteCreate) SetNillablePlanName(v *string) *EsaSiteCreate {
+	if v != nil {
+		_c.SetPlanName(*v)
+	}
+	return _c
+}
+
+// SetPlanSpecName sets the "plan_spec_name" field.
+func (_c *EsaSiteCreate) SetPlanSpecName(v string) *EsaSiteCreate {
+	_c.mutation.SetPlanSpecName(v)
+	return _c
+}
+
+// SetNillablePlanSpecName sets the "plan_spec_name" field if the given value is not nil.
+func (_c *EsaSiteCreate) SetNillablePlanSpecName(v *string) *EsaSiteCreate {
+	if v != nil {
+		_c.SetPlanSpecName(*v)
 	}
 	return _c
 }
@@ -145,6 +215,20 @@ func (_c *EsaSiteCreate) SetStatus(v esasite.Status) *EsaSiteCreate {
 func (_c *EsaSiteCreate) SetNillableStatus(v *esasite.Status) *EsaSiteCreate {
 	if v != nil {
 		_c.SetStatus(*v)
+	}
+	return _c
+}
+
+// SetOfflineReason sets the "offline_reason" field.
+func (_c *EsaSiteCreate) SetOfflineReason(v string) *EsaSiteCreate {
+	_c.mutation.SetOfflineReason(v)
+	return _c
+}
+
+// SetNillableOfflineReason sets the "offline_reason" field if the given value is not nil.
+func (_c *EsaSiteCreate) SetNillableOfflineReason(v *string) *EsaSiteCreate {
+	if v != nil {
+		_c.SetOfflineReason(*v)
 	}
 	return _c
 }
@@ -339,9 +423,29 @@ func (_c *EsaSiteCreate) createSpec() (*EsaSite, *sqlgraph.CreateSpec) {
 		_spec.SetField(esasite.FieldAccessType, field.TypeEnum, value)
 		_node.AccessType = value
 	}
+	if value, ok := _c.mutation.CnameZone(); ok {
+		_spec.SetField(esasite.FieldCnameZone, field.TypeString, value)
+		_node.CnameZone = value
+	}
 	if value, ok := _c.mutation.Coverage(); ok {
 		_spec.SetField(esasite.FieldCoverage, field.TypeEnum, value)
 		_node.Coverage = value
+	}
+	if value, ok := _c.mutation.InstanceID(); ok {
+		_spec.SetField(esasite.FieldInstanceID, field.TypeString, value)
+		_node.InstanceID = value
+	}
+	if value, ok := _c.mutation.NameServerList(); ok {
+		_spec.SetField(esasite.FieldNameServerList, field.TypeString, value)
+		_node.NameServerList = value
+	}
+	if value, ok := _c.mutation.PlanName(); ok {
+		_spec.SetField(esasite.FieldPlanName, field.TypeString, value)
+		_node.PlanName = value
+	}
+	if value, ok := _c.mutation.PlanSpecName(); ok {
+		_spec.SetField(esasite.FieldPlanSpecName, field.TypeString, value)
+		_node.PlanSpecName = value
 	}
 	if value, ok := _c.mutation.SiteID(); ok {
 		_spec.SetField(esasite.FieldSiteID, field.TypeInt64, value)
@@ -354,6 +458,10 @@ func (_c *EsaSiteCreate) createSpec() (*EsaSite, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(esasite.FieldStatus, field.TypeEnum, value)
 		_node.Status = value
+	}
+	if value, ok := _c.mutation.OfflineReason(); ok {
+		_spec.SetField(esasite.FieldOfflineReason, field.TypeString, value)
+		_node.OfflineReason = value
 	}
 	if nodes := _c.mutation.ConfigIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -492,6 +600,24 @@ func (u *EsaSiteUpsert) ClearAccessType() *EsaSiteUpsert {
 	return u
 }
 
+// SetCnameZone sets the "cname_zone" field.
+func (u *EsaSiteUpsert) SetCnameZone(v string) *EsaSiteUpsert {
+	u.Set(esasite.FieldCnameZone, v)
+	return u
+}
+
+// UpdateCnameZone sets the "cname_zone" field to the value that was provided on create.
+func (u *EsaSiteUpsert) UpdateCnameZone() *EsaSiteUpsert {
+	u.SetExcluded(esasite.FieldCnameZone)
+	return u
+}
+
+// ClearCnameZone clears the value of the "cname_zone" field.
+func (u *EsaSiteUpsert) ClearCnameZone() *EsaSiteUpsert {
+	u.SetNull(esasite.FieldCnameZone)
+	return u
+}
+
 // SetCoverage sets the "coverage" field.
 func (u *EsaSiteUpsert) SetCoverage(v esasite.Coverage) *EsaSiteUpsert {
 	u.Set(esasite.FieldCoverage, v)
@@ -507,6 +633,78 @@ func (u *EsaSiteUpsert) UpdateCoverage() *EsaSiteUpsert {
 // ClearCoverage clears the value of the "coverage" field.
 func (u *EsaSiteUpsert) ClearCoverage() *EsaSiteUpsert {
 	u.SetNull(esasite.FieldCoverage)
+	return u
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (u *EsaSiteUpsert) SetInstanceID(v string) *EsaSiteUpsert {
+	u.Set(esasite.FieldInstanceID, v)
+	return u
+}
+
+// UpdateInstanceID sets the "instance_id" field to the value that was provided on create.
+func (u *EsaSiteUpsert) UpdateInstanceID() *EsaSiteUpsert {
+	u.SetExcluded(esasite.FieldInstanceID)
+	return u
+}
+
+// ClearInstanceID clears the value of the "instance_id" field.
+func (u *EsaSiteUpsert) ClearInstanceID() *EsaSiteUpsert {
+	u.SetNull(esasite.FieldInstanceID)
+	return u
+}
+
+// SetNameServerList sets the "name_server_list" field.
+func (u *EsaSiteUpsert) SetNameServerList(v string) *EsaSiteUpsert {
+	u.Set(esasite.FieldNameServerList, v)
+	return u
+}
+
+// UpdateNameServerList sets the "name_server_list" field to the value that was provided on create.
+func (u *EsaSiteUpsert) UpdateNameServerList() *EsaSiteUpsert {
+	u.SetExcluded(esasite.FieldNameServerList)
+	return u
+}
+
+// ClearNameServerList clears the value of the "name_server_list" field.
+func (u *EsaSiteUpsert) ClearNameServerList() *EsaSiteUpsert {
+	u.SetNull(esasite.FieldNameServerList)
+	return u
+}
+
+// SetPlanName sets the "plan_name" field.
+func (u *EsaSiteUpsert) SetPlanName(v string) *EsaSiteUpsert {
+	u.Set(esasite.FieldPlanName, v)
+	return u
+}
+
+// UpdatePlanName sets the "plan_name" field to the value that was provided on create.
+func (u *EsaSiteUpsert) UpdatePlanName() *EsaSiteUpsert {
+	u.SetExcluded(esasite.FieldPlanName)
+	return u
+}
+
+// ClearPlanName clears the value of the "plan_name" field.
+func (u *EsaSiteUpsert) ClearPlanName() *EsaSiteUpsert {
+	u.SetNull(esasite.FieldPlanName)
+	return u
+}
+
+// SetPlanSpecName sets the "plan_spec_name" field.
+func (u *EsaSiteUpsert) SetPlanSpecName(v string) *EsaSiteUpsert {
+	u.Set(esasite.FieldPlanSpecName, v)
+	return u
+}
+
+// UpdatePlanSpecName sets the "plan_spec_name" field to the value that was provided on create.
+func (u *EsaSiteUpsert) UpdatePlanSpecName() *EsaSiteUpsert {
+	u.SetExcluded(esasite.FieldPlanSpecName)
+	return u
+}
+
+// ClearPlanSpecName clears the value of the "plan_spec_name" field.
+func (u *EsaSiteUpsert) ClearPlanSpecName() *EsaSiteUpsert {
+	u.SetNull(esasite.FieldPlanSpecName)
 	return u
 }
 
@@ -543,6 +741,24 @@ func (u *EsaSiteUpsert) UpdateStatus() *EsaSiteUpsert {
 // ClearStatus clears the value of the "status" field.
 func (u *EsaSiteUpsert) ClearStatus() *EsaSiteUpsert {
 	u.SetNull(esasite.FieldStatus)
+	return u
+}
+
+// SetOfflineReason sets the "offline_reason" field.
+func (u *EsaSiteUpsert) SetOfflineReason(v string) *EsaSiteUpsert {
+	u.Set(esasite.FieldOfflineReason, v)
+	return u
+}
+
+// UpdateOfflineReason sets the "offline_reason" field to the value that was provided on create.
+func (u *EsaSiteUpsert) UpdateOfflineReason() *EsaSiteUpsert {
+	u.SetExcluded(esasite.FieldOfflineReason)
+	return u
+}
+
+// ClearOfflineReason clears the value of the "offline_reason" field.
+func (u *EsaSiteUpsert) ClearOfflineReason() *EsaSiteUpsert {
+	u.SetNull(esasite.FieldOfflineReason)
 	return u
 }
 
@@ -651,6 +867,27 @@ func (u *EsaSiteUpsertOne) ClearAccessType() *EsaSiteUpsertOne {
 	})
 }
 
+// SetCnameZone sets the "cname_zone" field.
+func (u *EsaSiteUpsertOne) SetCnameZone(v string) *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetCnameZone(v)
+	})
+}
+
+// UpdateCnameZone sets the "cname_zone" field to the value that was provided on create.
+func (u *EsaSiteUpsertOne) UpdateCnameZone() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdateCnameZone()
+	})
+}
+
+// ClearCnameZone clears the value of the "cname_zone" field.
+func (u *EsaSiteUpsertOne) ClearCnameZone() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearCnameZone()
+	})
+}
+
 // SetCoverage sets the "coverage" field.
 func (u *EsaSiteUpsertOne) SetCoverage(v esasite.Coverage) *EsaSiteUpsertOne {
 	return u.Update(func(s *EsaSiteUpsert) {
@@ -669,6 +906,90 @@ func (u *EsaSiteUpsertOne) UpdateCoverage() *EsaSiteUpsertOne {
 func (u *EsaSiteUpsertOne) ClearCoverage() *EsaSiteUpsertOne {
 	return u.Update(func(s *EsaSiteUpsert) {
 		s.ClearCoverage()
+	})
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (u *EsaSiteUpsertOne) SetInstanceID(v string) *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetInstanceID(v)
+	})
+}
+
+// UpdateInstanceID sets the "instance_id" field to the value that was provided on create.
+func (u *EsaSiteUpsertOne) UpdateInstanceID() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdateInstanceID()
+	})
+}
+
+// ClearInstanceID clears the value of the "instance_id" field.
+func (u *EsaSiteUpsertOne) ClearInstanceID() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearInstanceID()
+	})
+}
+
+// SetNameServerList sets the "name_server_list" field.
+func (u *EsaSiteUpsertOne) SetNameServerList(v string) *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetNameServerList(v)
+	})
+}
+
+// UpdateNameServerList sets the "name_server_list" field to the value that was provided on create.
+func (u *EsaSiteUpsertOne) UpdateNameServerList() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdateNameServerList()
+	})
+}
+
+// ClearNameServerList clears the value of the "name_server_list" field.
+func (u *EsaSiteUpsertOne) ClearNameServerList() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearNameServerList()
+	})
+}
+
+// SetPlanName sets the "plan_name" field.
+func (u *EsaSiteUpsertOne) SetPlanName(v string) *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetPlanName(v)
+	})
+}
+
+// UpdatePlanName sets the "plan_name" field to the value that was provided on create.
+func (u *EsaSiteUpsertOne) UpdatePlanName() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdatePlanName()
+	})
+}
+
+// ClearPlanName clears the value of the "plan_name" field.
+func (u *EsaSiteUpsertOne) ClearPlanName() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearPlanName()
+	})
+}
+
+// SetPlanSpecName sets the "plan_spec_name" field.
+func (u *EsaSiteUpsertOne) SetPlanSpecName(v string) *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetPlanSpecName(v)
+	})
+}
+
+// UpdatePlanSpecName sets the "plan_spec_name" field to the value that was provided on create.
+func (u *EsaSiteUpsertOne) UpdatePlanSpecName() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdatePlanSpecName()
+	})
+}
+
+// ClearPlanSpecName clears the value of the "plan_spec_name" field.
+func (u *EsaSiteUpsertOne) ClearPlanSpecName() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearPlanSpecName()
 	})
 }
 
@@ -711,6 +1032,27 @@ func (u *EsaSiteUpsertOne) UpdateStatus() *EsaSiteUpsertOne {
 func (u *EsaSiteUpsertOne) ClearStatus() *EsaSiteUpsertOne {
 	return u.Update(func(s *EsaSiteUpsert) {
 		s.ClearStatus()
+	})
+}
+
+// SetOfflineReason sets the "offline_reason" field.
+func (u *EsaSiteUpsertOne) SetOfflineReason(v string) *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetOfflineReason(v)
+	})
+}
+
+// UpdateOfflineReason sets the "offline_reason" field to the value that was provided on create.
+func (u *EsaSiteUpsertOne) UpdateOfflineReason() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdateOfflineReason()
+	})
+}
+
+// ClearOfflineReason clears the value of the "offline_reason" field.
+func (u *EsaSiteUpsertOne) ClearOfflineReason() *EsaSiteUpsertOne {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearOfflineReason()
 	})
 }
 
@@ -985,6 +1327,27 @@ func (u *EsaSiteUpsertBulk) ClearAccessType() *EsaSiteUpsertBulk {
 	})
 }
 
+// SetCnameZone sets the "cname_zone" field.
+func (u *EsaSiteUpsertBulk) SetCnameZone(v string) *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetCnameZone(v)
+	})
+}
+
+// UpdateCnameZone sets the "cname_zone" field to the value that was provided on create.
+func (u *EsaSiteUpsertBulk) UpdateCnameZone() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdateCnameZone()
+	})
+}
+
+// ClearCnameZone clears the value of the "cname_zone" field.
+func (u *EsaSiteUpsertBulk) ClearCnameZone() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearCnameZone()
+	})
+}
+
 // SetCoverage sets the "coverage" field.
 func (u *EsaSiteUpsertBulk) SetCoverage(v esasite.Coverage) *EsaSiteUpsertBulk {
 	return u.Update(func(s *EsaSiteUpsert) {
@@ -1003,6 +1366,90 @@ func (u *EsaSiteUpsertBulk) UpdateCoverage() *EsaSiteUpsertBulk {
 func (u *EsaSiteUpsertBulk) ClearCoverage() *EsaSiteUpsertBulk {
 	return u.Update(func(s *EsaSiteUpsert) {
 		s.ClearCoverage()
+	})
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (u *EsaSiteUpsertBulk) SetInstanceID(v string) *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetInstanceID(v)
+	})
+}
+
+// UpdateInstanceID sets the "instance_id" field to the value that was provided on create.
+func (u *EsaSiteUpsertBulk) UpdateInstanceID() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdateInstanceID()
+	})
+}
+
+// ClearInstanceID clears the value of the "instance_id" field.
+func (u *EsaSiteUpsertBulk) ClearInstanceID() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearInstanceID()
+	})
+}
+
+// SetNameServerList sets the "name_server_list" field.
+func (u *EsaSiteUpsertBulk) SetNameServerList(v string) *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetNameServerList(v)
+	})
+}
+
+// UpdateNameServerList sets the "name_server_list" field to the value that was provided on create.
+func (u *EsaSiteUpsertBulk) UpdateNameServerList() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdateNameServerList()
+	})
+}
+
+// ClearNameServerList clears the value of the "name_server_list" field.
+func (u *EsaSiteUpsertBulk) ClearNameServerList() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearNameServerList()
+	})
+}
+
+// SetPlanName sets the "plan_name" field.
+func (u *EsaSiteUpsertBulk) SetPlanName(v string) *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetPlanName(v)
+	})
+}
+
+// UpdatePlanName sets the "plan_name" field to the value that was provided on create.
+func (u *EsaSiteUpsertBulk) UpdatePlanName() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdatePlanName()
+	})
+}
+
+// ClearPlanName clears the value of the "plan_name" field.
+func (u *EsaSiteUpsertBulk) ClearPlanName() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearPlanName()
+	})
+}
+
+// SetPlanSpecName sets the "plan_spec_name" field.
+func (u *EsaSiteUpsertBulk) SetPlanSpecName(v string) *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetPlanSpecName(v)
+	})
+}
+
+// UpdatePlanSpecName sets the "plan_spec_name" field to the value that was provided on create.
+func (u *EsaSiteUpsertBulk) UpdatePlanSpecName() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdatePlanSpecName()
+	})
+}
+
+// ClearPlanSpecName clears the value of the "plan_spec_name" field.
+func (u *EsaSiteUpsertBulk) ClearPlanSpecName() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearPlanSpecName()
 	})
 }
 
@@ -1045,6 +1492,27 @@ func (u *EsaSiteUpsertBulk) UpdateStatus() *EsaSiteUpsertBulk {
 func (u *EsaSiteUpsertBulk) ClearStatus() *EsaSiteUpsertBulk {
 	return u.Update(func(s *EsaSiteUpsert) {
 		s.ClearStatus()
+	})
+}
+
+// SetOfflineReason sets the "offline_reason" field.
+func (u *EsaSiteUpsertBulk) SetOfflineReason(v string) *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.SetOfflineReason(v)
+	})
+}
+
+// UpdateOfflineReason sets the "offline_reason" field to the value that was provided on create.
+func (u *EsaSiteUpsertBulk) UpdateOfflineReason() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.UpdateOfflineReason()
+	})
+}
+
+// ClearOfflineReason clears the value of the "offline_reason" field.
+func (u *EsaSiteUpsertBulk) ClearOfflineReason() *EsaSiteUpsertBulk {
+	return u.Update(func(s *EsaSiteUpsert) {
+		s.ClearOfflineReason()
 	})
 }
 

@@ -76,6 +76,11 @@ func (EsaSiteOriginPool) Fields() []ent.Field {
 			Comment("源地址池被引用信息").
 			Annotations(entsql.WithComments(true)),
 
+		field.Int32("reference_l_b_count").
+			Optional().
+			Comment("被多少个负载均衡器引用").
+			Annotations(entsql.WithComments(true)),
+
 		field.JSON("origins", json.RawMessage{}).
 			Optional().
 			Comment("源地址池里添加的源站信息").

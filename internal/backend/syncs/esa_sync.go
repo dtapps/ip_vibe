@@ -140,13 +140,20 @@ func (s *ESASync) SyncThisSites(ctx context.Context, config_id int64) (err error
 			}
 			// 创建站点记录
 			err = s.db.EsaSite.Create().
+				SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(site.CreateTime)).Time).
 				SetSyncAt(time.Now()).
 				SetConfigID(firstPlatformCofing.ID).
 				SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType))).
+				SetCnameZone(tea.StringValue(site.CnameZone)).
 				SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage))).
+				SetInstanceID(tea.StringValue(site.InstanceId)).
+				SetNameServerList(tea.StringValue(site.NameServerList)).
+				SetPlanName(tea.StringValue(site.PlanName)).
+				SetPlanSpecName(tea.StringValue(site.PlanSpecName)).
 				SetSiteID(tea.Int64Value(site.SiteId)).
 				SetSiteName(tea.StringValue(site.SiteName)).
 				SetStatus(esasite.Status(tea.StringValue(site.Status))).
+				SetOfflineReason(tea.StringValue(site.OfflineReason)).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建站点记录失败: %w", err)
@@ -156,9 +163,15 @@ func (s *ESASync) SyncThisSites(ctx context.Context, config_id int64) (err error
 			err = s.db.EsaSite.UpdateOne(firstSite).
 				SetSyncAt(time.Now()).
 				SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType))).
+				SetCnameZone(tea.StringValue(site.CnameZone)).
 				SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage))).
+				SetInstanceID(tea.StringValue(site.InstanceId)).
+				SetNameServerList(tea.StringValue(site.NameServerList)).
+				SetPlanName(tea.StringValue(site.PlanName)).
+				SetPlanSpecName(tea.StringValue(site.PlanSpecName)).
 				SetSiteName(tea.StringValue(site.SiteName)).
 				SetStatus(esasite.Status(tea.StringValue(site.Status))).
+				SetOfflineReason(tea.StringValue(site.OfflineReason)).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新站点记录失败: %w", err)
@@ -208,13 +221,20 @@ func (s *ESASync) SyncThisSite(ctx context.Context, config_id int64, site_id int
 			}
 			// 创建站点记录
 			err = s.db.EsaSite.Create().
+				SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(site.CreateTime)).Time).
 				SetSyncAt(time.Now()).
 				SetConfigID(firstPlatformCofing.ID).
 				SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType))).
+				SetCnameZone(tea.StringValue(site.CnameZone)).
 				SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage))).
+				SetInstanceID(tea.StringValue(site.InstanceId)).
+				SetNameServerList(tea.StringValue(site.NameServerList)).
+				SetPlanName(tea.StringValue(site.PlanName)).
+				SetPlanSpecName(tea.StringValue(site.PlanSpecName)).
 				SetSiteID(tea.Int64Value(site.SiteId)).
 				SetSiteName(tea.StringValue(site.SiteName)).
 				SetStatus(esasite.Status(tea.StringValue(site.Status))).
+				SetOfflineReason(tea.StringValue(site.OfflineReason)).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建站点记录失败: %w", err)
@@ -224,9 +244,15 @@ func (s *ESASync) SyncThisSite(ctx context.Context, config_id int64, site_id int
 			err = s.db.EsaSite.UpdateOne(firstSite).
 				SetSyncAt(time.Now()).
 				SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType))).
+				SetCnameZone(tea.StringValue(site.CnameZone)).
 				SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage))).
+				SetInstanceID(tea.StringValue(site.InstanceId)).
+				SetNameServerList(tea.StringValue(site.NameServerList)).
+				SetPlanName(tea.StringValue(site.PlanName)).
+				SetPlanSpecName(tea.StringValue(site.PlanSpecName)).
 				SetSiteName(tea.StringValue(site.SiteName)).
 				SetStatus(esasite.Status(tea.StringValue(site.Status))).
+				SetOfflineReason(tea.StringValue(site.OfflineReason)).
 				Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新站点记录失败: %w", err)
@@ -335,6 +361,7 @@ func (s *ESASync) SyncThisSiteOriginPool(ctx context.Context, config_id int64, s
 				SetName(tea.StringValue(originPool.Name)).
 				SetRecordName(tea.StringValue(originPool.RecordName)).
 				SetReferences([]byte(gojson.JsonEncodeNoError(originPool.References))).
+				SetReferenceLBCount(tea.Int32Value(originPool.ReferenceLBCount)).
 				SetOrigins([]byte(gojson.JsonEncodeNoError(originPool.Origins))).
 				Exec(ctx)
 			if err != nil {
@@ -347,6 +374,7 @@ func (s *ESASync) SyncThisSiteOriginPool(ctx context.Context, config_id int64, s
 				SetName(tea.StringValue(originPool.Name)).
 				SetRecordName(tea.StringValue(originPool.RecordName)).
 				SetReferences([]byte(gojson.JsonEncodeNoError(originPool.References))).
+				SetReferenceLBCount(tea.Int32Value(originPool.ReferenceLBCount)).
 				SetOrigins([]byte(gojson.JsonEncodeNoError(originPool.Origins))).
 				Exec(ctx)
 			if err != nil {

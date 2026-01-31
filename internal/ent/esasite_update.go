@@ -71,6 +71,26 @@ func (_u *EsaSiteUpdate) ClearAccessType() *EsaSiteUpdate {
 	return _u
 }
 
+// SetCnameZone sets the "cname_zone" field.
+func (_u *EsaSiteUpdate) SetCnameZone(v string) *EsaSiteUpdate {
+	_u.mutation.SetCnameZone(v)
+	return _u
+}
+
+// SetNillableCnameZone sets the "cname_zone" field if the given value is not nil.
+func (_u *EsaSiteUpdate) SetNillableCnameZone(v *string) *EsaSiteUpdate {
+	if v != nil {
+		_u.SetCnameZone(*v)
+	}
+	return _u
+}
+
+// ClearCnameZone clears the value of the "cname_zone" field.
+func (_u *EsaSiteUpdate) ClearCnameZone() *EsaSiteUpdate {
+	_u.mutation.ClearCnameZone()
+	return _u
+}
+
 // SetCoverage sets the "coverage" field.
 func (_u *EsaSiteUpdate) SetCoverage(v esasite.Coverage) *EsaSiteUpdate {
 	_u.mutation.SetCoverage(v)
@@ -88,6 +108,86 @@ func (_u *EsaSiteUpdate) SetNillableCoverage(v *esasite.Coverage) *EsaSiteUpdate
 // ClearCoverage clears the value of the "coverage" field.
 func (_u *EsaSiteUpdate) ClearCoverage() *EsaSiteUpdate {
 	_u.mutation.ClearCoverage()
+	return _u
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (_u *EsaSiteUpdate) SetInstanceID(v string) *EsaSiteUpdate {
+	_u.mutation.SetInstanceID(v)
+	return _u
+}
+
+// SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
+func (_u *EsaSiteUpdate) SetNillableInstanceID(v *string) *EsaSiteUpdate {
+	if v != nil {
+		_u.SetInstanceID(*v)
+	}
+	return _u
+}
+
+// ClearInstanceID clears the value of the "instance_id" field.
+func (_u *EsaSiteUpdate) ClearInstanceID() *EsaSiteUpdate {
+	_u.mutation.ClearInstanceID()
+	return _u
+}
+
+// SetNameServerList sets the "name_server_list" field.
+func (_u *EsaSiteUpdate) SetNameServerList(v string) *EsaSiteUpdate {
+	_u.mutation.SetNameServerList(v)
+	return _u
+}
+
+// SetNillableNameServerList sets the "name_server_list" field if the given value is not nil.
+func (_u *EsaSiteUpdate) SetNillableNameServerList(v *string) *EsaSiteUpdate {
+	if v != nil {
+		_u.SetNameServerList(*v)
+	}
+	return _u
+}
+
+// ClearNameServerList clears the value of the "name_server_list" field.
+func (_u *EsaSiteUpdate) ClearNameServerList() *EsaSiteUpdate {
+	_u.mutation.ClearNameServerList()
+	return _u
+}
+
+// SetPlanName sets the "plan_name" field.
+func (_u *EsaSiteUpdate) SetPlanName(v string) *EsaSiteUpdate {
+	_u.mutation.SetPlanName(v)
+	return _u
+}
+
+// SetNillablePlanName sets the "plan_name" field if the given value is not nil.
+func (_u *EsaSiteUpdate) SetNillablePlanName(v *string) *EsaSiteUpdate {
+	if v != nil {
+		_u.SetPlanName(*v)
+	}
+	return _u
+}
+
+// ClearPlanName clears the value of the "plan_name" field.
+func (_u *EsaSiteUpdate) ClearPlanName() *EsaSiteUpdate {
+	_u.mutation.ClearPlanName()
+	return _u
+}
+
+// SetPlanSpecName sets the "plan_spec_name" field.
+func (_u *EsaSiteUpdate) SetPlanSpecName(v string) *EsaSiteUpdate {
+	_u.mutation.SetPlanSpecName(v)
+	return _u
+}
+
+// SetNillablePlanSpecName sets the "plan_spec_name" field if the given value is not nil.
+func (_u *EsaSiteUpdate) SetNillablePlanSpecName(v *string) *EsaSiteUpdate {
+	if v != nil {
+		_u.SetPlanSpecName(*v)
+	}
+	return _u
+}
+
+// ClearPlanSpecName clears the value of the "plan_spec_name" field.
+func (_u *EsaSiteUpdate) ClearPlanSpecName() *EsaSiteUpdate {
+	_u.mutation.ClearPlanSpecName()
 	return _u
 }
 
@@ -128,6 +228,26 @@ func (_u *EsaSiteUpdate) SetNillableStatus(v *esasite.Status) *EsaSiteUpdate {
 // ClearStatus clears the value of the "status" field.
 func (_u *EsaSiteUpdate) ClearStatus() *EsaSiteUpdate {
 	_u.mutation.ClearStatus()
+	return _u
+}
+
+// SetOfflineReason sets the "offline_reason" field.
+func (_u *EsaSiteUpdate) SetOfflineReason(v string) *EsaSiteUpdate {
+	_u.mutation.SetOfflineReason(v)
+	return _u
+}
+
+// SetNillableOfflineReason sets the "offline_reason" field if the given value is not nil.
+func (_u *EsaSiteUpdate) SetNillableOfflineReason(v *string) *EsaSiteUpdate {
+	if v != nil {
+		_u.SetOfflineReason(*v)
+	}
+	return _u
+}
+
+// ClearOfflineReason clears the value of the "offline_reason" field.
+func (_u *EsaSiteUpdate) ClearOfflineReason() *EsaSiteUpdate {
+	_u.mutation.ClearOfflineReason()
 	return _u
 }
 
@@ -309,11 +429,41 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.AccessTypeCleared() {
 		_spec.ClearField(esasite.FieldAccessType, field.TypeEnum)
 	}
+	if value, ok := _u.mutation.CnameZone(); ok {
+		_spec.SetField(esasite.FieldCnameZone, field.TypeString, value)
+	}
+	if _u.mutation.CnameZoneCleared() {
+		_spec.ClearField(esasite.FieldCnameZone, field.TypeString)
+	}
 	if value, ok := _u.mutation.Coverage(); ok {
 		_spec.SetField(esasite.FieldCoverage, field.TypeEnum, value)
 	}
 	if _u.mutation.CoverageCleared() {
 		_spec.ClearField(esasite.FieldCoverage, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.InstanceID(); ok {
+		_spec.SetField(esasite.FieldInstanceID, field.TypeString, value)
+	}
+	if _u.mutation.InstanceIDCleared() {
+		_spec.ClearField(esasite.FieldInstanceID, field.TypeString)
+	}
+	if value, ok := _u.mutation.NameServerList(); ok {
+		_spec.SetField(esasite.FieldNameServerList, field.TypeString, value)
+	}
+	if _u.mutation.NameServerListCleared() {
+		_spec.ClearField(esasite.FieldNameServerList, field.TypeString)
+	}
+	if value, ok := _u.mutation.PlanName(); ok {
+		_spec.SetField(esasite.FieldPlanName, field.TypeString, value)
+	}
+	if _u.mutation.PlanNameCleared() {
+		_spec.ClearField(esasite.FieldPlanName, field.TypeString)
+	}
+	if value, ok := _u.mutation.PlanSpecName(); ok {
+		_spec.SetField(esasite.FieldPlanSpecName, field.TypeString, value)
+	}
+	if _u.mutation.PlanSpecNameCleared() {
+		_spec.ClearField(esasite.FieldPlanSpecName, field.TypeString)
 	}
 	if value, ok := _u.mutation.SiteName(); ok {
 		_spec.SetField(esasite.FieldSiteName, field.TypeString, value)
@@ -326,6 +476,12 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.StatusCleared() {
 		_spec.ClearField(esasite.FieldStatus, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.OfflineReason(); ok {
+		_spec.SetField(esasite.FieldOfflineReason, field.TypeString, value)
+	}
+	if _u.mutation.OfflineReasonCleared() {
+		_spec.ClearField(esasite.FieldOfflineReason, field.TypeString)
 	}
 	if _u.mutation.RecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -479,6 +635,26 @@ func (_u *EsaSiteUpdateOne) ClearAccessType() *EsaSiteUpdateOne {
 	return _u
 }
 
+// SetCnameZone sets the "cname_zone" field.
+func (_u *EsaSiteUpdateOne) SetCnameZone(v string) *EsaSiteUpdateOne {
+	_u.mutation.SetCnameZone(v)
+	return _u
+}
+
+// SetNillableCnameZone sets the "cname_zone" field if the given value is not nil.
+func (_u *EsaSiteUpdateOne) SetNillableCnameZone(v *string) *EsaSiteUpdateOne {
+	if v != nil {
+		_u.SetCnameZone(*v)
+	}
+	return _u
+}
+
+// ClearCnameZone clears the value of the "cname_zone" field.
+func (_u *EsaSiteUpdateOne) ClearCnameZone() *EsaSiteUpdateOne {
+	_u.mutation.ClearCnameZone()
+	return _u
+}
+
 // SetCoverage sets the "coverage" field.
 func (_u *EsaSiteUpdateOne) SetCoverage(v esasite.Coverage) *EsaSiteUpdateOne {
 	_u.mutation.SetCoverage(v)
@@ -496,6 +672,86 @@ func (_u *EsaSiteUpdateOne) SetNillableCoverage(v *esasite.Coverage) *EsaSiteUpd
 // ClearCoverage clears the value of the "coverage" field.
 func (_u *EsaSiteUpdateOne) ClearCoverage() *EsaSiteUpdateOne {
 	_u.mutation.ClearCoverage()
+	return _u
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (_u *EsaSiteUpdateOne) SetInstanceID(v string) *EsaSiteUpdateOne {
+	_u.mutation.SetInstanceID(v)
+	return _u
+}
+
+// SetNillableInstanceID sets the "instance_id" field if the given value is not nil.
+func (_u *EsaSiteUpdateOne) SetNillableInstanceID(v *string) *EsaSiteUpdateOne {
+	if v != nil {
+		_u.SetInstanceID(*v)
+	}
+	return _u
+}
+
+// ClearInstanceID clears the value of the "instance_id" field.
+func (_u *EsaSiteUpdateOne) ClearInstanceID() *EsaSiteUpdateOne {
+	_u.mutation.ClearInstanceID()
+	return _u
+}
+
+// SetNameServerList sets the "name_server_list" field.
+func (_u *EsaSiteUpdateOne) SetNameServerList(v string) *EsaSiteUpdateOne {
+	_u.mutation.SetNameServerList(v)
+	return _u
+}
+
+// SetNillableNameServerList sets the "name_server_list" field if the given value is not nil.
+func (_u *EsaSiteUpdateOne) SetNillableNameServerList(v *string) *EsaSiteUpdateOne {
+	if v != nil {
+		_u.SetNameServerList(*v)
+	}
+	return _u
+}
+
+// ClearNameServerList clears the value of the "name_server_list" field.
+func (_u *EsaSiteUpdateOne) ClearNameServerList() *EsaSiteUpdateOne {
+	_u.mutation.ClearNameServerList()
+	return _u
+}
+
+// SetPlanName sets the "plan_name" field.
+func (_u *EsaSiteUpdateOne) SetPlanName(v string) *EsaSiteUpdateOne {
+	_u.mutation.SetPlanName(v)
+	return _u
+}
+
+// SetNillablePlanName sets the "plan_name" field if the given value is not nil.
+func (_u *EsaSiteUpdateOne) SetNillablePlanName(v *string) *EsaSiteUpdateOne {
+	if v != nil {
+		_u.SetPlanName(*v)
+	}
+	return _u
+}
+
+// ClearPlanName clears the value of the "plan_name" field.
+func (_u *EsaSiteUpdateOne) ClearPlanName() *EsaSiteUpdateOne {
+	_u.mutation.ClearPlanName()
+	return _u
+}
+
+// SetPlanSpecName sets the "plan_spec_name" field.
+func (_u *EsaSiteUpdateOne) SetPlanSpecName(v string) *EsaSiteUpdateOne {
+	_u.mutation.SetPlanSpecName(v)
+	return _u
+}
+
+// SetNillablePlanSpecName sets the "plan_spec_name" field if the given value is not nil.
+func (_u *EsaSiteUpdateOne) SetNillablePlanSpecName(v *string) *EsaSiteUpdateOne {
+	if v != nil {
+		_u.SetPlanSpecName(*v)
+	}
+	return _u
+}
+
+// ClearPlanSpecName clears the value of the "plan_spec_name" field.
+func (_u *EsaSiteUpdateOne) ClearPlanSpecName() *EsaSiteUpdateOne {
+	_u.mutation.ClearPlanSpecName()
 	return _u
 }
 
@@ -536,6 +792,26 @@ func (_u *EsaSiteUpdateOne) SetNillableStatus(v *esasite.Status) *EsaSiteUpdateO
 // ClearStatus clears the value of the "status" field.
 func (_u *EsaSiteUpdateOne) ClearStatus() *EsaSiteUpdateOne {
 	_u.mutation.ClearStatus()
+	return _u
+}
+
+// SetOfflineReason sets the "offline_reason" field.
+func (_u *EsaSiteUpdateOne) SetOfflineReason(v string) *EsaSiteUpdateOne {
+	_u.mutation.SetOfflineReason(v)
+	return _u
+}
+
+// SetNillableOfflineReason sets the "offline_reason" field if the given value is not nil.
+func (_u *EsaSiteUpdateOne) SetNillableOfflineReason(v *string) *EsaSiteUpdateOne {
+	if v != nil {
+		_u.SetOfflineReason(*v)
+	}
+	return _u
+}
+
+// ClearOfflineReason clears the value of the "offline_reason" field.
+func (_u *EsaSiteUpdateOne) ClearOfflineReason() *EsaSiteUpdateOne {
+	_u.mutation.ClearOfflineReason()
 	return _u
 }
 
@@ -747,11 +1023,41 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 	if _u.mutation.AccessTypeCleared() {
 		_spec.ClearField(esasite.FieldAccessType, field.TypeEnum)
 	}
+	if value, ok := _u.mutation.CnameZone(); ok {
+		_spec.SetField(esasite.FieldCnameZone, field.TypeString, value)
+	}
+	if _u.mutation.CnameZoneCleared() {
+		_spec.ClearField(esasite.FieldCnameZone, field.TypeString)
+	}
 	if value, ok := _u.mutation.Coverage(); ok {
 		_spec.SetField(esasite.FieldCoverage, field.TypeEnum, value)
 	}
 	if _u.mutation.CoverageCleared() {
 		_spec.ClearField(esasite.FieldCoverage, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.InstanceID(); ok {
+		_spec.SetField(esasite.FieldInstanceID, field.TypeString, value)
+	}
+	if _u.mutation.InstanceIDCleared() {
+		_spec.ClearField(esasite.FieldInstanceID, field.TypeString)
+	}
+	if value, ok := _u.mutation.NameServerList(); ok {
+		_spec.SetField(esasite.FieldNameServerList, field.TypeString, value)
+	}
+	if _u.mutation.NameServerListCleared() {
+		_spec.ClearField(esasite.FieldNameServerList, field.TypeString)
+	}
+	if value, ok := _u.mutation.PlanName(); ok {
+		_spec.SetField(esasite.FieldPlanName, field.TypeString, value)
+	}
+	if _u.mutation.PlanNameCleared() {
+		_spec.ClearField(esasite.FieldPlanName, field.TypeString)
+	}
+	if value, ok := _u.mutation.PlanSpecName(); ok {
+		_spec.SetField(esasite.FieldPlanSpecName, field.TypeString, value)
+	}
+	if _u.mutation.PlanSpecNameCleared() {
+		_spec.ClearField(esasite.FieldPlanSpecName, field.TypeString)
 	}
 	if value, ok := _u.mutation.SiteName(); ok {
 		_spec.SetField(esasite.FieldSiteName, field.TypeString, value)
@@ -764,6 +1070,12 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 	}
 	if _u.mutation.StatusCleared() {
 		_spec.ClearField(esasite.FieldStatus, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.OfflineReason(); ok {
+		_spec.SetField(esasite.FieldOfflineReason, field.TypeString, value)
+	}
+	if _u.mutation.OfflineReasonCleared() {
+		_spec.ClearField(esasite.FieldOfflineReason, field.TypeString)
 	}
 	if _u.mutation.RecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{

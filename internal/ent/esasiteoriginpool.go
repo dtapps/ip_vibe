@@ -40,6 +40,8 @@ type EsaSiteOriginPool struct {
 	Enabled bool `json:"enabled,omitempty"`
 	// 源地址池被引用信息
 	References json.RawMessage `json:"references,omitempty"`
+	// 被多少个负载均衡器引用
+	ReferenceLBCount int32 `json:"reference_l_b_count,omitempty"`
 	// 源地址池里添加的源站信息
 	Origins json.RawMessage `json:"origins,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -77,7 +79,7 @@ func (*EsaSiteOriginPool) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case esasiteoriginpool.FieldEnabled:
 			values[i] = new(sql.NullBool)
-		case esasiteoriginpool.FieldID, esasiteoriginpool.FieldEsaSiteID, esasiteoriginpool.FieldPoolID:
+		case esasiteoriginpool.FieldID, esasiteoriginpool.FieldEsaSiteID, esasiteoriginpool.FieldPoolID, esasiteoriginpool.FieldReferenceLBCount:
 			values[i] = new(sql.NullInt64)
 		case esasiteoriginpool.FieldName, esasiteoriginpool.FieldRecordName:
 			values[i] = new(sql.NullString)
@@ -166,6 +168,12 @@ func (_m *EsaSiteOriginPool) assignValues(columns []string, values []any) error 
 					return fmt.Errorf("unmarshal field references: %w", err)
 				}
 			}
+		case esasiteoriginpool.FieldReferenceLBCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field reference_l_b_count", values[i])
+			} else if value.Valid {
+				_m.ReferenceLBCount = int32(value.Int64)
+			}
 		case esasiteoriginpool.FieldOrigins:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field origins", values[i])
@@ -244,6 +252,9 @@ func (_m *EsaSiteOriginPool) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("references=")
 	builder.WriteString(fmt.Sprintf("%v", _m.References))
+	builder.WriteString(", ")
+	builder.WriteString("reference_l_b_count=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ReferenceLBCount))
 	builder.WriteString(", ")
 	builder.WriteString("origins=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Origins))

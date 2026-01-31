@@ -28,14 +28,26 @@ const (
 	FieldConfigID = "config_id"
 	// FieldAccessType holds the string denoting the access_type field in the database.
 	FieldAccessType = "access_type"
+	// FieldCnameZone holds the string denoting the cname_zone field in the database.
+	FieldCnameZone = "cname_zone"
 	// FieldCoverage holds the string denoting the coverage field in the database.
 	FieldCoverage = "coverage"
+	// FieldInstanceID holds the string denoting the instance_id field in the database.
+	FieldInstanceID = "instance_id"
+	// FieldNameServerList holds the string denoting the name_server_list field in the database.
+	FieldNameServerList = "name_server_list"
+	// FieldPlanName holds the string denoting the plan_name field in the database.
+	FieldPlanName = "plan_name"
+	// FieldPlanSpecName holds the string denoting the plan_spec_name field in the database.
+	FieldPlanSpecName = "plan_spec_name"
 	// FieldSiteID holds the string denoting the site_id field in the database.
 	FieldSiteID = "site_id"
 	// FieldSiteName holds the string denoting the site_name field in the database.
 	FieldSiteName = "site_name"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldOfflineReason holds the string denoting the offline_reason field in the database.
+	FieldOfflineReason = "offline_reason"
 	// EdgeConfig holds the string denoting the config edge name in mutations.
 	EdgeConfig = "config"
 	// EdgeRecords holds the string denoting the records edge name in mutations.
@@ -76,10 +88,16 @@ var Columns = []string{
 	FieldSyncAt,
 	FieldConfigID,
 	FieldAccessType,
+	FieldCnameZone,
 	FieldCoverage,
+	FieldInstanceID,
+	FieldNameServerList,
+	FieldPlanName,
+	FieldPlanSpecName,
 	FieldSiteID,
 	FieldSiteName,
 	FieldStatus,
+	FieldOfflineReason,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -221,9 +239,34 @@ func ByAccessType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAccessType, opts...).ToFunc()
 }
 
+// ByCnameZone orders the results by the cname_zone field.
+func ByCnameZone(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCnameZone, opts...).ToFunc()
+}
+
 // ByCoverage orders the results by the coverage field.
 func ByCoverage(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCoverage, opts...).ToFunc()
+}
+
+// ByInstanceID orders the results by the instance_id field.
+func ByInstanceID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInstanceID, opts...).ToFunc()
+}
+
+// ByNameServerList orders the results by the name_server_list field.
+func ByNameServerList(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNameServerList, opts...).ToFunc()
+}
+
+// ByPlanName orders the results by the plan_name field.
+func ByPlanName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPlanName, opts...).ToFunc()
+}
+
+// ByPlanSpecName orders the results by the plan_spec_name field.
+func ByPlanSpecName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPlanSpecName, opts...).ToFunc()
 }
 
 // BySiteID orders the results by the site_id field.
@@ -239,6 +282,11 @@ func BySiteName(opts ...sql.OrderTermOption) OrderOption {
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByOfflineReason orders the results by the offline_reason field.
+func ByOfflineReason(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOfflineReason, opts...).ToFunc()
 }
 
 // ByConfigField orders the results by config field.

@@ -100,6 +100,11 @@ func Enabled(v bool) predicate.EsaSiteOriginPool {
 	return predicate.EsaSiteOriginPool(sql.FieldEQ(FieldEnabled, v))
 }
 
+// ReferenceLBCount applies equality check predicate on the "reference_l_b_count" field. It's identical to ReferenceLBCountEQ.
+func ReferenceLBCount(v int32) predicate.EsaSiteOriginPool {
+	return predicate.EsaSiteOriginPool(sql.FieldEQ(FieldReferenceLBCount, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.EsaSiteOriginPool {
 	return predicate.EsaSiteOriginPool(sql.FieldEQ(FieldCreatedAt, v))
@@ -518,6 +523,56 @@ func ReferencesIsNil() predicate.EsaSiteOriginPool {
 // ReferencesNotNil applies the NotNil predicate on the "references" field.
 func ReferencesNotNil() predicate.EsaSiteOriginPool {
 	return predicate.EsaSiteOriginPool(sql.FieldNotNull(FieldReferences))
+}
+
+// ReferenceLBCountEQ applies the EQ predicate on the "reference_l_b_count" field.
+func ReferenceLBCountEQ(v int32) predicate.EsaSiteOriginPool {
+	return predicate.EsaSiteOriginPool(sql.FieldEQ(FieldReferenceLBCount, v))
+}
+
+// ReferenceLBCountNEQ applies the NEQ predicate on the "reference_l_b_count" field.
+func ReferenceLBCountNEQ(v int32) predicate.EsaSiteOriginPool {
+	return predicate.EsaSiteOriginPool(sql.FieldNEQ(FieldReferenceLBCount, v))
+}
+
+// ReferenceLBCountIn applies the In predicate on the "reference_l_b_count" field.
+func ReferenceLBCountIn(vs ...int32) predicate.EsaSiteOriginPool {
+	return predicate.EsaSiteOriginPool(sql.FieldIn(FieldReferenceLBCount, vs...))
+}
+
+// ReferenceLBCountNotIn applies the NotIn predicate on the "reference_l_b_count" field.
+func ReferenceLBCountNotIn(vs ...int32) predicate.EsaSiteOriginPool {
+	return predicate.EsaSiteOriginPool(sql.FieldNotIn(FieldReferenceLBCount, vs...))
+}
+
+// ReferenceLBCountGT applies the GT predicate on the "reference_l_b_count" field.
+func ReferenceLBCountGT(v int32) predicate.EsaSiteOriginPool {
+	return predicate.EsaSiteOriginPool(sql.FieldGT(FieldReferenceLBCount, v))
+}
+
+// ReferenceLBCountGTE applies the GTE predicate on the "reference_l_b_count" field.
+func ReferenceLBCountGTE(v int32) predicate.EsaSiteOriginPool {
+	return predicate.EsaSiteOriginPool(sql.FieldGTE(FieldReferenceLBCount, v))
+}
+
+// ReferenceLBCountLT applies the LT predicate on the "reference_l_b_count" field.
+func ReferenceLBCountLT(v int32) predicate.EsaSiteOriginPool {
+	return predicate.EsaSiteOriginPool(sql.FieldLT(FieldReferenceLBCount, v))
+}
+
+// ReferenceLBCountLTE applies the LTE predicate on the "reference_l_b_count" field.
+func ReferenceLBCountLTE(v int32) predicate.EsaSiteOriginPool {
+	return predicate.EsaSiteOriginPool(sql.FieldLTE(FieldReferenceLBCount, v))
+}
+
+// ReferenceLBCountIsNil applies the IsNil predicate on the "reference_l_b_count" field.
+func ReferenceLBCountIsNil() predicate.EsaSiteOriginPool {
+	return predicate.EsaSiteOriginPool(sql.FieldIsNull(FieldReferenceLBCount))
+}
+
+// ReferenceLBCountNotNil applies the NotNil predicate on the "reference_l_b_count" field.
+func ReferenceLBCountNotNil() predicate.EsaSiteOriginPool {
+	return predicate.EsaSiteOriginPool(sql.FieldNotNull(FieldReferenceLBCount))
 }
 
 // OriginsIsNil applies the IsNil predicate on the "origins" field.

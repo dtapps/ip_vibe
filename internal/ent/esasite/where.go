@@ -80,6 +80,31 @@ func ConfigID(v int64) predicate.EsaSite {
 	return predicate.EsaSite(sql.FieldEQ(FieldConfigID, v))
 }
 
+// CnameZone applies equality check predicate on the "cname_zone" field. It's identical to CnameZoneEQ.
+func CnameZone(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldCnameZone, v))
+}
+
+// InstanceID applies equality check predicate on the "instance_id" field. It's identical to InstanceIDEQ.
+func InstanceID(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldInstanceID, v))
+}
+
+// NameServerList applies equality check predicate on the "name_server_list" field. It's identical to NameServerListEQ.
+func NameServerList(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldNameServerList, v))
+}
+
+// PlanName applies equality check predicate on the "plan_name" field. It's identical to PlanNameEQ.
+func PlanName(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldPlanName, v))
+}
+
+// PlanSpecName applies equality check predicate on the "plan_spec_name" field. It's identical to PlanSpecNameEQ.
+func PlanSpecName(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldPlanSpecName, v))
+}
+
 // SiteID applies equality check predicate on the "site_id" field. It's identical to SiteIDEQ.
 func SiteID(v int64) predicate.EsaSite {
 	return predicate.EsaSite(sql.FieldEQ(FieldSiteID, v))
@@ -88,6 +113,11 @@ func SiteID(v int64) predicate.EsaSite {
 // SiteName applies equality check predicate on the "site_name" field. It's identical to SiteNameEQ.
 func SiteName(v string) predicate.EsaSite {
 	return predicate.EsaSite(sql.FieldEQ(FieldSiteName, v))
+}
+
+// OfflineReason applies equality check predicate on the "offline_reason" field. It's identical to OfflineReasonEQ.
+func OfflineReason(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldOfflineReason, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -320,6 +350,81 @@ func AccessTypeNotNil() predicate.EsaSite {
 	return predicate.EsaSite(sql.FieldNotNull(FieldAccessType))
 }
 
+// CnameZoneEQ applies the EQ predicate on the "cname_zone" field.
+func CnameZoneEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldCnameZone, v))
+}
+
+// CnameZoneNEQ applies the NEQ predicate on the "cname_zone" field.
+func CnameZoneNEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNEQ(FieldCnameZone, v))
+}
+
+// CnameZoneIn applies the In predicate on the "cname_zone" field.
+func CnameZoneIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIn(FieldCnameZone, vs...))
+}
+
+// CnameZoneNotIn applies the NotIn predicate on the "cname_zone" field.
+func CnameZoneNotIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotIn(FieldCnameZone, vs...))
+}
+
+// CnameZoneGT applies the GT predicate on the "cname_zone" field.
+func CnameZoneGT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGT(FieldCnameZone, v))
+}
+
+// CnameZoneGTE applies the GTE predicate on the "cname_zone" field.
+func CnameZoneGTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGTE(FieldCnameZone, v))
+}
+
+// CnameZoneLT applies the LT predicate on the "cname_zone" field.
+func CnameZoneLT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLT(FieldCnameZone, v))
+}
+
+// CnameZoneLTE applies the LTE predicate on the "cname_zone" field.
+func CnameZoneLTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLTE(FieldCnameZone, v))
+}
+
+// CnameZoneContains applies the Contains predicate on the "cname_zone" field.
+func CnameZoneContains(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContains(FieldCnameZone, v))
+}
+
+// CnameZoneHasPrefix applies the HasPrefix predicate on the "cname_zone" field.
+func CnameZoneHasPrefix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasPrefix(FieldCnameZone, v))
+}
+
+// CnameZoneHasSuffix applies the HasSuffix predicate on the "cname_zone" field.
+func CnameZoneHasSuffix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasSuffix(FieldCnameZone, v))
+}
+
+// CnameZoneIsNil applies the IsNil predicate on the "cname_zone" field.
+func CnameZoneIsNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIsNull(FieldCnameZone))
+}
+
+// CnameZoneNotNil applies the NotNil predicate on the "cname_zone" field.
+func CnameZoneNotNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotNull(FieldCnameZone))
+}
+
+// CnameZoneEqualFold applies the EqualFold predicate on the "cname_zone" field.
+func CnameZoneEqualFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEqualFold(FieldCnameZone, v))
+}
+
+// CnameZoneContainsFold applies the ContainsFold predicate on the "cname_zone" field.
+func CnameZoneContainsFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContainsFold(FieldCnameZone, v))
+}
+
 // CoverageEQ applies the EQ predicate on the "coverage" field.
 func CoverageEQ(v Coverage) predicate.EsaSite {
 	return predicate.EsaSite(sql.FieldEQ(FieldCoverage, v))
@@ -348,6 +453,306 @@ func CoverageIsNil() predicate.EsaSite {
 // CoverageNotNil applies the NotNil predicate on the "coverage" field.
 func CoverageNotNil() predicate.EsaSite {
 	return predicate.EsaSite(sql.FieldNotNull(FieldCoverage))
+}
+
+// InstanceIDEQ applies the EQ predicate on the "instance_id" field.
+func InstanceIDEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldInstanceID, v))
+}
+
+// InstanceIDNEQ applies the NEQ predicate on the "instance_id" field.
+func InstanceIDNEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNEQ(FieldInstanceID, v))
+}
+
+// InstanceIDIn applies the In predicate on the "instance_id" field.
+func InstanceIDIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIn(FieldInstanceID, vs...))
+}
+
+// InstanceIDNotIn applies the NotIn predicate on the "instance_id" field.
+func InstanceIDNotIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotIn(FieldInstanceID, vs...))
+}
+
+// InstanceIDGT applies the GT predicate on the "instance_id" field.
+func InstanceIDGT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGT(FieldInstanceID, v))
+}
+
+// InstanceIDGTE applies the GTE predicate on the "instance_id" field.
+func InstanceIDGTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGTE(FieldInstanceID, v))
+}
+
+// InstanceIDLT applies the LT predicate on the "instance_id" field.
+func InstanceIDLT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLT(FieldInstanceID, v))
+}
+
+// InstanceIDLTE applies the LTE predicate on the "instance_id" field.
+func InstanceIDLTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLTE(FieldInstanceID, v))
+}
+
+// InstanceIDContains applies the Contains predicate on the "instance_id" field.
+func InstanceIDContains(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContains(FieldInstanceID, v))
+}
+
+// InstanceIDHasPrefix applies the HasPrefix predicate on the "instance_id" field.
+func InstanceIDHasPrefix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasPrefix(FieldInstanceID, v))
+}
+
+// InstanceIDHasSuffix applies the HasSuffix predicate on the "instance_id" field.
+func InstanceIDHasSuffix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasSuffix(FieldInstanceID, v))
+}
+
+// InstanceIDIsNil applies the IsNil predicate on the "instance_id" field.
+func InstanceIDIsNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIsNull(FieldInstanceID))
+}
+
+// InstanceIDNotNil applies the NotNil predicate on the "instance_id" field.
+func InstanceIDNotNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotNull(FieldInstanceID))
+}
+
+// InstanceIDEqualFold applies the EqualFold predicate on the "instance_id" field.
+func InstanceIDEqualFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEqualFold(FieldInstanceID, v))
+}
+
+// InstanceIDContainsFold applies the ContainsFold predicate on the "instance_id" field.
+func InstanceIDContainsFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContainsFold(FieldInstanceID, v))
+}
+
+// NameServerListEQ applies the EQ predicate on the "name_server_list" field.
+func NameServerListEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldNameServerList, v))
+}
+
+// NameServerListNEQ applies the NEQ predicate on the "name_server_list" field.
+func NameServerListNEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNEQ(FieldNameServerList, v))
+}
+
+// NameServerListIn applies the In predicate on the "name_server_list" field.
+func NameServerListIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIn(FieldNameServerList, vs...))
+}
+
+// NameServerListNotIn applies the NotIn predicate on the "name_server_list" field.
+func NameServerListNotIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotIn(FieldNameServerList, vs...))
+}
+
+// NameServerListGT applies the GT predicate on the "name_server_list" field.
+func NameServerListGT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGT(FieldNameServerList, v))
+}
+
+// NameServerListGTE applies the GTE predicate on the "name_server_list" field.
+func NameServerListGTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGTE(FieldNameServerList, v))
+}
+
+// NameServerListLT applies the LT predicate on the "name_server_list" field.
+func NameServerListLT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLT(FieldNameServerList, v))
+}
+
+// NameServerListLTE applies the LTE predicate on the "name_server_list" field.
+func NameServerListLTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLTE(FieldNameServerList, v))
+}
+
+// NameServerListContains applies the Contains predicate on the "name_server_list" field.
+func NameServerListContains(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContains(FieldNameServerList, v))
+}
+
+// NameServerListHasPrefix applies the HasPrefix predicate on the "name_server_list" field.
+func NameServerListHasPrefix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasPrefix(FieldNameServerList, v))
+}
+
+// NameServerListHasSuffix applies the HasSuffix predicate on the "name_server_list" field.
+func NameServerListHasSuffix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasSuffix(FieldNameServerList, v))
+}
+
+// NameServerListIsNil applies the IsNil predicate on the "name_server_list" field.
+func NameServerListIsNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIsNull(FieldNameServerList))
+}
+
+// NameServerListNotNil applies the NotNil predicate on the "name_server_list" field.
+func NameServerListNotNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotNull(FieldNameServerList))
+}
+
+// NameServerListEqualFold applies the EqualFold predicate on the "name_server_list" field.
+func NameServerListEqualFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEqualFold(FieldNameServerList, v))
+}
+
+// NameServerListContainsFold applies the ContainsFold predicate on the "name_server_list" field.
+func NameServerListContainsFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContainsFold(FieldNameServerList, v))
+}
+
+// PlanNameEQ applies the EQ predicate on the "plan_name" field.
+func PlanNameEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldPlanName, v))
+}
+
+// PlanNameNEQ applies the NEQ predicate on the "plan_name" field.
+func PlanNameNEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNEQ(FieldPlanName, v))
+}
+
+// PlanNameIn applies the In predicate on the "plan_name" field.
+func PlanNameIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIn(FieldPlanName, vs...))
+}
+
+// PlanNameNotIn applies the NotIn predicate on the "plan_name" field.
+func PlanNameNotIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotIn(FieldPlanName, vs...))
+}
+
+// PlanNameGT applies the GT predicate on the "plan_name" field.
+func PlanNameGT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGT(FieldPlanName, v))
+}
+
+// PlanNameGTE applies the GTE predicate on the "plan_name" field.
+func PlanNameGTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGTE(FieldPlanName, v))
+}
+
+// PlanNameLT applies the LT predicate on the "plan_name" field.
+func PlanNameLT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLT(FieldPlanName, v))
+}
+
+// PlanNameLTE applies the LTE predicate on the "plan_name" field.
+func PlanNameLTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLTE(FieldPlanName, v))
+}
+
+// PlanNameContains applies the Contains predicate on the "plan_name" field.
+func PlanNameContains(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContains(FieldPlanName, v))
+}
+
+// PlanNameHasPrefix applies the HasPrefix predicate on the "plan_name" field.
+func PlanNameHasPrefix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasPrefix(FieldPlanName, v))
+}
+
+// PlanNameHasSuffix applies the HasSuffix predicate on the "plan_name" field.
+func PlanNameHasSuffix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasSuffix(FieldPlanName, v))
+}
+
+// PlanNameIsNil applies the IsNil predicate on the "plan_name" field.
+func PlanNameIsNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIsNull(FieldPlanName))
+}
+
+// PlanNameNotNil applies the NotNil predicate on the "plan_name" field.
+func PlanNameNotNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotNull(FieldPlanName))
+}
+
+// PlanNameEqualFold applies the EqualFold predicate on the "plan_name" field.
+func PlanNameEqualFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEqualFold(FieldPlanName, v))
+}
+
+// PlanNameContainsFold applies the ContainsFold predicate on the "plan_name" field.
+func PlanNameContainsFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContainsFold(FieldPlanName, v))
+}
+
+// PlanSpecNameEQ applies the EQ predicate on the "plan_spec_name" field.
+func PlanSpecNameEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldPlanSpecName, v))
+}
+
+// PlanSpecNameNEQ applies the NEQ predicate on the "plan_spec_name" field.
+func PlanSpecNameNEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNEQ(FieldPlanSpecName, v))
+}
+
+// PlanSpecNameIn applies the In predicate on the "plan_spec_name" field.
+func PlanSpecNameIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIn(FieldPlanSpecName, vs...))
+}
+
+// PlanSpecNameNotIn applies the NotIn predicate on the "plan_spec_name" field.
+func PlanSpecNameNotIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotIn(FieldPlanSpecName, vs...))
+}
+
+// PlanSpecNameGT applies the GT predicate on the "plan_spec_name" field.
+func PlanSpecNameGT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGT(FieldPlanSpecName, v))
+}
+
+// PlanSpecNameGTE applies the GTE predicate on the "plan_spec_name" field.
+func PlanSpecNameGTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGTE(FieldPlanSpecName, v))
+}
+
+// PlanSpecNameLT applies the LT predicate on the "plan_spec_name" field.
+func PlanSpecNameLT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLT(FieldPlanSpecName, v))
+}
+
+// PlanSpecNameLTE applies the LTE predicate on the "plan_spec_name" field.
+func PlanSpecNameLTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLTE(FieldPlanSpecName, v))
+}
+
+// PlanSpecNameContains applies the Contains predicate on the "plan_spec_name" field.
+func PlanSpecNameContains(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContains(FieldPlanSpecName, v))
+}
+
+// PlanSpecNameHasPrefix applies the HasPrefix predicate on the "plan_spec_name" field.
+func PlanSpecNameHasPrefix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasPrefix(FieldPlanSpecName, v))
+}
+
+// PlanSpecNameHasSuffix applies the HasSuffix predicate on the "plan_spec_name" field.
+func PlanSpecNameHasSuffix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasSuffix(FieldPlanSpecName, v))
+}
+
+// PlanSpecNameIsNil applies the IsNil predicate on the "plan_spec_name" field.
+func PlanSpecNameIsNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIsNull(FieldPlanSpecName))
+}
+
+// PlanSpecNameNotNil applies the NotNil predicate on the "plan_spec_name" field.
+func PlanSpecNameNotNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotNull(FieldPlanSpecName))
+}
+
+// PlanSpecNameEqualFold applies the EqualFold predicate on the "plan_spec_name" field.
+func PlanSpecNameEqualFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEqualFold(FieldPlanSpecName, v))
+}
+
+// PlanSpecNameContainsFold applies the ContainsFold predicate on the "plan_spec_name" field.
+func PlanSpecNameContainsFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContainsFold(FieldPlanSpecName, v))
 }
 
 // SiteIDEQ applies the EQ predicate on the "site_id" field.
@@ -493,6 +898,81 @@ func StatusIsNil() predicate.EsaSite {
 // StatusNotNil applies the NotNil predicate on the "status" field.
 func StatusNotNil() predicate.EsaSite {
 	return predicate.EsaSite(sql.FieldNotNull(FieldStatus))
+}
+
+// OfflineReasonEQ applies the EQ predicate on the "offline_reason" field.
+func OfflineReasonEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEQ(FieldOfflineReason, v))
+}
+
+// OfflineReasonNEQ applies the NEQ predicate on the "offline_reason" field.
+func OfflineReasonNEQ(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNEQ(FieldOfflineReason, v))
+}
+
+// OfflineReasonIn applies the In predicate on the "offline_reason" field.
+func OfflineReasonIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIn(FieldOfflineReason, vs...))
+}
+
+// OfflineReasonNotIn applies the NotIn predicate on the "offline_reason" field.
+func OfflineReasonNotIn(vs ...string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotIn(FieldOfflineReason, vs...))
+}
+
+// OfflineReasonGT applies the GT predicate on the "offline_reason" field.
+func OfflineReasonGT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGT(FieldOfflineReason, v))
+}
+
+// OfflineReasonGTE applies the GTE predicate on the "offline_reason" field.
+func OfflineReasonGTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldGTE(FieldOfflineReason, v))
+}
+
+// OfflineReasonLT applies the LT predicate on the "offline_reason" field.
+func OfflineReasonLT(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLT(FieldOfflineReason, v))
+}
+
+// OfflineReasonLTE applies the LTE predicate on the "offline_reason" field.
+func OfflineReasonLTE(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldLTE(FieldOfflineReason, v))
+}
+
+// OfflineReasonContains applies the Contains predicate on the "offline_reason" field.
+func OfflineReasonContains(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContains(FieldOfflineReason, v))
+}
+
+// OfflineReasonHasPrefix applies the HasPrefix predicate on the "offline_reason" field.
+func OfflineReasonHasPrefix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasPrefix(FieldOfflineReason, v))
+}
+
+// OfflineReasonHasSuffix applies the HasSuffix predicate on the "offline_reason" field.
+func OfflineReasonHasSuffix(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldHasSuffix(FieldOfflineReason, v))
+}
+
+// OfflineReasonIsNil applies the IsNil predicate on the "offline_reason" field.
+func OfflineReasonIsNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldIsNull(FieldOfflineReason))
+}
+
+// OfflineReasonNotNil applies the NotNil predicate on the "offline_reason" field.
+func OfflineReasonNotNil() predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldNotNull(FieldOfflineReason))
+}
+
+// OfflineReasonEqualFold applies the EqualFold predicate on the "offline_reason" field.
+func OfflineReasonEqualFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldEqualFold(FieldOfflineReason, v))
+}
+
+// OfflineReasonContainsFold applies the ContainsFold predicate on the "offline_reason" field.
+func OfflineReasonContainsFold(v string) predicate.EsaSite {
+	return predicate.EsaSite(sql.FieldContainsFold(FieldOfflineReason, v))
 }
 
 // HasConfig applies the HasEdge predicate on the "config" edge.

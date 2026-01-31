@@ -140,6 +140,20 @@ func (_c *EsaSiteOriginPoolCreate) SetReferences(v json.RawMessage) *EsaSiteOrig
 	return _c
 }
 
+// SetReferenceLBCount sets the "reference_l_b_count" field.
+func (_c *EsaSiteOriginPoolCreate) SetReferenceLBCount(v int32) *EsaSiteOriginPoolCreate {
+	_c.mutation.SetReferenceLBCount(v)
+	return _c
+}
+
+// SetNillableReferenceLBCount sets the "reference_l_b_count" field if the given value is not nil.
+func (_c *EsaSiteOriginPoolCreate) SetNillableReferenceLBCount(v *int32) *EsaSiteOriginPoolCreate {
+	if v != nil {
+		_c.SetReferenceLBCount(*v)
+	}
+	return _c
+}
+
 // SetOrigins sets the "origins" field.
 func (_c *EsaSiteOriginPoolCreate) SetOrigins(v json.RawMessage) *EsaSiteOriginPoolCreate {
 	_c.mutation.SetOrigins(v)
@@ -307,6 +321,10 @@ func (_c *EsaSiteOriginPoolCreate) createSpec() (*EsaSiteOriginPool, *sqlgraph.C
 		_spec.SetField(esasiteoriginpool.FieldReferences, field.TypeJSON, value)
 		_node.References = value
 	}
+	if value, ok := _c.mutation.ReferenceLBCount(); ok {
+		_spec.SetField(esasiteoriginpool.FieldReferenceLBCount, field.TypeInt32, value)
+		_node.ReferenceLBCount = value
+	}
 	if value, ok := _c.mutation.Origins(); ok {
 		_spec.SetField(esasiteoriginpool.FieldOrigins, field.TypeJSON, value)
 		_node.Origins = value
@@ -467,6 +485,30 @@ func (u *EsaSiteOriginPoolUpsert) UpdateReferences() *EsaSiteOriginPoolUpsert {
 // ClearReferences clears the value of the "references" field.
 func (u *EsaSiteOriginPoolUpsert) ClearReferences() *EsaSiteOriginPoolUpsert {
 	u.SetNull(esasiteoriginpool.FieldReferences)
+	return u
+}
+
+// SetReferenceLBCount sets the "reference_l_b_count" field.
+func (u *EsaSiteOriginPoolUpsert) SetReferenceLBCount(v int32) *EsaSiteOriginPoolUpsert {
+	u.Set(esasiteoriginpool.FieldReferenceLBCount, v)
+	return u
+}
+
+// UpdateReferenceLBCount sets the "reference_l_b_count" field to the value that was provided on create.
+func (u *EsaSiteOriginPoolUpsert) UpdateReferenceLBCount() *EsaSiteOriginPoolUpsert {
+	u.SetExcluded(esasiteoriginpool.FieldReferenceLBCount)
+	return u
+}
+
+// AddReferenceLBCount adds v to the "reference_l_b_count" field.
+func (u *EsaSiteOriginPoolUpsert) AddReferenceLBCount(v int32) *EsaSiteOriginPoolUpsert {
+	u.Add(esasiteoriginpool.FieldReferenceLBCount, v)
+	return u
+}
+
+// ClearReferenceLBCount clears the value of the "reference_l_b_count" field.
+func (u *EsaSiteOriginPoolUpsert) ClearReferenceLBCount() *EsaSiteOriginPoolUpsert {
+	u.SetNull(esasiteoriginpool.FieldReferenceLBCount)
 	return u
 }
 
@@ -653,6 +695,34 @@ func (u *EsaSiteOriginPoolUpsertOne) UpdateReferences() *EsaSiteOriginPoolUpsert
 func (u *EsaSiteOriginPoolUpsertOne) ClearReferences() *EsaSiteOriginPoolUpsertOne {
 	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
 		s.ClearReferences()
+	})
+}
+
+// SetReferenceLBCount sets the "reference_l_b_count" field.
+func (u *EsaSiteOriginPoolUpsertOne) SetReferenceLBCount(v int32) *EsaSiteOriginPoolUpsertOne {
+	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
+		s.SetReferenceLBCount(v)
+	})
+}
+
+// AddReferenceLBCount adds v to the "reference_l_b_count" field.
+func (u *EsaSiteOriginPoolUpsertOne) AddReferenceLBCount(v int32) *EsaSiteOriginPoolUpsertOne {
+	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
+		s.AddReferenceLBCount(v)
+	})
+}
+
+// UpdateReferenceLBCount sets the "reference_l_b_count" field to the value that was provided on create.
+func (u *EsaSiteOriginPoolUpsertOne) UpdateReferenceLBCount() *EsaSiteOriginPoolUpsertOne {
+	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
+		s.UpdateReferenceLBCount()
+	})
+}
+
+// ClearReferenceLBCount clears the value of the "reference_l_b_count" field.
+func (u *EsaSiteOriginPoolUpsertOne) ClearReferenceLBCount() *EsaSiteOriginPoolUpsertOne {
+	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
+		s.ClearReferenceLBCount()
 	})
 }
 
@@ -1008,6 +1078,34 @@ func (u *EsaSiteOriginPoolUpsertBulk) UpdateReferences() *EsaSiteOriginPoolUpser
 func (u *EsaSiteOriginPoolUpsertBulk) ClearReferences() *EsaSiteOriginPoolUpsertBulk {
 	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
 		s.ClearReferences()
+	})
+}
+
+// SetReferenceLBCount sets the "reference_l_b_count" field.
+func (u *EsaSiteOriginPoolUpsertBulk) SetReferenceLBCount(v int32) *EsaSiteOriginPoolUpsertBulk {
+	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
+		s.SetReferenceLBCount(v)
+	})
+}
+
+// AddReferenceLBCount adds v to the "reference_l_b_count" field.
+func (u *EsaSiteOriginPoolUpsertBulk) AddReferenceLBCount(v int32) *EsaSiteOriginPoolUpsertBulk {
+	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
+		s.AddReferenceLBCount(v)
+	})
+}
+
+// UpdateReferenceLBCount sets the "reference_l_b_count" field to the value that was provided on create.
+func (u *EsaSiteOriginPoolUpsertBulk) UpdateReferenceLBCount() *EsaSiteOriginPoolUpsertBulk {
+	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
+		s.UpdateReferenceLBCount()
+	})
+}
+
+// ClearReferenceLBCount clears the value of the "reference_l_b_count" field.
+func (u *EsaSiteOriginPoolUpsertBulk) ClearReferenceLBCount() *EsaSiteOriginPoolUpsertBulk {
+	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
+		s.ClearReferenceLBCount()
 	})
 }
 

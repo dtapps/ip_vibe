@@ -35,6 +35,8 @@ const (
 	FieldEnabled = "enabled"
 	// FieldReferences holds the string denoting the references field in the database.
 	FieldReferences = "references"
+	// FieldReferenceLBCount holds the string denoting the reference_l_b_count field in the database.
+	FieldReferenceLBCount = "reference_l_b_count"
 	// FieldOrigins holds the string denoting the origins field in the database.
 	FieldOrigins = "origins"
 	// EdgeEsaSite holds the string denoting the esa_site edge name in mutations.
@@ -63,6 +65,7 @@ var Columns = []string{
 	FieldRecordName,
 	FieldEnabled,
 	FieldReferences,
+	FieldReferenceLBCount,
 	FieldOrigins,
 }
 
@@ -146,6 +149,11 @@ func ByRecordName(opts ...sql.OrderTermOption) OrderOption {
 // ByEnabled orders the results by the enabled field.
 func ByEnabled(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEnabled, opts...).ToFunc()
+}
+
+// ByReferenceLBCount orders the results by the reference_l_b_count field.
+func ByReferenceLBCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReferenceLBCount, opts...).ToFunc()
 }
 
 // ByEsaSiteField orders the results by esa_site field.

@@ -31,14 +31,26 @@ type EsaSite struct {
 	ConfigID int64 `json:"config_id,omitempty"`
 	// 站点接入类型
 	AccessType esasite.AccessType `json:"access_type,omitempty"`
+	// 站点的 CNAME 后缀
+	CnameZone string `json:"cname_zone,omitempty"`
 	// 站点加速区域
 	Coverage esasite.Coverage `json:"coverage,omitempty"`
+	// 站点绑定的套餐实例 ID
+	InstanceID string `json:"instance_id,omitempty"`
+	// 站点分配的 NS 列表。使用半角逗号（,）分隔
+	NameServerList string `json:"name_server_list,omitempty"`
+	// 套餐名称
+	PlanName string `json:"plan_name,omitempty"`
+	// 站点套餐的规格名称
+	PlanSpecName string `json:"plan_spec_name,omitempty"`
 	// 站点 ID
 	SiteID int64 `json:"site_id,omitempty"`
 	// 站点名称
 	SiteName string `json:"site_name,omitempty"`
 	// 站点状态
 	Status esasite.Status `json:"status,omitempty"`
+	// 站点停用原因
+	OfflineReason string `json:"offline_reason,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EsaSiteQuery when eager-loading is set.
 	Edges        EsaSiteEdges `json:"edges"`
@@ -96,7 +108,7 @@ func (*EsaSite) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case esasite.FieldID, esasite.FieldConfigID, esasite.FieldSiteID:
 			values[i] = new(sql.NullInt64)
-		case esasite.FieldAccessType, esasite.FieldCoverage, esasite.FieldSiteName, esasite.FieldStatus:
+		case esasite.FieldAccessType, esasite.FieldCnameZone, esasite.FieldCoverage, esasite.FieldInstanceID, esasite.FieldNameServerList, esasite.FieldPlanName, esasite.FieldPlanSpecName, esasite.FieldSiteName, esasite.FieldStatus, esasite.FieldOfflineReason:
 			values[i] = new(sql.NullString)
 		case esasite.FieldCreatedAt, esasite.FieldUpdatedAt, esasite.FieldRemoteCreatedAt, esasite.FieldSyncAt:
 			values[i] = new(sql.NullTime)
@@ -157,11 +169,41 @@ func (_m *EsaSite) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.AccessType = esasite.AccessType(value.String)
 			}
+		case esasite.FieldCnameZone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field cname_zone", values[i])
+			} else if value.Valid {
+				_m.CnameZone = value.String
+			}
 		case esasite.FieldCoverage:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field coverage", values[i])
 			} else if value.Valid {
 				_m.Coverage = esasite.Coverage(value.String)
+			}
+		case esasite.FieldInstanceID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field instance_id", values[i])
+			} else if value.Valid {
+				_m.InstanceID = value.String
+			}
+		case esasite.FieldNameServerList:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name_server_list", values[i])
+			} else if value.Valid {
+				_m.NameServerList = value.String
+			}
+		case esasite.FieldPlanName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field plan_name", values[i])
+			} else if value.Valid {
+				_m.PlanName = value.String
+			}
+		case esasite.FieldPlanSpecName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field plan_spec_name", values[i])
+			} else if value.Valid {
+				_m.PlanSpecName = value.String
 			}
 		case esasite.FieldSiteID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -180,6 +222,12 @@ func (_m *EsaSite) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
 				_m.Status = esasite.Status(value.String)
+			}
+		case esasite.FieldOfflineReason:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field offline_reason", values[i])
+			} else if value.Valid {
+				_m.OfflineReason = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -250,8 +298,23 @@ func (_m *EsaSite) String() string {
 	builder.WriteString("access_type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.AccessType))
 	builder.WriteString(", ")
+	builder.WriteString("cname_zone=")
+	builder.WriteString(_m.CnameZone)
+	builder.WriteString(", ")
 	builder.WriteString("coverage=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Coverage))
+	builder.WriteString(", ")
+	builder.WriteString("instance_id=")
+	builder.WriteString(_m.InstanceID)
+	builder.WriteString(", ")
+	builder.WriteString("name_server_list=")
+	builder.WriteString(_m.NameServerList)
+	builder.WriteString(", ")
+	builder.WriteString("plan_name=")
+	builder.WriteString(_m.PlanName)
+	builder.WriteString(", ")
+	builder.WriteString("plan_spec_name=")
+	builder.WriteString(_m.PlanSpecName)
 	builder.WriteString(", ")
 	builder.WriteString("site_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.SiteID))
@@ -261,6 +324,9 @@ func (_m *EsaSite) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Status))
+	builder.WriteString(", ")
+	builder.WriteString("offline_reason=")
+	builder.WriteString(_m.OfflineReason)
 	builder.WriteByte(')')
 	return builder.String()
 }

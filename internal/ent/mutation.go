@@ -15225,11 +15225,17 @@ type EsaSiteMutation struct {
 	remote_created_at  *time.Time
 	sync_at            *time.Time
 	access_type        *esasite.AccessType
+	cname_zone         *string
 	coverage           *esasite.Coverage
+	instance_id        *string
+	name_server_list   *string
+	plan_name          *string
+	plan_spec_name     *string
 	site_id            *int64
 	addsite_id         *int64
 	site_name          *string
 	status             *esasite.Status
+	offline_reason     *string
 	clearedFields      map[string]struct{}
 	_config            *int64
 	cleared_config     bool
@@ -15603,6 +15609,55 @@ func (m *EsaSiteMutation) ResetAccessType() {
 	delete(m.clearedFields, esasite.FieldAccessType)
 }
 
+// SetCnameZone sets the "cname_zone" field.
+func (m *EsaSiteMutation) SetCnameZone(s string) {
+	m.cname_zone = &s
+}
+
+// CnameZone returns the value of the "cname_zone" field in the mutation.
+func (m *EsaSiteMutation) CnameZone() (r string, exists bool) {
+	v := m.cname_zone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCnameZone returns the old "cname_zone" field's value of the EsaSite entity.
+// If the EsaSite object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteMutation) OldCnameZone(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCnameZone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCnameZone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCnameZone: %w", err)
+	}
+	return oldValue.CnameZone, nil
+}
+
+// ClearCnameZone clears the value of the "cname_zone" field.
+func (m *EsaSiteMutation) ClearCnameZone() {
+	m.cname_zone = nil
+	m.clearedFields[esasite.FieldCnameZone] = struct{}{}
+}
+
+// CnameZoneCleared returns if the "cname_zone" field was cleared in this mutation.
+func (m *EsaSiteMutation) CnameZoneCleared() bool {
+	_, ok := m.clearedFields[esasite.FieldCnameZone]
+	return ok
+}
+
+// ResetCnameZone resets all changes to the "cname_zone" field.
+func (m *EsaSiteMutation) ResetCnameZone() {
+	m.cname_zone = nil
+	delete(m.clearedFields, esasite.FieldCnameZone)
+}
+
 // SetCoverage sets the "coverage" field.
 func (m *EsaSiteMutation) SetCoverage(e esasite.Coverage) {
 	m.coverage = &e
@@ -15650,6 +15705,202 @@ func (m *EsaSiteMutation) CoverageCleared() bool {
 func (m *EsaSiteMutation) ResetCoverage() {
 	m.coverage = nil
 	delete(m.clearedFields, esasite.FieldCoverage)
+}
+
+// SetInstanceID sets the "instance_id" field.
+func (m *EsaSiteMutation) SetInstanceID(s string) {
+	m.instance_id = &s
+}
+
+// InstanceID returns the value of the "instance_id" field in the mutation.
+func (m *EsaSiteMutation) InstanceID() (r string, exists bool) {
+	v := m.instance_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInstanceID returns the old "instance_id" field's value of the EsaSite entity.
+// If the EsaSite object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteMutation) OldInstanceID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInstanceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInstanceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInstanceID: %w", err)
+	}
+	return oldValue.InstanceID, nil
+}
+
+// ClearInstanceID clears the value of the "instance_id" field.
+func (m *EsaSiteMutation) ClearInstanceID() {
+	m.instance_id = nil
+	m.clearedFields[esasite.FieldInstanceID] = struct{}{}
+}
+
+// InstanceIDCleared returns if the "instance_id" field was cleared in this mutation.
+func (m *EsaSiteMutation) InstanceIDCleared() bool {
+	_, ok := m.clearedFields[esasite.FieldInstanceID]
+	return ok
+}
+
+// ResetInstanceID resets all changes to the "instance_id" field.
+func (m *EsaSiteMutation) ResetInstanceID() {
+	m.instance_id = nil
+	delete(m.clearedFields, esasite.FieldInstanceID)
+}
+
+// SetNameServerList sets the "name_server_list" field.
+func (m *EsaSiteMutation) SetNameServerList(s string) {
+	m.name_server_list = &s
+}
+
+// NameServerList returns the value of the "name_server_list" field in the mutation.
+func (m *EsaSiteMutation) NameServerList() (r string, exists bool) {
+	v := m.name_server_list
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNameServerList returns the old "name_server_list" field's value of the EsaSite entity.
+// If the EsaSite object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteMutation) OldNameServerList(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNameServerList is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNameServerList requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNameServerList: %w", err)
+	}
+	return oldValue.NameServerList, nil
+}
+
+// ClearNameServerList clears the value of the "name_server_list" field.
+func (m *EsaSiteMutation) ClearNameServerList() {
+	m.name_server_list = nil
+	m.clearedFields[esasite.FieldNameServerList] = struct{}{}
+}
+
+// NameServerListCleared returns if the "name_server_list" field was cleared in this mutation.
+func (m *EsaSiteMutation) NameServerListCleared() bool {
+	_, ok := m.clearedFields[esasite.FieldNameServerList]
+	return ok
+}
+
+// ResetNameServerList resets all changes to the "name_server_list" field.
+func (m *EsaSiteMutation) ResetNameServerList() {
+	m.name_server_list = nil
+	delete(m.clearedFields, esasite.FieldNameServerList)
+}
+
+// SetPlanName sets the "plan_name" field.
+func (m *EsaSiteMutation) SetPlanName(s string) {
+	m.plan_name = &s
+}
+
+// PlanName returns the value of the "plan_name" field in the mutation.
+func (m *EsaSiteMutation) PlanName() (r string, exists bool) {
+	v := m.plan_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlanName returns the old "plan_name" field's value of the EsaSite entity.
+// If the EsaSite object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteMutation) OldPlanName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlanName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlanName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlanName: %w", err)
+	}
+	return oldValue.PlanName, nil
+}
+
+// ClearPlanName clears the value of the "plan_name" field.
+func (m *EsaSiteMutation) ClearPlanName() {
+	m.plan_name = nil
+	m.clearedFields[esasite.FieldPlanName] = struct{}{}
+}
+
+// PlanNameCleared returns if the "plan_name" field was cleared in this mutation.
+func (m *EsaSiteMutation) PlanNameCleared() bool {
+	_, ok := m.clearedFields[esasite.FieldPlanName]
+	return ok
+}
+
+// ResetPlanName resets all changes to the "plan_name" field.
+func (m *EsaSiteMutation) ResetPlanName() {
+	m.plan_name = nil
+	delete(m.clearedFields, esasite.FieldPlanName)
+}
+
+// SetPlanSpecName sets the "plan_spec_name" field.
+func (m *EsaSiteMutation) SetPlanSpecName(s string) {
+	m.plan_spec_name = &s
+}
+
+// PlanSpecName returns the value of the "plan_spec_name" field in the mutation.
+func (m *EsaSiteMutation) PlanSpecName() (r string, exists bool) {
+	v := m.plan_spec_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlanSpecName returns the old "plan_spec_name" field's value of the EsaSite entity.
+// If the EsaSite object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteMutation) OldPlanSpecName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlanSpecName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlanSpecName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlanSpecName: %w", err)
+	}
+	return oldValue.PlanSpecName, nil
+}
+
+// ClearPlanSpecName clears the value of the "plan_spec_name" field.
+func (m *EsaSiteMutation) ClearPlanSpecName() {
+	m.plan_spec_name = nil
+	m.clearedFields[esasite.FieldPlanSpecName] = struct{}{}
+}
+
+// PlanSpecNameCleared returns if the "plan_spec_name" field was cleared in this mutation.
+func (m *EsaSiteMutation) PlanSpecNameCleared() bool {
+	_, ok := m.clearedFields[esasite.FieldPlanSpecName]
+	return ok
+}
+
+// ResetPlanSpecName resets all changes to the "plan_spec_name" field.
+func (m *EsaSiteMutation) ResetPlanSpecName() {
+	m.plan_spec_name = nil
+	delete(m.clearedFields, esasite.FieldPlanSpecName)
 }
 
 // SetSiteID sets the "site_id" field.
@@ -15804,6 +16055,55 @@ func (m *EsaSiteMutation) StatusCleared() bool {
 func (m *EsaSiteMutation) ResetStatus() {
 	m.status = nil
 	delete(m.clearedFields, esasite.FieldStatus)
+}
+
+// SetOfflineReason sets the "offline_reason" field.
+func (m *EsaSiteMutation) SetOfflineReason(s string) {
+	m.offline_reason = &s
+}
+
+// OfflineReason returns the value of the "offline_reason" field in the mutation.
+func (m *EsaSiteMutation) OfflineReason() (r string, exists bool) {
+	v := m.offline_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOfflineReason returns the old "offline_reason" field's value of the EsaSite entity.
+// If the EsaSite object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteMutation) OldOfflineReason(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOfflineReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOfflineReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOfflineReason: %w", err)
+	}
+	return oldValue.OfflineReason, nil
+}
+
+// ClearOfflineReason clears the value of the "offline_reason" field.
+func (m *EsaSiteMutation) ClearOfflineReason() {
+	m.offline_reason = nil
+	m.clearedFields[esasite.FieldOfflineReason] = struct{}{}
+}
+
+// OfflineReasonCleared returns if the "offline_reason" field was cleared in this mutation.
+func (m *EsaSiteMutation) OfflineReasonCleared() bool {
+	_, ok := m.clearedFields[esasite.FieldOfflineReason]
+	return ok
+}
+
+// ResetOfflineReason resets all changes to the "offline_reason" field.
+func (m *EsaSiteMutation) ResetOfflineReason() {
+	m.offline_reason = nil
+	delete(m.clearedFields, esasite.FieldOfflineReason)
 }
 
 // ClearConfig clears the "config" edge to the PlatformConfig entity.
@@ -15975,7 +16275,7 @@ func (m *EsaSiteMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EsaSiteMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, esasite.FieldCreatedAt)
 	}
@@ -15994,8 +16294,23 @@ func (m *EsaSiteMutation) Fields() []string {
 	if m.access_type != nil {
 		fields = append(fields, esasite.FieldAccessType)
 	}
+	if m.cname_zone != nil {
+		fields = append(fields, esasite.FieldCnameZone)
+	}
 	if m.coverage != nil {
 		fields = append(fields, esasite.FieldCoverage)
+	}
+	if m.instance_id != nil {
+		fields = append(fields, esasite.FieldInstanceID)
+	}
+	if m.name_server_list != nil {
+		fields = append(fields, esasite.FieldNameServerList)
+	}
+	if m.plan_name != nil {
+		fields = append(fields, esasite.FieldPlanName)
+	}
+	if m.plan_spec_name != nil {
+		fields = append(fields, esasite.FieldPlanSpecName)
 	}
 	if m.site_id != nil {
 		fields = append(fields, esasite.FieldSiteID)
@@ -16005,6 +16320,9 @@ func (m *EsaSiteMutation) Fields() []string {
 	}
 	if m.status != nil {
 		fields = append(fields, esasite.FieldStatus)
+	}
+	if m.offline_reason != nil {
+		fields = append(fields, esasite.FieldOfflineReason)
 	}
 	return fields
 }
@@ -16026,14 +16344,26 @@ func (m *EsaSiteMutation) Field(name string) (ent.Value, bool) {
 		return m.ConfigID()
 	case esasite.FieldAccessType:
 		return m.AccessType()
+	case esasite.FieldCnameZone:
+		return m.CnameZone()
 	case esasite.FieldCoverage:
 		return m.Coverage()
+	case esasite.FieldInstanceID:
+		return m.InstanceID()
+	case esasite.FieldNameServerList:
+		return m.NameServerList()
+	case esasite.FieldPlanName:
+		return m.PlanName()
+	case esasite.FieldPlanSpecName:
+		return m.PlanSpecName()
 	case esasite.FieldSiteID:
 		return m.SiteID()
 	case esasite.FieldSiteName:
 		return m.SiteName()
 	case esasite.FieldStatus:
 		return m.Status()
+	case esasite.FieldOfflineReason:
+		return m.OfflineReason()
 	}
 	return nil, false
 }
@@ -16055,14 +16385,26 @@ func (m *EsaSiteMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldConfigID(ctx)
 	case esasite.FieldAccessType:
 		return m.OldAccessType(ctx)
+	case esasite.FieldCnameZone:
+		return m.OldCnameZone(ctx)
 	case esasite.FieldCoverage:
 		return m.OldCoverage(ctx)
+	case esasite.FieldInstanceID:
+		return m.OldInstanceID(ctx)
+	case esasite.FieldNameServerList:
+		return m.OldNameServerList(ctx)
+	case esasite.FieldPlanName:
+		return m.OldPlanName(ctx)
+	case esasite.FieldPlanSpecName:
+		return m.OldPlanSpecName(ctx)
 	case esasite.FieldSiteID:
 		return m.OldSiteID(ctx)
 	case esasite.FieldSiteName:
 		return m.OldSiteName(ctx)
 	case esasite.FieldStatus:
 		return m.OldStatus(ctx)
+	case esasite.FieldOfflineReason:
+		return m.OldOfflineReason(ctx)
 	}
 	return nil, fmt.Errorf("unknown EsaSite field %s", name)
 }
@@ -16114,12 +16456,47 @@ func (m *EsaSiteMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAccessType(v)
 		return nil
+	case esasite.FieldCnameZone:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCnameZone(v)
+		return nil
 	case esasite.FieldCoverage:
 		v, ok := value.(esasite.Coverage)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCoverage(v)
+		return nil
+	case esasite.FieldInstanceID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInstanceID(v)
+		return nil
+	case esasite.FieldNameServerList:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNameServerList(v)
+		return nil
+	case esasite.FieldPlanName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlanName(v)
+		return nil
+	case esasite.FieldPlanSpecName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlanSpecName(v)
 		return nil
 	case esasite.FieldSiteID:
 		v, ok := value.(int64)
@@ -16141,6 +16518,13 @@ func (m *EsaSiteMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
+		return nil
+	case esasite.FieldOfflineReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOfflineReason(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EsaSite field %s", name)
@@ -16196,14 +16580,32 @@ func (m *EsaSiteMutation) ClearedFields() []string {
 	if m.FieldCleared(esasite.FieldAccessType) {
 		fields = append(fields, esasite.FieldAccessType)
 	}
+	if m.FieldCleared(esasite.FieldCnameZone) {
+		fields = append(fields, esasite.FieldCnameZone)
+	}
 	if m.FieldCleared(esasite.FieldCoverage) {
 		fields = append(fields, esasite.FieldCoverage)
+	}
+	if m.FieldCleared(esasite.FieldInstanceID) {
+		fields = append(fields, esasite.FieldInstanceID)
+	}
+	if m.FieldCleared(esasite.FieldNameServerList) {
+		fields = append(fields, esasite.FieldNameServerList)
+	}
+	if m.FieldCleared(esasite.FieldPlanName) {
+		fields = append(fields, esasite.FieldPlanName)
+	}
+	if m.FieldCleared(esasite.FieldPlanSpecName) {
+		fields = append(fields, esasite.FieldPlanSpecName)
 	}
 	if m.FieldCleared(esasite.FieldSiteName) {
 		fields = append(fields, esasite.FieldSiteName)
 	}
 	if m.FieldCleared(esasite.FieldStatus) {
 		fields = append(fields, esasite.FieldStatus)
+	}
+	if m.FieldCleared(esasite.FieldOfflineReason) {
+		fields = append(fields, esasite.FieldOfflineReason)
 	}
 	return fields
 }
@@ -16228,14 +16630,32 @@ func (m *EsaSiteMutation) ClearField(name string) error {
 	case esasite.FieldAccessType:
 		m.ClearAccessType()
 		return nil
+	case esasite.FieldCnameZone:
+		m.ClearCnameZone()
+		return nil
 	case esasite.FieldCoverage:
 		m.ClearCoverage()
+		return nil
+	case esasite.FieldInstanceID:
+		m.ClearInstanceID()
+		return nil
+	case esasite.FieldNameServerList:
+		m.ClearNameServerList()
+		return nil
+	case esasite.FieldPlanName:
+		m.ClearPlanName()
+		return nil
+	case esasite.FieldPlanSpecName:
+		m.ClearPlanSpecName()
 		return nil
 	case esasite.FieldSiteName:
 		m.ClearSiteName()
 		return nil
 	case esasite.FieldStatus:
 		m.ClearStatus()
+		return nil
+	case esasite.FieldOfflineReason:
+		m.ClearOfflineReason()
 		return nil
 	}
 	return fmt.Errorf("unknown EsaSite nullable field %s", name)
@@ -16263,8 +16683,23 @@ func (m *EsaSiteMutation) ResetField(name string) error {
 	case esasite.FieldAccessType:
 		m.ResetAccessType()
 		return nil
+	case esasite.FieldCnameZone:
+		m.ResetCnameZone()
+		return nil
 	case esasite.FieldCoverage:
 		m.ResetCoverage()
+		return nil
+	case esasite.FieldInstanceID:
+		m.ResetInstanceID()
+		return nil
+	case esasite.FieldNameServerList:
+		m.ResetNameServerList()
+		return nil
+	case esasite.FieldPlanName:
+		m.ResetPlanName()
+		return nil
+	case esasite.FieldPlanSpecName:
+		m.ResetPlanSpecName()
 		return nil
 	case esasite.FieldSiteID:
 		m.ResetSiteID()
@@ -16274,6 +16709,9 @@ func (m *EsaSiteMutation) ResetField(name string) error {
 		return nil
 	case esasite.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case esasite.FieldOfflineReason:
+		m.ResetOfflineReason()
 		return nil
 	}
 	return fmt.Errorf("unknown EsaSite field %s", name)
@@ -16410,28 +16848,30 @@ func (m *EsaSiteMutation) ResetEdge(name string) error {
 // EsaSiteOriginPoolMutation represents an operation that mutates the EsaSiteOriginPool nodes in the graph.
 type EsaSiteOriginPoolMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int64
-	created_at        *time.Time
-	updated_at        *time.Time
-	remote_created_at *time.Time
-	sync_at           *time.Time
-	pool_id           *int64
-	addpool_id        *int64
-	name              *string
-	record_name       *string
-	enabled           *bool
-	references        *json.RawMessage
-	appendreferences  json.RawMessage
-	origins           *json.RawMessage
-	appendorigins     json.RawMessage
-	clearedFields     map[string]struct{}
-	esa_site          *int64
-	clearedesa_site   bool
-	done              bool
-	oldValue          func(context.Context) (*EsaSiteOriginPool, error)
-	predicates        []predicate.EsaSiteOriginPool
+	op                     Op
+	typ                    string
+	id                     *int64
+	created_at             *time.Time
+	updated_at             *time.Time
+	remote_created_at      *time.Time
+	sync_at                *time.Time
+	pool_id                *int64
+	addpool_id             *int64
+	name                   *string
+	record_name            *string
+	enabled                *bool
+	references             *json.RawMessage
+	appendreferences       json.RawMessage
+	reference_l_b_count    *int32
+	addreference_l_b_count *int32
+	origins                *json.RawMessage
+	appendorigins          json.RawMessage
+	clearedFields          map[string]struct{}
+	esa_site               *int64
+	clearedesa_site        bool
+	done                   bool
+	oldValue               func(context.Context) (*EsaSiteOriginPool, error)
+	predicates             []predicate.EsaSiteOriginPool
 }
 
 var _ ent.Mutation = (*EsaSiteOriginPoolMutation)(nil)
@@ -17012,6 +17452,76 @@ func (m *EsaSiteOriginPoolMutation) ResetReferences() {
 	delete(m.clearedFields, esasiteoriginpool.FieldReferences)
 }
 
+// SetReferenceLBCount sets the "reference_l_b_count" field.
+func (m *EsaSiteOriginPoolMutation) SetReferenceLBCount(i int32) {
+	m.reference_l_b_count = &i
+	m.addreference_l_b_count = nil
+}
+
+// ReferenceLBCount returns the value of the "reference_l_b_count" field in the mutation.
+func (m *EsaSiteOriginPoolMutation) ReferenceLBCount() (r int32, exists bool) {
+	v := m.reference_l_b_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReferenceLBCount returns the old "reference_l_b_count" field's value of the EsaSiteOriginPool entity.
+// If the EsaSiteOriginPool object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteOriginPoolMutation) OldReferenceLBCount(ctx context.Context) (v int32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReferenceLBCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReferenceLBCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReferenceLBCount: %w", err)
+	}
+	return oldValue.ReferenceLBCount, nil
+}
+
+// AddReferenceLBCount adds i to the "reference_l_b_count" field.
+func (m *EsaSiteOriginPoolMutation) AddReferenceLBCount(i int32) {
+	if m.addreference_l_b_count != nil {
+		*m.addreference_l_b_count += i
+	} else {
+		m.addreference_l_b_count = &i
+	}
+}
+
+// AddedReferenceLBCount returns the value that was added to the "reference_l_b_count" field in this mutation.
+func (m *EsaSiteOriginPoolMutation) AddedReferenceLBCount() (r int32, exists bool) {
+	v := m.addreference_l_b_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearReferenceLBCount clears the value of the "reference_l_b_count" field.
+func (m *EsaSiteOriginPoolMutation) ClearReferenceLBCount() {
+	m.reference_l_b_count = nil
+	m.addreference_l_b_count = nil
+	m.clearedFields[esasiteoriginpool.FieldReferenceLBCount] = struct{}{}
+}
+
+// ReferenceLBCountCleared returns if the "reference_l_b_count" field was cleared in this mutation.
+func (m *EsaSiteOriginPoolMutation) ReferenceLBCountCleared() bool {
+	_, ok := m.clearedFields[esasiteoriginpool.FieldReferenceLBCount]
+	return ok
+}
+
+// ResetReferenceLBCount resets all changes to the "reference_l_b_count" field.
+func (m *EsaSiteOriginPoolMutation) ResetReferenceLBCount() {
+	m.reference_l_b_count = nil
+	m.addreference_l_b_count = nil
+	delete(m.clearedFields, esasiteoriginpool.FieldReferenceLBCount)
+}
+
 // SetOrigins sets the "origins" field.
 func (m *EsaSiteOriginPoolMutation) SetOrigins(jm json.RawMessage) {
 	m.origins = &jm
@@ -17138,7 +17648,7 @@ func (m *EsaSiteOriginPoolMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EsaSiteOriginPoolMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, esasiteoriginpool.FieldCreatedAt)
 	}
@@ -17168,6 +17678,9 @@ func (m *EsaSiteOriginPoolMutation) Fields() []string {
 	}
 	if m.references != nil {
 		fields = append(fields, esasiteoriginpool.FieldReferences)
+	}
+	if m.reference_l_b_count != nil {
+		fields = append(fields, esasiteoriginpool.FieldReferenceLBCount)
 	}
 	if m.origins != nil {
 		fields = append(fields, esasiteoriginpool.FieldOrigins)
@@ -17200,6 +17713,8 @@ func (m *EsaSiteOriginPoolMutation) Field(name string) (ent.Value, bool) {
 		return m.Enabled()
 	case esasiteoriginpool.FieldReferences:
 		return m.References()
+	case esasiteoriginpool.FieldReferenceLBCount:
+		return m.ReferenceLBCount()
 	case esasiteoriginpool.FieldOrigins:
 		return m.Origins()
 	}
@@ -17231,6 +17746,8 @@ func (m *EsaSiteOriginPoolMutation) OldField(ctx context.Context, name string) (
 		return m.OldEnabled(ctx)
 	case esasiteoriginpool.FieldReferences:
 		return m.OldReferences(ctx)
+	case esasiteoriginpool.FieldReferenceLBCount:
+		return m.OldReferenceLBCount(ctx)
 	case esasiteoriginpool.FieldOrigins:
 		return m.OldOrigins(ctx)
 	}
@@ -17312,6 +17829,13 @@ func (m *EsaSiteOriginPoolMutation) SetField(name string, value ent.Value) error
 		}
 		m.SetReferences(v)
 		return nil
+	case esasiteoriginpool.FieldReferenceLBCount:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReferenceLBCount(v)
+		return nil
 	case esasiteoriginpool.FieldOrigins:
 		v, ok := value.(json.RawMessage)
 		if !ok {
@@ -17330,6 +17854,9 @@ func (m *EsaSiteOriginPoolMutation) AddedFields() []string {
 	if m.addpool_id != nil {
 		fields = append(fields, esasiteoriginpool.FieldPoolID)
 	}
+	if m.addreference_l_b_count != nil {
+		fields = append(fields, esasiteoriginpool.FieldReferenceLBCount)
+	}
 	return fields
 }
 
@@ -17340,6 +17867,8 @@ func (m *EsaSiteOriginPoolMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case esasiteoriginpool.FieldPoolID:
 		return m.AddedPoolID()
+	case esasiteoriginpool.FieldReferenceLBCount:
+		return m.AddedReferenceLBCount()
 	}
 	return nil, false
 }
@@ -17355,6 +17884,13 @@ func (m *EsaSiteOriginPoolMutation) AddField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddPoolID(v)
+		return nil
+	case esasiteoriginpool.FieldReferenceLBCount:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddReferenceLBCount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EsaSiteOriginPool numeric field %s", name)
@@ -17381,6 +17917,9 @@ func (m *EsaSiteOriginPoolMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(esasiteoriginpool.FieldReferences) {
 		fields = append(fields, esasiteoriginpool.FieldReferences)
+	}
+	if m.FieldCleared(esasiteoriginpool.FieldReferenceLBCount) {
+		fields = append(fields, esasiteoriginpool.FieldReferenceLBCount)
 	}
 	if m.FieldCleared(esasiteoriginpool.FieldOrigins) {
 		fields = append(fields, esasiteoriginpool.FieldOrigins)
@@ -17416,6 +17955,9 @@ func (m *EsaSiteOriginPoolMutation) ClearField(name string) error {
 		return nil
 	case esasiteoriginpool.FieldReferences:
 		m.ClearReferences()
+		return nil
+	case esasiteoriginpool.FieldReferenceLBCount:
+		m.ClearReferenceLBCount()
 		return nil
 	case esasiteoriginpool.FieldOrigins:
 		m.ClearOrigins()
@@ -17457,6 +17999,9 @@ func (m *EsaSiteOriginPoolMutation) ResetField(name string) error {
 		return nil
 	case esasiteoriginpool.FieldReferences:
 		m.ResetReferences()
+		return nil
+	case esasiteoriginpool.FieldReferenceLBCount:
+		m.ResetReferenceLBCount()
 		return nil
 	case esasiteoriginpool.FieldOrigins:
 		m.ResetOrigins()
