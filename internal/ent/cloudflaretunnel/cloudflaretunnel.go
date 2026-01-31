@@ -28,14 +28,18 @@ const (
 	FieldConfigID = "config_id"
 	// FieldTunnelID holds the string denoting the tunnel_id field in the database.
 	FieldTunnelID = "tunnel_id"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
-	// FieldStatus holds the string denoting the status field in the database.
-	FieldStatus = "status"
 	// FieldConnections holds the string denoting the connections field in the database.
 	FieldConnections = "connections"
 	// FieldConnsActiveAt holds the string denoting the conns_active_at field in the database.
 	FieldConnsActiveAt = "conns_active_at"
+	// FieldConnsInactiveAt holds the string denoting the conns_inactive_at field in the database.
+	FieldConnsInactiveAt = "conns_inactive_at"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
+	// FieldTunType holds the string denoting the tun_type field in the database.
+	FieldTunType = "tun_type"
 	// EdgeConfig holds the string denoting the config edge name in mutations.
 	EdgeConfig = "config"
 	// EdgeIngresses holds the string denoting the ingresses edge name in mutations.
@@ -67,10 +71,12 @@ var Columns = []string{
 	FieldSyncAt,
 	FieldConfigID,
 	FieldTunnelID,
-	FieldName,
-	FieldStatus,
 	FieldConnections,
 	FieldConnsActiveAt,
+	FieldConnsInactiveAt,
+	FieldName,
+	FieldStatus,
+	FieldTunType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -127,6 +133,34 @@ func StatusValidator(s Status) error {
 	}
 }
 
+// TunType defines the type for the "tun_type" enum field.
+type TunType string
+
+// TunType values.
+const (
+	TunTypeCfdTunnel     TunType = "cfd_tunnel"
+	TunTypeWarpConnector TunType = "warp_connector"
+	TunTypeWarp          TunType = "warp"
+	TunTypeMagic         TunType = "magic"
+	TunTypeIpsec         TunType = "ipsec"
+	TunTypeGre           TunType = "gre"
+	TunTypeCni           TunType = "cni"
+)
+
+func (tt TunType) String() string {
+	return string(tt)
+}
+
+// TunTypeValidator is a validator for the "tun_type" field enum values. It is called by the builders before save.
+func TunTypeValidator(tt TunType) error {
+	switch tt {
+	case TunTypeCfdTunnel, TunTypeWarpConnector, TunTypeWarp, TunTypeMagic, TunTypeIpsec, TunTypeGre, TunTypeCni:
+		return nil
+	default:
+		return fmt.Errorf("cloudflaretunnel: invalid enum value for tun_type field: %q", tt)
+	}
+}
+
 // OrderOption defines the ordering options for the CloudflareTunnel queries.
 type OrderOption func(*sql.Selector)
 
@@ -165,6 +199,16 @@ func ByTunnelID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTunnelID, opts...).ToFunc()
 }
 
+// ByConnsActiveAt orders the results by the conns_active_at field.
+func ByConnsActiveAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldConnsActiveAt, opts...).ToFunc()
+}
+
+// ByConnsInactiveAt orders the results by the conns_inactive_at field.
+func ByConnsInactiveAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldConnsInactiveAt, opts...).ToFunc()
+}
+
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
@@ -175,9 +219,9 @@ func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
 }
 
-// ByConnsActiveAt orders the results by the conns_active_at field.
-func ByConnsActiveAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldConnsActiveAt, opts...).ToFunc()
+// ByTunType orders the results by the tun_type field.
+func ByTunType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTunType, opts...).ToFunc()
 }
 
 // ByConfigField orders the results by config field.

@@ -139,33 +139,46 @@ func (s *EdgeOneSync) SyncThisZones(ctx context.Context, config_id int64) (err e
 				return fmt.Errorf("查询站点记录失败: %w", err)
 			}
 			// 创建站点记录
-			err = s.db.EdgeOneZone.Create().
-				SetSyncAt(time.Now()).
-				SetConfigID(firstPlatformCofing.ID).
-				SetZoneID(utils.PtrToString(zone.ZoneId)).
-				SetName(utils.PtrToString(zone.ZoneName)).
-				SetArea(edgeonezone.Area(utils.PtrToString(zone.Area))).
-				SetType(edgeonezone.Type(utils.PtrToString(zone.Type))).
-				SetStatus(edgeonezone.Status(utils.PtrToString(zone.Status))).
-				SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus))).
-				SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus))).
-				SetPaused(utils.PtrToBool(zone.Paused)).
-				Exec(ctx)
+			createOne := s.db.EdgeOneZone.Create()
+			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(zone.CreatedOn)).Time)
+			createOne.SetSyncAt(time.Now())
+			createOne.SetConfigID(firstPlatformCofing.ID)
+			createOne.SetZoneID(utils.PtrToString(zone.ZoneId))
+			createOne.SetZoneName(utils.PtrToString(zone.ZoneName))
+			createOne.SetAliasZoneName(utils.PtrToString(zone.AliasZoneName))
+			createOne.SetArea(edgeonezone.Area(utils.PtrToString(zone.Area)))
+			createOne.SetType(edgeonezone.Type(utils.PtrToString(zone.Type)))
+			createOne.SetResources(json.RawMessage(gojson.JsonEncodeNoError(zone.Resources)))
+			createOne.SetNsDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.NSDetail)))
+			createOne.SetCnameDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.CNAMEDetail)))
+			createOne.SetDnspodDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.DNSPodDetail)))
+			createOne.SetStatus(edgeonezone.Status(utils.PtrToString(zone.Status)))
+			createOne.SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus)))
+			createOne.SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus)))
+			createOne.SetLockStatus(edgeonezone.LockStatus(utils.PtrToString(zone.LockStatus)))
+			createOne.SetPaused(utils.PtrToBool(zone.Paused))
+			err = createOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建站点记录失败: %w", err)
 			}
 		} else {
 			// 更新站点记录
-			err = s.db.EdgeOneZone.UpdateOne(firstZone).
-				SetSyncAt(time.Now()).
-				SetName(utils.PtrToString(zone.ZoneName)).
-				SetArea(edgeonezone.Area(utils.PtrToString(zone.Area))).
-				SetType(edgeonezone.Type(utils.PtrToString(zone.Type))).
-				SetStatus(edgeonezone.Status(utils.PtrToString(zone.Status))).
-				SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus))).
-				SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus))).
-				SetPaused(utils.PtrToBool(zone.Paused)).
-				Exec(ctx)
+			updateOne := s.db.EdgeOneZone.UpdateOne(firstZone)
+			updateOne.SetSyncAt(time.Now())
+			updateOne.SetZoneName(utils.PtrToString(zone.ZoneName))
+			updateOne.SetAliasZoneName(utils.PtrToString(zone.AliasZoneName))
+			updateOne.SetArea(edgeonezone.Area(utils.PtrToString(zone.Area)))
+			updateOne.SetType(edgeonezone.Type(utils.PtrToString(zone.Type)))
+			updateOne.SetResources(json.RawMessage(gojson.JsonEncodeNoError(zone.Resources)))
+			updateOne.SetNsDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.NSDetail)))
+			updateOne.SetCnameDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.CNAMEDetail)))
+			updateOne.SetDnspodDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.DNSPodDetail)))
+			updateOne.SetStatus(edgeonezone.Status(utils.PtrToString(zone.Status)))
+			updateOne.SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus)))
+			updateOne.SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus)))
+			updateOne.SetLockStatus(edgeonezone.LockStatus(utils.PtrToString(zone.LockStatus)))
+			updateOne.SetPaused(utils.PtrToBool(zone.Paused))
+			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新站点记录失败: %w", err)
 			}
@@ -213,33 +226,46 @@ func (s *EdgeOneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id
 				return fmt.Errorf("查询站点记录失败: %w", err)
 			}
 			// 创建站点记录
-			err = s.db.EdgeOneZone.Create().
-				SetSyncAt(time.Now()).
-				SetConfigID(firstPlatformCofing.ID).
-				SetZoneID(utils.PtrToString(zone.ZoneId)).
-				SetName(utils.PtrToString(zone.ZoneName)).
-				SetArea(edgeonezone.Area(utils.PtrToString(zone.Area))).
-				SetType(edgeonezone.Type(utils.PtrToString(zone.Type))).
-				SetStatus(edgeonezone.Status(utils.PtrToString(zone.Status))).
-				SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus))).
-				SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus))).
-				SetPaused(utils.PtrToBool(zone.Paused)).
-				Exec(ctx)
+			createOne := s.db.EdgeOneZone.Create()
+			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(zone.CreatedOn)).Time)
+			createOne.SetSyncAt(time.Now())
+			createOne.SetConfigID(firstPlatformCofing.ID)
+			createOne.SetZoneID(utils.PtrToString(zone.ZoneId))
+			createOne.SetZoneName(utils.PtrToString(zone.ZoneName))
+			createOne.SetAliasZoneName(utils.PtrToString(zone.AliasZoneName))
+			createOne.SetArea(edgeonezone.Area(utils.PtrToString(zone.Area)))
+			createOne.SetType(edgeonezone.Type(utils.PtrToString(zone.Type)))
+			createOne.SetResources(json.RawMessage(gojson.JsonEncodeNoError(zone.Resources)))
+			createOne.SetNsDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.NSDetail)))
+			createOne.SetCnameDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.CNAMEDetail)))
+			createOne.SetDnspodDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.DNSPodDetail)))
+			createOne.SetStatus(edgeonezone.Status(utils.PtrToString(zone.Status)))
+			createOne.SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus)))
+			createOne.SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus)))
+			createOne.SetLockStatus(edgeonezone.LockStatus(utils.PtrToString(zone.LockStatus)))
+			createOne.SetPaused(utils.PtrToBool(zone.Paused))
+			err = createOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建站点记录失败: %w", err)
 			}
 		} else {
 			// 更新站点记录
-			err = s.db.EdgeOneZone.UpdateOne(firstZone).
-				SetSyncAt(time.Now()).
-				SetName(utils.PtrToString(zone.ZoneName)).
-				SetArea(edgeonezone.Area(utils.PtrToString(zone.Area))).
-				SetType(edgeonezone.Type(utils.PtrToString(zone.Type))).
-				SetStatus(edgeonezone.Status(utils.PtrToString(zone.Status))).
-				SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus))).
-				SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus))).
-				SetPaused(utils.PtrToBool(zone.Paused)).
-				Exec(ctx)
+			updateOne := s.db.EdgeOneZone.UpdateOne(firstZone)
+			updateOne.SetSyncAt(time.Now())
+			updateOne.SetZoneName(utils.PtrToString(zone.ZoneName))
+			updateOne.SetAliasZoneName(utils.PtrToString(zone.AliasZoneName))
+			updateOne.SetArea(edgeonezone.Area(utils.PtrToString(zone.Area)))
+			updateOne.SetType(edgeonezone.Type(utils.PtrToString(zone.Type)))
+			updateOne.SetResources(json.RawMessage(gojson.JsonEncodeNoError(zone.Resources)))
+			updateOne.SetNsDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.NSDetail)))
+			updateOne.SetCnameDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.CNAMEDetail)))
+			updateOne.SetDnspodDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.DNSPodDetail)))
+			updateOne.SetStatus(edgeonezone.Status(utils.PtrToString(zone.Status)))
+			updateOne.SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus)))
+			updateOne.SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus)))
+			updateOne.SetLockStatus(edgeonezone.LockStatus(utils.PtrToString(zone.LockStatus)))
+			updateOne.SetPaused(utils.PtrToBool(zone.Paused))
+			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新站点记录失败: %w", err)
 			}
@@ -341,28 +367,34 @@ func (s *EdgeOneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id int
 				return fmt.Errorf("查询源站组记录失败: %w", err)
 			}
 			// 创建源站组记录
-			err = s.db.EdgeOneZoneOriginGroup.Create().
-				SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(originGroup.CreateTime)).Time).
-				SetSyncAt(time.Now()).
-				SetEdgeoneZoneID(firstEdgeOneZone.ID).
-				SetGroupID(utils.PtrToString(originGroup.GroupId)).
-				SetName(utils.PtrToString(originGroup.Name)).
-				SetType(edgeonezoneorigingroup.Type(utils.PtrToString(originGroup.Type))).
-				SetRecords([]byte(gojson.JsonEncodeNoError(originGroup.Records))).
-				SetReferences([]byte(gojson.JsonEncodeNoError(originGroup.References))).
-				Exec(ctx)
+			createOne := s.db.EdgeOneZoneOriginGroup.Create()
+			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(originGroup.CreateTime)).Time)
+			createOne.SetSyncAt(time.Now())
+			createOne.SetEdgeoneZoneID(firstEdgeOneZone.ID)
+			createOne.SetGroupID(utils.PtrToString(originGroup.GroupId))
+			createOne.SetName(utils.PtrToString(originGroup.Name))
+			if utils.PtrToString(originGroup.Type) != "" {
+				createOne.SetType(edgeonezoneorigingroup.Type(utils.PtrToString(originGroup.Type)))
+			}
+			createOne.SetRecords(json.RawMessage(gojson.JsonEncodeNoError(originGroup.Records)))
+			createOne.SetReferences(json.RawMessage(gojson.JsonEncodeNoError(originGroup.References)))
+			createOne.SetHostHeader(utils.PtrToString(originGroup.HostHeader))
+			err = createOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建源站组记录失败: %w", err)
 			}
 		} else {
 			// 更新源站组记录
-			err = s.db.EdgeOneZoneOriginGroup.UpdateOne(firstOriginGroup).
-				SetSyncAt(time.Now()).
-				SetName(utils.PtrToString(originGroup.Name)).
-				SetType(edgeonezoneorigingroup.Type(utils.PtrToString(originGroup.Type))).
-				SetRecords([]byte(gojson.JsonEncodeNoError(originGroup.Records))).
-				SetReferences([]byte(gojson.JsonEncodeNoError(originGroup.References))).
-				Exec(ctx)
+			updateOne := s.db.EdgeOneZoneOriginGroup.UpdateOne(firstOriginGroup)
+			updateOne.SetSyncAt(time.Now())
+			updateOne.SetName(utils.PtrToString(originGroup.Name))
+			if utils.PtrToString(originGroup.Type) != "" {
+				updateOne.SetType(edgeonezoneorigingroup.Type(utils.PtrToString(originGroup.Type)))
+			}
+			updateOne.SetRecords(json.RawMessage(gojson.JsonEncodeNoError(originGroup.Records)))
+			updateOne.SetReferences(json.RawMessage(gojson.JsonEncodeNoError(originGroup.References)))
+			updateOne.SetHostHeader(utils.PtrToString(originGroup.HostHeader))
+			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新源站组记录失败: %w", err)
 			}
@@ -464,36 +496,44 @@ func (s *EdgeOneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, z
 				return fmt.Errorf("查询DNS记录记录失败: %w", err)
 			}
 			// 创建DNS记录记录
-			err = s.db.EdgeOneZoneDNSRecord.Create().
-				SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(dnsRecord.CreatedOn)).Time).
-				SetSyncAt(time.Now()).
-				SetEdgeoneZoneID(firstEdgeOneZone.ID).
-				SetRecordID(utils.PtrToString(dnsRecord.RecordId)).
-				SetName(utils.PtrToString(dnsRecord.Name)).
-				SetType(edgeonezonednsrecord.Type(utils.PtrToString(dnsRecord.Type))).
-				SetLocation(utils.PtrToString(dnsRecord.Location)).
-				SetContent(utils.PtrToString(dnsRecord.Content)).
-				SetTTL(utils.PtrToInt64(dnsRecord.TTL)).
-				SetWeight(utils.PtrToInt64(dnsRecord.Weight)).
-				SetPriority(utils.PtrToInt64(dnsRecord.Priority)).
-				SetStatus(edgeonezonednsrecord.Status(utils.PtrToString(dnsRecord.Status))).
-				Exec(ctx)
+			createOne := s.db.EdgeOneZoneDNSRecord.Create()
+			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(dnsRecord.CreatedOn)).Time)
+			createOne.SetSyncAt(time.Now())
+			createOne.SetEdgeoneZoneID(firstEdgeOneZone.ID)
+			createOne.SetRecordID(utils.PtrToString(dnsRecord.RecordId))
+			createOne.SetName(utils.PtrToString(dnsRecord.Name))
+			if utils.PtrToString(dnsRecord.Type) != "" {
+				createOne.SetType(edgeonezonednsrecord.Type(utils.PtrToString(dnsRecord.Type)))
+			}
+			createOne.SetLocation(utils.PtrToString(dnsRecord.Location))
+			createOne.SetContent(utils.PtrToString(dnsRecord.Content))
+			createOne.SetTTL(utils.PtrToInt64(dnsRecord.TTL))
+			createOne.SetWeight(utils.PtrToInt64(dnsRecord.Weight))
+			createOne.SetPriority(utils.PtrToInt64(dnsRecord.Priority))
+			if utils.PtrToString(dnsRecord.Status) != "" {
+				createOne.SetStatus(edgeonezonednsrecord.Status(utils.PtrToString(dnsRecord.Status)))
+			}
+			err = createOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建DNS记录记录失败: %w", err)
 			}
 		} else {
 			// 更新DNS记录记录
-			err = s.db.EdgeOneZoneDNSRecord.UpdateOne(firstDNSRecord).
-				SetSyncAt(time.Now()).
-				SetName(utils.PtrToString(dnsRecord.Name)).
-				SetType(edgeonezonednsrecord.Type(utils.PtrToString(dnsRecord.Type))).
-				SetLocation(utils.PtrToString(dnsRecord.Location)).
-				SetContent(utils.PtrToString(dnsRecord.Content)).
-				SetTTL(utils.PtrToInt64(dnsRecord.TTL)).
-				SetWeight(utils.PtrToInt64(dnsRecord.Weight)).
-				SetPriority(utils.PtrToInt64(dnsRecord.Priority)).
-				SetStatus(edgeonezonednsrecord.Status(utils.PtrToString(dnsRecord.Status))).
-				Exec(ctx)
+			updateOne := s.db.EdgeOneZoneDNSRecord.UpdateOne(firstDNSRecord)
+			updateOne.SetSyncAt(time.Now())
+			updateOne.SetName(utils.PtrToString(dnsRecord.Name))
+			if utils.PtrToString(dnsRecord.Type) != "" {
+				updateOne.SetType(edgeonezonednsrecord.Type(utils.PtrToString(dnsRecord.Type)))
+			}
+			updateOne.SetLocation(utils.PtrToString(dnsRecord.Location))
+			updateOne.SetContent(utils.PtrToString(dnsRecord.Content))
+			updateOne.SetTTL(utils.PtrToInt64(dnsRecord.TTL))
+			updateOne.SetWeight(utils.PtrToInt64(dnsRecord.Weight))
+			updateOne.SetPriority(utils.PtrToInt64(dnsRecord.Priority))
+			if utils.PtrToString(dnsRecord.Status) != "" {
+				updateOne.SetStatus(edgeonezonednsrecord.Status(utils.PtrToString(dnsRecord.Status)))
+			}
+			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新DNS记录记录失败: %w", err)
 			}
@@ -518,40 +558,56 @@ func (s *EdgeOneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, z
 				return fmt.Errorf("查询加速域名记录失败: %w", err)
 			}
 			// 创建加速域名记录
-			err = s.db.EdgeOneZoneAccelerationDomain.Create().
-				SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(accelerationDomain.CreatedOn)).Time).
-				SetSyncAt(time.Now()).
-				SetEdgeoneZoneID(firstEdgeOneZone.ID).
-				SetDomainName(utils.PtrToString(accelerationDomain.DomainName)).
-				SetDomainStatus(edgeonezoneaccelerationdomain.DomainStatus(utils.PtrToString(accelerationDomain.DomainStatus))).
-				SetCname(utils.PtrToString(accelerationDomain.Cname)).
-				SetIpv6Status(edgeonezoneaccelerationdomain.Ipv6Status(utils.PtrToString(accelerationDomain.IPv6Status))).
-				SetIdentificationStatus(edgeonezoneaccelerationdomain.IdentificationStatus(utils.PtrToString(accelerationDomain.IdentificationStatus))).
-				SetOwnershipVerification([]byte(gojson.JsonEncodeNoError(accelerationDomain.OwnershipVerification))).
-				SetOriginDetail([]byte(gojson.JsonEncodeNoError(accelerationDomain.OriginDetail))).
-				SetOriginProtocol(edgeonezoneaccelerationdomain.OriginProtocol(utils.PtrToString(accelerationDomain.OriginProtocol))).
-				SetHTTPOriginPort(utils.PtrToUint64(accelerationDomain.HttpOriginPort)).
-				SetHTTPSOriginPort(utils.PtrToUint64(accelerationDomain.HttpsOriginPort)).
-				SetCertificate([]byte(gojson.JsonEncodeNoError(accelerationDomain.Certificate))).
-				Exec(ctx)
+			createOne := s.db.EdgeOneZoneAccelerationDomain.Create()
+			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(accelerationDomain.CreatedOn)).Time)
+			createOne.SetSyncAt(time.Now())
+			createOne.SetEdgeoneZoneID(firstEdgeOneZone.ID)
+			createOne.SetDomainName(utils.PtrToString(accelerationDomain.DomainName))
+			if utils.PtrToString(accelerationDomain.DomainStatus) != "" {
+				createOne.SetDomainStatus(edgeonezoneaccelerationdomain.DomainStatus(utils.PtrToString(accelerationDomain.DomainStatus)))
+			}
+			createOne.SetCname(utils.PtrToString(accelerationDomain.Cname))
+			if utils.PtrToString(accelerationDomain.IPv6Status) != "" {
+				createOne.SetIpv6Status(edgeonezoneaccelerationdomain.Ipv6Status(utils.PtrToString(accelerationDomain.IPv6Status)))
+			}
+			if utils.PtrToString(accelerationDomain.IdentificationStatus) != "" {
+				createOne.SetIdentificationStatus(edgeonezoneaccelerationdomain.IdentificationStatus(utils.PtrToString(accelerationDomain.IdentificationStatus)))
+			}
+			createOne.SetOwnershipVerification(json.RawMessage(gojson.JsonEncodeNoError(accelerationDomain.OwnershipVerification)))
+			createOne.SetOriginDetail(json.RawMessage(gojson.JsonEncodeNoError(accelerationDomain.OriginDetail)))
+			if utils.PtrToString(accelerationDomain.OriginProtocol) != "" {
+				createOne.SetOriginProtocol(edgeonezoneaccelerationdomain.OriginProtocol(utils.PtrToString(accelerationDomain.OriginProtocol)))
+			}
+			createOne.SetHTTPOriginPort(utils.PtrToUint64(accelerationDomain.HttpOriginPort))
+			createOne.SetHTTPSOriginPort(utils.PtrToUint64(accelerationDomain.HttpsOriginPort))
+			createOne.SetCertificate(json.RawMessage(gojson.JsonEncodeNoError(accelerationDomain.Certificate)))
+			err = createOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建加速域名记录失败: %w", err)
 			}
 		} else {
 			// 更新加速域名记录
-			err = s.db.EdgeOneZoneAccelerationDomain.UpdateOne(firstAccelerationDomain).
-				SetSyncAt(time.Now()).
-				SetDomainStatus(edgeonezoneaccelerationdomain.DomainStatus(utils.PtrToString(accelerationDomain.DomainStatus))).
-				SetCname(utils.PtrToString(accelerationDomain.Cname)).
-				SetIpv6Status(edgeonezoneaccelerationdomain.Ipv6Status(utils.PtrToString(accelerationDomain.IPv6Status))).
-				SetIdentificationStatus(edgeonezoneaccelerationdomain.IdentificationStatus(utils.PtrToString(accelerationDomain.IdentificationStatus))).
-				SetOwnershipVerification([]byte(gojson.JsonEncodeNoError(accelerationDomain.OwnershipVerification))).
-				SetOriginDetail([]byte(gojson.JsonEncodeNoError(accelerationDomain.OriginDetail))).
-				SetOriginProtocol(edgeonezoneaccelerationdomain.OriginProtocol(utils.PtrToString(accelerationDomain.OriginProtocol))).
-				SetHTTPOriginPort(utils.PtrToUint64(accelerationDomain.HttpOriginPort)).
-				SetHTTPSOriginPort(utils.PtrToUint64(accelerationDomain.HttpsOriginPort)).
-				SetCertificate([]byte(gojson.JsonEncodeNoError(accelerationDomain.Certificate))).
-				Exec(ctx)
+			updateOne := s.db.EdgeOneZoneAccelerationDomain.UpdateOne(firstAccelerationDomain)
+			updateOne.SetSyncAt(time.Now())
+			if utils.PtrToString(accelerationDomain.DomainStatus) != "" {
+				updateOne.SetDomainStatus(edgeonezoneaccelerationdomain.DomainStatus(utils.PtrToString(accelerationDomain.DomainStatus)))
+			}
+			updateOne.SetCname(utils.PtrToString(accelerationDomain.Cname))
+			if utils.PtrToString(accelerationDomain.IPv6Status) != "" {
+				updateOne.SetIpv6Status(edgeonezoneaccelerationdomain.Ipv6Status(utils.PtrToString(accelerationDomain.IPv6Status)))
+			}
+			if utils.PtrToString(accelerationDomain.IdentificationStatus) != "" {
+				updateOne.SetIdentificationStatus(edgeonezoneaccelerationdomain.IdentificationStatus(utils.PtrToString(accelerationDomain.IdentificationStatus)))
+			}
+			updateOne.SetOwnershipVerification(json.RawMessage(gojson.JsonEncodeNoError(accelerationDomain.OwnershipVerification)))
+			updateOne.SetOriginDetail(json.RawMessage(gojson.JsonEncodeNoError(accelerationDomain.OriginDetail)))
+			if utils.PtrToString(accelerationDomain.OriginProtocol) != "" {
+				updateOne.SetOriginProtocol(edgeonezoneaccelerationdomain.OriginProtocol(utils.PtrToString(accelerationDomain.OriginProtocol)))
+			}
+			updateOne.SetHTTPOriginPort(utils.PtrToUint64(accelerationDomain.HttpOriginPort))
+			updateOne.SetHTTPSOriginPort(utils.PtrToUint64(accelerationDomain.HttpsOriginPort))
+			updateOne.SetCertificate(json.RawMessage(gojson.JsonEncodeNoError(accelerationDomain.Certificate)))
+			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新加速域名记录失败: %w", err)
 			}

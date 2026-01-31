@@ -385,9 +385,9 @@ func (s *ESASync) SyncThisSiteOriginPool(ctx context.Context, config_id int64, s
 			createOne.SetPoolID(tea.Int64Value(originPool.Id))
 			createOne.SetName(tea.StringValue(originPool.Name))
 			createOne.SetRecordName(tea.StringValue(originPool.RecordName))
-			createOne.SetReferences([]byte(gojson.JsonEncodeNoError(originPool.References)))
+			createOne.SetReferences(json.RawMessage(gojson.JsonEncodeNoError(originPool.References)))
 			createOne.SetReferenceLBCount(tea.Int32Value(originPool.ReferenceLBCount))
-			createOne.SetOrigins([]byte(gojson.JsonEncodeNoError(originPool.Origins)))
+			createOne.SetOrigins(json.RawMessage(gojson.JsonEncodeNoError(originPool.Origins)))
 			err = createOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建源地址池记录失败: %w", err)
@@ -398,9 +398,9 @@ func (s *ESASync) SyncThisSiteOriginPool(ctx context.Context, config_id int64, s
 			updateOne.SetSyncAt(time.Now())
 			updateOne.SetName(tea.StringValue(originPool.Name))
 			updateOne.SetRecordName(tea.StringValue(originPool.RecordName))
-			updateOne.SetReferences([]byte(gojson.JsonEncodeNoError(originPool.References)))
+			updateOne.SetReferences(json.RawMessage(gojson.JsonEncodeNoError(originPool.References)))
 			updateOne.SetReferenceLBCount(tea.Int32Value(originPool.ReferenceLBCount))
-			updateOne.SetOrigins([]byte(gojson.JsonEncodeNoError(originPool.Origins)))
+			updateOne.SetOrigins(json.RawMessage(gojson.JsonEncodeNoError(originPool.Origins)))
 			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新源地址池记录失败: %w", err)
@@ -510,7 +510,7 @@ func (s *ESASync) SyncThisSiteRecord(ctx context.Context, config_id int64, site_
 			if tea.StringValue(record.BizName) != "" {
 				createOne.SetBizName(esasiterecord.BizName(tea.StringValue(record.BizName)))
 			}
-			createOne.SetData([]byte(gojson.JsonEncodeNoError(record.Data)))
+			createOne.SetData(json.RawMessage(gojson.JsonEncodeNoError(record.Data)))
 			createOne.SetProxied(tea.BoolValue(record.Proxied))
 			createOne.SetRecordID(tea.Int64Value(record.RecordId))
 			if tea.StringValue(record.RecordSourceType) != "" {
@@ -523,7 +523,7 @@ func (s *ESASync) SyncThisSiteRecord(ctx context.Context, config_id int64, site_
 			createOne.SetTTL(tea.Int64Value(record.Ttl))
 			createOne.SetRecordCname(tea.StringValue(record.RecordCname))
 			createOne.SetComment(tea.StringValue(record.Comment))
-			createOne.SetAuthConf([]byte(gojson.JsonEncodeNoError(record.AuthConf)))
+			createOne.SetAuthConf(json.RawMessage(gojson.JsonEncodeNoError(record.AuthConf)))
 			if tea.StringValue(record.HostPolicy) != "" {
 				createOne.SetHostPolicy(esasiterecord.HostPolicy(tea.StringValue(record.HostPolicy)))
 			}
@@ -538,7 +538,7 @@ func (s *ESASync) SyncThisSiteRecord(ctx context.Context, config_id int64, site_
 			if tea.StringValue(record.BizName) != "" {
 				updateOne.SetBizName(esasiterecord.BizName(tea.StringValue(record.BizName)))
 			}
-			updateOne.SetData([]byte(gojson.JsonEncodeNoError(record.Data)))
+			updateOne.SetData(json.RawMessage(gojson.JsonEncodeNoError(record.Data)))
 			updateOne.SetProxied(tea.BoolValue(record.Proxied))
 			if tea.StringValue(record.RecordSourceType) != "" {
 				updateOne.SetRecordSourceType(esasiterecord.RecordSourceType(tea.StringValue(record.RecordSourceType)))
@@ -550,7 +550,7 @@ func (s *ESASync) SyncThisSiteRecord(ctx context.Context, config_id int64, site_
 			updateOne.SetTTL(tea.Int64Value(record.Ttl))
 			updateOne.SetRecordCname(tea.StringValue(record.RecordCname))
 			updateOne.SetComment(tea.StringValue(record.Comment))
-			updateOne.SetAuthConf([]byte(gojson.JsonEncodeNoError(record.AuthConf)))
+			updateOne.SetAuthConf(json.RawMessage(gojson.JsonEncodeNoError(record.AuthConf)))
 			if tea.StringValue(record.HostPolicy) != "" {
 				updateOne.SetHostPolicy(esasiterecord.HostPolicy(tea.StringValue(record.HostPolicy)))
 			}

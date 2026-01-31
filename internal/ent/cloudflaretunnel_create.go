@@ -93,6 +93,40 @@ func (_c *CloudflareTunnelCreate) SetTunnelID(v string) *CloudflareTunnelCreate 
 	return _c
 }
 
+// SetConnections sets the "connections" field.
+func (_c *CloudflareTunnelCreate) SetConnections(v json.RawMessage) *CloudflareTunnelCreate {
+	_c.mutation.SetConnections(v)
+	return _c
+}
+
+// SetConnsActiveAt sets the "conns_active_at" field.
+func (_c *CloudflareTunnelCreate) SetConnsActiveAt(v time.Time) *CloudflareTunnelCreate {
+	_c.mutation.SetConnsActiveAt(v)
+	return _c
+}
+
+// SetNillableConnsActiveAt sets the "conns_active_at" field if the given value is not nil.
+func (_c *CloudflareTunnelCreate) SetNillableConnsActiveAt(v *time.Time) *CloudflareTunnelCreate {
+	if v != nil {
+		_c.SetConnsActiveAt(*v)
+	}
+	return _c
+}
+
+// SetConnsInactiveAt sets the "conns_inactive_at" field.
+func (_c *CloudflareTunnelCreate) SetConnsInactiveAt(v time.Time) *CloudflareTunnelCreate {
+	_c.mutation.SetConnsInactiveAt(v)
+	return _c
+}
+
+// SetNillableConnsInactiveAt sets the "conns_inactive_at" field if the given value is not nil.
+func (_c *CloudflareTunnelCreate) SetNillableConnsInactiveAt(v *time.Time) *CloudflareTunnelCreate {
+	if v != nil {
+		_c.SetConnsInactiveAt(*v)
+	}
+	return _c
+}
+
 // SetName sets the "name" field.
 func (_c *CloudflareTunnelCreate) SetName(v string) *CloudflareTunnelCreate {
 	_c.mutation.SetName(v)
@@ -121,22 +155,16 @@ func (_c *CloudflareTunnelCreate) SetNillableStatus(v *cloudflaretunnel.Status) 
 	return _c
 }
 
-// SetConnections sets the "connections" field.
-func (_c *CloudflareTunnelCreate) SetConnections(v json.RawMessage) *CloudflareTunnelCreate {
-	_c.mutation.SetConnections(v)
+// SetTunType sets the "tun_type" field.
+func (_c *CloudflareTunnelCreate) SetTunType(v cloudflaretunnel.TunType) *CloudflareTunnelCreate {
+	_c.mutation.SetTunType(v)
 	return _c
 }
 
-// SetConnsActiveAt sets the "conns_active_at" field.
-func (_c *CloudflareTunnelCreate) SetConnsActiveAt(v time.Time) *CloudflareTunnelCreate {
-	_c.mutation.SetConnsActiveAt(v)
-	return _c
-}
-
-// SetNillableConnsActiveAt sets the "conns_active_at" field if the given value is not nil.
-func (_c *CloudflareTunnelCreate) SetNillableConnsActiveAt(v *time.Time) *CloudflareTunnelCreate {
+// SetNillableTunType sets the "tun_type" field if the given value is not nil.
+func (_c *CloudflareTunnelCreate) SetNillableTunType(v *cloudflaretunnel.TunType) *CloudflareTunnelCreate {
 	if v != nil {
-		_c.SetConnsActiveAt(*v)
+		_c.SetTunType(*v)
 	}
 	return _c
 }
@@ -245,6 +273,11 @@ func (_c *CloudflareTunnelCreate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnel.status": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.TunType(); ok {
+		if err := cloudflaretunnel.TunTypeValidator(v); err != nil {
+			return &ValidationError{Name: "tun_type", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnel.tun_type": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := cloudflaretunnel.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnel.id": %w`, err)}
@@ -306,6 +339,18 @@ func (_c *CloudflareTunnelCreate) createSpec() (*CloudflareTunnel, *sqlgraph.Cre
 		_spec.SetField(cloudflaretunnel.FieldTunnelID, field.TypeString, value)
 		_node.TunnelID = value
 	}
+	if value, ok := _c.mutation.Connections(); ok {
+		_spec.SetField(cloudflaretunnel.FieldConnections, field.TypeJSON, value)
+		_node.Connections = value
+	}
+	if value, ok := _c.mutation.ConnsActiveAt(); ok {
+		_spec.SetField(cloudflaretunnel.FieldConnsActiveAt, field.TypeTime, value)
+		_node.ConnsActiveAt = value
+	}
+	if value, ok := _c.mutation.ConnsInactiveAt(); ok {
+		_spec.SetField(cloudflaretunnel.FieldConnsInactiveAt, field.TypeTime, value)
+		_node.ConnsInactiveAt = value
+	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(cloudflaretunnel.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -314,13 +359,9 @@ func (_c *CloudflareTunnelCreate) createSpec() (*CloudflareTunnel, *sqlgraph.Cre
 		_spec.SetField(cloudflaretunnel.FieldStatus, field.TypeEnum, value)
 		_node.Status = value
 	}
-	if value, ok := _c.mutation.Connections(); ok {
-		_spec.SetField(cloudflaretunnel.FieldConnections, field.TypeJSON, value)
-		_node.Connections = value
-	}
-	if value, ok := _c.mutation.ConnsActiveAt(); ok {
-		_spec.SetField(cloudflaretunnel.FieldConnsActiveAt, field.TypeTime, value)
-		_node.ConnsActiveAt = value
+	if value, ok := _c.mutation.TunType(); ok {
+		_spec.SetField(cloudflaretunnel.FieldTunType, field.TypeEnum, value)
+		_node.TunType = value
 	}
 	if nodes := _c.mutation.ConfigIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -425,6 +466,60 @@ func (u *CloudflareTunnelUpsert) ClearSyncAt() *CloudflareTunnelUpsert {
 	return u
 }
 
+// SetConnections sets the "connections" field.
+func (u *CloudflareTunnelUpsert) SetConnections(v json.RawMessage) *CloudflareTunnelUpsert {
+	u.Set(cloudflaretunnel.FieldConnections, v)
+	return u
+}
+
+// UpdateConnections sets the "connections" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsert) UpdateConnections() *CloudflareTunnelUpsert {
+	u.SetExcluded(cloudflaretunnel.FieldConnections)
+	return u
+}
+
+// ClearConnections clears the value of the "connections" field.
+func (u *CloudflareTunnelUpsert) ClearConnections() *CloudflareTunnelUpsert {
+	u.SetNull(cloudflaretunnel.FieldConnections)
+	return u
+}
+
+// SetConnsActiveAt sets the "conns_active_at" field.
+func (u *CloudflareTunnelUpsert) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpsert {
+	u.Set(cloudflaretunnel.FieldConnsActiveAt, v)
+	return u
+}
+
+// UpdateConnsActiveAt sets the "conns_active_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsert) UpdateConnsActiveAt() *CloudflareTunnelUpsert {
+	u.SetExcluded(cloudflaretunnel.FieldConnsActiveAt)
+	return u
+}
+
+// ClearConnsActiveAt clears the value of the "conns_active_at" field.
+func (u *CloudflareTunnelUpsert) ClearConnsActiveAt() *CloudflareTunnelUpsert {
+	u.SetNull(cloudflaretunnel.FieldConnsActiveAt)
+	return u
+}
+
+// SetConnsInactiveAt sets the "conns_inactive_at" field.
+func (u *CloudflareTunnelUpsert) SetConnsInactiveAt(v time.Time) *CloudflareTunnelUpsert {
+	u.Set(cloudflaretunnel.FieldConnsInactiveAt, v)
+	return u
+}
+
+// UpdateConnsInactiveAt sets the "conns_inactive_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsert) UpdateConnsInactiveAt() *CloudflareTunnelUpsert {
+	u.SetExcluded(cloudflaretunnel.FieldConnsInactiveAt)
+	return u
+}
+
+// ClearConnsInactiveAt clears the value of the "conns_inactive_at" field.
+func (u *CloudflareTunnelUpsert) ClearConnsInactiveAt() *CloudflareTunnelUpsert {
+	u.SetNull(cloudflaretunnel.FieldConnsInactiveAt)
+	return u
+}
+
 // SetName sets the "name" field.
 func (u *CloudflareTunnelUpsert) SetName(v string) *CloudflareTunnelUpsert {
 	u.Set(cloudflaretunnel.FieldName, v)
@@ -461,39 +556,21 @@ func (u *CloudflareTunnelUpsert) ClearStatus() *CloudflareTunnelUpsert {
 	return u
 }
 
-// SetConnections sets the "connections" field.
-func (u *CloudflareTunnelUpsert) SetConnections(v json.RawMessage) *CloudflareTunnelUpsert {
-	u.Set(cloudflaretunnel.FieldConnections, v)
+// SetTunType sets the "tun_type" field.
+func (u *CloudflareTunnelUpsert) SetTunType(v cloudflaretunnel.TunType) *CloudflareTunnelUpsert {
+	u.Set(cloudflaretunnel.FieldTunType, v)
 	return u
 }
 
-// UpdateConnections sets the "connections" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsert) UpdateConnections() *CloudflareTunnelUpsert {
-	u.SetExcluded(cloudflaretunnel.FieldConnections)
+// UpdateTunType sets the "tun_type" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsert) UpdateTunType() *CloudflareTunnelUpsert {
+	u.SetExcluded(cloudflaretunnel.FieldTunType)
 	return u
 }
 
-// ClearConnections clears the value of the "connections" field.
-func (u *CloudflareTunnelUpsert) ClearConnections() *CloudflareTunnelUpsert {
-	u.SetNull(cloudflaretunnel.FieldConnections)
-	return u
-}
-
-// SetConnsActiveAt sets the "conns_active_at" field.
-func (u *CloudflareTunnelUpsert) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpsert {
-	u.Set(cloudflaretunnel.FieldConnsActiveAt, v)
-	return u
-}
-
-// UpdateConnsActiveAt sets the "conns_active_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsert) UpdateConnsActiveAt() *CloudflareTunnelUpsert {
-	u.SetExcluded(cloudflaretunnel.FieldConnsActiveAt)
-	return u
-}
-
-// ClearConnsActiveAt clears the value of the "conns_active_at" field.
-func (u *CloudflareTunnelUpsert) ClearConnsActiveAt() *CloudflareTunnelUpsert {
-	u.SetNull(cloudflaretunnel.FieldConnsActiveAt)
+// ClearTunType clears the value of the "tun_type" field.
+func (u *CloudflareTunnelUpsert) ClearTunType() *CloudflareTunnelUpsert {
+	u.SetNull(cloudflaretunnel.FieldTunType)
 	return u
 }
 
@@ -581,6 +658,69 @@ func (u *CloudflareTunnelUpsertOne) ClearSyncAt() *CloudflareTunnelUpsertOne {
 	})
 }
 
+// SetConnections sets the "connections" field.
+func (u *CloudflareTunnelUpsertOne) SetConnections(v json.RawMessage) *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.SetConnections(v)
+	})
+}
+
+// UpdateConnections sets the "connections" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertOne) UpdateConnections() *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.UpdateConnections()
+	})
+}
+
+// ClearConnections clears the value of the "connections" field.
+func (u *CloudflareTunnelUpsertOne) ClearConnections() *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearConnections()
+	})
+}
+
+// SetConnsActiveAt sets the "conns_active_at" field.
+func (u *CloudflareTunnelUpsertOne) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.SetConnsActiveAt(v)
+	})
+}
+
+// UpdateConnsActiveAt sets the "conns_active_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertOne) UpdateConnsActiveAt() *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.UpdateConnsActiveAt()
+	})
+}
+
+// ClearConnsActiveAt clears the value of the "conns_active_at" field.
+func (u *CloudflareTunnelUpsertOne) ClearConnsActiveAt() *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearConnsActiveAt()
+	})
+}
+
+// SetConnsInactiveAt sets the "conns_inactive_at" field.
+func (u *CloudflareTunnelUpsertOne) SetConnsInactiveAt(v time.Time) *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.SetConnsInactiveAt(v)
+	})
+}
+
+// UpdateConnsInactiveAt sets the "conns_inactive_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertOne) UpdateConnsInactiveAt() *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.UpdateConnsInactiveAt()
+	})
+}
+
+// ClearConnsInactiveAt clears the value of the "conns_inactive_at" field.
+func (u *CloudflareTunnelUpsertOne) ClearConnsInactiveAt() *CloudflareTunnelUpsertOne {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearConnsInactiveAt()
+	})
+}
+
 // SetName sets the "name" field.
 func (u *CloudflareTunnelUpsertOne) SetName(v string) *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
@@ -623,45 +763,24 @@ func (u *CloudflareTunnelUpsertOne) ClearStatus() *CloudflareTunnelUpsertOne {
 	})
 }
 
-// SetConnections sets the "connections" field.
-func (u *CloudflareTunnelUpsertOne) SetConnections(v json.RawMessage) *CloudflareTunnelUpsertOne {
+// SetTunType sets the "tun_type" field.
+func (u *CloudflareTunnelUpsertOne) SetTunType(v cloudflaretunnel.TunType) *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetConnections(v)
+		s.SetTunType(v)
 	})
 }
 
-// UpdateConnections sets the "connections" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertOne) UpdateConnections() *CloudflareTunnelUpsertOne {
+// UpdateTunType sets the "tun_type" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertOne) UpdateTunType() *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateConnections()
+		s.UpdateTunType()
 	})
 }
 
-// ClearConnections clears the value of the "connections" field.
-func (u *CloudflareTunnelUpsertOne) ClearConnections() *CloudflareTunnelUpsertOne {
+// ClearTunType clears the value of the "tun_type" field.
+func (u *CloudflareTunnelUpsertOne) ClearTunType() *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearConnections()
-	})
-}
-
-// SetConnsActiveAt sets the "conns_active_at" field.
-func (u *CloudflareTunnelUpsertOne) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetConnsActiveAt(v)
-	})
-}
-
-// UpdateConnsActiveAt sets the "conns_active_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertOne) UpdateConnsActiveAt() *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateConnsActiveAt()
-	})
-}
-
-// ClearConnsActiveAt clears the value of the "conns_active_at" field.
-func (u *CloudflareTunnelUpsertOne) ClearConnsActiveAt() *CloudflareTunnelUpsertOne {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearConnsActiveAt()
+		s.ClearTunType()
 	})
 }
 
@@ -915,6 +1034,69 @@ func (u *CloudflareTunnelUpsertBulk) ClearSyncAt() *CloudflareTunnelUpsertBulk {
 	})
 }
 
+// SetConnections sets the "connections" field.
+func (u *CloudflareTunnelUpsertBulk) SetConnections(v json.RawMessage) *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.SetConnections(v)
+	})
+}
+
+// UpdateConnections sets the "connections" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertBulk) UpdateConnections() *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.UpdateConnections()
+	})
+}
+
+// ClearConnections clears the value of the "connections" field.
+func (u *CloudflareTunnelUpsertBulk) ClearConnections() *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearConnections()
+	})
+}
+
+// SetConnsActiveAt sets the "conns_active_at" field.
+func (u *CloudflareTunnelUpsertBulk) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.SetConnsActiveAt(v)
+	})
+}
+
+// UpdateConnsActiveAt sets the "conns_active_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertBulk) UpdateConnsActiveAt() *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.UpdateConnsActiveAt()
+	})
+}
+
+// ClearConnsActiveAt clears the value of the "conns_active_at" field.
+func (u *CloudflareTunnelUpsertBulk) ClearConnsActiveAt() *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearConnsActiveAt()
+	})
+}
+
+// SetConnsInactiveAt sets the "conns_inactive_at" field.
+func (u *CloudflareTunnelUpsertBulk) SetConnsInactiveAt(v time.Time) *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.SetConnsInactiveAt(v)
+	})
+}
+
+// UpdateConnsInactiveAt sets the "conns_inactive_at" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertBulk) UpdateConnsInactiveAt() *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.UpdateConnsInactiveAt()
+	})
+}
+
+// ClearConnsInactiveAt clears the value of the "conns_inactive_at" field.
+func (u *CloudflareTunnelUpsertBulk) ClearConnsInactiveAt() *CloudflareTunnelUpsertBulk {
+	return u.Update(func(s *CloudflareTunnelUpsert) {
+		s.ClearConnsInactiveAt()
+	})
+}
+
 // SetName sets the "name" field.
 func (u *CloudflareTunnelUpsertBulk) SetName(v string) *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
@@ -957,45 +1139,24 @@ func (u *CloudflareTunnelUpsertBulk) ClearStatus() *CloudflareTunnelUpsertBulk {
 	})
 }
 
-// SetConnections sets the "connections" field.
-func (u *CloudflareTunnelUpsertBulk) SetConnections(v json.RawMessage) *CloudflareTunnelUpsertBulk {
+// SetTunType sets the "tun_type" field.
+func (u *CloudflareTunnelUpsertBulk) SetTunType(v cloudflaretunnel.TunType) *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetConnections(v)
+		s.SetTunType(v)
 	})
 }
 
-// UpdateConnections sets the "connections" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertBulk) UpdateConnections() *CloudflareTunnelUpsertBulk {
+// UpdateTunType sets the "tun_type" field to the value that was provided on create.
+func (u *CloudflareTunnelUpsertBulk) UpdateTunType() *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateConnections()
+		s.UpdateTunType()
 	})
 }
 
-// ClearConnections clears the value of the "connections" field.
-func (u *CloudflareTunnelUpsertBulk) ClearConnections() *CloudflareTunnelUpsertBulk {
+// ClearTunType clears the value of the "tun_type" field.
+func (u *CloudflareTunnelUpsertBulk) ClearTunType() *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearConnections()
-	})
-}
-
-// SetConnsActiveAt sets the "conns_active_at" field.
-func (u *CloudflareTunnelUpsertBulk) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.SetConnsActiveAt(v)
-	})
-}
-
-// UpdateConnsActiveAt sets the "conns_active_at" field to the value that was provided on create.
-func (u *CloudflareTunnelUpsertBulk) UpdateConnsActiveAt() *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.UpdateConnsActiveAt()
-	})
-}
-
-// ClearConnsActiveAt clears the value of the "conns_active_at" field.
-func (u *CloudflareTunnelUpsertBulk) ClearConnsActiveAt() *CloudflareTunnelUpsertBulk {
-	return u.Update(func(s *CloudflareTunnelUpsert) {
-		s.ClearConnsActiveAt()
+		s.ClearTunType()
 	})
 }
 

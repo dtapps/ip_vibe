@@ -132,6 +132,20 @@ func (_c *EdgeOneZoneOriginGroupCreate) SetReferences(v json.RawMessage) *EdgeOn
 	return _c
 }
 
+// SetHostHeader sets the "host_header" field.
+func (_c *EdgeOneZoneOriginGroupCreate) SetHostHeader(v string) *EdgeOneZoneOriginGroupCreate {
+	_c.mutation.SetHostHeader(v)
+	return _c
+}
+
+// SetNillableHostHeader sets the "host_header" field if the given value is not nil.
+func (_c *EdgeOneZoneOriginGroupCreate) SetNillableHostHeader(v *string) *EdgeOneZoneOriginGroupCreate {
+	if v != nil {
+		_c.SetHostHeader(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *EdgeOneZoneOriginGroupCreate) SetID(v int64) *EdgeOneZoneOriginGroupCreate {
 	_c.mutation.SetID(v)
@@ -298,6 +312,10 @@ func (_c *EdgeOneZoneOriginGroupCreate) createSpec() (*EdgeOneZoneOriginGroup, *
 		_spec.SetField(edgeonezoneorigingroup.FieldReferences, field.TypeJSON, value)
 		_node.References = value
 	}
+	if value, ok := _c.mutation.HostHeader(); ok {
+		_spec.SetField(edgeonezoneorigingroup.FieldHostHeader, field.TypeString, value)
+		_node.HostHeader = value
+	}
 	if nodes := _c.mutation.EdgeoneZoneIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -454,6 +472,24 @@ func (u *EdgeOneZoneOriginGroupUpsert) UpdateReferences() *EdgeOneZoneOriginGrou
 // ClearReferences clears the value of the "references" field.
 func (u *EdgeOneZoneOriginGroupUpsert) ClearReferences() *EdgeOneZoneOriginGroupUpsert {
 	u.SetNull(edgeonezoneorigingroup.FieldReferences)
+	return u
+}
+
+// SetHostHeader sets the "host_header" field.
+func (u *EdgeOneZoneOriginGroupUpsert) SetHostHeader(v string) *EdgeOneZoneOriginGroupUpsert {
+	u.Set(edgeonezoneorigingroup.FieldHostHeader, v)
+	return u
+}
+
+// UpdateHostHeader sets the "host_header" field to the value that was provided on create.
+func (u *EdgeOneZoneOriginGroupUpsert) UpdateHostHeader() *EdgeOneZoneOriginGroupUpsert {
+	u.SetExcluded(edgeonezoneorigingroup.FieldHostHeader)
+	return u
+}
+
+// ClearHostHeader clears the value of the "host_header" field.
+func (u *EdgeOneZoneOriginGroupUpsert) ClearHostHeader() *EdgeOneZoneOriginGroupUpsert {
+	u.SetNull(edgeonezoneorigingroup.FieldHostHeader)
 	return u
 }
 
@@ -622,6 +658,27 @@ func (u *EdgeOneZoneOriginGroupUpsertOne) UpdateReferences() *EdgeOneZoneOriginG
 func (u *EdgeOneZoneOriginGroupUpsertOne) ClearReferences() *EdgeOneZoneOriginGroupUpsertOne {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.ClearReferences()
+	})
+}
+
+// SetHostHeader sets the "host_header" field.
+func (u *EdgeOneZoneOriginGroupUpsertOne) SetHostHeader(v string) *EdgeOneZoneOriginGroupUpsertOne {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.SetHostHeader(v)
+	})
+}
+
+// UpdateHostHeader sets the "host_header" field to the value that was provided on create.
+func (u *EdgeOneZoneOriginGroupUpsertOne) UpdateHostHeader() *EdgeOneZoneOriginGroupUpsertOne {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.UpdateHostHeader()
+	})
+}
+
+// ClearHostHeader clears the value of the "host_header" field.
+func (u *EdgeOneZoneOriginGroupUpsertOne) ClearHostHeader() *EdgeOneZoneOriginGroupUpsertOne {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.ClearHostHeader()
 	})
 }
 
@@ -956,6 +1013,27 @@ func (u *EdgeOneZoneOriginGroupUpsertBulk) UpdateReferences() *EdgeOneZoneOrigin
 func (u *EdgeOneZoneOriginGroupUpsertBulk) ClearReferences() *EdgeOneZoneOriginGroupUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.ClearReferences()
+	})
+}
+
+// SetHostHeader sets the "host_header" field.
+func (u *EdgeOneZoneOriginGroupUpsertBulk) SetHostHeader(v string) *EdgeOneZoneOriginGroupUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.SetHostHeader(v)
+	})
+}
+
+// UpdateHostHeader sets the "host_header" field to the value that was provided on create.
+func (u *EdgeOneZoneOriginGroupUpsertBulk) UpdateHostHeader() *EdgeOneZoneOriginGroupUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.UpdateHostHeader()
+	})
+}
+
+// ClearHostHeader clears the value of the "host_header" field.
+func (u *EdgeOneZoneOriginGroupUpsertBulk) ClearHostHeader() *EdgeOneZoneOriginGroupUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
+		s.ClearHostHeader()
 	})
 }
 

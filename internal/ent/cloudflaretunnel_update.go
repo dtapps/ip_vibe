@@ -52,6 +52,64 @@ func (_u *CloudflareTunnelUpdate) ClearSyncAt() *CloudflareTunnelUpdate {
 	return _u
 }
 
+// SetConnections sets the "connections" field.
+func (_u *CloudflareTunnelUpdate) SetConnections(v json.RawMessage) *CloudflareTunnelUpdate {
+	_u.mutation.SetConnections(v)
+	return _u
+}
+
+// AppendConnections appends value to the "connections" field.
+func (_u *CloudflareTunnelUpdate) AppendConnections(v json.RawMessage) *CloudflareTunnelUpdate {
+	_u.mutation.AppendConnections(v)
+	return _u
+}
+
+// ClearConnections clears the value of the "connections" field.
+func (_u *CloudflareTunnelUpdate) ClearConnections() *CloudflareTunnelUpdate {
+	_u.mutation.ClearConnections()
+	return _u
+}
+
+// SetConnsActiveAt sets the "conns_active_at" field.
+func (_u *CloudflareTunnelUpdate) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpdate {
+	_u.mutation.SetConnsActiveAt(v)
+	return _u
+}
+
+// SetNillableConnsActiveAt sets the "conns_active_at" field if the given value is not nil.
+func (_u *CloudflareTunnelUpdate) SetNillableConnsActiveAt(v *time.Time) *CloudflareTunnelUpdate {
+	if v != nil {
+		_u.SetConnsActiveAt(*v)
+	}
+	return _u
+}
+
+// ClearConnsActiveAt clears the value of the "conns_active_at" field.
+func (_u *CloudflareTunnelUpdate) ClearConnsActiveAt() *CloudflareTunnelUpdate {
+	_u.mutation.ClearConnsActiveAt()
+	return _u
+}
+
+// SetConnsInactiveAt sets the "conns_inactive_at" field.
+func (_u *CloudflareTunnelUpdate) SetConnsInactiveAt(v time.Time) *CloudflareTunnelUpdate {
+	_u.mutation.SetConnsInactiveAt(v)
+	return _u
+}
+
+// SetNillableConnsInactiveAt sets the "conns_inactive_at" field if the given value is not nil.
+func (_u *CloudflareTunnelUpdate) SetNillableConnsInactiveAt(v *time.Time) *CloudflareTunnelUpdate {
+	if v != nil {
+		_u.SetConnsInactiveAt(*v)
+	}
+	return _u
+}
+
+// ClearConnsInactiveAt clears the value of the "conns_inactive_at" field.
+func (_u *CloudflareTunnelUpdate) ClearConnsInactiveAt() *CloudflareTunnelUpdate {
+	_u.mutation.ClearConnsInactiveAt()
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *CloudflareTunnelUpdate) SetName(v string) *CloudflareTunnelUpdate {
 	_u.mutation.SetName(v)
@@ -92,41 +150,23 @@ func (_u *CloudflareTunnelUpdate) ClearStatus() *CloudflareTunnelUpdate {
 	return _u
 }
 
-// SetConnections sets the "connections" field.
-func (_u *CloudflareTunnelUpdate) SetConnections(v json.RawMessage) *CloudflareTunnelUpdate {
-	_u.mutation.SetConnections(v)
+// SetTunType sets the "tun_type" field.
+func (_u *CloudflareTunnelUpdate) SetTunType(v cloudflaretunnel.TunType) *CloudflareTunnelUpdate {
+	_u.mutation.SetTunType(v)
 	return _u
 }
 
-// AppendConnections appends value to the "connections" field.
-func (_u *CloudflareTunnelUpdate) AppendConnections(v json.RawMessage) *CloudflareTunnelUpdate {
-	_u.mutation.AppendConnections(v)
-	return _u
-}
-
-// ClearConnections clears the value of the "connections" field.
-func (_u *CloudflareTunnelUpdate) ClearConnections() *CloudflareTunnelUpdate {
-	_u.mutation.ClearConnections()
-	return _u
-}
-
-// SetConnsActiveAt sets the "conns_active_at" field.
-func (_u *CloudflareTunnelUpdate) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpdate {
-	_u.mutation.SetConnsActiveAt(v)
-	return _u
-}
-
-// SetNillableConnsActiveAt sets the "conns_active_at" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdate) SetNillableConnsActiveAt(v *time.Time) *CloudflareTunnelUpdate {
+// SetNillableTunType sets the "tun_type" field if the given value is not nil.
+func (_u *CloudflareTunnelUpdate) SetNillableTunType(v *cloudflaretunnel.TunType) *CloudflareTunnelUpdate {
 	if v != nil {
-		_u.SetConnsActiveAt(*v)
+		_u.SetTunType(*v)
 	}
 	return _u
 }
 
-// ClearConnsActiveAt clears the value of the "conns_active_at" field.
-func (_u *CloudflareTunnelUpdate) ClearConnsActiveAt() *CloudflareTunnelUpdate {
-	_u.mutation.ClearConnsActiveAt()
+// ClearTunType clears the value of the "tun_type" field.
+func (_u *CloudflareTunnelUpdate) ClearTunType() *CloudflareTunnelUpdate {
+	_u.mutation.ClearTunType()
 	return _u
 }
 
@@ -220,6 +260,11 @@ func (_u *CloudflareTunnelUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnel.status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.TunType(); ok {
+		if err := cloudflaretunnel.TunTypeValidator(v); err != nil {
+			return &ValidationError{Name: "tun_type", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnel.tun_type": %w`, err)}
+		}
+	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CloudflareTunnel.config"`)
 	}
@@ -256,18 +301,6 @@ func (_u *CloudflareTunnelUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(cloudflaretunnel.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(cloudflaretunnel.FieldName, field.TypeString, value)
-	}
-	if _u.mutation.NameCleared() {
-		_spec.ClearField(cloudflaretunnel.FieldName, field.TypeString)
-	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(cloudflaretunnel.FieldStatus, field.TypeEnum, value)
-	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(cloudflaretunnel.FieldStatus, field.TypeEnum)
-	}
 	if value, ok := _u.mutation.Connections(); ok {
 		_spec.SetField(cloudflaretunnel.FieldConnections, field.TypeJSON, value)
 	}
@@ -284,6 +317,30 @@ func (_u *CloudflareTunnelUpdate) sqlSave(ctx context.Context) (_node int, err e
 	}
 	if _u.mutation.ConnsActiveAtCleared() {
 		_spec.ClearField(cloudflaretunnel.FieldConnsActiveAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.ConnsInactiveAt(); ok {
+		_spec.SetField(cloudflaretunnel.FieldConnsInactiveAt, field.TypeTime, value)
+	}
+	if _u.mutation.ConnsInactiveAtCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldConnsInactiveAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(cloudflaretunnel.FieldName, field.TypeString, value)
+	}
+	if _u.mutation.NameCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldName, field.TypeString)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(cloudflaretunnel.FieldStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldStatus, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.TunType(); ok {
+		_spec.SetField(cloudflaretunnel.FieldTunType, field.TypeEnum, value)
+	}
+	if _u.mutation.TunTypeCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldTunType, field.TypeEnum)
 	}
 	if _u.mutation.IngressesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -372,6 +429,64 @@ func (_u *CloudflareTunnelUpdateOne) ClearSyncAt() *CloudflareTunnelUpdateOne {
 	return _u
 }
 
+// SetConnections sets the "connections" field.
+func (_u *CloudflareTunnelUpdateOne) SetConnections(v json.RawMessage) *CloudflareTunnelUpdateOne {
+	_u.mutation.SetConnections(v)
+	return _u
+}
+
+// AppendConnections appends value to the "connections" field.
+func (_u *CloudflareTunnelUpdateOne) AppendConnections(v json.RawMessage) *CloudflareTunnelUpdateOne {
+	_u.mutation.AppendConnections(v)
+	return _u
+}
+
+// ClearConnections clears the value of the "connections" field.
+func (_u *CloudflareTunnelUpdateOne) ClearConnections() *CloudflareTunnelUpdateOne {
+	_u.mutation.ClearConnections()
+	return _u
+}
+
+// SetConnsActiveAt sets the "conns_active_at" field.
+func (_u *CloudflareTunnelUpdateOne) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpdateOne {
+	_u.mutation.SetConnsActiveAt(v)
+	return _u
+}
+
+// SetNillableConnsActiveAt sets the "conns_active_at" field if the given value is not nil.
+func (_u *CloudflareTunnelUpdateOne) SetNillableConnsActiveAt(v *time.Time) *CloudflareTunnelUpdateOne {
+	if v != nil {
+		_u.SetConnsActiveAt(*v)
+	}
+	return _u
+}
+
+// ClearConnsActiveAt clears the value of the "conns_active_at" field.
+func (_u *CloudflareTunnelUpdateOne) ClearConnsActiveAt() *CloudflareTunnelUpdateOne {
+	_u.mutation.ClearConnsActiveAt()
+	return _u
+}
+
+// SetConnsInactiveAt sets the "conns_inactive_at" field.
+func (_u *CloudflareTunnelUpdateOne) SetConnsInactiveAt(v time.Time) *CloudflareTunnelUpdateOne {
+	_u.mutation.SetConnsInactiveAt(v)
+	return _u
+}
+
+// SetNillableConnsInactiveAt sets the "conns_inactive_at" field if the given value is not nil.
+func (_u *CloudflareTunnelUpdateOne) SetNillableConnsInactiveAt(v *time.Time) *CloudflareTunnelUpdateOne {
+	if v != nil {
+		_u.SetConnsInactiveAt(*v)
+	}
+	return _u
+}
+
+// ClearConnsInactiveAt clears the value of the "conns_inactive_at" field.
+func (_u *CloudflareTunnelUpdateOne) ClearConnsInactiveAt() *CloudflareTunnelUpdateOne {
+	_u.mutation.ClearConnsInactiveAt()
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *CloudflareTunnelUpdateOne) SetName(v string) *CloudflareTunnelUpdateOne {
 	_u.mutation.SetName(v)
@@ -412,41 +527,23 @@ func (_u *CloudflareTunnelUpdateOne) ClearStatus() *CloudflareTunnelUpdateOne {
 	return _u
 }
 
-// SetConnections sets the "connections" field.
-func (_u *CloudflareTunnelUpdateOne) SetConnections(v json.RawMessage) *CloudflareTunnelUpdateOne {
-	_u.mutation.SetConnections(v)
+// SetTunType sets the "tun_type" field.
+func (_u *CloudflareTunnelUpdateOne) SetTunType(v cloudflaretunnel.TunType) *CloudflareTunnelUpdateOne {
+	_u.mutation.SetTunType(v)
 	return _u
 }
 
-// AppendConnections appends value to the "connections" field.
-func (_u *CloudflareTunnelUpdateOne) AppendConnections(v json.RawMessage) *CloudflareTunnelUpdateOne {
-	_u.mutation.AppendConnections(v)
-	return _u
-}
-
-// ClearConnections clears the value of the "connections" field.
-func (_u *CloudflareTunnelUpdateOne) ClearConnections() *CloudflareTunnelUpdateOne {
-	_u.mutation.ClearConnections()
-	return _u
-}
-
-// SetConnsActiveAt sets the "conns_active_at" field.
-func (_u *CloudflareTunnelUpdateOne) SetConnsActiveAt(v time.Time) *CloudflareTunnelUpdateOne {
-	_u.mutation.SetConnsActiveAt(v)
-	return _u
-}
-
-// SetNillableConnsActiveAt sets the "conns_active_at" field if the given value is not nil.
-func (_u *CloudflareTunnelUpdateOne) SetNillableConnsActiveAt(v *time.Time) *CloudflareTunnelUpdateOne {
+// SetNillableTunType sets the "tun_type" field if the given value is not nil.
+func (_u *CloudflareTunnelUpdateOne) SetNillableTunType(v *cloudflaretunnel.TunType) *CloudflareTunnelUpdateOne {
 	if v != nil {
-		_u.SetConnsActiveAt(*v)
+		_u.SetTunType(*v)
 	}
 	return _u
 }
 
-// ClearConnsActiveAt clears the value of the "conns_active_at" field.
-func (_u *CloudflareTunnelUpdateOne) ClearConnsActiveAt() *CloudflareTunnelUpdateOne {
-	_u.mutation.ClearConnsActiveAt()
+// ClearTunType clears the value of the "tun_type" field.
+func (_u *CloudflareTunnelUpdateOne) ClearTunType() *CloudflareTunnelUpdateOne {
+	_u.mutation.ClearTunType()
 	return _u
 }
 
@@ -553,6 +650,11 @@ func (_u *CloudflareTunnelUpdateOne) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnel.status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.TunType(); ok {
+		if err := cloudflaretunnel.TunTypeValidator(v); err != nil {
+			return &ValidationError{Name: "tun_type", err: fmt.Errorf(`ent: validator failed for field "CloudflareTunnel.tun_type": %w`, err)}
+		}
+	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "CloudflareTunnel.config"`)
 	}
@@ -606,18 +708,6 @@ func (_u *CloudflareTunnelUpdateOne) sqlSave(ctx context.Context) (_node *Cloudf
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(cloudflaretunnel.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(cloudflaretunnel.FieldName, field.TypeString, value)
-	}
-	if _u.mutation.NameCleared() {
-		_spec.ClearField(cloudflaretunnel.FieldName, field.TypeString)
-	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(cloudflaretunnel.FieldStatus, field.TypeEnum, value)
-	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(cloudflaretunnel.FieldStatus, field.TypeEnum)
-	}
 	if value, ok := _u.mutation.Connections(); ok {
 		_spec.SetField(cloudflaretunnel.FieldConnections, field.TypeJSON, value)
 	}
@@ -634,6 +724,30 @@ func (_u *CloudflareTunnelUpdateOne) sqlSave(ctx context.Context) (_node *Cloudf
 	}
 	if _u.mutation.ConnsActiveAtCleared() {
 		_spec.ClearField(cloudflaretunnel.FieldConnsActiveAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.ConnsInactiveAt(); ok {
+		_spec.SetField(cloudflaretunnel.FieldConnsInactiveAt, field.TypeTime, value)
+	}
+	if _u.mutation.ConnsInactiveAtCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldConnsInactiveAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(cloudflaretunnel.FieldName, field.TypeString, value)
+	}
+	if _u.mutation.NameCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldName, field.TypeString)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(cloudflaretunnel.FieldStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldStatus, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.TunType(); ok {
+		_spec.SetField(cloudflaretunnel.FieldTunType, field.TypeEnum, value)
+	}
+	if _u.mutation.TunTypeCleared() {
+		_spec.ClearField(cloudflaretunnel.FieldTunType, field.TypeEnum)
 	}
 	if _u.mutation.IngressesCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -132,6 +132,14 @@ func (t *EdgeOneZone) ToMap() map[string]any {
 		return nil
 	}
 	m := make(map[string]any)
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["resources"] = t.Resources
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["ns_detail"] = t.NsDetail
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["cname_detail"] = t.CnameDetail
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["dnspod_detail"] = t.DnspodDetail
 	return m
 }
 

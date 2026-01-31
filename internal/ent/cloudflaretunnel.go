@@ -32,14 +32,18 @@ type CloudflareTunnel struct {
 	ConfigID int64 `json:"config_id,omitempty"`
 	// Cloudflare 隧道ID
 	TunnelID string `json:"tunnel_id,omitempty"`
-	// 隧道名称
-	Name string `json:"name,omitempty"`
-	// 隧道状态
-	Status cloudflaretunnel.Status `json:"status,omitempty"`
 	// 隧道连接配置
 	Connections json.RawMessage `json:"connections,omitempty"`
 	// 隧道连接活跃时间
 	ConnsActiveAt time.Time `json:"conns_active_at,omitempty"`
+	// 隧道连接不活跃时间
+	ConnsInactiveAt time.Time `json:"conns_inactive_at,omitempty"`
+	// 隧道名称
+	Name string `json:"name,omitempty"`
+	// 隧道状态
+	Status cloudflaretunnel.Status `json:"status,omitempty"`
+	// 隧道类型
+	TunType cloudflaretunnel.TunType `json:"tun_type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CloudflareTunnelQuery when eager-loading is set.
 	Edges        CloudflareTunnelEdges `json:"edges"`
@@ -87,9 +91,9 @@ func (*CloudflareTunnel) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case cloudflaretunnel.FieldID, cloudflaretunnel.FieldConfigID:
 			values[i] = new(sql.NullInt64)
-		case cloudflaretunnel.FieldTunnelID, cloudflaretunnel.FieldName, cloudflaretunnel.FieldStatus:
+		case cloudflaretunnel.FieldTunnelID, cloudflaretunnel.FieldName, cloudflaretunnel.FieldStatus, cloudflaretunnel.FieldTunType:
 			values[i] = new(sql.NullString)
-		case cloudflaretunnel.FieldCreatedAt, cloudflaretunnel.FieldUpdatedAt, cloudflaretunnel.FieldRemoteCreatedAt, cloudflaretunnel.FieldSyncAt, cloudflaretunnel.FieldConnsActiveAt:
+		case cloudflaretunnel.FieldCreatedAt, cloudflaretunnel.FieldUpdatedAt, cloudflaretunnel.FieldRemoteCreatedAt, cloudflaretunnel.FieldSyncAt, cloudflaretunnel.FieldConnsActiveAt, cloudflaretunnel.FieldConnsInactiveAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -148,18 +152,6 @@ func (_m *CloudflareTunnel) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.TunnelID = value.String
 			}
-		case cloudflaretunnel.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				_m.Name = value.String
-			}
-		case cloudflaretunnel.FieldStatus:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
-			} else if value.Valid {
-				_m.Status = cloudflaretunnel.Status(value.String)
-			}
 		case cloudflaretunnel.FieldConnections:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field connections", values[i])
@@ -173,6 +165,30 @@ func (_m *CloudflareTunnel) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field conns_active_at", values[i])
 			} else if value.Valid {
 				_m.ConnsActiveAt = value.Time
+			}
+		case cloudflaretunnel.FieldConnsInactiveAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field conns_inactive_at", values[i])
+			} else if value.Valid {
+				_m.ConnsInactiveAt = value.Time
+			}
+		case cloudflaretunnel.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				_m.Name = value.String
+			}
+		case cloudflaretunnel.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				_m.Status = cloudflaretunnel.Status(value.String)
+			}
+		case cloudflaretunnel.FieldTunType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field tun_type", values[i])
+			} else if value.Valid {
+				_m.TunType = cloudflaretunnel.TunType(value.String)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -238,17 +254,23 @@ func (_m *CloudflareTunnel) String() string {
 	builder.WriteString("tunnel_id=")
 	builder.WriteString(_m.TunnelID)
 	builder.WriteString(", ")
+	builder.WriteString("connections=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Connections))
+	builder.WriteString(", ")
+	builder.WriteString("conns_active_at=")
+	builder.WriteString(_m.ConnsActiveAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("conns_inactive_at=")
+	builder.WriteString(_m.ConnsInactiveAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Status))
 	builder.WriteString(", ")
-	builder.WriteString("connections=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Connections))
-	builder.WriteString(", ")
-	builder.WriteString("conns_active_at=")
-	builder.WriteString(_m.ConnsActiveAt.Format(time.ANSIC))
+	builder.WriteString("tun_type=")
+	builder.WriteString(fmt.Sprintf("%v", _m.TunType))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -1935,11 +1935,13 @@ type CloudflareTunnelMutation struct {
 	remote_created_at *time.Time
 	sync_at           *time.Time
 	tunnel_id         *string
-	name              *string
-	status            *cloudflaretunnel.Status
 	connections       *json.RawMessage
 	appendconnections json.RawMessage
 	conns_active_at   *time.Time
+	conns_inactive_at *time.Time
+	name              *string
+	status            *cloudflaretunnel.Status
+	tun_type          *cloudflaretunnel.TunType
 	clearedFields     map[string]struct{}
 	_config           *int64
 	cleared_config    bool
@@ -2297,104 +2299,6 @@ func (m *CloudflareTunnelMutation) ResetTunnelID() {
 	m.tunnel_id = nil
 }
 
-// SetName sets the "name" field.
-func (m *CloudflareTunnelMutation) SetName(s string) {
-	m.name = &s
-}
-
-// Name returns the value of the "name" field in the mutation.
-func (m *CloudflareTunnelMutation) Name() (r string, exists bool) {
-	v := m.name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "name" field's value of the CloudflareTunnel entity.
-// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareTunnelMutation) OldName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ClearName clears the value of the "name" field.
-func (m *CloudflareTunnelMutation) ClearName() {
-	m.name = nil
-	m.clearedFields[cloudflaretunnel.FieldName] = struct{}{}
-}
-
-// NameCleared returns if the "name" field was cleared in this mutation.
-func (m *CloudflareTunnelMutation) NameCleared() bool {
-	_, ok := m.clearedFields[cloudflaretunnel.FieldName]
-	return ok
-}
-
-// ResetName resets all changes to the "name" field.
-func (m *CloudflareTunnelMutation) ResetName() {
-	m.name = nil
-	delete(m.clearedFields, cloudflaretunnel.FieldName)
-}
-
-// SetStatus sets the "status" field.
-func (m *CloudflareTunnelMutation) SetStatus(c cloudflaretunnel.Status) {
-	m.status = &c
-}
-
-// Status returns the value of the "status" field in the mutation.
-func (m *CloudflareTunnelMutation) Status() (r cloudflaretunnel.Status, exists bool) {
-	v := m.status
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldStatus returns the old "status" field's value of the CloudflareTunnel entity.
-// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareTunnelMutation) OldStatus(ctx context.Context) (v cloudflaretunnel.Status, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStatus requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
-	}
-	return oldValue.Status, nil
-}
-
-// ClearStatus clears the value of the "status" field.
-func (m *CloudflareTunnelMutation) ClearStatus() {
-	m.status = nil
-	m.clearedFields[cloudflaretunnel.FieldStatus] = struct{}{}
-}
-
-// StatusCleared returns if the "status" field was cleared in this mutation.
-func (m *CloudflareTunnelMutation) StatusCleared() bool {
-	_, ok := m.clearedFields[cloudflaretunnel.FieldStatus]
-	return ok
-}
-
-// ResetStatus resets all changes to the "status" field.
-func (m *CloudflareTunnelMutation) ResetStatus() {
-	m.status = nil
-	delete(m.clearedFields, cloudflaretunnel.FieldStatus)
-}
-
 // SetConnections sets the "connections" field.
 func (m *CloudflareTunnelMutation) SetConnections(jm json.RawMessage) {
 	m.connections = &jm
@@ -2507,6 +2411,202 @@ func (m *CloudflareTunnelMutation) ConnsActiveAtCleared() bool {
 func (m *CloudflareTunnelMutation) ResetConnsActiveAt() {
 	m.conns_active_at = nil
 	delete(m.clearedFields, cloudflaretunnel.FieldConnsActiveAt)
+}
+
+// SetConnsInactiveAt sets the "conns_inactive_at" field.
+func (m *CloudflareTunnelMutation) SetConnsInactiveAt(t time.Time) {
+	m.conns_inactive_at = &t
+}
+
+// ConnsInactiveAt returns the value of the "conns_inactive_at" field in the mutation.
+func (m *CloudflareTunnelMutation) ConnsInactiveAt() (r time.Time, exists bool) {
+	v := m.conns_inactive_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConnsInactiveAt returns the old "conns_inactive_at" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldConnsInactiveAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConnsInactiveAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConnsInactiveAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConnsInactiveAt: %w", err)
+	}
+	return oldValue.ConnsInactiveAt, nil
+}
+
+// ClearConnsInactiveAt clears the value of the "conns_inactive_at" field.
+func (m *CloudflareTunnelMutation) ClearConnsInactiveAt() {
+	m.conns_inactive_at = nil
+	m.clearedFields[cloudflaretunnel.FieldConnsInactiveAt] = struct{}{}
+}
+
+// ConnsInactiveAtCleared returns if the "conns_inactive_at" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) ConnsInactiveAtCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldConnsInactiveAt]
+	return ok
+}
+
+// ResetConnsInactiveAt resets all changes to the "conns_inactive_at" field.
+func (m *CloudflareTunnelMutation) ResetConnsInactiveAt() {
+	m.conns_inactive_at = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldConnsInactiveAt)
+}
+
+// SetName sets the "name" field.
+func (m *CloudflareTunnelMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *CloudflareTunnelMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ClearName clears the value of the "name" field.
+func (m *CloudflareTunnelMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[cloudflaretunnel.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) NameCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldName]
+	return ok
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *CloudflareTunnelMutation) ResetName() {
+	m.name = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldName)
+}
+
+// SetStatus sets the "status" field.
+func (m *CloudflareTunnelMutation) SetStatus(c cloudflaretunnel.Status) {
+	m.status = &c
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *CloudflareTunnelMutation) Status() (r cloudflaretunnel.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldStatus(ctx context.Context) (v cloudflaretunnel.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ClearStatus clears the value of the "status" field.
+func (m *CloudflareTunnelMutation) ClearStatus() {
+	m.status = nil
+	m.clearedFields[cloudflaretunnel.FieldStatus] = struct{}{}
+}
+
+// StatusCleared returns if the "status" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) StatusCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldStatus]
+	return ok
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *CloudflareTunnelMutation) ResetStatus() {
+	m.status = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldStatus)
+}
+
+// SetTunType sets the "tun_type" field.
+func (m *CloudflareTunnelMutation) SetTunType(ct cloudflaretunnel.TunType) {
+	m.tun_type = &ct
+}
+
+// TunType returns the value of the "tun_type" field in the mutation.
+func (m *CloudflareTunnelMutation) TunType() (r cloudflaretunnel.TunType, exists bool) {
+	v := m.tun_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTunType returns the old "tun_type" field's value of the CloudflareTunnel entity.
+// If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareTunnelMutation) OldTunType(ctx context.Context) (v cloudflaretunnel.TunType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTunType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTunType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTunType: %w", err)
+	}
+	return oldValue.TunType, nil
+}
+
+// ClearTunType clears the value of the "tun_type" field.
+func (m *CloudflareTunnelMutation) ClearTunType() {
+	m.tun_type = nil
+	m.clearedFields[cloudflaretunnel.FieldTunType] = struct{}{}
+}
+
+// TunTypeCleared returns if the "tun_type" field was cleared in this mutation.
+func (m *CloudflareTunnelMutation) TunTypeCleared() bool {
+	_, ok := m.clearedFields[cloudflaretunnel.FieldTunType]
+	return ok
+}
+
+// ResetTunType resets all changes to the "tun_type" field.
+func (m *CloudflareTunnelMutation) ResetTunType() {
+	m.tun_type = nil
+	delete(m.clearedFields, cloudflaretunnel.FieldTunType)
 }
 
 // ClearConfig clears the "config" edge to the PlatformConfig entity.
@@ -2624,7 +2724,7 @@ func (m *CloudflareTunnelMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CloudflareTunnelMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, cloudflaretunnel.FieldCreatedAt)
 	}
@@ -2643,17 +2743,23 @@ func (m *CloudflareTunnelMutation) Fields() []string {
 	if m.tunnel_id != nil {
 		fields = append(fields, cloudflaretunnel.FieldTunnelID)
 	}
+	if m.connections != nil {
+		fields = append(fields, cloudflaretunnel.FieldConnections)
+	}
+	if m.conns_active_at != nil {
+		fields = append(fields, cloudflaretunnel.FieldConnsActiveAt)
+	}
+	if m.conns_inactive_at != nil {
+		fields = append(fields, cloudflaretunnel.FieldConnsInactiveAt)
+	}
 	if m.name != nil {
 		fields = append(fields, cloudflaretunnel.FieldName)
 	}
 	if m.status != nil {
 		fields = append(fields, cloudflaretunnel.FieldStatus)
 	}
-	if m.connections != nil {
-		fields = append(fields, cloudflaretunnel.FieldConnections)
-	}
-	if m.conns_active_at != nil {
-		fields = append(fields, cloudflaretunnel.FieldConnsActiveAt)
+	if m.tun_type != nil {
+		fields = append(fields, cloudflaretunnel.FieldTunType)
 	}
 	return fields
 }
@@ -2675,14 +2781,18 @@ func (m *CloudflareTunnelMutation) Field(name string) (ent.Value, bool) {
 		return m.ConfigID()
 	case cloudflaretunnel.FieldTunnelID:
 		return m.TunnelID()
-	case cloudflaretunnel.FieldName:
-		return m.Name()
-	case cloudflaretunnel.FieldStatus:
-		return m.Status()
 	case cloudflaretunnel.FieldConnections:
 		return m.Connections()
 	case cloudflaretunnel.FieldConnsActiveAt:
 		return m.ConnsActiveAt()
+	case cloudflaretunnel.FieldConnsInactiveAt:
+		return m.ConnsInactiveAt()
+	case cloudflaretunnel.FieldName:
+		return m.Name()
+	case cloudflaretunnel.FieldStatus:
+		return m.Status()
+	case cloudflaretunnel.FieldTunType:
+		return m.TunType()
 	}
 	return nil, false
 }
@@ -2704,14 +2814,18 @@ func (m *CloudflareTunnelMutation) OldField(ctx context.Context, name string) (e
 		return m.OldConfigID(ctx)
 	case cloudflaretunnel.FieldTunnelID:
 		return m.OldTunnelID(ctx)
-	case cloudflaretunnel.FieldName:
-		return m.OldName(ctx)
-	case cloudflaretunnel.FieldStatus:
-		return m.OldStatus(ctx)
 	case cloudflaretunnel.FieldConnections:
 		return m.OldConnections(ctx)
 	case cloudflaretunnel.FieldConnsActiveAt:
 		return m.OldConnsActiveAt(ctx)
+	case cloudflaretunnel.FieldConnsInactiveAt:
+		return m.OldConnsInactiveAt(ctx)
+	case cloudflaretunnel.FieldName:
+		return m.OldName(ctx)
+	case cloudflaretunnel.FieldStatus:
+		return m.OldStatus(ctx)
+	case cloudflaretunnel.FieldTunType:
+		return m.OldTunType(ctx)
 	}
 	return nil, fmt.Errorf("unknown CloudflareTunnel field %s", name)
 }
@@ -2763,6 +2877,27 @@ func (m *CloudflareTunnelMutation) SetField(name string, value ent.Value) error 
 		}
 		m.SetTunnelID(v)
 		return nil
+	case cloudflaretunnel.FieldConnections:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConnections(v)
+		return nil
+	case cloudflaretunnel.FieldConnsActiveAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConnsActiveAt(v)
+		return nil
+	case cloudflaretunnel.FieldConnsInactiveAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConnsInactiveAt(v)
+		return nil
 	case cloudflaretunnel.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -2777,19 +2912,12 @@ func (m *CloudflareTunnelMutation) SetField(name string, value ent.Value) error 
 		}
 		m.SetStatus(v)
 		return nil
-	case cloudflaretunnel.FieldConnections:
-		v, ok := value.(json.RawMessage)
+	case cloudflaretunnel.FieldTunType:
+		v, ok := value.(cloudflaretunnel.TunType)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetConnections(v)
-		return nil
-	case cloudflaretunnel.FieldConnsActiveAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetConnsActiveAt(v)
+		m.SetTunType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnel field %s", name)
@@ -2830,17 +2958,23 @@ func (m *CloudflareTunnelMutation) ClearedFields() []string {
 	if m.FieldCleared(cloudflaretunnel.FieldSyncAt) {
 		fields = append(fields, cloudflaretunnel.FieldSyncAt)
 	}
+	if m.FieldCleared(cloudflaretunnel.FieldConnections) {
+		fields = append(fields, cloudflaretunnel.FieldConnections)
+	}
+	if m.FieldCleared(cloudflaretunnel.FieldConnsActiveAt) {
+		fields = append(fields, cloudflaretunnel.FieldConnsActiveAt)
+	}
+	if m.FieldCleared(cloudflaretunnel.FieldConnsInactiveAt) {
+		fields = append(fields, cloudflaretunnel.FieldConnsInactiveAt)
+	}
 	if m.FieldCleared(cloudflaretunnel.FieldName) {
 		fields = append(fields, cloudflaretunnel.FieldName)
 	}
 	if m.FieldCleared(cloudflaretunnel.FieldStatus) {
 		fields = append(fields, cloudflaretunnel.FieldStatus)
 	}
-	if m.FieldCleared(cloudflaretunnel.FieldConnections) {
-		fields = append(fields, cloudflaretunnel.FieldConnections)
-	}
-	if m.FieldCleared(cloudflaretunnel.FieldConnsActiveAt) {
-		fields = append(fields, cloudflaretunnel.FieldConnsActiveAt)
+	if m.FieldCleared(cloudflaretunnel.FieldTunType) {
+		fields = append(fields, cloudflaretunnel.FieldTunType)
 	}
 	return fields
 }
@@ -2862,17 +2996,23 @@ func (m *CloudflareTunnelMutation) ClearField(name string) error {
 	case cloudflaretunnel.FieldSyncAt:
 		m.ClearSyncAt()
 		return nil
+	case cloudflaretunnel.FieldConnections:
+		m.ClearConnections()
+		return nil
+	case cloudflaretunnel.FieldConnsActiveAt:
+		m.ClearConnsActiveAt()
+		return nil
+	case cloudflaretunnel.FieldConnsInactiveAt:
+		m.ClearConnsInactiveAt()
+		return nil
 	case cloudflaretunnel.FieldName:
 		m.ClearName()
 		return nil
 	case cloudflaretunnel.FieldStatus:
 		m.ClearStatus()
 		return nil
-	case cloudflaretunnel.FieldConnections:
-		m.ClearConnections()
-		return nil
-	case cloudflaretunnel.FieldConnsActiveAt:
-		m.ClearConnsActiveAt()
+	case cloudflaretunnel.FieldTunType:
+		m.ClearTunType()
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnel nullable field %s", name)
@@ -2900,17 +3040,23 @@ func (m *CloudflareTunnelMutation) ResetField(name string) error {
 	case cloudflaretunnel.FieldTunnelID:
 		m.ResetTunnelID()
 		return nil
+	case cloudflaretunnel.FieldConnections:
+		m.ResetConnections()
+		return nil
+	case cloudflaretunnel.FieldConnsActiveAt:
+		m.ResetConnsActiveAt()
+		return nil
+	case cloudflaretunnel.FieldConnsInactiveAt:
+		m.ResetConnsInactiveAt()
+		return nil
 	case cloudflaretunnel.FieldName:
 		m.ResetName()
 		return nil
 	case cloudflaretunnel.FieldStatus:
 		m.ResetStatus()
 		return nil
-	case cloudflaretunnel.FieldConnections:
-		m.ResetConnections()
-		return nil
-	case cloudflaretunnel.FieldConnsActiveAt:
-		m.ResetConnsActiveAt()
+	case cloudflaretunnel.FieldTunType:
+		m.ResetTunType()
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnel field %s", name)
@@ -9802,12 +9948,22 @@ type EdgeOneZoneMutation struct {
 	remote_created_at          *time.Time
 	sync_at                    *time.Time
 	zone_id                    *string
-	name                       *string
+	zone_name                  *string
+	alias_zone_name            *string
 	area                       *edgeonezone.Area
 	_type                      *edgeonezone.Type
+	resources                  *json.RawMessage
+	appendresources            json.RawMessage
+	ns_detail                  *json.RawMessage
+	appendns_detail            json.RawMessage
+	cname_detail               *json.RawMessage
+	appendcname_detail         json.RawMessage
+	dnspod_detail              *json.RawMessage
+	appenddnspod_detail        json.RawMessage
 	status                     *edgeonezone.Status
 	cname_status               *edgeonezone.CnameStatus
 	active_status              *edgeonezone.ActiveStatus
+	lock_status                *edgeonezone.LockStatus
 	paused                     *bool
 	clearedFields              map[string]struct{}
 	_config                    *int64
@@ -10172,53 +10328,102 @@ func (m *EdgeOneZoneMutation) ResetZoneID() {
 	m.zone_id = nil
 }
 
-// SetName sets the "name" field.
-func (m *EdgeOneZoneMutation) SetName(s string) {
-	m.name = &s
+// SetZoneName sets the "zone_name" field.
+func (m *EdgeOneZoneMutation) SetZoneName(s string) {
+	m.zone_name = &s
 }
 
-// Name returns the value of the "name" field in the mutation.
-func (m *EdgeOneZoneMutation) Name() (r string, exists bool) {
-	v := m.name
+// ZoneName returns the value of the "zone_name" field in the mutation.
+func (m *EdgeOneZoneMutation) ZoneName() (r string, exists bool) {
+	v := m.zone_name
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldName returns the old "name" field's value of the EdgeOneZone entity.
+// OldZoneName returns the old "zone_name" field's value of the EdgeOneZone entity.
 // If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneMutation) OldName(ctx context.Context) (v string, err error) {
+func (m *EdgeOneZoneMutation) OldZoneName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
+		return v, errors.New("OldZoneName is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
+		return v, errors.New("OldZoneName requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
+		return v, fmt.Errorf("querying old value for OldZoneName: %w", err)
 	}
-	return oldValue.Name, nil
+	return oldValue.ZoneName, nil
 }
 
-// ClearName clears the value of the "name" field.
-func (m *EdgeOneZoneMutation) ClearName() {
-	m.name = nil
-	m.clearedFields[edgeonezone.FieldName] = struct{}{}
+// ClearZoneName clears the value of the "zone_name" field.
+func (m *EdgeOneZoneMutation) ClearZoneName() {
+	m.zone_name = nil
+	m.clearedFields[edgeonezone.FieldZoneName] = struct{}{}
 }
 
-// NameCleared returns if the "name" field was cleared in this mutation.
-func (m *EdgeOneZoneMutation) NameCleared() bool {
-	_, ok := m.clearedFields[edgeonezone.FieldName]
+// ZoneNameCleared returns if the "zone_name" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) ZoneNameCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldZoneName]
 	return ok
 }
 
-// ResetName resets all changes to the "name" field.
-func (m *EdgeOneZoneMutation) ResetName() {
-	m.name = nil
-	delete(m.clearedFields, edgeonezone.FieldName)
+// ResetZoneName resets all changes to the "zone_name" field.
+func (m *EdgeOneZoneMutation) ResetZoneName() {
+	m.zone_name = nil
+	delete(m.clearedFields, edgeonezone.FieldZoneName)
+}
+
+// SetAliasZoneName sets the "alias_zone_name" field.
+func (m *EdgeOneZoneMutation) SetAliasZoneName(s string) {
+	m.alias_zone_name = &s
+}
+
+// AliasZoneName returns the value of the "alias_zone_name" field in the mutation.
+func (m *EdgeOneZoneMutation) AliasZoneName() (r string, exists bool) {
+	v := m.alias_zone_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAliasZoneName returns the old "alias_zone_name" field's value of the EdgeOneZone entity.
+// If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneMutation) OldAliasZoneName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAliasZoneName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAliasZoneName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAliasZoneName: %w", err)
+	}
+	return oldValue.AliasZoneName, nil
+}
+
+// ClearAliasZoneName clears the value of the "alias_zone_name" field.
+func (m *EdgeOneZoneMutation) ClearAliasZoneName() {
+	m.alias_zone_name = nil
+	m.clearedFields[edgeonezone.FieldAliasZoneName] = struct{}{}
+}
+
+// AliasZoneNameCleared returns if the "alias_zone_name" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) AliasZoneNameCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldAliasZoneName]
+	return ok
+}
+
+// ResetAliasZoneName resets all changes to the "alias_zone_name" field.
+func (m *EdgeOneZoneMutation) ResetAliasZoneName() {
+	m.alias_zone_name = nil
+	delete(m.clearedFields, edgeonezone.FieldAliasZoneName)
 }
 
 // SetArea sets the "area" field.
@@ -10317,6 +10522,266 @@ func (m *EdgeOneZoneMutation) TypeCleared() bool {
 func (m *EdgeOneZoneMutation) ResetType() {
 	m._type = nil
 	delete(m.clearedFields, edgeonezone.FieldType)
+}
+
+// SetResources sets the "resources" field.
+func (m *EdgeOneZoneMutation) SetResources(jm json.RawMessage) {
+	m.resources = &jm
+	m.appendresources = nil
+}
+
+// Resources returns the value of the "resources" field in the mutation.
+func (m *EdgeOneZoneMutation) Resources() (r json.RawMessage, exists bool) {
+	v := m.resources
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResources returns the old "resources" field's value of the EdgeOneZone entity.
+// If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneMutation) OldResources(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResources is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResources requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResources: %w", err)
+	}
+	return oldValue.Resources, nil
+}
+
+// AppendResources adds jm to the "resources" field.
+func (m *EdgeOneZoneMutation) AppendResources(jm json.RawMessage) {
+	m.appendresources = append(m.appendresources, jm...)
+}
+
+// AppendedResources returns the list of values that were appended to the "resources" field in this mutation.
+func (m *EdgeOneZoneMutation) AppendedResources() (json.RawMessage, bool) {
+	if len(m.appendresources) == 0 {
+		return nil, false
+	}
+	return m.appendresources, true
+}
+
+// ClearResources clears the value of the "resources" field.
+func (m *EdgeOneZoneMutation) ClearResources() {
+	m.resources = nil
+	m.appendresources = nil
+	m.clearedFields[edgeonezone.FieldResources] = struct{}{}
+}
+
+// ResourcesCleared returns if the "resources" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) ResourcesCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldResources]
+	return ok
+}
+
+// ResetResources resets all changes to the "resources" field.
+func (m *EdgeOneZoneMutation) ResetResources() {
+	m.resources = nil
+	m.appendresources = nil
+	delete(m.clearedFields, edgeonezone.FieldResources)
+}
+
+// SetNsDetail sets the "ns_detail" field.
+func (m *EdgeOneZoneMutation) SetNsDetail(jm json.RawMessage) {
+	m.ns_detail = &jm
+	m.appendns_detail = nil
+}
+
+// NsDetail returns the value of the "ns_detail" field in the mutation.
+func (m *EdgeOneZoneMutation) NsDetail() (r json.RawMessage, exists bool) {
+	v := m.ns_detail
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNsDetail returns the old "ns_detail" field's value of the EdgeOneZone entity.
+// If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneMutation) OldNsDetail(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNsDetail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNsDetail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNsDetail: %w", err)
+	}
+	return oldValue.NsDetail, nil
+}
+
+// AppendNsDetail adds jm to the "ns_detail" field.
+func (m *EdgeOneZoneMutation) AppendNsDetail(jm json.RawMessage) {
+	m.appendns_detail = append(m.appendns_detail, jm...)
+}
+
+// AppendedNsDetail returns the list of values that were appended to the "ns_detail" field in this mutation.
+func (m *EdgeOneZoneMutation) AppendedNsDetail() (json.RawMessage, bool) {
+	if len(m.appendns_detail) == 0 {
+		return nil, false
+	}
+	return m.appendns_detail, true
+}
+
+// ClearNsDetail clears the value of the "ns_detail" field.
+func (m *EdgeOneZoneMutation) ClearNsDetail() {
+	m.ns_detail = nil
+	m.appendns_detail = nil
+	m.clearedFields[edgeonezone.FieldNsDetail] = struct{}{}
+}
+
+// NsDetailCleared returns if the "ns_detail" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) NsDetailCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldNsDetail]
+	return ok
+}
+
+// ResetNsDetail resets all changes to the "ns_detail" field.
+func (m *EdgeOneZoneMutation) ResetNsDetail() {
+	m.ns_detail = nil
+	m.appendns_detail = nil
+	delete(m.clearedFields, edgeonezone.FieldNsDetail)
+}
+
+// SetCnameDetail sets the "cname_detail" field.
+func (m *EdgeOneZoneMutation) SetCnameDetail(jm json.RawMessage) {
+	m.cname_detail = &jm
+	m.appendcname_detail = nil
+}
+
+// CnameDetail returns the value of the "cname_detail" field in the mutation.
+func (m *EdgeOneZoneMutation) CnameDetail() (r json.RawMessage, exists bool) {
+	v := m.cname_detail
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCnameDetail returns the old "cname_detail" field's value of the EdgeOneZone entity.
+// If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneMutation) OldCnameDetail(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCnameDetail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCnameDetail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCnameDetail: %w", err)
+	}
+	return oldValue.CnameDetail, nil
+}
+
+// AppendCnameDetail adds jm to the "cname_detail" field.
+func (m *EdgeOneZoneMutation) AppendCnameDetail(jm json.RawMessage) {
+	m.appendcname_detail = append(m.appendcname_detail, jm...)
+}
+
+// AppendedCnameDetail returns the list of values that were appended to the "cname_detail" field in this mutation.
+func (m *EdgeOneZoneMutation) AppendedCnameDetail() (json.RawMessage, bool) {
+	if len(m.appendcname_detail) == 0 {
+		return nil, false
+	}
+	return m.appendcname_detail, true
+}
+
+// ClearCnameDetail clears the value of the "cname_detail" field.
+func (m *EdgeOneZoneMutation) ClearCnameDetail() {
+	m.cname_detail = nil
+	m.appendcname_detail = nil
+	m.clearedFields[edgeonezone.FieldCnameDetail] = struct{}{}
+}
+
+// CnameDetailCleared returns if the "cname_detail" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) CnameDetailCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldCnameDetail]
+	return ok
+}
+
+// ResetCnameDetail resets all changes to the "cname_detail" field.
+func (m *EdgeOneZoneMutation) ResetCnameDetail() {
+	m.cname_detail = nil
+	m.appendcname_detail = nil
+	delete(m.clearedFields, edgeonezone.FieldCnameDetail)
+}
+
+// SetDnspodDetail sets the "dnspod_detail" field.
+func (m *EdgeOneZoneMutation) SetDnspodDetail(jm json.RawMessage) {
+	m.dnspod_detail = &jm
+	m.appenddnspod_detail = nil
+}
+
+// DnspodDetail returns the value of the "dnspod_detail" field in the mutation.
+func (m *EdgeOneZoneMutation) DnspodDetail() (r json.RawMessage, exists bool) {
+	v := m.dnspod_detail
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDnspodDetail returns the old "dnspod_detail" field's value of the EdgeOneZone entity.
+// If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneMutation) OldDnspodDetail(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDnspodDetail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDnspodDetail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDnspodDetail: %w", err)
+	}
+	return oldValue.DnspodDetail, nil
+}
+
+// AppendDnspodDetail adds jm to the "dnspod_detail" field.
+func (m *EdgeOneZoneMutation) AppendDnspodDetail(jm json.RawMessage) {
+	m.appenddnspod_detail = append(m.appenddnspod_detail, jm...)
+}
+
+// AppendedDnspodDetail returns the list of values that were appended to the "dnspod_detail" field in this mutation.
+func (m *EdgeOneZoneMutation) AppendedDnspodDetail() (json.RawMessage, bool) {
+	if len(m.appenddnspod_detail) == 0 {
+		return nil, false
+	}
+	return m.appenddnspod_detail, true
+}
+
+// ClearDnspodDetail clears the value of the "dnspod_detail" field.
+func (m *EdgeOneZoneMutation) ClearDnspodDetail() {
+	m.dnspod_detail = nil
+	m.appenddnspod_detail = nil
+	m.clearedFields[edgeonezone.FieldDnspodDetail] = struct{}{}
+}
+
+// DnspodDetailCleared returns if the "dnspod_detail" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) DnspodDetailCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldDnspodDetail]
+	return ok
+}
+
+// ResetDnspodDetail resets all changes to the "dnspod_detail" field.
+func (m *EdgeOneZoneMutation) ResetDnspodDetail() {
+	m.dnspod_detail = nil
+	m.appenddnspod_detail = nil
+	delete(m.clearedFields, edgeonezone.FieldDnspodDetail)
 }
 
 // SetStatus sets the "status" field.
@@ -10464,6 +10929,55 @@ func (m *EdgeOneZoneMutation) ActiveStatusCleared() bool {
 func (m *EdgeOneZoneMutation) ResetActiveStatus() {
 	m.active_status = nil
 	delete(m.clearedFields, edgeonezone.FieldActiveStatus)
+}
+
+// SetLockStatus sets the "lock_status" field.
+func (m *EdgeOneZoneMutation) SetLockStatus(es edgeonezone.LockStatus) {
+	m.lock_status = &es
+}
+
+// LockStatus returns the value of the "lock_status" field in the mutation.
+func (m *EdgeOneZoneMutation) LockStatus() (r edgeonezone.LockStatus, exists bool) {
+	v := m.lock_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLockStatus returns the old "lock_status" field's value of the EdgeOneZone entity.
+// If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneMutation) OldLockStatus(ctx context.Context) (v edgeonezone.LockStatus, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLockStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLockStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLockStatus: %w", err)
+	}
+	return oldValue.LockStatus, nil
+}
+
+// ClearLockStatus clears the value of the "lock_status" field.
+func (m *EdgeOneZoneMutation) ClearLockStatus() {
+	m.lock_status = nil
+	m.clearedFields[edgeonezone.FieldLockStatus] = struct{}{}
+}
+
+// LockStatusCleared returns if the "lock_status" field was cleared in this mutation.
+func (m *EdgeOneZoneMutation) LockStatusCleared() bool {
+	_, ok := m.clearedFields[edgeonezone.FieldLockStatus]
+	return ok
+}
+
+// ResetLockStatus resets all changes to the "lock_status" field.
+func (m *EdgeOneZoneMutation) ResetLockStatus() {
+	m.lock_status = nil
+	delete(m.clearedFields, edgeonezone.FieldLockStatus)
 }
 
 // SetPaused sets the "paused" field.
@@ -10738,7 +11252,7 @@ func (m *EdgeOneZoneMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EdgeOneZoneMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, edgeonezone.FieldCreatedAt)
 	}
@@ -10757,14 +11271,29 @@ func (m *EdgeOneZoneMutation) Fields() []string {
 	if m.zone_id != nil {
 		fields = append(fields, edgeonezone.FieldZoneID)
 	}
-	if m.name != nil {
-		fields = append(fields, edgeonezone.FieldName)
+	if m.zone_name != nil {
+		fields = append(fields, edgeonezone.FieldZoneName)
+	}
+	if m.alias_zone_name != nil {
+		fields = append(fields, edgeonezone.FieldAliasZoneName)
 	}
 	if m.area != nil {
 		fields = append(fields, edgeonezone.FieldArea)
 	}
 	if m._type != nil {
 		fields = append(fields, edgeonezone.FieldType)
+	}
+	if m.resources != nil {
+		fields = append(fields, edgeonezone.FieldResources)
+	}
+	if m.ns_detail != nil {
+		fields = append(fields, edgeonezone.FieldNsDetail)
+	}
+	if m.cname_detail != nil {
+		fields = append(fields, edgeonezone.FieldCnameDetail)
+	}
+	if m.dnspod_detail != nil {
+		fields = append(fields, edgeonezone.FieldDnspodDetail)
 	}
 	if m.status != nil {
 		fields = append(fields, edgeonezone.FieldStatus)
@@ -10774,6 +11303,9 @@ func (m *EdgeOneZoneMutation) Fields() []string {
 	}
 	if m.active_status != nil {
 		fields = append(fields, edgeonezone.FieldActiveStatus)
+	}
+	if m.lock_status != nil {
+		fields = append(fields, edgeonezone.FieldLockStatus)
 	}
 	if m.paused != nil {
 		fields = append(fields, edgeonezone.FieldPaused)
@@ -10798,18 +11330,30 @@ func (m *EdgeOneZoneMutation) Field(name string) (ent.Value, bool) {
 		return m.ConfigID()
 	case edgeonezone.FieldZoneID:
 		return m.ZoneID()
-	case edgeonezone.FieldName:
-		return m.Name()
+	case edgeonezone.FieldZoneName:
+		return m.ZoneName()
+	case edgeonezone.FieldAliasZoneName:
+		return m.AliasZoneName()
 	case edgeonezone.FieldArea:
 		return m.Area()
 	case edgeonezone.FieldType:
 		return m.GetType()
+	case edgeonezone.FieldResources:
+		return m.Resources()
+	case edgeonezone.FieldNsDetail:
+		return m.NsDetail()
+	case edgeonezone.FieldCnameDetail:
+		return m.CnameDetail()
+	case edgeonezone.FieldDnspodDetail:
+		return m.DnspodDetail()
 	case edgeonezone.FieldStatus:
 		return m.Status()
 	case edgeonezone.FieldCnameStatus:
 		return m.CnameStatus()
 	case edgeonezone.FieldActiveStatus:
 		return m.ActiveStatus()
+	case edgeonezone.FieldLockStatus:
+		return m.LockStatus()
 	case edgeonezone.FieldPaused:
 		return m.Paused()
 	}
@@ -10833,18 +11377,30 @@ func (m *EdgeOneZoneMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldConfigID(ctx)
 	case edgeonezone.FieldZoneID:
 		return m.OldZoneID(ctx)
-	case edgeonezone.FieldName:
-		return m.OldName(ctx)
+	case edgeonezone.FieldZoneName:
+		return m.OldZoneName(ctx)
+	case edgeonezone.FieldAliasZoneName:
+		return m.OldAliasZoneName(ctx)
 	case edgeonezone.FieldArea:
 		return m.OldArea(ctx)
 	case edgeonezone.FieldType:
 		return m.OldType(ctx)
+	case edgeonezone.FieldResources:
+		return m.OldResources(ctx)
+	case edgeonezone.FieldNsDetail:
+		return m.OldNsDetail(ctx)
+	case edgeonezone.FieldCnameDetail:
+		return m.OldCnameDetail(ctx)
+	case edgeonezone.FieldDnspodDetail:
+		return m.OldDnspodDetail(ctx)
 	case edgeonezone.FieldStatus:
 		return m.OldStatus(ctx)
 	case edgeonezone.FieldCnameStatus:
 		return m.OldCnameStatus(ctx)
 	case edgeonezone.FieldActiveStatus:
 		return m.OldActiveStatus(ctx)
+	case edgeonezone.FieldLockStatus:
+		return m.OldLockStatus(ctx)
 	case edgeonezone.FieldPaused:
 		return m.OldPaused(ctx)
 	}
@@ -10898,12 +11454,19 @@ func (m *EdgeOneZoneMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetZoneID(v)
 		return nil
-	case edgeonezone.FieldName:
+	case edgeonezone.FieldZoneName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetName(v)
+		m.SetZoneName(v)
+		return nil
+	case edgeonezone.FieldAliasZoneName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAliasZoneName(v)
 		return nil
 	case edgeonezone.FieldArea:
 		v, ok := value.(edgeonezone.Area)
@@ -10918,6 +11481,34 @@ func (m *EdgeOneZoneMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetType(v)
+		return nil
+	case edgeonezone.FieldResources:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResources(v)
+		return nil
+	case edgeonezone.FieldNsDetail:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNsDetail(v)
+		return nil
+	case edgeonezone.FieldCnameDetail:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCnameDetail(v)
+		return nil
+	case edgeonezone.FieldDnspodDetail:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDnspodDetail(v)
 		return nil
 	case edgeonezone.FieldStatus:
 		v, ok := value.(edgeonezone.Status)
@@ -10939,6 +11530,13 @@ func (m *EdgeOneZoneMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetActiveStatus(v)
+		return nil
+	case edgeonezone.FieldLockStatus:
+		v, ok := value.(edgeonezone.LockStatus)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLockStatus(v)
 		return nil
 	case edgeonezone.FieldPaused:
 		v, ok := value.(bool)
@@ -10986,14 +11584,29 @@ func (m *EdgeOneZoneMutation) ClearedFields() []string {
 	if m.FieldCleared(edgeonezone.FieldSyncAt) {
 		fields = append(fields, edgeonezone.FieldSyncAt)
 	}
-	if m.FieldCleared(edgeonezone.FieldName) {
-		fields = append(fields, edgeonezone.FieldName)
+	if m.FieldCleared(edgeonezone.FieldZoneName) {
+		fields = append(fields, edgeonezone.FieldZoneName)
+	}
+	if m.FieldCleared(edgeonezone.FieldAliasZoneName) {
+		fields = append(fields, edgeonezone.FieldAliasZoneName)
 	}
 	if m.FieldCleared(edgeonezone.FieldArea) {
 		fields = append(fields, edgeonezone.FieldArea)
 	}
 	if m.FieldCleared(edgeonezone.FieldType) {
 		fields = append(fields, edgeonezone.FieldType)
+	}
+	if m.FieldCleared(edgeonezone.FieldResources) {
+		fields = append(fields, edgeonezone.FieldResources)
+	}
+	if m.FieldCleared(edgeonezone.FieldNsDetail) {
+		fields = append(fields, edgeonezone.FieldNsDetail)
+	}
+	if m.FieldCleared(edgeonezone.FieldCnameDetail) {
+		fields = append(fields, edgeonezone.FieldCnameDetail)
+	}
+	if m.FieldCleared(edgeonezone.FieldDnspodDetail) {
+		fields = append(fields, edgeonezone.FieldDnspodDetail)
 	}
 	if m.FieldCleared(edgeonezone.FieldStatus) {
 		fields = append(fields, edgeonezone.FieldStatus)
@@ -11003,6 +11616,9 @@ func (m *EdgeOneZoneMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(edgeonezone.FieldActiveStatus) {
 		fields = append(fields, edgeonezone.FieldActiveStatus)
+	}
+	if m.FieldCleared(edgeonezone.FieldLockStatus) {
+		fields = append(fields, edgeonezone.FieldLockStatus)
 	}
 	if m.FieldCleared(edgeonezone.FieldPaused) {
 		fields = append(fields, edgeonezone.FieldPaused)
@@ -11027,14 +11643,29 @@ func (m *EdgeOneZoneMutation) ClearField(name string) error {
 	case edgeonezone.FieldSyncAt:
 		m.ClearSyncAt()
 		return nil
-	case edgeonezone.FieldName:
-		m.ClearName()
+	case edgeonezone.FieldZoneName:
+		m.ClearZoneName()
+		return nil
+	case edgeonezone.FieldAliasZoneName:
+		m.ClearAliasZoneName()
 		return nil
 	case edgeonezone.FieldArea:
 		m.ClearArea()
 		return nil
 	case edgeonezone.FieldType:
 		m.ClearType()
+		return nil
+	case edgeonezone.FieldResources:
+		m.ClearResources()
+		return nil
+	case edgeonezone.FieldNsDetail:
+		m.ClearNsDetail()
+		return nil
+	case edgeonezone.FieldCnameDetail:
+		m.ClearCnameDetail()
+		return nil
+	case edgeonezone.FieldDnspodDetail:
+		m.ClearDnspodDetail()
 		return nil
 	case edgeonezone.FieldStatus:
 		m.ClearStatus()
@@ -11044,6 +11675,9 @@ func (m *EdgeOneZoneMutation) ClearField(name string) error {
 		return nil
 	case edgeonezone.FieldActiveStatus:
 		m.ClearActiveStatus()
+		return nil
+	case edgeonezone.FieldLockStatus:
+		m.ClearLockStatus()
 		return nil
 	case edgeonezone.FieldPaused:
 		m.ClearPaused()
@@ -11074,14 +11708,29 @@ func (m *EdgeOneZoneMutation) ResetField(name string) error {
 	case edgeonezone.FieldZoneID:
 		m.ResetZoneID()
 		return nil
-	case edgeonezone.FieldName:
-		m.ResetName()
+	case edgeonezone.FieldZoneName:
+		m.ResetZoneName()
+		return nil
+	case edgeonezone.FieldAliasZoneName:
+		m.ResetAliasZoneName()
 		return nil
 	case edgeonezone.FieldArea:
 		m.ResetArea()
 		return nil
 	case edgeonezone.FieldType:
 		m.ResetType()
+		return nil
+	case edgeonezone.FieldResources:
+		m.ResetResources()
+		return nil
+	case edgeonezone.FieldNsDetail:
+		m.ResetNsDetail()
+		return nil
+	case edgeonezone.FieldCnameDetail:
+		m.ResetCnameDetail()
+		return nil
+	case edgeonezone.FieldDnspodDetail:
+		m.ResetDnspodDetail()
 		return nil
 	case edgeonezone.FieldStatus:
 		m.ResetStatus()
@@ -11091,6 +11740,9 @@ func (m *EdgeOneZoneMutation) ResetField(name string) error {
 		return nil
 	case edgeonezone.FieldActiveStatus:
 		m.ResetActiveStatus()
+		return nil
+	case edgeonezone.FieldLockStatus:
+		m.ResetLockStatus()
 		return nil
 	case edgeonezone.FieldPaused:
 		m.ResetPaused()
@@ -14205,6 +14857,7 @@ type EdgeOneZoneOriginGroupMutation struct {
 	appendrecords       json.RawMessage
 	references          *json.RawMessage
 	appendreferences    json.RawMessage
+	host_header         *string
 	clearedFields       map[string]struct{}
 	edgeone_zone        *int64
 	clearededgeone_zone bool
@@ -14787,6 +15440,55 @@ func (m *EdgeOneZoneOriginGroupMutation) ResetReferences() {
 	delete(m.clearedFields, edgeonezoneorigingroup.FieldReferences)
 }
 
+// SetHostHeader sets the "host_header" field.
+func (m *EdgeOneZoneOriginGroupMutation) SetHostHeader(s string) {
+	m.host_header = &s
+}
+
+// HostHeader returns the value of the "host_header" field in the mutation.
+func (m *EdgeOneZoneOriginGroupMutation) HostHeader() (r string, exists bool) {
+	v := m.host_header
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHostHeader returns the old "host_header" field's value of the EdgeOneZoneOriginGroup entity.
+// If the EdgeOneZoneOriginGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneOriginGroupMutation) OldHostHeader(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHostHeader is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHostHeader requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHostHeader: %w", err)
+	}
+	return oldValue.HostHeader, nil
+}
+
+// ClearHostHeader clears the value of the "host_header" field.
+func (m *EdgeOneZoneOriginGroupMutation) ClearHostHeader() {
+	m.host_header = nil
+	m.clearedFields[edgeonezoneorigingroup.FieldHostHeader] = struct{}{}
+}
+
+// HostHeaderCleared returns if the "host_header" field was cleared in this mutation.
+func (m *EdgeOneZoneOriginGroupMutation) HostHeaderCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneorigingroup.FieldHostHeader]
+	return ok
+}
+
+// ResetHostHeader resets all changes to the "host_header" field.
+func (m *EdgeOneZoneOriginGroupMutation) ResetHostHeader() {
+	m.host_header = nil
+	delete(m.clearedFields, edgeonezoneorigingroup.FieldHostHeader)
+}
+
 // ClearEdgeoneZone clears the "edgeone_zone" edge to the EdgeOneZone entity.
 func (m *EdgeOneZoneOriginGroupMutation) ClearEdgeoneZone() {
 	m.clearededgeone_zone = true
@@ -14848,7 +15550,7 @@ func (m *EdgeOneZoneOriginGroupMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EdgeOneZoneOriginGroupMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, edgeonezoneorigingroup.FieldCreatedAt)
 	}
@@ -14879,6 +15581,9 @@ func (m *EdgeOneZoneOriginGroupMutation) Fields() []string {
 	if m.references != nil {
 		fields = append(fields, edgeonezoneorigingroup.FieldReferences)
 	}
+	if m.host_header != nil {
+		fields = append(fields, edgeonezoneorigingroup.FieldHostHeader)
+	}
 	return fields
 }
 
@@ -14907,6 +15612,8 @@ func (m *EdgeOneZoneOriginGroupMutation) Field(name string) (ent.Value, bool) {
 		return m.Records()
 	case edgeonezoneorigingroup.FieldReferences:
 		return m.References()
+	case edgeonezoneorigingroup.FieldHostHeader:
+		return m.HostHeader()
 	}
 	return nil, false
 }
@@ -14936,6 +15643,8 @@ func (m *EdgeOneZoneOriginGroupMutation) OldField(ctx context.Context, name stri
 		return m.OldRecords(ctx)
 	case edgeonezoneorigingroup.FieldReferences:
 		return m.OldReferences(ctx)
+	case edgeonezoneorigingroup.FieldHostHeader:
+		return m.OldHostHeader(ctx)
 	}
 	return nil, fmt.Errorf("unknown EdgeOneZoneOriginGroup field %s", name)
 }
@@ -15015,6 +15724,13 @@ func (m *EdgeOneZoneOriginGroupMutation) SetField(name string, value ent.Value) 
 		}
 		m.SetReferences(v)
 		return nil
+	case edgeonezoneorigingroup.FieldHostHeader:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHostHeader(v)
+		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZoneOriginGroup field %s", name)
 }
@@ -15066,6 +15782,9 @@ func (m *EdgeOneZoneOriginGroupMutation) ClearedFields() []string {
 	if m.FieldCleared(edgeonezoneorigingroup.FieldReferences) {
 		fields = append(fields, edgeonezoneorigingroup.FieldReferences)
 	}
+	if m.FieldCleared(edgeonezoneorigingroup.FieldHostHeader) {
+		fields = append(fields, edgeonezoneorigingroup.FieldHostHeader)
+	}
 	return fields
 }
 
@@ -15097,6 +15816,9 @@ func (m *EdgeOneZoneOriginGroupMutation) ClearField(name string) error {
 		return nil
 	case edgeonezoneorigingroup.FieldReferences:
 		m.ClearReferences()
+		return nil
+	case edgeonezoneorigingroup.FieldHostHeader:
+		m.ClearHostHeader()
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZoneOriginGroup nullable field %s", name)
@@ -15135,6 +15857,9 @@ func (m *EdgeOneZoneOriginGroupMutation) ResetField(name string) error {
 		return nil
 	case edgeonezoneorigingroup.FieldReferences:
 		m.ResetReferences()
+		return nil
+	case edgeonezoneorigingroup.FieldHostHeader:
+		m.ResetHostHeader()
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZoneOriginGroup field %s", name)

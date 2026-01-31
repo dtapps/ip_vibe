@@ -127,6 +127,26 @@ func (_u *EdgeOneZoneOriginGroupUpdate) ClearReferences() *EdgeOneZoneOriginGrou
 	return _u
 }
 
+// SetHostHeader sets the "host_header" field.
+func (_u *EdgeOneZoneOriginGroupUpdate) SetHostHeader(v string) *EdgeOneZoneOriginGroupUpdate {
+	_u.mutation.SetHostHeader(v)
+	return _u
+}
+
+// SetNillableHostHeader sets the "host_header" field if the given value is not nil.
+func (_u *EdgeOneZoneOriginGroupUpdate) SetNillableHostHeader(v *string) *EdgeOneZoneOriginGroupUpdate {
+	if v != nil {
+		_u.SetHostHeader(*v)
+	}
+	return _u
+}
+
+// ClearHostHeader clears the value of the "host_header" field.
+func (_u *EdgeOneZoneOriginGroupUpdate) ClearHostHeader() *EdgeOneZoneOriginGroupUpdate {
+	_u.mutation.ClearHostHeader()
+	return _u
+}
+
 // Mutation returns the EdgeOneZoneOriginGroupMutation object of the builder.
 func (_u *EdgeOneZoneOriginGroupUpdate) Mutation() *EdgeOneZoneOriginGroupMutation {
 	return _u.mutation
@@ -251,6 +271,12 @@ func (_u *EdgeOneZoneOriginGroupUpdate) sqlSave(ctx context.Context) (_node int,
 	if _u.mutation.ReferencesCleared() {
 		_spec.ClearField(edgeonezoneorigingroup.FieldReferences, field.TypeJSON)
 	}
+	if value, ok := _u.mutation.HostHeader(); ok {
+		_spec.SetField(edgeonezoneorigingroup.FieldHostHeader, field.TypeString, value)
+	}
+	if _u.mutation.HostHeaderCleared() {
+		_spec.ClearField(edgeonezoneorigingroup.FieldHostHeader, field.TypeString)
+	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -366,6 +392,26 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) AppendReferences(v json.RawMessage) *
 // ClearReferences clears the value of the "references" field.
 func (_u *EdgeOneZoneOriginGroupUpdateOne) ClearReferences() *EdgeOneZoneOriginGroupUpdateOne {
 	_u.mutation.ClearReferences()
+	return _u
+}
+
+// SetHostHeader sets the "host_header" field.
+func (_u *EdgeOneZoneOriginGroupUpdateOne) SetHostHeader(v string) *EdgeOneZoneOriginGroupUpdateOne {
+	_u.mutation.SetHostHeader(v)
+	return _u
+}
+
+// SetNillableHostHeader sets the "host_header" field if the given value is not nil.
+func (_u *EdgeOneZoneOriginGroupUpdateOne) SetNillableHostHeader(v *string) *EdgeOneZoneOriginGroupUpdateOne {
+	if v != nil {
+		_u.SetHostHeader(*v)
+	}
+	return _u
+}
+
+// ClearHostHeader clears the value of the "host_header" field.
+func (_u *EdgeOneZoneOriginGroupUpdateOne) ClearHostHeader() *EdgeOneZoneOriginGroupUpdateOne {
+	_u.mutation.ClearHostHeader()
 	return _u
 }
 
@@ -522,6 +568,12 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) sqlSave(ctx context.Context) (_node *
 	}
 	if _u.mutation.ReferencesCleared() {
 		_spec.ClearField(edgeonezoneorigingroup.FieldReferences, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.HostHeader(); ok {
+		_spec.SetField(edgeonezoneorigingroup.FieldHostHeader, field.TypeString, value)
+	}
+	if _u.mutation.HostHeaderCleared() {
+		_spec.ClearField(edgeonezoneorigingroup.FieldHostHeader, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &EdgeOneZoneOriginGroup{config: _u.config}

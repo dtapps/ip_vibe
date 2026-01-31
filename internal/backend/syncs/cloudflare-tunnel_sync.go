@@ -143,28 +143,36 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 				return fmt.Errorf("查询隧道记录失败: %w", err)
 			}
 			// 创建隧道记录
-			err = s.db.CloudflareTunnel.Create().
-				SetRemoteCreatedAt(connector.CreatedAt).
-				SetSyncAt(time.Now()).
-				SetConfigID(firstPlatformCofing.ID).
-				SetTunnelID(connector.ID).
-				SetName(connector.Name).
-				SetStatus(cloudflaretunnel.Status(connector.Status)).
-				SetConnections([]byte(gojson.JsonEncodeNoError(connector.Connections))).
-				SetConnsActiveAt(connector.ConnsActiveAt).
-				Exec(ctx)
+			createOne := s.db.CloudflareTunnel.Create()
+			createOne.SetRemoteCreatedAt(connector.CreatedAt)
+			createOne.SetSyncAt(time.Now())
+			createOne.SetConfigID(firstPlatformCofing.ID)
+			createOne.SetTunnelID(connector.ID)
+			createOne.SetConnections(json.RawMessage(gojson.JsonEncodeNoError(connector.Connections)))
+			createOne.SetConnsActiveAt(connector.ConnsActiveAt)
+			createOne.SetConnsInactiveAt(connector.ConnsInactiveAt)
+			createOne.SetName(connector.Name)
+			createOne.SetStatus(cloudflaretunnel.Status(connector.Status))
+			if connector.TunType != "" {
+				createOne.SetTunType(cloudflaretunnel.TunType(connector.TunType))
+			}
+			err = createOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("创建隧道记录失败: %w", err)
 			}
 		} else {
 			// 更新隧道记录
-			err = s.db.CloudflareTunnel.UpdateOne(firstTunnel).
-				SetSyncAt(time.Now()).
-				SetName(connector.Name).
-				SetStatus(cloudflaretunnel.Status(connector.Status)).
-				SetConnections([]byte(gojson.JsonEncodeNoError(connector.Connections))).
-				SetConnsActiveAt(connector.ConnsActiveAt).
-				Exec(ctx)
+			updateOne := s.db.CloudflareTunnel.UpdateOne(firstTunnel)
+			updateOne.SetSyncAt(time.Now())
+			updateOne.SetConnections(json.RawMessage(gojson.JsonEncodeNoError(connector.Connections)))
+			updateOne.SetConnsActiveAt(connector.ConnsActiveAt)
+			updateOne.SetConnsInactiveAt(connector.ConnsInactiveAt)
+			updateOne.SetName(connector.Name)
+			updateOne.SetStatus(cloudflaretunnel.Status(connector.Status))
+			if connector.TunType != "" {
+				updateOne.SetTunType(cloudflaretunnel.TunType(connector.TunType))
+			}
+			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新隧道记录失败: %w", err)
 			}
@@ -252,14 +260,16 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnelIngresses(ctx context.Con
 			// 批量创建Cloudflare隧道入站规则
 			createBulkList := make([]*ent.CloudflareTunnelIngressCreate, 0, len(ingresses))
 			for _, ingress := range ingresses {
-				createBulkList = append(createBulkList,
-					s.db.CloudflareTunnelIngress.Create().
-						SetSyncAt(time.Now()).
-						SetCloudflareTunnelID(itemCloudflareTunnel.ID).
-						SetHostname(ingress.Hostname).
-						SetService(ingress.Service).
-						SetPath(ingress.Path).
-						SetOriginRequest([]byte(gojson.JsonEncodeNoError(ingress.OriginRequest))),
+				createOne := s.db.CloudflareTunnelIngress.Create()
+				createOne.SetSyncAt(time.Now())
+				createOne.SetCloudflareTunnelID(itemCloudflareTunnel.ID)
+				createOne.SetHostname(ingress.Hostname)
+				createOne.SetService(ingress.Service)
+				createOne.SetPath(ingress.Path)
+				createOne.SetOriginRequest([]byte(gojson.JsonEncodeNoError(ingress.OriginRequest)))
+				createBulkList = append(
+					createBulkList,
+					createOne,
 				)
 			}
 			if len(createBulkList) > 0 {
@@ -325,14 +335,16 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareThisTunnelIngresses(ctx context
 	// 批量创建Cloudflare隧道入站规则
 	createBulkList := make([]*ent.CloudflareTunnelIngressCreate, 0, len(ingresses))
 	for _, ingress := range ingresses {
-		createBulkList = append(createBulkList,
-			s.db.CloudflareTunnelIngress.Create().
-				SetSyncAt(time.Now()).
-				SetCloudflareTunnelID(firstCloudflareTunnel.ID).
-				SetHostname(ingress.Hostname).
-				SetService(ingress.Service).
-				SetPath(ingress.Path).
-				SetOriginRequest([]byte(gojson.JsonEncodeNoError(ingress.OriginRequest))),
+		createOne := s.db.CloudflareTunnelIngress.Create()
+		createOne.SetSyncAt(time.Now())
+		createOne.SetCloudflareTunnelID(firstCloudflareTunnel.ID)
+		createOne.SetHostname(ingress.Hostname)
+		createOne.SetService(ingress.Service)
+		createOne.SetPath(ingress.Path)
+		createOne.SetOriginRequest([]byte(gojson.JsonEncodeNoError(ingress.OriginRequest)))
+		createBulkList = append(
+			createBulkList,
+			createOne,
 		)
 	}
 	if len(createBulkList) > 0 {

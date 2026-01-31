@@ -705,7 +705,7 @@ const (
 	CloudflareTunnelStatusDown     string = "down"     // 下线
 )
 
-// GetCloudflareTunnelStatusDescriptions 隧道状态说明映射
+// GetCloudflareTunnelStatusDescriptions 隧道状态 说明映射
 var GetCloudflareTunnelStatusDescriptions = map[string]string{
 	CloudflareTunnelStatusInactive: "活跃",
 	CloudflareTunnelStatusDegraded: "降级",
@@ -713,12 +713,44 @@ var GetCloudflareTunnelStatusDescriptions = map[string]string{
 	CloudflareTunnelStatusDown:     "下线",
 }
 
-// GetCloudflareTunnelStatuss 返回所有隧道状态
+// GetCloudflareTunnelStatuss 返回所有 隧道状态
 var GetCloudflareTunnelStatuss = []string{
 	CloudflareTunnelStatusInactive,
 	CloudflareTunnelStatusDegraded,
 	CloudflareTunnelStatusHealthy,
 	CloudflareTunnelStatusDown,
+}
+
+const (
+	CloudflareTunnelTunTypeCfdTunnel     string = "cfd_tunnel"     // Cloudflare 隧道
+	CloudflareTunnelTunTypeWarpConnector string = "warp_connector" // Warp 连接器
+	CloudflareTunnelTunTypeWarp          string = "warp"           // Warp 隧道
+	CloudflareTunnelTunTypeMagic         string = "magic"          // Magic 隧道
+	CloudflareTunnelTunTypeIPSec         string = "ipsec"          // IPsec 隧道
+	CloudflareTunnelTunTypeGRE           string = "gre"            // GRE 隧道
+	CloudflareTunnelTunTypeCNI           string = "cni"            // CNI 隧道
+)
+
+// GetCloudflareTunnelTunTypeDescriptions 隧道类型 说明映射
+var GetCloudflareTunnelTunTypeDescriptions = map[string]string{
+	CloudflareTunnelTunTypeCfdTunnel:     "Cloudflare 隧道",
+	CloudflareTunnelTunTypeWarpConnector: "Warp 连接器",
+	CloudflareTunnelTunTypeWarp:          "Warp 隧道",
+	CloudflareTunnelTunTypeMagic:         "Magic 隧道",
+	CloudflareTunnelTunTypeIPSec:         "IPsec 隧道",
+	CloudflareTunnelTunTypeGRE:           "GRE 隧道",
+	CloudflareTunnelTunTypeCNI:           "CNI 隧道",
+}
+
+// GetCloudflareTunnelTunTypes 返回所有 隧道类型
+var GetCloudflareTunnelTunTypes = []string{
+	CloudflareTunnelTunTypeCfdTunnel,
+	CloudflareTunnelTunTypeWarpConnector,
+	CloudflareTunnelTunTypeWarp,
+	CloudflareTunnelTunTypeMagic,
+	CloudflareTunnelTunTypeIPSec,
+	CloudflareTunnelTunTypeGRE,
+	CloudflareTunnelTunTypeCNI,
 }
 
 // --------
@@ -830,6 +862,26 @@ var GetEdgeOneZoneActiveStatuss = []string{
 	EdgeOneZoneActiveStatusActive,
 	EdgeOneZoneActiveStatusInactive,
 	EdgeOneZoneActiveStatusPaused,
+}
+
+const (
+	EdgeOneZoneLockStatusEnable      string = "enable"       // 正常
+	EdgeOneZoneLockStatusDisable     string = "disable"      // 锁定中
+	EdgeOneZoneLockStatusPlanMigrate string = "plan_migrate" // 套餐迁移中
+)
+
+// GetEdgeOneZoneLockStatusDescriptions 锁定状态 说明映射
+var GetEdgeOneZoneLockStatusDescriptions = map[string]string{
+	EdgeOneZoneLockStatusEnable:      "正常",
+	EdgeOneZoneLockStatusDisable:     "锁定中",
+	EdgeOneZoneLockStatusPlanMigrate: "套餐迁移中",
+}
+
+// GetEdgeOneZoneLockStatuss 返回所有 锁定状态
+var GetEdgeOneZoneLockStatuss = []string{
+	EdgeOneZoneLockStatusEnable,
+	EdgeOneZoneLockStatusDisable,
+	EdgeOneZoneLockStatusPlanMigrate,
 }
 
 // --------

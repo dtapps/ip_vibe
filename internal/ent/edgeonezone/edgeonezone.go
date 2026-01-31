@@ -28,18 +28,30 @@ const (
 	FieldConfigID = "config_id"
 	// FieldZoneID holds the string denoting the zone_id field in the database.
 	FieldZoneID = "zone_id"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
+	// FieldZoneName holds the string denoting the zone_name field in the database.
+	FieldZoneName = "zone_name"
+	// FieldAliasZoneName holds the string denoting the alias_zone_name field in the database.
+	FieldAliasZoneName = "alias_zone_name"
 	// FieldArea holds the string denoting the area field in the database.
 	FieldArea = "area"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
+	// FieldResources holds the string denoting the resources field in the database.
+	FieldResources = "resources"
+	// FieldNsDetail holds the string denoting the ns_detail field in the database.
+	FieldNsDetail = "ns_detail"
+	// FieldCnameDetail holds the string denoting the cname_detail field in the database.
+	FieldCnameDetail = "cname_detail"
+	// FieldDnspodDetail holds the string denoting the dnspod_detail field in the database.
+	FieldDnspodDetail = "dnspod_detail"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldCnameStatus holds the string denoting the cname_status field in the database.
 	FieldCnameStatus = "cname_status"
 	// FieldActiveStatus holds the string denoting the active_status field in the database.
 	FieldActiveStatus = "active_status"
+	// FieldLockStatus holds the string denoting the lock_status field in the database.
+	FieldLockStatus = "lock_status"
 	// FieldPaused holds the string denoting the paused field in the database.
 	FieldPaused = "paused"
 	// EdgeConfig holds the string denoting the config edge name in mutations.
@@ -91,12 +103,18 @@ var Columns = []string{
 	FieldSyncAt,
 	FieldConfigID,
 	FieldZoneID,
-	FieldName,
+	FieldZoneName,
+	FieldAliasZoneName,
 	FieldArea,
 	FieldType,
+	FieldResources,
+	FieldNsDetail,
+	FieldCnameDetail,
+	FieldDnspodDetail,
 	FieldStatus,
 	FieldCnameStatus,
 	FieldActiveStatus,
+	FieldLockStatus,
 	FieldPaused,
 }
 
@@ -252,6 +270,30 @@ func ActiveStatusValidator(as ActiveStatus) error {
 	}
 }
 
+// LockStatus defines the type for the "lock_status" enum field.
+type LockStatus string
+
+// LockStatus values.
+const (
+	LockStatusEnable      LockStatus = "enable"
+	LockStatusDisable     LockStatus = "disable"
+	LockStatusPlanMigrate LockStatus = "plan_migrate"
+)
+
+func (ls LockStatus) String() string {
+	return string(ls)
+}
+
+// LockStatusValidator is a validator for the "lock_status" field enum values. It is called by the builders before save.
+func LockStatusValidator(ls LockStatus) error {
+	switch ls {
+	case LockStatusEnable, LockStatusDisable, LockStatusPlanMigrate:
+		return nil
+	default:
+		return fmt.Errorf("edgeonezone: invalid enum value for lock_status field: %q", ls)
+	}
+}
+
 // OrderOption defines the ordering options for the EdgeOneZone queries.
 type OrderOption func(*sql.Selector)
 
@@ -290,9 +332,14 @@ func ByZoneID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldZoneID, opts...).ToFunc()
 }
 
-// ByName orders the results by the name field.
-func ByName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldName, opts...).ToFunc()
+// ByZoneName orders the results by the zone_name field.
+func ByZoneName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldZoneName, opts...).ToFunc()
+}
+
+// ByAliasZoneName orders the results by the alias_zone_name field.
+func ByAliasZoneName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAliasZoneName, opts...).ToFunc()
 }
 
 // ByArea orders the results by the area field.
@@ -318,6 +365,11 @@ func ByCnameStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByActiveStatus orders the results by the active_status field.
 func ByActiveStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldActiveStatus, opts...).ToFunc()
+}
+
+// ByLockStatus orders the results by the lock_status field.
+func ByLockStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLockStatus, opts...).ToFunc()
 }
 
 // ByPaused orders the results by the paused field.

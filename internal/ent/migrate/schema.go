@@ -122,10 +122,12 @@ var (
 		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
 		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "tunnel_id", Type: field.TypeString, Comment: "Cloudflare 隧道ID"},
-		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "隧道名称"},
-		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "隧道状态", Enums: []string{"inactive", "degraded", "healthy", "down"}},
 		{Name: "connections", Type: field.TypeJSON, Nullable: true, Comment: "隧道连接配置"},
 		{Name: "conns_active_at", Type: field.TypeTime, Nullable: true, Comment: "隧道连接活跃时间"},
+		{Name: "conns_inactive_at", Type: field.TypeTime, Nullable: true, Comment: "隧道连接不活跃时间"},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "隧道名称"},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "隧道状态", Enums: []string{"inactive", "degraded", "healthy", "down"}},
+		{Name: "tun_type", Type: field.TypeEnum, Nullable: true, Comment: "隧道类型", Enums: []string{"cfd_tunnel", "warp_connector", "warp", "magic", "ipsec", "gre", "cni"}},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
 	// CloudflareTunnelTable holds the schema information for the "cloudflare_tunnel" table.
@@ -137,7 +139,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cloudflare_tunnel_platform_config_cloudflare_tunnels",
-				Columns:    []*schema.Column{CloudflareTunnelColumns[10]},
+				Columns:    []*schema.Column{CloudflareTunnelColumns[12]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -154,7 +156,7 @@ var (
 			{
 				Name:    "cloudflaretunnel_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{CloudflareTunnelColumns[10]},
+				Columns: []*schema.Column{CloudflareTunnelColumns[12]},
 			},
 			{
 				Name:    "cloudflaretunnel_tunnel_id",
@@ -164,7 +166,7 @@ var (
 			{
 				Name:    "cloudflaretunnel_config_id_tunnel_id",
 				Unique:  false,
-				Columns: []*schema.Column{CloudflareTunnelColumns[10], CloudflareTunnelColumns[5]},
+				Columns: []*schema.Column{CloudflareTunnelColumns[12], CloudflareTunnelColumns[5]},
 			},
 		},
 	}
@@ -521,12 +523,18 @@ var (
 		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
 		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
 		{Name: "zone_id", Type: field.TypeString, Comment: "站点ID"},
-		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "站点名称"},
-		{Name: "area", Type: field.TypeEnum, Nullable: true, Comment: "加速区域", Enums: []string{"global", "mainland", "overseas"}},
-		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "接入类型", Enums: []string{"full", "partial", "noDomainAccess", "dnsPodAccess", "pages"}},
+		{Name: "zone_name", Type: field.TypeString, Nullable: true, Comment: "站点名称"},
+		{Name: "alias_zone_name", Type: field.TypeString, Nullable: true, Comment: "同名站点标识"},
+		{Name: "area", Type: field.TypeEnum, Nullable: true, Comment: "站点加速区域", Enums: []string{"global", "mainland", "overseas"}},
+		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "站点接入类型", Enums: []string{"full", "partial", "noDomainAccess", "dnsPodAccess", "pages"}},
+		{Name: "resources", Type: field.TypeJSON, Nullable: true, Comment: "计费资源列表"},
+		{Name: "ns_detail", Type: field.TypeJSON, Nullable: true, Comment: "NS 类型站点详情"},
+		{Name: "cname_detail", Type: field.TypeJSON, Nullable: true, Comment: "CNAME 类型站点详情"},
+		{Name: "dnspod_detail", Type: field.TypeJSON, Nullable: true, Comment: "DNSPod 托管类型站点详情"},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"active", "pending", "moved", "deactivated", "initializing"}},
 		{Name: "cname_status", Type: field.TypeEnum, Nullable: true, Comment: "CNAME 接入状态", Enums: []string{"finished", "pending"}},
 		{Name: "active_status", Type: field.TypeEnum, Nullable: true, Comment: "展示状态", Enums: []string{"active", "inactive", "paused"}},
+		{Name: "lock_status", Type: field.TypeEnum, Nullable: true, Comment: "锁定状态", Enums: []string{"enable", "disable", "plan_migrate"}},
 		{Name: "paused", Type: field.TypeBool, Nullable: true, Comment: "是否关闭"},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
@@ -539,7 +547,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "edgeone_zone_platform_config_edgeone_zones",
-				Columns:    []*schema.Column{EdgeoneZoneColumns[13]},
+				Columns:    []*schema.Column{EdgeoneZoneColumns[19]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -556,7 +564,7 @@ var (
 			{
 				Name:    "edgeonezone_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{EdgeoneZoneColumns[13]},
+				Columns: []*schema.Column{EdgeoneZoneColumns[19]},
 			},
 			{
 				Name:    "edgeonezone_zone_id",
@@ -566,7 +574,7 @@ var (
 			{
 				Name:    "edgeonezone_config_id_zone_id",
 				Unique:  false,
-				Columns: []*schema.Column{EdgeoneZoneColumns[13], EdgeoneZoneColumns[5]},
+				Columns: []*schema.Column{EdgeoneZoneColumns[19], EdgeoneZoneColumns[5]},
 			},
 		},
 	}
@@ -700,6 +708,7 @@ var (
 		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "源站组类型", Enums: []string{"GENERAL", "HTTP"}},
 		{Name: "records", Type: field.TypeJSON, Nullable: true, Comment: "源站记录信息"},
 		{Name: "references", Type: field.TypeJSON, Nullable: true, Comment: "源站组被引用实例列表"},
+		{Name: "host_header", Type: field.TypeString, Nullable: true, Comment: "回源Host Header"},
 		{Name: "edgeone_zone_id", Type: field.TypeInt64, Comment: "关联 EdgeOne 站点序号"},
 	}
 	// EdgeoneZoneOrigingroupTable holds the schema information for the "edgeone_zone_origingroup" table.
@@ -711,7 +720,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "edgeone_zone_origingroup_edgeone_zone_origingroups",
-				Columns:    []*schema.Column{EdgeoneZoneOrigingroupColumns[10]},
+				Columns:    []*schema.Column{EdgeoneZoneOrigingroupColumns[11]},
 				RefColumns: []*schema.Column{EdgeoneZoneColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -728,7 +737,7 @@ var (
 			{
 				Name:    "edgeonezoneorigingroup_edgeone_zone_id",
 				Unique:  false,
-				Columns: []*schema.Column{EdgeoneZoneOrigingroupColumns[10]},
+				Columns: []*schema.Column{EdgeoneZoneOrigingroupColumns[11]},
 			},
 			{
 				Name:    "edgeonezoneorigingroup_group_id",
@@ -738,7 +747,7 @@ var (
 			{
 				Name:    "edgeonezoneorigingroup_edgeone_zone_id_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{EdgeoneZoneOrigingroupColumns[10], EdgeoneZoneOrigingroupColumns[5]},
+				Columns: []*schema.Column{EdgeoneZoneOrigingroupColumns[11], EdgeoneZoneOrigingroupColumns[5]},
 			},
 		},
 	}

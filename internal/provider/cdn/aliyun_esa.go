@@ -719,6 +719,7 @@ func (p *AliyunESAProvider) ParseCustomConfig(config_json json.RawMessage) (err 
 }
 
 // SitesRaw 获取所有站点
+// https://next.api.aliyun.com/api/ESA/2024-09-10/ListSites
 func (p *AliyunESAProvider) SitesRaw(ctx context.Context) (sites []*esa20240910.ListSitesResponseBodySites, err error) {
 	request := &esa20240910.ListSitesRequest{}
 	request.OrderBy = tea.String("gmtCreate")
@@ -732,6 +733,7 @@ func (p *AliyunESAProvider) SitesRaw(ctx context.Context) (sites []*esa20240910.
 }
 
 // OriginPoolsRaw 获取所有源地址池
+// https://next.api.aliyun.com/api/ESA/2024-09-10/ListOriginPools
 func (p *AliyunESAProvider) OriginPoolsRaw(ctx context.Context, site_id int64) (pools []*esa20240910.ListOriginPoolsResponseBodyOriginPools, err error) {
 	request := &esa20240910.ListOriginPoolsRequest{}
 	request.PageNumber = tea.Int32(1)
@@ -745,6 +747,7 @@ func (p *AliyunESAProvider) OriginPoolsRaw(ctx context.Context, site_id int64) (
 }
 
 // RecordsRaw 获取所有解析记录
+// https://next.api.aliyun.com/api/ESA/2024-09-10/ListRecords
 func (p *AliyunESAProvider) RecordsRaw(ctx context.Context, site_id int64) (records []*esa20240910.ListRecordsResponseBodyRecords, err error) {
 	request := &esa20240910.ListRecordsRequest{}
 	request.SiteId = tea.Int64(site_id)

@@ -77,6 +77,11 @@ func (EdgeOneZoneOriginGroup) Fields() []ent.Field {
 			Optional().
 			Comment("源站组被引用实例列表").
 			Annotations(entsql.WithComments(true)),
+
+		field.String("host_header").
+			Optional().
+			Comment("回源Host Header").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

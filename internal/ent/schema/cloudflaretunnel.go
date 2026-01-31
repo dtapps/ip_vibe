@@ -57,6 +57,21 @@ func (CloudflareTunnel) Fields() []ent.Field {
 			Comment("Cloudflare 隧道ID").
 			Annotations(entsql.WithComments(true)),
 
+		field.JSON("connections", json.RawMessage{}).
+			Optional().
+			Comment("隧道连接配置").
+			Annotations(entsql.WithComments(true)),
+
+		field.Time("conns_active_at").
+			Optional().
+			Comment("隧道连接活跃时间").
+			Annotations(entsql.WithComments(true)),
+
+		field.Time("conns_inactive_at").
+			Optional().
+			Comment("隧道连接不活跃时间").
+			Annotations(entsql.WithComments(true)),
+
 		field.String("name").
 			Optional().
 			Comment("隧道名称").
@@ -68,14 +83,10 @@ func (CloudflareTunnel) Fields() []ent.Field {
 			Comment("隧道状态").
 			Annotations(entsql.WithComments(true)),
 
-		field.JSON("connections", json.RawMessage{}).
+		field.Enum("tun_type").
+			Values(schematype.GetCloudflareTunnelTunTypes...).
 			Optional().
-			Comment("隧道连接配置").
-			Annotations(entsql.WithComments(true)),
-
-		field.Time("conns_active_at").
-			Optional().
-			Comment("隧道连接活跃时间").
+			Comment("隧道类型").
 			Annotations(entsql.WithComments(true)),
 	}
 }

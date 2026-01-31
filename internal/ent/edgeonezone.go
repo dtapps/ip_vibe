@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -32,17 +33,29 @@ type EdgeOneZone struct {
 	// 站点ID
 	ZoneID string `json:"zone_id,omitempty"`
 	// 站点名称
-	Name string `json:"name,omitempty"`
-	// 加速区域
+	ZoneName string `json:"zone_name,omitempty"`
+	// 同名站点标识
+	AliasZoneName string `json:"alias_zone_name,omitempty"`
+	// 站点加速区域
 	Area edgeonezone.Area `json:"area,omitempty"`
-	// 接入类型
+	// 站点接入类型
 	Type edgeonezone.Type `json:"type,omitempty"`
+	// 计费资源列表
+	Resources json.RawMessage `json:"resources,omitempty"`
+	// NS 类型站点详情
+	NsDetail json.RawMessage `json:"ns_detail,omitempty"`
+	// CNAME 类型站点详情
+	CnameDetail json.RawMessage `json:"cname_detail,omitempty"`
+	// DNSPod 托管类型站点详情
+	DnspodDetail json.RawMessage `json:"dnspod_detail,omitempty"`
 	// 状态
 	Status edgeonezone.Status `json:"status,omitempty"`
 	// CNAME 接入状态
 	CnameStatus edgeonezone.CnameStatus `json:"cname_status,omitempty"`
 	// 展示状态
 	ActiveStatus edgeonezone.ActiveStatus `json:"active_status,omitempty"`
+	// 锁定状态
+	LockStatus edgeonezone.LockStatus `json:"lock_status,omitempty"`
 	// 是否关闭
 	Paused bool `json:"paused,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -112,11 +125,13 @@ func (*EdgeOneZone) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case edgeonezone.FieldResources, edgeonezone.FieldNsDetail, edgeonezone.FieldCnameDetail, edgeonezone.FieldDnspodDetail:
+			values[i] = new([]byte)
 		case edgeonezone.FieldPaused:
 			values[i] = new(sql.NullBool)
 		case edgeonezone.FieldID, edgeonezone.FieldConfigID:
 			values[i] = new(sql.NullInt64)
-		case edgeonezone.FieldZoneID, edgeonezone.FieldName, edgeonezone.FieldArea, edgeonezone.FieldType, edgeonezone.FieldStatus, edgeonezone.FieldCnameStatus, edgeonezone.FieldActiveStatus:
+		case edgeonezone.FieldZoneID, edgeonezone.FieldZoneName, edgeonezone.FieldAliasZoneName, edgeonezone.FieldArea, edgeonezone.FieldType, edgeonezone.FieldStatus, edgeonezone.FieldCnameStatus, edgeonezone.FieldActiveStatus, edgeonezone.FieldLockStatus:
 			values[i] = new(sql.NullString)
 		case edgeonezone.FieldCreatedAt, edgeonezone.FieldUpdatedAt, edgeonezone.FieldRemoteCreatedAt, edgeonezone.FieldSyncAt:
 			values[i] = new(sql.NullTime)
@@ -177,11 +192,17 @@ func (_m *EdgeOneZone) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.ZoneID = value.String
 			}
-		case edgeonezone.FieldName:
+		case edgeonezone.FieldZoneName:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
+				return fmt.Errorf("unexpected type %T for field zone_name", values[i])
 			} else if value.Valid {
-				_m.Name = value.String
+				_m.ZoneName = value.String
+			}
+		case edgeonezone.FieldAliasZoneName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field alias_zone_name", values[i])
+			} else if value.Valid {
+				_m.AliasZoneName = value.String
 			}
 		case edgeonezone.FieldArea:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -194,6 +215,38 @@ func (_m *EdgeOneZone) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
 				_m.Type = edgeonezone.Type(value.String)
+			}
+		case edgeonezone.FieldResources:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field resources", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Resources); err != nil {
+					return fmt.Errorf("unmarshal field resources: %w", err)
+				}
+			}
+		case edgeonezone.FieldNsDetail:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field ns_detail", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.NsDetail); err != nil {
+					return fmt.Errorf("unmarshal field ns_detail: %w", err)
+				}
+			}
+		case edgeonezone.FieldCnameDetail:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field cname_detail", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.CnameDetail); err != nil {
+					return fmt.Errorf("unmarshal field cname_detail: %w", err)
+				}
+			}
+		case edgeonezone.FieldDnspodDetail:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field dnspod_detail", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.DnspodDetail); err != nil {
+					return fmt.Errorf("unmarshal field dnspod_detail: %w", err)
+				}
 			}
 		case edgeonezone.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -212,6 +265,12 @@ func (_m *EdgeOneZone) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field active_status", values[i])
 			} else if value.Valid {
 				_m.ActiveStatus = edgeonezone.ActiveStatus(value.String)
+			}
+		case edgeonezone.FieldLockStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field lock_status", values[i])
+			} else if value.Valid {
+				_m.LockStatus = edgeonezone.LockStatus(value.String)
 			}
 		case edgeonezone.FieldPaused:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -293,14 +352,29 @@ func (_m *EdgeOneZone) String() string {
 	builder.WriteString("zone_id=")
 	builder.WriteString(_m.ZoneID)
 	builder.WriteString(", ")
-	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
+	builder.WriteString("zone_name=")
+	builder.WriteString(_m.ZoneName)
+	builder.WriteString(", ")
+	builder.WriteString("alias_zone_name=")
+	builder.WriteString(_m.AliasZoneName)
 	builder.WriteString(", ")
 	builder.WriteString("area=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Area))
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Type))
+	builder.WriteString(", ")
+	builder.WriteString("resources=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Resources))
+	builder.WriteString(", ")
+	builder.WriteString("ns_detail=")
+	builder.WriteString(fmt.Sprintf("%v", _m.NsDetail))
+	builder.WriteString(", ")
+	builder.WriteString("cname_detail=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CnameDetail))
+	builder.WriteString(", ")
+	builder.WriteString("dnspod_detail=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DnspodDetail))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Status))
@@ -310,6 +384,9 @@ func (_m *EdgeOneZone) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("active_status=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ActiveStatus))
+	builder.WriteString(", ")
+	builder.WriteString("lock_status=")
+	builder.WriteString(fmt.Sprintf("%v", _m.LockStatus))
 	builder.WriteString(", ")
 	builder.WriteString("paused=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Paused))

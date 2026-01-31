@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -15,6 +16,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -52,23 +54,43 @@ func (_u *EdgeOneZoneUpdate) ClearSyncAt() *EdgeOneZoneUpdate {
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *EdgeOneZoneUpdate) SetName(v string) *EdgeOneZoneUpdate {
-	_u.mutation.SetName(v)
+// SetZoneName sets the "zone_name" field.
+func (_u *EdgeOneZoneUpdate) SetZoneName(v string) *EdgeOneZoneUpdate {
+	_u.mutation.SetZoneName(v)
 	return _u
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *EdgeOneZoneUpdate) SetNillableName(v *string) *EdgeOneZoneUpdate {
+// SetNillableZoneName sets the "zone_name" field if the given value is not nil.
+func (_u *EdgeOneZoneUpdate) SetNillableZoneName(v *string) *EdgeOneZoneUpdate {
 	if v != nil {
-		_u.SetName(*v)
+		_u.SetZoneName(*v)
 	}
 	return _u
 }
 
-// ClearName clears the value of the "name" field.
-func (_u *EdgeOneZoneUpdate) ClearName() *EdgeOneZoneUpdate {
-	_u.mutation.ClearName()
+// ClearZoneName clears the value of the "zone_name" field.
+func (_u *EdgeOneZoneUpdate) ClearZoneName() *EdgeOneZoneUpdate {
+	_u.mutation.ClearZoneName()
+	return _u
+}
+
+// SetAliasZoneName sets the "alias_zone_name" field.
+func (_u *EdgeOneZoneUpdate) SetAliasZoneName(v string) *EdgeOneZoneUpdate {
+	_u.mutation.SetAliasZoneName(v)
+	return _u
+}
+
+// SetNillableAliasZoneName sets the "alias_zone_name" field if the given value is not nil.
+func (_u *EdgeOneZoneUpdate) SetNillableAliasZoneName(v *string) *EdgeOneZoneUpdate {
+	if v != nil {
+		_u.SetAliasZoneName(*v)
+	}
+	return _u
+}
+
+// ClearAliasZoneName clears the value of the "alias_zone_name" field.
+func (_u *EdgeOneZoneUpdate) ClearAliasZoneName() *EdgeOneZoneUpdate {
+	_u.mutation.ClearAliasZoneName()
 	return _u
 }
 
@@ -109,6 +131,78 @@ func (_u *EdgeOneZoneUpdate) SetNillableType(v *edgeonezone.Type) *EdgeOneZoneUp
 // ClearType clears the value of the "type" field.
 func (_u *EdgeOneZoneUpdate) ClearType() *EdgeOneZoneUpdate {
 	_u.mutation.ClearType()
+	return _u
+}
+
+// SetResources sets the "resources" field.
+func (_u *EdgeOneZoneUpdate) SetResources(v json.RawMessage) *EdgeOneZoneUpdate {
+	_u.mutation.SetResources(v)
+	return _u
+}
+
+// AppendResources appends value to the "resources" field.
+func (_u *EdgeOneZoneUpdate) AppendResources(v json.RawMessage) *EdgeOneZoneUpdate {
+	_u.mutation.AppendResources(v)
+	return _u
+}
+
+// ClearResources clears the value of the "resources" field.
+func (_u *EdgeOneZoneUpdate) ClearResources() *EdgeOneZoneUpdate {
+	_u.mutation.ClearResources()
+	return _u
+}
+
+// SetNsDetail sets the "ns_detail" field.
+func (_u *EdgeOneZoneUpdate) SetNsDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+	_u.mutation.SetNsDetail(v)
+	return _u
+}
+
+// AppendNsDetail appends value to the "ns_detail" field.
+func (_u *EdgeOneZoneUpdate) AppendNsDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+	_u.mutation.AppendNsDetail(v)
+	return _u
+}
+
+// ClearNsDetail clears the value of the "ns_detail" field.
+func (_u *EdgeOneZoneUpdate) ClearNsDetail() *EdgeOneZoneUpdate {
+	_u.mutation.ClearNsDetail()
+	return _u
+}
+
+// SetCnameDetail sets the "cname_detail" field.
+func (_u *EdgeOneZoneUpdate) SetCnameDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+	_u.mutation.SetCnameDetail(v)
+	return _u
+}
+
+// AppendCnameDetail appends value to the "cname_detail" field.
+func (_u *EdgeOneZoneUpdate) AppendCnameDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+	_u.mutation.AppendCnameDetail(v)
+	return _u
+}
+
+// ClearCnameDetail clears the value of the "cname_detail" field.
+func (_u *EdgeOneZoneUpdate) ClearCnameDetail() *EdgeOneZoneUpdate {
+	_u.mutation.ClearCnameDetail()
+	return _u
+}
+
+// SetDnspodDetail sets the "dnspod_detail" field.
+func (_u *EdgeOneZoneUpdate) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+	_u.mutation.SetDnspodDetail(v)
+	return _u
+}
+
+// AppendDnspodDetail appends value to the "dnspod_detail" field.
+func (_u *EdgeOneZoneUpdate) AppendDnspodDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+	_u.mutation.AppendDnspodDetail(v)
+	return _u
+}
+
+// ClearDnspodDetail clears the value of the "dnspod_detail" field.
+func (_u *EdgeOneZoneUpdate) ClearDnspodDetail() *EdgeOneZoneUpdate {
+	_u.mutation.ClearDnspodDetail()
 	return _u
 }
 
@@ -169,6 +263,26 @@ func (_u *EdgeOneZoneUpdate) SetNillableActiveStatus(v *edgeonezone.ActiveStatus
 // ClearActiveStatus clears the value of the "active_status" field.
 func (_u *EdgeOneZoneUpdate) ClearActiveStatus() *EdgeOneZoneUpdate {
 	_u.mutation.ClearActiveStatus()
+	return _u
+}
+
+// SetLockStatus sets the "lock_status" field.
+func (_u *EdgeOneZoneUpdate) SetLockStatus(v edgeonezone.LockStatus) *EdgeOneZoneUpdate {
+	_u.mutation.SetLockStatus(v)
+	return _u
+}
+
+// SetNillableLockStatus sets the "lock_status" field if the given value is not nil.
+func (_u *EdgeOneZoneUpdate) SetNillableLockStatus(v *edgeonezone.LockStatus) *EdgeOneZoneUpdate {
+	if v != nil {
+		_u.SetLockStatus(*v)
+	}
+	return _u
+}
+
+// ClearLockStatus clears the value of the "lock_status" field.
+func (_u *EdgeOneZoneUpdate) ClearLockStatus() *EdgeOneZoneUpdate {
+	_u.mutation.ClearLockStatus()
 	return _u
 }
 
@@ -374,6 +488,11 @@ func (_u *EdgeOneZoneUpdate) check() error {
 			return &ValidationError{Name: "active_status", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.active_status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.LockStatus(); ok {
+		if err := edgeonezone.LockStatusValidator(v); err != nil {
+			return &ValidationError{Name: "lock_status", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.lock_status": %w`, err)}
+		}
+	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EdgeOneZone.config"`)
 	}
@@ -410,11 +529,17 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezone.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(edgeonezone.FieldName, field.TypeString, value)
+	if value, ok := _u.mutation.ZoneName(); ok {
+		_spec.SetField(edgeonezone.FieldZoneName, field.TypeString, value)
 	}
-	if _u.mutation.NameCleared() {
-		_spec.ClearField(edgeonezone.FieldName, field.TypeString)
+	if _u.mutation.ZoneNameCleared() {
+		_spec.ClearField(edgeonezone.FieldZoneName, field.TypeString)
+	}
+	if value, ok := _u.mutation.AliasZoneName(); ok {
+		_spec.SetField(edgeonezone.FieldAliasZoneName, field.TypeString, value)
+	}
+	if _u.mutation.AliasZoneNameCleared() {
+		_spec.ClearField(edgeonezone.FieldAliasZoneName, field.TypeString)
 	}
 	if value, ok := _u.mutation.Area(); ok {
 		_spec.SetField(edgeonezone.FieldArea, field.TypeEnum, value)
@@ -427,6 +552,50 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	}
 	if _u.mutation.TypeCleared() {
 		_spec.ClearField(edgeonezone.FieldType, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.Resources(); ok {
+		_spec.SetField(edgeonezone.FieldResources, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedResources(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, edgeonezone.FieldResources, value)
+		})
+	}
+	if _u.mutation.ResourcesCleared() {
+		_spec.ClearField(edgeonezone.FieldResources, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.NsDetail(); ok {
+		_spec.SetField(edgeonezone.FieldNsDetail, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedNsDetail(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, edgeonezone.FieldNsDetail, value)
+		})
+	}
+	if _u.mutation.NsDetailCleared() {
+		_spec.ClearField(edgeonezone.FieldNsDetail, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.CnameDetail(); ok {
+		_spec.SetField(edgeonezone.FieldCnameDetail, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedCnameDetail(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, edgeonezone.FieldCnameDetail, value)
+		})
+	}
+	if _u.mutation.CnameDetailCleared() {
+		_spec.ClearField(edgeonezone.FieldCnameDetail, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.DnspodDetail(); ok {
+		_spec.SetField(edgeonezone.FieldDnspodDetail, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedDnspodDetail(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, edgeonezone.FieldDnspodDetail, value)
+		})
+	}
+	if _u.mutation.DnspodDetailCleared() {
+		_spec.ClearField(edgeonezone.FieldDnspodDetail, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(edgeonezone.FieldStatus, field.TypeEnum, value)
@@ -445,6 +614,12 @@ func (_u *EdgeOneZoneUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	}
 	if _u.mutation.ActiveStatusCleared() {
 		_spec.ClearField(edgeonezone.FieldActiveStatus, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.LockStatus(); ok {
+		_spec.SetField(edgeonezone.FieldLockStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.LockStatusCleared() {
+		_spec.ClearField(edgeonezone.FieldLockStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.Paused(); ok {
 		_spec.SetField(edgeonezone.FieldPaused, field.TypeBool, value)
@@ -629,23 +804,43 @@ func (_u *EdgeOneZoneUpdateOne) ClearSyncAt() *EdgeOneZoneUpdateOne {
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *EdgeOneZoneUpdateOne) SetName(v string) *EdgeOneZoneUpdateOne {
-	_u.mutation.SetName(v)
+// SetZoneName sets the "zone_name" field.
+func (_u *EdgeOneZoneUpdateOne) SetZoneName(v string) *EdgeOneZoneUpdateOne {
+	_u.mutation.SetZoneName(v)
 	return _u
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *EdgeOneZoneUpdateOne) SetNillableName(v *string) *EdgeOneZoneUpdateOne {
+// SetNillableZoneName sets the "zone_name" field if the given value is not nil.
+func (_u *EdgeOneZoneUpdateOne) SetNillableZoneName(v *string) *EdgeOneZoneUpdateOne {
 	if v != nil {
-		_u.SetName(*v)
+		_u.SetZoneName(*v)
 	}
 	return _u
 }
 
-// ClearName clears the value of the "name" field.
-func (_u *EdgeOneZoneUpdateOne) ClearName() *EdgeOneZoneUpdateOne {
-	_u.mutation.ClearName()
+// ClearZoneName clears the value of the "zone_name" field.
+func (_u *EdgeOneZoneUpdateOne) ClearZoneName() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearZoneName()
+	return _u
+}
+
+// SetAliasZoneName sets the "alias_zone_name" field.
+func (_u *EdgeOneZoneUpdateOne) SetAliasZoneName(v string) *EdgeOneZoneUpdateOne {
+	_u.mutation.SetAliasZoneName(v)
+	return _u
+}
+
+// SetNillableAliasZoneName sets the "alias_zone_name" field if the given value is not nil.
+func (_u *EdgeOneZoneUpdateOne) SetNillableAliasZoneName(v *string) *EdgeOneZoneUpdateOne {
+	if v != nil {
+		_u.SetAliasZoneName(*v)
+	}
+	return _u
+}
+
+// ClearAliasZoneName clears the value of the "alias_zone_name" field.
+func (_u *EdgeOneZoneUpdateOne) ClearAliasZoneName() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearAliasZoneName()
 	return _u
 }
 
@@ -686,6 +881,78 @@ func (_u *EdgeOneZoneUpdateOne) SetNillableType(v *edgeonezone.Type) *EdgeOneZon
 // ClearType clears the value of the "type" field.
 func (_u *EdgeOneZoneUpdateOne) ClearType() *EdgeOneZoneUpdateOne {
 	_u.mutation.ClearType()
+	return _u
+}
+
+// SetResources sets the "resources" field.
+func (_u *EdgeOneZoneUpdateOne) SetResources(v json.RawMessage) *EdgeOneZoneUpdateOne {
+	_u.mutation.SetResources(v)
+	return _u
+}
+
+// AppendResources appends value to the "resources" field.
+func (_u *EdgeOneZoneUpdateOne) AppendResources(v json.RawMessage) *EdgeOneZoneUpdateOne {
+	_u.mutation.AppendResources(v)
+	return _u
+}
+
+// ClearResources clears the value of the "resources" field.
+func (_u *EdgeOneZoneUpdateOne) ClearResources() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearResources()
+	return _u
+}
+
+// SetNsDetail sets the "ns_detail" field.
+func (_u *EdgeOneZoneUpdateOne) SetNsDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+	_u.mutation.SetNsDetail(v)
+	return _u
+}
+
+// AppendNsDetail appends value to the "ns_detail" field.
+func (_u *EdgeOneZoneUpdateOne) AppendNsDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+	_u.mutation.AppendNsDetail(v)
+	return _u
+}
+
+// ClearNsDetail clears the value of the "ns_detail" field.
+func (_u *EdgeOneZoneUpdateOne) ClearNsDetail() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearNsDetail()
+	return _u
+}
+
+// SetCnameDetail sets the "cname_detail" field.
+func (_u *EdgeOneZoneUpdateOne) SetCnameDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+	_u.mutation.SetCnameDetail(v)
+	return _u
+}
+
+// AppendCnameDetail appends value to the "cname_detail" field.
+func (_u *EdgeOneZoneUpdateOne) AppendCnameDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+	_u.mutation.AppendCnameDetail(v)
+	return _u
+}
+
+// ClearCnameDetail clears the value of the "cname_detail" field.
+func (_u *EdgeOneZoneUpdateOne) ClearCnameDetail() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearCnameDetail()
+	return _u
+}
+
+// SetDnspodDetail sets the "dnspod_detail" field.
+func (_u *EdgeOneZoneUpdateOne) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+	_u.mutation.SetDnspodDetail(v)
+	return _u
+}
+
+// AppendDnspodDetail appends value to the "dnspod_detail" field.
+func (_u *EdgeOneZoneUpdateOne) AppendDnspodDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+	_u.mutation.AppendDnspodDetail(v)
+	return _u
+}
+
+// ClearDnspodDetail clears the value of the "dnspod_detail" field.
+func (_u *EdgeOneZoneUpdateOne) ClearDnspodDetail() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearDnspodDetail()
 	return _u
 }
 
@@ -746,6 +1013,26 @@ func (_u *EdgeOneZoneUpdateOne) SetNillableActiveStatus(v *edgeonezone.ActiveSta
 // ClearActiveStatus clears the value of the "active_status" field.
 func (_u *EdgeOneZoneUpdateOne) ClearActiveStatus() *EdgeOneZoneUpdateOne {
 	_u.mutation.ClearActiveStatus()
+	return _u
+}
+
+// SetLockStatus sets the "lock_status" field.
+func (_u *EdgeOneZoneUpdateOne) SetLockStatus(v edgeonezone.LockStatus) *EdgeOneZoneUpdateOne {
+	_u.mutation.SetLockStatus(v)
+	return _u
+}
+
+// SetNillableLockStatus sets the "lock_status" field if the given value is not nil.
+func (_u *EdgeOneZoneUpdateOne) SetNillableLockStatus(v *edgeonezone.LockStatus) *EdgeOneZoneUpdateOne {
+	if v != nil {
+		_u.SetLockStatus(*v)
+	}
+	return _u
+}
+
+// ClearLockStatus clears the value of the "lock_status" field.
+func (_u *EdgeOneZoneUpdateOne) ClearLockStatus() *EdgeOneZoneUpdateOne {
+	_u.mutation.ClearLockStatus()
 	return _u
 }
 
@@ -964,6 +1251,11 @@ func (_u *EdgeOneZoneUpdateOne) check() error {
 			return &ValidationError{Name: "active_status", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.active_status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.LockStatus(); ok {
+		if err := edgeonezone.LockStatusValidator(v); err != nil {
+			return &ValidationError{Name: "lock_status", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.lock_status": %w`, err)}
+		}
+	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "EdgeOneZone.config"`)
 	}
@@ -1017,11 +1309,17 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 	if _u.mutation.SyncAtCleared() {
 		_spec.ClearField(edgeonezone.FieldSyncAt, field.TypeTime)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(edgeonezone.FieldName, field.TypeString, value)
+	if value, ok := _u.mutation.ZoneName(); ok {
+		_spec.SetField(edgeonezone.FieldZoneName, field.TypeString, value)
 	}
-	if _u.mutation.NameCleared() {
-		_spec.ClearField(edgeonezone.FieldName, field.TypeString)
+	if _u.mutation.ZoneNameCleared() {
+		_spec.ClearField(edgeonezone.FieldZoneName, field.TypeString)
+	}
+	if value, ok := _u.mutation.AliasZoneName(); ok {
+		_spec.SetField(edgeonezone.FieldAliasZoneName, field.TypeString, value)
+	}
+	if _u.mutation.AliasZoneNameCleared() {
+		_spec.ClearField(edgeonezone.FieldAliasZoneName, field.TypeString)
 	}
 	if value, ok := _u.mutation.Area(); ok {
 		_spec.SetField(edgeonezone.FieldArea, field.TypeEnum, value)
@@ -1034,6 +1332,50 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 	}
 	if _u.mutation.TypeCleared() {
 		_spec.ClearField(edgeonezone.FieldType, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.Resources(); ok {
+		_spec.SetField(edgeonezone.FieldResources, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedResources(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, edgeonezone.FieldResources, value)
+		})
+	}
+	if _u.mutation.ResourcesCleared() {
+		_spec.ClearField(edgeonezone.FieldResources, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.NsDetail(); ok {
+		_spec.SetField(edgeonezone.FieldNsDetail, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedNsDetail(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, edgeonezone.FieldNsDetail, value)
+		})
+	}
+	if _u.mutation.NsDetailCleared() {
+		_spec.ClearField(edgeonezone.FieldNsDetail, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.CnameDetail(); ok {
+		_spec.SetField(edgeonezone.FieldCnameDetail, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedCnameDetail(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, edgeonezone.FieldCnameDetail, value)
+		})
+	}
+	if _u.mutation.CnameDetailCleared() {
+		_spec.ClearField(edgeonezone.FieldCnameDetail, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.DnspodDetail(); ok {
+		_spec.SetField(edgeonezone.FieldDnspodDetail, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedDnspodDetail(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, edgeonezone.FieldDnspodDetail, value)
+		})
+	}
+	if _u.mutation.DnspodDetailCleared() {
+		_spec.ClearField(edgeonezone.FieldDnspodDetail, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(edgeonezone.FieldStatus, field.TypeEnum, value)
@@ -1052,6 +1394,12 @@ func (_u *EdgeOneZoneUpdateOne) sqlSave(ctx context.Context) (_node *EdgeOneZone
 	}
 	if _u.mutation.ActiveStatusCleared() {
 		_spec.ClearField(edgeonezone.FieldActiveStatus, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.LockStatus(); ok {
+		_spec.SetField(edgeonezone.FieldLockStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.LockStatusCleared() {
+		_spec.ClearField(edgeonezone.FieldLockStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.Paused(); ok {
 		_spec.SetField(edgeonezone.FieldPaused, field.TypeBool, value)

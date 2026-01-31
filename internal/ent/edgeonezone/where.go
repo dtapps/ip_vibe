@@ -85,9 +85,14 @@ func ZoneID(v string) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldEQ(FieldZoneID, v))
 }
 
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldEQ(FieldName, v))
+// ZoneName applies equality check predicate on the "zone_name" field. It's identical to ZoneNameEQ.
+func ZoneName(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldEQ(FieldZoneName, v))
+}
+
+// AliasZoneName applies equality check predicate on the "alias_zone_name" field. It's identical to AliasZoneNameEQ.
+func AliasZoneName(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldEQ(FieldAliasZoneName, v))
 }
 
 // Paused applies equality check predicate on the "paused" field. It's identical to PausedEQ.
@@ -360,79 +365,154 @@ func ZoneIDContainsFold(v string) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldContainsFold(FieldZoneID, v))
 }
 
-// NameEQ applies the EQ predicate on the "name" field.
-func NameEQ(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldEQ(FieldName, v))
+// ZoneNameEQ applies the EQ predicate on the "zone_name" field.
+func ZoneNameEQ(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldEQ(FieldZoneName, v))
 }
 
-// NameNEQ applies the NEQ predicate on the "name" field.
-func NameNEQ(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldNEQ(FieldName, v))
+// ZoneNameNEQ applies the NEQ predicate on the "zone_name" field.
+func ZoneNameNEQ(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNEQ(FieldZoneName, v))
 }
 
-// NameIn applies the In predicate on the "name" field.
-func NameIn(vs ...string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldIn(FieldName, vs...))
+// ZoneNameIn applies the In predicate on the "zone_name" field.
+func ZoneNameIn(vs ...string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIn(FieldZoneName, vs...))
 }
 
-// NameNotIn applies the NotIn predicate on the "name" field.
-func NameNotIn(vs ...string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldNotIn(FieldName, vs...))
+// ZoneNameNotIn applies the NotIn predicate on the "zone_name" field.
+func ZoneNameNotIn(vs ...string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotIn(FieldZoneName, vs...))
 }
 
-// NameGT applies the GT predicate on the "name" field.
-func NameGT(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldGT(FieldName, v))
+// ZoneNameGT applies the GT predicate on the "zone_name" field.
+func ZoneNameGT(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldGT(FieldZoneName, v))
 }
 
-// NameGTE applies the GTE predicate on the "name" field.
-func NameGTE(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldGTE(FieldName, v))
+// ZoneNameGTE applies the GTE predicate on the "zone_name" field.
+func ZoneNameGTE(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldGTE(FieldZoneName, v))
 }
 
-// NameLT applies the LT predicate on the "name" field.
-func NameLT(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldLT(FieldName, v))
+// ZoneNameLT applies the LT predicate on the "zone_name" field.
+func ZoneNameLT(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldLT(FieldZoneName, v))
 }
 
-// NameLTE applies the LTE predicate on the "name" field.
-func NameLTE(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldLTE(FieldName, v))
+// ZoneNameLTE applies the LTE predicate on the "zone_name" field.
+func ZoneNameLTE(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldLTE(FieldZoneName, v))
 }
 
-// NameContains applies the Contains predicate on the "name" field.
-func NameContains(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldContains(FieldName, v))
+// ZoneNameContains applies the Contains predicate on the "zone_name" field.
+func ZoneNameContains(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldContains(FieldZoneName, v))
 }
 
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
-func NameHasPrefix(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldHasPrefix(FieldName, v))
+// ZoneNameHasPrefix applies the HasPrefix predicate on the "zone_name" field.
+func ZoneNameHasPrefix(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldHasPrefix(FieldZoneName, v))
 }
 
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
-func NameHasSuffix(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldHasSuffix(FieldName, v))
+// ZoneNameHasSuffix applies the HasSuffix predicate on the "zone_name" field.
+func ZoneNameHasSuffix(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldHasSuffix(FieldZoneName, v))
 }
 
-// NameIsNil applies the IsNil predicate on the "name" field.
-func NameIsNil() predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldIsNull(FieldName))
+// ZoneNameIsNil applies the IsNil predicate on the "zone_name" field.
+func ZoneNameIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldZoneName))
 }
 
-// NameNotNil applies the NotNil predicate on the "name" field.
-func NameNotNil() predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldNotNull(FieldName))
+// ZoneNameNotNil applies the NotNil predicate on the "zone_name" field.
+func ZoneNameNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldZoneName))
 }
 
-// NameEqualFold applies the EqualFold predicate on the "name" field.
-func NameEqualFold(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldEqualFold(FieldName, v))
+// ZoneNameEqualFold applies the EqualFold predicate on the "zone_name" field.
+func ZoneNameEqualFold(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldEqualFold(FieldZoneName, v))
 }
 
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
-func NameContainsFold(v string) predicate.EdgeOneZone {
-	return predicate.EdgeOneZone(sql.FieldContainsFold(FieldName, v))
+// ZoneNameContainsFold applies the ContainsFold predicate on the "zone_name" field.
+func ZoneNameContainsFold(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldContainsFold(FieldZoneName, v))
+}
+
+// AliasZoneNameEQ applies the EQ predicate on the "alias_zone_name" field.
+func AliasZoneNameEQ(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldEQ(FieldAliasZoneName, v))
+}
+
+// AliasZoneNameNEQ applies the NEQ predicate on the "alias_zone_name" field.
+func AliasZoneNameNEQ(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNEQ(FieldAliasZoneName, v))
+}
+
+// AliasZoneNameIn applies the In predicate on the "alias_zone_name" field.
+func AliasZoneNameIn(vs ...string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIn(FieldAliasZoneName, vs...))
+}
+
+// AliasZoneNameNotIn applies the NotIn predicate on the "alias_zone_name" field.
+func AliasZoneNameNotIn(vs ...string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotIn(FieldAliasZoneName, vs...))
+}
+
+// AliasZoneNameGT applies the GT predicate on the "alias_zone_name" field.
+func AliasZoneNameGT(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldGT(FieldAliasZoneName, v))
+}
+
+// AliasZoneNameGTE applies the GTE predicate on the "alias_zone_name" field.
+func AliasZoneNameGTE(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldGTE(FieldAliasZoneName, v))
+}
+
+// AliasZoneNameLT applies the LT predicate on the "alias_zone_name" field.
+func AliasZoneNameLT(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldLT(FieldAliasZoneName, v))
+}
+
+// AliasZoneNameLTE applies the LTE predicate on the "alias_zone_name" field.
+func AliasZoneNameLTE(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldLTE(FieldAliasZoneName, v))
+}
+
+// AliasZoneNameContains applies the Contains predicate on the "alias_zone_name" field.
+func AliasZoneNameContains(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldContains(FieldAliasZoneName, v))
+}
+
+// AliasZoneNameHasPrefix applies the HasPrefix predicate on the "alias_zone_name" field.
+func AliasZoneNameHasPrefix(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldHasPrefix(FieldAliasZoneName, v))
+}
+
+// AliasZoneNameHasSuffix applies the HasSuffix predicate on the "alias_zone_name" field.
+func AliasZoneNameHasSuffix(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldHasSuffix(FieldAliasZoneName, v))
+}
+
+// AliasZoneNameIsNil applies the IsNil predicate on the "alias_zone_name" field.
+func AliasZoneNameIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldAliasZoneName))
+}
+
+// AliasZoneNameNotNil applies the NotNil predicate on the "alias_zone_name" field.
+func AliasZoneNameNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldAliasZoneName))
+}
+
+// AliasZoneNameEqualFold applies the EqualFold predicate on the "alias_zone_name" field.
+func AliasZoneNameEqualFold(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldEqualFold(FieldAliasZoneName, v))
+}
+
+// AliasZoneNameContainsFold applies the ContainsFold predicate on the "alias_zone_name" field.
+func AliasZoneNameContainsFold(v string) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldContainsFold(FieldAliasZoneName, v))
 }
 
 // AreaEQ applies the EQ predicate on the "area" field.
@@ -493,6 +573,46 @@ func TypeIsNil() predicate.EdgeOneZone {
 // TypeNotNil applies the NotNil predicate on the "type" field.
 func TypeNotNil() predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldNotNull(FieldType))
+}
+
+// ResourcesIsNil applies the IsNil predicate on the "resources" field.
+func ResourcesIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldResources))
+}
+
+// ResourcesNotNil applies the NotNil predicate on the "resources" field.
+func ResourcesNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldResources))
+}
+
+// NsDetailIsNil applies the IsNil predicate on the "ns_detail" field.
+func NsDetailIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldNsDetail))
+}
+
+// NsDetailNotNil applies the NotNil predicate on the "ns_detail" field.
+func NsDetailNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldNsDetail))
+}
+
+// CnameDetailIsNil applies the IsNil predicate on the "cname_detail" field.
+func CnameDetailIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldCnameDetail))
+}
+
+// CnameDetailNotNil applies the NotNil predicate on the "cname_detail" field.
+func CnameDetailNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldCnameDetail))
+}
+
+// DnspodDetailIsNil applies the IsNil predicate on the "dnspod_detail" field.
+func DnspodDetailIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldDnspodDetail))
+}
+
+// DnspodDetailNotNil applies the NotNil predicate on the "dnspod_detail" field.
+func DnspodDetailNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldDnspodDetail))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
@@ -583,6 +703,36 @@ func ActiveStatusIsNil() predicate.EdgeOneZone {
 // ActiveStatusNotNil applies the NotNil predicate on the "active_status" field.
 func ActiveStatusNotNil() predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(sql.FieldNotNull(FieldActiveStatus))
+}
+
+// LockStatusEQ applies the EQ predicate on the "lock_status" field.
+func LockStatusEQ(v LockStatus) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldEQ(FieldLockStatus, v))
+}
+
+// LockStatusNEQ applies the NEQ predicate on the "lock_status" field.
+func LockStatusNEQ(v LockStatus) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNEQ(FieldLockStatus, v))
+}
+
+// LockStatusIn applies the In predicate on the "lock_status" field.
+func LockStatusIn(vs ...LockStatus) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIn(FieldLockStatus, vs...))
+}
+
+// LockStatusNotIn applies the NotIn predicate on the "lock_status" field.
+func LockStatusNotIn(vs ...LockStatus) predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotIn(FieldLockStatus, vs...))
+}
+
+// LockStatusIsNil applies the IsNil predicate on the "lock_status" field.
+func LockStatusIsNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldIsNull(FieldLockStatus))
+}
+
+// LockStatusNotNil applies the NotNil predicate on the "lock_status" field.
+func LockStatusNotNil() predicate.EdgeOneZone {
+	return predicate.EdgeOneZone(sql.FieldNotNull(FieldLockStatus))
 }
 
 // PausedEQ applies the EQ predicate on the "paused" field.

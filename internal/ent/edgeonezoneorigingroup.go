@@ -40,6 +40,8 @@ type EdgeOneZoneOriginGroup struct {
 	Records json.RawMessage `json:"records,omitempty"`
 	// 源站组被引用实例列表
 	References json.RawMessage `json:"references,omitempty"`
+	// 回源Host Header
+	HostHeader string `json:"host_header,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EdgeOneZoneOriginGroupQuery when eager-loading is set.
 	Edges        EdgeOneZoneOriginGroupEdges `json:"edges"`
@@ -75,7 +77,7 @@ func (*EdgeOneZoneOriginGroup) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case edgeonezoneorigingroup.FieldID, edgeonezoneorigingroup.FieldEdgeoneZoneID:
 			values[i] = new(sql.NullInt64)
-		case edgeonezoneorigingroup.FieldGroupID, edgeonezoneorigingroup.FieldName, edgeonezoneorigingroup.FieldType:
+		case edgeonezoneorigingroup.FieldGroupID, edgeonezoneorigingroup.FieldName, edgeonezoneorigingroup.FieldType, edgeonezoneorigingroup.FieldHostHeader:
 			values[i] = new(sql.NullString)
 		case edgeonezoneorigingroup.FieldCreatedAt, edgeonezoneorigingroup.FieldUpdatedAt, edgeonezoneorigingroup.FieldRemoteCreatedAt, edgeonezoneorigingroup.FieldSyncAt:
 			values[i] = new(sql.NullTime)
@@ -164,6 +166,12 @@ func (_m *EdgeOneZoneOriginGroup) assignValues(columns []string, values []any) e
 					return fmt.Errorf("unmarshal field references: %w", err)
 				}
 			}
+		case edgeonezoneorigingroup.FieldHostHeader:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field host_header", values[i])
+			} else if value.Valid {
+				_m.HostHeader = value.String
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -234,6 +242,9 @@ func (_m *EdgeOneZoneOriginGroup) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("references=")
 	builder.WriteString(fmt.Sprintf("%v", _m.References))
+	builder.WriteString(", ")
+	builder.WriteString("host_header=")
+	builder.WriteString(_m.HostHeader)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -94,16 +95,30 @@ func (_c *EdgeOneZoneCreate) SetZoneID(v string) *EdgeOneZoneCreate {
 	return _c
 }
 
-// SetName sets the "name" field.
-func (_c *EdgeOneZoneCreate) SetName(v string) *EdgeOneZoneCreate {
-	_c.mutation.SetName(v)
+// SetZoneName sets the "zone_name" field.
+func (_c *EdgeOneZoneCreate) SetZoneName(v string) *EdgeOneZoneCreate {
+	_c.mutation.SetZoneName(v)
 	return _c
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_c *EdgeOneZoneCreate) SetNillableName(v *string) *EdgeOneZoneCreate {
+// SetNillableZoneName sets the "zone_name" field if the given value is not nil.
+func (_c *EdgeOneZoneCreate) SetNillableZoneName(v *string) *EdgeOneZoneCreate {
 	if v != nil {
-		_c.SetName(*v)
+		_c.SetZoneName(*v)
+	}
+	return _c
+}
+
+// SetAliasZoneName sets the "alias_zone_name" field.
+func (_c *EdgeOneZoneCreate) SetAliasZoneName(v string) *EdgeOneZoneCreate {
+	_c.mutation.SetAliasZoneName(v)
+	return _c
+}
+
+// SetNillableAliasZoneName sets the "alias_zone_name" field if the given value is not nil.
+func (_c *EdgeOneZoneCreate) SetNillableAliasZoneName(v *string) *EdgeOneZoneCreate {
+	if v != nil {
+		_c.SetAliasZoneName(*v)
 	}
 	return _c
 }
@@ -133,6 +148,30 @@ func (_c *EdgeOneZoneCreate) SetNillableType(v *edgeonezone.Type) *EdgeOneZoneCr
 	if v != nil {
 		_c.SetType(*v)
 	}
+	return _c
+}
+
+// SetResources sets the "resources" field.
+func (_c *EdgeOneZoneCreate) SetResources(v json.RawMessage) *EdgeOneZoneCreate {
+	_c.mutation.SetResources(v)
+	return _c
+}
+
+// SetNsDetail sets the "ns_detail" field.
+func (_c *EdgeOneZoneCreate) SetNsDetail(v json.RawMessage) *EdgeOneZoneCreate {
+	_c.mutation.SetNsDetail(v)
+	return _c
+}
+
+// SetCnameDetail sets the "cname_detail" field.
+func (_c *EdgeOneZoneCreate) SetCnameDetail(v json.RawMessage) *EdgeOneZoneCreate {
+	_c.mutation.SetCnameDetail(v)
+	return _c
+}
+
+// SetDnspodDetail sets the "dnspod_detail" field.
+func (_c *EdgeOneZoneCreate) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneCreate {
+	_c.mutation.SetDnspodDetail(v)
 	return _c
 }
 
@@ -174,6 +213,20 @@ func (_c *EdgeOneZoneCreate) SetActiveStatus(v edgeonezone.ActiveStatus) *EdgeOn
 func (_c *EdgeOneZoneCreate) SetNillableActiveStatus(v *edgeonezone.ActiveStatus) *EdgeOneZoneCreate {
 	if v != nil {
 		_c.SetActiveStatus(*v)
+	}
+	return _c
+}
+
+// SetLockStatus sets the "lock_status" field.
+func (_c *EdgeOneZoneCreate) SetLockStatus(v edgeonezone.LockStatus) *EdgeOneZoneCreate {
+	_c.mutation.SetLockStatus(v)
+	return _c
+}
+
+// SetNillableLockStatus sets the "lock_status" field if the given value is not nil.
+func (_c *EdgeOneZoneCreate) SetNillableLockStatus(v *edgeonezone.LockStatus) *EdgeOneZoneCreate {
+	if v != nil {
+		_c.SetLockStatus(*v)
 	}
 	return _c
 }
@@ -346,6 +399,11 @@ func (_c *EdgeOneZoneCreate) check() error {
 			return &ValidationError{Name: "active_status", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.active_status": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.LockStatus(); ok {
+		if err := edgeonezone.LockStatusValidator(v); err != nil {
+			return &ValidationError{Name: "lock_status", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.lock_status": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := edgeonezone.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "EdgeOneZone.id": %w`, err)}
@@ -407,9 +465,13 @@ func (_c *EdgeOneZoneCreate) createSpec() (*EdgeOneZone, *sqlgraph.CreateSpec) {
 		_spec.SetField(edgeonezone.FieldZoneID, field.TypeString, value)
 		_node.ZoneID = value
 	}
-	if value, ok := _c.mutation.Name(); ok {
-		_spec.SetField(edgeonezone.FieldName, field.TypeString, value)
-		_node.Name = value
+	if value, ok := _c.mutation.ZoneName(); ok {
+		_spec.SetField(edgeonezone.FieldZoneName, field.TypeString, value)
+		_node.ZoneName = value
+	}
+	if value, ok := _c.mutation.AliasZoneName(); ok {
+		_spec.SetField(edgeonezone.FieldAliasZoneName, field.TypeString, value)
+		_node.AliasZoneName = value
 	}
 	if value, ok := _c.mutation.Area(); ok {
 		_spec.SetField(edgeonezone.FieldArea, field.TypeEnum, value)
@@ -418,6 +480,22 @@ func (_c *EdgeOneZoneCreate) createSpec() (*EdgeOneZone, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.GetType(); ok {
 		_spec.SetField(edgeonezone.FieldType, field.TypeEnum, value)
 		_node.Type = value
+	}
+	if value, ok := _c.mutation.Resources(); ok {
+		_spec.SetField(edgeonezone.FieldResources, field.TypeJSON, value)
+		_node.Resources = value
+	}
+	if value, ok := _c.mutation.NsDetail(); ok {
+		_spec.SetField(edgeonezone.FieldNsDetail, field.TypeJSON, value)
+		_node.NsDetail = value
+	}
+	if value, ok := _c.mutation.CnameDetail(); ok {
+		_spec.SetField(edgeonezone.FieldCnameDetail, field.TypeJSON, value)
+		_node.CnameDetail = value
+	}
+	if value, ok := _c.mutation.DnspodDetail(); ok {
+		_spec.SetField(edgeonezone.FieldDnspodDetail, field.TypeJSON, value)
+		_node.DnspodDetail = value
 	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(edgeonezone.FieldStatus, field.TypeEnum, value)
@@ -430,6 +508,10 @@ func (_c *EdgeOneZoneCreate) createSpec() (*EdgeOneZone, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ActiveStatus(); ok {
 		_spec.SetField(edgeonezone.FieldActiveStatus, field.TypeEnum, value)
 		_node.ActiveStatus = value
+	}
+	if value, ok := _c.mutation.LockStatus(); ok {
+		_spec.SetField(edgeonezone.FieldLockStatus, field.TypeEnum, value)
+		_node.LockStatus = value
 	}
 	if value, ok := _c.mutation.Paused(); ok {
 		_spec.SetField(edgeonezone.FieldPaused, field.TypeBool, value)
@@ -570,21 +652,39 @@ func (u *EdgeOneZoneUpsert) ClearSyncAt() *EdgeOneZoneUpsert {
 	return u
 }
 
-// SetName sets the "name" field.
-func (u *EdgeOneZoneUpsert) SetName(v string) *EdgeOneZoneUpsert {
-	u.Set(edgeonezone.FieldName, v)
+// SetZoneName sets the "zone_name" field.
+func (u *EdgeOneZoneUpsert) SetZoneName(v string) *EdgeOneZoneUpsert {
+	u.Set(edgeonezone.FieldZoneName, v)
 	return u
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *EdgeOneZoneUpsert) UpdateName() *EdgeOneZoneUpsert {
-	u.SetExcluded(edgeonezone.FieldName)
+// UpdateZoneName sets the "zone_name" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsert) UpdateZoneName() *EdgeOneZoneUpsert {
+	u.SetExcluded(edgeonezone.FieldZoneName)
 	return u
 }
 
-// ClearName clears the value of the "name" field.
-func (u *EdgeOneZoneUpsert) ClearName() *EdgeOneZoneUpsert {
-	u.SetNull(edgeonezone.FieldName)
+// ClearZoneName clears the value of the "zone_name" field.
+func (u *EdgeOneZoneUpsert) ClearZoneName() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldZoneName)
+	return u
+}
+
+// SetAliasZoneName sets the "alias_zone_name" field.
+func (u *EdgeOneZoneUpsert) SetAliasZoneName(v string) *EdgeOneZoneUpsert {
+	u.Set(edgeonezone.FieldAliasZoneName, v)
+	return u
+}
+
+// UpdateAliasZoneName sets the "alias_zone_name" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsert) UpdateAliasZoneName() *EdgeOneZoneUpsert {
+	u.SetExcluded(edgeonezone.FieldAliasZoneName)
+	return u
+}
+
+// ClearAliasZoneName clears the value of the "alias_zone_name" field.
+func (u *EdgeOneZoneUpsert) ClearAliasZoneName() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldAliasZoneName)
 	return u
 }
 
@@ -621,6 +721,78 @@ func (u *EdgeOneZoneUpsert) UpdateType() *EdgeOneZoneUpsert {
 // ClearType clears the value of the "type" field.
 func (u *EdgeOneZoneUpsert) ClearType() *EdgeOneZoneUpsert {
 	u.SetNull(edgeonezone.FieldType)
+	return u
+}
+
+// SetResources sets the "resources" field.
+func (u *EdgeOneZoneUpsert) SetResources(v json.RawMessage) *EdgeOneZoneUpsert {
+	u.Set(edgeonezone.FieldResources, v)
+	return u
+}
+
+// UpdateResources sets the "resources" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsert) UpdateResources() *EdgeOneZoneUpsert {
+	u.SetExcluded(edgeonezone.FieldResources)
+	return u
+}
+
+// ClearResources clears the value of the "resources" field.
+func (u *EdgeOneZoneUpsert) ClearResources() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldResources)
+	return u
+}
+
+// SetNsDetail sets the "ns_detail" field.
+func (u *EdgeOneZoneUpsert) SetNsDetail(v json.RawMessage) *EdgeOneZoneUpsert {
+	u.Set(edgeonezone.FieldNsDetail, v)
+	return u
+}
+
+// UpdateNsDetail sets the "ns_detail" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsert) UpdateNsDetail() *EdgeOneZoneUpsert {
+	u.SetExcluded(edgeonezone.FieldNsDetail)
+	return u
+}
+
+// ClearNsDetail clears the value of the "ns_detail" field.
+func (u *EdgeOneZoneUpsert) ClearNsDetail() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldNsDetail)
+	return u
+}
+
+// SetCnameDetail sets the "cname_detail" field.
+func (u *EdgeOneZoneUpsert) SetCnameDetail(v json.RawMessage) *EdgeOneZoneUpsert {
+	u.Set(edgeonezone.FieldCnameDetail, v)
+	return u
+}
+
+// UpdateCnameDetail sets the "cname_detail" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsert) UpdateCnameDetail() *EdgeOneZoneUpsert {
+	u.SetExcluded(edgeonezone.FieldCnameDetail)
+	return u
+}
+
+// ClearCnameDetail clears the value of the "cname_detail" field.
+func (u *EdgeOneZoneUpsert) ClearCnameDetail() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldCnameDetail)
+	return u
+}
+
+// SetDnspodDetail sets the "dnspod_detail" field.
+func (u *EdgeOneZoneUpsert) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneUpsert {
+	u.Set(edgeonezone.FieldDnspodDetail, v)
+	return u
+}
+
+// UpdateDnspodDetail sets the "dnspod_detail" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsert) UpdateDnspodDetail() *EdgeOneZoneUpsert {
+	u.SetExcluded(edgeonezone.FieldDnspodDetail)
+	return u
+}
+
+// ClearDnspodDetail clears the value of the "dnspod_detail" field.
+func (u *EdgeOneZoneUpsert) ClearDnspodDetail() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldDnspodDetail)
 	return u
 }
 
@@ -675,6 +847,24 @@ func (u *EdgeOneZoneUpsert) UpdateActiveStatus() *EdgeOneZoneUpsert {
 // ClearActiveStatus clears the value of the "active_status" field.
 func (u *EdgeOneZoneUpsert) ClearActiveStatus() *EdgeOneZoneUpsert {
 	u.SetNull(edgeonezone.FieldActiveStatus)
+	return u
+}
+
+// SetLockStatus sets the "lock_status" field.
+func (u *EdgeOneZoneUpsert) SetLockStatus(v edgeonezone.LockStatus) *EdgeOneZoneUpsert {
+	u.Set(edgeonezone.FieldLockStatus, v)
+	return u
+}
+
+// UpdateLockStatus sets the "lock_status" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsert) UpdateLockStatus() *EdgeOneZoneUpsert {
+	u.SetExcluded(edgeonezone.FieldLockStatus)
+	return u
+}
+
+// ClearLockStatus clears the value of the "lock_status" field.
+func (u *EdgeOneZoneUpsert) ClearLockStatus() *EdgeOneZoneUpsert {
+	u.SetNull(edgeonezone.FieldLockStatus)
 	return u
 }
 
@@ -780,24 +970,45 @@ func (u *EdgeOneZoneUpsertOne) ClearSyncAt() *EdgeOneZoneUpsertOne {
 	})
 }
 
-// SetName sets the "name" field.
-func (u *EdgeOneZoneUpsertOne) SetName(v string) *EdgeOneZoneUpsertOne {
+// SetZoneName sets the "zone_name" field.
+func (u *EdgeOneZoneUpsertOne) SetZoneName(v string) *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.SetName(v)
+		s.SetZoneName(v)
 	})
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *EdgeOneZoneUpsertOne) UpdateName() *EdgeOneZoneUpsertOne {
+// UpdateZoneName sets the "zone_name" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertOne) UpdateZoneName() *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.UpdateName()
+		s.UpdateZoneName()
 	})
 }
 
-// ClearName clears the value of the "name" field.
-func (u *EdgeOneZoneUpsertOne) ClearName() *EdgeOneZoneUpsertOne {
+// ClearZoneName clears the value of the "zone_name" field.
+func (u *EdgeOneZoneUpsertOne) ClearZoneName() *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.ClearName()
+		s.ClearZoneName()
+	})
+}
+
+// SetAliasZoneName sets the "alias_zone_name" field.
+func (u *EdgeOneZoneUpsertOne) SetAliasZoneName(v string) *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetAliasZoneName(v)
+	})
+}
+
+// UpdateAliasZoneName sets the "alias_zone_name" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertOne) UpdateAliasZoneName() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateAliasZoneName()
+	})
+}
+
+// ClearAliasZoneName clears the value of the "alias_zone_name" field.
+func (u *EdgeOneZoneUpsertOne) ClearAliasZoneName() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearAliasZoneName()
 	})
 }
 
@@ -840,6 +1051,90 @@ func (u *EdgeOneZoneUpsertOne) UpdateType() *EdgeOneZoneUpsertOne {
 func (u *EdgeOneZoneUpsertOne) ClearType() *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.ClearType()
+	})
+}
+
+// SetResources sets the "resources" field.
+func (u *EdgeOneZoneUpsertOne) SetResources(v json.RawMessage) *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetResources(v)
+	})
+}
+
+// UpdateResources sets the "resources" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertOne) UpdateResources() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateResources()
+	})
+}
+
+// ClearResources clears the value of the "resources" field.
+func (u *EdgeOneZoneUpsertOne) ClearResources() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearResources()
+	})
+}
+
+// SetNsDetail sets the "ns_detail" field.
+func (u *EdgeOneZoneUpsertOne) SetNsDetail(v json.RawMessage) *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetNsDetail(v)
+	})
+}
+
+// UpdateNsDetail sets the "ns_detail" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertOne) UpdateNsDetail() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateNsDetail()
+	})
+}
+
+// ClearNsDetail clears the value of the "ns_detail" field.
+func (u *EdgeOneZoneUpsertOne) ClearNsDetail() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearNsDetail()
+	})
+}
+
+// SetCnameDetail sets the "cname_detail" field.
+func (u *EdgeOneZoneUpsertOne) SetCnameDetail(v json.RawMessage) *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetCnameDetail(v)
+	})
+}
+
+// UpdateCnameDetail sets the "cname_detail" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertOne) UpdateCnameDetail() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateCnameDetail()
+	})
+}
+
+// ClearCnameDetail clears the value of the "cname_detail" field.
+func (u *EdgeOneZoneUpsertOne) ClearCnameDetail() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearCnameDetail()
+	})
+}
+
+// SetDnspodDetail sets the "dnspod_detail" field.
+func (u *EdgeOneZoneUpsertOne) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetDnspodDetail(v)
+	})
+}
+
+// UpdateDnspodDetail sets the "dnspod_detail" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertOne) UpdateDnspodDetail() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateDnspodDetail()
+	})
+}
+
+// ClearDnspodDetail clears the value of the "dnspod_detail" field.
+func (u *EdgeOneZoneUpsertOne) ClearDnspodDetail() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearDnspodDetail()
 	})
 }
 
@@ -903,6 +1198,27 @@ func (u *EdgeOneZoneUpsertOne) UpdateActiveStatus() *EdgeOneZoneUpsertOne {
 func (u *EdgeOneZoneUpsertOne) ClearActiveStatus() *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.ClearActiveStatus()
+	})
+}
+
+// SetLockStatus sets the "lock_status" field.
+func (u *EdgeOneZoneUpsertOne) SetLockStatus(v edgeonezone.LockStatus) *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetLockStatus(v)
+	})
+}
+
+// UpdateLockStatus sets the "lock_status" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertOne) UpdateLockStatus() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateLockStatus()
+	})
+}
+
+// ClearLockStatus clears the value of the "lock_status" field.
+func (u *EdgeOneZoneUpsertOne) ClearLockStatus() *EdgeOneZoneUpsertOne {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearLockStatus()
 	})
 }
 
@@ -1177,24 +1493,45 @@ func (u *EdgeOneZoneUpsertBulk) ClearSyncAt() *EdgeOneZoneUpsertBulk {
 	})
 }
 
-// SetName sets the "name" field.
-func (u *EdgeOneZoneUpsertBulk) SetName(v string) *EdgeOneZoneUpsertBulk {
+// SetZoneName sets the "zone_name" field.
+func (u *EdgeOneZoneUpsertBulk) SetZoneName(v string) *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.SetName(v)
+		s.SetZoneName(v)
 	})
 }
 
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *EdgeOneZoneUpsertBulk) UpdateName() *EdgeOneZoneUpsertBulk {
+// UpdateZoneName sets the "zone_name" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertBulk) UpdateZoneName() *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.UpdateName()
+		s.UpdateZoneName()
 	})
 }
 
-// ClearName clears the value of the "name" field.
-func (u *EdgeOneZoneUpsertBulk) ClearName() *EdgeOneZoneUpsertBulk {
+// ClearZoneName clears the value of the "zone_name" field.
+func (u *EdgeOneZoneUpsertBulk) ClearZoneName() *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
-		s.ClearName()
+		s.ClearZoneName()
+	})
+}
+
+// SetAliasZoneName sets the "alias_zone_name" field.
+func (u *EdgeOneZoneUpsertBulk) SetAliasZoneName(v string) *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetAliasZoneName(v)
+	})
+}
+
+// UpdateAliasZoneName sets the "alias_zone_name" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertBulk) UpdateAliasZoneName() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateAliasZoneName()
+	})
+}
+
+// ClearAliasZoneName clears the value of the "alias_zone_name" field.
+func (u *EdgeOneZoneUpsertBulk) ClearAliasZoneName() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearAliasZoneName()
 	})
 }
 
@@ -1237,6 +1574,90 @@ func (u *EdgeOneZoneUpsertBulk) UpdateType() *EdgeOneZoneUpsertBulk {
 func (u *EdgeOneZoneUpsertBulk) ClearType() *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.ClearType()
+	})
+}
+
+// SetResources sets the "resources" field.
+func (u *EdgeOneZoneUpsertBulk) SetResources(v json.RawMessage) *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetResources(v)
+	})
+}
+
+// UpdateResources sets the "resources" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertBulk) UpdateResources() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateResources()
+	})
+}
+
+// ClearResources clears the value of the "resources" field.
+func (u *EdgeOneZoneUpsertBulk) ClearResources() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearResources()
+	})
+}
+
+// SetNsDetail sets the "ns_detail" field.
+func (u *EdgeOneZoneUpsertBulk) SetNsDetail(v json.RawMessage) *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetNsDetail(v)
+	})
+}
+
+// UpdateNsDetail sets the "ns_detail" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertBulk) UpdateNsDetail() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateNsDetail()
+	})
+}
+
+// ClearNsDetail clears the value of the "ns_detail" field.
+func (u *EdgeOneZoneUpsertBulk) ClearNsDetail() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearNsDetail()
+	})
+}
+
+// SetCnameDetail sets the "cname_detail" field.
+func (u *EdgeOneZoneUpsertBulk) SetCnameDetail(v json.RawMessage) *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetCnameDetail(v)
+	})
+}
+
+// UpdateCnameDetail sets the "cname_detail" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertBulk) UpdateCnameDetail() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateCnameDetail()
+	})
+}
+
+// ClearCnameDetail clears the value of the "cname_detail" field.
+func (u *EdgeOneZoneUpsertBulk) ClearCnameDetail() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearCnameDetail()
+	})
+}
+
+// SetDnspodDetail sets the "dnspod_detail" field.
+func (u *EdgeOneZoneUpsertBulk) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetDnspodDetail(v)
+	})
+}
+
+// UpdateDnspodDetail sets the "dnspod_detail" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertBulk) UpdateDnspodDetail() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateDnspodDetail()
+	})
+}
+
+// ClearDnspodDetail clears the value of the "dnspod_detail" field.
+func (u *EdgeOneZoneUpsertBulk) ClearDnspodDetail() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearDnspodDetail()
 	})
 }
 
@@ -1300,6 +1721,27 @@ func (u *EdgeOneZoneUpsertBulk) UpdateActiveStatus() *EdgeOneZoneUpsertBulk {
 func (u *EdgeOneZoneUpsertBulk) ClearActiveStatus() *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.ClearActiveStatus()
+	})
+}
+
+// SetLockStatus sets the "lock_status" field.
+func (u *EdgeOneZoneUpsertBulk) SetLockStatus(v edgeonezone.LockStatus) *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.SetLockStatus(v)
+	})
+}
+
+// UpdateLockStatus sets the "lock_status" field to the value that was provided on create.
+func (u *EdgeOneZoneUpsertBulk) UpdateLockStatus() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.UpdateLockStatus()
+	})
+}
+
+// ClearLockStatus clears the value of the "lock_status" field.
+func (u *EdgeOneZoneUpsertBulk) ClearLockStatus() *EdgeOneZoneUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneUpsert) {
+		s.ClearLockStatus()
 	})
 }
 

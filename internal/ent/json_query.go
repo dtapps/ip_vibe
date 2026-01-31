@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
+	"vibe_ip/internal/ent/edgeonezone"
 	"vibe_ip/internal/ent/edgeonezoneaccelerationdomain"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/esasiteoriginpool"
@@ -192,6 +193,122 @@ func (q *DomainMonitorQuery) WhereRequestHeadersContains(val any) *DomainMonitor
 func (q *DomainMonitorQuery) WhereRequestHeadersContainsIf(condition bool, val any) *DomainMonitorQuery {
 	if condition {
 		return q.WhereRequestHeadersContains(val)
+	}
+	return q
+}
+
+// WhereResourcesContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EdgeOneZoneQuery) WhereResourcesContains(val any) *EdgeOneZoneQuery {
+	return q.Where(predicate.EdgeOneZone(func(s *sql.Selector) {
+		column := edgeonezone.FieldResources
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereResourcesContainsIf 只有在 condition 为 true 时才调用 WhereResourcesContains。
+func (q *EdgeOneZoneQuery) WhereResourcesContainsIf(condition bool, val any) *EdgeOneZoneQuery {
+	if condition {
+		return q.WhereResourcesContains(val)
+	}
+	return q
+}
+
+// WhereNsDetailContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EdgeOneZoneQuery) WhereNsDetailContains(val any) *EdgeOneZoneQuery {
+	return q.Where(predicate.EdgeOneZone(func(s *sql.Selector) {
+		column := edgeonezone.FieldNsDetail
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereNsDetailContainsIf 只有在 condition 为 true 时才调用 WhereNsDetailContains。
+func (q *EdgeOneZoneQuery) WhereNsDetailContainsIf(condition bool, val any) *EdgeOneZoneQuery {
+	if condition {
+		return q.WhereNsDetailContains(val)
+	}
+	return q
+}
+
+// WhereCnameDetailContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EdgeOneZoneQuery) WhereCnameDetailContains(val any) *EdgeOneZoneQuery {
+	return q.Where(predicate.EdgeOneZone(func(s *sql.Selector) {
+		column := edgeonezone.FieldCnameDetail
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereCnameDetailContainsIf 只有在 condition 为 true 时才调用 WhereCnameDetailContains。
+func (q *EdgeOneZoneQuery) WhereCnameDetailContainsIf(condition bool, val any) *EdgeOneZoneQuery {
+	if condition {
+		return q.WhereCnameDetailContains(val)
+	}
+	return q
+}
+
+// WhereDnspodDetailContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *EdgeOneZoneQuery) WhereDnspodDetailContains(val any) *EdgeOneZoneQuery {
+	return q.Where(predicate.EdgeOneZone(func(s *sql.Selector) {
+		column := edgeonezone.FieldDnspodDetail
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereDnspodDetailContainsIf 只有在 condition 为 true 时才调用 WhereDnspodDetailContains。
+func (q *EdgeOneZoneQuery) WhereDnspodDetailContainsIf(condition bool, val any) *EdgeOneZoneQuery {
+	if condition {
+		return q.WhereDnspodDetailContains(val)
 	}
 	return q
 }

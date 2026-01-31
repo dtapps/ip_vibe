@@ -90,6 +90,11 @@ func Name(v string) predicate.EdgeOneZoneOriginGroup {
 	return predicate.EdgeOneZoneOriginGroup(sql.FieldEQ(FieldName, v))
 }
 
+// HostHeader applies equality check predicate on the "host_header" field. It's identical to HostHeaderEQ.
+func HostHeader(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldEQ(FieldHostHeader, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.EdgeOneZoneOriginGroup {
 	return predicate.EdgeOneZoneOriginGroup(sql.FieldEQ(FieldCreatedAt, v))
@@ -478,6 +483,81 @@ func ReferencesIsNil() predicate.EdgeOneZoneOriginGroup {
 // ReferencesNotNil applies the NotNil predicate on the "references" field.
 func ReferencesNotNil() predicate.EdgeOneZoneOriginGroup {
 	return predicate.EdgeOneZoneOriginGroup(sql.FieldNotNull(FieldReferences))
+}
+
+// HostHeaderEQ applies the EQ predicate on the "host_header" field.
+func HostHeaderEQ(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldEQ(FieldHostHeader, v))
+}
+
+// HostHeaderNEQ applies the NEQ predicate on the "host_header" field.
+func HostHeaderNEQ(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldNEQ(FieldHostHeader, v))
+}
+
+// HostHeaderIn applies the In predicate on the "host_header" field.
+func HostHeaderIn(vs ...string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldIn(FieldHostHeader, vs...))
+}
+
+// HostHeaderNotIn applies the NotIn predicate on the "host_header" field.
+func HostHeaderNotIn(vs ...string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldNotIn(FieldHostHeader, vs...))
+}
+
+// HostHeaderGT applies the GT predicate on the "host_header" field.
+func HostHeaderGT(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldGT(FieldHostHeader, v))
+}
+
+// HostHeaderGTE applies the GTE predicate on the "host_header" field.
+func HostHeaderGTE(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldGTE(FieldHostHeader, v))
+}
+
+// HostHeaderLT applies the LT predicate on the "host_header" field.
+func HostHeaderLT(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldLT(FieldHostHeader, v))
+}
+
+// HostHeaderLTE applies the LTE predicate on the "host_header" field.
+func HostHeaderLTE(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldLTE(FieldHostHeader, v))
+}
+
+// HostHeaderContains applies the Contains predicate on the "host_header" field.
+func HostHeaderContains(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldContains(FieldHostHeader, v))
+}
+
+// HostHeaderHasPrefix applies the HasPrefix predicate on the "host_header" field.
+func HostHeaderHasPrefix(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldHasPrefix(FieldHostHeader, v))
+}
+
+// HostHeaderHasSuffix applies the HasSuffix predicate on the "host_header" field.
+func HostHeaderHasSuffix(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldHasSuffix(FieldHostHeader, v))
+}
+
+// HostHeaderIsNil applies the IsNil predicate on the "host_header" field.
+func HostHeaderIsNil() predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldIsNull(FieldHostHeader))
+}
+
+// HostHeaderNotNil applies the NotNil predicate on the "host_header" field.
+func HostHeaderNotNil() predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldNotNull(FieldHostHeader))
+}
+
+// HostHeaderEqualFold applies the EqualFold predicate on the "host_header" field.
+func HostHeaderEqualFold(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldEqualFold(FieldHostHeader, v))
+}
+
+// HostHeaderContainsFold applies the ContainsFold predicate on the "host_header" field.
+func HostHeaderContainsFold(v string) predicate.EdgeOneZoneOriginGroup {
+	return predicate.EdgeOneZoneOriginGroup(sql.FieldContainsFold(FieldHostHeader, v))
 }
 
 // HasEdgeoneZone applies the HasEdge predicate on the "edgeone_zone" edge.

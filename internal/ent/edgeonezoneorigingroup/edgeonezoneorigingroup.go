@@ -36,6 +36,8 @@ const (
 	FieldRecords = "records"
 	// FieldReferences holds the string denoting the references field in the database.
 	FieldReferences = "references"
+	// FieldHostHeader holds the string denoting the host_header field in the database.
+	FieldHostHeader = "host_header"
 	// EdgeEdgeoneZone holds the string denoting the edgeone_zone edge name in mutations.
 	EdgeEdgeoneZone = "edgeone_zone"
 	// Table holds the table name of the edgeonezoneorigingroup in the database.
@@ -62,6 +64,7 @@ var Columns = []string{
 	FieldType,
 	FieldRecords,
 	FieldReferences,
+	FieldHostHeader,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -162,6 +165,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
+}
+
+// ByHostHeader orders the results by the host_header field.
+func ByHostHeader(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHostHeader, opts...).ToFunc()
 }
 
 // ByEdgeoneZoneField orders the results by edgeone_zone field.

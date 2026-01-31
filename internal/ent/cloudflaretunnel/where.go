@@ -85,14 +85,19 @@ func TunnelID(v string) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldEQ(FieldTunnelID, v))
 }
 
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldEQ(FieldName, v))
-}
-
 // ConnsActiveAt applies equality check predicate on the "conns_active_at" field. It's identical to ConnsActiveAtEQ.
 func ConnsActiveAt(v time.Time) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldEQ(FieldConnsActiveAt, v))
+}
+
+// ConnsInactiveAt applies equality check predicate on the "conns_inactive_at" field. It's identical to ConnsInactiveAtEQ.
+func ConnsInactiveAt(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldEQ(FieldConnsInactiveAt, v))
+}
+
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldEQ(FieldName, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -360,6 +365,116 @@ func TunnelIDContainsFold(v string) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldContainsFold(FieldTunnelID, v))
 }
 
+// ConnectionsIsNil applies the IsNil predicate on the "connections" field.
+func ConnectionsIsNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldConnections))
+}
+
+// ConnectionsNotNil applies the NotNil predicate on the "connections" field.
+func ConnectionsNotNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldConnections))
+}
+
+// ConnsActiveAtEQ applies the EQ predicate on the "conns_active_at" field.
+func ConnsActiveAtEQ(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldEQ(FieldConnsActiveAt, v))
+}
+
+// ConnsActiveAtNEQ applies the NEQ predicate on the "conns_active_at" field.
+func ConnsActiveAtNEQ(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNEQ(FieldConnsActiveAt, v))
+}
+
+// ConnsActiveAtIn applies the In predicate on the "conns_active_at" field.
+func ConnsActiveAtIn(vs ...time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldIn(FieldConnsActiveAt, vs...))
+}
+
+// ConnsActiveAtNotIn applies the NotIn predicate on the "conns_active_at" field.
+func ConnsActiveAtNotIn(vs ...time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNotIn(FieldConnsActiveAt, vs...))
+}
+
+// ConnsActiveAtGT applies the GT predicate on the "conns_active_at" field.
+func ConnsActiveAtGT(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldGT(FieldConnsActiveAt, v))
+}
+
+// ConnsActiveAtGTE applies the GTE predicate on the "conns_active_at" field.
+func ConnsActiveAtGTE(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldGTE(FieldConnsActiveAt, v))
+}
+
+// ConnsActiveAtLT applies the LT predicate on the "conns_active_at" field.
+func ConnsActiveAtLT(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldLT(FieldConnsActiveAt, v))
+}
+
+// ConnsActiveAtLTE applies the LTE predicate on the "conns_active_at" field.
+func ConnsActiveAtLTE(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldLTE(FieldConnsActiveAt, v))
+}
+
+// ConnsActiveAtIsNil applies the IsNil predicate on the "conns_active_at" field.
+func ConnsActiveAtIsNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldConnsActiveAt))
+}
+
+// ConnsActiveAtNotNil applies the NotNil predicate on the "conns_active_at" field.
+func ConnsActiveAtNotNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldConnsActiveAt))
+}
+
+// ConnsInactiveAtEQ applies the EQ predicate on the "conns_inactive_at" field.
+func ConnsInactiveAtEQ(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldEQ(FieldConnsInactiveAt, v))
+}
+
+// ConnsInactiveAtNEQ applies the NEQ predicate on the "conns_inactive_at" field.
+func ConnsInactiveAtNEQ(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNEQ(FieldConnsInactiveAt, v))
+}
+
+// ConnsInactiveAtIn applies the In predicate on the "conns_inactive_at" field.
+func ConnsInactiveAtIn(vs ...time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldIn(FieldConnsInactiveAt, vs...))
+}
+
+// ConnsInactiveAtNotIn applies the NotIn predicate on the "conns_inactive_at" field.
+func ConnsInactiveAtNotIn(vs ...time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNotIn(FieldConnsInactiveAt, vs...))
+}
+
+// ConnsInactiveAtGT applies the GT predicate on the "conns_inactive_at" field.
+func ConnsInactiveAtGT(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldGT(FieldConnsInactiveAt, v))
+}
+
+// ConnsInactiveAtGTE applies the GTE predicate on the "conns_inactive_at" field.
+func ConnsInactiveAtGTE(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldGTE(FieldConnsInactiveAt, v))
+}
+
+// ConnsInactiveAtLT applies the LT predicate on the "conns_inactive_at" field.
+func ConnsInactiveAtLT(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldLT(FieldConnsInactiveAt, v))
+}
+
+// ConnsInactiveAtLTE applies the LTE predicate on the "conns_inactive_at" field.
+func ConnsInactiveAtLTE(v time.Time) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldLTE(FieldConnsInactiveAt, v))
+}
+
+// ConnsInactiveAtIsNil applies the IsNil predicate on the "conns_inactive_at" field.
+func ConnsInactiveAtIsNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldConnsInactiveAt))
+}
+
+// ConnsInactiveAtNotNil applies the NotNil predicate on the "conns_inactive_at" field.
+func ConnsInactiveAtNotNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldConnsInactiveAt))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldEQ(FieldName, v))
@@ -465,64 +580,34 @@ func StatusNotNil() predicate.CloudflareTunnel {
 	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldStatus))
 }
 
-// ConnectionsIsNil applies the IsNil predicate on the "connections" field.
-func ConnectionsIsNil() predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldConnections))
+// TunTypeEQ applies the EQ predicate on the "tun_type" field.
+func TunTypeEQ(v TunType) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldEQ(FieldTunType, v))
 }
 
-// ConnectionsNotNil applies the NotNil predicate on the "connections" field.
-func ConnectionsNotNil() predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldConnections))
+// TunTypeNEQ applies the NEQ predicate on the "tun_type" field.
+func TunTypeNEQ(v TunType) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNEQ(FieldTunType, v))
 }
 
-// ConnsActiveAtEQ applies the EQ predicate on the "conns_active_at" field.
-func ConnsActiveAtEQ(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldEQ(FieldConnsActiveAt, v))
+// TunTypeIn applies the In predicate on the "tun_type" field.
+func TunTypeIn(vs ...TunType) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldIn(FieldTunType, vs...))
 }
 
-// ConnsActiveAtNEQ applies the NEQ predicate on the "conns_active_at" field.
-func ConnsActiveAtNEQ(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldNEQ(FieldConnsActiveAt, v))
+// TunTypeNotIn applies the NotIn predicate on the "tun_type" field.
+func TunTypeNotIn(vs ...TunType) predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNotIn(FieldTunType, vs...))
 }
 
-// ConnsActiveAtIn applies the In predicate on the "conns_active_at" field.
-func ConnsActiveAtIn(vs ...time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldIn(FieldConnsActiveAt, vs...))
+// TunTypeIsNil applies the IsNil predicate on the "tun_type" field.
+func TunTypeIsNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldTunType))
 }
 
-// ConnsActiveAtNotIn applies the NotIn predicate on the "conns_active_at" field.
-func ConnsActiveAtNotIn(vs ...time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldNotIn(FieldConnsActiveAt, vs...))
-}
-
-// ConnsActiveAtGT applies the GT predicate on the "conns_active_at" field.
-func ConnsActiveAtGT(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldGT(FieldConnsActiveAt, v))
-}
-
-// ConnsActiveAtGTE applies the GTE predicate on the "conns_active_at" field.
-func ConnsActiveAtGTE(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldGTE(FieldConnsActiveAt, v))
-}
-
-// ConnsActiveAtLT applies the LT predicate on the "conns_active_at" field.
-func ConnsActiveAtLT(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldLT(FieldConnsActiveAt, v))
-}
-
-// ConnsActiveAtLTE applies the LTE predicate on the "conns_active_at" field.
-func ConnsActiveAtLTE(v time.Time) predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldLTE(FieldConnsActiveAt, v))
-}
-
-// ConnsActiveAtIsNil applies the IsNil predicate on the "conns_active_at" field.
-func ConnsActiveAtIsNil() predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldIsNull(FieldConnsActiveAt))
-}
-
-// ConnsActiveAtNotNil applies the NotNil predicate on the "conns_active_at" field.
-func ConnsActiveAtNotNil() predicate.CloudflareTunnel {
-	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldConnsActiveAt))
+// TunTypeNotNil applies the NotNil predicate on the "tun_type" field.
+func TunTypeNotNil() predicate.CloudflareTunnel {
+	return predicate.CloudflareTunnel(sql.FieldNotNull(FieldTunType))
 }
 
 // HasConfig applies the HasEdge predicate on the "config" edge.

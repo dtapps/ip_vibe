@@ -467,6 +467,7 @@ func (p *TencentEOProvider) ParseCustomConfig(config_json json.RawMessage) (err 
 }
 
 // ZonesRaw 获取所有站点
+// https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeZones
 func (p *TencentEOProvider) ZonesRaw(ctx context.Context) (zones []*teo.Zone, err error) {
 	request := teo.NewDescribeZonesRequest()
 	request.Offset = common.Int64Ptr(0)
@@ -481,6 +482,7 @@ func (p *TencentEOProvider) ZonesRaw(ctx context.Context) (zones []*teo.Zone, er
 }
 
 // OriginGroupsRaw 获取所有源站组
+// https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeOriginGroup
 func (p *TencentEOProvider) OriginGroupsRaw(ctx context.Context, zone_id string) (groups []*teo.OriginGroup, err error) {
 	request := teo.NewDescribeOriginGroupRequest()
 	request.ZoneId = common.StringPtr(zone_id)
@@ -494,6 +496,7 @@ func (p *TencentEOProvider) OriginGroupsRaw(ctx context.Context, zone_id string)
 }
 
 // DnsRecordsRaw 获取所有DNS记录
+// https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeDnsRecords
 func (p *TencentEOProvider) DnsRecordsRaw(ctx context.Context, zone_id string) (records []*teo.DnsRecord, err error) {
 	request := teo.NewDescribeDnsRecordsRequest()
 	request.ZoneId = common.StringPtr(zone_id)
@@ -509,6 +512,7 @@ func (p *TencentEOProvider) DnsRecordsRaw(ctx context.Context, zone_id string) (
 }
 
 // AccelerationDomainsRaw 获取所有加速域名
+// https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeAccelerationDomains
 func (p *TencentEOProvider) AccelerationDomainsRaw(ctx context.Context, zone_id string) (records []*teo.AccelerationDomain, err error) {
 	request := teo.NewDescribeAccelerationDomainsRequest()
 	request.ZoneId = common.StringPtr(zone_id)

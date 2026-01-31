@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
@@ -56,21 +57,46 @@ func (EdgeOneZone) Fields() []ent.Field {
 			Comment("站点ID").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("name").
+		field.String("zone_name").
 			Optional().
 			Comment("站点名称").
+			Annotations(entsql.WithComments(true)),
+
+		field.String("alias_zone_name").
+			Optional().
+			Comment("同名站点标识").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("area").
 			Values(schematype.GetEdgeOneZoneAreas...).
 			Optional().
-			Comment("加速区域").
+			Comment("站点加速区域").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("type").
 			Values(schematype.GetEdgeOneZoneTypes...).
 			Optional().
-			Comment("接入类型").
+			Comment("站点接入类型").
+			Annotations(entsql.WithComments(true)),
+
+		field.JSON("resources", json.RawMessage{}).
+			Optional().
+			Comment("计费资源列表").
+			Annotations(entsql.WithComments(true)),
+
+		field.JSON("ns_detail", json.RawMessage{}).
+			Optional().
+			Comment("NS 类型站点详情").
+			Annotations(entsql.WithComments(true)),
+
+		field.JSON("cname_detail", json.RawMessage{}).
+			Optional().
+			Comment("CNAME 类型站点详情").
+			Annotations(entsql.WithComments(true)),
+
+		field.JSON("dnspod_detail", json.RawMessage{}).
+			Optional().
+			Comment("DNSPod 托管类型站点详情").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("status").
@@ -89,6 +115,12 @@ func (EdgeOneZone) Fields() []ent.Field {
 			Values(schematype.GetEdgeOneZoneActiveStatuss...).
 			Optional().
 			Comment("展示状态").
+			Annotations(entsql.WithComments(true)),
+
+		field.Enum("lock_status").
+			Values(schematype.GetEdgeOneZoneLockStatuss...).
+			Optional().
+			Comment("锁定状态").
 			Annotations(entsql.WithComments(true)),
 
 		field.Bool("paused").
