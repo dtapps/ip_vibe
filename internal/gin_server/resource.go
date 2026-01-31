@@ -125,6 +125,111 @@ var EnumRegistry = map[string]EnumDefinition{
 		Values:       schematype.GetCloudflareTunnelStatuss,
 		Descriptions: schematype.GetCloudflareTunnelStatusDescriptions,
 	},
+	// Cloudflare 隧道 隧道类型
+	"cloudflare_tunnel_tun_type": {
+		Values:       schematype.GetCloudflareTunnelTunTypes,
+		Descriptions: schematype.GetCloudflareTunnelTunTypeDescriptions,
+	},
+	// EdgeOne 站点 站点加速区域
+	"edgeone_zone_area": {
+		Values:       schematype.GetEdgeOneZoneAreas,
+		Descriptions: schematype.GetEdgeOneZoneAreaDescriptions,
+	},
+	// EdgeOne 站点 站点接入类型
+	"edgeone_zone_type": {
+		Values:       schematype.GetEdgeOneZoneTypes,
+		Descriptions: schematype.GetEdgeOneZoneTypeDescriptions,
+	},
+	// EdgeOne 站点 状态
+	"edgeone_zone_status": {
+		Values:       schematype.GetEdgeOneZoneStatuss,
+		Descriptions: schematype.GetEdgeOneZoneStatusDescriptions,
+	},
+	// EdgeOne 站点 CNAME 接入状态
+	"edgeone_zone_cname_status": {
+		Values:       schematype.GetEdgeOneZoneCnameStatuss,
+		Descriptions: schematype.GetEdgeOneZoneCnameStatusDescriptions,
+	},
+	// EdgeOne 站点 展示状态
+	"edgeone_zone_active_status": {
+		Values:       schematype.GetEdgeOneZoneActiveStatuss,
+		Descriptions: schematype.GetEdgeOneZoneActiveStatusDescriptions,
+	},
+	// EdgeOne 站点 锁定状态
+	"edgeone_zone_lock_status": {
+		Values:       schematype.GetEdgeOneZoneLockStatuss,
+		Descriptions: schematype.GetEdgeOneZoneLockStatusDescriptions,
+	},
+	// EdgeOne 站点源站组 源站组类型
+	"edgeone_zone_origingroup_type": {
+		Values:       schematype.GetEdgeOneZoneOriginGroupTypes,
+		Descriptions: schematype.GetEdgeOneZoneOriginGroupTypeDescriptions,
+	},
+	// EdgeOne 站点DNS记录 DNS 记录类型
+	"edgeone_zone_dnsrecord_type": {
+		Values:       schematype.GetEdgeOneZoneDNSRecordTypes,
+		Descriptions: schematype.GetEdgeOneZoneDNSRecordTypeDescriptions,
+	},
+	// EdgeOne 站点DNS记录 DNS 记录解析状态
+	"edgeone_zone_dnsrecord_status": {
+		Values:       schematype.GetEdgeOneZoneDNSRecordStatuss,
+		Descriptions: schematype.GetEdgeOneZoneDNSRecordStatusDescriptions,
+	},
+	// EdgeOne 站点加速域名 加速域名状态
+	"edgeone_zone_accelerationdomain_domain_status": {
+		Values:       schematype.GetEdgeOneZoneAccelerationDomainDomainStatuss,
+		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainDomainStatusDescriptions,
+	},
+	// EdgeOne 站点加速域名 Pv6 状态
+	"edgeone_zone_accelerationdomain_ipv6_status": {
+		Values:       schematype.GetEdgeOneZoneAccelerationDomainIPv6Statuss,
+		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainIPv6StatusDescriptions,
+	},
+	// EdgeOne 站点加速域名 加速域名归属权验证状态
+	"edgeone_zone_accelerationdomain_identification_status": {
+		Values:       schematype.GetEdgeOneZoneAccelerationDomainIdentificationStatuss,
+		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainIdentificationStatusDescriptions,
+	},
+	// EdgeOne 站点加速域名 回源协议
+	"edgeone_zone_accelerationdomain_origin_protocol": {
+		Values:       schematype.GetEdgeOneZoneAccelerationDomainOriginProtocols,
+		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainOriginProtocolDescriptions,
+	},
+	// ESA 站点 站点接入类型
+	"esa_site_access_type": {
+		Values:       schematype.GetEsaSiteAccessTypes,
+		Descriptions: schematype.GetEsaSiteAccessTypeDescriptions,
+	},
+	// ESA 站点 站点加速区域
+	"esa_site_coverage": {
+		Values:       schematype.GetEsaSiteCoverages,
+		Descriptions: schematype.GetEsaSiteCoverageDescriptions,
+	},
+	// ESA 站点 站点状态
+	"esa_site_status": {
+		Values:       schematype.GetEsaSiteStatuss,
+		Descriptions: schematype.GetEsaSiteStatusDescriptions,
+	},
+	// ESA 站点记录 记录加速时的业务场景
+	"esa_site_record_biz_name": {
+		Values:       schematype.GetEsaSiteRecordBizNames,
+		Descriptions: schematype.GetEsaSiteRecordBizNameDescriptions,
+	},
+	// ESA 站点记录 CNAME 记录的源站类型
+	"esa_site_record_record_source_type": {
+		Values:       schematype.GetEsaSiteRecordRecordSourceTypes,
+		Descriptions: schematype.GetEsaSiteRecordRecordSourceTypeDescriptions,
+	},
+	// ESA 站点记录 记录的 DNS 类型
+	"esa_site_record_record_type": {
+		Values:       schematype.GetEsaSiteRecordRecordTypes,
+		Descriptions: schematype.GetEsaSiteRecordRecordTypeDescriptions,
+	},
+	// ESA 站点记录 回源 HOST 策略
+	"esa_site_record_host_policy": {
+		Values:       schematype.GetEsaSiteRecordHostPolicys,
+		Descriptions: schematype.GetEsaSiteRecordHostPolicyDescriptions,
+	},
 }
 
 // 将原 main.go 的 funcMap 逻辑移入此处

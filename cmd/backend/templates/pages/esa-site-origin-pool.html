@@ -132,8 +132,8 @@
                         </td>
                         <td class="ui-td">
                             <div class="flex flex-col gap-2 py-2">
-                                {{ $references := jsonToSlice $pool.References }}
-                                {{ range $reference := $references }}
+                                {{ $dnsRecords := jsonGet $pool.References "DnsRecords" }}
+                                {{ range $reference := $dnsRecords }}
                                 <div
                                     class="flex flex-col p-2 bg-base-200/50 rounded-xl border border-base-300/50 group/item">
                                     <div class="flex items-center gap-2">
