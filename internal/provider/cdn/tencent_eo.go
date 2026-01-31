@@ -56,6 +56,7 @@ func (cfg *TencentEOConfig) CdnValidate() error {
 // NewDefaultTencentEOConfig 创建默认的腾讯云 EO 配置
 // https://cloud.tencent.com/document/product/1552/80723
 // https://www.tencentcloud.com/zh/document/product/1145/50456
+// https://edgeone.ai/zh/document/50456?product=api
 func NewDefaultTencentEOConfig() *TencentEOConfig {
 	return &TencentEOConfig{
 		Endpoint:   "teo.tencentcloudapi.com",

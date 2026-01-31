@@ -152,8 +152,12 @@
           <progress class="progress progress-primary w-full h-2 bg-base-300"
             value="{{ $data.SystemMemoryInfo.UsedPercent }}" max="100"></progress>
           <div class="flex justify-between mt-1 text-[9px] opacity-50 font-mono">
-            <span>Go Alloc: {{ $data.SystemMemoryInfo.AllocMem }}</span>
-            <span>Total: {{ $data.SystemMemoryInfo.TotalMem }}</span>
+            <span>
+              Go Alloc: {{ $data.SystemMemoryInfo.AllocMem }}
+            </span>
+            <span>
+              Total: {{ $data.SystemMemoryInfo.TotalMem }}
+            </span>
           </div>
         </div>
 
@@ -170,8 +174,9 @@
             </div>
             <div class="flex justify-between items-center text-xs">
               <span class="opacity-50">已运行自</span>
-              <span class="font-mono text-[10px] opacity-80">
-                {{ $data.SystemMemoryInfo.RuntimeStartTime }}
+              <span class="font-mono text-[10px] opacity-80 tooltip tooltip-left"
+                data-tip='{{ $data.SystemMemoryInfo.RuntimeStartTime.Format "01-02 15:04:05" }}'>
+                {{ diffForHumans $data.SystemMemoryInfo.RuntimeStartTime }}
               </span>
             </div>
           </div>

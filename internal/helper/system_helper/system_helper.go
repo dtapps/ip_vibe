@@ -45,7 +45,7 @@ func (s *SystemHelper) GetMemoryInfo(ctx context.Context) types.ReturnMemoryInfo
 		OS:        global.GvaOS,
 		Arch:      global.GvaArch,
 
-		RuntimeStartTime: runtimeStartTime.Format("01-02 15:04:05"),
+		RuntimeStartTime: runtimeStartTime,
 		NumGoroutine:     runtime.NumGoroutine(),
 		NumGC:            m.NumGC,
 

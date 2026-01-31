@@ -1,6 +1,9 @@
 package types
 
-import "vibe_ip/internal/ent_log"
+import (
+	"time"
+	"vibe_ip/internal/ent_log"
+)
 
 // 仪表盘 统计
 type DashboardStat struct {
@@ -37,9 +40,9 @@ type ReturnMemoryInfo struct {
 	OS        string `json:"os"`         // 系统 OS
 	Arch      string `json:"arch"`       // 系统架构
 
-	RuntimeStartTime string `json:"runtime_start_time"` // 应用启动时间
-	NumGoroutine     int    `json:"num_goroutine"`      // Goroutine 数量
-	NumGC            uint32 `json:"num_gc"`             // GC 总次数
+	RuntimeStartTime time.Time `json:"runtime_start_time"` // 应用启动时间
+	NumGoroutine     int       `json:"num_goroutine"`      // Goroutine 数量
+	NumGC            uint32    `json:"num_gc"`             // GC 总次数
 
 	CPUModel    string  `json:"cpu_model"`    // CPU 型号
 	UsedPercent float64 `json:"used_percent"` // 内存使用率
