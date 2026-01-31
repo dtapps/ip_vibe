@@ -27,8 +27,8 @@ type AliyunCDNConfig struct {
 	DomainName      string `json:"domain_name"`        // 主域名
 }
 
-// Validate 验证阿里云 CDN 配置
-func (cfg *AliyunCDNConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *AliyunCDNConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
 		return fmt.Errorf("Endpoint 不能为空")
 	}
@@ -38,6 +38,11 @@ func (cfg *AliyunCDNConfig) Validate() error {
 	if cfg.AccessKeySecret == "" {
 		return fmt.Errorf("AccessKeySecret 不能为空")
 	}
+	return nil
+}
+
+// CdnValidate 验证配置
+func (cfg *AliyunCDNConfig) CdnValidate() error {
 	if cfg.DomainName == "" {
 		return fmt.Errorf("DomainName 不能为空")
 	}
@@ -98,7 +103,7 @@ func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -161,6 +166,11 @@ func (p *AliyunCDNProvider) Name() string {
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/ESA/2024-09-10/ListRecords
 func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	defaultIP := "192.0.2.0"
 
@@ -236,6 +246,11 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 // https://next.api.aliyun.com/api/Cdn/2018-05-10/AddCdnDomain
 // https://next.api.aliyun.com/api/Cdn/2018-05-10/ModifyCdnDomain
 func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	type SourceItem struct {
 		Content  string `json:"content"`  // 回源地址

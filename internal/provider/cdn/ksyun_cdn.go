@@ -20,8 +20,8 @@ type KsyunCDNConfig struct {
 	DomainName string `json:"domain_name"`      // 主域名
 }
 
-// Validate 验证金山云 CDN 配置
-func (cfg *KsyunCDNConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *KsyunCDNConfig) DefaultValidate() error {
 	if cfg.Region == "" {
 		return fmt.Errorf("Region 不能为空")
 	}
@@ -31,6 +31,11 @@ func (cfg *KsyunCDNConfig) Validate() error {
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
 	}
+	return nil
+}
+
+// CdnValidate 验证配置
+func (cfg *KsyunCDNConfig) CdnValidate() error {
 	if cfg.DomainName == "" {
 		return fmt.Errorf("DomainName 不能为空")
 	}
@@ -90,7 +95,7 @@ func NewKsyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Ksyun
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 

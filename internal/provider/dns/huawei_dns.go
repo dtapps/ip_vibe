@@ -28,8 +28,8 @@ type HuaweiDNSConfig struct {
 	DomainName      string `json:"domain_name"`       // 主域名
 }
 
-// Validate 验证华为云 DNS 配置
-func (cfg *HuaweiDNSConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *HuaweiDNSConfig) DefaultValidate() error {
 	if cfg.Region == "" {
 		return fmt.Errorf("Region 不能为空")
 	}
@@ -39,6 +39,11 @@ func (cfg *HuaweiDNSConfig) Validate() error {
 	if cfg.SecretAccessKey == "" {
 		return fmt.Errorf("SecretAccessKey 不能为空")
 	}
+	return nil
+}
+
+// DnsValidate 验证配置
+func (cfg *HuaweiDNSConfig) DnsValidate() error {
 	if cfg.ZoneID == "" {
 		return fmt.Errorf("ZoneID 不能为空")
 	}
@@ -103,7 +108,7 @@ func NewHuaweiDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Huaw
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -165,6 +170,11 @@ func (p *HuaweiDNSProvider) Name() string {
 // Check 检查子域名是否存在
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=ShowRecordSetByZone
 func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -241,6 +251,11 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=CreateRecordSetWithLine
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/sdk?api=UpdateRecordSets
 func (p *HuaweiDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

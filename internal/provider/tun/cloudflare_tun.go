@@ -23,11 +23,16 @@ type CloudfareTUNConfig struct {
 	AccountID string `json:"account_id"` // 账号ID
 }
 
-// Validate 验证Cloudfare TUN 配置
-func (cfg *CloudfareTUNConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *CloudfareTUNConfig) DefaultValidate() error {
 	if cfg.ApiToken == "" {
 		return fmt.Errorf("ApiToken 不能为空")
 	}
+	return nil
+}
+
+// TunValidate 验证配置
+func (cfg *CloudfareTUNConfig) TunValidate() error {
 	if cfg.AccountID == "" {
 		return fmt.Errorf("AccountID 不能为空")
 	}
@@ -84,7 +89,7 @@ func NewCloudfareTUNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *C
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -153,6 +158,11 @@ func (p *CloudfareTUNProvider) HandleHostnameAndService(sub_domain string, domai
 // https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/get/
 func (p *CloudfareTUNProvider) Check(ctx context.Context, sub_domain string, domain_path string, serve_type string, serve_uri string) (data *provider.TUNProviderInternalData, err error) {
 
+	// 验证配置
+	if err := p.cfg.TunValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
+
 	// 处理主机名和服务
 	hostname, service := p.HandleHostnameAndService(sub_domain, p.CustomConfig.ZoneName, serve_type, serve_uri)
 
@@ -203,6 +213,11 @@ func (p *CloudfareTUNProvider) Check(ctx context.Context, sub_domain string, dom
 // Update 更新 记录
 // https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/update/
 func (p *CloudfareTUNProvider) Update(ctx context.Context, sub_domain string, domain_path string, serve_type string, serve_uri string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.TunValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 处理主机名和服务
 	hostname, service := p.HandleHostnameAndService(sub_domain, p.CustomConfig.ZoneName, serve_type, serve_uri)

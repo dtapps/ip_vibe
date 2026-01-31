@@ -24,8 +24,8 @@ type TencentCDNConfig struct {
 	DomainName string `json:"domain_name"`        // 主域名
 }
 
-// Validate 验证腾讯云 CDN 配置
-func (cfg *TencentCDNConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *TencentCDNConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
 		return fmt.Errorf("Endpoint 不能为空")
 	}
@@ -35,6 +35,11 @@ func (cfg *TencentCDNConfig) Validate() error {
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
 	}
+	return nil
+}
+
+// CdnValidate 验证配置
+func (cfg *TencentCDNConfig) CdnValidate() error {
 	if cfg.DomainName == "" {
 		return fmt.Errorf("DomainName 不能为空")
 	}
@@ -94,7 +99,7 @@ func NewTencentCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Ten
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -148,6 +153,11 @@ func (p *TencentCDNProvider) Name() string {
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=DescribeDomains
 func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -233,6 +243,11 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=AddCdnDomain
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=UpdateDomainConfig
 func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

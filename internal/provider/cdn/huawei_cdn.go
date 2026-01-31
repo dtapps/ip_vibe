@@ -26,8 +26,8 @@ type HuaweiCDNConfig struct {
 	DomainName      string `json:"domain_name"`       // 主域名
 }
 
-// Validate 验证华为云 CDN 配置
-func (cfg *HuaweiCDNConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *HuaweiCDNConfig) DefaultValidate() error {
 	if cfg.Region == "" {
 		return fmt.Errorf("Region 不能为空")
 	}
@@ -37,6 +37,11 @@ func (cfg *HuaweiCDNConfig) Validate() error {
 	if cfg.SecretAccessKey == "" {
 		return fmt.Errorf("SecretAccessKey 不能为空")
 	}
+	return nil
+}
+
+// CdnValidate 验证配置
+func (cfg *HuaweiCDNConfig) CdnValidate() error {
 	if cfg.DomainName == "" {
 		return fmt.Errorf("DomainName 不能为空")
 	}
@@ -98,7 +103,7 @@ func NewHuaweiCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Huaw
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -160,6 +165,11 @@ func (p *HuaweiCDNProvider) Name() string {
 // Check 检查子域名是否存在
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/sdk?version=v2&api=ListDomains
 func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -242,6 +252,11 @@ func (p *HuaweiCDNProvider) Check(ctx context.Context, domain string, subdomain 
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/debug?version=v2&api=CreateDomain
 // https://console.huaweicloud.com/apiexplorer/#/openapi/CDN/sdk?version=v2&api=UpdateDomainFullConfig
 func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

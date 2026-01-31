@@ -24,8 +24,8 @@ type JdcloudDNSConfig struct {
 	DomainName string `json:"domain_name"`      // 主域名
 }
 
-// Validate 验证京东云 DNS 配置
-func (cfg *JdcloudDNSConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *JdcloudDNSConfig) DefaultValidate() error {
 	if cfg.Region == "" {
 		return fmt.Errorf("Region 不能为空")
 	}
@@ -35,6 +35,11 @@ func (cfg *JdcloudDNSConfig) Validate() error {
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
 	}
+	return nil
+}
+
+// DnsValidate 验证配置
+func (cfg *JdcloudDNSConfig) DnsValidate() error {
 	if cfg.ZoneID == "" {
 		return fmt.Errorf("ZoneID 不能为空")
 	}
@@ -96,7 +101,7 @@ func NewJdcloudDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Jdc
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -137,6 +142,11 @@ func (p *JdcloudDNSProvider) Name() string {
 // Check 检查子域名是否存在
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/describeresourcerecord
 func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -202,6 +212,11 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/createresourcerecord
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/modifyresourcerecord
 func (p *JdcloudDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

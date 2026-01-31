@@ -25,10 +25,13 @@ type TencentEOConfig struct {
 	DomainName string `json:"domain_name"`           // 主域名
 }
 
-// Validate 验证腾讯云 EO 配置
-func (cfg *TencentEOConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *TencentEOConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
 		return fmt.Errorf("Endpoint 不能为空")
+	}
+	if cfg.RegionType == "" {
+		return fmt.Errorf("RegionType 不能为空")
 	}
 	if cfg.SecretID == "" {
 		return fmt.Errorf("SecretID 不能为空")
@@ -36,6 +39,11 @@ func (cfg *TencentEOConfig) Validate() error {
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
 	}
+	return nil
+}
+
+// CdnValidate 验证配置
+func (cfg *TencentEOConfig) CdnValidate() error {
 	if cfg.ZoneID == "" {
 		return fmt.Errorf("ZoneID 不能为空")
 	}
@@ -50,7 +58,8 @@ func (cfg *TencentEOConfig) Validate() error {
 // https://www.tencentcloud.com/zh/document/product/1145/50456
 func NewDefaultTencentEOConfig() *TencentEOConfig {
 	return &TencentEOConfig{
-		Endpoint: "teo.tencentcloudapi.com",
+		Endpoint:   "teo.tencentcloudapi.com",
+		RegionType: "cn",
 	}
 }
 
@@ -100,7 +109,7 @@ func NewTencentEOProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Tenc
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -163,6 +172,11 @@ func (p *TencentEOProvider) Name() string {
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeAccelerationDomains
 func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -277,6 +291,11 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=CreateAccelerationDomain
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=ModifyAccelerationDomain
 func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

@@ -22,8 +22,8 @@ type BaiduDNSConfig struct {
 	DomainName      string `json:"domain_name"`        // 主域名
 }
 
-// Validate 验证百度云 DNS 配置
-func (cfg *BaiduDNSConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *BaiduDNSConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
 		return fmt.Errorf("Endpoint 不能为空")
 	}
@@ -33,6 +33,11 @@ func (cfg *BaiduDNSConfig) Validate() error {
 	if cfg.SecretAccessKey == "" {
 		return fmt.Errorf("SecretAccessKey 不能为空")
 	}
+	return nil
+}
+
+// DnsValidate 验证配置
+func (cfg *BaiduDNSConfig) DnsValidate() error {
 	if cfg.DomainName == "" {
 		return fmt.Errorf("DomainName 不能为空")
 	}
@@ -90,7 +95,7 @@ func NewBaiduDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Baidu
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -139,6 +144,11 @@ func (p *BaiduDNSProvider) Name() string {
 // Check 检查子域名是否存在
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#查询解析记录列表
 func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 查询域名记录
 	requestDnsQuery := &dns.ListRecordRequest{}
@@ -212,6 +222,11 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#添加解析记录
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#修改解析记录
 func (p *BaiduDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	if p.InternalData.RecordID == "" {
 

@@ -19,8 +19,8 @@ type JdcloudCDNConfig struct {
 	DomainName string `json:"domain_name"`      // 主域名
 }
 
-// Validate 验证京东云 CDN 配置
-func (cfg *JdcloudCDNConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *JdcloudCDNConfig) DefaultValidate() error {
 	if cfg.Region == "" {
 		return fmt.Errorf("Region 不能为空")
 	}
@@ -30,6 +30,11 @@ func (cfg *JdcloudCDNConfig) Validate() error {
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
 	}
+	return nil
+}
+
+// CdnValidate 验证配置
+func (cfg *JdcloudCDNConfig) CdnValidate() error {
 	if cfg.DomainName == "" {
 		return fmt.Errorf("DomainName 不能为空")
 	}
@@ -88,7 +93,7 @@ func NewJdcloudCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Jdc
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 

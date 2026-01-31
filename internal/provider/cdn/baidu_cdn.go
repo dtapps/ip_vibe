@@ -22,8 +22,8 @@ type BaiduCDNConfig struct {
 	DomainName      string `json:"domain_name"`        // 主域名
 }
 
-// Validate 验证百度云 CDN 配置
-func (cfg *BaiduCDNConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *BaiduCDNConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
 		return fmt.Errorf("Endpoint 不能为空")
 	}
@@ -33,6 +33,11 @@ func (cfg *BaiduCDNConfig) Validate() error {
 	if cfg.SecretAccessKey == "" {
 		return fmt.Errorf("AccessKeySecret 不能为空")
 	}
+	return nil
+}
+
+// CdnValidate 验证配置
+func (cfg *BaiduCDNConfig) CdnValidate() error {
 	if cfg.DomainName == "" {
 		return fmt.Errorf("DomainName 不能为空")
 	}
@@ -90,7 +95,7 @@ func NewBaiduCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Baidu
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -140,6 +145,11 @@ func (p *BaiduCDNProvider) Name() string {
 // https://console.bce.baidu.com/support/#/api?product=CDN&project=CDN&parent=查询用户名下所有域名
 // https://console.bce.baidu.com/support/#/api?product=CDN&project=CDN&parent=查询加速域名详情
 func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -244,6 +254,11 @@ func (p *BaiduCDNProvider) Check(ctx context.Context, domain string, subdomain s
 // https://cloud.baidu.com/doc/CDN/s/Vk121slzt#更新加速域名回源地址-setdomainorigin
 // https://cloud.baidu.com/doc/CDN/s/qkggncsxp
 func (p *BaiduCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

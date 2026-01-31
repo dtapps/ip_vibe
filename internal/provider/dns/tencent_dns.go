@@ -24,8 +24,8 @@ type TencentDNSConfig struct {
 	DomainGrade string `json:"domain_grade,omitempty"` // 域名套餐等级
 }
 
-// Validate 验证腾讯云 DNS 配置
-func (cfg *TencentDNSConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *TencentDNSConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
 		return fmt.Errorf("Endpoint 不能为空")
 	}
@@ -35,6 +35,11 @@ func (cfg *TencentDNSConfig) Validate() error {
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
 	}
+	return nil
+}
+
+// DnsValidate 验证配置
+func (cfg *TencentDNSConfig) DnsValidate() error {
 	if cfg.DomainName == "" {
 		return fmt.Errorf("DomainName 不能为空")
 	}
@@ -94,7 +99,7 @@ func NewTencentDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Ten
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -148,6 +153,11 @@ func (p *TencentDNSProvider) Name() string {
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordList
 func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 查询域名记录
 	requestDnsQuery := dnspod.NewDescribeRecordListRequest()
@@ -224,6 +234,11 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=CreateRecord
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=ModifyRecord
 func (p *TencentDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	if p.InternalData.RecordID == "" {
 

@@ -25,8 +25,8 @@ type VolcengineDNSConfig struct {
 	DomainName string `json:"domain_name"`      // 主域名
 }
 
-// Validate 验证火山引擎 DNS 配置
-func (cfg *VolcengineDNSConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *VolcengineDNSConfig) DefaultValidate() error {
 	if cfg.Region == "" {
 		return fmt.Errorf("Region 不能为空")
 	}
@@ -36,6 +36,11 @@ func (cfg *VolcengineDNSConfig) Validate() error {
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
 	}
+	return nil
+}
+
+// DnsValidate 验证配置
+func (cfg *VolcengineDNSConfig) DnsValidate() error {
 	if cfg.ZoneID == 0 {
 		return fmt.Errorf("ZoneID 不能为空")
 	}
@@ -99,7 +104,7 @@ func NewVolcengineDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -158,6 +163,11 @@ func (p *VolcengineDNSProvider) Name() string {
 // Check 检查子域名是否存在
 // https://api.volcengine.com/api-explorer?action=ListRecords
 func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -243,6 +253,11 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 // https://api.volcengine.com/api-explorer?action=CreateRecord
 // https://api.volcengine.com/api-explorer?action=UpdateRecord
 func (p *VolcengineDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

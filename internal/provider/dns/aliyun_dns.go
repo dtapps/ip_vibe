@@ -25,8 +25,8 @@ type AliyunDNSConfig struct {
 	DomainName      string `json:"domain_name"`        // 主域名
 }
 
-// Validate 验证阿里云 DNS 配置
-func (cfg *AliyunDNSConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *AliyunDNSConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
 		return fmt.Errorf("Endpoint 不能为空")
 	}
@@ -36,6 +36,11 @@ func (cfg *AliyunDNSConfig) Validate() error {
 	if cfg.AccessKeySecret == "" {
 		return fmt.Errorf("AccessKeySecret 不能为空")
 	}
+	return nil
+}
+
+// DnsValidate 验证配置
+func (cfg *AliyunDNSConfig) DnsValidate() error {
 	if cfg.DomainName == "" {
 		return fmt.Errorf("DomainName 不能为空")
 	}
@@ -96,7 +101,7 @@ func NewAliyunDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -159,6 +164,11 @@ func (p *AliyunDNSProvider) Name() string {
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
 func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 查询域名记录
 	requestDnsQuery := &alidns20150109.DescribeDomainRecordsRequest{}
@@ -227,6 +237,11 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/AddDomainRecord
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/UpdateDomainRecord
 func (p *AliyunDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	if p.InternalData.RecordID == "" {
 

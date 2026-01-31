@@ -22,11 +22,16 @@ type CloudfareDNSConfig struct {
 	DomainName string `json:"domain_name"` // 主域名
 }
 
-// Validate 验证Cloudfare DNS 配置
-func (cfg *CloudfareDNSConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *CloudfareDNSConfig) DefaultValidate() error {
 	if cfg.ApiToken == "" {
 		return fmt.Errorf("ApiToken 不能为空")
 	}
+	return nil
+}
+
+// DnsValidate 验证配置
+func (cfg *CloudfareDNSConfig) DnsValidate() error {
 	if cfg.ZoneID == "" {
 		return fmt.Errorf("ZoneID 不能为空")
 	}
@@ -86,7 +91,7 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *C
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -130,6 +135,11 @@ func (p *CloudfareDNSProvider) Name() string {
 // Check 检查子域名是否存在
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
 func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -205,6 +215,11 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/edit/
 func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.DnsValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)

@@ -31,10 +31,13 @@ type AliyunESAConfig struct {
 	DomainName      string `json:"domain_name"`           // 主域名
 }
 
-// Validate 验证阿里云 ESA 配置
-func (cfg *AliyunESAConfig) Validate() error {
+// DefaultValidate 验证配置
+func (cfg *AliyunESAConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
 		return fmt.Errorf("Endpoint 不能为空")
+	}
+	if cfg.RegionType == "" {
+		return fmt.Errorf("RegionType 不能为空")
 	}
 	if cfg.AccessKeyID == "" {
 		return fmt.Errorf("AccessKeyID 不能为空")
@@ -42,6 +45,11 @@ func (cfg *AliyunESAConfig) Validate() error {
 	if cfg.AccessKeySecret == "" {
 		return fmt.Errorf("AccessKeySecret 不能为空")
 	}
+	return nil
+}
+
+// CdnValidate 验证配置
+func (cfg *AliyunESAConfig) CdnValidate() error {
 	if cfg.SiteID == 0 {
 		return fmt.Errorf("SiteID 不能为空")
 	}
@@ -56,7 +64,8 @@ func (cfg *AliyunESAConfig) Validate() error {
 // https://www.alibabacloud.com/help/zh/edge-security-acceleration/esa/api-esa-2024-09-10-endpoint
 func NewDefaultAliyunESAConfig() *AliyunESAConfig {
 	return &AliyunESAConfig{
-		Endpoint: "esa.cn-hangzhou.aliyuncs.com",
+		Endpoint:   "esa.cn-hangzhou.aliyuncs.com",
+		RegionType: "cn",
 	}
 }
 
@@ -107,7 +116,7 @@ func NewAliyunESAProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 	}
 
 	// 验证配置
-	if err := cfg.Validate(); err != nil {
+	if err := cfg.DefaultValidate(); err != nil {
 		return nil, fmt.Errorf("配置无效: %w", err)
 	}
 
@@ -179,6 +188,11 @@ func (p *AliyunESAProvider) Name() string {
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/ESA/2024-09-10/ListRecords
 func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return nil, fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -277,6 +291,11 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 // https://next.api.aliyun.com/api/ESA/2024-09-10/CreateRecord
 // https://next.api.aliyun.com/api/ESA/2024-09-10/UpdateRecord
 func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
+
+	// 验证配置
+	if err := p.cfg.CdnValidate(); err != nil {
+		return fmt.Errorf("配置无效: %w", err)
+	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
