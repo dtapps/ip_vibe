@@ -56,6 +56,30 @@ func (f CloudflareTunnelIngressFunc) Mutate(ctx context.Context, m ent.Mutation)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CloudflareTunnelIngressMutation", m)
 }
 
+// The CloudflareZoneFunc type is an adapter to allow the use of ordinary
+// function as CloudflareZone mutator.
+type CloudflareZoneFunc func(context.Context, *ent.CloudflareZoneMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CloudflareZoneFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CloudflareZoneMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CloudflareZoneMutation", m)
+}
+
+// The CloudflareZoneRecordFunc type is an adapter to allow the use of ordinary
+// function as CloudflareZoneRecord mutator.
+type CloudflareZoneRecordFunc func(context.Context, *ent.CloudflareZoneRecordMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CloudflareZoneRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CloudflareZoneRecordMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CloudflareZoneRecordMutation", m)
+}
+
 // The DNSRecordFunc type is an adapter to allow the use of ordinary
 // function as DNSRecord mutator.
 type DNSRecordFunc func(context.Context, *ent.DNSRecordMutation) (ent.Value, error)

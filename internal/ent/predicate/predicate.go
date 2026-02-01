@@ -18,6 +18,12 @@ type CloudflareTunnel func(*sql.Selector)
 // CloudflareTunnelIngress is the predicate function for cloudflaretunnelingress builders.
 type CloudflareTunnelIngress func(*sql.Selector)
 
+// CloudflareZone is the predicate function for cloudflarezone builders.
+type CloudflareZone func(*sql.Selector)
+
+// CloudflareZoneRecord is the predicate function for cloudflarezonerecord builders.
+type CloudflareZoneRecord func(*sql.Selector)
+
 // DNSRecord is the predicate function for dnsrecord builders.
 type DNSRecord func(*sql.Selector)
 

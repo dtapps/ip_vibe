@@ -7,6 +7,8 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
+	"vibe_ip/internal/ent/cloudflarezone"
+	"vibe_ip/internal/ent/cloudflarezonerecord"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -106,6 +108,122 @@ func (q *CloudflareTunnelIngressQuery) WhereOriginRequestContains(val any) *Clou
 func (q *CloudflareTunnelIngressQuery) WhereOriginRequestContainsIf(condition bool, val any) *CloudflareTunnelIngressQuery {
 	if condition {
 		return q.WhereOriginRequestContains(val)
+	}
+	return q
+}
+
+// WhereAccountContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *CloudflareZoneQuery) WhereAccountContains(val any) *CloudflareZoneQuery {
+	return q.Where(predicate.CloudflareZone(func(s *sql.Selector) {
+		column := cloudflarezone.FieldAccount
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereAccountContainsIf 只有在 condition 为 true 时才调用 WhereAccountContains。
+func (q *CloudflareZoneQuery) WhereAccountContainsIf(condition bool, val any) *CloudflareZoneQuery {
+	if condition {
+		return q.WhereAccountContains(val)
+	}
+	return q
+}
+
+// WhereNameServersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *CloudflareZoneQuery) WhereNameServersContains(val any) *CloudflareZoneQuery {
+	return q.Where(predicate.CloudflareZone(func(s *sql.Selector) {
+		column := cloudflarezone.FieldNameServers
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereNameServersContainsIf 只有在 condition 为 true 时才调用 WhereNameServersContains。
+func (q *CloudflareZoneQuery) WhereNameServersContainsIf(condition bool, val any) *CloudflareZoneQuery {
+	if condition {
+		return q.WhereNameServersContains(val)
+	}
+	return q
+}
+
+// WhereOriginalNameServersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *CloudflareZoneQuery) WhereOriginalNameServersContains(val any) *CloudflareZoneQuery {
+	return q.Where(predicate.CloudflareZone(func(s *sql.Selector) {
+		column := cloudflarezone.FieldOriginalNameServers
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereOriginalNameServersContainsIf 只有在 condition 为 true 时才调用 WhereOriginalNameServersContains。
+func (q *CloudflareZoneQuery) WhereOriginalNameServersContainsIf(condition bool, val any) *CloudflareZoneQuery {
+	if condition {
+		return q.WhereOriginalNameServersContains(val)
+	}
+	return q
+}
+
+// WhereSettingsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *CloudflareZoneRecordQuery) WhereSettingsContains(val any) *CloudflareZoneRecordQuery {
+	return q.Where(predicate.CloudflareZoneRecord(func(s *sql.Selector) {
+		column := cloudflarezonerecord.FieldSettings
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereSettingsContainsIf 只有在 condition 为 true 时才调用 WhereSettingsContains。
+func (q *CloudflareZoneRecordQuery) WhereSettingsContainsIf(condition bool, val any) *CloudflareZoneRecordQuery {
+	if condition {
+		return q.WhereSettingsContains(val)
 	}
 	return q
 }

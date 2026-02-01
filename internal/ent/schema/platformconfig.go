@@ -109,11 +109,11 @@ func (PlatformConfig) Edges() []ent.Edge {
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
 
-		// 一对多 PlatformConfig -> CloudflareTunnel
-		edge.To("cloudflare_tunnels", CloudflareTunnel.Type).
-			Comment("关联的Cloudflare隧道").
+		// 一对多 PlatformConfig -> CloudflareZone
+		edge.To("cloudflare_zones", CloudflareZone.Type).
+			Comment("关联的Cloudflare站点").
 			Annotations(entsql.Annotation{
-				// 级联删除：删除 PlatformConfig 时，其所有 CloudflareTunnel 记录也应删除
+				// 级联删除：删除 PlatformConfig 时，其所有 CloudflareZone 记录也应删除
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
 
@@ -130,6 +130,14 @@ func (PlatformConfig) Edges() []ent.Edge {
 			Comment("关联的ESA站点").
 			Annotations(entsql.Annotation{
 				// 级联删除：删除 PlatformConfig 时，其所有 EsaSite 记录也应删除
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
+
+		// 一对多 PlatformConfig -> CloudflareTunnel
+		edge.To("cloudflare_tunnels", CloudflareTunnel.Type).
+			Comment("关联的Cloudflare隧道").
+			Annotations(entsql.Annotation{
+				// 级联删除：删除 PlatformConfig 时，其所有 CloudflareTunnel 记录也应删除
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
 	}

@@ -13,6 +13,8 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
+	"vibe_ip/internal/ent/cloudflarezone"
+	"vibe_ip/internal/ent/cloudflarezonerecord"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -53,6 +55,8 @@ const (
 	TypeCache                         = "Cache"
 	TypeCloudflareTunnel              = "CloudflareTunnel"
 	TypeCloudflareTunnelIngress       = "CloudflareTunnelIngress"
+	TypeCloudflareZone                = "CloudflareZone"
+	TypeCloudflareZoneRecord          = "CloudflareZoneRecord"
 	TypeDNSRecord                     = "DNSRecord"
 	TypeDevice                        = "Device"
 	TypeDeviceGroup                   = "DeviceGroup"
@@ -4117,6 +4121,2794 @@ func (m *CloudflareTunnelIngressMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown CloudflareTunnelIngress edge %s", name)
+}
+
+// CloudflareZoneMutation represents an operation that mutates the CloudflareZone nodes in the graph.
+type CloudflareZoneMutation struct {
+	config
+	op                          Op
+	typ                         string
+	id                          *int64
+	created_at                  *time.Time
+	updated_at                  *time.Time
+	remote_created_at           *time.Time
+	sync_at                     *time.Time
+	zone_id                     *int64
+	addzone_id                  *int64
+	account                     *json.RawMessage
+	appendaccount               json.RawMessage
+	name                        *string
+	name_servers                *[]string
+	appendname_servers          []string
+	original_dnshost            *string
+	original_name_servers       *[]string
+	appendoriginal_name_servers []string
+	original_registrar          *string
+	paused                      *bool
+	status                      *cloudflarezone.Status
+	_type                       *string
+	clearedFields               map[string]struct{}
+	_config                     *int64
+	cleared_config              bool
+	records                     map[int64]struct{}
+	removedrecords              map[int64]struct{}
+	clearedrecords              bool
+	done                        bool
+	oldValue                    func(context.Context) (*CloudflareZone, error)
+	predicates                  []predicate.CloudflareZone
+}
+
+var _ ent.Mutation = (*CloudflareZoneMutation)(nil)
+
+// cloudflarezoneOption allows management of the mutation configuration using functional options.
+type cloudflarezoneOption func(*CloudflareZoneMutation)
+
+// newCloudflareZoneMutation creates new mutation for the CloudflareZone entity.
+func newCloudflareZoneMutation(c config, op Op, opts ...cloudflarezoneOption) *CloudflareZoneMutation {
+	m := &CloudflareZoneMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCloudflareZone,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCloudflareZoneID sets the ID field of the mutation.
+func withCloudflareZoneID(id int64) cloudflarezoneOption {
+	return func(m *CloudflareZoneMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CloudflareZone
+		)
+		m.oldValue = func(ctx context.Context) (*CloudflareZone, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CloudflareZone.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCloudflareZone sets the old CloudflareZone of the mutation.
+func withCloudflareZone(node *CloudflareZone) cloudflarezoneOption {
+	return func(m *CloudflareZoneMutation) {
+		m.oldValue = func(context.Context) (*CloudflareZone, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CloudflareZoneMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CloudflareZoneMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of CloudflareZone entities.
+func (m *CloudflareZoneMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CloudflareZoneMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CloudflareZoneMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CloudflareZone.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CloudflareZoneMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CloudflareZoneMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CloudflareZoneMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CloudflareZoneMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CloudflareZoneMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CloudflareZoneMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (m *CloudflareZoneMutation) SetRemoteCreatedAt(t time.Time) {
+	m.remote_created_at = &t
+}
+
+// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
+func (m *CloudflareZoneMutation) RemoteCreatedAt() (r time.Time, exists bool) {
+	v := m.remote_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
+	}
+	return oldValue.RemoteCreatedAt, nil
+}
+
+// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
+func (m *CloudflareZoneMutation) ClearRemoteCreatedAt() {
+	m.remote_created_at = nil
+	m.clearedFields[cloudflarezone.FieldRemoteCreatedAt] = struct{}{}
+}
+
+// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
+func (m *CloudflareZoneMutation) RemoteCreatedAtCleared() bool {
+	_, ok := m.clearedFields[cloudflarezone.FieldRemoteCreatedAt]
+	return ok
+}
+
+// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
+func (m *CloudflareZoneMutation) ResetRemoteCreatedAt() {
+	m.remote_created_at = nil
+	delete(m.clearedFields, cloudflarezone.FieldRemoteCreatedAt)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (m *CloudflareZoneMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
+}
+
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *CloudflareZoneMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncAt returns the old "sync_at" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
+	}
+	return oldValue.SyncAt, nil
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *CloudflareZoneMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[cloudflarezone.FieldSyncAt] = struct{}{}
+}
+
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *CloudflareZoneMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[cloudflarezone.FieldSyncAt]
+	return ok
+}
+
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *CloudflareZoneMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, cloudflarezone.FieldSyncAt)
+}
+
+// SetConfigID sets the "config_id" field.
+func (m *CloudflareZoneMutation) SetConfigID(i int64) {
+	m._config = &i
+}
+
+// ConfigID returns the value of the "config_id" field in the mutation.
+func (m *CloudflareZoneMutation) ConfigID() (r int64, exists bool) {
+	v := m._config
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldConfigID returns the old "config_id" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldConfigID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldConfigID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldConfigID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldConfigID: %w", err)
+	}
+	return oldValue.ConfigID, nil
+}
+
+// ResetConfigID resets all changes to the "config_id" field.
+func (m *CloudflareZoneMutation) ResetConfigID() {
+	m._config = nil
+}
+
+// SetZoneID sets the "zone_id" field.
+func (m *CloudflareZoneMutation) SetZoneID(i int64) {
+	m.zone_id = &i
+	m.addzone_id = nil
+}
+
+// ZoneID returns the value of the "zone_id" field in the mutation.
+func (m *CloudflareZoneMutation) ZoneID() (r int64, exists bool) {
+	v := m.zone_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldZoneID returns the old "zone_id" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldZoneID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldZoneID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldZoneID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldZoneID: %w", err)
+	}
+	return oldValue.ZoneID, nil
+}
+
+// AddZoneID adds i to the "zone_id" field.
+func (m *CloudflareZoneMutation) AddZoneID(i int64) {
+	if m.addzone_id != nil {
+		*m.addzone_id += i
+	} else {
+		m.addzone_id = &i
+	}
+}
+
+// AddedZoneID returns the value that was added to the "zone_id" field in this mutation.
+func (m *CloudflareZoneMutation) AddedZoneID() (r int64, exists bool) {
+	v := m.addzone_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetZoneID resets all changes to the "zone_id" field.
+func (m *CloudflareZoneMutation) ResetZoneID() {
+	m.zone_id = nil
+	m.addzone_id = nil
+}
+
+// SetAccount sets the "account" field.
+func (m *CloudflareZoneMutation) SetAccount(jm json.RawMessage) {
+	m.account = &jm
+	m.appendaccount = nil
+}
+
+// Account returns the value of the "account" field in the mutation.
+func (m *CloudflareZoneMutation) Account() (r json.RawMessage, exists bool) {
+	v := m.account
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccount returns the old "account" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldAccount(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAccount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAccount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccount: %w", err)
+	}
+	return oldValue.Account, nil
+}
+
+// AppendAccount adds jm to the "account" field.
+func (m *CloudflareZoneMutation) AppendAccount(jm json.RawMessage) {
+	m.appendaccount = append(m.appendaccount, jm...)
+}
+
+// AppendedAccount returns the list of values that were appended to the "account" field in this mutation.
+func (m *CloudflareZoneMutation) AppendedAccount() (json.RawMessage, bool) {
+	if len(m.appendaccount) == 0 {
+		return nil, false
+	}
+	return m.appendaccount, true
+}
+
+// ClearAccount clears the value of the "account" field.
+func (m *CloudflareZoneMutation) ClearAccount() {
+	m.account = nil
+	m.appendaccount = nil
+	m.clearedFields[cloudflarezone.FieldAccount] = struct{}{}
+}
+
+// AccountCleared returns if the "account" field was cleared in this mutation.
+func (m *CloudflareZoneMutation) AccountCleared() bool {
+	_, ok := m.clearedFields[cloudflarezone.FieldAccount]
+	return ok
+}
+
+// ResetAccount resets all changes to the "account" field.
+func (m *CloudflareZoneMutation) ResetAccount() {
+	m.account = nil
+	m.appendaccount = nil
+	delete(m.clearedFields, cloudflarezone.FieldAccount)
+}
+
+// SetName sets the "name" field.
+func (m *CloudflareZoneMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *CloudflareZoneMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ClearName clears the value of the "name" field.
+func (m *CloudflareZoneMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[cloudflarezone.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *CloudflareZoneMutation) NameCleared() bool {
+	_, ok := m.clearedFields[cloudflarezone.FieldName]
+	return ok
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *CloudflareZoneMutation) ResetName() {
+	m.name = nil
+	delete(m.clearedFields, cloudflarezone.FieldName)
+}
+
+// SetNameServers sets the "name_servers" field.
+func (m *CloudflareZoneMutation) SetNameServers(s []string) {
+	m.name_servers = &s
+	m.appendname_servers = nil
+}
+
+// NameServers returns the value of the "name_servers" field in the mutation.
+func (m *CloudflareZoneMutation) NameServers() (r []string, exists bool) {
+	v := m.name_servers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNameServers returns the old "name_servers" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldNameServers(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNameServers is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNameServers requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNameServers: %w", err)
+	}
+	return oldValue.NameServers, nil
+}
+
+// AppendNameServers adds s to the "name_servers" field.
+func (m *CloudflareZoneMutation) AppendNameServers(s []string) {
+	m.appendname_servers = append(m.appendname_servers, s...)
+}
+
+// AppendedNameServers returns the list of values that were appended to the "name_servers" field in this mutation.
+func (m *CloudflareZoneMutation) AppendedNameServers() ([]string, bool) {
+	if len(m.appendname_servers) == 0 {
+		return nil, false
+	}
+	return m.appendname_servers, true
+}
+
+// ClearNameServers clears the value of the "name_servers" field.
+func (m *CloudflareZoneMutation) ClearNameServers() {
+	m.name_servers = nil
+	m.appendname_servers = nil
+	m.clearedFields[cloudflarezone.FieldNameServers] = struct{}{}
+}
+
+// NameServersCleared returns if the "name_servers" field was cleared in this mutation.
+func (m *CloudflareZoneMutation) NameServersCleared() bool {
+	_, ok := m.clearedFields[cloudflarezone.FieldNameServers]
+	return ok
+}
+
+// ResetNameServers resets all changes to the "name_servers" field.
+func (m *CloudflareZoneMutation) ResetNameServers() {
+	m.name_servers = nil
+	m.appendname_servers = nil
+	delete(m.clearedFields, cloudflarezone.FieldNameServers)
+}
+
+// SetOriginalDnshost sets the "original_dnshost" field.
+func (m *CloudflareZoneMutation) SetOriginalDnshost(s string) {
+	m.original_dnshost = &s
+}
+
+// OriginalDnshost returns the value of the "original_dnshost" field in the mutation.
+func (m *CloudflareZoneMutation) OriginalDnshost() (r string, exists bool) {
+	v := m.original_dnshost
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOriginalDnshost returns the old "original_dnshost" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldOriginalDnshost(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOriginalDnshost is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOriginalDnshost requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOriginalDnshost: %w", err)
+	}
+	return oldValue.OriginalDnshost, nil
+}
+
+// ClearOriginalDnshost clears the value of the "original_dnshost" field.
+func (m *CloudflareZoneMutation) ClearOriginalDnshost() {
+	m.original_dnshost = nil
+	m.clearedFields[cloudflarezone.FieldOriginalDnshost] = struct{}{}
+}
+
+// OriginalDnshostCleared returns if the "original_dnshost" field was cleared in this mutation.
+func (m *CloudflareZoneMutation) OriginalDnshostCleared() bool {
+	_, ok := m.clearedFields[cloudflarezone.FieldOriginalDnshost]
+	return ok
+}
+
+// ResetOriginalDnshost resets all changes to the "original_dnshost" field.
+func (m *CloudflareZoneMutation) ResetOriginalDnshost() {
+	m.original_dnshost = nil
+	delete(m.clearedFields, cloudflarezone.FieldOriginalDnshost)
+}
+
+// SetOriginalNameServers sets the "original_name_servers" field.
+func (m *CloudflareZoneMutation) SetOriginalNameServers(s []string) {
+	m.original_name_servers = &s
+	m.appendoriginal_name_servers = nil
+}
+
+// OriginalNameServers returns the value of the "original_name_servers" field in the mutation.
+func (m *CloudflareZoneMutation) OriginalNameServers() (r []string, exists bool) {
+	v := m.original_name_servers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOriginalNameServers returns the old "original_name_servers" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldOriginalNameServers(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOriginalNameServers is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOriginalNameServers requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOriginalNameServers: %w", err)
+	}
+	return oldValue.OriginalNameServers, nil
+}
+
+// AppendOriginalNameServers adds s to the "original_name_servers" field.
+func (m *CloudflareZoneMutation) AppendOriginalNameServers(s []string) {
+	m.appendoriginal_name_servers = append(m.appendoriginal_name_servers, s...)
+}
+
+// AppendedOriginalNameServers returns the list of values that were appended to the "original_name_servers" field in this mutation.
+func (m *CloudflareZoneMutation) AppendedOriginalNameServers() ([]string, bool) {
+	if len(m.appendoriginal_name_servers) == 0 {
+		return nil, false
+	}
+	return m.appendoriginal_name_servers, true
+}
+
+// ClearOriginalNameServers clears the value of the "original_name_servers" field.
+func (m *CloudflareZoneMutation) ClearOriginalNameServers() {
+	m.original_name_servers = nil
+	m.appendoriginal_name_servers = nil
+	m.clearedFields[cloudflarezone.FieldOriginalNameServers] = struct{}{}
+}
+
+// OriginalNameServersCleared returns if the "original_name_servers" field was cleared in this mutation.
+func (m *CloudflareZoneMutation) OriginalNameServersCleared() bool {
+	_, ok := m.clearedFields[cloudflarezone.FieldOriginalNameServers]
+	return ok
+}
+
+// ResetOriginalNameServers resets all changes to the "original_name_servers" field.
+func (m *CloudflareZoneMutation) ResetOriginalNameServers() {
+	m.original_name_servers = nil
+	m.appendoriginal_name_servers = nil
+	delete(m.clearedFields, cloudflarezone.FieldOriginalNameServers)
+}
+
+// SetOriginalRegistrar sets the "original_registrar" field.
+func (m *CloudflareZoneMutation) SetOriginalRegistrar(s string) {
+	m.original_registrar = &s
+}
+
+// OriginalRegistrar returns the value of the "original_registrar" field in the mutation.
+func (m *CloudflareZoneMutation) OriginalRegistrar() (r string, exists bool) {
+	v := m.original_registrar
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOriginalRegistrar returns the old "original_registrar" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldOriginalRegistrar(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOriginalRegistrar is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOriginalRegistrar requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOriginalRegistrar: %w", err)
+	}
+	return oldValue.OriginalRegistrar, nil
+}
+
+// ClearOriginalRegistrar clears the value of the "original_registrar" field.
+func (m *CloudflareZoneMutation) ClearOriginalRegistrar() {
+	m.original_registrar = nil
+	m.clearedFields[cloudflarezone.FieldOriginalRegistrar] = struct{}{}
+}
+
+// OriginalRegistrarCleared returns if the "original_registrar" field was cleared in this mutation.
+func (m *CloudflareZoneMutation) OriginalRegistrarCleared() bool {
+	_, ok := m.clearedFields[cloudflarezone.FieldOriginalRegistrar]
+	return ok
+}
+
+// ResetOriginalRegistrar resets all changes to the "original_registrar" field.
+func (m *CloudflareZoneMutation) ResetOriginalRegistrar() {
+	m.original_registrar = nil
+	delete(m.clearedFields, cloudflarezone.FieldOriginalRegistrar)
+}
+
+// SetPaused sets the "paused" field.
+func (m *CloudflareZoneMutation) SetPaused(b bool) {
+	m.paused = &b
+}
+
+// Paused returns the value of the "paused" field in the mutation.
+func (m *CloudflareZoneMutation) Paused() (r bool, exists bool) {
+	v := m.paused
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPaused returns the old "paused" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldPaused(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPaused is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPaused requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPaused: %w", err)
+	}
+	return oldValue.Paused, nil
+}
+
+// ClearPaused clears the value of the "paused" field.
+func (m *CloudflareZoneMutation) ClearPaused() {
+	m.paused = nil
+	m.clearedFields[cloudflarezone.FieldPaused] = struct{}{}
+}
+
+// PausedCleared returns if the "paused" field was cleared in this mutation.
+func (m *CloudflareZoneMutation) PausedCleared() bool {
+	_, ok := m.clearedFields[cloudflarezone.FieldPaused]
+	return ok
+}
+
+// ResetPaused resets all changes to the "paused" field.
+func (m *CloudflareZoneMutation) ResetPaused() {
+	m.paused = nil
+	delete(m.clearedFields, cloudflarezone.FieldPaused)
+}
+
+// SetStatus sets the "status" field.
+func (m *CloudflareZoneMutation) SetStatus(c cloudflarezone.Status) {
+	m.status = &c
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *CloudflareZoneMutation) Status() (r cloudflarezone.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldStatus(ctx context.Context) (v cloudflarezone.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ClearStatus clears the value of the "status" field.
+func (m *CloudflareZoneMutation) ClearStatus() {
+	m.status = nil
+	m.clearedFields[cloudflarezone.FieldStatus] = struct{}{}
+}
+
+// StatusCleared returns if the "status" field was cleared in this mutation.
+func (m *CloudflareZoneMutation) StatusCleared() bool {
+	_, ok := m.clearedFields[cloudflarezone.FieldStatus]
+	return ok
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *CloudflareZoneMutation) ResetStatus() {
+	m.status = nil
+	delete(m.clearedFields, cloudflarezone.FieldStatus)
+}
+
+// SetType sets the "type" field.
+func (m *CloudflareZoneMutation) SetType(s string) {
+	m._type = &s
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *CloudflareZoneMutation) GetType() (r string, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the CloudflareZone entity.
+// If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneMutation) OldType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ClearType clears the value of the "type" field.
+func (m *CloudflareZoneMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[cloudflarezone.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *CloudflareZoneMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[cloudflarezone.FieldType]
+	return ok
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *CloudflareZoneMutation) ResetType() {
+	m._type = nil
+	delete(m.clearedFields, cloudflarezone.FieldType)
+}
+
+// ClearConfig clears the "config" edge to the PlatformConfig entity.
+func (m *CloudflareZoneMutation) ClearConfig() {
+	m.cleared_config = true
+	m.clearedFields[cloudflarezone.FieldConfigID] = struct{}{}
+}
+
+// ConfigCleared reports if the "config" edge to the PlatformConfig entity was cleared.
+func (m *CloudflareZoneMutation) ConfigCleared() bool {
+	return m.cleared_config
+}
+
+// ConfigIDs returns the "config" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ConfigID instead. It exists only for internal usage by the builders.
+func (m *CloudflareZoneMutation) ConfigIDs() (ids []int64) {
+	if id := m._config; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetConfig resets all changes to the "config" edge.
+func (m *CloudflareZoneMutation) ResetConfig() {
+	m._config = nil
+	m.cleared_config = false
+}
+
+// AddRecordIDs adds the "records" edge to the CloudflareZoneRecord entity by ids.
+func (m *CloudflareZoneMutation) AddRecordIDs(ids ...int64) {
+	if m.records == nil {
+		m.records = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.records[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRecords clears the "records" edge to the CloudflareZoneRecord entity.
+func (m *CloudflareZoneMutation) ClearRecords() {
+	m.clearedrecords = true
+}
+
+// RecordsCleared reports if the "records" edge to the CloudflareZoneRecord entity was cleared.
+func (m *CloudflareZoneMutation) RecordsCleared() bool {
+	return m.clearedrecords
+}
+
+// RemoveRecordIDs removes the "records" edge to the CloudflareZoneRecord entity by IDs.
+func (m *CloudflareZoneMutation) RemoveRecordIDs(ids ...int64) {
+	if m.removedrecords == nil {
+		m.removedrecords = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.records, ids[i])
+		m.removedrecords[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRecords returns the removed IDs of the "records" edge to the CloudflareZoneRecord entity.
+func (m *CloudflareZoneMutation) RemovedRecordsIDs() (ids []int64) {
+	for id := range m.removedrecords {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RecordsIDs returns the "records" edge IDs in the mutation.
+func (m *CloudflareZoneMutation) RecordsIDs() (ids []int64) {
+	for id := range m.records {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRecords resets all changes to the "records" edge.
+func (m *CloudflareZoneMutation) ResetRecords() {
+	m.records = nil
+	m.clearedrecords = false
+	m.removedrecords = nil
+}
+
+// Where appends a list predicates to the CloudflareZoneMutation builder.
+func (m *CloudflareZoneMutation) Where(ps ...predicate.CloudflareZone) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CloudflareZoneMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CloudflareZoneMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CloudflareZone, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CloudflareZoneMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CloudflareZoneMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CloudflareZone).
+func (m *CloudflareZoneMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CloudflareZoneMutation) Fields() []string {
+	fields := make([]string, 0, 15)
+	if m.created_at != nil {
+		fields = append(fields, cloudflarezone.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, cloudflarezone.FieldUpdatedAt)
+	}
+	if m.remote_created_at != nil {
+		fields = append(fields, cloudflarezone.FieldRemoteCreatedAt)
+	}
+	if m.sync_at != nil {
+		fields = append(fields, cloudflarezone.FieldSyncAt)
+	}
+	if m._config != nil {
+		fields = append(fields, cloudflarezone.FieldConfigID)
+	}
+	if m.zone_id != nil {
+		fields = append(fields, cloudflarezone.FieldZoneID)
+	}
+	if m.account != nil {
+		fields = append(fields, cloudflarezone.FieldAccount)
+	}
+	if m.name != nil {
+		fields = append(fields, cloudflarezone.FieldName)
+	}
+	if m.name_servers != nil {
+		fields = append(fields, cloudflarezone.FieldNameServers)
+	}
+	if m.original_dnshost != nil {
+		fields = append(fields, cloudflarezone.FieldOriginalDnshost)
+	}
+	if m.original_name_servers != nil {
+		fields = append(fields, cloudflarezone.FieldOriginalNameServers)
+	}
+	if m.original_registrar != nil {
+		fields = append(fields, cloudflarezone.FieldOriginalRegistrar)
+	}
+	if m.paused != nil {
+		fields = append(fields, cloudflarezone.FieldPaused)
+	}
+	if m.status != nil {
+		fields = append(fields, cloudflarezone.FieldStatus)
+	}
+	if m._type != nil {
+		fields = append(fields, cloudflarezone.FieldType)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CloudflareZoneMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case cloudflarezone.FieldCreatedAt:
+		return m.CreatedAt()
+	case cloudflarezone.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case cloudflarezone.FieldRemoteCreatedAt:
+		return m.RemoteCreatedAt()
+	case cloudflarezone.FieldSyncAt:
+		return m.SyncAt()
+	case cloudflarezone.FieldConfigID:
+		return m.ConfigID()
+	case cloudflarezone.FieldZoneID:
+		return m.ZoneID()
+	case cloudflarezone.FieldAccount:
+		return m.Account()
+	case cloudflarezone.FieldName:
+		return m.Name()
+	case cloudflarezone.FieldNameServers:
+		return m.NameServers()
+	case cloudflarezone.FieldOriginalDnshost:
+		return m.OriginalDnshost()
+	case cloudflarezone.FieldOriginalNameServers:
+		return m.OriginalNameServers()
+	case cloudflarezone.FieldOriginalRegistrar:
+		return m.OriginalRegistrar()
+	case cloudflarezone.FieldPaused:
+		return m.Paused()
+	case cloudflarezone.FieldStatus:
+		return m.Status()
+	case cloudflarezone.FieldType:
+		return m.GetType()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CloudflareZoneMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case cloudflarezone.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case cloudflarezone.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case cloudflarezone.FieldRemoteCreatedAt:
+		return m.OldRemoteCreatedAt(ctx)
+	case cloudflarezone.FieldSyncAt:
+		return m.OldSyncAt(ctx)
+	case cloudflarezone.FieldConfigID:
+		return m.OldConfigID(ctx)
+	case cloudflarezone.FieldZoneID:
+		return m.OldZoneID(ctx)
+	case cloudflarezone.FieldAccount:
+		return m.OldAccount(ctx)
+	case cloudflarezone.FieldName:
+		return m.OldName(ctx)
+	case cloudflarezone.FieldNameServers:
+		return m.OldNameServers(ctx)
+	case cloudflarezone.FieldOriginalDnshost:
+		return m.OldOriginalDnshost(ctx)
+	case cloudflarezone.FieldOriginalNameServers:
+		return m.OldOriginalNameServers(ctx)
+	case cloudflarezone.FieldOriginalRegistrar:
+		return m.OldOriginalRegistrar(ctx)
+	case cloudflarezone.FieldPaused:
+		return m.OldPaused(ctx)
+	case cloudflarezone.FieldStatus:
+		return m.OldStatus(ctx)
+	case cloudflarezone.FieldType:
+		return m.OldType(ctx)
+	}
+	return nil, fmt.Errorf("unknown CloudflareZone field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CloudflareZoneMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case cloudflarezone.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case cloudflarezone.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case cloudflarezone.FieldRemoteCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteCreatedAt(v)
+		return nil
+	case cloudflarezone.FieldSyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncAt(v)
+		return nil
+	case cloudflarezone.FieldConfigID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetConfigID(v)
+		return nil
+	case cloudflarezone.FieldZoneID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetZoneID(v)
+		return nil
+	case cloudflarezone.FieldAccount:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccount(v)
+		return nil
+	case cloudflarezone.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case cloudflarezone.FieldNameServers:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNameServers(v)
+		return nil
+	case cloudflarezone.FieldOriginalDnshost:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOriginalDnshost(v)
+		return nil
+	case cloudflarezone.FieldOriginalNameServers:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOriginalNameServers(v)
+		return nil
+	case cloudflarezone.FieldOriginalRegistrar:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOriginalRegistrar(v)
+		return nil
+	case cloudflarezone.FieldPaused:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPaused(v)
+		return nil
+	case cloudflarezone.FieldStatus:
+		v, ok := value.(cloudflarezone.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case cloudflarezone.FieldType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZone field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CloudflareZoneMutation) AddedFields() []string {
+	var fields []string
+	if m.addzone_id != nil {
+		fields = append(fields, cloudflarezone.FieldZoneID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CloudflareZoneMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case cloudflarezone.FieldZoneID:
+		return m.AddedZoneID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CloudflareZoneMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case cloudflarezone.FieldZoneID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddZoneID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZone numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CloudflareZoneMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(cloudflarezone.FieldRemoteCreatedAt) {
+		fields = append(fields, cloudflarezone.FieldRemoteCreatedAt)
+	}
+	if m.FieldCleared(cloudflarezone.FieldSyncAt) {
+		fields = append(fields, cloudflarezone.FieldSyncAt)
+	}
+	if m.FieldCleared(cloudflarezone.FieldAccount) {
+		fields = append(fields, cloudflarezone.FieldAccount)
+	}
+	if m.FieldCleared(cloudflarezone.FieldName) {
+		fields = append(fields, cloudflarezone.FieldName)
+	}
+	if m.FieldCleared(cloudflarezone.FieldNameServers) {
+		fields = append(fields, cloudflarezone.FieldNameServers)
+	}
+	if m.FieldCleared(cloudflarezone.FieldOriginalDnshost) {
+		fields = append(fields, cloudflarezone.FieldOriginalDnshost)
+	}
+	if m.FieldCleared(cloudflarezone.FieldOriginalNameServers) {
+		fields = append(fields, cloudflarezone.FieldOriginalNameServers)
+	}
+	if m.FieldCleared(cloudflarezone.FieldOriginalRegistrar) {
+		fields = append(fields, cloudflarezone.FieldOriginalRegistrar)
+	}
+	if m.FieldCleared(cloudflarezone.FieldPaused) {
+		fields = append(fields, cloudflarezone.FieldPaused)
+	}
+	if m.FieldCleared(cloudflarezone.FieldStatus) {
+		fields = append(fields, cloudflarezone.FieldStatus)
+	}
+	if m.FieldCleared(cloudflarezone.FieldType) {
+		fields = append(fields, cloudflarezone.FieldType)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CloudflareZoneMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CloudflareZoneMutation) ClearField(name string) error {
+	switch name {
+	case cloudflarezone.FieldRemoteCreatedAt:
+		m.ClearRemoteCreatedAt()
+		return nil
+	case cloudflarezone.FieldSyncAt:
+		m.ClearSyncAt()
+		return nil
+	case cloudflarezone.FieldAccount:
+		m.ClearAccount()
+		return nil
+	case cloudflarezone.FieldName:
+		m.ClearName()
+		return nil
+	case cloudflarezone.FieldNameServers:
+		m.ClearNameServers()
+		return nil
+	case cloudflarezone.FieldOriginalDnshost:
+		m.ClearOriginalDnshost()
+		return nil
+	case cloudflarezone.FieldOriginalNameServers:
+		m.ClearOriginalNameServers()
+		return nil
+	case cloudflarezone.FieldOriginalRegistrar:
+		m.ClearOriginalRegistrar()
+		return nil
+	case cloudflarezone.FieldPaused:
+		m.ClearPaused()
+		return nil
+	case cloudflarezone.FieldStatus:
+		m.ClearStatus()
+		return nil
+	case cloudflarezone.FieldType:
+		m.ClearType()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZone nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CloudflareZoneMutation) ResetField(name string) error {
+	switch name {
+	case cloudflarezone.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case cloudflarezone.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case cloudflarezone.FieldRemoteCreatedAt:
+		m.ResetRemoteCreatedAt()
+		return nil
+	case cloudflarezone.FieldSyncAt:
+		m.ResetSyncAt()
+		return nil
+	case cloudflarezone.FieldConfigID:
+		m.ResetConfigID()
+		return nil
+	case cloudflarezone.FieldZoneID:
+		m.ResetZoneID()
+		return nil
+	case cloudflarezone.FieldAccount:
+		m.ResetAccount()
+		return nil
+	case cloudflarezone.FieldName:
+		m.ResetName()
+		return nil
+	case cloudflarezone.FieldNameServers:
+		m.ResetNameServers()
+		return nil
+	case cloudflarezone.FieldOriginalDnshost:
+		m.ResetOriginalDnshost()
+		return nil
+	case cloudflarezone.FieldOriginalNameServers:
+		m.ResetOriginalNameServers()
+		return nil
+	case cloudflarezone.FieldOriginalRegistrar:
+		m.ResetOriginalRegistrar()
+		return nil
+	case cloudflarezone.FieldPaused:
+		m.ResetPaused()
+		return nil
+	case cloudflarezone.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case cloudflarezone.FieldType:
+		m.ResetType()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZone field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CloudflareZoneMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m._config != nil {
+		edges = append(edges, cloudflarezone.EdgeConfig)
+	}
+	if m.records != nil {
+		edges = append(edges, cloudflarezone.EdgeRecords)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CloudflareZoneMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case cloudflarezone.EdgeConfig:
+		if id := m._config; id != nil {
+			return []ent.Value{*id}
+		}
+	case cloudflarezone.EdgeRecords:
+		ids := make([]ent.Value, 0, len(m.records))
+		for id := range m.records {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CloudflareZoneMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedrecords != nil {
+		edges = append(edges, cloudflarezone.EdgeRecords)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CloudflareZoneMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case cloudflarezone.EdgeRecords:
+		ids := make([]ent.Value, 0, len(m.removedrecords))
+		for id := range m.removedrecords {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CloudflareZoneMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.cleared_config {
+		edges = append(edges, cloudflarezone.EdgeConfig)
+	}
+	if m.clearedrecords {
+		edges = append(edges, cloudflarezone.EdgeRecords)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CloudflareZoneMutation) EdgeCleared(name string) bool {
+	switch name {
+	case cloudflarezone.EdgeConfig:
+		return m.cleared_config
+	case cloudflarezone.EdgeRecords:
+		return m.clearedrecords
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CloudflareZoneMutation) ClearEdge(name string) error {
+	switch name {
+	case cloudflarezone.EdgeConfig:
+		m.ClearConfig()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZone unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CloudflareZoneMutation) ResetEdge(name string) error {
+	switch name {
+	case cloudflarezone.EdgeConfig:
+		m.ResetConfig()
+		return nil
+	case cloudflarezone.EdgeRecords:
+		m.ResetRecords()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZone edge %s", name)
+}
+
+// CloudflareZoneRecordMutation represents an operation that mutates the CloudflareZoneRecord nodes in the graph.
+type CloudflareZoneRecordMutation struct {
+	config
+	op                     Op
+	typ                    string
+	id                     *int64
+	created_at             *time.Time
+	updated_at             *time.Time
+	remote_created_at      *time.Time
+	sync_at                *time.Time
+	record_id              *string
+	comment                *string
+	content                *string
+	proxiable              *bool
+	proxied                *bool
+	settings               *json.RawMessage
+	appendsettings         json.RawMessage
+	ttl                    *int64
+	addttl                 *int64
+	_type                  *cloudflarezonerecord.Type
+	clearedFields          map[string]struct{}
+	cloudflare_zone        *int64
+	clearedcloudflare_zone bool
+	done                   bool
+	oldValue               func(context.Context) (*CloudflareZoneRecord, error)
+	predicates             []predicate.CloudflareZoneRecord
+}
+
+var _ ent.Mutation = (*CloudflareZoneRecordMutation)(nil)
+
+// cloudflarezonerecordOption allows management of the mutation configuration using functional options.
+type cloudflarezonerecordOption func(*CloudflareZoneRecordMutation)
+
+// newCloudflareZoneRecordMutation creates new mutation for the CloudflareZoneRecord entity.
+func newCloudflareZoneRecordMutation(c config, op Op, opts ...cloudflarezonerecordOption) *CloudflareZoneRecordMutation {
+	m := &CloudflareZoneRecordMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCloudflareZoneRecord,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCloudflareZoneRecordID sets the ID field of the mutation.
+func withCloudflareZoneRecordID(id int64) cloudflarezonerecordOption {
+	return func(m *CloudflareZoneRecordMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CloudflareZoneRecord
+		)
+		m.oldValue = func(ctx context.Context) (*CloudflareZoneRecord, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CloudflareZoneRecord.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCloudflareZoneRecord sets the old CloudflareZoneRecord of the mutation.
+func withCloudflareZoneRecord(node *CloudflareZoneRecord) cloudflarezonerecordOption {
+	return func(m *CloudflareZoneRecordMutation) {
+		m.oldValue = func(context.Context) (*CloudflareZoneRecord, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CloudflareZoneRecordMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CloudflareZoneRecordMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of CloudflareZoneRecord entities.
+func (m *CloudflareZoneRecordMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CloudflareZoneRecordMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CloudflareZoneRecordMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CloudflareZoneRecord.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CloudflareZoneRecordMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CloudflareZoneRecordMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CloudflareZoneRecordMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CloudflareZoneRecordMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CloudflareZoneRecordMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CloudflareZoneRecordMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (m *CloudflareZoneRecordMutation) SetRemoteCreatedAt(t time.Time) {
+	m.remote_created_at = &t
+}
+
+// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
+func (m *CloudflareZoneRecordMutation) RemoteCreatedAt() (r time.Time, exists bool) {
+	v := m.remote_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
+	}
+	return oldValue.RemoteCreatedAt, nil
+}
+
+// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
+func (m *CloudflareZoneRecordMutation) ClearRemoteCreatedAt() {
+	m.remote_created_at = nil
+	m.clearedFields[cloudflarezonerecord.FieldRemoteCreatedAt] = struct{}{}
+}
+
+// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) RemoteCreatedAtCleared() bool {
+	_, ok := m.clearedFields[cloudflarezonerecord.FieldRemoteCreatedAt]
+	return ok
+}
+
+// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
+func (m *CloudflareZoneRecordMutation) ResetRemoteCreatedAt() {
+	m.remote_created_at = nil
+	delete(m.clearedFields, cloudflarezonerecord.FieldRemoteCreatedAt)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (m *CloudflareZoneRecordMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
+}
+
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *CloudflareZoneRecordMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncAt returns the old "sync_at" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
+	}
+	return oldValue.SyncAt, nil
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *CloudflareZoneRecordMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[cloudflarezonerecord.FieldSyncAt] = struct{}{}
+}
+
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[cloudflarezonerecord.FieldSyncAt]
+	return ok
+}
+
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *CloudflareZoneRecordMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, cloudflarezonerecord.FieldSyncAt)
+}
+
+// SetCloudflareZoneID sets the "cloudflare_zone_id" field.
+func (m *CloudflareZoneRecordMutation) SetCloudflareZoneID(i int64) {
+	m.cloudflare_zone = &i
+}
+
+// CloudflareZoneID returns the value of the "cloudflare_zone_id" field in the mutation.
+func (m *CloudflareZoneRecordMutation) CloudflareZoneID() (r int64, exists bool) {
+	v := m.cloudflare_zone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCloudflareZoneID returns the old "cloudflare_zone_id" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldCloudflareZoneID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCloudflareZoneID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCloudflareZoneID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCloudflareZoneID: %w", err)
+	}
+	return oldValue.CloudflareZoneID, nil
+}
+
+// ResetCloudflareZoneID resets all changes to the "cloudflare_zone_id" field.
+func (m *CloudflareZoneRecordMutation) ResetCloudflareZoneID() {
+	m.cloudflare_zone = nil
+}
+
+// SetRecordID sets the "record_id" field.
+func (m *CloudflareZoneRecordMutation) SetRecordID(s string) {
+	m.record_id = &s
+}
+
+// RecordID returns the value of the "record_id" field in the mutation.
+func (m *CloudflareZoneRecordMutation) RecordID() (r string, exists bool) {
+	v := m.record_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordID returns the old "record_id" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldRecordID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordID: %w", err)
+	}
+	return oldValue.RecordID, nil
+}
+
+// ResetRecordID resets all changes to the "record_id" field.
+func (m *CloudflareZoneRecordMutation) ResetRecordID() {
+	m.record_id = nil
+}
+
+// SetComment sets the "comment" field.
+func (m *CloudflareZoneRecordMutation) SetComment(s string) {
+	m.comment = &s
+}
+
+// Comment returns the value of the "comment" field in the mutation.
+func (m *CloudflareZoneRecordMutation) Comment() (r string, exists bool) {
+	v := m.comment
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldComment returns the old "comment" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldComment(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldComment is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldComment requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldComment: %w", err)
+	}
+	return oldValue.Comment, nil
+}
+
+// ClearComment clears the value of the "comment" field.
+func (m *CloudflareZoneRecordMutation) ClearComment() {
+	m.comment = nil
+	m.clearedFields[cloudflarezonerecord.FieldComment] = struct{}{}
+}
+
+// CommentCleared returns if the "comment" field was cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) CommentCleared() bool {
+	_, ok := m.clearedFields[cloudflarezonerecord.FieldComment]
+	return ok
+}
+
+// ResetComment resets all changes to the "comment" field.
+func (m *CloudflareZoneRecordMutation) ResetComment() {
+	m.comment = nil
+	delete(m.clearedFields, cloudflarezonerecord.FieldComment)
+}
+
+// SetContent sets the "content" field.
+func (m *CloudflareZoneRecordMutation) SetContent(s string) {
+	m.content = &s
+}
+
+// Content returns the value of the "content" field in the mutation.
+func (m *CloudflareZoneRecordMutation) Content() (r string, exists bool) {
+	v := m.content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContent returns the old "content" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
+	}
+	return oldValue.Content, nil
+}
+
+// ClearContent clears the value of the "content" field.
+func (m *CloudflareZoneRecordMutation) ClearContent() {
+	m.content = nil
+	m.clearedFields[cloudflarezonerecord.FieldContent] = struct{}{}
+}
+
+// ContentCleared returns if the "content" field was cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) ContentCleared() bool {
+	_, ok := m.clearedFields[cloudflarezonerecord.FieldContent]
+	return ok
+}
+
+// ResetContent resets all changes to the "content" field.
+func (m *CloudflareZoneRecordMutation) ResetContent() {
+	m.content = nil
+	delete(m.clearedFields, cloudflarezonerecord.FieldContent)
+}
+
+// SetProxiable sets the "proxiable" field.
+func (m *CloudflareZoneRecordMutation) SetProxiable(b bool) {
+	m.proxiable = &b
+}
+
+// Proxiable returns the value of the "proxiable" field in the mutation.
+func (m *CloudflareZoneRecordMutation) Proxiable() (r bool, exists bool) {
+	v := m.proxiable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProxiable returns the old "proxiable" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldProxiable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProxiable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProxiable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProxiable: %w", err)
+	}
+	return oldValue.Proxiable, nil
+}
+
+// ClearProxiable clears the value of the "proxiable" field.
+func (m *CloudflareZoneRecordMutation) ClearProxiable() {
+	m.proxiable = nil
+	m.clearedFields[cloudflarezonerecord.FieldProxiable] = struct{}{}
+}
+
+// ProxiableCleared returns if the "proxiable" field was cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) ProxiableCleared() bool {
+	_, ok := m.clearedFields[cloudflarezonerecord.FieldProxiable]
+	return ok
+}
+
+// ResetProxiable resets all changes to the "proxiable" field.
+func (m *CloudflareZoneRecordMutation) ResetProxiable() {
+	m.proxiable = nil
+	delete(m.clearedFields, cloudflarezonerecord.FieldProxiable)
+}
+
+// SetProxied sets the "proxied" field.
+func (m *CloudflareZoneRecordMutation) SetProxied(b bool) {
+	m.proxied = &b
+}
+
+// Proxied returns the value of the "proxied" field in the mutation.
+func (m *CloudflareZoneRecordMutation) Proxied() (r bool, exists bool) {
+	v := m.proxied
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProxied returns the old "proxied" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldProxied(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProxied is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProxied requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProxied: %w", err)
+	}
+	return oldValue.Proxied, nil
+}
+
+// ClearProxied clears the value of the "proxied" field.
+func (m *CloudflareZoneRecordMutation) ClearProxied() {
+	m.proxied = nil
+	m.clearedFields[cloudflarezonerecord.FieldProxied] = struct{}{}
+}
+
+// ProxiedCleared returns if the "proxied" field was cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) ProxiedCleared() bool {
+	_, ok := m.clearedFields[cloudflarezonerecord.FieldProxied]
+	return ok
+}
+
+// ResetProxied resets all changes to the "proxied" field.
+func (m *CloudflareZoneRecordMutation) ResetProxied() {
+	m.proxied = nil
+	delete(m.clearedFields, cloudflarezonerecord.FieldProxied)
+}
+
+// SetSettings sets the "settings" field.
+func (m *CloudflareZoneRecordMutation) SetSettings(jm json.RawMessage) {
+	m.settings = &jm
+	m.appendsettings = nil
+}
+
+// Settings returns the value of the "settings" field in the mutation.
+func (m *CloudflareZoneRecordMutation) Settings() (r json.RawMessage, exists bool) {
+	v := m.settings
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSettings returns the old "settings" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldSettings(ctx context.Context) (v json.RawMessage, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSettings is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSettings requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSettings: %w", err)
+	}
+	return oldValue.Settings, nil
+}
+
+// AppendSettings adds jm to the "settings" field.
+func (m *CloudflareZoneRecordMutation) AppendSettings(jm json.RawMessage) {
+	m.appendsettings = append(m.appendsettings, jm...)
+}
+
+// AppendedSettings returns the list of values that were appended to the "settings" field in this mutation.
+func (m *CloudflareZoneRecordMutation) AppendedSettings() (json.RawMessage, bool) {
+	if len(m.appendsettings) == 0 {
+		return nil, false
+	}
+	return m.appendsettings, true
+}
+
+// ClearSettings clears the value of the "settings" field.
+func (m *CloudflareZoneRecordMutation) ClearSettings() {
+	m.settings = nil
+	m.appendsettings = nil
+	m.clearedFields[cloudflarezonerecord.FieldSettings] = struct{}{}
+}
+
+// SettingsCleared returns if the "settings" field was cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) SettingsCleared() bool {
+	_, ok := m.clearedFields[cloudflarezonerecord.FieldSettings]
+	return ok
+}
+
+// ResetSettings resets all changes to the "settings" field.
+func (m *CloudflareZoneRecordMutation) ResetSettings() {
+	m.settings = nil
+	m.appendsettings = nil
+	delete(m.clearedFields, cloudflarezonerecord.FieldSettings)
+}
+
+// SetTTL sets the "ttl" field.
+func (m *CloudflareZoneRecordMutation) SetTTL(i int64) {
+	m.ttl = &i
+	m.addttl = nil
+}
+
+// TTL returns the value of the "ttl" field in the mutation.
+func (m *CloudflareZoneRecordMutation) TTL() (r int64, exists bool) {
+	v := m.ttl
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTTL returns the old "ttl" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldTTL(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTTL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTTL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTTL: %w", err)
+	}
+	return oldValue.TTL, nil
+}
+
+// AddTTL adds i to the "ttl" field.
+func (m *CloudflareZoneRecordMutation) AddTTL(i int64) {
+	if m.addttl != nil {
+		*m.addttl += i
+	} else {
+		m.addttl = &i
+	}
+}
+
+// AddedTTL returns the value that was added to the "ttl" field in this mutation.
+func (m *CloudflareZoneRecordMutation) AddedTTL() (r int64, exists bool) {
+	v := m.addttl
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTTL clears the value of the "ttl" field.
+func (m *CloudflareZoneRecordMutation) ClearTTL() {
+	m.ttl = nil
+	m.addttl = nil
+	m.clearedFields[cloudflarezonerecord.FieldTTL] = struct{}{}
+}
+
+// TTLCleared returns if the "ttl" field was cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) TTLCleared() bool {
+	_, ok := m.clearedFields[cloudflarezonerecord.FieldTTL]
+	return ok
+}
+
+// ResetTTL resets all changes to the "ttl" field.
+func (m *CloudflareZoneRecordMutation) ResetTTL() {
+	m.ttl = nil
+	m.addttl = nil
+	delete(m.clearedFields, cloudflarezonerecord.FieldTTL)
+}
+
+// SetType sets the "type" field.
+func (m *CloudflareZoneRecordMutation) SetType(c cloudflarezonerecord.Type) {
+	m._type = &c
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *CloudflareZoneRecordMutation) GetType() (r cloudflarezonerecord.Type, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldType(ctx context.Context) (v cloudflarezonerecord.Type, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ClearType clears the value of the "type" field.
+func (m *CloudflareZoneRecordMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[cloudflarezonerecord.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[cloudflarezonerecord.FieldType]
+	return ok
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *CloudflareZoneRecordMutation) ResetType() {
+	m._type = nil
+	delete(m.clearedFields, cloudflarezonerecord.FieldType)
+}
+
+// ClearCloudflareZone clears the "cloudflare_zone" edge to the CloudflareZone entity.
+func (m *CloudflareZoneRecordMutation) ClearCloudflareZone() {
+	m.clearedcloudflare_zone = true
+	m.clearedFields[cloudflarezonerecord.FieldCloudflareZoneID] = struct{}{}
+}
+
+// CloudflareZoneCleared reports if the "cloudflare_zone" edge to the CloudflareZone entity was cleared.
+func (m *CloudflareZoneRecordMutation) CloudflareZoneCleared() bool {
+	return m.clearedcloudflare_zone
+}
+
+// CloudflareZoneIDs returns the "cloudflare_zone" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CloudflareZoneID instead. It exists only for internal usage by the builders.
+func (m *CloudflareZoneRecordMutation) CloudflareZoneIDs() (ids []int64) {
+	if id := m.cloudflare_zone; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCloudflareZone resets all changes to the "cloudflare_zone" edge.
+func (m *CloudflareZoneRecordMutation) ResetCloudflareZone() {
+	m.cloudflare_zone = nil
+	m.clearedcloudflare_zone = false
+}
+
+// Where appends a list predicates to the CloudflareZoneRecordMutation builder.
+func (m *CloudflareZoneRecordMutation) Where(ps ...predicate.CloudflareZoneRecord) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CloudflareZoneRecordMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CloudflareZoneRecordMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CloudflareZoneRecord, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CloudflareZoneRecordMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CloudflareZoneRecordMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CloudflareZoneRecord).
+func (m *CloudflareZoneRecordMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CloudflareZoneRecordMutation) Fields() []string {
+	fields := make([]string, 0, 13)
+	if m.created_at != nil {
+		fields = append(fields, cloudflarezonerecord.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, cloudflarezonerecord.FieldUpdatedAt)
+	}
+	if m.remote_created_at != nil {
+		fields = append(fields, cloudflarezonerecord.FieldRemoteCreatedAt)
+	}
+	if m.sync_at != nil {
+		fields = append(fields, cloudflarezonerecord.FieldSyncAt)
+	}
+	if m.cloudflare_zone != nil {
+		fields = append(fields, cloudflarezonerecord.FieldCloudflareZoneID)
+	}
+	if m.record_id != nil {
+		fields = append(fields, cloudflarezonerecord.FieldRecordID)
+	}
+	if m.comment != nil {
+		fields = append(fields, cloudflarezonerecord.FieldComment)
+	}
+	if m.content != nil {
+		fields = append(fields, cloudflarezonerecord.FieldContent)
+	}
+	if m.proxiable != nil {
+		fields = append(fields, cloudflarezonerecord.FieldProxiable)
+	}
+	if m.proxied != nil {
+		fields = append(fields, cloudflarezonerecord.FieldProxied)
+	}
+	if m.settings != nil {
+		fields = append(fields, cloudflarezonerecord.FieldSettings)
+	}
+	if m.ttl != nil {
+		fields = append(fields, cloudflarezonerecord.FieldTTL)
+	}
+	if m._type != nil {
+		fields = append(fields, cloudflarezonerecord.FieldType)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CloudflareZoneRecordMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case cloudflarezonerecord.FieldCreatedAt:
+		return m.CreatedAt()
+	case cloudflarezonerecord.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case cloudflarezonerecord.FieldRemoteCreatedAt:
+		return m.RemoteCreatedAt()
+	case cloudflarezonerecord.FieldSyncAt:
+		return m.SyncAt()
+	case cloudflarezonerecord.FieldCloudflareZoneID:
+		return m.CloudflareZoneID()
+	case cloudflarezonerecord.FieldRecordID:
+		return m.RecordID()
+	case cloudflarezonerecord.FieldComment:
+		return m.Comment()
+	case cloudflarezonerecord.FieldContent:
+		return m.Content()
+	case cloudflarezonerecord.FieldProxiable:
+		return m.Proxiable()
+	case cloudflarezonerecord.FieldProxied:
+		return m.Proxied()
+	case cloudflarezonerecord.FieldSettings:
+		return m.Settings()
+	case cloudflarezonerecord.FieldTTL:
+		return m.TTL()
+	case cloudflarezonerecord.FieldType:
+		return m.GetType()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CloudflareZoneRecordMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case cloudflarezonerecord.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case cloudflarezonerecord.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case cloudflarezonerecord.FieldRemoteCreatedAt:
+		return m.OldRemoteCreatedAt(ctx)
+	case cloudflarezonerecord.FieldSyncAt:
+		return m.OldSyncAt(ctx)
+	case cloudflarezonerecord.FieldCloudflareZoneID:
+		return m.OldCloudflareZoneID(ctx)
+	case cloudflarezonerecord.FieldRecordID:
+		return m.OldRecordID(ctx)
+	case cloudflarezonerecord.FieldComment:
+		return m.OldComment(ctx)
+	case cloudflarezonerecord.FieldContent:
+		return m.OldContent(ctx)
+	case cloudflarezonerecord.FieldProxiable:
+		return m.OldProxiable(ctx)
+	case cloudflarezonerecord.FieldProxied:
+		return m.OldProxied(ctx)
+	case cloudflarezonerecord.FieldSettings:
+		return m.OldSettings(ctx)
+	case cloudflarezonerecord.FieldTTL:
+		return m.OldTTL(ctx)
+	case cloudflarezonerecord.FieldType:
+		return m.OldType(ctx)
+	}
+	return nil, fmt.Errorf("unknown CloudflareZoneRecord field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CloudflareZoneRecordMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case cloudflarezonerecord.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case cloudflarezonerecord.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case cloudflarezonerecord.FieldRemoteCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteCreatedAt(v)
+		return nil
+	case cloudflarezonerecord.FieldSyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncAt(v)
+		return nil
+	case cloudflarezonerecord.FieldCloudflareZoneID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCloudflareZoneID(v)
+		return nil
+	case cloudflarezonerecord.FieldRecordID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordID(v)
+		return nil
+	case cloudflarezonerecord.FieldComment:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetComment(v)
+		return nil
+	case cloudflarezonerecord.FieldContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContent(v)
+		return nil
+	case cloudflarezonerecord.FieldProxiable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProxiable(v)
+		return nil
+	case cloudflarezonerecord.FieldProxied:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProxied(v)
+		return nil
+	case cloudflarezonerecord.FieldSettings:
+		v, ok := value.(json.RawMessage)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSettings(v)
+		return nil
+	case cloudflarezonerecord.FieldTTL:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTTL(v)
+		return nil
+	case cloudflarezonerecord.FieldType:
+		v, ok := value.(cloudflarezonerecord.Type)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZoneRecord field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CloudflareZoneRecordMutation) AddedFields() []string {
+	var fields []string
+	if m.addttl != nil {
+		fields = append(fields, cloudflarezonerecord.FieldTTL)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CloudflareZoneRecordMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case cloudflarezonerecord.FieldTTL:
+		return m.AddedTTL()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CloudflareZoneRecordMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case cloudflarezonerecord.FieldTTL:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTTL(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZoneRecord numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CloudflareZoneRecordMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(cloudflarezonerecord.FieldRemoteCreatedAt) {
+		fields = append(fields, cloudflarezonerecord.FieldRemoteCreatedAt)
+	}
+	if m.FieldCleared(cloudflarezonerecord.FieldSyncAt) {
+		fields = append(fields, cloudflarezonerecord.FieldSyncAt)
+	}
+	if m.FieldCleared(cloudflarezonerecord.FieldComment) {
+		fields = append(fields, cloudflarezonerecord.FieldComment)
+	}
+	if m.FieldCleared(cloudflarezonerecord.FieldContent) {
+		fields = append(fields, cloudflarezonerecord.FieldContent)
+	}
+	if m.FieldCleared(cloudflarezonerecord.FieldProxiable) {
+		fields = append(fields, cloudflarezonerecord.FieldProxiable)
+	}
+	if m.FieldCleared(cloudflarezonerecord.FieldProxied) {
+		fields = append(fields, cloudflarezonerecord.FieldProxied)
+	}
+	if m.FieldCleared(cloudflarezonerecord.FieldSettings) {
+		fields = append(fields, cloudflarezonerecord.FieldSettings)
+	}
+	if m.FieldCleared(cloudflarezonerecord.FieldTTL) {
+		fields = append(fields, cloudflarezonerecord.FieldTTL)
+	}
+	if m.FieldCleared(cloudflarezonerecord.FieldType) {
+		fields = append(fields, cloudflarezonerecord.FieldType)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CloudflareZoneRecordMutation) ClearField(name string) error {
+	switch name {
+	case cloudflarezonerecord.FieldRemoteCreatedAt:
+		m.ClearRemoteCreatedAt()
+		return nil
+	case cloudflarezonerecord.FieldSyncAt:
+		m.ClearSyncAt()
+		return nil
+	case cloudflarezonerecord.FieldComment:
+		m.ClearComment()
+		return nil
+	case cloudflarezonerecord.FieldContent:
+		m.ClearContent()
+		return nil
+	case cloudflarezonerecord.FieldProxiable:
+		m.ClearProxiable()
+		return nil
+	case cloudflarezonerecord.FieldProxied:
+		m.ClearProxied()
+		return nil
+	case cloudflarezonerecord.FieldSettings:
+		m.ClearSettings()
+		return nil
+	case cloudflarezonerecord.FieldTTL:
+		m.ClearTTL()
+		return nil
+	case cloudflarezonerecord.FieldType:
+		m.ClearType()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZoneRecord nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CloudflareZoneRecordMutation) ResetField(name string) error {
+	switch name {
+	case cloudflarezonerecord.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case cloudflarezonerecord.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case cloudflarezonerecord.FieldRemoteCreatedAt:
+		m.ResetRemoteCreatedAt()
+		return nil
+	case cloudflarezonerecord.FieldSyncAt:
+		m.ResetSyncAt()
+		return nil
+	case cloudflarezonerecord.FieldCloudflareZoneID:
+		m.ResetCloudflareZoneID()
+		return nil
+	case cloudflarezonerecord.FieldRecordID:
+		m.ResetRecordID()
+		return nil
+	case cloudflarezonerecord.FieldComment:
+		m.ResetComment()
+		return nil
+	case cloudflarezonerecord.FieldContent:
+		m.ResetContent()
+		return nil
+	case cloudflarezonerecord.FieldProxiable:
+		m.ResetProxiable()
+		return nil
+	case cloudflarezonerecord.FieldProxied:
+		m.ResetProxied()
+		return nil
+	case cloudflarezonerecord.FieldSettings:
+		m.ResetSettings()
+		return nil
+	case cloudflarezonerecord.FieldTTL:
+		m.ResetTTL()
+		return nil
+	case cloudflarezonerecord.FieldType:
+		m.ResetType()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZoneRecord field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CloudflareZoneRecordMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cloudflare_zone != nil {
+		edges = append(edges, cloudflarezonerecord.EdgeCloudflareZone)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CloudflareZoneRecordMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case cloudflarezonerecord.EdgeCloudflareZone:
+		if id := m.cloudflare_zone; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CloudflareZoneRecordMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CloudflareZoneRecordMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedcloudflare_zone {
+		edges = append(edges, cloudflarezonerecord.EdgeCloudflareZone)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) EdgeCleared(name string) bool {
+	switch name {
+	case cloudflarezonerecord.EdgeCloudflareZone:
+		return m.clearedcloudflare_zone
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CloudflareZoneRecordMutation) ClearEdge(name string) error {
+	switch name {
+	case cloudflarezonerecord.EdgeCloudflareZone:
+		m.ClearCloudflareZone()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZoneRecord unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CloudflareZoneRecordMutation) ResetEdge(name string) error {
+	switch name {
+	case cloudflarezonerecord.EdgeCloudflareZone:
+		m.ResetCloudflareZone()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZoneRecord edge %s", name)
 }
 
 // DNSRecordMutation represents an operation that mutates the DNSRecord nodes in the graph.
@@ -21686,15 +24478,18 @@ type PlatformConfigMutation struct {
 	tun_records               map[int64]struct{}
 	removedtun_records        map[int64]struct{}
 	clearedtun_records        bool
-	cloudflare_tunnels        map[int64]struct{}
-	removedcloudflare_tunnels map[int64]struct{}
-	clearedcloudflare_tunnels bool
+	cloudflare_zones          map[int64]struct{}
+	removedcloudflare_zones   map[int64]struct{}
+	clearedcloudflare_zones   bool
 	edgeone_zones             map[int64]struct{}
 	removededgeone_zones      map[int64]struct{}
 	clearededgeone_zones      bool
 	esa_zones                 map[int64]struct{}
 	removedesa_zones          map[int64]struct{}
 	clearedesa_zones          bool
+	cloudflare_tunnels        map[int64]struct{}
+	removedcloudflare_tunnels map[int64]struct{}
+	clearedcloudflare_tunnels bool
 	done                      bool
 	oldValue                  func(context.Context) (*PlatformConfig, error)
 	predicates                []predicate.PlatformConfig
@@ -22314,58 +25109,58 @@ func (m *PlatformConfigMutation) ResetTunRecords() {
 	m.removedtun_records = nil
 }
 
-// AddCloudflareTunnelIDs adds the "cloudflare_tunnels" edge to the CloudflareTunnel entity by ids.
-func (m *PlatformConfigMutation) AddCloudflareTunnelIDs(ids ...int64) {
-	if m.cloudflare_tunnels == nil {
-		m.cloudflare_tunnels = make(map[int64]struct{})
+// AddCloudflareZoneIDs adds the "cloudflare_zones" edge to the CloudflareZone entity by ids.
+func (m *PlatformConfigMutation) AddCloudflareZoneIDs(ids ...int64) {
+	if m.cloudflare_zones == nil {
+		m.cloudflare_zones = make(map[int64]struct{})
 	}
 	for i := range ids {
-		m.cloudflare_tunnels[ids[i]] = struct{}{}
+		m.cloudflare_zones[ids[i]] = struct{}{}
 	}
 }
 
-// ClearCloudflareTunnels clears the "cloudflare_tunnels" edge to the CloudflareTunnel entity.
-func (m *PlatformConfigMutation) ClearCloudflareTunnels() {
-	m.clearedcloudflare_tunnels = true
+// ClearCloudflareZones clears the "cloudflare_zones" edge to the CloudflareZone entity.
+func (m *PlatformConfigMutation) ClearCloudflareZones() {
+	m.clearedcloudflare_zones = true
 }
 
-// CloudflareTunnelsCleared reports if the "cloudflare_tunnels" edge to the CloudflareTunnel entity was cleared.
-func (m *PlatformConfigMutation) CloudflareTunnelsCleared() bool {
-	return m.clearedcloudflare_tunnels
+// CloudflareZonesCleared reports if the "cloudflare_zones" edge to the CloudflareZone entity was cleared.
+func (m *PlatformConfigMutation) CloudflareZonesCleared() bool {
+	return m.clearedcloudflare_zones
 }
 
-// RemoveCloudflareTunnelIDs removes the "cloudflare_tunnels" edge to the CloudflareTunnel entity by IDs.
-func (m *PlatformConfigMutation) RemoveCloudflareTunnelIDs(ids ...int64) {
-	if m.removedcloudflare_tunnels == nil {
-		m.removedcloudflare_tunnels = make(map[int64]struct{})
+// RemoveCloudflareZoneIDs removes the "cloudflare_zones" edge to the CloudflareZone entity by IDs.
+func (m *PlatformConfigMutation) RemoveCloudflareZoneIDs(ids ...int64) {
+	if m.removedcloudflare_zones == nil {
+		m.removedcloudflare_zones = make(map[int64]struct{})
 	}
 	for i := range ids {
-		delete(m.cloudflare_tunnels, ids[i])
-		m.removedcloudflare_tunnels[ids[i]] = struct{}{}
+		delete(m.cloudflare_zones, ids[i])
+		m.removedcloudflare_zones[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedCloudflareTunnels returns the removed IDs of the "cloudflare_tunnels" edge to the CloudflareTunnel entity.
-func (m *PlatformConfigMutation) RemovedCloudflareTunnelsIDs() (ids []int64) {
-	for id := range m.removedcloudflare_tunnels {
+// RemovedCloudflareZones returns the removed IDs of the "cloudflare_zones" edge to the CloudflareZone entity.
+func (m *PlatformConfigMutation) RemovedCloudflareZonesIDs() (ids []int64) {
+	for id := range m.removedcloudflare_zones {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// CloudflareTunnelsIDs returns the "cloudflare_tunnels" edge IDs in the mutation.
-func (m *PlatformConfigMutation) CloudflareTunnelsIDs() (ids []int64) {
-	for id := range m.cloudflare_tunnels {
+// CloudflareZonesIDs returns the "cloudflare_zones" edge IDs in the mutation.
+func (m *PlatformConfigMutation) CloudflareZonesIDs() (ids []int64) {
+	for id := range m.cloudflare_zones {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetCloudflareTunnels resets all changes to the "cloudflare_tunnels" edge.
-func (m *PlatformConfigMutation) ResetCloudflareTunnels() {
-	m.cloudflare_tunnels = nil
-	m.clearedcloudflare_tunnels = false
-	m.removedcloudflare_tunnels = nil
+// ResetCloudflareZones resets all changes to the "cloudflare_zones" edge.
+func (m *PlatformConfigMutation) ResetCloudflareZones() {
+	m.cloudflare_zones = nil
+	m.clearedcloudflare_zones = false
+	m.removedcloudflare_zones = nil
 }
 
 // AddEdgeoneZoneIDs adds the "edgeone_zones" edge to the EdgeOneZone entity by ids.
@@ -22474,6 +25269,60 @@ func (m *PlatformConfigMutation) ResetEsaZones() {
 	m.esa_zones = nil
 	m.clearedesa_zones = false
 	m.removedesa_zones = nil
+}
+
+// AddCloudflareTunnelIDs adds the "cloudflare_tunnels" edge to the CloudflareTunnel entity by ids.
+func (m *PlatformConfigMutation) AddCloudflareTunnelIDs(ids ...int64) {
+	if m.cloudflare_tunnels == nil {
+		m.cloudflare_tunnels = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.cloudflare_tunnels[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCloudflareTunnels clears the "cloudflare_tunnels" edge to the CloudflareTunnel entity.
+func (m *PlatformConfigMutation) ClearCloudflareTunnels() {
+	m.clearedcloudflare_tunnels = true
+}
+
+// CloudflareTunnelsCleared reports if the "cloudflare_tunnels" edge to the CloudflareTunnel entity was cleared.
+func (m *PlatformConfigMutation) CloudflareTunnelsCleared() bool {
+	return m.clearedcloudflare_tunnels
+}
+
+// RemoveCloudflareTunnelIDs removes the "cloudflare_tunnels" edge to the CloudflareTunnel entity by IDs.
+func (m *PlatformConfigMutation) RemoveCloudflareTunnelIDs(ids ...int64) {
+	if m.removedcloudflare_tunnels == nil {
+		m.removedcloudflare_tunnels = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.cloudflare_tunnels, ids[i])
+		m.removedcloudflare_tunnels[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCloudflareTunnels returns the removed IDs of the "cloudflare_tunnels" edge to the CloudflareTunnel entity.
+func (m *PlatformConfigMutation) RemovedCloudflareTunnelsIDs() (ids []int64) {
+	for id := range m.removedcloudflare_tunnels {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CloudflareTunnelsIDs returns the "cloudflare_tunnels" edge IDs in the mutation.
+func (m *PlatformConfigMutation) CloudflareTunnelsIDs() (ids []int64) {
+	for id := range m.cloudflare_tunnels {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCloudflareTunnels resets all changes to the "cloudflare_tunnels" edge.
+func (m *PlatformConfigMutation) ResetCloudflareTunnels() {
+	m.cloudflare_tunnels = nil
+	m.clearedcloudflare_tunnels = false
+	m.removedcloudflare_tunnels = nil
 }
 
 // Where appends a list predicates to the PlatformConfigMutation builder.
@@ -22726,7 +25575,7 @@ func (m *PlatformConfigMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlatformConfigMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.dns_records != nil {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
@@ -22739,14 +25588,17 @@ func (m *PlatformConfigMutation) AddedEdges() []string {
 	if m.tun_records != nil {
 		edges = append(edges, platformconfig.EdgeTunRecords)
 	}
-	if m.cloudflare_tunnels != nil {
-		edges = append(edges, platformconfig.EdgeCloudflareTunnels)
+	if m.cloudflare_zones != nil {
+		edges = append(edges, platformconfig.EdgeCloudflareZones)
 	}
 	if m.edgeone_zones != nil {
 		edges = append(edges, platformconfig.EdgeEdgeoneZones)
 	}
 	if m.esa_zones != nil {
 		edges = append(edges, platformconfig.EdgeEsaZones)
+	}
+	if m.cloudflare_tunnels != nil {
+		edges = append(edges, platformconfig.EdgeCloudflareTunnels)
 	}
 	return edges
 }
@@ -22779,9 +25631,9 @@ func (m *PlatformConfigMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case platformconfig.EdgeCloudflareTunnels:
-		ids := make([]ent.Value, 0, len(m.cloudflare_tunnels))
-		for id := range m.cloudflare_tunnels {
+	case platformconfig.EdgeCloudflareZones:
+		ids := make([]ent.Value, 0, len(m.cloudflare_zones))
+		for id := range m.cloudflare_zones {
 			ids = append(ids, id)
 		}
 		return ids
@@ -22797,13 +25649,19 @@ func (m *PlatformConfigMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case platformconfig.EdgeCloudflareTunnels:
+		ids := make([]ent.Value, 0, len(m.cloudflare_tunnels))
+		for id := range m.cloudflare_tunnels {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlatformConfigMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.removeddns_records != nil {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
@@ -22816,14 +25674,17 @@ func (m *PlatformConfigMutation) RemovedEdges() []string {
 	if m.removedtun_records != nil {
 		edges = append(edges, platformconfig.EdgeTunRecords)
 	}
-	if m.removedcloudflare_tunnels != nil {
-		edges = append(edges, platformconfig.EdgeCloudflareTunnels)
+	if m.removedcloudflare_zones != nil {
+		edges = append(edges, platformconfig.EdgeCloudflareZones)
 	}
 	if m.removededgeone_zones != nil {
 		edges = append(edges, platformconfig.EdgeEdgeoneZones)
 	}
 	if m.removedesa_zones != nil {
 		edges = append(edges, platformconfig.EdgeEsaZones)
+	}
+	if m.removedcloudflare_tunnels != nil {
+		edges = append(edges, platformconfig.EdgeCloudflareTunnels)
 	}
 	return edges
 }
@@ -22856,9 +25717,9 @@ func (m *PlatformConfigMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case platformconfig.EdgeCloudflareTunnels:
-		ids := make([]ent.Value, 0, len(m.removedcloudflare_tunnels))
-		for id := range m.removedcloudflare_tunnels {
+	case platformconfig.EdgeCloudflareZones:
+		ids := make([]ent.Value, 0, len(m.removedcloudflare_zones))
+		for id := range m.removedcloudflare_zones {
 			ids = append(ids, id)
 		}
 		return ids
@@ -22874,13 +25735,19 @@ func (m *PlatformConfigMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case platformconfig.EdgeCloudflareTunnels:
+		ids := make([]ent.Value, 0, len(m.removedcloudflare_tunnels))
+		for id := range m.removedcloudflare_tunnels {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlatformConfigMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.cleareddns_records {
 		edges = append(edges, platformconfig.EdgeDNSRecords)
 	}
@@ -22893,14 +25760,17 @@ func (m *PlatformConfigMutation) ClearedEdges() []string {
 	if m.clearedtun_records {
 		edges = append(edges, platformconfig.EdgeTunRecords)
 	}
-	if m.clearedcloudflare_tunnels {
-		edges = append(edges, platformconfig.EdgeCloudflareTunnels)
+	if m.clearedcloudflare_zones {
+		edges = append(edges, platformconfig.EdgeCloudflareZones)
 	}
 	if m.clearededgeone_zones {
 		edges = append(edges, platformconfig.EdgeEdgeoneZones)
 	}
 	if m.clearedesa_zones {
 		edges = append(edges, platformconfig.EdgeEsaZones)
+	}
+	if m.clearedcloudflare_tunnels {
+		edges = append(edges, platformconfig.EdgeCloudflareTunnels)
 	}
 	return edges
 }
@@ -22917,12 +25787,14 @@ func (m *PlatformConfigMutation) EdgeCleared(name string) bool {
 		return m.clearedssl_records
 	case platformconfig.EdgeTunRecords:
 		return m.clearedtun_records
-	case platformconfig.EdgeCloudflareTunnels:
-		return m.clearedcloudflare_tunnels
+	case platformconfig.EdgeCloudflareZones:
+		return m.clearedcloudflare_zones
 	case platformconfig.EdgeEdgeoneZones:
 		return m.clearededgeone_zones
 	case platformconfig.EdgeEsaZones:
 		return m.clearedesa_zones
+	case platformconfig.EdgeCloudflareTunnels:
+		return m.clearedcloudflare_tunnels
 	}
 	return false
 }
@@ -22951,14 +25823,17 @@ func (m *PlatformConfigMutation) ResetEdge(name string) error {
 	case platformconfig.EdgeTunRecords:
 		m.ResetTunRecords()
 		return nil
-	case platformconfig.EdgeCloudflareTunnels:
-		m.ResetCloudflareTunnels()
+	case platformconfig.EdgeCloudflareZones:
+		m.ResetCloudflareZones()
 		return nil
 	case platformconfig.EdgeEdgeoneZones:
 		m.ResetEdgeoneZones()
 		return nil
 	case platformconfig.EdgeEsaZones:
 		m.ResetEsaZones()
+		return nil
+	case platformconfig.EdgeCloudflareTunnels:
+		m.ResetCloudflareTunnels()
 		return nil
 	}
 	return fmt.Errorf("unknown PlatformConfig edge %s", name)

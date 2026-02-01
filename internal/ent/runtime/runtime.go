@@ -8,6 +8,8 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
+	"vibe_ip/internal/ent/cloudflarezone"
+	"vibe_ip/internal/ent/cloudflarezonerecord"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -123,6 +125,52 @@ func init() {
 	cloudflaretunnelingressDescID := cloudflaretunnelingressFields[0].Descriptor()
 	// cloudflaretunnelingress.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	cloudflaretunnelingress.IDValidator = cloudflaretunnelingressDescID.Validators[0].(func(int64) error)
+	cloudflarezoneMixin := schema.CloudflareZone{}.Mixin()
+	cloudflarezoneMixinFields0 := cloudflarezoneMixin[0].Fields()
+	_ = cloudflarezoneMixinFields0
+	cloudflarezoneFields := schema.CloudflareZone{}.Fields()
+	_ = cloudflarezoneFields
+	// cloudflarezoneDescCreatedAt is the schema descriptor for created_at field.
+	cloudflarezoneDescCreatedAt := cloudflarezoneMixinFields0[0].Descriptor()
+	// cloudflarezone.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cloudflarezone.DefaultCreatedAt = cloudflarezoneDescCreatedAt.Default.(func() time.Time)
+	// cloudflarezoneDescUpdatedAt is the schema descriptor for updated_at field.
+	cloudflarezoneDescUpdatedAt := cloudflarezoneMixinFields0[1].Descriptor()
+	// cloudflarezone.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cloudflarezone.DefaultUpdatedAt = cloudflarezoneDescUpdatedAt.Default.(func() time.Time)
+	// cloudflarezone.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cloudflarezone.UpdateDefaultUpdatedAt = cloudflarezoneDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cloudflarezoneDescConfigID is the schema descriptor for config_id field.
+	cloudflarezoneDescConfigID := cloudflarezoneFields[1].Descriptor()
+	// cloudflarezone.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
+	cloudflarezone.ConfigIDValidator = cloudflarezoneDescConfigID.Validators[0].(func(int64) error)
+	// cloudflarezoneDescID is the schema descriptor for id field.
+	cloudflarezoneDescID := cloudflarezoneFields[0].Descriptor()
+	// cloudflarezone.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	cloudflarezone.IDValidator = cloudflarezoneDescID.Validators[0].(func(int64) error)
+	cloudflarezonerecordMixin := schema.CloudflareZoneRecord{}.Mixin()
+	cloudflarezonerecordMixinFields0 := cloudflarezonerecordMixin[0].Fields()
+	_ = cloudflarezonerecordMixinFields0
+	cloudflarezonerecordFields := schema.CloudflareZoneRecord{}.Fields()
+	_ = cloudflarezonerecordFields
+	// cloudflarezonerecordDescCreatedAt is the schema descriptor for created_at field.
+	cloudflarezonerecordDescCreatedAt := cloudflarezonerecordMixinFields0[0].Descriptor()
+	// cloudflarezonerecord.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cloudflarezonerecord.DefaultCreatedAt = cloudflarezonerecordDescCreatedAt.Default.(func() time.Time)
+	// cloudflarezonerecordDescUpdatedAt is the schema descriptor for updated_at field.
+	cloudflarezonerecordDescUpdatedAt := cloudflarezonerecordMixinFields0[1].Descriptor()
+	// cloudflarezonerecord.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cloudflarezonerecord.DefaultUpdatedAt = cloudflarezonerecordDescUpdatedAt.Default.(func() time.Time)
+	// cloudflarezonerecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cloudflarezonerecord.UpdateDefaultUpdatedAt = cloudflarezonerecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cloudflarezonerecordDescCloudflareZoneID is the schema descriptor for cloudflare_zone_id field.
+	cloudflarezonerecordDescCloudflareZoneID := cloudflarezonerecordFields[1].Descriptor()
+	// cloudflarezonerecord.CloudflareZoneIDValidator is a validator for the "cloudflare_zone_id" field. It is called by the builders before save.
+	cloudflarezonerecord.CloudflareZoneIDValidator = cloudflarezonerecordDescCloudflareZoneID.Validators[0].(func(int64) error)
+	// cloudflarezonerecordDescID is the schema descriptor for id field.
+	cloudflarezonerecordDescID := cloudflarezonerecordFields[0].Descriptor()
+	// cloudflarezonerecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	cloudflarezonerecord.IDValidator = cloudflarezonerecordDescID.Validators[0].(func(int64) error)
 	dnsrecordMixin := schema.DNSRecord{}.Mixin()
 	dnsrecordHooks := schema.DNSRecord{}.Hooks()
 	dnsrecord.Hooks[0] = dnsrecordHooks[0]

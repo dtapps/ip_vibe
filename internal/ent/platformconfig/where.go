@@ -437,21 +437,21 @@ func HasTunRecordsWith(preds ...predicate.TUNRecord) predicate.PlatformConfig {
 	})
 }
 
-// HasCloudflareTunnels applies the HasEdge predicate on the "cloudflare_tunnels" edge.
-func HasCloudflareTunnels() predicate.PlatformConfig {
+// HasCloudflareZones applies the HasEdge predicate on the "cloudflare_zones" edge.
+func HasCloudflareZones() predicate.PlatformConfig {
 	return predicate.PlatformConfig(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CloudflareTunnelsTable, CloudflareTunnelsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, CloudflareZonesTable, CloudflareZonesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCloudflareTunnelsWith applies the HasEdge predicate on the "cloudflare_tunnels" edge with a given conditions (other predicates).
-func HasCloudflareTunnelsWith(preds ...predicate.CloudflareTunnel) predicate.PlatformConfig {
+// HasCloudflareZonesWith applies the HasEdge predicate on the "cloudflare_zones" edge with a given conditions (other predicates).
+func HasCloudflareZonesWith(preds ...predicate.CloudflareZone) predicate.PlatformConfig {
 	return predicate.PlatformConfig(func(s *sql.Selector) {
-		step := newCloudflareTunnelsStep()
+		step := newCloudflareZonesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -498,6 +498,29 @@ func HasEsaZones() predicate.PlatformConfig {
 func HasEsaZonesWith(preds ...predicate.EsaSite) predicate.PlatformConfig {
 	return predicate.PlatformConfig(func(s *sql.Selector) {
 		step := newEsaZonesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCloudflareTunnels applies the HasEdge predicate on the "cloudflare_tunnels" edge.
+func HasCloudflareTunnels() predicate.PlatformConfig {
+	return predicate.PlatformConfig(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CloudflareTunnelsTable, CloudflareTunnelsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCloudflareTunnelsWith applies the HasEdge predicate on the "cloudflare_tunnels" edge with a given conditions (other predicates).
+func HasCloudflareTunnelsWith(preds ...predicate.CloudflareTunnel) predicate.PlatformConfig {
+	return predicate.PlatformConfig(func(s *sql.Selector) {
+		step := newCloudflareTunnelsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

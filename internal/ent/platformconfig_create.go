@@ -10,6 +10,7 @@ import (
 	"time"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/cloudflaretunnel"
+	"vibe_ip/internal/ent/cloudflarezone"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/edgeonezone"
 	"vibe_ip/internal/ent/esasite"
@@ -170,19 +171,19 @@ func (_c *PlatformConfigCreate) AddTunRecords(v ...*TUNRecord) *PlatformConfigCr
 	return _c.AddTunRecordIDs(ids...)
 }
 
-// AddCloudflareTunnelIDs adds the "cloudflare_tunnels" edge to the CloudflareTunnel entity by IDs.
-func (_c *PlatformConfigCreate) AddCloudflareTunnelIDs(ids ...int64) *PlatformConfigCreate {
-	_c.mutation.AddCloudflareTunnelIDs(ids...)
+// AddCloudflareZoneIDs adds the "cloudflare_zones" edge to the CloudflareZone entity by IDs.
+func (_c *PlatformConfigCreate) AddCloudflareZoneIDs(ids ...int64) *PlatformConfigCreate {
+	_c.mutation.AddCloudflareZoneIDs(ids...)
 	return _c
 }
 
-// AddCloudflareTunnels adds the "cloudflare_tunnels" edges to the CloudflareTunnel entity.
-func (_c *PlatformConfigCreate) AddCloudflareTunnels(v ...*CloudflareTunnel) *PlatformConfigCreate {
+// AddCloudflareZones adds the "cloudflare_zones" edges to the CloudflareZone entity.
+func (_c *PlatformConfigCreate) AddCloudflareZones(v ...*CloudflareZone) *PlatformConfigCreate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _c.AddCloudflareTunnelIDs(ids...)
+	return _c.AddCloudflareZoneIDs(ids...)
 }
 
 // AddEdgeoneZoneIDs adds the "edgeone_zones" edge to the EdgeOneZone entity by IDs.
@@ -213,6 +214,21 @@ func (_c *PlatformConfigCreate) AddEsaZones(v ...*EsaSite) *PlatformConfigCreate
 		ids[i] = v[i].ID
 	}
 	return _c.AddEsaZoneIDs(ids...)
+}
+
+// AddCloudflareTunnelIDs adds the "cloudflare_tunnels" edge to the CloudflareTunnel entity by IDs.
+func (_c *PlatformConfigCreate) AddCloudflareTunnelIDs(ids ...int64) *PlatformConfigCreate {
+	_c.mutation.AddCloudflareTunnelIDs(ids...)
+	return _c
+}
+
+// AddCloudflareTunnels adds the "cloudflare_tunnels" edges to the CloudflareTunnel entity.
+func (_c *PlatformConfigCreate) AddCloudflareTunnels(v ...*CloudflareTunnel) *PlatformConfigCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddCloudflareTunnelIDs(ids...)
 }
 
 // Mutation returns the PlatformConfigMutation object of the builder.
@@ -430,15 +446,15 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.CloudflareTunnelsIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.CloudflareZonesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   platformconfig.CloudflareTunnelsTable,
-			Columns: []string{platformconfig.CloudflareTunnelsColumn},
+			Table:   platformconfig.CloudflareZonesTable,
+			Columns: []string{platformconfig.CloudflareZonesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(cloudflaretunnel.FieldID, field.TypeInt64),
+				IDSpec: sqlgraph.NewFieldSpec(cloudflarezone.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -471,6 +487,22 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasite.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.CloudflareTunnelsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   platformconfig.CloudflareTunnelsTable,
+			Columns: []string{platformconfig.CloudflareTunnelsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cloudflaretunnel.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

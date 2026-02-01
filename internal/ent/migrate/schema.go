@@ -213,6 +213,122 @@ var (
 			},
 		},
 	}
+	// CloudflareZoneColumns holds the columns for the "cloudflare_zone" table.
+	CloudflareZoneColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "Cloudflare 站点序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
+		{Name: "zone_id", Type: field.TypeInt64, Comment: "站点 ID"},
+		{Name: "account", Type: field.TypeJSON, Nullable: true, Comment: "区域所属的帐户"},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "域名"},
+		{Name: "name_servers", Type: field.TypeJSON, Nullable: true, Comment: "Cloudflare分配给区域的名称服务器"},
+		{Name: "original_dnshost", Type: field.TypeString, Nullable: true, Comment: "切换到Cloudflare时的DNS主机"},
+		{Name: "original_name_servers", Type: field.TypeJSON, Nullable: true, Comment: "迁移到Cloudflare之前的原始名称服务器"},
+		{Name: "original_registrar", Type: field.TypeString, Nullable: true, Comment: "转换到Cloudflare时的域名注册商"},
+		{Name: "paused", Type: field.TypeBool, Nullable: true, Comment: "指示区域是否仅使用Cloudflare DNS服务。 true值意味着该区域将不会获得安全或性能方面的好处"},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "Cloudflare上的区域状态", Enums: []string{"initializing", "pending", "active", "moved"}},
+		{Name: "type", Type: field.TypeString, Nullable: true, Comment: "完整区域意味着DNS托管在Cloudflare上。部分区域通常是合作伙伴托管的区域或CNAME设置"},
+		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
+	}
+	// CloudflareZoneTable holds the schema information for the "cloudflare_zone" table.
+	CloudflareZoneTable = &schema.Table{
+		Name:       "cloudflare_zone",
+		Comment:    "Cloudflare 站点",
+		Columns:    CloudflareZoneColumns,
+		PrimaryKey: []*schema.Column{CloudflareZoneColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "cloudflare_zone_platform_config_cloudflare_zones",
+				Columns:    []*schema.Column{CloudflareZoneColumns[15]},
+				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cloudflarezone_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "cloudflarezone_config_id",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneColumns[15]},
+			},
+			{
+				Name:    "cloudflarezone_zone_id",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneColumns[5]},
+			},
+			{
+				Name:    "cloudflarezone_config_id_zone_id",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneColumns[15], CloudflareZoneColumns[5]},
+			},
+		},
+	}
+	// CloudflareZoneRecordColumns holds the columns for the "cloudflare_zone_record" table.
+	CloudflareZoneRecordColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "Cloudflare 站点记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
+		{Name: "record_id", Type: field.TypeString, Comment: "记录 ID"},
+		{Name: "comment", Type: field.TypeString, Nullable: true, Comment: "有关DNS记录的注释或说明。 此字段对DNS响应没有影响。"},
+		{Name: "content", Type: field.TypeString, Nullable: true, Comment: "单个Base64编码的OpenPGP可传输公钥（RFC 4880第11.1节）"},
+		{Name: "proxiable", Type: field.TypeBool, Nullable: true, Comment: "Cloudflare是否可以代理该记录"},
+		{Name: "proxied", Type: field.TypeBool, Nullable: true, Comment: "记录是否获得Cloudflare的性能和安全优势"},
+		{Name: "settings", Type: field.TypeJSON, Nullable: true, Comment: "DNS记录的设置"},
+		{Name: "ttl", Type: field.TypeInt64, Nullable: true, Comment: "DNS记录的生存时间（TTL），以秒为单位。 设置为1表示“自动”。 值必须介于60和86400之间，对于企业区域，最小值减少到30"},
+		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "数据录类型", Enums: []string{"A", "AAAA", "CNAME", "MX", "NS", "PTR", "TXT", "CAA", "CERT", "DNSKEY", "DS", "HTTPS", "LOC", "NAPTR", "SMIMEA", "SRV", "SSHFP", "SVCB", "TLSA", "URI"}},
+		{Name: "cloudflare_zone_id", Type: field.TypeInt64, Comment: "关联 Cloudflare 站点序号"},
+	}
+	// CloudflareZoneRecordTable holds the schema information for the "cloudflare_zone_record" table.
+	CloudflareZoneRecordTable = &schema.Table{
+		Name:       "cloudflare_zone_record",
+		Comment:    "Cloudflare 站点记录",
+		Columns:    CloudflareZoneRecordColumns,
+		PrimaryKey: []*schema.Column{CloudflareZoneRecordColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "cloudflare_zone_record_cloudflare_zone_records",
+				Columns:    []*schema.Column{CloudflareZoneRecordColumns[13]},
+				RefColumns: []*schema.Column{CloudflareZoneColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cloudflarezonerecord_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneRecordColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "cloudflarezonerecord_cloudflare_zone_id",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneRecordColumns[13]},
+			},
+			{
+				Name:    "cloudflarezonerecord_record_id",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneRecordColumns[5]},
+			},
+			{
+				Name:    "cloudflarezonerecord_cloudflare_zone_id_record_id",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneRecordColumns[13], CloudflareZoneRecordColumns[5]},
+			},
+		},
+	}
 	// DNSRecordColumns holds the columns for the "dns_record" table.
 	DNSRecordColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "DNS记录序号"},
@@ -1351,6 +1467,8 @@ var (
 		CacheTable,
 		CloudflareTunnelTable,
 		CloudflareTunnelIngressTable,
+		CloudflareZoneTable,
+		CloudflareZoneRecordTable,
 		DNSRecordTable,
 		DeviceTable,
 		DeviceGroupTable,
@@ -1392,6 +1510,14 @@ func init() {
 	CloudflareTunnelIngressTable.ForeignKeys[0].RefTable = CloudflareTunnelTable
 	CloudflareTunnelIngressTable.Annotation = &entsql.Annotation{
 		Table: "cloudflare_tunnel_ingress",
+	}
+	CloudflareZoneTable.ForeignKeys[0].RefTable = PlatformConfigTable
+	CloudflareZoneTable.Annotation = &entsql.Annotation{
+		Table: "cloudflare_zone",
+	}
+	CloudflareZoneRecordTable.ForeignKeys[0].RefTable = CloudflareZoneTable
+	CloudflareZoneRecordTable.Annotation = &entsql.Annotation{
+		Table: "cloudflare_zone_record",
 	}
 	DNSRecordTable.ForeignKeys[0].RefTable = CdnRecordTable
 	DNSRecordTable.ForeignKeys[1].RefTable = DeviceGroupTable

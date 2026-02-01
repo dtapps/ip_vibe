@@ -360,6 +360,8 @@ const (
 	LogObjTypeCache                         string = "Cache"                         // 缓存
 	LogObjTypeCloudflareTunnel              string = "CloudflareTunnel"              // Cloudflare隧道
 	LogObjTypeCloudflareTunnelIngress       string = "CloudflareTunnelIngress"       // Cloudflare隧道入站规则
+	LogObjTypeCloudflareZone                string = "CloudflareZone"                // Cloudflare区域
+	LogObjTypeCloudflareZoneRecord          string = "CloudflareZoneRecord"          // Cloudflare区域记录
 	LogObjTypeDNSRecord                     string = "DNSRecord"                     // DNS记录
 	LogObjTypeDevice                        string = "Device"                        // 设备
 	LogObjTypeDeviceGroup                   string = "DeviceGroup"                   // 设备组
@@ -402,6 +404,8 @@ var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeCache:                         "缓存",
 	LogObjTypeCloudflareTunnel:              "Cloudflare隧道",
 	LogObjTypeCloudflareTunnelIngress:       "Cloudflare隧道入站规则",
+	LogObjTypeCloudflareZone:                "Cloudflare区域",
+	LogObjTypeCloudflareZoneRecord:          "Cloudflare区域记录",
 	LogObjTypeCDNRecord:                     "CDN记录",
 	LogObjTypeDNSRecord:                     "DNS记录",
 	LogObjTypeDevice:                        "设备",
@@ -442,6 +446,8 @@ var GetLogObjTypes = []string{
 	LogObjTypeCache,
 	LogObjTypeCloudflareTunnel,
 	LogObjTypeCloudflareTunnelIngress,
+	LogObjTypeCloudflareZone,
+	LogObjTypeCloudflareZoneRecord,
 	LogObjTypeCDNRecord,
 	LogObjTypeDNSRecord,
 	LogObjTypeDevice,
@@ -699,58 +705,97 @@ var GetTUNRecordServeTypes = []string{
 // --------
 
 const (
-	CloudflareTunnelStatusInactive string = "inactive" // 活跃
-	CloudflareTunnelStatusDegraded string = "degraded" // 降级
-	CloudflareTunnelStatusHealthy  string = "healthy"  // 健康
-	CloudflareTunnelStatusDown     string = "down"     // 下线
+	CloudflareZoneStatusInitializing string = "initializing" // 初始化中
+	CloudflareZoneStatusPending      string = "pending"      // 待处理
+	CloudflareZoneStatusActive       string = "active"       // 已激活
+	CloudflareZoneStatusMoved        string = "moved"        // 已迁移
 )
 
-// GetCloudflareTunnelStatusDescriptions 隧道状态 说明映射
-var GetCloudflareTunnelStatusDescriptions = map[string]string{
-	CloudflareTunnelStatusInactive: "活跃",
-	CloudflareTunnelStatusDegraded: "降级",
-	CloudflareTunnelStatusHealthy:  "健康",
-	CloudflareTunnelStatusDown:     "下线",
+// GetCloudflareZoneStatusDescriptions Cloudflare上的区域状态 说明映射
+var GetCloudflareZoneStatusDescriptions = map[string]string{
+	CloudflareZoneStatusInitializing: "初始化中",
+	CloudflareZoneStatusPending:      "待处理",
+	CloudflareZoneStatusActive:       "已激活",
+	CloudflareZoneStatusMoved:        "已迁移",
 }
 
-// GetCloudflareTunnelStatuss 返回所有 隧道状态
-var GetCloudflareTunnelStatuss = []string{
-	CloudflareTunnelStatusInactive,
-	CloudflareTunnelStatusDegraded,
-	CloudflareTunnelStatusHealthy,
-	CloudflareTunnelStatusDown,
+// GetCloudflareZoneStatuss 返回所有 Cloudflare上的区域状态
+var GetCloudflareZoneStatuss = []string{
+	CloudflareZoneStatusInitializing,
+	CloudflareZoneStatusPending,
+	CloudflareZoneStatusActive,
+	CloudflareZoneStatusMoved,
 }
 
 const (
-	CloudflareTunnelTunTypeCfdTunnel     string = "cfd_tunnel"     // Cloudflare 隧道
-	CloudflareTunnelTunTypeWarpConnector string = "warp_connector" // Warp 连接器
-	CloudflareTunnelTunTypeWarp          string = "warp"           // Warp 隧道
-	CloudflareTunnelTunTypeMagic         string = "magic"          // Magic 隧道
-	CloudflareTunnelTunTypeIPSec         string = "ipsec"          // IPsec 隧道
-	CloudflareTunnelTunTypeGRE           string = "gre"            // GRE 隧道
-	CloudflareTunnelTunTypeCNI           string = "cni"            // CNI 隧道
+	CloudflareZoneRecordTypeA      string = "A"      // A
+	CloudflareZoneRecordTypeAaaa   string = "AAAA"   // AAAA
+	CloudflareZoneRecordTypeCname  string = "CNAME"  // CNAME
+	CloudflareZoneRecordTypeMx     string = "MX"     // MX
+	CloudflareZoneRecordTypeNs     string = "NS"     // NS
+	CloudflareZoneRecordTypePtr    string = "PTR"    // PTR
+	CloudflareZoneRecordTypeTxt    string = "TXT"    // TXT
+	CloudflareZoneRecordTypeCaa    string = "CAA"    // CAA
+	CloudflareZoneRecordTypeCert   string = "CERT"   // CERT
+	CloudflareZoneRecordTypeDnskey string = "DNSKEY" // DNSKEY
+	CloudflareZoneRecordTypeDs     string = "DS"     // DS
+	CloudflareZoneRecordTypeHttps  string = "HTTPS"  // HTTPS
+	CloudflareZoneRecordTypeLoc    string = "LOC"    // LOC
+	CloudflareZoneRecordTypeNaptr  string = "NAPTR"  // NAPTR
+	CloudflareZoneRecordTypeSmimea string = "SMIMEA" // SMIMEA
+	CloudflareZoneRecordTypeSrv    string = "SRV"    // SRV
+	CloudflareZoneRecordTypeSshfp  string = "SSHFP"  // SSHFP
+	CloudflareZoneRecordTypeSvc    string = "SVCB"   // SVCB
+	CloudflareZoneRecordTypeTlsa   string = "TLSA"   // TLSA
+	CloudflareZoneRecordTypeUri    string = "URI"    // URI
 )
 
-// GetCloudflareTunnelTunTypeDescriptions 隧道类型 说明映射
-var GetCloudflareTunnelTunTypeDescriptions = map[string]string{
-	CloudflareTunnelTunTypeCfdTunnel:     "Cloudflare 隧道",
-	CloudflareTunnelTunTypeWarpConnector: "Warp 连接器",
-	CloudflareTunnelTunTypeWarp:          "Warp 隧道",
-	CloudflareTunnelTunTypeMagic:         "Magic 隧道",
-	CloudflareTunnelTunTypeIPSec:         "IPsec 隧道",
-	CloudflareTunnelTunTypeGRE:           "GRE 隧道",
-	CloudflareTunnelTunTypeCNI:           "CNI 隧道",
+// GetCloudflareZoneRecordTypeDescriptions 数据录类型 说明映射
+var GetCloudflareZoneRecordTypeDescriptions = map[string]string{
+	CloudflareZoneRecordTypeA:      "A",
+	CloudflareZoneRecordTypeAaaa:   "AAAA",
+	CloudflareZoneRecordTypeCname:  "CNAME",
+	CloudflareZoneRecordTypeMx:     "MX",
+	CloudflareZoneRecordTypeNs:     "NS",
+	CloudflareZoneRecordTypePtr:    "PTR",
+	CloudflareZoneRecordTypeTxt:    "TXT",
+	CloudflareZoneRecordTypeCaa:    "CAA",
+	CloudflareZoneRecordTypeCert:   "CERT",
+	CloudflareZoneRecordTypeDnskey: "DNSKEY",
+	CloudflareZoneRecordTypeDs:     "DS",
+	CloudflareZoneRecordTypeHttps:  "HTTPS",
+	CloudflareZoneRecordTypeLoc:    "LOC",
+	CloudflareZoneRecordTypeNaptr:  "NAPTR",
+	CloudflareZoneRecordTypeSmimea: "SMIMEA",
+	CloudflareZoneRecordTypeSrv:    "SRV",
+	CloudflareZoneRecordTypeSshfp:  "SSHFP",
+	CloudflareZoneRecordTypeSvc:    "SVCB",
+	CloudflareZoneRecordTypeTlsa:   "TLSA",
+	CloudflareZoneRecordTypeUri:    "URI",
 }
 
-// GetCloudflareTunnelTunTypes 返回所有 隧道类型
-var GetCloudflareTunnelTunTypes = []string{
-	CloudflareTunnelTunTypeCfdTunnel,
-	CloudflareTunnelTunTypeWarpConnector,
-	CloudflareTunnelTunTypeWarp,
-	CloudflareTunnelTunTypeMagic,
-	CloudflareTunnelTunTypeIPSec,
-	CloudflareTunnelTunTypeGRE,
-	CloudflareTunnelTunTypeCNI,
+// GetCloudflareZoneRecordTypes 返回所有 数据录类型
+var GetCloudflareZoneRecordTypes = []string{
+	CloudflareZoneRecordTypeA,
+	CloudflareZoneRecordTypeAaaa,
+	CloudflareZoneRecordTypeCname,
+	CloudflareZoneRecordTypeMx,
+	CloudflareZoneRecordTypeNs,
+	CloudflareZoneRecordTypePtr,
+	CloudflareZoneRecordTypeTxt,
+	CloudflareZoneRecordTypeCaa,
+	CloudflareZoneRecordTypeCert,
+	CloudflareZoneRecordTypeDnskey,
+	CloudflareZoneRecordTypeDs,
+	CloudflareZoneRecordTypeHttps,
+	CloudflareZoneRecordTypeLoc,
+	CloudflareZoneRecordTypeNaptr,
+	CloudflareZoneRecordTypeSmimea,
+	CloudflareZoneRecordTypeSrv,
+	CloudflareZoneRecordTypeSshfp,
+	CloudflareZoneRecordTypeSvc,
+	CloudflareZoneRecordTypeTlsa,
+	CloudflareZoneRecordTypeUri,
 }
 
 // --------
@@ -1187,4 +1232,61 @@ var GetEsaSiteRecordHostPolicyDescriptions = map[string]string{
 var GetEsaSiteRecordHostPolicys = []string{
 	EsaSiteRecordHostPolicyFollowHostname,
 	EsaSiteRecordHostPolicyFollowOriginDomain,
+}
+
+// --------
+
+const (
+	CloudflareTunnelStatusInactive string = "inactive" // 活跃
+	CloudflareTunnelStatusDegraded string = "degraded" // 降级
+	CloudflareTunnelStatusHealthy  string = "healthy"  // 健康
+	CloudflareTunnelStatusDown     string = "down"     // 下线
+)
+
+// GetCloudflareTunnelStatusDescriptions 隧道状态 说明映射
+var GetCloudflareTunnelStatusDescriptions = map[string]string{
+	CloudflareTunnelStatusInactive: "活跃",
+	CloudflareTunnelStatusDegraded: "降级",
+	CloudflareTunnelStatusHealthy:  "健康",
+	CloudflareTunnelStatusDown:     "下线",
+}
+
+// GetCloudflareTunnelStatuss 返回所有 隧道状态
+var GetCloudflareTunnelStatuss = []string{
+	CloudflareTunnelStatusInactive,
+	CloudflareTunnelStatusDegraded,
+	CloudflareTunnelStatusHealthy,
+	CloudflareTunnelStatusDown,
+}
+
+const (
+	CloudflareTunnelTunTypeCfdTunnel     string = "cfd_tunnel"     // Cloudflare 隧道
+	CloudflareTunnelTunTypeWarpConnector string = "warp_connector" // Warp 连接器
+	CloudflareTunnelTunTypeWarp          string = "warp"           // Warp 隧道
+	CloudflareTunnelTunTypeMagic         string = "magic"          // Magic 隧道
+	CloudflareTunnelTunTypeIPSec         string = "ipsec"          // IPsec 隧道
+	CloudflareTunnelTunTypeGRE           string = "gre"            // GRE 隧道
+	CloudflareTunnelTunTypeCNI           string = "cni"            // CNI 隧道
+)
+
+// GetCloudflareTunnelTunTypeDescriptions 隧道类型 说明映射
+var GetCloudflareTunnelTunTypeDescriptions = map[string]string{
+	CloudflareTunnelTunTypeCfdTunnel:     "Cloudflare 隧道",
+	CloudflareTunnelTunTypeWarpConnector: "Warp 连接器",
+	CloudflareTunnelTunTypeWarp:          "Warp 隧道",
+	CloudflareTunnelTunTypeMagic:         "Magic 隧道",
+	CloudflareTunnelTunTypeIPSec:         "IPsec 隧道",
+	CloudflareTunnelTunTypeGRE:           "GRE 隧道",
+	CloudflareTunnelTunTypeCNI:           "CNI 隧道",
+}
+
+// GetCloudflareTunnelTunTypes 返回所有 隧道类型
+var GetCloudflareTunnelTunTypes = []string{
+	CloudflareTunnelTunTypeCfdTunnel,
+	CloudflareTunnelTunTypeWarpConnector,
+	CloudflareTunnelTunTypeWarp,
+	CloudflareTunnelTunTypeMagic,
+	CloudflareTunnelTunTypeIPSec,
+	CloudflareTunnelTunTypeGRE,
+	CloudflareTunnelTunTypeCNI,
 }

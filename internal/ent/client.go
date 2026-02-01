@@ -15,6 +15,8 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
+	"vibe_ip/internal/ent/cloudflarezone"
+	"vibe_ip/internal/ent/cloudflarezonerecord"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -58,6 +60,10 @@ type Client struct {
 	CloudflareTunnel *CloudflareTunnelClient
 	// CloudflareTunnelIngress is the client for interacting with the CloudflareTunnelIngress builders.
 	CloudflareTunnelIngress *CloudflareTunnelIngressClient
+	// CloudflareZone is the client for interacting with the CloudflareZone builders.
+	CloudflareZone *CloudflareZoneClient
+	// CloudflareZoneRecord is the client for interacting with the CloudflareZoneRecord builders.
+	CloudflareZoneRecord *CloudflareZoneRecordClient
 	// DNSRecord is the client for interacting with the DNSRecord builders.
 	DNSRecord *DNSRecordClient
 	// Device is the client for interacting with the Device builders.
@@ -115,6 +121,8 @@ func (c *Client) init() {
 	c.Cache = NewCacheClient(c.config)
 	c.CloudflareTunnel = NewCloudflareTunnelClient(c.config)
 	c.CloudflareTunnelIngress = NewCloudflareTunnelIngressClient(c.config)
+	c.CloudflareZone = NewCloudflareZoneClient(c.config)
+	c.CloudflareZoneRecord = NewCloudflareZoneRecordClient(c.config)
 	c.DNSRecord = NewDNSRecordClient(c.config)
 	c.Device = NewDeviceClient(c.config)
 	c.DeviceGroup = NewDeviceGroupClient(c.config)
@@ -232,6 +240,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Cache:                         NewCacheClient(cfg),
 		CloudflareTunnel:              NewCloudflareTunnelClient(cfg),
 		CloudflareTunnelIngress:       NewCloudflareTunnelIngressClient(cfg),
+		CloudflareZone:                NewCloudflareZoneClient(cfg),
+		CloudflareZoneRecord:          NewCloudflareZoneRecordClient(cfg),
 		DNSRecord:                     NewDNSRecordClient(cfg),
 		Device:                        NewDeviceClient(cfg),
 		DeviceGroup:                   NewDeviceGroupClient(cfg),
@@ -276,6 +286,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Cache:                         NewCacheClient(cfg),
 		CloudflareTunnel:              NewCloudflareTunnelClient(cfg),
 		CloudflareTunnelIngress:       NewCloudflareTunnelIngressClient(cfg),
+		CloudflareZone:                NewCloudflareZoneClient(cfg),
+		CloudflareZoneRecord:          NewCloudflareZoneRecordClient(cfg),
 		DNSRecord:                     NewDNSRecordClient(cfg),
 		Device:                        NewDeviceClient(cfg),
 		DeviceGroup:                   NewDeviceGroupClient(cfg),
@@ -327,12 +339,12 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
-		c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward,
-		c.DomainMonitor, c.EdgeOneZone, c.EdgeOneZoneAccelerationDomain,
-		c.EdgeOneZoneDNSRecord, c.EdgeOneZoneOriginGroup, c.EsaSite,
-		c.EsaSiteOriginPool, c.EsaSiteRecord, c.IpGroup, c.IpGroupDevice,
-		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord, c.Webhook,
-		c.WebhookSubscription,
+		c.CloudflareZone, c.CloudflareZoneRecord, c.DNSRecord, c.Device, c.DeviceGroup,
+		c.DeviceGroupDevice, c.DevicePortForward, c.DomainMonitor, c.EdgeOneZone,
+		c.EdgeOneZoneAccelerationDomain, c.EdgeOneZoneDNSRecord,
+		c.EdgeOneZoneOriginGroup, c.EsaSite, c.EsaSiteOriginPool, c.EsaSiteRecord,
+		c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLImport, c.SSLRecord,
+		c.TUNRecord, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Use(hooks...)
 	}
@@ -343,12 +355,12 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
-		c.DNSRecord, c.Device, c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward,
-		c.DomainMonitor, c.EdgeOneZone, c.EdgeOneZoneAccelerationDomain,
-		c.EdgeOneZoneDNSRecord, c.EdgeOneZoneOriginGroup, c.EsaSite,
-		c.EsaSiteOriginPool, c.EsaSiteRecord, c.IpGroup, c.IpGroupDevice,
-		c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord, c.Webhook,
-		c.WebhookSubscription,
+		c.CloudflareZone, c.CloudflareZoneRecord, c.DNSRecord, c.Device, c.DeviceGroup,
+		c.DeviceGroupDevice, c.DevicePortForward, c.DomainMonitor, c.EdgeOneZone,
+		c.EdgeOneZoneAccelerationDomain, c.EdgeOneZoneDNSRecord,
+		c.EdgeOneZoneOriginGroup, c.EsaSite, c.EsaSiteOriginPool, c.EsaSiteRecord,
+		c.IpGroup, c.IpGroupDevice, c.PlatformConfig, c.SSLImport, c.SSLRecord,
+		c.TUNRecord, c.Webhook, c.WebhookSubscription,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -365,6 +377,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CloudflareTunnel.mutate(ctx, m)
 	case *CloudflareTunnelIngressMutation:
 		return c.CloudflareTunnelIngress.mutate(ctx, m)
+	case *CloudflareZoneMutation:
+		return c.CloudflareZone.mutate(ctx, m)
+	case *CloudflareZoneRecordMutation:
+		return c.CloudflareZoneRecord.mutate(ctx, m)
 	case *DNSRecordMutation:
 		return c.DNSRecord.mutate(ctx, m)
 	case *DeviceMutation:
@@ -1057,6 +1073,320 @@ func (c *CloudflareTunnelIngressClient) mutate(ctx context.Context, m *Cloudflar
 		return (&CloudflareTunnelIngressDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown CloudflareTunnelIngress mutation op: %q", m.Op())
+	}
+}
+
+// CloudflareZoneClient is a client for the CloudflareZone schema.
+type CloudflareZoneClient struct {
+	config
+}
+
+// NewCloudflareZoneClient returns a client for the CloudflareZone from the given config.
+func NewCloudflareZoneClient(c config) *CloudflareZoneClient {
+	return &CloudflareZoneClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `cloudflarezone.Hooks(f(g(h())))`.
+func (c *CloudflareZoneClient) Use(hooks ...Hook) {
+	c.hooks.CloudflareZone = append(c.hooks.CloudflareZone, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `cloudflarezone.Intercept(f(g(h())))`.
+func (c *CloudflareZoneClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CloudflareZone = append(c.inters.CloudflareZone, interceptors...)
+}
+
+// Create returns a builder for creating a CloudflareZone entity.
+func (c *CloudflareZoneClient) Create() *CloudflareZoneCreate {
+	mutation := newCloudflareZoneMutation(c.config, OpCreate)
+	return &CloudflareZoneCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CloudflareZone entities.
+func (c *CloudflareZoneClient) CreateBulk(builders ...*CloudflareZoneCreate) *CloudflareZoneCreateBulk {
+	return &CloudflareZoneCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CloudflareZoneClient) MapCreateBulk(slice any, setFunc func(*CloudflareZoneCreate, int)) *CloudflareZoneCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CloudflareZoneCreateBulk{err: fmt.Errorf("calling to CloudflareZoneClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CloudflareZoneCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CloudflareZoneCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CloudflareZone.
+func (c *CloudflareZoneClient) Update() *CloudflareZoneUpdate {
+	mutation := newCloudflareZoneMutation(c.config, OpUpdate)
+	return &CloudflareZoneUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CloudflareZoneClient) UpdateOne(_m *CloudflareZone) *CloudflareZoneUpdateOne {
+	mutation := newCloudflareZoneMutation(c.config, OpUpdateOne, withCloudflareZone(_m))
+	return &CloudflareZoneUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CloudflareZoneClient) UpdateOneID(id int64) *CloudflareZoneUpdateOne {
+	mutation := newCloudflareZoneMutation(c.config, OpUpdateOne, withCloudflareZoneID(id))
+	return &CloudflareZoneUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CloudflareZone.
+func (c *CloudflareZoneClient) Delete() *CloudflareZoneDelete {
+	mutation := newCloudflareZoneMutation(c.config, OpDelete)
+	return &CloudflareZoneDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CloudflareZoneClient) DeleteOne(_m *CloudflareZone) *CloudflareZoneDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CloudflareZoneClient) DeleteOneID(id int64) *CloudflareZoneDeleteOne {
+	builder := c.Delete().Where(cloudflarezone.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CloudflareZoneDeleteOne{builder}
+}
+
+// Query returns a query builder for CloudflareZone.
+func (c *CloudflareZoneClient) Query() *CloudflareZoneQuery {
+	return &CloudflareZoneQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCloudflareZone},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CloudflareZone entity by its id.
+func (c *CloudflareZoneClient) Get(ctx context.Context, id int64) (*CloudflareZone, error) {
+	return c.Query().Where(cloudflarezone.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CloudflareZoneClient) GetX(ctx context.Context, id int64) *CloudflareZone {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryConfig queries the config edge of a CloudflareZone.
+func (c *CloudflareZoneClient) QueryConfig(_m *CloudflareZone) *PlatformConfigQuery {
+	query := (&PlatformConfigClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cloudflarezone.Table, cloudflarezone.FieldID, id),
+			sqlgraph.To(platformconfig.Table, platformconfig.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cloudflarezone.ConfigTable, cloudflarezone.ConfigColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRecords queries the records edge of a CloudflareZone.
+func (c *CloudflareZoneClient) QueryRecords(_m *CloudflareZone) *CloudflareZoneRecordQuery {
+	query := (&CloudflareZoneRecordClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cloudflarezone.Table, cloudflarezone.FieldID, id),
+			sqlgraph.To(cloudflarezonerecord.Table, cloudflarezonerecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cloudflarezone.RecordsTable, cloudflarezone.RecordsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CloudflareZoneClient) Hooks() []Hook {
+	return c.hooks.CloudflareZone
+}
+
+// Interceptors returns the client interceptors.
+func (c *CloudflareZoneClient) Interceptors() []Interceptor {
+	return c.inters.CloudflareZone
+}
+
+func (c *CloudflareZoneClient) mutate(ctx context.Context, m *CloudflareZoneMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CloudflareZoneCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CloudflareZoneUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CloudflareZoneUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CloudflareZoneDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CloudflareZone mutation op: %q", m.Op())
+	}
+}
+
+// CloudflareZoneRecordClient is a client for the CloudflareZoneRecord schema.
+type CloudflareZoneRecordClient struct {
+	config
+}
+
+// NewCloudflareZoneRecordClient returns a client for the CloudflareZoneRecord from the given config.
+func NewCloudflareZoneRecordClient(c config) *CloudflareZoneRecordClient {
+	return &CloudflareZoneRecordClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `cloudflarezonerecord.Hooks(f(g(h())))`.
+func (c *CloudflareZoneRecordClient) Use(hooks ...Hook) {
+	c.hooks.CloudflareZoneRecord = append(c.hooks.CloudflareZoneRecord, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `cloudflarezonerecord.Intercept(f(g(h())))`.
+func (c *CloudflareZoneRecordClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CloudflareZoneRecord = append(c.inters.CloudflareZoneRecord, interceptors...)
+}
+
+// Create returns a builder for creating a CloudflareZoneRecord entity.
+func (c *CloudflareZoneRecordClient) Create() *CloudflareZoneRecordCreate {
+	mutation := newCloudflareZoneRecordMutation(c.config, OpCreate)
+	return &CloudflareZoneRecordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CloudflareZoneRecord entities.
+func (c *CloudflareZoneRecordClient) CreateBulk(builders ...*CloudflareZoneRecordCreate) *CloudflareZoneRecordCreateBulk {
+	return &CloudflareZoneRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CloudflareZoneRecordClient) MapCreateBulk(slice any, setFunc func(*CloudflareZoneRecordCreate, int)) *CloudflareZoneRecordCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CloudflareZoneRecordCreateBulk{err: fmt.Errorf("calling to CloudflareZoneRecordClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CloudflareZoneRecordCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CloudflareZoneRecordCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CloudflareZoneRecord.
+func (c *CloudflareZoneRecordClient) Update() *CloudflareZoneRecordUpdate {
+	mutation := newCloudflareZoneRecordMutation(c.config, OpUpdate)
+	return &CloudflareZoneRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CloudflareZoneRecordClient) UpdateOne(_m *CloudflareZoneRecord) *CloudflareZoneRecordUpdateOne {
+	mutation := newCloudflareZoneRecordMutation(c.config, OpUpdateOne, withCloudflareZoneRecord(_m))
+	return &CloudflareZoneRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CloudflareZoneRecordClient) UpdateOneID(id int64) *CloudflareZoneRecordUpdateOne {
+	mutation := newCloudflareZoneRecordMutation(c.config, OpUpdateOne, withCloudflareZoneRecordID(id))
+	return &CloudflareZoneRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CloudflareZoneRecord.
+func (c *CloudflareZoneRecordClient) Delete() *CloudflareZoneRecordDelete {
+	mutation := newCloudflareZoneRecordMutation(c.config, OpDelete)
+	return &CloudflareZoneRecordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CloudflareZoneRecordClient) DeleteOne(_m *CloudflareZoneRecord) *CloudflareZoneRecordDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CloudflareZoneRecordClient) DeleteOneID(id int64) *CloudflareZoneRecordDeleteOne {
+	builder := c.Delete().Where(cloudflarezonerecord.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CloudflareZoneRecordDeleteOne{builder}
+}
+
+// Query returns a query builder for CloudflareZoneRecord.
+func (c *CloudflareZoneRecordClient) Query() *CloudflareZoneRecordQuery {
+	return &CloudflareZoneRecordQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCloudflareZoneRecord},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CloudflareZoneRecord entity by its id.
+func (c *CloudflareZoneRecordClient) Get(ctx context.Context, id int64) (*CloudflareZoneRecord, error) {
+	return c.Query().Where(cloudflarezonerecord.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CloudflareZoneRecordClient) GetX(ctx context.Context, id int64) *CloudflareZoneRecord {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCloudflareZone queries the cloudflare_zone edge of a CloudflareZoneRecord.
+func (c *CloudflareZoneRecordClient) QueryCloudflareZone(_m *CloudflareZoneRecord) *CloudflareZoneQuery {
+	query := (&CloudflareZoneClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cloudflarezonerecord.Table, cloudflarezonerecord.FieldID, id),
+			sqlgraph.To(cloudflarezone.Table, cloudflarezone.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cloudflarezonerecord.CloudflareZoneTable, cloudflarezonerecord.CloudflareZoneColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CloudflareZoneRecordClient) Hooks() []Hook {
+	return c.hooks.CloudflareZoneRecord
+}
+
+// Interceptors returns the client interceptors.
+func (c *CloudflareZoneRecordClient) Interceptors() []Interceptor {
+	return c.inters.CloudflareZoneRecord
+}
+
+func (c *CloudflareZoneRecordClient) mutate(ctx context.Context, m *CloudflareZoneRecordMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CloudflareZoneRecordCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CloudflareZoneRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CloudflareZoneRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CloudflareZoneRecordDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CloudflareZoneRecord mutation op: %q", m.Op())
 	}
 }
 
@@ -3686,15 +4016,15 @@ func (c *PlatformConfigClient) QueryTunRecords(_m *PlatformConfig) *TUNRecordQue
 	return query
 }
 
-// QueryCloudflareTunnels queries the cloudflare_tunnels edge of a PlatformConfig.
-func (c *PlatformConfigClient) QueryCloudflareTunnels(_m *PlatformConfig) *CloudflareTunnelQuery {
-	query := (&CloudflareTunnelClient{config: c.config}).Query()
+// QueryCloudflareZones queries the cloudflare_zones edge of a PlatformConfig.
+func (c *PlatformConfigClient) QueryCloudflareZones(_m *PlatformConfig) *CloudflareZoneQuery {
+	query := (&CloudflareZoneClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, id),
-			sqlgraph.To(cloudflaretunnel.Table, cloudflaretunnel.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.CloudflareTunnelsTable, platformconfig.CloudflareTunnelsColumn),
+			sqlgraph.To(cloudflarezone.Table, cloudflarezone.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.CloudflareZonesTable, platformconfig.CloudflareZonesColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -3727,6 +4057,22 @@ func (c *PlatformConfigClient) QueryEsaZones(_m *PlatformConfig) *EsaSiteQuery {
 			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, id),
 			sqlgraph.To(esasite.Table, esasite.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.EsaZonesTable, platformconfig.EsaZonesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCloudflareTunnels queries the cloudflare_tunnels edge of a PlatformConfig.
+func (c *PlatformConfigClient) QueryCloudflareTunnels(_m *PlatformConfig) *CloudflareTunnelQuery {
+	query := (&CloudflareTunnelClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(platformconfig.Table, platformconfig.FieldID, id),
+			sqlgraph.To(cloudflaretunnel.Table, cloudflaretunnel.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, platformconfig.CloudflareTunnelsTable, platformconfig.CloudflareTunnelsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -4497,20 +4843,20 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, DNSRecord, Device,
-		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor, EdgeOneZone,
-		EdgeOneZoneAccelerationDomain, EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup,
-		EsaSite, EsaSiteOriginPool, EsaSiteRecord, IpGroup, IpGroupDevice,
-		PlatformConfig, SSLImport, SSLRecord, TUNRecord, Webhook,
-		WebhookSubscription []ent.Hook
+		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, CloudflareZone,
+		CloudflareZoneRecord, DNSRecord, Device, DeviceGroup, DeviceGroupDevice,
+		DevicePortForward, DomainMonitor, EdgeOneZone, EdgeOneZoneAccelerationDomain,
+		EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup, EsaSite, EsaSiteOriginPool,
+		EsaSiteRecord, IpGroup, IpGroupDevice, PlatformConfig, SSLImport, SSLRecord,
+		TUNRecord, Webhook, WebhookSubscription []ent.Hook
 	}
 	inters struct {
-		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, DNSRecord, Device,
-		DeviceGroup, DeviceGroupDevice, DevicePortForward, DomainMonitor, EdgeOneZone,
-		EdgeOneZoneAccelerationDomain, EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup,
-		EsaSite, EsaSiteOriginPool, EsaSiteRecord, IpGroup, IpGroupDevice,
-		PlatformConfig, SSLImport, SSLRecord, TUNRecord, Webhook,
-		WebhookSubscription []ent.Interceptor
+		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, CloudflareZone,
+		CloudflareZoneRecord, DNSRecord, Device, DeviceGroup, DeviceGroupDevice,
+		DevicePortForward, DomainMonitor, EdgeOneZone, EdgeOneZoneAccelerationDomain,
+		EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup, EsaSite, EsaSiteOriginPool,
+		EsaSiteRecord, IpGroup, IpGroupDevice, PlatformConfig, SSLImport, SSLRecord,
+		TUNRecord, Webhook, WebhookSubscription []ent.Interceptor
 	}
 )
 

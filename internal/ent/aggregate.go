@@ -8,6 +8,8 @@ import (
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/cloudflaretunnel"
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
+	"vibe_ip/internal/ent/cloudflarezone"
+	"vibe_ip/internal/ent/cloudflarezonerecord"
 	"vibe_ip/internal/ent/devicegroupdevice"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
@@ -603,6 +605,458 @@ func (q *CloudflareTunnelIngressQuery) StddevCloudflareTunnelIDOrZero(ctx contex
 // 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
 // 若需严格错误处理，请使用原生 Count 方法。
 func (q *CloudflareTunnelIngressQuery) CountOrZero(ctx context.Context) (int64, error) {
+	count, err := q.Count(ctx)
+	if err != nil {
+		return 0, err
+	}
+	return int64(count), nil
+}
+
+// SumConfigIDOrZero 计算字段 config_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneQuery) SumConfigIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezone.FieldConfigID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxConfigIDOrZero 获取字段 config_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneQuery) MaxConfigIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezone.FieldConfigID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinConfigIDOrZero 获取字段 config_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneQuery) MinConfigIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezone.FieldConfigID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgConfigIDOrZero 计算字段 config_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneQuery) AvgConfigIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezone.FieldConfigID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevConfigIDOrZero 计算字段 config_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneQuery) StddevConfigIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezone.FieldConfigID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumZoneIDOrZero 计算字段 zone_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneQuery) SumZoneIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezone.FieldZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxZoneIDOrZero 获取字段 zone_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneQuery) MaxZoneIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezone.FieldZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinZoneIDOrZero 获取字段 zone_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneQuery) MinZoneIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezone.FieldZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgZoneIDOrZero 计算字段 zone_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneQuery) AvgZoneIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezone.FieldZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevZoneIDOrZero 计算字段 zone_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneQuery) StddevZoneIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezone.FieldZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
+func (q *CloudflareZoneQuery) CountOrZero(ctx context.Context) (int64, error) {
+	count, err := q.Count(ctx)
+	if err != nil {
+		return 0, err
+	}
+	return int64(count), nil
+}
+
+// SumCloudflareZoneIDOrZero 计算字段 cloudflare_zone_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneRecordQuery) SumCloudflareZoneIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezonerecord.FieldCloudflareZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxCloudflareZoneIDOrZero 获取字段 cloudflare_zone_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneRecordQuery) MaxCloudflareZoneIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezonerecord.FieldCloudflareZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinCloudflareZoneIDOrZero 获取字段 cloudflare_zone_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneRecordQuery) MinCloudflareZoneIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezonerecord.FieldCloudflareZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgCloudflareZoneIDOrZero 计算字段 cloudflare_zone_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneRecordQuery) AvgCloudflareZoneIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezonerecord.FieldCloudflareZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevCloudflareZoneIDOrZero 计算字段 cloudflare_zone_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneRecordQuery) StddevCloudflareZoneIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezonerecord.FieldCloudflareZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumTTLOrZero 计算字段 ttl 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneRecordQuery) SumTTLOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezonerecord.FieldTTL))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxTTLOrZero 获取字段 ttl 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneRecordQuery) MaxTTLOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezonerecord.FieldTTL))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinTTLOrZero 获取字段 ttl 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneRecordQuery) MinTTLOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezonerecord.FieldTTL))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgTTLOrZero 计算字段 ttl 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneRecordQuery) AvgTTLOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezonerecord.FieldTTL))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevTTLOrZero 计算字段 ttl 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneRecordQuery) StddevTTLOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezonerecord.FieldTTL))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
+func (q *CloudflareZoneRecordQuery) CountOrZero(ctx context.Context) (int64, error) {
 	count, err := q.Count(ctx)
 	if err != nil {
 		return 0, err
@@ -3096,6 +3550,113 @@ func (q *EsaSiteOriginPoolQuery) StddevPoolIDOrZero(ctx context.Context) (float6
 	return results[0].Val.Float64, nil
 }
 
+// SumReferenceLBCountOrZero 计算字段 reference_l_b_count 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *EsaSiteOriginPoolQuery) SumReferenceLBCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(esasiteoriginpool.FieldReferenceLBCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxReferenceLBCountOrZero 获取字段 reference_l_b_count 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *EsaSiteOriginPoolQuery) MaxReferenceLBCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(esasiteoriginpool.FieldReferenceLBCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinReferenceLBCountOrZero 获取字段 reference_l_b_count 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *EsaSiteOriginPoolQuery) MinReferenceLBCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(esasiteoriginpool.FieldReferenceLBCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgReferenceLBCountOrZero 计算字段 reference_l_b_count 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *EsaSiteOriginPoolQuery) AvgReferenceLBCountOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(esasiteoriginpool.FieldReferenceLBCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevReferenceLBCountOrZero 计算字段 reference_l_b_count 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *EsaSiteOriginPoolQuery) StddevReferenceLBCountOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(esasiteoriginpool.FieldReferenceLBCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
 // CountOrZero 返回满足当前查询条件的记录总数。
 // 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
 // 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
@@ -3204,6 +3765,113 @@ func (q *EsaSiteRecordQuery) StddevEsaSiteIDOrZero(ctx context.Context) (float64
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
 			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(esasiterecord.FieldEsaSiteID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumRecordIDOrZero 计算字段 record_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *EsaSiteRecordQuery) SumRecordIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(esasiterecord.FieldRecordID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxRecordIDOrZero 获取字段 record_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *EsaSiteRecordQuery) MaxRecordIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(esasiterecord.FieldRecordID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinRecordIDOrZero 获取字段 record_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *EsaSiteRecordQuery) MinRecordIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(esasiterecord.FieldRecordID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgRecordIDOrZero 计算字段 record_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *EsaSiteRecordQuery) AvgRecordIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(esasiterecord.FieldRecordID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevRecordIDOrZero 计算字段 record_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *EsaSiteRecordQuery) StddevRecordIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(esasiterecord.FieldRecordID))
 		},
 	).Scan(ctx, &results)
 	if err != nil {

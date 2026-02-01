@@ -52,6 +52,36 @@ func (t *CloudflareTunnelIngress) ToMap() map[string]any {
 	return m
 }
 
+// ToMap 将 CloudflareZone 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *CloudflareZone) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["account"] = t.Account
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["name_servers"] = t.NameServers
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["original_name_servers"] = t.OriginalNameServers
+	return m
+}
+
+// ToMap 将 CloudflareZoneRecord 实体转换为 map[string]any。
+// 键为数据库列名（snake_case），值为字段当前值。
+// 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
+func (t *CloudflareZoneRecord) ToMap() map[string]any {
+	if t == nil {
+		return nil
+	}
+	m := make(map[string]any)
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["settings"] = t.Settings
+	return m
+}
+
 // ToMap 将 DNSRecord 实体转换为 map[string]any。
 // 键为数据库列名（snake_case），值为字段当前值。
 // 自动处理指针字段（如 *string）、time.Time 零值、以及 JSON 类型（如 json.RawMessage）。
