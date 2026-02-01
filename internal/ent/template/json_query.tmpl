@@ -47,8 +47,112 @@ import (
                 }
                 return q
             }
+
+			// {{ $baseFuncName }}FieldNotEmptyIf 只有在 condition 为 true 时才调用 {{ $baseFuncName }}FieldNotEmpty。
+			func (q *{{ $n.Name }}Query) {{ $baseFuncName }}FieldNotEmptyIf(condition bool, path string) *{{ $n.Name }}Query {
+				if condition {
+					return q.{{ $baseFuncName }}FieldNotEmpty(path)
+				}
+				return q
+			}
+
+			// {{ $baseFuncName }}FieldNotEmpty 判断 JSON 对象中指定路径的值存在且非空（非 null 且非空字符串）。
+			// 支持嵌套路径：如 "user.profile.account_id" 会转换为 "$.user.profile.account_id"。
+			// 安全提示：path 参数自动转义，防止 SQL 注入。
+			func (q *{{ $n.Name }}Query) {{ $baseFuncName }}FieldNotEmpty(path string) *{{ $n.Name }}Query {
+				return q.Where(predicate.{{ $n.Name }}(func(s *sql.Selector) {
+					column := {{ $n.Package }}.Field{{ $f.StructField }}
+					jsonPath := buildJSONPath(path)
+
+					switch s.Dialect() {
+					case dialect.MySQL:
+						// JSON_UNQUOTE 去引号后判断非空，同时校验非 NULL
+						s.Where(sql.ExprP(
+							"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != '' AND JSON_EXTRACT("+column+", ?) IS NOT NULL",
+							jsonPath, jsonPath,
+						))
+					case dialect.Postgres:
+						// ->> 提取文本，判断非 NULL 且非空字符串
+						s.Where(sql.ExprP(
+							"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+							path, path,
+						))
+					case dialect.SQLite:
+						// json_type 判断存在，同时排除空字符串（注意：SQLite 中空字符串为 '""'）
+						s.Where(sql.ExprP(
+							"(json_type("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('\"\"', ''))",
+							jsonPath, jsonPath,
+						))
+					default:
+						// 兜底：模糊匹配字段名+非空值（不精确，仅兼容）
+						s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", path)))
+					}
+				}))
+			}
+
+			// {{ $baseFuncName }}FieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
+			// 示例：WhereConfigJSONFieldEquals("account_id", "000")
+			func (q *{{ $n.Name }}Query) {{ $baseFuncName }}FieldEquals(path string, val any) *{{ $n.Name }}Query {
+				return q.Where(predicate.{{ $n.Name }}(func(s *sql.Selector) {
+					column := {{ $n.Package }}.Field{{ $f.StructField }}
+					jsonPath := buildJSONPath(path)
+
+					// 将 val 转为 JSON 兼容字符串（数字/布尔值不加引号，字符串加引号）
+					jsonVal := marshalJSONValue(val)
+
+					switch s.Dialect() {
+					case dialect.MySQL:
+						s.Where(sql.ExprP("JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) = ?", jsonPath, jsonVal))
+					case dialect.Postgres:
+						s.Where(sql.ExprP(column+"->>? = ?", path, fmt.Sprintf("%v", val)))
+					case dialect.SQLite:
+						s.Where(sql.ExprP("json_extract("+column+", ?) = ?", jsonPath, jsonVal))
+					default:
+						// 兜底：模糊匹配（不推荐）
+						s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\":\"%v\"%%", path, val)))
+					}
+				}))
+			}
+
+			// {{ $baseFuncName }}FieldEqualsIf 只有在 condition 为 true 时才调用 {{ $baseFuncName }}FieldEquals。
+			func (q *{{ $n.Name }}Query) {{ $baseFuncName }}FieldEqualsIf(condition bool, path string, val any) *{{ $n.Name }}Query {
+				if condition {
+					return q.{{ $baseFuncName }}FieldEquals(path, val)
+				}
+				return q
+			}
         {{ end }}
     {{ end }}
 {{ end }}
+
+
+// buildJSONPath 将点号路径转换为标准 JSON 路径（如 "user.name" → "$.user.name"）
+// 自动处理字段名含特殊字符（如连字符）的情况：使用双引号包裹
+func buildJSONPath(path string) string {
+	parts := strings.Split(path, ".")
+	for i, part := range parts {
+		// 如果字段名含特殊字符（非字母数字下划线），用双引号包裹
+		if strings.ContainsAny(part, "- ") || !regexp.MustCompile(`^[a-zA-Z0-9_]+$`).MatchString(part) {
+			parts[i] = `"` + strings.ReplaceAll(part, `"`, `\"`) + `"`
+		}
+	}
+	return "$." + strings.Join(parts, ".")
+}
+
+// marshalJSONValue 将 Go 值转为 JSON 字面量（用于 SQL 比较）
+// 注意：此函数仅用于生成安全的字面量，实际查询应优先使用参数化
+func marshalJSONValue(val any) string {
+	switch v := val.(type) {
+	case string:
+		return `"` + strings.ReplaceAll(v, `"`, `\"`) + `"`
+	case bool:
+		return fmt.Sprintf("%v", v)
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, float32, float64:
+		return fmt.Sprintf("%v", v)
+	default:
+		// 兜底：转为字符串（可能不精确）
+		return fmt.Sprintf("%v", v)
+	}
+}
 
 {{ end }}
