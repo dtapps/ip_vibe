@@ -1218,7 +1218,8 @@ func (c *CloudflareZoneClient) QueryRecords(_m *CloudflareZone) *CloudflareZoneR
 
 // Hooks returns the client hooks.
 func (c *CloudflareZoneClient) Hooks() []Hook {
-	return c.hooks.CloudflareZone
+	hooks := c.hooks.CloudflareZone
+	return append(hooks[:len(hooks):len(hooks)], cloudflarezone.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1367,7 +1368,8 @@ func (c *CloudflareZoneRecordClient) QueryCloudflareZone(_m *CloudflareZoneRecor
 
 // Hooks returns the client hooks.
 func (c *CloudflareZoneRecordClient) Hooks() []Hook {
-	return c.hooks.CloudflareZoneRecord
+	hooks := c.hooks.CloudflareZoneRecord
+	return append(hooks[:len(hooks):len(hooks)], cloudflarezonerecord.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

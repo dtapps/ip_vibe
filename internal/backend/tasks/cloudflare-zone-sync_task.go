@@ -98,7 +98,7 @@ func (s *CloudflareZoneSyncTask) StartJob(ctx context.Context) (err error) {
 		jobDuration,
 		gocron.NewTask(s.RunSyncTask), // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
-		gocron.WithName("EdgeOne Zone Sync"),                 // 任务名称
+		gocron.WithName("Cloudflare Zone Sync"),              // 任务名称
 		gocron.WithEventListeners(
 			s.jobHelper.PanicPeriodicListener(),
 			s.jobHelper.BeforePeriodicListener(),

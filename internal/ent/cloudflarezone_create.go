@@ -228,7 +228,9 @@ func (_c *CloudflareZoneCreate) Mutation() *CloudflareZoneMutation {
 
 // Save creates the CloudflareZone in the database.
 func (_c *CloudflareZoneCreate) Save(ctx context.Context) (*CloudflareZone, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -255,15 +257,22 @@ func (_c *CloudflareZoneCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *CloudflareZoneCreate) defaults() {
+func (_c *CloudflareZoneCreate) defaults() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if cloudflarezone.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cloudflarezone.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := cloudflarezone.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if cloudflarezone.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cloudflarezone.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cloudflarezone.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

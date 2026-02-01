@@ -269,7 +269,9 @@ func (_u *CloudflareZoneUpdate) RemoveRecords(v ...*CloudflareZoneRecord) *Cloud
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *CloudflareZoneUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -296,11 +298,15 @@ func (_u *CloudflareZoneUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *CloudflareZoneUpdate) defaults() {
+func (_u *CloudflareZoneUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if cloudflarezone.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cloudflarezone.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cloudflarezone.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -737,7 +743,9 @@ func (_u *CloudflareZoneUpdateOne) Select(field string, fields ...string) *Cloud
 
 // Save executes the query and returns the updated CloudflareZone entity.
 func (_u *CloudflareZoneUpdateOne) Save(ctx context.Context) (*CloudflareZone, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -764,11 +772,15 @@ func (_u *CloudflareZoneUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *CloudflareZoneUpdateOne) defaults() {
+func (_u *CloudflareZoneUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if cloudflarezone.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cloudflarezone.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cloudflarezone.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

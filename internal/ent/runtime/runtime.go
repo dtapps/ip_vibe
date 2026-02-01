@@ -126,6 +126,8 @@ func init() {
 	// cloudflaretunnelingress.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	cloudflaretunnelingress.IDValidator = cloudflaretunnelingressDescID.Validators[0].(func(int64) error)
 	cloudflarezoneMixin := schema.CloudflareZone{}.Mixin()
+	cloudflarezoneHooks := schema.CloudflareZone{}.Hooks()
+	cloudflarezone.Hooks[0] = cloudflarezoneHooks[0]
 	cloudflarezoneMixinFields0 := cloudflarezoneMixin[0].Fields()
 	_ = cloudflarezoneMixinFields0
 	cloudflarezoneFields := schema.CloudflareZone{}.Fields()
@@ -149,6 +151,8 @@ func init() {
 	// cloudflarezone.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	cloudflarezone.IDValidator = cloudflarezoneDescID.Validators[0].(func(int64) error)
 	cloudflarezonerecordMixin := schema.CloudflareZoneRecord{}.Mixin()
+	cloudflarezonerecordHooks := schema.CloudflareZoneRecord{}.Hooks()
+	cloudflarezonerecord.Hooks[0] = cloudflarezonerecordHooks[0]
 	cloudflarezonerecordMixinFields0 := cloudflarezonerecordMixin[0].Fields()
 	_ = cloudflarezonerecordMixinFields0
 	cloudflarezonerecordFields := schema.CloudflareZoneRecord{}.Fields()

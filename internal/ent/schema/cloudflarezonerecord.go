@@ -2,7 +2,7 @@ package schema
 
 import (
 	"encoding/json"
-	// "vibe_ip/internal/ent/schema/schemahook"
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -134,6 +134,6 @@ func (CloudflareZoneRecord) Indexes() []ent.Index {
 // Hooks of the CloudflareZoneRecord.
 func (CloudflareZoneRecord) Hooks() []ent.Hook {
 	return []ent.Hook{
-		// schemahook.CloudflareZoneRecordLogHook(),
+		schemahook.CloudflareZoneRecordLogHook(),
 	}
 }
