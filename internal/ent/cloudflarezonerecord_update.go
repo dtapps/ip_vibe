@@ -91,6 +91,26 @@ func (_u *CloudflareZoneRecordUpdate) ClearContent() *CloudflareZoneRecordUpdate
 	return _u
 }
 
+// SetName sets the "name" field.
+func (_u *CloudflareZoneRecordUpdate) SetName(v string) *CloudflareZoneRecordUpdate {
+	_u.mutation.SetName(v)
+	return _u
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *CloudflareZoneRecordUpdate) SetNillableName(v *string) *CloudflareZoneRecordUpdate {
+	if v != nil {
+		_u.SetName(*v)
+	}
+	return _u
+}
+
+// ClearName clears the value of the "name" field.
+func (_u *CloudflareZoneRecordUpdate) ClearName() *CloudflareZoneRecordUpdate {
+	_u.mutation.ClearName()
+	return _u
+}
+
 // SetProxiable sets the "proxiable" field.
 func (_u *CloudflareZoneRecordUpdate) SetProxiable(v bool) *CloudflareZoneRecordUpdate {
 	_u.mutation.SetProxiable(v)
@@ -298,6 +318,12 @@ func (_u *CloudflareZoneRecordUpdate) sqlSave(ctx context.Context) (_node int, e
 	if _u.mutation.ContentCleared() {
 		_spec.ClearField(cloudflarezonerecord.FieldContent, field.TypeString)
 	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(cloudflarezonerecord.FieldName, field.TypeString, value)
+	}
+	if _u.mutation.NameCleared() {
+		_spec.ClearField(cloudflarezonerecord.FieldName, field.TypeString)
+	}
 	if value, ok := _u.mutation.Proxiable(); ok {
 		_spec.SetField(cloudflarezonerecord.FieldProxiable, field.TypeBool, value)
 	}
@@ -415,6 +441,26 @@ func (_u *CloudflareZoneRecordUpdateOne) SetNillableContent(v *string) *Cloudfla
 // ClearContent clears the value of the "content" field.
 func (_u *CloudflareZoneRecordUpdateOne) ClearContent() *CloudflareZoneRecordUpdateOne {
 	_u.mutation.ClearContent()
+	return _u
+}
+
+// SetName sets the "name" field.
+func (_u *CloudflareZoneRecordUpdateOne) SetName(v string) *CloudflareZoneRecordUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *CloudflareZoneRecordUpdateOne) SetNillableName(v *string) *CloudflareZoneRecordUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
+	}
+	return _u
+}
+
+// ClearName clears the value of the "name" field.
+func (_u *CloudflareZoneRecordUpdateOne) ClearName() *CloudflareZoneRecordUpdateOne {
+	_u.mutation.ClearName()
 	return _u
 }
 
@@ -654,6 +700,12 @@ func (_u *CloudflareZoneRecordUpdateOne) sqlSave(ctx context.Context) (_node *Cl
 	}
 	if _u.mutation.ContentCleared() {
 		_spec.ClearField(cloudflarezonerecord.FieldContent, field.TypeString)
+	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(cloudflarezonerecord.FieldName, field.TypeString, value)
+	}
+	if _u.mutation.NameCleared() {
+		_spec.ClearField(cloudflarezonerecord.FieldName, field.TypeString)
 	}
 	if value, ok := _u.mutation.Proxiable(); ok {
 		_spec.SetField(cloudflarezonerecord.FieldProxiable, field.TypeBool, value)

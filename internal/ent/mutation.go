@@ -5629,6 +5629,7 @@ type CloudflareZoneRecordMutation struct {
 	record_id              *string
 	comment                *string
 	content                *string
+	name                   *string
 	proxiable              *bool
 	proxied                *bool
 	settings               *json.RawMessage
@@ -6088,6 +6089,55 @@ func (m *CloudflareZoneRecordMutation) ResetContent() {
 	delete(m.clearedFields, cloudflarezonerecord.FieldContent)
 }
 
+// SetName sets the "name" field.
+func (m *CloudflareZoneRecordMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *CloudflareZoneRecordMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the CloudflareZoneRecord entity.
+// If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneRecordMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ClearName clears the value of the "name" field.
+func (m *CloudflareZoneRecordMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[cloudflarezonerecord.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *CloudflareZoneRecordMutation) NameCleared() bool {
+	_, ok := m.clearedFields[cloudflarezonerecord.FieldName]
+	return ok
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *CloudflareZoneRecordMutation) ResetName() {
+	m.name = nil
+	delete(m.clearedFields, cloudflarezonerecord.FieldName)
+}
+
 // SetProxiable sets the "proxiable" field.
 func (m *CloudflareZoneRecordMutation) SetProxiable(b bool) {
 	m.proxiable = &b
@@ -6431,7 +6481,7 @@ func (m *CloudflareZoneRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CloudflareZoneRecordMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, cloudflarezonerecord.FieldCreatedAt)
 	}
@@ -6455,6 +6505,9 @@ func (m *CloudflareZoneRecordMutation) Fields() []string {
 	}
 	if m.content != nil {
 		fields = append(fields, cloudflarezonerecord.FieldContent)
+	}
+	if m.name != nil {
+		fields = append(fields, cloudflarezonerecord.FieldName)
 	}
 	if m.proxiable != nil {
 		fields = append(fields, cloudflarezonerecord.FieldProxiable)
@@ -6495,6 +6548,8 @@ func (m *CloudflareZoneRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.Comment()
 	case cloudflarezonerecord.FieldContent:
 		return m.Content()
+	case cloudflarezonerecord.FieldName:
+		return m.Name()
 	case cloudflarezonerecord.FieldProxiable:
 		return m.Proxiable()
 	case cloudflarezonerecord.FieldProxied:
@@ -6530,6 +6585,8 @@ func (m *CloudflareZoneRecordMutation) OldField(ctx context.Context, name string
 		return m.OldComment(ctx)
 	case cloudflarezonerecord.FieldContent:
 		return m.OldContent(ctx)
+	case cloudflarezonerecord.FieldName:
+		return m.OldName(ctx)
 	case cloudflarezonerecord.FieldProxiable:
 		return m.OldProxiable(ctx)
 	case cloudflarezonerecord.FieldProxied:
@@ -6604,6 +6661,13 @@ func (m *CloudflareZoneRecordMutation) SetField(name string, value ent.Value) er
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetContent(v)
+		return nil
+	case cloudflarezonerecord.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
 		return nil
 	case cloudflarezonerecord.FieldProxiable:
 		v, ok := value.(bool)
@@ -6697,6 +6761,9 @@ func (m *CloudflareZoneRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(cloudflarezonerecord.FieldContent) {
 		fields = append(fields, cloudflarezonerecord.FieldContent)
 	}
+	if m.FieldCleared(cloudflarezonerecord.FieldName) {
+		fields = append(fields, cloudflarezonerecord.FieldName)
+	}
 	if m.FieldCleared(cloudflarezonerecord.FieldProxiable) {
 		fields = append(fields, cloudflarezonerecord.FieldProxiable)
 	}
@@ -6737,6 +6804,9 @@ func (m *CloudflareZoneRecordMutation) ClearField(name string) error {
 		return nil
 	case cloudflarezonerecord.FieldContent:
 		m.ClearContent()
+		return nil
+	case cloudflarezonerecord.FieldName:
+		m.ClearName()
 		return nil
 	case cloudflarezonerecord.FieldProxiable:
 		m.ClearProxiable()
@@ -6784,6 +6854,9 @@ func (m *CloudflareZoneRecordMutation) ResetField(name string) error {
 		return nil
 	case cloudflarezonerecord.FieldContent:
 		m.ResetContent()
+		return nil
+	case cloudflarezonerecord.FieldName:
+		m.ResetName()
 		return nil
 	case cloudflarezonerecord.FieldProxiable:
 		m.ResetProxiable()

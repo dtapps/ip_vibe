@@ -1507,6 +1507,31 @@ func (q *CloudflareZoneRecordQuery) OrderByContentAsc() *CloudflareZoneRecordQue
 	return q.Order(Asc(cloudflarezonerecord.FieldContent))
 }
 
+// OrderByNameDesc 按字段 name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CloudflareZoneRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CloudflareZoneRecord.Query().
+//	    OrderByNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CloudflareZoneRecordQuery) OrderByNameDesc() *CloudflareZoneRecordQuery {
+	return q.Order(Desc(cloudflarezonerecord.FieldName))
+}
+
+// OrderByNameAsc 按字段 name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CloudflareZoneRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CloudflareZoneRecord.Query().
+//	    OrderByNameAsc().
+//	    All(ctx)
+func (q *CloudflareZoneRecordQuery) OrderByNameAsc() *CloudflareZoneRecordQuery {
+	return q.Order(Asc(cloudflarezonerecord.FieldName))
+}
+
 // OrderByProxiableDesc 按字段 proxiable 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *CloudflareZoneRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

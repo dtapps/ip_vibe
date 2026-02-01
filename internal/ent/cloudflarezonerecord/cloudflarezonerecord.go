@@ -32,6 +32,8 @@ const (
 	FieldComment = "comment"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
 	// FieldProxiable holds the string denoting the proxiable field in the database.
 	FieldProxiable = "proxiable"
 	// FieldProxied holds the string denoting the proxied field in the database.
@@ -66,6 +68,7 @@ var Columns = []string{
 	FieldRecordID,
 	FieldComment,
 	FieldContent,
+	FieldName,
 	FieldProxiable,
 	FieldProxied,
 	FieldSettings,
@@ -189,6 +192,11 @@ func ByComment(opts ...sql.OrderTermOption) OrderOption {
 // ByContent orders the results by the content field.
 func ByContent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldContent, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
 // ByProxiable orders the results by the proxiable field.

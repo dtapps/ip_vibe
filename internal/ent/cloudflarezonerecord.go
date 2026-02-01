@@ -36,6 +36,8 @@ type CloudflareZoneRecord struct {
 	Comment string `json:"comment,omitempty"`
 	// 单个Base64编码的OpenPGP可传输公钥（RFC 4880第11.1节）
 	Content string `json:"content,omitempty"`
+	// 完整的DNS记录名称，包括区域名称，在Punycode中
+	Name string `json:"name,omitempty"`
 	// Cloudflare是否可以代理该记录
 	Proxiable bool `json:"proxiable,omitempty"`
 	// 记录是否获得Cloudflare的性能和安全优势
@@ -85,7 +87,7 @@ func (*CloudflareZoneRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case cloudflarezonerecord.FieldID, cloudflarezonerecord.FieldCloudflareZoneID:
 			values[i] = new(sql.NullInt64)
-		case cloudflarezonerecord.FieldRecordID, cloudflarezonerecord.FieldComment, cloudflarezonerecord.FieldContent, cloudflarezonerecord.FieldType:
+		case cloudflarezonerecord.FieldRecordID, cloudflarezonerecord.FieldComment, cloudflarezonerecord.FieldContent, cloudflarezonerecord.FieldName, cloudflarezonerecord.FieldType:
 			values[i] = new(sql.NullString)
 		case cloudflarezonerecord.FieldCreatedAt, cloudflarezonerecord.FieldUpdatedAt, cloudflarezonerecord.FieldRemoteCreatedAt, cloudflarezonerecord.FieldSyncAt:
 			values[i] = new(sql.NullTime)
@@ -157,6 +159,12 @@ func (_m *CloudflareZoneRecord) assignValues(columns []string, values []any) err
 				return fmt.Errorf("unexpected type %T for field content", values[i])
 			} else if value.Valid {
 				_m.Content = value.String
+			}
+		case cloudflarezonerecord.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				_m.Name = value.String
 			}
 		case cloudflarezonerecord.FieldProxiable:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -254,6 +262,9 @@ func (_m *CloudflareZoneRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("content=")
 	builder.WriteString(_m.Content)
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
 	builder.WriteString("proxiable=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Proxiable))

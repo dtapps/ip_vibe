@@ -120,6 +120,20 @@ func (_c *CloudflareZoneRecordCreate) SetNillableContent(v *string) *CloudflareZ
 	return _c
 }
 
+// SetName sets the "name" field.
+func (_c *CloudflareZoneRecordCreate) SetName(v string) *CloudflareZoneRecordCreate {
+	_c.mutation.SetName(v)
+	return _c
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_c *CloudflareZoneRecordCreate) SetNillableName(v *string) *CloudflareZoneRecordCreate {
+	if v != nil {
+		_c.SetName(*v)
+	}
+	return _c
+}
+
 // SetProxiable sets the "proxiable" field.
 func (_c *CloudflareZoneRecordCreate) SetProxiable(v bool) *CloudflareZoneRecordCreate {
 	_c.mutation.SetProxiable(v)
@@ -340,6 +354,10 @@ func (_c *CloudflareZoneRecordCreate) createSpec() (*CloudflareZoneRecord, *sqlg
 		_spec.SetField(cloudflarezonerecord.FieldContent, field.TypeString, value)
 		_node.Content = value
 	}
+	if value, ok := _c.mutation.Name(); ok {
+		_spec.SetField(cloudflarezonerecord.FieldName, field.TypeString, value)
+		_node.Name = value
+	}
 	if value, ok := _c.mutation.Proxiable(); ok {
 		_spec.SetField(cloudflarezonerecord.FieldProxiable, field.TypeBool, value)
 		_node.Proxiable = value
@@ -480,6 +498,24 @@ func (u *CloudflareZoneRecordUpsert) UpdateContent() *CloudflareZoneRecordUpsert
 // ClearContent clears the value of the "content" field.
 func (u *CloudflareZoneRecordUpsert) ClearContent() *CloudflareZoneRecordUpsert {
 	u.SetNull(cloudflarezonerecord.FieldContent)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *CloudflareZoneRecordUpsert) SetName(v string) *CloudflareZoneRecordUpsert {
+	u.Set(cloudflarezonerecord.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CloudflareZoneRecordUpsert) UpdateName() *CloudflareZoneRecordUpsert {
+	u.SetExcluded(cloudflarezonerecord.FieldName)
+	return u
+}
+
+// ClearName clears the value of the "name" field.
+func (u *CloudflareZoneRecordUpsert) ClearName() *CloudflareZoneRecordUpsert {
+	u.SetNull(cloudflarezonerecord.FieldName)
 	return u
 }
 
@@ -702,6 +738,27 @@ func (u *CloudflareZoneRecordUpsertOne) UpdateContent() *CloudflareZoneRecordUps
 func (u *CloudflareZoneRecordUpsertOne) ClearContent() *CloudflareZoneRecordUpsertOne {
 	return u.Update(func(s *CloudflareZoneRecordUpsert) {
 		s.ClearContent()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *CloudflareZoneRecordUpsertOne) SetName(v string) *CloudflareZoneRecordUpsertOne {
+	return u.Update(func(s *CloudflareZoneRecordUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CloudflareZoneRecordUpsertOne) UpdateName() *CloudflareZoneRecordUpsertOne {
+	return u.Update(func(s *CloudflareZoneRecordUpsert) {
+		s.UpdateName()
+	})
+}
+
+// ClearName clears the value of the "name" field.
+func (u *CloudflareZoneRecordUpsertOne) ClearName() *CloudflareZoneRecordUpsertOne {
+	return u.Update(func(s *CloudflareZoneRecordUpsert) {
+		s.ClearName()
 	})
 }
 
@@ -1106,6 +1163,27 @@ func (u *CloudflareZoneRecordUpsertBulk) UpdateContent() *CloudflareZoneRecordUp
 func (u *CloudflareZoneRecordUpsertBulk) ClearContent() *CloudflareZoneRecordUpsertBulk {
 	return u.Update(func(s *CloudflareZoneRecordUpsert) {
 		s.ClearContent()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *CloudflareZoneRecordUpsertBulk) SetName(v string) *CloudflareZoneRecordUpsertBulk {
+	return u.Update(func(s *CloudflareZoneRecordUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CloudflareZoneRecordUpsertBulk) UpdateName() *CloudflareZoneRecordUpsertBulk {
+	return u.Update(func(s *CloudflareZoneRecordUpsert) {
+		s.UpdateName()
+	})
+}
+
+// ClearName clears the value of the "name" field.
+func (u *CloudflareZoneRecordUpsertBulk) ClearName() *CloudflareZoneRecordUpsertBulk {
+	return u.Update(func(s *CloudflareZoneRecordUpsert) {
+		s.ClearName()
 	})
 }
 

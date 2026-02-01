@@ -282,6 +282,7 @@ var (
 		{Name: "record_id", Type: field.TypeString, Comment: "记录 ID"},
 		{Name: "comment", Type: field.TypeString, Nullable: true, Comment: "有关DNS记录的注释或说明。 此字段对DNS响应没有影响。"},
 		{Name: "content", Type: field.TypeString, Nullable: true, Comment: "单个Base64编码的OpenPGP可传输公钥（RFC 4880第11.1节）"},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "完整的DNS记录名称，包括区域名称，在Punycode中"},
 		{Name: "proxiable", Type: field.TypeBool, Nullable: true, Comment: "Cloudflare是否可以代理该记录"},
 		{Name: "proxied", Type: field.TypeBool, Nullable: true, Comment: "记录是否获得Cloudflare的性能和安全优势"},
 		{Name: "settings", Type: field.TypeJSON, Nullable: true, Comment: "DNS记录的设置"},
@@ -298,7 +299,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cloudflare_zone_record_cloudflare_zone_records",
-				Columns:    []*schema.Column{CloudflareZoneRecordColumns[13]},
+				Columns:    []*schema.Column{CloudflareZoneRecordColumns[14]},
 				RefColumns: []*schema.Column{CloudflareZoneColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -315,7 +316,7 @@ var (
 			{
 				Name:    "cloudflarezonerecord_cloudflare_zone_id",
 				Unique:  false,
-				Columns: []*schema.Column{CloudflareZoneRecordColumns[13]},
+				Columns: []*schema.Column{CloudflareZoneRecordColumns[14]},
 			},
 			{
 				Name:    "cloudflarezonerecord_record_id",
@@ -325,7 +326,7 @@ var (
 			{
 				Name:    "cloudflarezonerecord_cloudflare_zone_id_record_id",
 				Unique:  false,
-				Columns: []*schema.Column{CloudflareZoneRecordColumns[13], CloudflareZoneRecordColumns[5]},
+				Columns: []*schema.Column{CloudflareZoneRecordColumns[14], CloudflareZoneRecordColumns[5]},
 			},
 		},
 	}

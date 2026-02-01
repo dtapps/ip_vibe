@@ -67,6 +67,11 @@ func (CloudflareZoneRecord) Fields() []ent.Field {
 			Comment("单个Base64编码的OpenPGP可传输公钥（RFC 4880第11.1节）").
 			Annotations(entsql.WithComments(true)),
 
+		field.String("name").
+			Optional().
+			Comment("完整的DNS记录名称，包括区域名称，在Punycode中").
+			Annotations(entsql.WithComments(true)),
+
 		field.Bool("proxiable").
 			Optional().
 			Comment("Cloudflare是否可以代理该记录").
