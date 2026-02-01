@@ -2531,7 +2531,7 @@ paths:
       - CloudflareTunnel
   /cloudflare-tunnels/sync-all:
     post:
-      description: 同步全部Cloudflare隧道
+      description: 同步全部账号Cloudflare隧道和入站规则
       requestBody:
         content:
           application/json:
@@ -2556,12 +2556,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 同步全部Cloudflare隧道
+      summary: 同步全部账号Cloudflare隧道和入站规则
       tags:
       - CloudflareTunnel
   /cloudflare-tunnels/sync/{config_id}:
     post:
-      description: 同步某个Cloudflare隧道
+      description: 同步某个账号Cloudflare隧道和入站规则
       parameters:
       - description: 平台配置序号
         in: path
@@ -2593,12 +2593,55 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 同步某个Cloudflare隧道
+      summary: 同步某个账号Cloudflare隧道和入站规则
+      tags:
+      - CloudflareTunnel
+  /cloudflare-tunnels/sync/{config_id}/{tunnel_id}/ingress:
+    post:
+      description: 同步某个账号Cloudflare某个隧道的入站规则
+      parameters:
+      - description: 平台配置序号
+        in: path
+        name: config_id
+        required: true
+        schema:
+          type: integer
+      - description: 隧道序号
+        in: path
+        name: tunnel_id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 同步某个账号Cloudflare某个隧道的入站规则
       tags:
       - CloudflareTunnel
   /cloudflare-tunnels/sync/{config_id}/ingress:
     post:
-      description: 同步某个Cloudflare隧道入站规则
+      description: 同步某个账号Cloudflare隧道的入站规则
       parameters:
       - description: 平台配置序号
         in: path
@@ -2630,7 +2673,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
-      summary: 同步某个Cloudflare隧道入站规则
+      summary: 同步某个账号Cloudflare隧道的入站规则
       tags:
       - CloudflareTunnel
   /cloudflares/{id}/domain:

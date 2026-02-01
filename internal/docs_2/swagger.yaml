@@ -2348,7 +2348,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: 同步全部Cloudflare隧道
+      description: 同步全部账号Cloudflare隧道和入站规则
       produces:
       - application/json
       responses:
@@ -2364,14 +2364,14 @@ paths:
           description: 错误响应
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 同步全部Cloudflare隧道
+      summary: 同步全部账号Cloudflare隧道和入站规则
       tags:
       - CloudflareTunnel
   /cloudflare-tunnels/sync/{config_id}:
     post:
       consumes:
       - application/json
-      description: 同步某个Cloudflare隧道
+      description: 同步某个账号Cloudflare隧道和入站规则
       parameters:
       - description: 平台配置序号
         format: int64
@@ -2394,14 +2394,50 @@ paths:
           description: 错误响应
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 同步某个Cloudflare隧道
+      summary: 同步某个账号Cloudflare隧道和入站规则
+      tags:
+      - CloudflareTunnel
+  /cloudflare-tunnels/sync/{config_id}/{tunnel_id}/ingress:
+    post:
+      consumes:
+      - application/json
+      description: 同步某个账号Cloudflare某个隧道的入站规则
+      parameters:
+      - description: 平台配置序号
+        format: int64
+        in: path
+        name: config_id
+        required: true
+        type: integer
+      - description: 隧道序号
+        format: int64
+        in: path
+        name: tunnel_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 同步某个账号Cloudflare某个隧道的入站规则
       tags:
       - CloudflareTunnel
   /cloudflare-tunnels/sync/{config_id}/ingress:
     post:
       consumes:
       - application/json
-      description: 同步某个Cloudflare隧道入站规则
+      description: 同步某个账号Cloudflare隧道的入站规则
       parameters:
       - description: 平台配置序号
         format: int64
@@ -2424,7 +2460,7 @@ paths:
           description: 错误响应
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 同步某个Cloudflare隧道入站规则
+      summary: 同步某个账号Cloudflare隧道的入站规则
       tags:
       - CloudflareTunnel
   /cloudflares/{id}/domain:

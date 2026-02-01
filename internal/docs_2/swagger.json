@@ -474,7 +474,7 @@
         },
         "/cloudflare-tunnels/sync-all": {
             "post": {
-                "description": "同步全部Cloudflare隧道",
+                "description": "同步全部账号Cloudflare隧道和入站规则",
                 "consumes": [
                     "application/json"
                 ],
@@ -484,7 +484,7 @@
                 "tags": [
                     "CloudflareTunnel"
                 ],
-                "summary": "同步全部Cloudflare隧道",
+                "summary": "同步全部账号Cloudflare隧道和入站规则",
                 "responses": {
                     "200": {
                         "description": "成功响应",
@@ -509,7 +509,7 @@
         },
         "/cloudflare-tunnels/sync/{config_id}": {
             "post": {
-                "description": "同步某个Cloudflare隧道",
+                "description": "同步某个账号Cloudflare隧道和入站规则",
                 "consumes": [
                     "application/json"
                 ],
@@ -519,7 +519,7 @@
                 "tags": [
                     "CloudflareTunnel"
                 ],
-                "summary": "同步某个Cloudflare隧道",
+                "summary": "同步某个账号Cloudflare隧道和入站规则",
                 "parameters": [
                     {
                         "type": "integer",
@@ -554,7 +554,7 @@
         },
         "/cloudflare-tunnels/sync/{config_id}/ingress": {
             "post": {
-                "description": "同步某个Cloudflare隧道入站规则",
+                "description": "同步某个账号Cloudflare隧道的入站规则",
                 "consumes": [
                     "application/json"
                 ],
@@ -564,13 +564,66 @@
                 "tags": [
                     "CloudflareTunnel"
                 ],
-                "summary": "同步某个Cloudflare隧道入站规则",
+                "summary": "同步某个账号Cloudflare隧道的入站规则",
                 "parameters": [
                     {
                         "type": "integer",
                         "format": "int64",
                         "description": "平台配置序号",
                         "name": "config_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cloudflare-tunnels/sync/{config_id}/{tunnel_id}/ingress": {
+            "post": {
+                "description": "同步某个账号Cloudflare某个隧道的入站规则",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CloudflareTunnel"
+                ],
+                "summary": "同步某个账号Cloudflare某个隧道的入站规则",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "平台配置序号",
+                        "name": "config_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "隧道序号",
+                        "name": "tunnel_id",
                         "in": "path",
                         "required": true
                     }
