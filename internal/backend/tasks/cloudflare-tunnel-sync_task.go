@@ -17,21 +17,21 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 )
 
-// CloudFlare Tunnel同步任务
-type CloudflareTunnelTask struct {
+// Cloudflare隧道同步任务
+type CloudflareTunnelSyncTask struct {
 	db                   *ent.Client                   // 数据库客户端
 	logDb                *ent_log.Client               // 日志数据库客户端
 	cron                 gocron.Scheduler              // 定时任务调度器
-	job                  gocron.Job                    // CloudFlare Tunnel同步任务
+	job                  gocron.Job                    // Cloudflare隧道同步任务
 	jobHelper            *gocron_helper.JobHelper      // 任务助手
 	logger               *slog.Logger                  // 日志记录器
 	httpTransport        *http_log.LoggingRoundTripper // HTTP日志记录器
-	cloudflareTunnelSync *syncs.CloudflareTunnelSync   // CloudFlare Tunnel同步
+	cloudflareTunnelSync *syncs.CloudflareTunnelSync   // Cloudflare隧道同步
 	debug                bool                          // 是否开启调试模式
 }
 
-// 创建 CloudFlare Tunnel同步任务 实例
-func NewCloudflareTunnelTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CloudflareTunnelTask {
+// 创建 Cloudflare隧道同步任务 实例
+func NewCloudflareTunnelSyncTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CloudflareTunnelSyncTask {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -42,7 +42,7 @@ func NewCloudflareTunnelTask(db *ent.Client, logDb *ent_log.Client, cron gocron.
 		logger,
 		httpTransport,
 	)
-	return &CloudflareTunnelTask{
+	return &CloudflareTunnelSyncTask{
 		db:                   db,
 		logDb:                logDb,
 		cron:                 cron,
@@ -55,27 +55,27 @@ func NewCloudflareTunnelTask(db *ent.Client, logDb *ent_log.Client, cron gocron.
 }
 
 // Close 关闭服务，释放资源
-func (s *CloudflareTunnelTask) Close() {
+func (s *CloudflareTunnelSyncTask) Close() {
 	if s.cron != nil && s.job != nil {
 		_ = s.cron.RemoveJob(s.job.ID())
 	}
 }
 
 // SetDebug 设置调试模式
-func (s *CloudflareTunnelTask) SetDebug(debug bool) *CloudflareTunnelTask {
+func (s *CloudflareTunnelSyncTask) SetDebug(debug bool) *CloudflareTunnelSyncTask {
 	s.debug = debug
 	return s
 }
 
 // 自定义 logger
-func (s *CloudflareTunnelTask) setLogger(logger *slog.Logger) *CloudflareTunnelTask {
+func (s *CloudflareTunnelSyncTask) setLogger(logger *slog.Logger) *CloudflareTunnelSyncTask {
 	s.logger = logger
 	return s
 }
 
-// 启动CloudFlare Tunnel同步任务
-func (s *CloudflareTunnelTask) StartJob(ctx context.Context) (err error) {
-	// 判断是否存在CloudFlare Tunnel同步任务
+// 启动 Cloudflare隧道同步任务
+func (s *CloudflareTunnelSyncTask) StartJob(ctx context.Context) (err error) {
+	// 判断是否存在 Cloudflare隧道同步任务
 	if s.job != nil {
 		return nil
 	}
@@ -96,7 +96,7 @@ func (s *CloudflareTunnelTask) StartJob(ctx context.Context) (err error) {
 	// 创建周期任务
 	s.job, err = s.cron.NewJob(
 		jobDuration,
-		gocron.NewTask(s.RunTunTask), // 执行任务
+		gocron.NewTask(s.RunSyncTask), // 执行任务
 		gocron.WithSingletonMode(gocron.LimitModeReschedule), // 单例模式
 		gocron.WithName("CloudFlare Tunnel Sync"),            // 任务名称
 		gocron.WithEventListeners(
@@ -111,8 +111,8 @@ func (s *CloudflareTunnelTask) StartJob(ctx context.Context) (err error) {
 	return nil
 }
 
-// 运行CloudFlare Tunnel同步任务
-func (s *CloudflareTunnelTask) RunTunTask() {
+// 运行Cloudflare隧道同步任务
+func (s *CloudflareTunnelSyncTask) RunSyncTask() {
 
 	// 创建上下文
 	ctx := schemahook.WithSource(context.Background(), operationlog.SourceTask.String())

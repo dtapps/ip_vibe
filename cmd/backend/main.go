@@ -240,45 +240,45 @@ func main() {
 		panic(err)
 	}
 
-	// 启动 CloudFlare Tunnel同步任务
-	cloudflareTunnelTask := tasks.NewCloudflareTunnelTask(
+	// 启动 Cloudflare隧道同步任务
+	cloudflareTunnelSyncTask := tasks.NewCloudflareTunnelSyncTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
 	)
-	if err := cloudflareTunnelTask.StartJob(ctx); err != nil {
+	if err := cloudflareTunnelSyncTask.StartJob(ctx); err != nil {
 		slog.Error("启动CloudFlare Tunnel同步任务失败",
 			slog.Any("err", err),
 		)
 		panic(err)
 	}
 
-	// 启动 EdgeOne同步任务
-	edgeOneTask := tasks.NewEdgeOneTask(
+	// 启动 EdgeOne站点同步任务
+	edgeOneZoneSyncTask := tasks.NewEdgeOneZoneSyncTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
 	)
-	if err := edgeOneTask.StartJob(ctx); err != nil {
+	if err := edgeOneZoneSyncTask.StartJob(ctx); err != nil {
 		slog.Error("启动EdgeOne同步任务失败",
 			slog.Any("err", err),
 		)
 		panic(err)
 	}
 
-	// 启动 ESA同步任务
-	esaTask := tasks.NewESATask(
+	// 启动 ESA站点同步任务
+	esaSiteSyncTask := tasks.NewESASiteSyncTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
 		global.GvaHttpLog,
 	)
-	if err := esaTask.StartJob(ctx); err != nil {
+	if err := esaSiteSyncTask.StartJob(ctx); err != nil {
 		slog.Error("启动ESA同步任务失败",
 			slog.Any("err", err),
 		)

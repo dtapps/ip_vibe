@@ -23,7 +23,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type EdgeOneSync struct {
+// EdgeOneZoneSync
+type EdgeOneZoneSync struct {
 	db            *ent.Client                   // 数据库客户端
 	logDb         *ent_log.Client               // 日志数据库客户端
 	logger        *slog.Logger                  // 日志记录器
@@ -31,13 +32,13 @@ type EdgeOneSync struct {
 	debug         bool                          // 调试模式
 }
 
-// NewEdgeOneSync 创建EdgeOne同步实例
-func NewEdgeOneSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *EdgeOneSync {
+// NewEdgeOneZoneSync 创建EdgeOne站点同步实例
+func NewEdgeOneZoneSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *EdgeOneZoneSync {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
-	return &EdgeOneSync{
+	return &EdgeOneZoneSync{
 		db:            db,
 		logDb:         logDb,
 		logger:        logger,
@@ -47,12 +48,12 @@ func NewEdgeOneSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, 
 }
 
 // SetDebug 设置调试模式
-func (s *EdgeOneSync) SetDebug(debug bool) {
+func (s *EdgeOneZoneSync) SetDebug(debug bool) {
 	s.debug = debug
 }
 
 // 获取EdgeOne提供程序
-func (s *EdgeOneSync) GetApiClient(ctx context.Context, platformConfigJSON json.RawMessage) (*cdn.TencentEOProvider, error) {
+func (s *EdgeOneZoneSync) GetApiClient(ctx context.Context, platformConfigJSON json.RawMessage) (*cdn.TencentEOProvider, error) {
 
 	// 创建EdgeOne提供程序选项
 	var cdnProviderOpts = make([]cdn.Option, 0, 1)
@@ -77,7 +78,7 @@ func (s *EdgeOneSync) GetApiClient(ctx context.Context, platformConfigJSON json.
 }
 
 // 同步 全部账号 所有站点
-func (s *EdgeOneSync) SyncAllZones(ctx context.Context) (err error) {
+func (s *EdgeOneZoneSync) SyncAllZones(ctx context.Context) (err error) {
 	// 查询全部EdgeOne平台
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
@@ -105,7 +106,7 @@ func (s *EdgeOneSync) SyncAllZones(ctx context.Context) (err error) {
 }
 
 // 同步 某个账号 所有站点
-func (s *EdgeOneSync) SyncThisZones(ctx context.Context, config_id int64) (err error) {
+func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (err error) {
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -189,7 +190,7 @@ func (s *EdgeOneSync) SyncThisZones(ctx context.Context, config_id int64) (err e
 }
 
 // 同步 某个账号 某个站点
-func (s *EdgeOneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id string) (err error) {
+func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id string) (err error) {
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -276,7 +277,7 @@ func (s *EdgeOneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id
 }
 
 // 同步 全部账号 所有站点 所有源站组
-func (s *EdgeOneSync) SyncAllZoneOriginGroups(ctx context.Context) (err error) {
+func (s *EdgeOneZoneSync) SyncAllZoneOriginGroups(ctx context.Context) (err error) {
 	// 查询全部EdgeOne平台
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
@@ -304,7 +305,7 @@ func (s *EdgeOneSync) SyncAllZoneOriginGroups(ctx context.Context) (err error) {
 }
 
 // 同步 某个账号 所有站点 所有源站组
-func (s *EdgeOneSync) SyncThisZoneOriginGroups(ctx context.Context, config_id int64) (err error) {
+func (s *EdgeOneZoneSync) SyncThisZoneOriginGroups(ctx context.Context, config_id int64) (err error) {
 
 	// 查询所有站点
 	allEdgeOneZoneIDs, err := s.db.EdgeOneZone.Query().
@@ -333,7 +334,7 @@ func (s *EdgeOneSync) SyncThisZoneOriginGroups(ctx context.Context, config_id in
 }
 
 // 同步 某个账号 某个站点 所有源站组
-func (s *EdgeOneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id int64, zone_id int64) (err error) {
+func (s *EdgeOneZoneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id int64, zone_id int64) (err error) {
 	// 查询站点记录
 	firstEdgeOneZone, err := s.db.EdgeOneZone.Query().
 		Where(edgeonezone.IDEQ(zone_id)).
@@ -405,7 +406,7 @@ func (s *EdgeOneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id int
 }
 
 // 同步 全部账号 所有站点 所有记录
-func (s *EdgeOneSync) SyncAllZoneRecords(ctx context.Context) (err error) {
+func (s *EdgeOneZoneSync) SyncAllZoneRecords(ctx context.Context) (err error) {
 	// 查询全部EdgeOne平台
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
@@ -433,7 +434,7 @@ func (s *EdgeOneSync) SyncAllZoneRecords(ctx context.Context) (err error) {
 }
 
 // 同步 某个账号 所有站点 所有记录
-func (s *EdgeOneSync) SyncThisZoneRecords(ctx context.Context, config_id int64) (err error) {
+func (s *EdgeOneZoneSync) SyncThisZoneRecords(ctx context.Context, config_id int64) (err error) {
 
 	// 查询所有站点
 	allEdgeOneZoneIDs, err := s.db.EdgeOneZone.Query().
@@ -462,7 +463,7 @@ func (s *EdgeOneSync) SyncThisZoneRecords(ctx context.Context, config_id int64) 
 }
 
 // 同步 某个账号 某个站点 所有记录
-func (s *EdgeOneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, zone_id int64) (err error) {
+func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, zone_id int64) (err error) {
 	// 查询站点记录
 	firstEdgeOneZone, err := s.db.EdgeOneZone.Query().
 		Where(edgeonezone.IDEQ(zone_id)).

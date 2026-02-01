@@ -20,6 +20,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// Cloudflare隧道同步
 type CloudflareTunnelSync struct {
 	db            *ent.Client                   // 数据库客户端
 	logDb         *ent_log.Client               // 日志数据库客户端
@@ -28,7 +29,7 @@ type CloudflareTunnelSync struct {
 	debug         bool                          // 调试模式
 }
 
-// NewCloudflareTunnelSync 创建Cloudflare Tunnel同步实例
+// NewCloudflareTunnelSync 创建Cloudflare隧道同步实例
 func NewCloudflareTunnelSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CloudflareTunnelSync {
 	debug := false
 	if sys_env.GvaEnv != nil {
@@ -48,26 +49,26 @@ func (s *CloudflareTunnelSync) SetDebug(debug bool) {
 	s.debug = debug
 }
 
-// 获取Cloudflare Tunnel提供程序
+// 获取Cloudflare隧道提供程序
 func (s *CloudflareTunnelSync) GetApiClient(ctx context.Context, platformConfigJSON json.RawMessage) (*tun.CloudfareTUNProvider, error) {
 
-	// 创建Cloudflare Tunnel提供程序选项
+	// 创建Cloudflare隧道提供程序选项
 	var tunProviderOpts = make([]tun.Option, 0, 1)
 	if s.httpTransport != nil {
 		tunProviderOpts = append(tunProviderOpts, tun.WithHttpTransport(s.httpTransport))
 	}
 
-	// 创建默认的Cloudflare Tunnel配置
+	// 创建默认的Cloudflare隧道配置
 	tunProviderCfg := tun.NewDefaultCloudfareTUNConfig()
 	err := tunProviderCfg.ParseCustomConfig(platformConfigJSON)
 	if err != nil {
-		return nil, fmt.Errorf("解析Cloudflare Tunnel配置失败: %w", err)
+		return nil, fmt.Errorf("解析Cloudflare隧道配置失败: %w", err)
 	}
 
-	// 创建Cloudflare Tunnel提供程序
+	// 创建Cloudflare隧道提供程序
 	tunProvider, err := tun.NewCloudfareTUNProviderRaw(ctx, s.logger, tunProviderCfg, tunProviderOpts...)
 	if err != nil {
-		return nil, fmt.Errorf("创建Cloudflare Tunnel提供程序失败: %w", err)
+		return nil, fmt.Errorf("创建Cloudflare隧道提供程序失败: %w", err)
 	}
 
 	return tunProvider, nil
@@ -117,7 +118,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 		return nil
 	}
 
-	// 获取Cloudflare Tunnel提供程序
+	// 获取Cloudflare隧道提供程序
 	tunProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
 		return fmt.Errorf("获取Cloudflare隧道提供程序失败: %w", err)
@@ -232,7 +233,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnelIngresses(ctx context.Con
 				return nil
 			}
 
-			// 获取Cloudflare Tunnel提供程序
+			// 获取Cloudflare隧道提供程序
 			tunProvider, err := s.GetApiClient(ctx, itemCloudflareTunnel.Edges.Config.ConfigJSON)
 			if err != nil {
 				return fmt.Errorf("获取Cloudflare隧道提供程序失败: %w", err)
@@ -307,7 +308,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareThisTunnelIngresses(ctx context
 		return nil
 	}
 
-	// 获取Cloudflare Tunnel提供程序
+	// 获取Cloudflare隧道提供程序
 	tunProvider, err := s.GetApiClient(ctx, firstCloudflareTunnel.Edges.Config.ConfigJSON)
 	if err != nil {
 		return fmt.Errorf("获取Cloudflare隧道提供程序失败: %w", err)

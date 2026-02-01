@@ -23,7 +23,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-type ESASync struct {
+// ESASiteSync ESA站点同步
+type ESASiteSync struct {
 	db            *ent.Client                   // 数据库客户端
 	logDb         *ent_log.Client               // 日志数据库客户端
 	logger        *slog.Logger                  // 日志记录器
@@ -31,13 +32,13 @@ type ESASync struct {
 	debug         bool                          // 调试模式
 }
 
-// NewESASync 创建ESA同步实例
-func NewESASync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *ESASync {
+// NewESASiteSync 创建ESA站点同步实例
+func NewESASiteSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *ESASiteSync {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
-	return &ESASync{
+	return &ESASiteSync{
 		db:            db,
 		logDb:         logDb,
 		logger:        logger,
@@ -47,12 +48,12 @@ func NewESASync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, http
 }
 
 // SetDebug 设置调试模式
-func (s *ESASync) SetDebug(debug bool) {
+func (s *ESASiteSync) SetDebug(debug bool) {
 	s.debug = debug
 }
 
 // 获取ESA提供程序
-func (s *ESASync) GetApiClient(ctx context.Context, platformConfigJSON json.RawMessage) (*cdn.AliyunESAProvider, error) {
+func (s *ESASiteSync) GetApiClient(ctx context.Context, platformConfigJSON json.RawMessage) (*cdn.AliyunESAProvider, error) {
 
 	// 创建ESA提供程序选项
 	var cdnProviderOpts = make([]cdn.Option, 0, 1)
@@ -77,7 +78,7 @@ func (s *ESASync) GetApiClient(ctx context.Context, platformConfigJSON json.RawM
 }
 
 // 同步 全部账号 所有站点
-func (s *ESASync) SyncAllSites(ctx context.Context) (err error) {
+func (s *ESASiteSync) SyncAllSites(ctx context.Context) (err error) {
 	// 查询全部ESA平台
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformAliyunEsa)).
@@ -105,7 +106,7 @@ func (s *ESASync) SyncAllSites(ctx context.Context) (err error) {
 }
 
 // 同步 某个账号 所有站点
-func (s *ESASync) SyncThisSites(ctx context.Context, config_id int64) (err error) {
+func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err error) {
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -195,7 +196,7 @@ func (s *ESASync) SyncThisSites(ctx context.Context, config_id int64) (err error
 }
 
 // 同步 某个账号 某个站点
-func (s *ESASync) SyncThisSite(ctx context.Context, config_id int64, site_id int64) (err error) {
+func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id int64) (err error) {
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -288,7 +289,7 @@ func (s *ESASync) SyncThisSite(ctx context.Context, config_id int64, site_id int
 }
 
 // 同步 全部账号 所有站点 所有源地址池
-func (s *ESASync) SyncAllSiteOriginPools(ctx context.Context) (err error) {
+func (s *ESASiteSync) SyncAllSiteOriginPools(ctx context.Context) (err error) {
 	// 查询全部ESA平台
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformAliyunEsa)).
@@ -316,7 +317,7 @@ func (s *ESASync) SyncAllSiteOriginPools(ctx context.Context) (err error) {
 }
 
 // 同步 某个账号 所有站点 所有源地址池
-func (s *ESASync) SyncThisSiteOriginPools(ctx context.Context, config_id int64) (err error) {
+func (s *ESASiteSync) SyncThisSiteOriginPools(ctx context.Context, config_id int64) (err error) {
 
 	// 查询所有站点
 	allEsaSiteSiteIDs, err := s.db.EsaSite.Query().
@@ -345,7 +346,7 @@ func (s *ESASync) SyncThisSiteOriginPools(ctx context.Context, config_id int64) 
 }
 
 // 同步 某个账号 某个站点 所有源地址池
-func (s *ESASync) SyncThisSiteOriginPool(ctx context.Context, config_id int64, site_id int64) (err error) {
+func (s *ESASiteSync) SyncThisSiteOriginPool(ctx context.Context, config_id int64, site_id int64) (err error) {
 	// 查询站点记录
 	firstEsaSite, err := s.db.EsaSite.Query().
 		Where(esasite.IDEQ(site_id)).
@@ -414,7 +415,7 @@ func (s *ESASync) SyncThisSiteOriginPool(ctx context.Context, config_id int64, s
 }
 
 // 同步 全部账号 所有站点 所有记录
-func (s *ESASync) SyncAllSiteRecords(ctx context.Context) (err error) {
+func (s *ESASiteSync) SyncAllSiteRecords(ctx context.Context) (err error) {
 	// 查询全部ESA平台
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformAliyunEsa)).
@@ -442,7 +443,7 @@ func (s *ESASync) SyncAllSiteRecords(ctx context.Context) (err error) {
 }
 
 // 同步 某个账号 所有站点 所有记录
-func (s *ESASync) SyncThisSiteRecords(ctx context.Context, config_id int64) (err error) {
+func (s *ESASiteSync) SyncThisSiteRecords(ctx context.Context, config_id int64) (err error) {
 
 	// 查询所有站点
 	allEsaSiteSiteIDs, err := s.db.EsaSite.Query().
@@ -471,7 +472,7 @@ func (s *ESASync) SyncThisSiteRecords(ctx context.Context, config_id int64) (err
 }
 
 // 同步 某个账号 某个站点 所有记录
-func (s *ESASync) SyncThisSiteRecord(ctx context.Context, config_id int64, site_id int64) (err error) {
+func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, site_id int64) (err error) {
 	// 查询站点记录
 	firstEsaSite, err := s.db.EsaSite.Query().
 		Where(esasite.IDEQ(site_id)).
