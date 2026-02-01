@@ -165,7 +165,7 @@ func main() {
 	// 启动 GoCron 调度器
 	initialize.StartGoCron(ctx, global.GvaGocronSlog)
 
-	// 启动 CDN、DNS 刷新任务
+	// 启动 CDN/DNS刷新任务
 	ipUpdateTask := tasks.NewIPUpdateTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
@@ -174,7 +174,7 @@ func main() {
 		global.GvaHttpLog,
 	)
 	if err := ipUpdateTask.StartCdnJob(ctx); err != nil {
-		slog.Error("启动CDN、DNS刷新任务失败",
+		slog.Error("启动 CDN/DNS刷新任务 失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -195,7 +195,7 @@ func main() {
 	// 	panic(err)
 	// }
 
-	// 启动 SSL 申请任务
+	// 启动 SSL申请任务
 	sslApplyTask := tasks.NewSSLApplyTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
@@ -204,13 +204,13 @@ func main() {
 		global.GvaHttpLog,
 	)
 	if err := sslApplyTask.StartPeriodicTask(ctx); err != nil {
-		slog.Error("启动SSL申请任务失败",
+		slog.Error("启动 SSL申请任务 失败",
 			slog.Any("err", err),
 		)
 		panic(err)
 	}
 
-	// 启动 SSL 刷新任务
+	// 启动 SSL刷新任务
 	sslRefreshTask := tasks.NewSSLRefreshTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
@@ -219,13 +219,13 @@ func main() {
 		global.GvaHttpLog,
 	)
 	if err := sslRefreshTask.StartPeriodicTask(ctx); err != nil {
-		slog.Error("启动SSL刷新任务失败",
+		slog.Error("启动 SSL刷新任务 失败",
 			slog.Any("err", err),
 		)
 		panic(err)
 	}
 
-	// 启动域名监控任务
+	// 启动 域名监控任务
 	domainMonitorTask := tasks.NewDomainMonitorTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
@@ -234,7 +234,7 @@ func main() {
 		global.GvaHttpLog,
 	)
 	if err := domainMonitorTask.StartPeriodicTask(ctx); err != nil {
-		slog.Error("启动域名监控任务失败",
+		slog.Error("启动 域名监控任务 失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -249,7 +249,22 @@ func main() {
 		global.GvaHttpLog,
 	)
 	if err := cloudflareTunnelSyncTask.StartJob(ctx); err != nil {
-		slog.Error("启动CloudFlare Tunnel同步任务失败",
+		slog.Error("启动 Cloudflare隧道同步任务 失败",
+			slog.Any("err", err),
+		)
+		panic(err)
+	}
+
+	// 启动 Cloudflare站点同步任务
+	cloudflareZoneSyncTask := tasks.NewCloudflareZoneSyncTask(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+	)
+	if err := cloudflareZoneSyncTask.StartJob(ctx); err != nil {
+		slog.Error("启动 Cloudflare站点同步任务 失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -264,7 +279,7 @@ func main() {
 		global.GvaHttpLog,
 	)
 	if err := edgeOneZoneSyncTask.StartJob(ctx); err != nil {
-		slog.Error("启动EdgeOne同步任务失败",
+		slog.Error("启动 EdgeOne站点同步任务失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -279,13 +294,13 @@ func main() {
 		global.GvaHttpLog,
 	)
 	if err := esaSiteSyncTask.StartJob(ctx); err != nil {
-		slog.Error("启动ESA同步任务失败",
+		slog.Error("启动 ESA站点同步任务失败",
 			slog.Any("err", err),
 		)
 		panic(err)
 	}
 
-	// 启动清除数据任务
+	// 启动 清除数据任务
 	clearDataTask := tasks.NewClearDataTask(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
@@ -293,7 +308,7 @@ func main() {
 		global.GvaGocronSlog,
 	)
 	if err := clearDataTask.StartPeriodicTask(ctx); err != nil {
-		slog.Error("启动清除数据任务失败",
+		slog.Error("启动 清除数据任务失败",
 			slog.Any("err", err),
 		)
 		panic(err)
