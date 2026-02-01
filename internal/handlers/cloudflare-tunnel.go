@@ -31,6 +31,7 @@ func CloudflareTunnel(c *gin.Context) {
 	// 查询全部Cloudflare配置
 	allCloudflareConfig, err := global.GvaEntDb.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
+		WhereConfigJSONContainsFieldExistsAndNotEmpty("account_id").
 		OrderByCreatedAtAsc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

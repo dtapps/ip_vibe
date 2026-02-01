@@ -131,12 +131,12 @@ func Dashboard(c *gin.Context) {
 		{
 			Title: "EO 管理",
 			Icon:  "i-lucide-globe-2",
-			Href:  "/edgeone",
+			Href:  "/edgeone-zone",
 		},
 		{
 			Title: "ESA 管理",
 			Icon:  "i-lucide-globe-2",
-			Href:  "/esa",
+			Href:  "/esa-site",
 		},
 		{
 			Title: "通知管理",

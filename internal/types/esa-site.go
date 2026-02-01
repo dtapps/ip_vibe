@@ -4,6 +4,16 @@ import (
 	"vibe_ip/internal/ent"
 )
 
+// ESA页面 - 站点 请求结构
+type ESASiteRequest struct {
+	CommonPageRequest
+}
+
+// ESA页面 - 站点 响应结构
+type ESASiteResponse struct {
+	CommonPageResponse[GetESASiteResponse, ESASiteRequest]
+}
+
 // ESA页面 - 站点记录 请求结构
 type ESASiteRecordRequest struct {
 	CommonPageRequest

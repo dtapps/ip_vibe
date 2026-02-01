@@ -96,14 +96,14 @@ func (m *GinServerManager) setupWebRouter() {
 	r.GET("/cloudflare-tunnel", handlers.CloudflareTunnel)
 
 	// EdgeOne 管理页面 - 提供HTML页面并渲染数据
-	r.GET("/edgeone", handlers.EdgeOne)
-	r.GET("/edgeone/zone/:id/record", handlers.EdgeOneZoneRecord)
-	r.GET("/edgeone/zone/:id/origin-group", handlers.EdgeOneZoneOriginGroup)
+	r.GET("/edgeone-zone", handlers.EdgeOneZone)
+	r.GET("/edgeone-zone/:id/record", handlers.EdgeOneZoneRecord)
+	r.GET("/edgeone-zone/:id/origin-group", handlers.EdgeOneZoneOriginGroup)
 
 	// ESA 管理页面 - 提供HTML页面并渲染数据
-	r.GET("/esa", handlers.ESA)
-	r.GET("/esa/site/:id/record", handlers.ESASiteRecord)
-	r.GET("/esa/site/:id/origin-pool", handlers.ESASiteOriginPool)
+	r.GET("/esa-site", handlers.ESASite)
+	r.GET("/esa-site/:id/record", handlers.ESASiteRecord)
+	r.GET("/esa-site/:id/origin-pool", handlers.ESASiteOriginPool)
 
 	// 未匹配到任何路由
 	r.NoRoute(func(c *gin.Context) {

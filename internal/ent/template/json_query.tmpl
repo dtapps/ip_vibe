@@ -48,14 +48,6 @@ import (
                 return q
             }
 
-			// {{ $baseFuncName }}FieldNotEmptyIf 只有在 condition 为 true 时才调用 {{ $baseFuncName }}FieldNotEmpty。
-			func (q *{{ $n.Name }}Query) {{ $baseFuncName }}FieldNotEmptyIf(condition bool, path string) *{{ $n.Name }}Query {
-				if condition {
-					return q.{{ $baseFuncName }}FieldNotEmpty(path)
-				}
-				return q
-			}
-
 			// {{ $baseFuncName }}FieldNotEmpty 判断 JSON 对象中指定路径的值存在且非空（非 null 且非空字符串）。
 			// 支持嵌套路径：如 "user.profile.account_id" 会转换为 "$.user.profile.account_id"。
 			// 安全提示：path 参数自动转义，防止 SQL 注入。
@@ -90,6 +82,14 @@ import (
 				}))
 			}
 
+			// {{ $baseFuncName }}FieldNotEmptyIf 只有在 condition 为 true 时才调用 {{ $baseFuncName }}FieldNotEmpty。
+			func (q *{{ $n.Name }}Query) {{ $baseFuncName }}FieldNotEmptyIf(condition bool, path string) *{{ $n.Name }}Query {
+				if condition {
+					return q.{{ $baseFuncName }}FieldNotEmpty(path)
+				}
+				return q
+			}
+
 			// {{ $baseFuncName }}FieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 			// 示例：WhereConfigJSONFieldEquals("account_id", "000")
 			func (q *{{ $n.Name }}Query) {{ $baseFuncName }}FieldEquals(path string, val any) *{{ $n.Name }}Query {
@@ -118,6 +118,62 @@ import (
 			func (q *{{ $n.Name }}Query) {{ $baseFuncName }}FieldEqualsIf(condition bool, path string, val any) *{{ $n.Name }}Query {
 				if condition {
 					return q.{{ $baseFuncName }}FieldEquals(path, val)
+				}
+				return q
+			}
+
+			// {{ $baseFuncName }}FieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+			// 同时排除以下情况：
+			//   - 字段不存在（如 {} 中查询 account_id）
+			//   - 字段值为 null（如 {"account_id": null}）
+			//   - 字段值为空字符串（如 {"account_id": ""}）
+			// 支持嵌套路径：如 "user.profile.account_id"
+			func (q *{{ $n.Name }}Query) {{ $baseFuncName }}FieldExistsAndNotEmpty(path string) *{{ $n.Name }}Query {
+				return q.Where(predicate.{{ $n.Name }}(func(s *sql.Selector) {
+					column := {{ $n.Package }}.Field{{ $f.StructField }}
+					jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+					switch s.Dialect() {
+					case dialect.MySQL:
+						// 关键逻辑：
+						// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+						// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+						// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+						s.Where(sql.ExprP(
+							"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+							jsonPath, jsonPath,
+						))
+
+					case dialect.Postgres:
+						// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+						s.Where(sql.ExprP(
+							"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+							path, path,
+						))
+
+					case dialect.SQLite:
+						// SQLite 特殊处理：
+						// - 字段不存在 → json_extract = NULL
+						// - 值为 null → json_extract = 'null' (字符串)
+						// - 空字符串 → json_extract = '""'
+						// 需同时排除这三种情况
+						s.Where(sql.ExprP(
+							"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+							jsonPath, jsonPath,
+						))
+
+					default:
+						// 兜底：模糊匹配（不精确，仅兼容）
+						escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+						s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+					}
+				}))
+			}
+
+			// {{ $baseFuncName }}FieldExistsAndNotEmptyIf 条件版本
+			func (q *{{ $n.Name }}Query) {{ $baseFuncName }}FieldExistsAndNotEmptyIf(condition bool, path string) *{{ $n.Name }}Query {
+				if condition {
+					return q.{{ $baseFuncName }}FieldExistsAndNotEmpty(path)
 				}
 				return q
 			}

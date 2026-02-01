@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -12,6 +13,86 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 )
+
+func ESASite(c *gin.Context) {
+	// 请求参数
+	var requestParams types.ESASiteRequest
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 准备页面数据
+	pageData := types.ESASiteResponse{
+		CommonPageResponse: types.CommonPageResponse[types.GetESASiteResponse, types.ESASiteRequest]{
+			Filter: requestParams,
+			List:   []types.GetESASiteResponse{},
+		},
+	}
+
+	// 查询全部ESA配置
+	allPlatformConfig, err := global.GvaEntDb.PlatformConfig.Query().
+		Where(platformconfig.PlatformEQ(platformconfig.PlatformAliyunEsa)).
+		OrderByCreatedAtAsc().
+		Paginate(c, requestParams.Page, requestParams.PageSize)
+	if err == nil {
+		for _, item := range allPlatformConfig.Items {
+			sites := make([]types.GetESASiteSite, 0)
+			// 查询隧道列表
+			allSite, err := global.GvaEntDb.EsaSite.Query().
+				Where(esasite.ConfigID(item.ID)).
+				WithRecords().
+				WithOriginpools().
+				OrderBySiteNameAsc().
+				All(c)
+			if err == nil {
+				for _, site := range allSite {
+					sites = append(sites, types.GetESASiteSite{
+						ID:              site.ID,
+						RemoteCreatedAt: site.RemoteCreatedAt,
+						SyncAt:          site.SyncAt,
+						AccessType:      site.AccessType.String(),
+						CnameZone:       site.CnameZone,
+						Coverage:        site.Coverage.String(),
+						InstanceID:      site.InstanceID,
+						NameServerList:  site.NameServerList,
+						PlanName:        site.PlanName,
+						PlanSpecName:    site.PlanSpecName,
+						SiteID:          site.SiteID,
+						SiteName:        site.SiteName,
+						Status:          site.Status.String(),
+						OfflineReason:   site.OfflineReason,
+
+						RecordCount:     len(site.Edges.Records),
+						OriginpoolCount: len(site.Edges.Originpools),
+					})
+				}
+			}
+			pageData.List = append(pageData.List, types.GetESASiteResponse{
+				ID:          item.ID,
+				Capability:  item.Capability.String(),
+				Name:        item.Name,
+				Description: item.Description,
+				Platform:    item.Platform.String(),
+				Sites:       sites,
+			})
+		}
+	}
+
+	pageData.Page = allPlatformConfig.Page
+	pageData.PageSize = allPlatformConfig.Size
+	pageData.Total = allPlatformConfig.Total
+
+	// 渲染模板
+	renderHTML(
+		c,
+		filepath.Join("pages", "esa-site.html"),
+		types.BasePageData[types.ESASiteResponse]{
+			Title: "ESA 站点管理",
+			Data:  pageData,
+		},
+	)
+}
 
 func ESASiteRecord(c *gin.Context) {
 	// 请求参数
@@ -64,7 +145,7 @@ func ESASiteRecord(c *gin.Context) {
 			Title: "ESA 站点记录",
 			Data:  pageData,
 		},
-		"esa",
+		"esa-site",
 	)
 }
 
@@ -119,6 +200,6 @@ func ESASiteOriginPool(c *gin.Context) {
 			Title: "ESA 站点源地址池",
 			Data:  pageData,
 		},
-		"esa",
+		"esa-site",
 	)
 }

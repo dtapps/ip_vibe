@@ -47,14 +47,6 @@ func (q *DomainMonitorHistoryQuery) WhereIPResolvedContainsIf(condition bool, va
 	return q
 }
 
-// WhereIPResolvedContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereIPResolvedContainsFieldNotEmpty。
-func (q *DomainMonitorHistoryQuery) WhereIPResolvedContainsFieldNotEmptyIf(condition bool, path string) *DomainMonitorHistoryQuery {
-	if condition {
-		return q.WhereIPResolvedContainsFieldNotEmpty(path)
-	}
-	return q
-}
-
 // WhereIPResolvedContainsFieldNotEmpty 判断 JSON 对象中指定路径的值存在且非空（非 null 且非空字符串）。
 // 支持嵌套路径：如 "user.profile.account_id" 会转换为 "$.user.profile.account_id"。
 // 安全提示：path 参数自动转义，防止 SQL 注入。
@@ -89,6 +81,14 @@ func (q *DomainMonitorHistoryQuery) WhereIPResolvedContainsFieldNotEmpty(path st
 	}))
 }
 
+// WhereIPResolvedContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereIPResolvedContainsFieldNotEmpty。
+func (q *DomainMonitorHistoryQuery) WhereIPResolvedContainsFieldNotEmptyIf(condition bool, path string) *DomainMonitorHistoryQuery {
+	if condition {
+		return q.WhereIPResolvedContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereIPResolvedContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *DomainMonitorHistoryQuery) WhereIPResolvedContainsFieldEquals(path string, val any) *DomainMonitorHistoryQuery {
@@ -121,6 +121,63 @@ func (q *DomainMonitorHistoryQuery) WhereIPResolvedContainsFieldEqualsIf(conditi
 	return q
 }
 
+// WhereIPResolvedContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *DomainMonitorHistoryQuery) WhereIPResolvedContainsFieldExistsAndNotEmpty(path string) *DomainMonitorHistoryQuery {
+	return q.Where(predicate.DomainMonitorHistory(func(s *sql.Selector) {
+		column := domainmonitorhistory.FieldIPResolved
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereIPResolvedContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *DomainMonitorHistoryQuery) WhereIPResolvedContainsFieldExistsAndNotEmptyIf(condition bool, path string) *DomainMonitorHistoryQuery {
+	if condition {
+		return q.WhereIPResolvedContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *HttpLogQuery) WhereRequestHeadersContains(val any) *HttpLogQuery {
@@ -146,14 +203,6 @@ func (q *HttpLogQuery) WhereRequestHeadersContains(val any) *HttpLogQuery {
 func (q *HttpLogQuery) WhereRequestHeadersContainsIf(condition bool, val any) *HttpLogQuery {
 	if condition {
 		return q.WhereRequestHeadersContains(val)
-	}
-	return q
-}
-
-// WhereRequestHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestHeadersContainsFieldNotEmpty。
-func (q *HttpLogQuery) WhereRequestHeadersContainsFieldNotEmptyIf(condition bool, path string) *HttpLogQuery {
-	if condition {
-		return q.WhereRequestHeadersContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -192,6 +241,14 @@ func (q *HttpLogQuery) WhereRequestHeadersContainsFieldNotEmpty(path string) *Ht
 	}))
 }
 
+// WhereRequestHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestHeadersContainsFieldNotEmpty。
+func (q *HttpLogQuery) WhereRequestHeadersContainsFieldNotEmptyIf(condition bool, path string) *HttpLogQuery {
+	if condition {
+		return q.WhereRequestHeadersContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestHeadersContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *HttpLogQuery) WhereRequestHeadersContainsFieldEquals(path string, val any) *HttpLogQuery {
@@ -224,6 +281,63 @@ func (q *HttpLogQuery) WhereRequestHeadersContainsFieldEqualsIf(condition bool, 
 	return q
 }
 
+// WhereRequestHeadersContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *HttpLogQuery) WhereRequestHeadersContainsFieldExistsAndNotEmpty(path string) *HttpLogQuery {
+	return q.Where(predicate.HttpLog(func(s *sql.Selector) {
+		column := httplog.FieldRequestHeaders
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestHeadersContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *HttpLogQuery) WhereRequestHeadersContainsFieldExistsAndNotEmptyIf(condition bool, path string) *HttpLogQuery {
+	if condition {
+		return q.WhereRequestHeadersContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *HttpLogQuery) WhereRequestBodyContains(val any) *HttpLogQuery {
@@ -249,14 +363,6 @@ func (q *HttpLogQuery) WhereRequestBodyContains(val any) *HttpLogQuery {
 func (q *HttpLogQuery) WhereRequestBodyContainsIf(condition bool, val any) *HttpLogQuery {
 	if condition {
 		return q.WhereRequestBodyContains(val)
-	}
-	return q
-}
-
-// WhereRequestBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestBodyContainsFieldNotEmpty。
-func (q *HttpLogQuery) WhereRequestBodyContainsFieldNotEmptyIf(condition bool, path string) *HttpLogQuery {
-	if condition {
-		return q.WhereRequestBodyContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -295,6 +401,14 @@ func (q *HttpLogQuery) WhereRequestBodyContainsFieldNotEmpty(path string) *HttpL
 	}))
 }
 
+// WhereRequestBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestBodyContainsFieldNotEmpty。
+func (q *HttpLogQuery) WhereRequestBodyContainsFieldNotEmptyIf(condition bool, path string) *HttpLogQuery {
+	if condition {
+		return q.WhereRequestBodyContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestBodyContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *HttpLogQuery) WhereRequestBodyContainsFieldEquals(path string, val any) *HttpLogQuery {
@@ -327,6 +441,63 @@ func (q *HttpLogQuery) WhereRequestBodyContainsFieldEqualsIf(condition bool, pat
 	return q
 }
 
+// WhereRequestBodyContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *HttpLogQuery) WhereRequestBodyContainsFieldExistsAndNotEmpty(path string) *HttpLogQuery {
+	return q.Where(predicate.HttpLog(func(s *sql.Selector) {
+		column := httplog.FieldRequestBody
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestBodyContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *HttpLogQuery) WhereRequestBodyContainsFieldExistsAndNotEmptyIf(condition bool, path string) *HttpLogQuery {
+	if condition {
+		return q.WhereRequestBodyContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *HttpLogQuery) WhereResponseHeadersContains(val any) *HttpLogQuery {
@@ -352,14 +523,6 @@ func (q *HttpLogQuery) WhereResponseHeadersContains(val any) *HttpLogQuery {
 func (q *HttpLogQuery) WhereResponseHeadersContainsIf(condition bool, val any) *HttpLogQuery {
 	if condition {
 		return q.WhereResponseHeadersContains(val)
-	}
-	return q
-}
-
-// WhereResponseHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseHeadersContainsFieldNotEmpty。
-func (q *HttpLogQuery) WhereResponseHeadersContainsFieldNotEmptyIf(condition bool, path string) *HttpLogQuery {
-	if condition {
-		return q.WhereResponseHeadersContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -398,6 +561,14 @@ func (q *HttpLogQuery) WhereResponseHeadersContainsFieldNotEmpty(path string) *H
 	}))
 }
 
+// WhereResponseHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseHeadersContainsFieldNotEmpty。
+func (q *HttpLogQuery) WhereResponseHeadersContainsFieldNotEmptyIf(condition bool, path string) *HttpLogQuery {
+	if condition {
+		return q.WhereResponseHeadersContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseHeadersContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *HttpLogQuery) WhereResponseHeadersContainsFieldEquals(path string, val any) *HttpLogQuery {
@@ -430,6 +601,63 @@ func (q *HttpLogQuery) WhereResponseHeadersContainsFieldEqualsIf(condition bool,
 	return q
 }
 
+// WhereResponseHeadersContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *HttpLogQuery) WhereResponseHeadersContainsFieldExistsAndNotEmpty(path string) *HttpLogQuery {
+	return q.Where(predicate.HttpLog(func(s *sql.Selector) {
+		column := httplog.FieldResponseHeaders
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereResponseHeadersContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *HttpLogQuery) WhereResponseHeadersContainsFieldExistsAndNotEmptyIf(condition bool, path string) *HttpLogQuery {
+	if condition {
+		return q.WhereResponseHeadersContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *HttpLogQuery) WhereResponseBodyContains(val any) *HttpLogQuery {
@@ -455,14 +683,6 @@ func (q *HttpLogQuery) WhereResponseBodyContains(val any) *HttpLogQuery {
 func (q *HttpLogQuery) WhereResponseBodyContainsIf(condition bool, val any) *HttpLogQuery {
 	if condition {
 		return q.WhereResponseBodyContains(val)
-	}
-	return q
-}
-
-// WhereResponseBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseBodyContainsFieldNotEmpty。
-func (q *HttpLogQuery) WhereResponseBodyContainsFieldNotEmptyIf(condition bool, path string) *HttpLogQuery {
-	if condition {
-		return q.WhereResponseBodyContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -501,6 +721,14 @@ func (q *HttpLogQuery) WhereResponseBodyContainsFieldNotEmpty(path string) *Http
 	}))
 }
 
+// WhereResponseBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseBodyContainsFieldNotEmpty。
+func (q *HttpLogQuery) WhereResponseBodyContainsFieldNotEmptyIf(condition bool, path string) *HttpLogQuery {
+	if condition {
+		return q.WhereResponseBodyContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseBodyContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *HttpLogQuery) WhereResponseBodyContainsFieldEquals(path string, val any) *HttpLogQuery {
@@ -533,6 +761,63 @@ func (q *HttpLogQuery) WhereResponseBodyContainsFieldEqualsIf(condition bool, pa
 	return q
 }
 
+// WhereResponseBodyContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *HttpLogQuery) WhereResponseBodyContainsFieldExistsAndNotEmpty(path string) *HttpLogQuery {
+	return q.Where(predicate.HttpLog(func(s *sql.Selector) {
+		column := httplog.FieldResponseBody
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereResponseBodyContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *HttpLogQuery) WhereResponseBodyContainsFieldExistsAndNotEmptyIf(condition bool, path string) *HttpLogQuery {
+	if condition {
+		return q.WhereResponseBodyContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereObjIDContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *OperationLogQuery) WhereObjIDContains(val any) *OperationLogQuery {
@@ -558,14 +843,6 @@ func (q *OperationLogQuery) WhereObjIDContains(val any) *OperationLogQuery {
 func (q *OperationLogQuery) WhereObjIDContainsIf(condition bool, val any) *OperationLogQuery {
 	if condition {
 		return q.WhereObjIDContains(val)
-	}
-	return q
-}
-
-// WhereObjIDContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereObjIDContainsFieldNotEmpty。
-func (q *OperationLogQuery) WhereObjIDContainsFieldNotEmptyIf(condition bool, path string) *OperationLogQuery {
-	if condition {
-		return q.WhereObjIDContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -604,6 +881,14 @@ func (q *OperationLogQuery) WhereObjIDContainsFieldNotEmpty(path string) *Operat
 	}))
 }
 
+// WhereObjIDContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereObjIDContainsFieldNotEmpty。
+func (q *OperationLogQuery) WhereObjIDContainsFieldNotEmptyIf(condition bool, path string) *OperationLogQuery {
+	if condition {
+		return q.WhereObjIDContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereObjIDContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *OperationLogQuery) WhereObjIDContainsFieldEquals(path string, val any) *OperationLogQuery {
@@ -636,6 +921,63 @@ func (q *OperationLogQuery) WhereObjIDContainsFieldEqualsIf(condition bool, path
 	return q
 }
 
+// WhereObjIDContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *OperationLogQuery) WhereObjIDContainsFieldExistsAndNotEmpty(path string) *OperationLogQuery {
+	return q.Where(predicate.OperationLog(func(s *sql.Selector) {
+		column := operationlog.FieldObjID
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereObjIDContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *OperationLogQuery) WhereObjIDContainsFieldExistsAndNotEmptyIf(condition bool, path string) *OperationLogQuery {
+	if condition {
+		return q.WhereObjIDContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereOldValueContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *OperationLogQuery) WhereOldValueContains(val any) *OperationLogQuery {
@@ -661,14 +1003,6 @@ func (q *OperationLogQuery) WhereOldValueContains(val any) *OperationLogQuery {
 func (q *OperationLogQuery) WhereOldValueContainsIf(condition bool, val any) *OperationLogQuery {
 	if condition {
 		return q.WhereOldValueContains(val)
-	}
-	return q
-}
-
-// WhereOldValueContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereOldValueContainsFieldNotEmpty。
-func (q *OperationLogQuery) WhereOldValueContainsFieldNotEmptyIf(condition bool, path string) *OperationLogQuery {
-	if condition {
-		return q.WhereOldValueContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -707,6 +1041,14 @@ func (q *OperationLogQuery) WhereOldValueContainsFieldNotEmpty(path string) *Ope
 	}))
 }
 
+// WhereOldValueContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereOldValueContainsFieldNotEmpty。
+func (q *OperationLogQuery) WhereOldValueContainsFieldNotEmptyIf(condition bool, path string) *OperationLogQuery {
+	if condition {
+		return q.WhereOldValueContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereOldValueContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *OperationLogQuery) WhereOldValueContainsFieldEquals(path string, val any) *OperationLogQuery {
@@ -739,6 +1081,63 @@ func (q *OperationLogQuery) WhereOldValueContainsFieldEqualsIf(condition bool, p
 	return q
 }
 
+// WhereOldValueContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *OperationLogQuery) WhereOldValueContainsFieldExistsAndNotEmpty(path string) *OperationLogQuery {
+	return q.Where(predicate.OperationLog(func(s *sql.Selector) {
+		column := operationlog.FieldOldValue
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereOldValueContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *OperationLogQuery) WhereOldValueContainsFieldExistsAndNotEmptyIf(condition bool, path string) *OperationLogQuery {
+	if condition {
+		return q.WhereOldValueContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereNewValueContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *OperationLogQuery) WhereNewValueContains(val any) *OperationLogQuery {
@@ -764,14 +1163,6 @@ func (q *OperationLogQuery) WhereNewValueContains(val any) *OperationLogQuery {
 func (q *OperationLogQuery) WhereNewValueContainsIf(condition bool, val any) *OperationLogQuery {
 	if condition {
 		return q.WhereNewValueContains(val)
-	}
-	return q
-}
-
-// WhereNewValueContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereNewValueContainsFieldNotEmpty。
-func (q *OperationLogQuery) WhereNewValueContainsFieldNotEmptyIf(condition bool, path string) *OperationLogQuery {
-	if condition {
-		return q.WhereNewValueContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -810,6 +1201,14 @@ func (q *OperationLogQuery) WhereNewValueContainsFieldNotEmpty(path string) *Ope
 	}))
 }
 
+// WhereNewValueContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereNewValueContainsFieldNotEmpty。
+func (q *OperationLogQuery) WhereNewValueContainsFieldNotEmptyIf(condition bool, path string) *OperationLogQuery {
+	if condition {
+		return q.WhereNewValueContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereNewValueContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *OperationLogQuery) WhereNewValueContainsFieldEquals(path string, val any) *OperationLogQuery {
@@ -842,6 +1241,63 @@ func (q *OperationLogQuery) WhereNewValueContainsFieldEqualsIf(condition bool, p
 	return q
 }
 
+// WhereNewValueContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *OperationLogQuery) WhereNewValueContainsFieldExistsAndNotEmpty(path string) *OperationLogQuery {
+	return q.Where(predicate.OperationLog(func(s *sql.Selector) {
+		column := operationlog.FieldNewValue
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereNewValueContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *OperationLogQuery) WhereNewValueContainsFieldExistsAndNotEmptyIf(condition bool, path string) *OperationLogQuery {
+	if condition {
+		return q.WhereNewValueContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *ReqLogQuery) WhereRequestHeadersContains(val any) *ReqLogQuery {
@@ -867,14 +1323,6 @@ func (q *ReqLogQuery) WhereRequestHeadersContains(val any) *ReqLogQuery {
 func (q *ReqLogQuery) WhereRequestHeadersContainsIf(condition bool, val any) *ReqLogQuery {
 	if condition {
 		return q.WhereRequestHeadersContains(val)
-	}
-	return q
-}
-
-// WhereRequestHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestHeadersContainsFieldNotEmpty。
-func (q *ReqLogQuery) WhereRequestHeadersContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
-	if condition {
-		return q.WhereRequestHeadersContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -913,6 +1361,14 @@ func (q *ReqLogQuery) WhereRequestHeadersContainsFieldNotEmpty(path string) *Req
 	}))
 }
 
+// WhereRequestHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestHeadersContainsFieldNotEmpty。
+func (q *ReqLogQuery) WhereRequestHeadersContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestHeadersContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestHeadersContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *ReqLogQuery) WhereRequestHeadersContainsFieldEquals(path string, val any) *ReqLogQuery {
@@ -945,6 +1401,63 @@ func (q *ReqLogQuery) WhereRequestHeadersContainsFieldEqualsIf(condition bool, p
 	return q
 }
 
+// WhereRequestHeadersContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *ReqLogQuery) WhereRequestHeadersContainsFieldExistsAndNotEmpty(path string) *ReqLogQuery {
+	return q.Where(predicate.ReqLog(func(s *sql.Selector) {
+		column := reqlog.FieldRequestHeaders
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestHeadersContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *ReqLogQuery) WhereRequestHeadersContainsFieldExistsAndNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestHeadersContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *ReqLogQuery) WhereRequestBodyContains(val any) *ReqLogQuery {
@@ -970,14 +1483,6 @@ func (q *ReqLogQuery) WhereRequestBodyContains(val any) *ReqLogQuery {
 func (q *ReqLogQuery) WhereRequestBodyContainsIf(condition bool, val any) *ReqLogQuery {
 	if condition {
 		return q.WhereRequestBodyContains(val)
-	}
-	return q
-}
-
-// WhereRequestBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestBodyContainsFieldNotEmpty。
-func (q *ReqLogQuery) WhereRequestBodyContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
-	if condition {
-		return q.WhereRequestBodyContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -1016,6 +1521,14 @@ func (q *ReqLogQuery) WhereRequestBodyContainsFieldNotEmpty(path string) *ReqLog
 	}))
 }
 
+// WhereRequestBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestBodyContainsFieldNotEmpty。
+func (q *ReqLogQuery) WhereRequestBodyContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestBodyContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestBodyContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *ReqLogQuery) WhereRequestBodyContainsFieldEquals(path string, val any) *ReqLogQuery {
@@ -1048,6 +1561,63 @@ func (q *ReqLogQuery) WhereRequestBodyContainsFieldEqualsIf(condition bool, path
 	return q
 }
 
+// WhereRequestBodyContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *ReqLogQuery) WhereRequestBodyContainsFieldExistsAndNotEmpty(path string) *ReqLogQuery {
+	return q.Where(predicate.ReqLog(func(s *sql.Selector) {
+		column := reqlog.FieldRequestBody
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestBodyContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *ReqLogQuery) WhereRequestBodyContainsFieldExistsAndNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestBodyContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestQueryParamsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *ReqLogQuery) WhereRequestQueryParamsContains(val any) *ReqLogQuery {
@@ -1073,14 +1643,6 @@ func (q *ReqLogQuery) WhereRequestQueryParamsContains(val any) *ReqLogQuery {
 func (q *ReqLogQuery) WhereRequestQueryParamsContainsIf(condition bool, val any) *ReqLogQuery {
 	if condition {
 		return q.WhereRequestQueryParamsContains(val)
-	}
-	return q
-}
-
-// WhereRequestQueryParamsContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestQueryParamsContainsFieldNotEmpty。
-func (q *ReqLogQuery) WhereRequestQueryParamsContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
-	if condition {
-		return q.WhereRequestQueryParamsContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -1119,6 +1681,14 @@ func (q *ReqLogQuery) WhereRequestQueryParamsContainsFieldNotEmpty(path string) 
 	}))
 }
 
+// WhereRequestQueryParamsContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestQueryParamsContainsFieldNotEmpty。
+func (q *ReqLogQuery) WhereRequestQueryParamsContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestQueryParamsContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestQueryParamsContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *ReqLogQuery) WhereRequestQueryParamsContainsFieldEquals(path string, val any) *ReqLogQuery {
@@ -1151,6 +1721,63 @@ func (q *ReqLogQuery) WhereRequestQueryParamsContainsFieldEqualsIf(condition boo
 	return q
 }
 
+// WhereRequestQueryParamsContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *ReqLogQuery) WhereRequestQueryParamsContainsFieldExistsAndNotEmpty(path string) *ReqLogQuery {
+	return q.Where(predicate.ReqLog(func(s *sql.Selector) {
+		column := reqlog.FieldRequestQueryParams
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestQueryParamsContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *ReqLogQuery) WhereRequestQueryParamsContainsFieldExistsAndNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestQueryParamsContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestFormDataContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *ReqLogQuery) WhereRequestFormDataContains(val any) *ReqLogQuery {
@@ -1176,14 +1803,6 @@ func (q *ReqLogQuery) WhereRequestFormDataContains(val any) *ReqLogQuery {
 func (q *ReqLogQuery) WhereRequestFormDataContainsIf(condition bool, val any) *ReqLogQuery {
 	if condition {
 		return q.WhereRequestFormDataContains(val)
-	}
-	return q
-}
-
-// WhereRequestFormDataContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestFormDataContainsFieldNotEmpty。
-func (q *ReqLogQuery) WhereRequestFormDataContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
-	if condition {
-		return q.WhereRequestFormDataContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -1222,6 +1841,14 @@ func (q *ReqLogQuery) WhereRequestFormDataContainsFieldNotEmpty(path string) *Re
 	}))
 }
 
+// WhereRequestFormDataContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestFormDataContainsFieldNotEmpty。
+func (q *ReqLogQuery) WhereRequestFormDataContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestFormDataContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestFormDataContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *ReqLogQuery) WhereRequestFormDataContainsFieldEquals(path string, val any) *ReqLogQuery {
@@ -1254,6 +1881,63 @@ func (q *ReqLogQuery) WhereRequestFormDataContainsFieldEqualsIf(condition bool, 
 	return q
 }
 
+// WhereRequestFormDataContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *ReqLogQuery) WhereRequestFormDataContainsFieldExistsAndNotEmpty(path string) *ReqLogQuery {
+	return q.Where(predicate.ReqLog(func(s *sql.Selector) {
+		column := reqlog.FieldRequestFormData
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestFormDataContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *ReqLogQuery) WhereRequestFormDataContainsFieldExistsAndNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestFormDataContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestPathParamsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *ReqLogQuery) WhereRequestPathParamsContains(val any) *ReqLogQuery {
@@ -1279,14 +1963,6 @@ func (q *ReqLogQuery) WhereRequestPathParamsContains(val any) *ReqLogQuery {
 func (q *ReqLogQuery) WhereRequestPathParamsContainsIf(condition bool, val any) *ReqLogQuery {
 	if condition {
 		return q.WhereRequestPathParamsContains(val)
-	}
-	return q
-}
-
-// WhereRequestPathParamsContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestPathParamsContainsFieldNotEmpty。
-func (q *ReqLogQuery) WhereRequestPathParamsContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
-	if condition {
-		return q.WhereRequestPathParamsContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -1325,6 +2001,14 @@ func (q *ReqLogQuery) WhereRequestPathParamsContainsFieldNotEmpty(path string) *
 	}))
 }
 
+// WhereRequestPathParamsContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestPathParamsContainsFieldNotEmpty。
+func (q *ReqLogQuery) WhereRequestPathParamsContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestPathParamsContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestPathParamsContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *ReqLogQuery) WhereRequestPathParamsContainsFieldEquals(path string, val any) *ReqLogQuery {
@@ -1357,6 +2041,63 @@ func (q *ReqLogQuery) WhereRequestPathParamsContainsFieldEqualsIf(condition bool
 	return q
 }
 
+// WhereRequestPathParamsContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *ReqLogQuery) WhereRequestPathParamsContainsFieldExistsAndNotEmpty(path string) *ReqLogQuery {
+	return q.Where(predicate.ReqLog(func(s *sql.Selector) {
+		column := reqlog.FieldRequestPathParams
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestPathParamsContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *ReqLogQuery) WhereRequestPathParamsContainsFieldExistsAndNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereRequestPathParamsContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *ReqLogQuery) WhereResponseHeadersContains(val any) *ReqLogQuery {
@@ -1382,14 +2123,6 @@ func (q *ReqLogQuery) WhereResponseHeadersContains(val any) *ReqLogQuery {
 func (q *ReqLogQuery) WhereResponseHeadersContainsIf(condition bool, val any) *ReqLogQuery {
 	if condition {
 		return q.WhereResponseHeadersContains(val)
-	}
-	return q
-}
-
-// WhereResponseHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseHeadersContainsFieldNotEmpty。
-func (q *ReqLogQuery) WhereResponseHeadersContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
-	if condition {
-		return q.WhereResponseHeadersContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -1428,6 +2161,14 @@ func (q *ReqLogQuery) WhereResponseHeadersContainsFieldNotEmpty(path string) *Re
 	}))
 }
 
+// WhereResponseHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseHeadersContainsFieldNotEmpty。
+func (q *ReqLogQuery) WhereResponseHeadersContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereResponseHeadersContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseHeadersContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *ReqLogQuery) WhereResponseHeadersContainsFieldEquals(path string, val any) *ReqLogQuery {
@@ -1460,6 +2201,63 @@ func (q *ReqLogQuery) WhereResponseHeadersContainsFieldEqualsIf(condition bool, 
 	return q
 }
 
+// WhereResponseHeadersContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *ReqLogQuery) WhereResponseHeadersContainsFieldExistsAndNotEmpty(path string) *ReqLogQuery {
+	return q.Where(predicate.ReqLog(func(s *sql.Selector) {
+		column := reqlog.FieldResponseHeaders
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereResponseHeadersContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *ReqLogQuery) WhereResponseHeadersContainsFieldExistsAndNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereResponseHeadersContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *ReqLogQuery) WhereResponseBodyContains(val any) *ReqLogQuery {
@@ -1485,14 +2283,6 @@ func (q *ReqLogQuery) WhereResponseBodyContains(val any) *ReqLogQuery {
 func (q *ReqLogQuery) WhereResponseBodyContainsIf(condition bool, val any) *ReqLogQuery {
 	if condition {
 		return q.WhereResponseBodyContains(val)
-	}
-	return q
-}
-
-// WhereResponseBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseBodyContainsFieldNotEmpty。
-func (q *ReqLogQuery) WhereResponseBodyContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
-	if condition {
-		return q.WhereResponseBodyContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -1531,6 +2321,14 @@ func (q *ReqLogQuery) WhereResponseBodyContainsFieldNotEmpty(path string) *ReqLo
 	}))
 }
 
+// WhereResponseBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseBodyContainsFieldNotEmpty。
+func (q *ReqLogQuery) WhereResponseBodyContainsFieldNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereResponseBodyContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseBodyContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *ReqLogQuery) WhereResponseBodyContainsFieldEquals(path string, val any) *ReqLogQuery {
@@ -1563,6 +2361,63 @@ func (q *ReqLogQuery) WhereResponseBodyContainsFieldEqualsIf(condition bool, pat
 	return q
 }
 
+// WhereResponseBodyContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *ReqLogQuery) WhereResponseBodyContainsFieldExistsAndNotEmpty(path string) *ReqLogQuery {
+	return q.Where(predicate.ReqLog(func(s *sql.Selector) {
+		column := reqlog.FieldResponseBody
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereResponseBodyContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *ReqLogQuery) WhereResponseBodyContainsFieldExistsAndNotEmptyIf(condition bool, path string) *ReqLogQuery {
+	if condition {
+		return q.WhereResponseBodyContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *RestyLogQuery) WhereRequestHeadersContains(val any) *RestyLogQuery {
@@ -1588,14 +2443,6 @@ func (q *RestyLogQuery) WhereRequestHeadersContains(val any) *RestyLogQuery {
 func (q *RestyLogQuery) WhereRequestHeadersContainsIf(condition bool, val any) *RestyLogQuery {
 	if condition {
 		return q.WhereRequestHeadersContains(val)
-	}
-	return q
-}
-
-// WhereRequestHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestHeadersContainsFieldNotEmpty。
-func (q *RestyLogQuery) WhereRequestHeadersContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
-	if condition {
-		return q.WhereRequestHeadersContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -1634,6 +2481,14 @@ func (q *RestyLogQuery) WhereRequestHeadersContainsFieldNotEmpty(path string) *R
 	}))
 }
 
+// WhereRequestHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestHeadersContainsFieldNotEmpty。
+func (q *RestyLogQuery) WhereRequestHeadersContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestHeadersContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestHeadersContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *RestyLogQuery) WhereRequestHeadersContainsFieldEquals(path string, val any) *RestyLogQuery {
@@ -1666,6 +2521,63 @@ func (q *RestyLogQuery) WhereRequestHeadersContainsFieldEqualsIf(condition bool,
 	return q
 }
 
+// WhereRequestHeadersContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *RestyLogQuery) WhereRequestHeadersContainsFieldExistsAndNotEmpty(path string) *RestyLogQuery {
+	return q.Where(predicate.RestyLog(func(s *sql.Selector) {
+		column := restylog.FieldRequestHeaders
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestHeadersContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *RestyLogQuery) WhereRequestHeadersContainsFieldExistsAndNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestHeadersContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *RestyLogQuery) WhereRequestBodyContains(val any) *RestyLogQuery {
@@ -1691,14 +2603,6 @@ func (q *RestyLogQuery) WhereRequestBodyContains(val any) *RestyLogQuery {
 func (q *RestyLogQuery) WhereRequestBodyContainsIf(condition bool, val any) *RestyLogQuery {
 	if condition {
 		return q.WhereRequestBodyContains(val)
-	}
-	return q
-}
-
-// WhereRequestBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestBodyContainsFieldNotEmpty。
-func (q *RestyLogQuery) WhereRequestBodyContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
-	if condition {
-		return q.WhereRequestBodyContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -1737,6 +2641,14 @@ func (q *RestyLogQuery) WhereRequestBodyContainsFieldNotEmpty(path string) *Rest
 	}))
 }
 
+// WhereRequestBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestBodyContainsFieldNotEmpty。
+func (q *RestyLogQuery) WhereRequestBodyContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestBodyContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestBodyContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *RestyLogQuery) WhereRequestBodyContainsFieldEquals(path string, val any) *RestyLogQuery {
@@ -1769,6 +2681,63 @@ func (q *RestyLogQuery) WhereRequestBodyContainsFieldEqualsIf(condition bool, pa
 	return q
 }
 
+// WhereRequestBodyContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *RestyLogQuery) WhereRequestBodyContainsFieldExistsAndNotEmpty(path string) *RestyLogQuery {
+	return q.Where(predicate.RestyLog(func(s *sql.Selector) {
+		column := restylog.FieldRequestBody
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestBodyContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *RestyLogQuery) WhereRequestBodyContainsFieldExistsAndNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestBodyContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestQueryParamsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *RestyLogQuery) WhereRequestQueryParamsContains(val any) *RestyLogQuery {
@@ -1794,14 +2763,6 @@ func (q *RestyLogQuery) WhereRequestQueryParamsContains(val any) *RestyLogQuery 
 func (q *RestyLogQuery) WhereRequestQueryParamsContainsIf(condition bool, val any) *RestyLogQuery {
 	if condition {
 		return q.WhereRequestQueryParamsContains(val)
-	}
-	return q
-}
-
-// WhereRequestQueryParamsContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestQueryParamsContainsFieldNotEmpty。
-func (q *RestyLogQuery) WhereRequestQueryParamsContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
-	if condition {
-		return q.WhereRequestQueryParamsContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -1840,6 +2801,14 @@ func (q *RestyLogQuery) WhereRequestQueryParamsContainsFieldNotEmpty(path string
 	}))
 }
 
+// WhereRequestQueryParamsContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestQueryParamsContainsFieldNotEmpty。
+func (q *RestyLogQuery) WhereRequestQueryParamsContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestQueryParamsContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestQueryParamsContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *RestyLogQuery) WhereRequestQueryParamsContainsFieldEquals(path string, val any) *RestyLogQuery {
@@ -1872,6 +2841,63 @@ func (q *RestyLogQuery) WhereRequestQueryParamsContainsFieldEqualsIf(condition b
 	return q
 }
 
+// WhereRequestQueryParamsContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *RestyLogQuery) WhereRequestQueryParamsContainsFieldExistsAndNotEmpty(path string) *RestyLogQuery {
+	return q.Where(predicate.RestyLog(func(s *sql.Selector) {
+		column := restylog.FieldRequestQueryParams
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestQueryParamsContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *RestyLogQuery) WhereRequestQueryParamsContainsFieldExistsAndNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestQueryParamsContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestFormDataContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *RestyLogQuery) WhereRequestFormDataContains(val any) *RestyLogQuery {
@@ -1897,14 +2923,6 @@ func (q *RestyLogQuery) WhereRequestFormDataContains(val any) *RestyLogQuery {
 func (q *RestyLogQuery) WhereRequestFormDataContainsIf(condition bool, val any) *RestyLogQuery {
 	if condition {
 		return q.WhereRequestFormDataContains(val)
-	}
-	return q
-}
-
-// WhereRequestFormDataContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestFormDataContainsFieldNotEmpty。
-func (q *RestyLogQuery) WhereRequestFormDataContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
-	if condition {
-		return q.WhereRequestFormDataContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -1943,6 +2961,14 @@ func (q *RestyLogQuery) WhereRequestFormDataContainsFieldNotEmpty(path string) *
 	}))
 }
 
+// WhereRequestFormDataContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestFormDataContainsFieldNotEmpty。
+func (q *RestyLogQuery) WhereRequestFormDataContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestFormDataContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestFormDataContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *RestyLogQuery) WhereRequestFormDataContainsFieldEquals(path string, val any) *RestyLogQuery {
@@ -1975,6 +3001,63 @@ func (q *RestyLogQuery) WhereRequestFormDataContainsFieldEqualsIf(condition bool
 	return q
 }
 
+// WhereRequestFormDataContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *RestyLogQuery) WhereRequestFormDataContainsFieldExistsAndNotEmpty(path string) *RestyLogQuery {
+	return q.Where(predicate.RestyLog(func(s *sql.Selector) {
+		column := restylog.FieldRequestFormData
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestFormDataContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *RestyLogQuery) WhereRequestFormDataContainsFieldExistsAndNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestFormDataContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestPathParamsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *RestyLogQuery) WhereRequestPathParamsContains(val any) *RestyLogQuery {
@@ -2000,14 +3083,6 @@ func (q *RestyLogQuery) WhereRequestPathParamsContains(val any) *RestyLogQuery {
 func (q *RestyLogQuery) WhereRequestPathParamsContainsIf(condition bool, val any) *RestyLogQuery {
 	if condition {
 		return q.WhereRequestPathParamsContains(val)
-	}
-	return q
-}
-
-// WhereRequestPathParamsContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestPathParamsContainsFieldNotEmpty。
-func (q *RestyLogQuery) WhereRequestPathParamsContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
-	if condition {
-		return q.WhereRequestPathParamsContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -2046,6 +3121,14 @@ func (q *RestyLogQuery) WhereRequestPathParamsContainsFieldNotEmpty(path string)
 	}))
 }
 
+// WhereRequestPathParamsContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereRequestPathParamsContainsFieldNotEmpty。
+func (q *RestyLogQuery) WhereRequestPathParamsContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestPathParamsContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereRequestPathParamsContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *RestyLogQuery) WhereRequestPathParamsContainsFieldEquals(path string, val any) *RestyLogQuery {
@@ -2078,6 +3161,63 @@ func (q *RestyLogQuery) WhereRequestPathParamsContainsFieldEqualsIf(condition bo
 	return q
 }
 
+// WhereRequestPathParamsContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *RestyLogQuery) WhereRequestPathParamsContainsFieldExistsAndNotEmpty(path string) *RestyLogQuery {
+	return q.Where(predicate.RestyLog(func(s *sql.Selector) {
+		column := restylog.FieldRequestPathParams
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereRequestPathParamsContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *RestyLogQuery) WhereRequestPathParamsContainsFieldExistsAndNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereRequestPathParamsContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseHeadersContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *RestyLogQuery) WhereResponseHeadersContains(val any) *RestyLogQuery {
@@ -2103,14 +3243,6 @@ func (q *RestyLogQuery) WhereResponseHeadersContains(val any) *RestyLogQuery {
 func (q *RestyLogQuery) WhereResponseHeadersContainsIf(condition bool, val any) *RestyLogQuery {
 	if condition {
 		return q.WhereResponseHeadersContains(val)
-	}
-	return q
-}
-
-// WhereResponseHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseHeadersContainsFieldNotEmpty。
-func (q *RestyLogQuery) WhereResponseHeadersContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
-	if condition {
-		return q.WhereResponseHeadersContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -2149,6 +3281,14 @@ func (q *RestyLogQuery) WhereResponseHeadersContainsFieldNotEmpty(path string) *
 	}))
 }
 
+// WhereResponseHeadersContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseHeadersContainsFieldNotEmpty。
+func (q *RestyLogQuery) WhereResponseHeadersContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereResponseHeadersContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseHeadersContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *RestyLogQuery) WhereResponseHeadersContainsFieldEquals(path string, val any) *RestyLogQuery {
@@ -2181,6 +3321,63 @@ func (q *RestyLogQuery) WhereResponseHeadersContainsFieldEqualsIf(condition bool
 	return q
 }
 
+// WhereResponseHeadersContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *RestyLogQuery) WhereResponseHeadersContainsFieldExistsAndNotEmpty(path string) *RestyLogQuery {
+	return q.Where(predicate.RestyLog(func(s *sql.Selector) {
+		column := restylog.FieldResponseHeaders
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereResponseHeadersContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *RestyLogQuery) WhereResponseHeadersContainsFieldExistsAndNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereResponseHeadersContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseBodyContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *RestyLogQuery) WhereResponseBodyContains(val any) *RestyLogQuery {
@@ -2206,14 +3403,6 @@ func (q *RestyLogQuery) WhereResponseBodyContains(val any) *RestyLogQuery {
 func (q *RestyLogQuery) WhereResponseBodyContainsIf(condition bool, val any) *RestyLogQuery {
 	if condition {
 		return q.WhereResponseBodyContains(val)
-	}
-	return q
-}
-
-// WhereResponseBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseBodyContainsFieldNotEmpty。
-func (q *RestyLogQuery) WhereResponseBodyContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
-	if condition {
-		return q.WhereResponseBodyContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -2252,6 +3441,14 @@ func (q *RestyLogQuery) WhereResponseBodyContainsFieldNotEmpty(path string) *Res
 	}))
 }
 
+// WhereResponseBodyContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseBodyContainsFieldNotEmpty。
+func (q *RestyLogQuery) WhereResponseBodyContainsFieldNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereResponseBodyContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseBodyContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *RestyLogQuery) WhereResponseBodyContainsFieldEquals(path string, val any) *RestyLogQuery {
@@ -2284,6 +3481,63 @@ func (q *RestyLogQuery) WhereResponseBodyContainsFieldEqualsIf(condition bool, p
 	return q
 }
 
+// WhereResponseBodyContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *RestyLogQuery) WhereResponseBodyContainsFieldExistsAndNotEmpty(path string) *RestyLogQuery {
+	return q.Where(predicate.RestyLog(func(s *sql.Selector) {
+		column := restylog.FieldResponseBody
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereResponseBodyContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *RestyLogQuery) WhereResponseBodyContainsFieldExistsAndNotEmptyIf(condition bool, path string) *RestyLogQuery {
+	if condition {
+		return q.WhereResponseBodyContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseContains 扩展了查询构建器，支持 JSON 数组的包含查询。
 // 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
 func (q *WebhookHistoryQuery) WhereResponseContains(val any) *WebhookHistoryQuery {
@@ -2309,14 +3563,6 @@ func (q *WebhookHistoryQuery) WhereResponseContains(val any) *WebhookHistoryQuer
 func (q *WebhookHistoryQuery) WhereResponseContainsIf(condition bool, val any) *WebhookHistoryQuery {
 	if condition {
 		return q.WhereResponseContains(val)
-	}
-	return q
-}
-
-// WhereResponseContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseContainsFieldNotEmpty。
-func (q *WebhookHistoryQuery) WhereResponseContainsFieldNotEmptyIf(condition bool, path string) *WebhookHistoryQuery {
-	if condition {
-		return q.WhereResponseContainsFieldNotEmpty(path)
 	}
 	return q
 }
@@ -2355,6 +3601,14 @@ func (q *WebhookHistoryQuery) WhereResponseContainsFieldNotEmpty(path string) *W
 	}))
 }
 
+// WhereResponseContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereResponseContainsFieldNotEmpty。
+func (q *WebhookHistoryQuery) WhereResponseContainsFieldNotEmptyIf(condition bool, path string) *WebhookHistoryQuery {
+	if condition {
+		return q.WhereResponseContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
 // WhereResponseContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
 // 示例：WhereConfigJSONFieldEquals("account_id", "000")
 func (q *WebhookHistoryQuery) WhereResponseContainsFieldEquals(path string, val any) *WebhookHistoryQuery {
@@ -2383,6 +3637,63 @@ func (q *WebhookHistoryQuery) WhereResponseContainsFieldEquals(path string, val 
 func (q *WebhookHistoryQuery) WhereResponseContainsFieldEqualsIf(condition bool, path string, val any) *WebhookHistoryQuery {
 	if condition {
 		return q.WhereResponseContainsFieldEquals(path, val)
+	}
+	return q
+}
+
+// WhereResponseContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *WebhookHistoryQuery) WhereResponseContainsFieldExistsAndNotEmpty(path string) *WebhookHistoryQuery {
+	return q.Where(predicate.WebhookHistory(func(s *sql.Selector) {
+		column := webhookhistory.FieldResponse
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereResponseContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *WebhookHistoryQuery) WhereResponseContainsFieldExistsAndNotEmptyIf(condition bool, path string) *WebhookHistoryQuery {
+	if condition {
+		return q.WhereResponseContainsFieldExistsAndNotEmpty(path)
 	}
 	return q
 }

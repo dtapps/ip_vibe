@@ -4,8 +4,8 @@ import (
 	"time"
 )
 
-// 获取EdgeOne 站点
-type GetEdgeOneZone struct {
+// 获取EdgeOne站点 站点
+type GetEdgeOneZoneZone struct {
 	ID              int64     `json:"id"`                // EdgeOne 站点序号
 	RemoteCreatedAt time.Time `json:"remote_created_at"` // 远程创建时间
 	SyncAt          time.Time `json:"sync_at"`           // 最近一次同步时间
@@ -23,12 +23,12 @@ type GetEdgeOneZone struct {
 	OrigingroupCount        int `json:"origingroup_count"`        // 源站组数量
 }
 
-// 获取EdgeOne 响应结构
-type GetEdgeOneResponse struct {
-	ID          int64            `json:"id"`          // 平台配置序号
-	Capability  string           `json:"capability"`  // 平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）
-	Name        string           `json:"name"`        // 平台配置名称
-	Description string           `json:"description"` // 平台配置描述
-	Platform    string           `json:"platform"`    // 平台类型
-	Zones       []GetEdgeOneZone `json:"zones"`       // 站点列表
+// 获取EdgeOne站点 响应结构
+type GetEdgeOneZoneResponse struct {
+	ID          int64                `json:"id"`          // 平台配置序号
+	Capability  string               `json:"capability"`  // 平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）
+	Name        string               `json:"name"`        // 平台配置名称
+	Description string               `json:"description"` // 平台配置描述
+	Platform    string               `json:"platform"`    // 平台类型
+	Zones       []GetEdgeOneZoneZone `json:"zones"`       // 站点列表
 }
