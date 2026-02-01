@@ -220,7 +220,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
 		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
-		{Name: "zone_id", Type: field.TypeInt64, Comment: "站点 ID"},
+		{Name: "zone_id", Type: field.TypeString, Comment: "站点 ID"},
 		{Name: "account", Type: field.TypeJSON, Nullable: true, Comment: "区域所属的帐户"},
 		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "域名"},
 		{Name: "name_servers", Type: field.TypeJSON, Nullable: true, Comment: "Cloudflare分配给区域的名称服务器"},
@@ -229,7 +229,7 @@ var (
 		{Name: "original_registrar", Type: field.TypeString, Nullable: true, Comment: "转换到Cloudflare时的域名注册商"},
 		{Name: "paused", Type: field.TypeBool, Nullable: true, Comment: "指示区域是否仅使用Cloudflare DNS服务。 true值意味着该区域将不会获得安全或性能方面的好处"},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "Cloudflare上的区域状态", Enums: []string{"initializing", "pending", "active", "moved"}},
-		{Name: "type", Type: field.TypeString, Nullable: true, Comment: "完整区域意味着DNS托管在Cloudflare上。部分区域通常是合作伙伴托管的区域或CNAME设置"},
+		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "完整区域意味着DNS托管在Cloudflare上。部分区域通常是合作伙伴托管的区域或CNAME设置", Enums: []string{"full", "partial", "secondary", "internal"}},
 		{Name: "config_id", Type: field.TypeInt64, Comment: "平台配置序号"},
 	}
 	// CloudflareZoneTable holds the schema information for the "cloudflare_zone" table.
@@ -285,7 +285,7 @@ var (
 		{Name: "proxiable", Type: field.TypeBool, Nullable: true, Comment: "Cloudflare是否可以代理该记录"},
 		{Name: "proxied", Type: field.TypeBool, Nullable: true, Comment: "记录是否获得Cloudflare的性能和安全优势"},
 		{Name: "settings", Type: field.TypeJSON, Nullable: true, Comment: "DNS记录的设置"},
-		{Name: "ttl", Type: field.TypeInt64, Nullable: true, Comment: "DNS记录的生存时间（TTL），以秒为单位。 设置为1表示“自动”。 值必须介于60和86400之间，对于企业区域，最小值减少到30"},
+		{Name: "ttl", Type: field.TypeFloat64, Nullable: true, Comment: "DNS记录的生存时间（TTL），以秒为单位。 设置为1表示“自动”。 值必须介于60和86400之间，对于企业区域，最小值减少到30"},
 		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "数据录类型", Enums: []string{"A", "AAAA", "CNAME", "MX", "NS", "PTR", "TXT", "CAA", "CERT", "DNSKEY", "DS", "HTTPS", "LOC", "NAPTR", "SMIMEA", "SRV", "SSHFP", "SVCB", "TLSA", "URI"}},
 		{Name: "cloudflare_zone_id", Type: field.TypeInt64, Comment: "关联 Cloudflare 站点序号"},
 	}

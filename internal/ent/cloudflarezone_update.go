@@ -207,13 +207,13 @@ func (_u *CloudflareZoneUpdate) ClearStatus() *CloudflareZoneUpdate {
 }
 
 // SetType sets the "type" field.
-func (_u *CloudflareZoneUpdate) SetType(v string) *CloudflareZoneUpdate {
+func (_u *CloudflareZoneUpdate) SetType(v cloudflarezone.Type) *CloudflareZoneUpdate {
 	_u.mutation.SetType(v)
 	return _u
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (_u *CloudflareZoneUpdate) SetNillableType(v *string) *CloudflareZoneUpdate {
+func (_u *CloudflareZoneUpdate) SetNillableType(v *cloudflarezone.Type) *CloudflareZoneUpdate {
 	if v != nil {
 		_u.SetType(*v)
 	}
@@ -308,6 +308,11 @@ func (_u *CloudflareZoneUpdate) check() error {
 	if v, ok := _u.mutation.Status(); ok {
 		if err := cloudflarezone.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "CloudflareZone.status": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.GetType(); ok {
+		if err := cloudflarezone.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "CloudflareZone.type": %w`, err)}
 		}
 	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
@@ -410,10 +415,10 @@ func (_u *CloudflareZoneUpdate) sqlSave(ctx context.Context) (_node int, err err
 		_spec.ClearField(cloudflarezone.FieldStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
-		_spec.SetField(cloudflarezone.FieldType, field.TypeString, value)
+		_spec.SetField(cloudflarezone.FieldType, field.TypeEnum, value)
 	}
 	if _u.mutation.TypeCleared() {
-		_spec.ClearField(cloudflarezone.FieldType, field.TypeString)
+		_spec.ClearField(cloudflarezone.FieldType, field.TypeEnum)
 	}
 	if _u.mutation.RecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -657,13 +662,13 @@ func (_u *CloudflareZoneUpdateOne) ClearStatus() *CloudflareZoneUpdateOne {
 }
 
 // SetType sets the "type" field.
-func (_u *CloudflareZoneUpdateOne) SetType(v string) *CloudflareZoneUpdateOne {
+func (_u *CloudflareZoneUpdateOne) SetType(v cloudflarezone.Type) *CloudflareZoneUpdateOne {
 	_u.mutation.SetType(v)
 	return _u
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (_u *CloudflareZoneUpdateOne) SetNillableType(v *string) *CloudflareZoneUpdateOne {
+func (_u *CloudflareZoneUpdateOne) SetNillableType(v *cloudflarezone.Type) *CloudflareZoneUpdateOne {
 	if v != nil {
 		_u.SetType(*v)
 	}
@@ -771,6 +776,11 @@ func (_u *CloudflareZoneUpdateOne) check() error {
 	if v, ok := _u.mutation.Status(); ok {
 		if err := cloudflarezone.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "CloudflareZone.status": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.GetType(); ok {
+		if err := cloudflarezone.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "CloudflareZone.type": %w`, err)}
 		}
 	}
 	if _u.mutation.ConfigCleared() && len(_u.mutation.ConfigIDs()) > 0 {
@@ -890,10 +900,10 @@ func (_u *CloudflareZoneUpdateOne) sqlSave(ctx context.Context) (_node *Cloudfla
 		_spec.ClearField(cloudflarezone.FieldStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
-		_spec.SetField(cloudflarezone.FieldType, field.TypeString, value)
+		_spec.SetField(cloudflarezone.FieldType, field.TypeEnum, value)
 	}
 	if _u.mutation.TypeCleared() {
-		_spec.ClearField(cloudflarezone.FieldType, field.TypeString)
+		_spec.ClearField(cloudflarezone.FieldType, field.TypeEnum)
 	}
 	if _u.mutation.RecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{

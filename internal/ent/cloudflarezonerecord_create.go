@@ -155,13 +155,13 @@ func (_c *CloudflareZoneRecordCreate) SetSettings(v json.RawMessage) *Cloudflare
 }
 
 // SetTTL sets the "ttl" field.
-func (_c *CloudflareZoneRecordCreate) SetTTL(v int64) *CloudflareZoneRecordCreate {
+func (_c *CloudflareZoneRecordCreate) SetTTL(v float64) *CloudflareZoneRecordCreate {
 	_c.mutation.SetTTL(v)
 	return _c
 }
 
 // SetNillableTTL sets the "ttl" field if the given value is not nil.
-func (_c *CloudflareZoneRecordCreate) SetNillableTTL(v *int64) *CloudflareZoneRecordCreate {
+func (_c *CloudflareZoneRecordCreate) SetNillableTTL(v *float64) *CloudflareZoneRecordCreate {
 	if v != nil {
 		_c.SetTTL(*v)
 	}
@@ -344,7 +344,7 @@ func (_c *CloudflareZoneRecordCreate) createSpec() (*CloudflareZoneRecord, *sqlg
 		_node.Settings = value
 	}
 	if value, ok := _c.mutation.TTL(); ok {
-		_spec.SetField(cloudflarezonerecord.FieldTTL, field.TypeInt64, value)
+		_spec.SetField(cloudflarezonerecord.FieldTTL, field.TypeFloat64, value)
 		_node.TTL = value
 	}
 	if value, ok := _c.mutation.GetType(); ok {
@@ -529,7 +529,7 @@ func (u *CloudflareZoneRecordUpsert) ClearSettings() *CloudflareZoneRecordUpsert
 }
 
 // SetTTL sets the "ttl" field.
-func (u *CloudflareZoneRecordUpsert) SetTTL(v int64) *CloudflareZoneRecordUpsert {
+func (u *CloudflareZoneRecordUpsert) SetTTL(v float64) *CloudflareZoneRecordUpsert {
 	u.Set(cloudflarezonerecord.FieldTTL, v)
 	return u
 }
@@ -541,7 +541,7 @@ func (u *CloudflareZoneRecordUpsert) UpdateTTL() *CloudflareZoneRecordUpsert {
 }
 
 // AddTTL adds v to the "ttl" field.
-func (u *CloudflareZoneRecordUpsert) AddTTL(v int64) *CloudflareZoneRecordUpsert {
+func (u *CloudflareZoneRecordUpsert) AddTTL(v float64) *CloudflareZoneRecordUpsert {
 	u.Add(cloudflarezonerecord.FieldTTL, v)
 	return u
 }
@@ -760,14 +760,14 @@ func (u *CloudflareZoneRecordUpsertOne) ClearSettings() *CloudflareZoneRecordUps
 }
 
 // SetTTL sets the "ttl" field.
-func (u *CloudflareZoneRecordUpsertOne) SetTTL(v int64) *CloudflareZoneRecordUpsertOne {
+func (u *CloudflareZoneRecordUpsertOne) SetTTL(v float64) *CloudflareZoneRecordUpsertOne {
 	return u.Update(func(s *CloudflareZoneRecordUpsert) {
 		s.SetTTL(v)
 	})
 }
 
 // AddTTL adds v to the "ttl" field.
-func (u *CloudflareZoneRecordUpsertOne) AddTTL(v int64) *CloudflareZoneRecordUpsertOne {
+func (u *CloudflareZoneRecordUpsertOne) AddTTL(v float64) *CloudflareZoneRecordUpsertOne {
 	return u.Update(func(s *CloudflareZoneRecordUpsert) {
 		s.AddTTL(v)
 	})
@@ -1164,14 +1164,14 @@ func (u *CloudflareZoneRecordUpsertBulk) ClearSettings() *CloudflareZoneRecordUp
 }
 
 // SetTTL sets the "ttl" field.
-func (u *CloudflareZoneRecordUpsertBulk) SetTTL(v int64) *CloudflareZoneRecordUpsertBulk {
+func (u *CloudflareZoneRecordUpsertBulk) SetTTL(v float64) *CloudflareZoneRecordUpsertBulk {
 	return u.Update(func(s *CloudflareZoneRecordUpsert) {
 		s.SetTTL(v)
 	})
 }
 
 // AddTTL adds v to the "ttl" field.
-func (u *CloudflareZoneRecordUpsertBulk) AddTTL(v int64) *CloudflareZoneRecordUpsertBulk {
+func (u *CloudflareZoneRecordUpsertBulk) AddTTL(v float64) *CloudflareZoneRecordUpsertBulk {
 	return u.Update(func(s *CloudflareZoneRecordUpsert) {
 		s.AddTTL(v)
 	})

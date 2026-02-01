@@ -106,7 +106,7 @@ func Proxied(v bool) predicate.CloudflareZoneRecord {
 }
 
 // TTL applies equality check predicate on the "ttl" field. It's identical to TTLEQ.
-func TTL(v int64) predicate.CloudflareZoneRecord {
+func TTL(v float64) predicate.CloudflareZoneRecord {
 	return predicate.CloudflareZoneRecord(sql.FieldEQ(FieldTTL, v))
 }
 
@@ -576,42 +576,42 @@ func SettingsNotNil() predicate.CloudflareZoneRecord {
 }
 
 // TTLEQ applies the EQ predicate on the "ttl" field.
-func TTLEQ(v int64) predicate.CloudflareZoneRecord {
+func TTLEQ(v float64) predicate.CloudflareZoneRecord {
 	return predicate.CloudflareZoneRecord(sql.FieldEQ(FieldTTL, v))
 }
 
 // TTLNEQ applies the NEQ predicate on the "ttl" field.
-func TTLNEQ(v int64) predicate.CloudflareZoneRecord {
+func TTLNEQ(v float64) predicate.CloudflareZoneRecord {
 	return predicate.CloudflareZoneRecord(sql.FieldNEQ(FieldTTL, v))
 }
 
 // TTLIn applies the In predicate on the "ttl" field.
-func TTLIn(vs ...int64) predicate.CloudflareZoneRecord {
+func TTLIn(vs ...float64) predicate.CloudflareZoneRecord {
 	return predicate.CloudflareZoneRecord(sql.FieldIn(FieldTTL, vs...))
 }
 
 // TTLNotIn applies the NotIn predicate on the "ttl" field.
-func TTLNotIn(vs ...int64) predicate.CloudflareZoneRecord {
+func TTLNotIn(vs ...float64) predicate.CloudflareZoneRecord {
 	return predicate.CloudflareZoneRecord(sql.FieldNotIn(FieldTTL, vs...))
 }
 
 // TTLGT applies the GT predicate on the "ttl" field.
-func TTLGT(v int64) predicate.CloudflareZoneRecord {
+func TTLGT(v float64) predicate.CloudflareZoneRecord {
 	return predicate.CloudflareZoneRecord(sql.FieldGT(FieldTTL, v))
 }
 
 // TTLGTE applies the GTE predicate on the "ttl" field.
-func TTLGTE(v int64) predicate.CloudflareZoneRecord {
+func TTLGTE(v float64) predicate.CloudflareZoneRecord {
 	return predicate.CloudflareZoneRecord(sql.FieldGTE(FieldTTL, v))
 }
 
 // TTLLT applies the LT predicate on the "ttl" field.
-func TTLLT(v int64) predicate.CloudflareZoneRecord {
+func TTLLT(v float64) predicate.CloudflareZoneRecord {
 	return predicate.CloudflareZoneRecord(sql.FieldLT(FieldTTL, v))
 }
 
 // TTLLTE applies the LTE predicate on the "ttl" field.
-func TTLLTE(v int64) predicate.CloudflareZoneRecord {
+func TTLLTE(v float64) predicate.CloudflareZoneRecord {
 	return predicate.CloudflareZoneRecord(sql.FieldLTE(FieldTTL, v))
 }
 

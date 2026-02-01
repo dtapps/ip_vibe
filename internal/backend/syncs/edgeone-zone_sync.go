@@ -55,23 +55,23 @@ func (s *EdgeOneZoneSync) SetDebug(debug bool) {
 // 获取EdgeOne提供程序
 func (s *EdgeOneZoneSync) GetApiClient(ctx context.Context, platformConfigJSON json.RawMessage) (*cdn.TencentEOProvider, error) {
 
-	// 创建EdgeOne提供程序选项
+	// 创建EdgeOne CDN提供程序选项
 	var cdnProviderOpts = make([]cdn.Option, 0, 1)
 	if s.httpTransport != nil {
 		cdnProviderOpts = append(cdnProviderOpts, cdn.WithHttpTransport(s.httpTransport))
 	}
 
-	// 创建默认的EdgeOne配置
+	// 创建默认的EdgeOne CDN配置
 	cdnProviderCfg := cdn.NewDefaultTencentEOConfig()
 	err := cdnProviderCfg.ParseCustomConfig(platformConfigJSON)
 	if err != nil {
-		return nil, fmt.Errorf("解析EdgeOne配置失败: %w", err)
+		return nil, fmt.Errorf("解析EdgeOne CDN配置失败: %w", err)
 	}
 
-	// 创建EdgeOne提供程序
+	// 创建EdgeOne CDN提供程序
 	cdnProvider, err := cdn.NewTencentEOProviderRaw(ctx, s.logger, cdnProviderCfg, cdnProviderOpts...)
 	if err != nil {
-		return nil, fmt.Errorf("创建EdgeOne提供程序失败: %w", err)
+		return nil, fmt.Errorf("创建EEdgeOne CDN提供程序失败: %w", err)
 	}
 
 	return cdnProvider, nil
@@ -119,7 +119,7 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 	// 获取EdgeOne提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return fmt.Errorf("获取EdgeOne提供程序失败: %w", err)
+		return err
 	}
 
 	// 获取所有站点
@@ -203,7 +203,7 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 	// 获取EdgeOne提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return fmt.Errorf("获取EdgeOne提供程序失败: %w", err)
+		return err
 	}
 
 	// 获取所有站点
@@ -347,7 +347,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id
 	// 获取EdgeOne提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstEdgeOneZone.Edges.Config.ConfigJSON)
 	if err != nil {
-		return fmt.Errorf("获取EdgeOne提供程序失败: %w", err)
+		return err
 	}
 
 	// 获取所有源站组
@@ -476,7 +476,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int6
 	// 获取EdgeOne提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstEdgeOneZone.Edges.Config.ConfigJSON)
 	if err != nil {
-		return fmt.Errorf("获取EdgeOne提供程序失败: %w", err)
+		return err
 	}
 
 	// 获取所有DNS记录

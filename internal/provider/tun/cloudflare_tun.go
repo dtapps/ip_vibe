@@ -445,7 +445,7 @@ func (p *CloudfareTUNProvider) Zones(ctx context.Context) (lines []*CloudfareTUN
 	return lines, nil
 }
 
-// ZonesRaw 获取 Cloudfare TUN 域名列表
+// ZonesRaw 获取所有站点
 // https://developers.cloudflare.com/api/go/resources/zones/methods/list/
 func (p *CloudfareTUNProvider) ZonesRaw(ctx context.Context) (lines []zones.Zone, err error) {
 	// 查询域名列表

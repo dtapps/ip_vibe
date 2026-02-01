@@ -12,6 +12,7 @@ import (
 	"github.com/cloudflare/cloudflare-go/v6"
 	"github.com/cloudflare/cloudflare-go/v6/dns"
 	"github.com/cloudflare/cloudflare-go/v6/option"
+	"github.com/cloudflare/cloudflare-go/v6/zones"
 	"github.com/spf13/cast"
 )
 
@@ -284,4 +285,33 @@ func (p *CloudfareDNSProvider) ParseCustomConfig(config_json json.RawMessage) (e
 		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
+}
+
+// ZonesRaw 获取所有站点
+// https://developers.cloudflare.com/api/go/resources/zones/methods/list/
+func (p *CloudfareDNSProvider) ZonesRaw(ctx context.Context) (lines []zones.Zone, err error) {
+	// 查询域名列表
+	requestQueryList := zones.ZoneListParams{}
+	requestQueryList.Page = cloudflare.F(float64(1))
+	requestQueryList.PerPage = cloudflare.F(float64(50))
+	responseQueryList, err := p.Provider.Client.Zones.List(ctx, requestQueryList)
+	if err != nil {
+		return nil, fmt.Errorf("接口 Zones.List 失败 %w", err)
+	}
+	return responseQueryList.Result, nil
+}
+
+// RecordsRaw 获取所有解析记录
+// https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
+func (p *CloudfareDNSProvider) RecordsRaw(ctx context.Context, zone_id string) (lines []dns.RecordResponse, err error) {
+	// 查询域名列表
+	requestQueryList := dns.RecordListParams{}
+	requestQueryList.ZoneID = cloudflare.String(zone_id)
+	requestQueryList.Page = cloudflare.F(float64(1))
+	requestQueryList.PerPage = cloudflare.F(float64(5000000))
+	responseQueryList, err := p.Provider.Client.DNS.Records.List(ctx, requestQueryList)
+	if err != nil {
+		return nil, fmt.Errorf("接口 DNS.Records.List 失败 %w", err)
+	}
+	return responseQueryList.Result, nil
 }

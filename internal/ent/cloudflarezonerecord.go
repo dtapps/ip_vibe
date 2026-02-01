@@ -43,7 +43,7 @@ type CloudflareZoneRecord struct {
 	// DNS记录的设置
 	Settings json.RawMessage `json:"settings,omitempty"`
 	// DNS记录的生存时间（TTL），以秒为单位。 设置为1表示“自动”。 值必须介于60和86400之间，对于企业区域，最小值减少到30
-	TTL int64 `json:"ttl,omitempty"`
+	TTL float64 `json:"ttl,omitempty"`
 	// 数据录类型
 	Type cloudflarezonerecord.Type `json:"type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -81,7 +81,9 @@ func (*CloudflareZoneRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case cloudflarezonerecord.FieldProxiable, cloudflarezonerecord.FieldProxied:
 			values[i] = new(sql.NullBool)
-		case cloudflarezonerecord.FieldID, cloudflarezonerecord.FieldCloudflareZoneID, cloudflarezonerecord.FieldTTL:
+		case cloudflarezonerecord.FieldTTL:
+			values[i] = new(sql.NullFloat64)
+		case cloudflarezonerecord.FieldID, cloudflarezonerecord.FieldCloudflareZoneID:
 			values[i] = new(sql.NullInt64)
 		case cloudflarezonerecord.FieldRecordID, cloudflarezonerecord.FieldComment, cloudflarezonerecord.FieldContent, cloudflarezonerecord.FieldType:
 			values[i] = new(sql.NullString)
@@ -177,10 +179,10 @@ func (_m *CloudflareZoneRecord) assignValues(columns []string, values []any) err
 				}
 			}
 		case cloudflarezonerecord.FieldTTL:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field ttl", values[i])
 			} else if value.Valid {
-				_m.TTL = value.Int64
+				_m.TTL = value.Float64
 			}
 		case cloudflarezonerecord.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {

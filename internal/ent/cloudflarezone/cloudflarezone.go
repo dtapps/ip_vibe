@@ -135,6 +135,31 @@ func StatusValidator(s Status) error {
 	}
 }
 
+// Type defines the type for the "type" enum field.
+type Type string
+
+// Type values.
+const (
+	TypeFull      Type = "full"
+	TypePartial   Type = "partial"
+	TypeSecondary Type = "secondary"
+	TypeInternal  Type = "internal"
+)
+
+func (_type Type) String() string {
+	return string(_type)
+}
+
+// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
+func TypeValidator(_type Type) error {
+	switch _type {
+	case TypeFull, TypePartial, TypeSecondary, TypeInternal:
+		return nil
+	default:
+		return fmt.Errorf("cloudflarezone: invalid enum value for type field: %q", _type)
+	}
+}
+
 // OrderOption defines the ordering options for the CloudflareZone queries.
 type OrderOption func(*sql.Selector)
 

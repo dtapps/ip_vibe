@@ -4133,8 +4133,7 @@ type CloudflareZoneMutation struct {
 	updated_at                  *time.Time
 	remote_created_at           *time.Time
 	sync_at                     *time.Time
-	zone_id                     *int64
-	addzone_id                  *int64
+	zone_id                     *string
 	account                     *json.RawMessage
 	appendaccount               json.RawMessage
 	name                        *string
@@ -4146,7 +4145,7 @@ type CloudflareZoneMutation struct {
 	original_registrar          *string
 	paused                      *bool
 	status                      *cloudflarezone.Status
-	_type                       *string
+	_type                       *cloudflarezone.Type
 	clearedFields               map[string]struct{}
 	_config                     *int64
 	cleared_config              bool
@@ -4469,13 +4468,12 @@ func (m *CloudflareZoneMutation) ResetConfigID() {
 }
 
 // SetZoneID sets the "zone_id" field.
-func (m *CloudflareZoneMutation) SetZoneID(i int64) {
-	m.zone_id = &i
-	m.addzone_id = nil
+func (m *CloudflareZoneMutation) SetZoneID(s string) {
+	m.zone_id = &s
 }
 
 // ZoneID returns the value of the "zone_id" field in the mutation.
-func (m *CloudflareZoneMutation) ZoneID() (r int64, exists bool) {
+func (m *CloudflareZoneMutation) ZoneID() (r string, exists bool) {
 	v := m.zone_id
 	if v == nil {
 		return
@@ -4486,7 +4484,7 @@ func (m *CloudflareZoneMutation) ZoneID() (r int64, exists bool) {
 // OldZoneID returns the old "zone_id" field's value of the CloudflareZone entity.
 // If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareZoneMutation) OldZoneID(ctx context.Context) (v int64, err error) {
+func (m *CloudflareZoneMutation) OldZoneID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldZoneID is only allowed on UpdateOne operations")
 	}
@@ -4500,28 +4498,9 @@ func (m *CloudflareZoneMutation) OldZoneID(ctx context.Context) (v int64, err er
 	return oldValue.ZoneID, nil
 }
 
-// AddZoneID adds i to the "zone_id" field.
-func (m *CloudflareZoneMutation) AddZoneID(i int64) {
-	if m.addzone_id != nil {
-		*m.addzone_id += i
-	} else {
-		m.addzone_id = &i
-	}
-}
-
-// AddedZoneID returns the value that was added to the "zone_id" field in this mutation.
-func (m *CloudflareZoneMutation) AddedZoneID() (r int64, exists bool) {
-	v := m.addzone_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ResetZoneID resets all changes to the "zone_id" field.
 func (m *CloudflareZoneMutation) ResetZoneID() {
 	m.zone_id = nil
-	m.addzone_id = nil
 }
 
 // SetAccount sets the "account" field.
@@ -4965,12 +4944,12 @@ func (m *CloudflareZoneMutation) ResetStatus() {
 }
 
 // SetType sets the "type" field.
-func (m *CloudflareZoneMutation) SetType(s string) {
-	m._type = &s
+func (m *CloudflareZoneMutation) SetType(c cloudflarezone.Type) {
+	m._type = &c
 }
 
 // GetType returns the value of the "type" field in the mutation.
-func (m *CloudflareZoneMutation) GetType() (r string, exists bool) {
+func (m *CloudflareZoneMutation) GetType() (r cloudflarezone.Type, exists bool) {
 	v := m._type
 	if v == nil {
 		return
@@ -4981,7 +4960,7 @@ func (m *CloudflareZoneMutation) GetType() (r string, exists bool) {
 // OldType returns the old "type" field's value of the CloudflareZone entity.
 // If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareZoneMutation) OldType(ctx context.Context) (v string, err error) {
+func (m *CloudflareZoneMutation) OldType(ctx context.Context) (v cloudflarezone.Type, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldType is only allowed on UpdateOne operations")
 	}
@@ -5296,7 +5275,7 @@ func (m *CloudflareZoneMutation) SetField(name string, value ent.Value) error {
 		m.SetConfigID(v)
 		return nil
 	case cloudflarezone.FieldZoneID:
-		v, ok := value.(int64)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5359,7 +5338,7 @@ func (m *CloudflareZoneMutation) SetField(name string, value ent.Value) error {
 		m.SetStatus(v)
 		return nil
 	case cloudflarezone.FieldType:
-		v, ok := value.(string)
+		v, ok := value.(cloudflarezone.Type)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5373,9 +5352,6 @@ func (m *CloudflareZoneMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *CloudflareZoneMutation) AddedFields() []string {
 	var fields []string
-	if m.addzone_id != nil {
-		fields = append(fields, cloudflarezone.FieldZoneID)
-	}
 	return fields
 }
 
@@ -5384,8 +5360,6 @@ func (m *CloudflareZoneMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *CloudflareZoneMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case cloudflarezone.FieldZoneID:
-		return m.AddedZoneID()
 	}
 	return nil, false
 }
@@ -5395,13 +5369,6 @@ func (m *CloudflareZoneMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *CloudflareZoneMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case cloudflarezone.FieldZoneID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddZoneID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown CloudflareZone numeric field %s", name)
 }
@@ -5666,8 +5633,8 @@ type CloudflareZoneRecordMutation struct {
 	proxied                *bool
 	settings               *json.RawMessage
 	appendsettings         json.RawMessage
-	ttl                    *int64
-	addttl                 *int64
+	ttl                    *float64
+	addttl                 *float64
 	_type                  *cloudflarezonerecord.Type
 	clearedFields          map[string]struct{}
 	cloudflare_zone        *int64
@@ -6285,13 +6252,13 @@ func (m *CloudflareZoneRecordMutation) ResetSettings() {
 }
 
 // SetTTL sets the "ttl" field.
-func (m *CloudflareZoneRecordMutation) SetTTL(i int64) {
-	m.ttl = &i
+func (m *CloudflareZoneRecordMutation) SetTTL(f float64) {
+	m.ttl = &f
 	m.addttl = nil
 }
 
 // TTL returns the value of the "ttl" field in the mutation.
-func (m *CloudflareZoneRecordMutation) TTL() (r int64, exists bool) {
+func (m *CloudflareZoneRecordMutation) TTL() (r float64, exists bool) {
 	v := m.ttl
 	if v == nil {
 		return
@@ -6302,7 +6269,7 @@ func (m *CloudflareZoneRecordMutation) TTL() (r int64, exists bool) {
 // OldTTL returns the old "ttl" field's value of the CloudflareZoneRecord entity.
 // If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareZoneRecordMutation) OldTTL(ctx context.Context) (v int64, err error) {
+func (m *CloudflareZoneRecordMutation) OldTTL(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTTL is only allowed on UpdateOne operations")
 	}
@@ -6316,17 +6283,17 @@ func (m *CloudflareZoneRecordMutation) OldTTL(ctx context.Context) (v int64, err
 	return oldValue.TTL, nil
 }
 
-// AddTTL adds i to the "ttl" field.
-func (m *CloudflareZoneRecordMutation) AddTTL(i int64) {
+// AddTTL adds f to the "ttl" field.
+func (m *CloudflareZoneRecordMutation) AddTTL(f float64) {
 	if m.addttl != nil {
-		*m.addttl += i
+		*m.addttl += f
 	} else {
-		m.addttl = &i
+		m.addttl = &f
 	}
 }
 
 // AddedTTL returns the value that was added to the "ttl" field in this mutation.
-func (m *CloudflareZoneRecordMutation) AddedTTL() (r int64, exists bool) {
+func (m *CloudflareZoneRecordMutation) AddedTTL() (r float64, exists bool) {
 	v := m.addttl
 	if v == nil {
 		return
@@ -6660,7 +6627,7 @@ func (m *CloudflareZoneRecordMutation) SetField(name string, value ent.Value) er
 		m.SetSettings(v)
 		return nil
 	case cloudflarezonerecord.FieldTTL:
-		v, ok := value.(int64)
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -6704,7 +6671,7 @@ func (m *CloudflareZoneRecordMutation) AddedField(name string) (ent.Value, bool)
 func (m *CloudflareZoneRecordMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case cloudflarezonerecord.FieldTTL:
-		v, ok := value.(int64)
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

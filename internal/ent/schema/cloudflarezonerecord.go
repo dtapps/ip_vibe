@@ -82,7 +82,7 @@ func (CloudflareZoneRecord) Fields() []ent.Field {
 			Comment("DNS记录的设置").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int64("ttl").
+		field.Float("ttl").
 			Optional().
 			Comment("DNS记录的生存时间（TTL），以秒为单位。 设置为1表示“自动”。 值必须介于60和86400之间，对于企业区域，最小值减少到30").
 			Annotations(entsql.WithComments(true)),

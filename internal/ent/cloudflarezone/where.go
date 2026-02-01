@@ -81,7 +81,7 @@ func ConfigID(v int64) predicate.CloudflareZone {
 }
 
 // ZoneID applies equality check predicate on the "zone_id" field. It's identical to ZoneIDEQ.
-func ZoneID(v int64) predicate.CloudflareZone {
+func ZoneID(v string) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldEQ(FieldZoneID, v))
 }
 
@@ -103,11 +103,6 @@ func OriginalRegistrar(v string) predicate.CloudflareZone {
 // Paused applies equality check predicate on the "paused" field. It's identical to PausedEQ.
 func Paused(v bool) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldEQ(FieldPaused, v))
-}
-
-// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
-func Type(v string) predicate.CloudflareZone {
-	return predicate.CloudflareZone(sql.FieldEQ(FieldType, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -311,43 +306,68 @@ func ConfigIDNotIn(vs ...int64) predicate.CloudflareZone {
 }
 
 // ZoneIDEQ applies the EQ predicate on the "zone_id" field.
-func ZoneIDEQ(v int64) predicate.CloudflareZone {
+func ZoneIDEQ(v string) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldEQ(FieldZoneID, v))
 }
 
 // ZoneIDNEQ applies the NEQ predicate on the "zone_id" field.
-func ZoneIDNEQ(v int64) predicate.CloudflareZone {
+func ZoneIDNEQ(v string) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldNEQ(FieldZoneID, v))
 }
 
 // ZoneIDIn applies the In predicate on the "zone_id" field.
-func ZoneIDIn(vs ...int64) predicate.CloudflareZone {
+func ZoneIDIn(vs ...string) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldIn(FieldZoneID, vs...))
 }
 
 // ZoneIDNotIn applies the NotIn predicate on the "zone_id" field.
-func ZoneIDNotIn(vs ...int64) predicate.CloudflareZone {
+func ZoneIDNotIn(vs ...string) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldNotIn(FieldZoneID, vs...))
 }
 
 // ZoneIDGT applies the GT predicate on the "zone_id" field.
-func ZoneIDGT(v int64) predicate.CloudflareZone {
+func ZoneIDGT(v string) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldGT(FieldZoneID, v))
 }
 
 // ZoneIDGTE applies the GTE predicate on the "zone_id" field.
-func ZoneIDGTE(v int64) predicate.CloudflareZone {
+func ZoneIDGTE(v string) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldGTE(FieldZoneID, v))
 }
 
 // ZoneIDLT applies the LT predicate on the "zone_id" field.
-func ZoneIDLT(v int64) predicate.CloudflareZone {
+func ZoneIDLT(v string) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldLT(FieldZoneID, v))
 }
 
 // ZoneIDLTE applies the LTE predicate on the "zone_id" field.
-func ZoneIDLTE(v int64) predicate.CloudflareZone {
+func ZoneIDLTE(v string) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldLTE(FieldZoneID, v))
+}
+
+// ZoneIDContains applies the Contains predicate on the "zone_id" field.
+func ZoneIDContains(v string) predicate.CloudflareZone {
+	return predicate.CloudflareZone(sql.FieldContains(FieldZoneID, v))
+}
+
+// ZoneIDHasPrefix applies the HasPrefix predicate on the "zone_id" field.
+func ZoneIDHasPrefix(v string) predicate.CloudflareZone {
+	return predicate.CloudflareZone(sql.FieldHasPrefix(FieldZoneID, v))
+}
+
+// ZoneIDHasSuffix applies the HasSuffix predicate on the "zone_id" field.
+func ZoneIDHasSuffix(v string) predicate.CloudflareZone {
+	return predicate.CloudflareZone(sql.FieldHasSuffix(FieldZoneID, v))
+}
+
+// ZoneIDEqualFold applies the EqualFold predicate on the "zone_id" field.
+func ZoneIDEqualFold(v string) predicate.CloudflareZone {
+	return predicate.CloudflareZone(sql.FieldEqualFold(FieldZoneID, v))
+}
+
+// ZoneIDContainsFold applies the ContainsFold predicate on the "zone_id" field.
+func ZoneIDContainsFold(v string) predicate.CloudflareZone {
+	return predicate.CloudflareZone(sql.FieldContainsFold(FieldZoneID, v))
 }
 
 // AccountIsNil applies the IsNil predicate on the "account" field.
@@ -656,58 +676,23 @@ func StatusNotNil() predicate.CloudflareZone {
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v string) predicate.CloudflareZone {
+func TypeEQ(v Type) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldEQ(FieldType, v))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v string) predicate.CloudflareZone {
+func TypeNEQ(v Type) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldNEQ(FieldType, v))
 }
 
 // TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...string) predicate.CloudflareZone {
+func TypeIn(vs ...Type) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldIn(FieldType, vs...))
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...string) predicate.CloudflareZone {
+func TypeNotIn(vs ...Type) predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldNotIn(FieldType, vs...))
-}
-
-// TypeGT applies the GT predicate on the "type" field.
-func TypeGT(v string) predicate.CloudflareZone {
-	return predicate.CloudflareZone(sql.FieldGT(FieldType, v))
-}
-
-// TypeGTE applies the GTE predicate on the "type" field.
-func TypeGTE(v string) predicate.CloudflareZone {
-	return predicate.CloudflareZone(sql.FieldGTE(FieldType, v))
-}
-
-// TypeLT applies the LT predicate on the "type" field.
-func TypeLT(v string) predicate.CloudflareZone {
-	return predicate.CloudflareZone(sql.FieldLT(FieldType, v))
-}
-
-// TypeLTE applies the LTE predicate on the "type" field.
-func TypeLTE(v string) predicate.CloudflareZone {
-	return predicate.CloudflareZone(sql.FieldLTE(FieldType, v))
-}
-
-// TypeContains applies the Contains predicate on the "type" field.
-func TypeContains(v string) predicate.CloudflareZone {
-	return predicate.CloudflareZone(sql.FieldContains(FieldType, v))
-}
-
-// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
-func TypeHasPrefix(v string) predicate.CloudflareZone {
-	return predicate.CloudflareZone(sql.FieldHasPrefix(FieldType, v))
-}
-
-// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
-func TypeHasSuffix(v string) predicate.CloudflareZone {
-	return predicate.CloudflareZone(sql.FieldHasSuffix(FieldType, v))
 }
 
 // TypeIsNil applies the IsNil predicate on the "type" field.
@@ -718,16 +703,6 @@ func TypeIsNil() predicate.CloudflareZone {
 // TypeNotNil applies the NotNil predicate on the "type" field.
 func TypeNotNil() predicate.CloudflareZone {
 	return predicate.CloudflareZone(sql.FieldNotNull(FieldType))
-}
-
-// TypeEqualFold applies the EqualFold predicate on the "type" field.
-func TypeEqualFold(v string) predicate.CloudflareZone {
-	return predicate.CloudflareZone(sql.FieldEqualFold(FieldType, v))
-}
-
-// TypeContainsFold applies the ContainsFold predicate on the "type" field.
-func TypeContainsFold(v string) predicate.CloudflareZone {
-	return predicate.CloudflareZone(sql.FieldContainsFold(FieldType, v))
 }
 
 // HasConfig applies the HasEdge predicate on the "config" edge.

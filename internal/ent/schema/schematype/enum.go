@@ -728,6 +728,29 @@ var GetCloudflareZoneStatuss = []string{
 }
 
 const (
+	CloudflareZoneTypeFull      string = "full"      // 完整
+	CloudflareZoneTypePartial   string = "partial"   // 部分
+	CloudflareZoneTypeSecondary string = "secondary" // 二级
+	CloudflareZoneTypeInternal  string = "internal"  // 内部
+)
+
+// GetCloudflareZoneTypeDescriptions Cloudflare上的区域状态 说明映射
+var GetCloudflareZoneTypeDescriptions = map[string]string{
+	CloudflareZoneTypeFull:      "完整",
+	CloudflareZoneTypePartial:   "部分",
+	CloudflareZoneTypeSecondary: "二级",
+	CloudflareZoneTypeInternal:  "内部",
+}
+
+// GetCloudflareZoneTypes 返回所有 Cloudflare上的区域状态
+var GetCloudflareZoneTypes = []string{
+	CloudflareZoneTypeFull,
+	CloudflareZoneTypePartial,
+	CloudflareZoneTypeSecondary,
+	CloudflareZoneTypeInternal,
+}
+
+const (
 	CloudflareZoneRecordTypeA      string = "A"      // A
 	CloudflareZoneRecordTypeAaaa   string = "AAAA"   // AAAA
 	CloudflareZoneRecordTypeCname  string = "CNAME"  // CNAME

@@ -52,23 +52,23 @@ func (s *CloudflareTunnelSync) SetDebug(debug bool) {
 // 获取Cloudflare隧道提供程序
 func (s *CloudflareTunnelSync) GetApiClient(ctx context.Context, platformConfigJSON json.RawMessage) (*tun.CloudfareTUNProvider, error) {
 
-	// 创建Cloudflare隧道提供程序选项
+	// 创建Cloudflare TUN提供程序选项
 	var tunProviderOpts = make([]tun.Option, 0, 1)
 	if s.httpTransport != nil {
 		tunProviderOpts = append(tunProviderOpts, tun.WithHttpTransport(s.httpTransport))
 	}
 
-	// 创建默认的Cloudflare隧道配置
+	// 创建默认的Cloudflare TUN配置
 	tunProviderCfg := tun.NewDefaultCloudfareTUNConfig()
 	err := tunProviderCfg.ParseCustomConfig(platformConfigJSON)
 	if err != nil {
-		return nil, fmt.Errorf("解析Cloudflare隧道配置失败: %w", err)
+		return nil, fmt.Errorf("解析Cloudflare TUN配置失败: %w", err)
 	}
 
-	// 创建Cloudflare隧道提供程序
+	// 创建Cloudflare TUN提供程序
 	tunProvider, err := tun.NewCloudfareTUNProviderRaw(ctx, s.logger, tunProviderCfg, tunProviderOpts...)
 	if err != nil {
-		return nil, fmt.Errorf("创建Cloudflare隧道提供程序失败: %w", err)
+		return nil, fmt.Errorf("创建Cloudflare TUN提供程序失败: %w", err)
 	}
 
 	return tunProvider, nil
@@ -110,7 +110,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
 		First(ctx)
 	if err != nil {
-		return fmt.Errorf("查询Cloudflare平台配置失败: %w", err)
+		return fmt.Errorf("查询平台配置失败: %w", err)
 	}
 
 	// 判断是否存在 账号ID
@@ -121,7 +121,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 	// 获取Cloudflare隧道提供程序
 	tunProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return fmt.Errorf("获取Cloudflare隧道提供程序失败: %w", err)
+		return err
 	}
 
 	// 查询隧道列表
@@ -236,7 +236,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnelIngresses(ctx context.Con
 			// 获取Cloudflare隧道提供程序
 			tunProvider, err := s.GetApiClient(ctx, itemCloudflareTunnel.Edges.Config.ConfigJSON)
 			if err != nil {
-				return fmt.Errorf("获取Cloudflare隧道提供程序失败: %w", err)
+				return err
 			}
 
 			// 查询隧道入站规则列表
@@ -311,7 +311,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareThisTunnelIngresses(ctx context
 	// 获取Cloudflare隧道提供程序
 	tunProvider, err := s.GetApiClient(ctx, firstCloudflareTunnel.Edges.Config.ConfigJSON)
 	if err != nil {
-		return fmt.Errorf("获取Cloudflare隧道提供程序失败: %w", err)
+		return err
 	}
 
 	// 查询隧道入站规则列表

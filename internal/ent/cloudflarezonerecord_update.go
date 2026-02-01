@@ -150,14 +150,14 @@ func (_u *CloudflareZoneRecordUpdate) ClearSettings() *CloudflareZoneRecordUpdat
 }
 
 // SetTTL sets the "ttl" field.
-func (_u *CloudflareZoneRecordUpdate) SetTTL(v int64) *CloudflareZoneRecordUpdate {
+func (_u *CloudflareZoneRecordUpdate) SetTTL(v float64) *CloudflareZoneRecordUpdate {
 	_u.mutation.ResetTTL()
 	_u.mutation.SetTTL(v)
 	return _u
 }
 
 // SetNillableTTL sets the "ttl" field if the given value is not nil.
-func (_u *CloudflareZoneRecordUpdate) SetNillableTTL(v *int64) *CloudflareZoneRecordUpdate {
+func (_u *CloudflareZoneRecordUpdate) SetNillableTTL(v *float64) *CloudflareZoneRecordUpdate {
 	if v != nil {
 		_u.SetTTL(*v)
 	}
@@ -165,7 +165,7 @@ func (_u *CloudflareZoneRecordUpdate) SetNillableTTL(v *int64) *CloudflareZoneRe
 }
 
 // AddTTL adds value to the "ttl" field.
-func (_u *CloudflareZoneRecordUpdate) AddTTL(v int64) *CloudflareZoneRecordUpdate {
+func (_u *CloudflareZoneRecordUpdate) AddTTL(v float64) *CloudflareZoneRecordUpdate {
 	_u.mutation.AddTTL(v)
 	return _u
 }
@@ -316,13 +316,13 @@ func (_u *CloudflareZoneRecordUpdate) sqlSave(ctx context.Context) (_node int, e
 		_spec.ClearField(cloudflarezonerecord.FieldSettings, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.TTL(); ok {
-		_spec.SetField(cloudflarezonerecord.FieldTTL, field.TypeInt64, value)
+		_spec.SetField(cloudflarezonerecord.FieldTTL, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.AddedTTL(); ok {
-		_spec.AddField(cloudflarezonerecord.FieldTTL, field.TypeInt64, value)
+		_spec.AddField(cloudflarezonerecord.FieldTTL, field.TypeFloat64, value)
 	}
 	if _u.mutation.TTLCleared() {
-		_spec.ClearField(cloudflarezonerecord.FieldTTL, field.TypeInt64)
+		_spec.ClearField(cloudflarezonerecord.FieldTTL, field.TypeFloat64)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(cloudflarezonerecord.FieldType, field.TypeEnum, value)
@@ -471,14 +471,14 @@ func (_u *CloudflareZoneRecordUpdateOne) ClearSettings() *CloudflareZoneRecordUp
 }
 
 // SetTTL sets the "ttl" field.
-func (_u *CloudflareZoneRecordUpdateOne) SetTTL(v int64) *CloudflareZoneRecordUpdateOne {
+func (_u *CloudflareZoneRecordUpdateOne) SetTTL(v float64) *CloudflareZoneRecordUpdateOne {
 	_u.mutation.ResetTTL()
 	_u.mutation.SetTTL(v)
 	return _u
 }
 
 // SetNillableTTL sets the "ttl" field if the given value is not nil.
-func (_u *CloudflareZoneRecordUpdateOne) SetNillableTTL(v *int64) *CloudflareZoneRecordUpdateOne {
+func (_u *CloudflareZoneRecordUpdateOne) SetNillableTTL(v *float64) *CloudflareZoneRecordUpdateOne {
 	if v != nil {
 		_u.SetTTL(*v)
 	}
@@ -486,7 +486,7 @@ func (_u *CloudflareZoneRecordUpdateOne) SetNillableTTL(v *int64) *CloudflareZon
 }
 
 // AddTTL adds value to the "ttl" field.
-func (_u *CloudflareZoneRecordUpdateOne) AddTTL(v int64) *CloudflareZoneRecordUpdateOne {
+func (_u *CloudflareZoneRecordUpdateOne) AddTTL(v float64) *CloudflareZoneRecordUpdateOne {
 	_u.mutation.AddTTL(v)
 	return _u
 }
@@ -667,13 +667,13 @@ func (_u *CloudflareZoneRecordUpdateOne) sqlSave(ctx context.Context) (_node *Cl
 		_spec.ClearField(cloudflarezonerecord.FieldSettings, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.TTL(); ok {
-		_spec.SetField(cloudflarezonerecord.FieldTTL, field.TypeInt64, value)
+		_spec.SetField(cloudflarezonerecord.FieldTTL, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.AddedTTL(); ok {
-		_spec.AddField(cloudflarezonerecord.FieldTTL, field.TypeInt64, value)
+		_spec.AddField(cloudflarezonerecord.FieldTTL, field.TypeFloat64, value)
 	}
 	if _u.mutation.TTLCleared() {
-		_spec.ClearField(cloudflarezonerecord.FieldTTL, field.TypeInt64)
+		_spec.ClearField(cloudflarezonerecord.FieldTTL, field.TypeFloat64)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(cloudflarezonerecord.FieldType, field.TypeEnum, value)

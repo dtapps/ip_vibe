@@ -88,7 +88,7 @@ func (_c *CloudflareZoneCreate) SetConfigID(v int64) *CloudflareZoneCreate {
 }
 
 // SetZoneID sets the "zone_id" field.
-func (_c *CloudflareZoneCreate) SetZoneID(v int64) *CloudflareZoneCreate {
+func (_c *CloudflareZoneCreate) SetZoneID(v string) *CloudflareZoneCreate {
 	_c.mutation.SetZoneID(v)
 	return _c
 }
@@ -182,13 +182,13 @@ func (_c *CloudflareZoneCreate) SetNillableStatus(v *cloudflarezone.Status) *Clo
 }
 
 // SetType sets the "type" field.
-func (_c *CloudflareZoneCreate) SetType(v string) *CloudflareZoneCreate {
+func (_c *CloudflareZoneCreate) SetType(v cloudflarezone.Type) *CloudflareZoneCreate {
 	_c.mutation.SetType(v)
 	return _c
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (_c *CloudflareZoneCreate) SetNillableType(v *string) *CloudflareZoneCreate {
+func (_c *CloudflareZoneCreate) SetNillableType(v *cloudflarezone.Type) *CloudflareZoneCreate {
 	if v != nil {
 		_c.SetType(*v)
 	}
@@ -290,6 +290,11 @@ func (_c *CloudflareZoneCreate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "CloudflareZone.status": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.GetType(); ok {
+		if err := cloudflarezone.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "CloudflareZone.type": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := cloudflarezone.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "CloudflareZone.id": %w`, err)}
@@ -348,7 +353,7 @@ func (_c *CloudflareZoneCreate) createSpec() (*CloudflareZone, *sqlgraph.CreateS
 		_node.SyncAt = value
 	}
 	if value, ok := _c.mutation.ZoneID(); ok {
-		_spec.SetField(cloudflarezone.FieldZoneID, field.TypeInt64, value)
+		_spec.SetField(cloudflarezone.FieldZoneID, field.TypeString, value)
 		_node.ZoneID = value
 	}
 	if value, ok := _c.mutation.Account(); ok {
@@ -384,7 +389,7 @@ func (_c *CloudflareZoneCreate) createSpec() (*CloudflareZone, *sqlgraph.CreateS
 		_node.Status = value
 	}
 	if value, ok := _c.mutation.GetType(); ok {
-		_spec.SetField(cloudflarezone.FieldType, field.TypeString, value)
+		_spec.SetField(cloudflarezone.FieldType, field.TypeEnum, value)
 		_node.Type = value
 	}
 	if nodes := _c.mutation.ConfigIDs(); len(nodes) > 0 {
@@ -635,7 +640,7 @@ func (u *CloudflareZoneUpsert) ClearStatus() *CloudflareZoneUpsert {
 }
 
 // SetType sets the "type" field.
-func (u *CloudflareZoneUpsert) SetType(v string) *CloudflareZoneUpsert {
+func (u *CloudflareZoneUpsert) SetType(v cloudflarezone.Type) *CloudflareZoneUpsert {
 	u.Set(cloudflarezone.FieldType, v)
 	return u
 }
@@ -905,7 +910,7 @@ func (u *CloudflareZoneUpsertOne) ClearStatus() *CloudflareZoneUpsertOne {
 }
 
 // SetType sets the "type" field.
-func (u *CloudflareZoneUpsertOne) SetType(v string) *CloudflareZoneUpsertOne {
+func (u *CloudflareZoneUpsertOne) SetType(v cloudflarezone.Type) *CloudflareZoneUpsertOne {
 	return u.Update(func(s *CloudflareZoneUpsert) {
 		s.SetType(v)
 	})
@@ -1344,7 +1349,7 @@ func (u *CloudflareZoneUpsertBulk) ClearStatus() *CloudflareZoneUpsertBulk {
 }
 
 // SetType sets the "type" field.
-func (u *CloudflareZoneUpsertBulk) SetType(v string) *CloudflareZoneUpsertBulk {
+func (u *CloudflareZoneUpsertBulk) SetType(v cloudflarezone.Type) *CloudflareZoneUpsertBulk {
 	return u.Update(func(s *CloudflareZoneUpsert) {
 		s.SetType(v)
 	})

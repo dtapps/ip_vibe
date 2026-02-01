@@ -52,7 +52,7 @@ func (CloudflareZone) Fields() []ent.Field {
 			Comment("平台配置序号").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int64("zone_id").
+		field.String("zone_id").
 			Immutable().
 			Comment("站点 ID").
 			Annotations(entsql.WithComments(true)),
@@ -98,7 +98,8 @@ func (CloudflareZone) Fields() []ent.Field {
 			Comment("Cloudflare上的区域状态").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("type").
+		field.Enum("type").
+			Values(schematype.GetCloudflareZoneTypes...).
 			Optional().
 			Comment("完整区域意味着DNS托管在Cloudflare上。部分区域通常是合作伙伴托管的区域或CNAME设置").
 			Annotations(entsql.WithComments(true)),

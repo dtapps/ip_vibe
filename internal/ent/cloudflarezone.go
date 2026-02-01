@@ -31,7 +31,7 @@ type CloudflareZone struct {
 	// 平台配置序号
 	ConfigID int64 `json:"config_id,omitempty"`
 	// 站点 ID
-	ZoneID int64 `json:"zone_id,omitempty"`
+	ZoneID string `json:"zone_id,omitempty"`
 	// 区域所属的帐户
 	Account json.RawMessage `json:"account,omitempty"`
 	// 域名
@@ -49,7 +49,7 @@ type CloudflareZone struct {
 	// Cloudflare上的区域状态
 	Status cloudflarezone.Status `json:"status,omitempty"`
 	// 完整区域意味着DNS托管在Cloudflare上。部分区域通常是合作伙伴托管的区域或CNAME设置
-	Type string `json:"type,omitempty"`
+	Type cloudflarezone.Type `json:"type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CloudflareZoneQuery when eager-loading is set.
 	Edges        CloudflareZoneEdges `json:"edges"`
@@ -97,9 +97,9 @@ func (*CloudflareZone) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case cloudflarezone.FieldPaused:
 			values[i] = new(sql.NullBool)
-		case cloudflarezone.FieldID, cloudflarezone.FieldConfigID, cloudflarezone.FieldZoneID:
+		case cloudflarezone.FieldID, cloudflarezone.FieldConfigID:
 			values[i] = new(sql.NullInt64)
-		case cloudflarezone.FieldName, cloudflarezone.FieldOriginalDnshost, cloudflarezone.FieldOriginalRegistrar, cloudflarezone.FieldStatus, cloudflarezone.FieldType:
+		case cloudflarezone.FieldZoneID, cloudflarezone.FieldName, cloudflarezone.FieldOriginalDnshost, cloudflarezone.FieldOriginalRegistrar, cloudflarezone.FieldStatus, cloudflarezone.FieldType:
 			values[i] = new(sql.NullString)
 		case cloudflarezone.FieldCreatedAt, cloudflarezone.FieldUpdatedAt, cloudflarezone.FieldRemoteCreatedAt, cloudflarezone.FieldSyncAt:
 			values[i] = new(sql.NullTime)
@@ -155,10 +155,10 @@ func (_m *CloudflareZone) assignValues(columns []string, values []any) error {
 				_m.ConfigID = value.Int64
 			}
 		case cloudflarezone.FieldZoneID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field zone_id", values[i])
 			} else if value.Valid {
-				_m.ZoneID = value.Int64
+				_m.ZoneID = value.String
 			}
 		case cloudflarezone.FieldAccount:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -218,7 +218,7 @@ func (_m *CloudflareZone) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
-				_m.Type = value.String
+				_m.Type = cloudflarezone.Type(value.String)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -282,7 +282,7 @@ func (_m *CloudflareZone) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.ConfigID))
 	builder.WriteString(", ")
 	builder.WriteString("zone_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.ZoneID))
+	builder.WriteString(_m.ZoneID)
 	builder.WriteString(", ")
 	builder.WriteString("account=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Account))
@@ -309,7 +309,7 @@ func (_m *CloudflareZone) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.Status))
 	builder.WriteString(", ")
 	builder.WriteString("type=")
-	builder.WriteString(_m.Type)
+	builder.WriteString(fmt.Sprintf("%v", _m.Type))
 	builder.WriteByte(')')
 	return builder.String()
 }

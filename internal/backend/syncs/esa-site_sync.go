@@ -55,23 +55,23 @@ func (s *ESASiteSync) SetDebug(debug bool) {
 // 获取ESA提供程序
 func (s *ESASiteSync) GetApiClient(ctx context.Context, platformConfigJSON json.RawMessage) (*cdn.AliyunESAProvider, error) {
 
-	// 创建ESA提供程序选项
+	// 创建ESA CDN提供程序选项
 	var cdnProviderOpts = make([]cdn.Option, 0, 1)
 	if s.httpTransport != nil {
 		cdnProviderOpts = append(cdnProviderOpts, cdn.WithHttpTransport(s.httpTransport))
 	}
 
-	// 创建默认的ESA配置
+	// 创建默认的ESA CDN配置
 	cdnProviderCfg := cdn.NewDefaultAliyunESAConfig()
 	err := cdnProviderCfg.ParseCustomConfig(platformConfigJSON)
 	if err != nil {
-		return nil, fmt.Errorf("解析ESA配置失败: %w", err)
+		return nil, fmt.Errorf("解析ESA CDN配置失败: %w", err)
 	}
 
-	// 创建ESA提供程序
+	// 创建ESA CDN提供程序
 	cdnProvider, err := cdn.NewAliyunESAProviderRaw(ctx, s.logger, cdnProviderCfg, cdnProviderOpts...)
 	if err != nil {
-		return nil, fmt.Errorf("创建ESA提供程序失败: %w", err)
+		return nil, fmt.Errorf("创建ESA CDN提供程序失败: %w", err)
 	}
 
 	return cdnProvider, nil
@@ -119,7 +119,7 @@ func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err e
 	// 获取ESA提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return fmt.Errorf("获取ESA提供程序失败: %w", err)
+		return err
 	}
 
 	// 获取所有站点
@@ -209,7 +209,7 @@ func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id
 	// 获取ESA提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return fmt.Errorf("获取ESA提供程序失败: %w", err)
+		return err
 	}
 
 	// 获取所有站点
@@ -359,7 +359,7 @@ func (s *ESASiteSync) SyncThisSiteOriginPool(ctx context.Context, config_id int6
 	// 获取ESA提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstEsaSite.Edges.Config.ConfigJSON)
 	if err != nil {
-		return fmt.Errorf("获取ESA提供程序失败: %w", err)
+		return err
 	}
 
 	// 获取所有源地址池
@@ -485,7 +485,7 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	// 获取ESA提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstEsaSite.Edges.Config.ConfigJSON)
 	if err != nil {
-		return fmt.Errorf("获取ESA提供程序失败: %w", err)
+		return err
 	}
 
 	// 获取所有解析记录
