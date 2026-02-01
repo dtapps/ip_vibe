@@ -7,7 +7,7 @@
 {{ $pageSize := .Data.PageSize }}
 {{ $baseWebUrlPath := .CurrentPath }}
 {{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
-{{ $baseApiUrlPath := "/api/edgeones" }}
+{{ $baseApiUrlPath := "/api/edgeone-zones" }}
 
 <h1 class="text-3xl font-black mb-10 pl-4 text-base-content flex items-center gap-3 uppercase tracking-tighter italic">
     {{ template "icons" (dict "Name" "i-lucide-globe-2" "Class" "w-8 h-8 text-primary") }}
@@ -58,7 +58,7 @@
             <div class="p-8">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {{ range $zone := $config.Zones }}
-                    <a href="{{ $baseWebUrlPath }}/zone/{{ $zone.ID }}/record"
+                    <a href="{{ $baseWebUrlPath }}/{{ $zone.ID }}/record"
                         class="group relative bg-base-200/30 rounded-[2rem] p-6 border border-base-300/50 hover:border-primary/40 hover:bg-base-100 hover:shadow-2xl transition-all duration-500 cursor-pointer">
 
                         <div class="flex justify-between items-start mb-4">
