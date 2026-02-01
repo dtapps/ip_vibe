@@ -143,10 +143,9 @@
     async function handleSync(el) {
         try {
             const {
-                configId,
-                zoneId,
-                groupId,
                 type,
+                configId = 0,
+                zoneId = 0,
 
                 tips = "",
                 reload = true,
@@ -160,24 +159,12 @@
                 }
             }
 
-            if (type === "origin-group") {
-                // 调用 同步 源站组
-                await API.post(`/api/edgeones/sync`, {
-                    config_id: configId,
-                    zone_id: zoneId,
-                    group_id: groupId,
-                });
-            } else if (type === "zone") {
-                // 调用 同步 站点
-                await API.post(`/api/edgeones/sync`, {
-                    config_id: configId,
-                    zone_id: zoneId,
-                });
-            } else {
-                // 调用 同步 全部
-                await API.post(`/api/edgeones/sync`,);
-            }
-
+            // 调用 同步 接口
+            await API.post(`/api/cloudflare-zones/sync`, {
+                type: type,
+                config_id: configId ?? 0,
+                zone_id: zoneId ?? 0,
+            });
 
             // 刷新页面
             if (reload) {

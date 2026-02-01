@@ -21,7 +21,7 @@
 
         </h2>
         <div>
-            <button class="btn-ui-primary" onclick="syncAllTunnels(this)">
+            <button class="btn-ui-primary" onclick="handleSync(this)">
                 {{ template "icons" (dict "Name" "i-lucide-refresh-ccw") }} 同步所有
             </button>
         </div>
@@ -48,7 +48,7 @@
                 <div class="flex items-center gap-2">
                     <button
                         class="btn btn-sm btn-ghost gap-2 opacity-50 hover:opacity-100 hover:text-primary transition-all"
-                        data-config-id="{{ $config.ID }}" data-tips="确定同步此账号吗？" onclick="syncAllTunnels(this)">
+                        data-config-id="{{ $config.ID }}" data-tips="确定同步此账号吗？" onclick="handleSync(this)">
                         {{ template "icons" (dict "Name" "i-lucide-rotate-cw" "Class" "w-3 h-3 mr-1") }} 增量同步
                     </button>
                 </div>
@@ -136,7 +136,7 @@
                                     class="btn btn-sm btn-ghost btn-circle text-primary opacity-20 group-hover:opacity-100 transition-all tooltip tooltip-left"
                                     data-tip="同步此隧道配置" data-config-id="{{ $config.ID }}"
                                     data-tunnel-id="{{ $tunnel.ID }}" data-tips="确定同步此隧道配置吗？"
-                                    onclick="event.stopPropagation(); syncAllTunnels(this)">
+                                    onclick="event.stopPropagation(); handleSync(this)">
                                     {{ template "icons" (dict "Name" "i-lucide-rotate-cw" "Class" "w-4 h-4") }}
                                 </button>
 
@@ -179,15 +179,16 @@
 <script>
 
     /**
-     * 同步
+     * 处理同步
      * @param {*} el 触发事件的元素
      * @returns
      */
-    async function syncAllTunnels(el) {
+    async function handleSync(el) {
         try {
             const {
-                configId,
-                tunnelId,
+                type,
+                configId = 0,
+                tunnelId = 0,
 
                 tips = "确定同步所有账号吗？",
                 reload = true,
@@ -199,17 +200,12 @@
                 return;
             }
 
-            if (tunnelId && configId) {
-                // 调用 同步某个账号Cloudflare某个隧道的入站规则
-                await API.post(`/api/cloudflare-tunnels/sync/${configId}/${tunnelId}/ingress`);
-            } else if (configId) {
-                // 调用 同步某个账号Cloudflare隧道和入站规则
-                await API.post(`/api/cloudflare-tunnels/sync/${configId}`);
-            } else {
-                // 调用 同步全部账号Cloudflare隧道和入站规则
-                await API.post(`/api/cloudflare-tunnels/sync-all`);
-            }
-
+            // 调用 同步 接口
+            await API.post(`/api/cloudflare-tunnels/sync`, {
+                type: type,
+                config_id: configId ?? 0,
+                tunnel_id: tunnelId ?? 0,
+            });
 
             // 刷新页面
             if (reload) {

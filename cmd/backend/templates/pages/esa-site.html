@@ -143,10 +143,10 @@
     async function handleSync(el) {
         try {
             const {
-                configId,
-                zoneId,
-                poolId,
                 type,
+                configId = 0,
+                siteId = 0,
+                poolId = 0,
 
                 tips = "",
                 reload = true,
@@ -160,24 +160,13 @@
                 }
             }
 
-            if (type === "origin-pool") {
-                // 调用 同步 源地址池
-                await API.post(`/api/esas/sync`, {
-                    config_id: configId,
-                    zone_id: zoneId,
-                    pool_id: poolId,
-                });
-            } else if (type === "zone") {
-                // 调用 同步 站点
-                await API.post(`/api/esas/sync`, {
-                    config_id: configId,
-                    zone_id: zoneId,
-                });
-            } else {
-                // 调用 同步 全部
-                await API.post(`/api/esas/sync`,);
-            }
-
+            // 调用 同步 接口
+            await API.post(`/api/esa-sites/sync`, {
+                type: type,
+                config_id: configId ?? 0,
+                site_id: siteId ?? 0,
+                pool_id: poolId ?? 0,
+            });
 
             // 刷新页面
             if (reload) {
