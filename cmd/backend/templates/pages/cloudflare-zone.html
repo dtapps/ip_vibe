@@ -1,0 +1,194 @@
+{{ define "content" }}
+
+{{ $filter := .Data.Filter }}
+{{ $list := .Data.List }}
+{{ $page := .Data.Page }}
+{{ $total := .Data.Total }}
+{{ $pageSize := .Data.PageSize }}
+{{ $baseWebUrlPath := .CurrentPath }}
+{{ $baseWebUrlPathWithQuery := .CurrentPathWithQuery }}
+{{ $baseApiUrlPath := "/api/cloudflare-zones" }}
+
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content flex items-center gap-3 uppercase tracking-tighter italic">
+    {{ template "icons" (dict "Name" "i-lucide-globe-2" "Class" "w-8 h-8 text-primary") }}
+    CloudFlare 站点
+</h1>
+
+<div class="ui-panel">
+    <div class="ui-header">
+        <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
+
+        </h2>
+        <div>
+            <button class="btn-ui-primary" onclick="handleSync(this)">
+                {{ template "icons" (dict "Name" "i-lucide-refresh-ccw") }} 同步所有
+            </button>
+        </div>
+    </div>
+
+    <div class="edgeone-container flex flex-col gap-8">
+        {{ range $config := $list }}
+        <div class="ui-panel shadow-lg">
+            <div class="ui-header bg-base-200/20 py-6">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-primary/10 rounded-2xl text-primary">
+                        {{ template "icons" (dict "Name" "i-lucide-user-cog" "Class" "w-6 h-6") }}
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-xl font-black italic uppercase tracking-tighter text-base-content">
+                                {{ $config.Name }}
+                            </h2>
+                        </div>
+                        <p class="text-[11px] font-bold opacity-30 uppercase tracking-widest mt-0.5">
+                            ID: {{ $config.ID }} — {{ $config.Description }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button
+                        class="btn btn-sm btn-ghost gap-2 opacity-50 hover:opacity-100 hover:text-primary transition-all"
+                        data-config-id="{{ $config.ID }}" data-tips="确定同步此账号吗？" onclick="handleSync(this)">
+                        {{ template "icons" (dict "Name" "i-lucide-refresh-cw" "Class" "w-3 h-3") }} 增量同步
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {{ range $zone := $config.Zones }}
+                    <a href="{{ $baseWebUrlPath }}/{{ $zone.ID }}/record"
+                        class="group relative bg-base-200/30 rounded-[2rem] p-6 border border-base-300/50 hover:border-primary/40 hover:bg-base-100 hover:shadow-2xl transition-all duration-500 cursor-pointer">
+
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-[9px] font-black uppercase italic opacity-40">
+                                    接入方式
+                                </span>
+                                <span
+                                    class='badge badge-sm font-bold italic uppercase {{ if eq $zone.Type "full"}}badge-primary{{ else }}badge-ghost border-base-300{{ end }}'>
+                                    {{ fieldEnumLabel "cloudflare_zone_type" $zone.Type }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <h3
+                            class="text-xl font-black italic tracking-tighter uppercase truncate mb-6 group-hover:text-primary transition-colors">
+                            {{ or $zone.Name $zone.ZoneID }}
+                        </h3>
+
+                        <div class="grid grid-cols-3 gap-2 py-4 border-y border-base-300/30">
+                            <div class="text-center border-x border-base-300/30">
+                                <div class="text-[9px] font-black opacity-20 uppercase">
+                                    DNS记录
+                                </div>
+                                <div class="text-sm font-mono font-bold">
+                                    {{ len $zone.Edges.Records }}
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-[9px] font-black opacity-20 uppercase">
+                                    源站组
+                                </div>
+                                <div class="text-sm font-mono font-bold">
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex justify-between items-center">
+                            <div class="flex flex-col">
+                                <span class="text-[8px] font-black opacity-20 uppercase">Zone Status</span>
+                                <span
+                                    class='text-[10px] font-bold uppercase {{ if eq $zone.Status "active"}}text-success{{ else }}text-warning{{ end }}'>
+                                    {{ fieldEnumLabel "cloudflare_zone_status" $zone.Status }}
+                                </span>
+                            </div>
+                            <div
+                                class="opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all text-primary">
+                                {{ template "icons" (dict "Name" "i-lucide-arrow-right" "Class" "w-4 h-4") }}
+                            </div>
+                        </div>
+                    </a>
+                    {{ end }}
+
+                    <button
+                        class="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-base-300/50 rounded-[2rem] min-h-[220px] opacity-30 hover:opacity-100 hover:border-primary hover:text-primary transition-all">
+                        {{ template "icons" (dict "Name" "i-lucide-plus-circle" "Class" "w-8 h-8") }}
+                        <span class="text-xs font-black uppercase italic tracking-widest">
+                            创建新站点
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+
+    <!-- 分页 -->
+    <div class="p-8">
+        {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
+    </div>
+</div>
+
+
+<script>
+
+    /**
+     * 处理同步
+     * @param {*} el 触发事件的元素
+     * @returns
+     */
+    async function handleSync(el) {
+        try {
+            const {
+                configId,
+                zoneId,
+                groupId,
+                type,
+
+                tips = "",
+                reload = true,
+            } = el.dataset;
+
+            // 提示确认
+            if (tips !== "") {
+                const confirmed = confirm(tips);
+                if (!confirmed) {
+                    return;
+                }
+            }
+
+            if (type === "origin-group") {
+                // 调用 同步 源站组
+                await API.post(`/api/edgeones/sync`, {
+                    config_id: configId,
+                    zone_id: zoneId,
+                    group_id: groupId,
+                });
+            } else if (type === "zone") {
+                // 调用 同步 站点
+                await API.post(`/api/edgeones/sync`, {
+                    config_id: configId,
+                    zone_id: zoneId,
+                });
+            } else {
+                // 调用 同步 全部
+                await API.post(`/api/edgeones/sync`,);
+            }
+
+
+            // 刷新页面
+            if (reload) {
+                location.reload();
+            }
+        } catch (err) {
+            alert(`同步失败: ${err.message}`);
+            console.error(err);
+            return;
+        }
+    }
+
+</script>
+{{ end }}

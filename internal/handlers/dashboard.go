@@ -124,12 +124,17 @@ func Dashboard(c *gin.Context) {
 			Href:  "/port-forward",
 		},
 		{
-			Title: "CF 隧道管理",
+			Title: "Cloudflare 隧道管理",
 			Icon:  "i-lucide-cloud-lightning",
 			Href:  "/cloudflare-tunnel",
 		},
 		{
-			Title: "EO 管理",
+			Title: "Cloudflare 站点管理",
+			Icon:  "i-lucide-globe-2",
+			Href:  "/cloudflare-zone",
+		},
+		{
+			Title: "EdgeOne 管理",
 			Icon:  "i-lucide-globe-2",
 			Href:  "/edgeone-zone",
 		},

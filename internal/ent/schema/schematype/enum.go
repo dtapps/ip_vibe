@@ -705,6 +705,63 @@ var GetTUNRecordServeTypes = []string{
 // --------
 
 const (
+	CloudflareTunnelStatusInactive string = "inactive" // 活跃
+	CloudflareTunnelStatusDegraded string = "degraded" // 降级
+	CloudflareTunnelStatusHealthy  string = "healthy"  // 健康
+	CloudflareTunnelStatusDown     string = "down"     // 下线
+)
+
+// GetCloudflareTunnelStatusDescriptions 隧道状态 说明映射
+var GetCloudflareTunnelStatusDescriptions = map[string]string{
+	CloudflareTunnelStatusInactive: "活跃",
+	CloudflareTunnelStatusDegraded: "降级",
+	CloudflareTunnelStatusHealthy:  "健康",
+	CloudflareTunnelStatusDown:     "下线",
+}
+
+// GetCloudflareTunnelStatuss 返回所有 隧道状态
+var GetCloudflareTunnelStatuss = []string{
+	CloudflareTunnelStatusInactive,
+	CloudflareTunnelStatusDegraded,
+	CloudflareTunnelStatusHealthy,
+	CloudflareTunnelStatusDown,
+}
+
+const (
+	CloudflareTunnelTunTypeCfdTunnel     string = "cfd_tunnel"     // Cloudflare 隧道
+	CloudflareTunnelTunTypeWarpConnector string = "warp_connector" // Warp 连接器
+	CloudflareTunnelTunTypeWarp          string = "warp"           // Warp 隧道
+	CloudflareTunnelTunTypeMagic         string = "magic"          // Magic 隧道
+	CloudflareTunnelTunTypeIPSec         string = "ipsec"          // IPsec 隧道
+	CloudflareTunnelTunTypeGRE           string = "gre"            // GRE 隧道
+	CloudflareTunnelTunTypeCNI           string = "cni"            // CNI 隧道
+)
+
+// GetCloudflareTunnelTunTypeDescriptions 隧道类型 说明映射
+var GetCloudflareTunnelTunTypeDescriptions = map[string]string{
+	CloudflareTunnelTunTypeCfdTunnel:     "Cloudflare 隧道",
+	CloudflareTunnelTunTypeWarpConnector: "Warp 连接器",
+	CloudflareTunnelTunTypeWarp:          "Warp 隧道",
+	CloudflareTunnelTunTypeMagic:         "Magic 隧道",
+	CloudflareTunnelTunTypeIPSec:         "IPsec 隧道",
+	CloudflareTunnelTunTypeGRE:           "GRE 隧道",
+	CloudflareTunnelTunTypeCNI:           "CNI 隧道",
+}
+
+// GetCloudflareTunnelTunTypes 返回所有 隧道类型
+var GetCloudflareTunnelTunTypes = []string{
+	CloudflareTunnelTunTypeCfdTunnel,
+	CloudflareTunnelTunTypeWarpConnector,
+	CloudflareTunnelTunTypeWarp,
+	CloudflareTunnelTunTypeMagic,
+	CloudflareTunnelTunTypeIPSec,
+	CloudflareTunnelTunTypeGRE,
+	CloudflareTunnelTunTypeCNI,
+}
+
+// --------
+
+const (
 	CloudflareZoneStatusInitializing string = "initializing" // 初始化中
 	CloudflareZoneStatusPending      string = "pending"      // 待处理
 	CloudflareZoneStatusActive       string = "active"       // 已激活
@@ -1255,61 +1312,4 @@ var GetEsaSiteRecordHostPolicyDescriptions = map[string]string{
 var GetEsaSiteRecordHostPolicys = []string{
 	EsaSiteRecordHostPolicyFollowHostname,
 	EsaSiteRecordHostPolicyFollowOriginDomain,
-}
-
-// --------
-
-const (
-	CloudflareTunnelStatusInactive string = "inactive" // 活跃
-	CloudflareTunnelStatusDegraded string = "degraded" // 降级
-	CloudflareTunnelStatusHealthy  string = "healthy"  // 健康
-	CloudflareTunnelStatusDown     string = "down"     // 下线
-)
-
-// GetCloudflareTunnelStatusDescriptions 隧道状态 说明映射
-var GetCloudflareTunnelStatusDescriptions = map[string]string{
-	CloudflareTunnelStatusInactive: "活跃",
-	CloudflareTunnelStatusDegraded: "降级",
-	CloudflareTunnelStatusHealthy:  "健康",
-	CloudflareTunnelStatusDown:     "下线",
-}
-
-// GetCloudflareTunnelStatuss 返回所有 隧道状态
-var GetCloudflareTunnelStatuss = []string{
-	CloudflareTunnelStatusInactive,
-	CloudflareTunnelStatusDegraded,
-	CloudflareTunnelStatusHealthy,
-	CloudflareTunnelStatusDown,
-}
-
-const (
-	CloudflareTunnelTunTypeCfdTunnel     string = "cfd_tunnel"     // Cloudflare 隧道
-	CloudflareTunnelTunTypeWarpConnector string = "warp_connector" // Warp 连接器
-	CloudflareTunnelTunTypeWarp          string = "warp"           // Warp 隧道
-	CloudflareTunnelTunTypeMagic         string = "magic"          // Magic 隧道
-	CloudflareTunnelTunTypeIPSec         string = "ipsec"          // IPsec 隧道
-	CloudflareTunnelTunTypeGRE           string = "gre"            // GRE 隧道
-	CloudflareTunnelTunTypeCNI           string = "cni"            // CNI 隧道
-)
-
-// GetCloudflareTunnelTunTypeDescriptions 隧道类型 说明映射
-var GetCloudflareTunnelTunTypeDescriptions = map[string]string{
-	CloudflareTunnelTunTypeCfdTunnel:     "Cloudflare 隧道",
-	CloudflareTunnelTunTypeWarpConnector: "Warp 连接器",
-	CloudflareTunnelTunTypeWarp:          "Warp 隧道",
-	CloudflareTunnelTunTypeMagic:         "Magic 隧道",
-	CloudflareTunnelTunTypeIPSec:         "IPsec 隧道",
-	CloudflareTunnelTunTypeGRE:           "GRE 隧道",
-	CloudflareTunnelTunTypeCNI:           "CNI 隧道",
-}
-
-// GetCloudflareTunnelTunTypes 返回所有 隧道类型
-var GetCloudflareTunnelTunTypes = []string{
-	CloudflareTunnelTunTypeCfdTunnel,
-	CloudflareTunnelTunTypeWarpConnector,
-	CloudflareTunnelTunTypeWarp,
-	CloudflareTunnelTunTypeMagic,
-	CloudflareTunnelTunTypeIPSec,
-	CloudflareTunnelTunTypeGRE,
-	CloudflareTunnelTunTypeCNI,
 }

@@ -130,6 +130,21 @@ var EnumRegistry = map[string]EnumDefinition{
 		Values:       schematype.GetCloudflareTunnelTunTypes,
 		Descriptions: schematype.GetCloudflareTunnelTunTypeDescriptions,
 	},
+	// Cloudflare 站点 Cloudflare上的区域状态
+	"cloudflare_zone_status": {
+		Values:       schematype.GetCloudflareZoneStatuss,
+		Descriptions: schematype.GetCloudflareZoneStatusDescriptions,
+	},
+	// Cloudflare 站点 完整区域意味着DNS托管在Cloudflare上。部分区域通常是合作伙伴托管的区域或CNAME设置
+	"cloudflare_zone_type": {
+		Values:       schematype.GetCloudflareZoneTypes,
+		Descriptions: schematype.GetCloudflareZoneTypeDescriptions,
+	},
+	// Cloudflare 站点记录 数据录类型
+	"cloudflare_zone_record_type": {
+		Values:       schematype.GetCloudflareZoneRecordTypes,
+		Descriptions: schematype.GetCloudflareZoneRecordTypeDescriptions,
+	},
 	// EdgeOne 站点 站点加速区域
 	"edgeone_zone_area": {
 		Values:       schematype.GetEdgeOneZoneAreas,

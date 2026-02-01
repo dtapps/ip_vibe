@@ -92,15 +92,19 @@ func (m *GinServerManager) setupWebRouter() {
 	// 日志内容页面 - 提供HTML页面并渲染数据
 	r.GET("/log-content", handlers.LogContent)
 
-	// CF 隧道管理页面 - 提供HTML页面并渲染数据
+	// Cloudflare 隧道管理页面 - 提供HTML页面并渲染数据
 	r.GET("/cloudflare-tunnel", handlers.CloudflareTunnel)
 
-	// EdgeOne 管理页面 - 提供HTML页面并渲染数据
+	// Cloudflare 站点管理页面 - 提供HTML页面并渲染数据
+	r.GET("/cloudflare-zone", handlers.CloudflareZone)
+	r.GET("/cloudflare-zone/:id/record", handlers.CloudflareZoneRecord)
+
+	// EdgeOne 站点管理页面 - 提供HTML页面并渲染数据
 	r.GET("/edgeone-zone", handlers.EdgeOneZone)
 	r.GET("/edgeone-zone/:id/record", handlers.EdgeOneZoneRecord)
 	r.GET("/edgeone-zone/:id/origin-group", handlers.EdgeOneZoneOriginGroup)
 
-	// ESA 管理页面 - 提供HTML页面并渲染数据
+	// ESA 站点管理页面 - 提供HTML页面并渲染数据
 	r.GET("/esa-site", handlers.ESASite)
 	r.GET("/esa-site/:id/record", handlers.ESASiteRecord)
 	r.GET("/esa-site/:id/origin-pool", handlers.ESASiteOriginPool)
