@@ -106,7 +106,7 @@ func (s *CloudflareZoneSync) SyncThisZones(ctx context.Context, config_id int64)
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
-		Where(platformconfig.PlatformEQ(platformconfig.PlatformAliyunEsa)).
+		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
 		First(ctx)
 	if err != nil {
 		return fmt.Errorf("查询平台配置失败: %w", err)
@@ -190,7 +190,7 @@ func (s *CloudflareZoneSync) SyncThisSite(ctx context.Context, config_id int64, 
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
-		Where(platformconfig.PlatformEQ(platformconfig.PlatformAliyunEsa)).
+		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
 		First(ctx)
 	if err != nil {
 		return fmt.Errorf("查询平台配置失败: %w", err)
