@@ -1021,6 +1021,52 @@ func HasRecordsWith(preds ...predicate.EsaSiteRecord) predicate.EsaSite {
 	})
 }
 
+// HasEdgecontainerrecords applies the HasEdge predicate on the "edgecontainerrecords" edge.
+func HasEdgecontainerrecords() predicate.EsaSite {
+	return predicate.EsaSite(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, EdgecontainerrecordsTable, EdgecontainerrecordsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEdgecontainerrecordsWith applies the HasEdge predicate on the "edgecontainerrecords" edge with a given conditions (other predicates).
+func HasEdgecontainerrecordsWith(preds ...predicate.EsaSiteEdgeContainerRecord) predicate.EsaSite {
+	return predicate.EsaSite(func(s *sql.Selector) {
+		step := newEdgecontainerrecordsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEdgeroutinerecords applies the HasEdge predicate on the "edgeroutinerecords" edge.
+func HasEdgeroutinerecords() predicate.EsaSite {
+	return predicate.EsaSite(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, EdgeroutinerecordsTable, EdgeroutinerecordsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEdgeroutinerecordsWith applies the HasEdge predicate on the "edgeroutinerecords" edge with a given conditions (other predicates).
+func HasEdgeroutinerecordsWith(preds ...predicate.EsaSiteEdgeRoutineRecord) predicate.EsaSite {
+	return predicate.EsaSite(func(s *sql.Selector) {
+		step := newEdgeroutinerecordsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasOriginpools applies the HasEdge predicate on the "originpools" edge.
 func HasOriginpools() predicate.EsaSite {
 	return predicate.EsaSite(func(s *sql.Selector) {

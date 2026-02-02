@@ -63,13 +63,19 @@ type EsaSiteEdges struct {
 	Config *PlatformConfig `json:"config,omitempty"`
 	// 关联的ESA站点记录
 	Records []*EsaSiteRecord `json:"records,omitempty"`
+	// 关联的 ESA 站点边缘容器记录
+	Edgecontainerrecords []*EsaSiteEdgeContainerRecord `json:"edgecontainerrecords,omitempty"`
+	// 关联的 ESA 站点边缘路由记录
+	Edgeroutinerecords []*EsaSiteEdgeRoutineRecord `json:"edgeroutinerecords,omitempty"`
 	// 关联的ESA站点源地址池
 	Originpools []*EsaSiteOriginPool `json:"originpools,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes      [3]bool
-	namedRecords     map[string][]*EsaSiteRecord
-	namedOriginpools map[string][]*EsaSiteOriginPool
+	loadedTypes               [5]bool
+	namedRecords              map[string][]*EsaSiteRecord
+	namedEdgecontainerrecords map[string][]*EsaSiteEdgeContainerRecord
+	namedEdgeroutinerecords   map[string][]*EsaSiteEdgeRoutineRecord
+	namedOriginpools          map[string][]*EsaSiteOriginPool
 }
 
 // ConfigOrErr returns the Config value or an error if the edge
@@ -92,10 +98,28 @@ func (e EsaSiteEdges) RecordsOrErr() ([]*EsaSiteRecord, error) {
 	return nil, &NotLoadedError{edge: "records"}
 }
 
+// EdgecontainerrecordsOrErr returns the Edgecontainerrecords value or an error if the edge
+// was not loaded in eager-loading.
+func (e EsaSiteEdges) EdgecontainerrecordsOrErr() ([]*EsaSiteEdgeContainerRecord, error) {
+	if e.loadedTypes[2] {
+		return e.Edgecontainerrecords, nil
+	}
+	return nil, &NotLoadedError{edge: "edgecontainerrecords"}
+}
+
+// EdgeroutinerecordsOrErr returns the Edgeroutinerecords value or an error if the edge
+// was not loaded in eager-loading.
+func (e EsaSiteEdges) EdgeroutinerecordsOrErr() ([]*EsaSiteEdgeRoutineRecord, error) {
+	if e.loadedTypes[3] {
+		return e.Edgeroutinerecords, nil
+	}
+	return nil, &NotLoadedError{edge: "edgeroutinerecords"}
+}
+
 // OriginpoolsOrErr returns the Originpools value or an error if the edge
 // was not loaded in eager-loading.
 func (e EsaSiteEdges) OriginpoolsOrErr() ([]*EsaSiteOriginPool, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[4] {
 		return e.Originpools, nil
 	}
 	return nil, &NotLoadedError{edge: "originpools"}
@@ -252,6 +276,16 @@ func (_m *EsaSite) QueryRecords() *EsaSiteRecordQuery {
 	return NewEsaSiteClient(_m.config).QueryRecords(_m)
 }
 
+// QueryEdgecontainerrecords queries the "edgecontainerrecords" edge of the EsaSite entity.
+func (_m *EsaSite) QueryEdgecontainerrecords() *EsaSiteEdgeContainerRecordQuery {
+	return NewEsaSiteClient(_m.config).QueryEdgecontainerrecords(_m)
+}
+
+// QueryEdgeroutinerecords queries the "edgeroutinerecords" edge of the EsaSite entity.
+func (_m *EsaSite) QueryEdgeroutinerecords() *EsaSiteEdgeRoutineRecordQuery {
+	return NewEsaSiteClient(_m.config).QueryEdgeroutinerecords(_m)
+}
+
 // QueryOriginpools queries the "originpools" edge of the EsaSite entity.
 func (_m *EsaSite) QueryOriginpools() *EsaSiteOriginPoolQuery {
 	return NewEsaSiteClient(_m.config).QueryOriginpools(_m)
@@ -352,6 +386,54 @@ func (_m *EsaSite) appendNamedRecords(name string, edges ...*EsaSiteRecord) {
 		_m.Edges.namedRecords[name] = []*EsaSiteRecord{}
 	} else {
 		_m.Edges.namedRecords[name] = append(_m.Edges.namedRecords[name], edges...)
+	}
+}
+
+// NamedEdgecontainerrecords returns the Edgecontainerrecords named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *EsaSite) NamedEdgecontainerrecords(name string) ([]*EsaSiteEdgeContainerRecord, error) {
+	if _m.Edges.namedEdgecontainerrecords == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedEdgecontainerrecords[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *EsaSite) appendNamedEdgecontainerrecords(name string, edges ...*EsaSiteEdgeContainerRecord) {
+	if _m.Edges.namedEdgecontainerrecords == nil {
+		_m.Edges.namedEdgecontainerrecords = make(map[string][]*EsaSiteEdgeContainerRecord)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedEdgecontainerrecords[name] = []*EsaSiteEdgeContainerRecord{}
+	} else {
+		_m.Edges.namedEdgecontainerrecords[name] = append(_m.Edges.namedEdgecontainerrecords[name], edges...)
+	}
+}
+
+// NamedEdgeroutinerecords returns the Edgeroutinerecords named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (_m *EsaSite) NamedEdgeroutinerecords(name string) ([]*EsaSiteEdgeRoutineRecord, error) {
+	if _m.Edges.namedEdgeroutinerecords == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := _m.Edges.namedEdgeroutinerecords[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (_m *EsaSite) appendNamedEdgeroutinerecords(name string, edges ...*EsaSiteEdgeRoutineRecord) {
+	if _m.Edges.namedEdgeroutinerecords == nil {
+		_m.Edges.namedEdgeroutinerecords = make(map[string][]*EsaSiteEdgeRoutineRecord)
+	}
+	if len(edges) == 0 {
+		_m.Edges.namedEdgeroutinerecords[name] = []*EsaSiteEdgeRoutineRecord{}
+	} else {
+		_m.Edges.namedEdgeroutinerecords[name] = append(_m.Edges.namedEdgeroutinerecords[name], edges...)
 	}
 }
 

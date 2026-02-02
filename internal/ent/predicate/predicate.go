@@ -57,6 +57,12 @@ type EdgeOneZoneOriginGroup func(*sql.Selector)
 // EsaSite is the predicate function for esasite builders.
 type EsaSite func(*sql.Selector)
 
+// EsaSiteEdgeContainerRecord is the predicate function for esasiteedgecontainerrecord builders.
+type EsaSiteEdgeContainerRecord func(*sql.Selector)
+
+// EsaSiteEdgeRoutineRecord is the predicate function for esasiteedgeroutinerecord builders.
+type EsaSiteEdgeRoutineRecord func(*sql.Selector)
+
 // EsaSiteOriginPool is the predicate function for esasiteoriginpool builders.
 type EsaSiteOriginPool func(*sql.Selector)
 

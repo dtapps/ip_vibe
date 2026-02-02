@@ -8,6 +8,8 @@ import (
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/esasiteedgecontainerrecord"
+	"vibe_ip/internal/ent/esasiteedgeroutinerecord"
 	"vibe_ip/internal/ent/esasiteoriginpool"
 	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/platformconfig"
@@ -569,16 +571,16 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	}
 	for _, routineRecord := range routineRecords {
 		// 查询解析记录
-		firstRecord, err := s.db.EsaSiteRecord.Query().
-			Where(esasiterecord.EsaSiteIDEQ(firstEsaSite.ID)).
-			Where(esasiterecord.RecordNameEQ(tea.StringValue(routineRecord.RecordName))).
+		firstRecord, err := s.db.EsaSiteEdgeRoutineRecord.Query().
+			Where(esasiteedgeroutinerecord.EsaSiteIDEQ(firstEsaSite.ID)).
+			Where(esasiteedgeroutinerecord.RecordNameEQ(tea.StringValue(routineRecord.RecordName))).
 			First(ctx)
 		if err != nil {
 			if !ent.IsNotFound(err) {
 				return fmt.Errorf("查询解析记录记录失败: %w", err)
 			}
 			// 创建解析记录记录
-			createOne := s.db.EsaSiteRecord.Create()
+			createOne := s.db.EsaSiteEdgeRoutineRecord.Create()
 			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(routineRecord.CreateTime)).Time)
 			createOne.SetSyncAt(time.Now())
 			createOne.SetEsaSiteID(firstEsaSite.ID)
@@ -590,9 +592,8 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 			}
 		} else {
 			// 更新解析记录记录
-			updateOne := s.db.EsaSiteRecord.UpdateOne(firstRecord)
+			updateOne := s.db.EsaSiteEdgeRoutineRecord.UpdateOne(firstRecord)
 			updateOne.SetSyncAt(time.Now())
-			updateOne.SetRecordName(tea.StringValue(routineRecord.RecordName))
 			updateOne.SetRecordCname(tea.StringValue(routineRecord.RecordCname))
 			err = updateOne.Exec(ctx)
 			if err != nil {
@@ -608,16 +609,16 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	}
 	for _, containerRecord := range containerRecords {
 		// 查询解析记录
-		firstRecord, err := s.db.EsaSiteRecord.Query().
-			Where(esasiterecord.EsaSiteIDEQ(firstEsaSite.ID)).
-			Where(esasiterecord.RecordNameEQ(tea.StringValue(containerRecord.RecordName))).
+		firstRecord, err := s.db.EsaSiteEdgeContainerRecord.Query().
+			Where(esasiteedgecontainerrecord.EsaSiteIDEQ(firstEsaSite.ID)).
+			Where(esasiteedgecontainerrecord.RecordNameEQ(tea.StringValue(containerRecord.RecordName))).
 			First(ctx)
 		if err != nil {
 			if !ent.IsNotFound(err) {
 				return fmt.Errorf("查询解析记录记录失败: %w", err)
 			}
 			// 创建解析记录记录
-			createOne := s.db.EsaSiteRecord.Create()
+			createOne := s.db.EsaSiteEdgeContainerRecord.Create()
 			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(containerRecord.CreateTime)).Time)
 			createOne.SetSyncAt(time.Now())
 			createOne.SetEsaSiteID(firstEsaSite.ID)
@@ -629,9 +630,8 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 			}
 		} else {
 			// 更新解析记录记录
-			updateOne := s.db.EsaSiteRecord.UpdateOne(firstRecord)
+			updateOne := s.db.EsaSiteEdgeContainerRecord.UpdateOne(firstRecord)
 			updateOne.SetSyncAt(time.Now())
-			updateOne.SetRecordName(tea.StringValue(containerRecord.RecordName))
 			updateOne.SetRecordCname(tea.StringValue(containerRecord.RecordCname))
 			err = updateOne.Exec(ctx)
 			if err != nil {

@@ -21,6 +21,8 @@ import (
 	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/esasiteedgecontainerrecord"
+	"vibe_ip/internal/ent/esasiteedgeroutinerecord"
 	"vibe_ip/internal/ent/esasiteoriginpool"
 	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/ipgroup"
@@ -474,6 +476,56 @@ func init() {
 	esasiteDescID := esasiteFields[0].Descriptor()
 	// esasite.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	esasite.IDValidator = esasiteDescID.Validators[0].(func(int64) error)
+	esasiteedgecontainerrecordMixin := schema.EsaSiteEdgeContainerRecord{}.Mixin()
+	esasiteedgecontainerrecordHooks := schema.EsaSiteEdgeContainerRecord{}.Hooks()
+	esasiteedgecontainerrecord.Hooks[0] = esasiteedgecontainerrecordHooks[0]
+	esasiteedgecontainerrecordMixinFields0 := esasiteedgecontainerrecordMixin[0].Fields()
+	_ = esasiteedgecontainerrecordMixinFields0
+	esasiteedgecontainerrecordFields := schema.EsaSiteEdgeContainerRecord{}.Fields()
+	_ = esasiteedgecontainerrecordFields
+	// esasiteedgecontainerrecordDescCreatedAt is the schema descriptor for created_at field.
+	esasiteedgecontainerrecordDescCreatedAt := esasiteedgecontainerrecordMixinFields0[0].Descriptor()
+	// esasiteedgecontainerrecord.DefaultCreatedAt holds the default value on creation for the created_at field.
+	esasiteedgecontainerrecord.DefaultCreatedAt = esasiteedgecontainerrecordDescCreatedAt.Default.(func() time.Time)
+	// esasiteedgecontainerrecordDescUpdatedAt is the schema descriptor for updated_at field.
+	esasiteedgecontainerrecordDescUpdatedAt := esasiteedgecontainerrecordMixinFields0[1].Descriptor()
+	// esasiteedgecontainerrecord.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	esasiteedgecontainerrecord.DefaultUpdatedAt = esasiteedgecontainerrecordDescUpdatedAt.Default.(func() time.Time)
+	// esasiteedgecontainerrecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	esasiteedgecontainerrecord.UpdateDefaultUpdatedAt = esasiteedgecontainerrecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// esasiteedgecontainerrecordDescEsaSiteID is the schema descriptor for esa_site_id field.
+	esasiteedgecontainerrecordDescEsaSiteID := esasiteedgecontainerrecordFields[1].Descriptor()
+	// esasiteedgecontainerrecord.EsaSiteIDValidator is a validator for the "esa_site_id" field. It is called by the builders before save.
+	esasiteedgecontainerrecord.EsaSiteIDValidator = esasiteedgecontainerrecordDescEsaSiteID.Validators[0].(func(int64) error)
+	// esasiteedgecontainerrecordDescID is the schema descriptor for id field.
+	esasiteedgecontainerrecordDescID := esasiteedgecontainerrecordFields[0].Descriptor()
+	// esasiteedgecontainerrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	esasiteedgecontainerrecord.IDValidator = esasiteedgecontainerrecordDescID.Validators[0].(func(int64) error)
+	esasiteedgeroutinerecordMixin := schema.EsaSiteEdgeRoutineRecord{}.Mixin()
+	esasiteedgeroutinerecordHooks := schema.EsaSiteEdgeRoutineRecord{}.Hooks()
+	esasiteedgeroutinerecord.Hooks[0] = esasiteedgeroutinerecordHooks[0]
+	esasiteedgeroutinerecordMixinFields0 := esasiteedgeroutinerecordMixin[0].Fields()
+	_ = esasiteedgeroutinerecordMixinFields0
+	esasiteedgeroutinerecordFields := schema.EsaSiteEdgeRoutineRecord{}.Fields()
+	_ = esasiteedgeroutinerecordFields
+	// esasiteedgeroutinerecordDescCreatedAt is the schema descriptor for created_at field.
+	esasiteedgeroutinerecordDescCreatedAt := esasiteedgeroutinerecordMixinFields0[0].Descriptor()
+	// esasiteedgeroutinerecord.DefaultCreatedAt holds the default value on creation for the created_at field.
+	esasiteedgeroutinerecord.DefaultCreatedAt = esasiteedgeroutinerecordDescCreatedAt.Default.(func() time.Time)
+	// esasiteedgeroutinerecordDescUpdatedAt is the schema descriptor for updated_at field.
+	esasiteedgeroutinerecordDescUpdatedAt := esasiteedgeroutinerecordMixinFields0[1].Descriptor()
+	// esasiteedgeroutinerecord.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	esasiteedgeroutinerecord.DefaultUpdatedAt = esasiteedgeroutinerecordDescUpdatedAt.Default.(func() time.Time)
+	// esasiteedgeroutinerecord.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	esasiteedgeroutinerecord.UpdateDefaultUpdatedAt = esasiteedgeroutinerecordDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// esasiteedgeroutinerecordDescEsaSiteID is the schema descriptor for esa_site_id field.
+	esasiteedgeroutinerecordDescEsaSiteID := esasiteedgeroutinerecordFields[1].Descriptor()
+	// esasiteedgeroutinerecord.EsaSiteIDValidator is a validator for the "esa_site_id" field. It is called by the builders before save.
+	esasiteedgeroutinerecord.EsaSiteIDValidator = esasiteedgeroutinerecordDescEsaSiteID.Validators[0].(func(int64) error)
+	// esasiteedgeroutinerecordDescID is the schema descriptor for id field.
+	esasiteedgeroutinerecordDescID := esasiteedgeroutinerecordFields[0].Descriptor()
+	// esasiteedgeroutinerecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	esasiteedgeroutinerecord.IDValidator = esasiteedgeroutinerecordDescID.Validators[0].(func(int64) error)
 	esasiteoriginpoolMixin := schema.EsaSiteOriginPool{}.Mixin()
 	esasiteoriginpoolHooks := schema.EsaSiteOriginPool{}.Hooks()
 	esasiteoriginpool.Hooks[0] = esasiteoriginpoolHooks[0]

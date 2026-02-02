@@ -948,6 +948,108 @@ var (
 			},
 		},
 	}
+	// EsaSiteEdgeContainerRecordColumns holds the columns for the "esa_site_edge_container_record" table.
+	EsaSiteEdgeContainerRecordColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "ESA 站点边缘容器记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
+		{Name: "record_name", Type: field.TypeString, Comment: "记录名称"},
+		{Name: "record_cname", Type: field.TypeString, Nullable: true, Comment: "记录的 CNAME"},
+		{Name: "esa_site_id", Type: field.TypeInt64, Comment: "关联 ESA 站点序号"},
+	}
+	// EsaSiteEdgeContainerRecordTable holds the schema information for the "esa_site_edge_container_record" table.
+	EsaSiteEdgeContainerRecordTable = &schema.Table{
+		Name:       "esa_site_edge_container_record",
+		Comment:    "ESA 站点边缘容器记录",
+		Columns:    EsaSiteEdgeContainerRecordColumns,
+		PrimaryKey: []*schema.Column{EsaSiteEdgeContainerRecordColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "esa_site_edge_container_record_esa_site_edgecontainerrecords",
+				Columns:    []*schema.Column{EsaSiteEdgeContainerRecordColumns[7]},
+				RefColumns: []*schema.Column{EsaSiteColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "esasiteedgecontainerrecord_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteEdgeContainerRecordColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "esasiteedgecontainerrecord_esa_site_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteEdgeContainerRecordColumns[7]},
+			},
+			{
+				Name:    "esasiteedgecontainerrecord_record_name",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteEdgeContainerRecordColumns[5]},
+			},
+			{
+				Name:    "esasiteedgecontainerrecord_esa_site_id_record_name",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteEdgeContainerRecordColumns[7], EsaSiteEdgeContainerRecordColumns[5]},
+			},
+		},
+	}
+	// EsaSiteEdgeRoutineRecordColumns holds the columns for the "esa_site_edge_routine_record" table.
+	EsaSiteEdgeRoutineRecordColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "ESA 站点边缘路由记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "remote_created_at", Type: field.TypeTime, Nullable: true, Comment: "远程创建时间"},
+		{Name: "sync_at", Type: field.TypeTime, Nullable: true, Comment: "最近一次同步时间"},
+		{Name: "record_name", Type: field.TypeString, Comment: "记录名称"},
+		{Name: "record_cname", Type: field.TypeString, Nullable: true, Comment: "记录的 CNAME"},
+		{Name: "esa_site_id", Type: field.TypeInt64, Comment: "关联 ESA 站点序号"},
+	}
+	// EsaSiteEdgeRoutineRecordTable holds the schema information for the "esa_site_edge_routine_record" table.
+	EsaSiteEdgeRoutineRecordTable = &schema.Table{
+		Name:       "esa_site_edge_routine_record",
+		Comment:    "ESA 站点边缘路由记录",
+		Columns:    EsaSiteEdgeRoutineRecordColumns,
+		PrimaryKey: []*schema.Column{EsaSiteEdgeRoutineRecordColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "esa_site_edge_routine_record_esa_site_edgeroutinerecords",
+				Columns:    []*schema.Column{EsaSiteEdgeRoutineRecordColumns[7]},
+				RefColumns: []*schema.Column{EsaSiteColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "esasiteedgeroutinerecord_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteEdgeRoutineRecordColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "esasiteedgeroutinerecord_esa_site_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteEdgeRoutineRecordColumns[7]},
+			},
+			{
+				Name:    "esasiteedgeroutinerecord_record_name",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteEdgeRoutineRecordColumns[5]},
+			},
+			{
+				Name:    "esasiteedgeroutinerecord_esa_site_id_record_name",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteEdgeRoutineRecordColumns[7], EsaSiteEdgeRoutineRecordColumns[5]},
+			},
+		},
+	}
 	// EsaSiteOriginpoolColumns holds the columns for the "esa_site_originpool" table.
 	EsaSiteOriginpoolColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "ESA 站点源地址池序号"},
@@ -1511,6 +1613,8 @@ var (
 		EdgeoneZoneDnsrecordTable,
 		EdgeoneZoneOrigingroupTable,
 		EsaSiteTable,
+		EsaSiteEdgeContainerRecordTable,
+		EsaSiteEdgeRoutineRecordTable,
 		EsaSiteOriginpoolTable,
 		EsaSiteRecordTable,
 		IPGroupTable,
@@ -1594,6 +1698,14 @@ func init() {
 	EsaSiteTable.ForeignKeys[0].RefTable = PlatformConfigTable
 	EsaSiteTable.Annotation = &entsql.Annotation{
 		Table: "esa_site",
+	}
+	EsaSiteEdgeContainerRecordTable.ForeignKeys[0].RefTable = EsaSiteTable
+	EsaSiteEdgeContainerRecordTable.Annotation = &entsql.Annotation{
+		Table: "esa_site_edge_container_record",
+	}
+	EsaSiteEdgeRoutineRecordTable.ForeignKeys[0].RefTable = EsaSiteTable
+	EsaSiteEdgeRoutineRecordTable.Annotation = &entsql.Annotation{
+		Table: "esa_site_edge_routine_record",
 	}
 	EsaSiteOriginpoolTable.ForeignKeys[0].RefTable = EsaSiteTable
 	EsaSiteOriginpoolTable.Annotation = &entsql.Annotation{

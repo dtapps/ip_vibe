@@ -132,6 +132,22 @@ func (EsaSite) Edges() []ent.Edge {
 				OnDelete: entsql.Cascade,
 			}, entsql.WithComments(true)),
 
+		// 一对多 EsaSite -> EsaSiteEdgeContainerRecord
+		edge.To("edgecontainerrecords", EsaSiteEdgeContainerRecord.Type).
+			Comment("关联的 ESA 站点边缘容器记录").
+			Annotations(entsql.Annotation{
+				// 级联删除：删除 EsaSite 时，其所有 EsaSiteEdgeContainerRecord 记录也应删除
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
+
+		// 一对多 EsaSite -> EsaSiteEdgeRoutineRecord
+		edge.To("edgeroutinerecords", EsaSiteEdgeRoutineRecord.Type).
+			Comment("关联的 ESA 站点边缘路由记录").
+			Annotations(entsql.Annotation{
+				// 级联删除：删除 EsaSite 时，其所有 EsaSiteEdgeRoutineRecord 记录也应删除
+				OnDelete: entsql.Cascade,
+			}, entsql.WithComments(true)),
+
 		// 一对多 EsaSite -> EsaSiteOriginPool
 		edge.To("originpools", EsaSiteOriginPool.Type).
 			Comment("关联的ESA站点源地址池").

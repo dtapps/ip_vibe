@@ -52,6 +52,10 @@ const (
 	EdgeConfig = "config"
 	// EdgeRecords holds the string denoting the records edge name in mutations.
 	EdgeRecords = "records"
+	// EdgeEdgecontainerrecords holds the string denoting the edgecontainerrecords edge name in mutations.
+	EdgeEdgecontainerrecords = "edgecontainerrecords"
+	// EdgeEdgeroutinerecords holds the string denoting the edgeroutinerecords edge name in mutations.
+	EdgeEdgeroutinerecords = "edgeroutinerecords"
 	// EdgeOriginpools holds the string denoting the originpools edge name in mutations.
 	EdgeOriginpools = "originpools"
 	// Table holds the table name of the esasite in the database.
@@ -70,6 +74,20 @@ const (
 	RecordsInverseTable = "esa_site_record"
 	// RecordsColumn is the table column denoting the records relation/edge.
 	RecordsColumn = "esa_site_id"
+	// EdgecontainerrecordsTable is the table that holds the edgecontainerrecords relation/edge.
+	EdgecontainerrecordsTable = "esa_site_edge_container_record"
+	// EdgecontainerrecordsInverseTable is the table name for the EsaSiteEdgeContainerRecord entity.
+	// It exists in this package in order to avoid circular dependency with the "esasiteedgecontainerrecord" package.
+	EdgecontainerrecordsInverseTable = "esa_site_edge_container_record"
+	// EdgecontainerrecordsColumn is the table column denoting the edgecontainerrecords relation/edge.
+	EdgecontainerrecordsColumn = "esa_site_id"
+	// EdgeroutinerecordsTable is the table that holds the edgeroutinerecords relation/edge.
+	EdgeroutinerecordsTable = "esa_site_edge_routine_record"
+	// EdgeroutinerecordsInverseTable is the table name for the EsaSiteEdgeRoutineRecord entity.
+	// It exists in this package in order to avoid circular dependency with the "esasiteedgeroutinerecord" package.
+	EdgeroutinerecordsInverseTable = "esa_site_edge_routine_record"
+	// EdgeroutinerecordsColumn is the table column denoting the edgeroutinerecords relation/edge.
+	EdgeroutinerecordsColumn = "esa_site_id"
 	// OriginpoolsTable is the table that holds the originpools relation/edge.
 	OriginpoolsTable = "esa_site_originpool"
 	// OriginpoolsInverseTable is the table name for the EsaSiteOriginPool entity.
@@ -310,6 +328,34 @@ func ByRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByEdgecontainerrecordsCount orders the results by edgecontainerrecords count.
+func ByEdgecontainerrecordsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newEdgecontainerrecordsStep(), opts...)
+	}
+}
+
+// ByEdgecontainerrecords orders the results by edgecontainerrecords terms.
+func ByEdgecontainerrecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEdgecontainerrecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByEdgeroutinerecordsCount orders the results by edgeroutinerecords count.
+func ByEdgeroutinerecordsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newEdgeroutinerecordsStep(), opts...)
+	}
+}
+
+// ByEdgeroutinerecords orders the results by edgeroutinerecords terms.
+func ByEdgeroutinerecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEdgeroutinerecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByOriginpoolsCount orders the results by originpools count.
 func ByOriginpoolsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -335,6 +381,20 @@ func newRecordsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RecordsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, RecordsTable, RecordsColumn),
+	)
+}
+func newEdgecontainerrecordsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EdgecontainerrecordsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, EdgecontainerrecordsTable, EdgecontainerrecordsColumn),
+	)
+}
+func newEdgeroutinerecordsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EdgeroutinerecordsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, EdgeroutinerecordsTable, EdgeroutinerecordsColumn),
 	)
 }
 func newOriginpoolsStep() *sqlgraph.Step {

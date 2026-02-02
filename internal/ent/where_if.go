@@ -536,6 +536,68 @@ func (q *EsaSiteQuery) WhereIfFunc(condition bool, predicateFunc func() predicat
 
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EsaSiteEdgeContainerRecordQuery) WhereIf(condition bool, p predicate.EsaSiteEdgeContainerRecord) *EsaSiteEdgeContainerRecordQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EsaSiteEdgeContainerRecordQuery) WhereIfs(condition bool, p ...predicate.EsaSiteEdgeContainerRecord) *EsaSiteEdgeContainerRecordQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *EsaSiteEdgeContainerRecordQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.EsaSiteEdgeContainerRecord) *EsaSiteEdgeContainerRecordQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EsaSiteEdgeRoutineRecordQuery) WhereIf(condition bool, p predicate.EsaSiteEdgeRoutineRecord) *EsaSiteEdgeRoutineRecordQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *EsaSiteEdgeRoutineRecordQuery) WhereIfs(condition bool, p ...predicate.EsaSiteEdgeRoutineRecord) *EsaSiteEdgeRoutineRecordQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *EsaSiteEdgeRoutineRecordQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.EsaSiteEdgeRoutineRecord) *EsaSiteEdgeRoutineRecordQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
 func (q *EsaSiteOriginPoolQuery) WhereIf(condition bool, p predicate.EsaSiteOriginPool) *EsaSiteOriginPoolQuery {
 	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {

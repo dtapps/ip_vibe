@@ -21,6 +21,8 @@ import (
 	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/esasiteedgecontainerrecord"
+	"vibe_ip/internal/ent/esasiteedgeroutinerecord"
 	"vibe_ip/internal/ent/esasiteoriginpool"
 	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/ipgroup"
@@ -366,6 +368,46 @@ func (q *EsaSiteQuery) OrderIf(condition bool, o esasite.OrderOption) *EsaSiteQu
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *EsaSiteQuery) OrderIfs(condition bool, o ...esasite.OrderOption) *EsaSiteQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteEdgeContainerRecordQuery) OrderIf(condition bool, o esasiteedgecontainerrecord.OrderOption) *EsaSiteEdgeContainerRecordQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteEdgeContainerRecordQuery) OrderIfs(condition bool, o ...esasiteedgecontainerrecord.OrderOption) *EsaSiteEdgeContainerRecordQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteEdgeRoutineRecordQuery) OrderIf(condition bool, o esasiteedgeroutinerecord.OrderOption) *EsaSiteEdgeRoutineRecordQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteEdgeRoutineRecordQuery) OrderIfs(condition bool, o ...esasiteedgeroutinerecord.OrderOption) *EsaSiteEdgeRoutineRecordQuery {
 	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)

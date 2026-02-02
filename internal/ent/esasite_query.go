@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"math"
 	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/esasiteedgecontainerrecord"
+	"vibe_ip/internal/ent/esasiteedgeroutinerecord"
 	"vibe_ip/internal/ent/esasiteoriginpool"
 	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/platformconfig"
@@ -22,16 +24,20 @@ import (
 // EsaSiteQuery is the builder for querying EsaSite entities.
 type EsaSiteQuery struct {
 	config
-	ctx                  *QueryContext
-	order                []esasite.OrderOption
-	inters               []Interceptor
-	predicates           []predicate.EsaSite
-	withConfig           *PlatformConfigQuery
-	withRecords          *EsaSiteRecordQuery
-	withOriginpools      *EsaSiteOriginPoolQuery
-	modifiers            []func(*sql.Selector)
-	withNamedRecords     map[string]*EsaSiteRecordQuery
-	withNamedOriginpools map[string]*EsaSiteOriginPoolQuery
+	ctx                           *QueryContext
+	order                         []esasite.OrderOption
+	inters                        []Interceptor
+	predicates                    []predicate.EsaSite
+	withConfig                    *PlatformConfigQuery
+	withRecords                   *EsaSiteRecordQuery
+	withEdgecontainerrecords      *EsaSiteEdgeContainerRecordQuery
+	withEdgeroutinerecords        *EsaSiteEdgeRoutineRecordQuery
+	withOriginpools               *EsaSiteOriginPoolQuery
+	modifiers                     []func(*sql.Selector)
+	withNamedRecords              map[string]*EsaSiteRecordQuery
+	withNamedEdgecontainerrecords map[string]*EsaSiteEdgeContainerRecordQuery
+	withNamedEdgeroutinerecords   map[string]*EsaSiteEdgeRoutineRecordQuery
+	withNamedOriginpools          map[string]*EsaSiteOriginPoolQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -105,6 +111,50 @@ func (_q *EsaSiteQuery) QueryRecords() *EsaSiteRecordQuery {
 			sqlgraph.From(esasite.Table, esasite.FieldID, selector),
 			sqlgraph.To(esasiterecord.Table, esasiterecord.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, esasite.RecordsTable, esasite.RecordsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEdgecontainerrecords chains the current query on the "edgecontainerrecords" edge.
+func (_q *EsaSiteQuery) QueryEdgecontainerrecords() *EsaSiteEdgeContainerRecordQuery {
+	query := (&EsaSiteEdgeContainerRecordClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(esasite.Table, esasite.FieldID, selector),
+			sqlgraph.To(esasiteedgecontainerrecord.Table, esasiteedgecontainerrecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, esasite.EdgecontainerrecordsTable, esasite.EdgecontainerrecordsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEdgeroutinerecords chains the current query on the "edgeroutinerecords" edge.
+func (_q *EsaSiteQuery) QueryEdgeroutinerecords() *EsaSiteEdgeRoutineRecordQuery {
+	query := (&EsaSiteEdgeRoutineRecordClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(esasite.Table, esasite.FieldID, selector),
+			sqlgraph.To(esasiteedgeroutinerecord.Table, esasiteedgeroutinerecord.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, esasite.EdgeroutinerecordsTable, esasite.EdgeroutinerecordsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -321,14 +371,16 @@ func (_q *EsaSiteQuery) Clone() *EsaSiteQuery {
 		return nil
 	}
 	return &EsaSiteQuery{
-		config:          _q.config,
-		ctx:             _q.ctx.Clone(),
-		order:           append([]esasite.OrderOption{}, _q.order...),
-		inters:          append([]Interceptor{}, _q.inters...),
-		predicates:      append([]predicate.EsaSite{}, _q.predicates...),
-		withConfig:      _q.withConfig.Clone(),
-		withRecords:     _q.withRecords.Clone(),
-		withOriginpools: _q.withOriginpools.Clone(),
+		config:                   _q.config,
+		ctx:                      _q.ctx.Clone(),
+		order:                    append([]esasite.OrderOption{}, _q.order...),
+		inters:                   append([]Interceptor{}, _q.inters...),
+		predicates:               append([]predicate.EsaSite{}, _q.predicates...),
+		withConfig:               _q.withConfig.Clone(),
+		withRecords:              _q.withRecords.Clone(),
+		withEdgecontainerrecords: _q.withEdgecontainerrecords.Clone(),
+		withEdgeroutinerecords:   _q.withEdgeroutinerecords.Clone(),
+		withOriginpools:          _q.withOriginpools.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -355,6 +407,28 @@ func (_q *EsaSiteQuery) WithRecords(opts ...func(*EsaSiteRecordQuery)) *EsaSiteQ
 		opt(query)
 	}
 	_q.withRecords = query
+	return _q
+}
+
+// WithEdgecontainerrecords tells the query-builder to eager-load the nodes that are connected to
+// the "edgecontainerrecords" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *EsaSiteQuery) WithEdgecontainerrecords(opts ...func(*EsaSiteEdgeContainerRecordQuery)) *EsaSiteQuery {
+	query := (&EsaSiteEdgeContainerRecordClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withEdgecontainerrecords = query
+	return _q
+}
+
+// WithEdgeroutinerecords tells the query-builder to eager-load the nodes that are connected to
+// the "edgeroutinerecords" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *EsaSiteQuery) WithEdgeroutinerecords(opts ...func(*EsaSiteEdgeRoutineRecordQuery)) *EsaSiteQuery {
+	query := (&EsaSiteEdgeRoutineRecordClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withEdgeroutinerecords = query
 	return _q
 }
 
@@ -447,9 +521,11 @@ func (_q *EsaSiteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EsaS
 	var (
 		nodes       = []*EsaSite{}
 		_spec       = _q.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [5]bool{
 			_q.withConfig != nil,
 			_q.withRecords != nil,
+			_q.withEdgecontainerrecords != nil,
+			_q.withEdgeroutinerecords != nil,
 			_q.withOriginpools != nil,
 		}
 	)
@@ -492,6 +568,30 @@ func (_q *EsaSiteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EsaS
 			return nil, err
 		}
 	}
+	if query := _q.withEdgecontainerrecords; query != nil {
+		if err := _q.loadEdgecontainerrecords(ctx, query, nodes,
+			func(n *EsaSite) { n.Edges.Edgecontainerrecords = []*EsaSiteEdgeContainerRecord{} },
+			func(n *EsaSite, e *EsaSiteEdgeContainerRecord) {
+				n.Edges.Edgecontainerrecords = append(n.Edges.Edgecontainerrecords, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.EsaSite = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withEdgeroutinerecords; query != nil {
+		if err := _q.loadEdgeroutinerecords(ctx, query, nodes,
+			func(n *EsaSite) { n.Edges.Edgeroutinerecords = []*EsaSiteEdgeRoutineRecord{} },
+			func(n *EsaSite, e *EsaSiteEdgeRoutineRecord) {
+				n.Edges.Edgeroutinerecords = append(n.Edges.Edgeroutinerecords, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.EsaSite = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
 	if query := _q.withOriginpools; query != nil {
 		if err := _q.loadOriginpools(ctx, query, nodes,
 			func(n *EsaSite) { n.Edges.Originpools = []*EsaSiteOriginPool{} },
@@ -509,6 +609,30 @@ func (_q *EsaSiteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EsaS
 			func(n *EsaSite) { n.appendNamedRecords(name) },
 			func(n *EsaSite, e *EsaSiteRecord) {
 				n.appendNamedRecords(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.EsaSite = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedEdgecontainerrecords {
+		if err := _q.loadEdgecontainerrecords(ctx, query, nodes,
+			func(n *EsaSite) { n.appendNamedEdgecontainerrecords(name) },
+			func(n *EsaSite, e *EsaSiteEdgeContainerRecord) {
+				n.appendNamedEdgecontainerrecords(name, e)
+				if !e.Edges.loadedTypes[0] {
+					e.Edges.EsaSite = n
+				}
+			}); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range _q.withNamedEdgeroutinerecords {
+		if err := _q.loadEdgeroutinerecords(ctx, query, nodes,
+			func(n *EsaSite) { n.appendNamedEdgeroutinerecords(name) },
+			func(n *EsaSite, e *EsaSiteEdgeRoutineRecord) {
+				n.appendNamedEdgeroutinerecords(name, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.EsaSite = n
 				}
@@ -575,6 +699,66 @@ func (_q *EsaSiteQuery) loadRecords(ctx context.Context, query *EsaSiteRecordQue
 	}
 	query.Where(predicate.EsaSiteRecord(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(esasite.RecordsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EsaSiteID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "esa_site_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *EsaSiteQuery) loadEdgecontainerrecords(ctx context.Context, query *EsaSiteEdgeContainerRecordQuery, nodes []*EsaSite, init func(*EsaSite), assign func(*EsaSite, *EsaSiteEdgeContainerRecord)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*EsaSite)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(esasiteedgecontainerrecord.FieldEsaSiteID)
+	}
+	query.Where(predicate.EsaSiteEdgeContainerRecord(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(esasite.EdgecontainerrecordsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EsaSiteID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "esa_site_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *EsaSiteQuery) loadEdgeroutinerecords(ctx context.Context, query *EsaSiteEdgeRoutineRecordQuery, nodes []*EsaSite, init func(*EsaSite), assign func(*EsaSite, *EsaSiteEdgeRoutineRecord)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int64]*EsaSite)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(esasiteedgeroutinerecord.FieldEsaSiteID)
+	}
+	query.Where(predicate.EsaSiteEdgeRoutineRecord(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(esasite.EdgeroutinerecordsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -728,6 +912,34 @@ func (_q *EsaSiteQuery) WithNamedRecords(name string, opts ...func(*EsaSiteRecor
 		_q.withNamedRecords = make(map[string]*EsaSiteRecordQuery)
 	}
 	_q.withNamedRecords[name] = query
+	return _q
+}
+
+// WithNamedEdgecontainerrecords tells the query-builder to eager-load the nodes that are connected to the "edgecontainerrecords"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *EsaSiteQuery) WithNamedEdgecontainerrecords(name string, opts ...func(*EsaSiteEdgeContainerRecordQuery)) *EsaSiteQuery {
+	query := (&EsaSiteEdgeContainerRecordClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedEdgecontainerrecords == nil {
+		_q.withNamedEdgecontainerrecords = make(map[string]*EsaSiteEdgeContainerRecordQuery)
+	}
+	_q.withNamedEdgecontainerrecords[name] = query
+	return _q
+}
+
+// WithNamedEdgeroutinerecords tells the query-builder to eager-load the nodes that are connected to the "edgeroutinerecords"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (_q *EsaSiteQuery) WithNamedEdgeroutinerecords(name string, opts ...func(*EsaSiteEdgeRoutineRecordQuery)) *EsaSiteQuery {
+	query := (&EsaSiteEdgeRoutineRecordClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	if _q.withNamedEdgeroutinerecords == nil {
+		_q.withNamedEdgeroutinerecords = make(map[string]*EsaSiteEdgeRoutineRecordQuery)
+	}
+	_q.withNamedEdgeroutinerecords[name] = query
 	return _q
 }
 

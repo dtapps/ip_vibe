@@ -48,6 +48,10 @@ type Tx struct {
 	EdgeOneZoneOriginGroup *EdgeOneZoneOriginGroupClient
 	// EsaSite is the client for interacting with the EsaSite builders.
 	EsaSite *EsaSiteClient
+	// EsaSiteEdgeContainerRecord is the client for interacting with the EsaSiteEdgeContainerRecord builders.
+	EsaSiteEdgeContainerRecord *EsaSiteEdgeContainerRecordClient
+	// EsaSiteEdgeRoutineRecord is the client for interacting with the EsaSiteEdgeRoutineRecord builders.
+	EsaSiteEdgeRoutineRecord *EsaSiteEdgeRoutineRecordClient
 	// EsaSiteOriginPool is the client for interacting with the EsaSiteOriginPool builders.
 	EsaSiteOriginPool *EsaSiteOriginPoolClient
 	// EsaSiteRecord is the client for interacting with the EsaSiteRecord builders.
@@ -216,6 +220,8 @@ func (tx *Tx) init() {
 	tx.EdgeOneZoneDNSRecord = NewEdgeOneZoneDNSRecordClient(tx.config)
 	tx.EdgeOneZoneOriginGroup = NewEdgeOneZoneOriginGroupClient(tx.config)
 	tx.EsaSite = NewEsaSiteClient(tx.config)
+	tx.EsaSiteEdgeContainerRecord = NewEsaSiteEdgeContainerRecordClient(tx.config)
+	tx.EsaSiteEdgeRoutineRecord = NewEsaSiteEdgeRoutineRecordClient(tx.config)
 	tx.EsaSiteOriginPool = NewEsaSiteOriginPoolClient(tx.config)
 	tx.EsaSiteRecord = NewEsaSiteRecordClient(tx.config)
 	tx.IpGroup = NewIpGroupClient(tx.config)

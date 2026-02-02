@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"time"
 	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/esasiteedgecontainerrecord"
+	"vibe_ip/internal/ent/esasiteedgeroutinerecord"
 	"vibe_ip/internal/ent/esasiteoriginpool"
 	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/platformconfig"
@@ -259,6 +261,36 @@ func (_c *EsaSiteCreate) AddRecords(v ...*EsaSiteRecord) *EsaSiteCreate {
 	return _c.AddRecordIDs(ids...)
 }
 
+// AddEdgecontainerrecordIDs adds the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity by IDs.
+func (_c *EsaSiteCreate) AddEdgecontainerrecordIDs(ids ...int64) *EsaSiteCreate {
+	_c.mutation.AddEdgecontainerrecordIDs(ids...)
+	return _c
+}
+
+// AddEdgecontainerrecords adds the "edgecontainerrecords" edges to the EsaSiteEdgeContainerRecord entity.
+func (_c *EsaSiteCreate) AddEdgecontainerrecords(v ...*EsaSiteEdgeContainerRecord) *EsaSiteCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddEdgecontainerrecordIDs(ids...)
+}
+
+// AddEdgeroutinerecordIDs adds the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity by IDs.
+func (_c *EsaSiteCreate) AddEdgeroutinerecordIDs(ids ...int64) *EsaSiteCreate {
+	_c.mutation.AddEdgeroutinerecordIDs(ids...)
+	return _c
+}
+
+// AddEdgeroutinerecords adds the "edgeroutinerecords" edges to the EsaSiteEdgeRoutineRecord entity.
+func (_c *EsaSiteCreate) AddEdgeroutinerecords(v ...*EsaSiteEdgeRoutineRecord) *EsaSiteCreate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddEdgeroutinerecordIDs(ids...)
+}
+
 // AddOriginpoolIDs adds the "originpools" edge to the EsaSiteOriginPool entity by IDs.
 func (_c *EsaSiteCreate) AddOriginpoolIDs(ids ...int64) *EsaSiteCreate {
 	_c.mutation.AddOriginpoolIDs(ids...)
@@ -489,6 +521,38 @@ func (_c *EsaSiteCreate) createSpec() (*EsaSite, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiterecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.EdgecontainerrecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   esasite.EdgecontainerrecordsTable,
+			Columns: []string{esasite.EdgecontainerrecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(esasiteedgecontainerrecord.FieldID, field.TypeInt64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.EdgeroutinerecordsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   esasite.EdgeroutinerecordsTable,
+			Columns: []string{esasite.EdgeroutinerecordsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(esasiteedgeroutinerecord.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {

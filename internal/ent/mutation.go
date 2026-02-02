@@ -26,6 +26,8 @@ import (
 	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/esasite"
+	"vibe_ip/internal/ent/esasiteedgecontainerrecord"
+	"vibe_ip/internal/ent/esasiteedgeroutinerecord"
 	"vibe_ip/internal/ent/esasiteoriginpool"
 	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/ipgroup"
@@ -68,6 +70,8 @@ const (
 	TypeEdgeOneZoneDNSRecord          = "EdgeOneZoneDNSRecord"
 	TypeEdgeOneZoneOriginGroup        = "EdgeOneZoneOriginGroup"
 	TypeEsaSite                       = "EsaSite"
+	TypeEsaSiteEdgeContainerRecord    = "EsaSiteEdgeContainerRecord"
+	TypeEsaSiteEdgeRoutineRecord      = "EsaSiteEdgeRoutineRecord"
 	TypeEsaSiteOriginPool             = "EsaSiteOriginPool"
 	TypeEsaSiteRecord                 = "EsaSiteRecord"
 	TypeIpGroup                       = "IpGroup"
@@ -18774,37 +18778,43 @@ func (m *EdgeOneZoneOriginGroupMutation) ResetEdge(name string) error {
 // EsaSiteMutation represents an operation that mutates the EsaSite nodes in the graph.
 type EsaSiteMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *int64
-	created_at         *time.Time
-	updated_at         *time.Time
-	remote_created_at  *time.Time
-	sync_at            *time.Time
-	access_type        *esasite.AccessType
-	cname_zone         *string
-	coverage           *esasite.Coverage
-	instance_id        *string
-	name_server_list   *string
-	plan_name          *string
-	plan_spec_name     *string
-	site_id            *int64
-	addsite_id         *int64
-	site_name          *string
-	status             *esasite.Status
-	offline_reason     *string
-	clearedFields      map[string]struct{}
-	_config            *int64
-	cleared_config     bool
-	records            map[int64]struct{}
-	removedrecords     map[int64]struct{}
-	clearedrecords     bool
-	originpools        map[int64]struct{}
-	removedoriginpools map[int64]struct{}
-	clearedoriginpools bool
-	done               bool
-	oldValue           func(context.Context) (*EsaSite, error)
-	predicates         []predicate.EsaSite
+	op                          Op
+	typ                         string
+	id                          *int64
+	created_at                  *time.Time
+	updated_at                  *time.Time
+	remote_created_at           *time.Time
+	sync_at                     *time.Time
+	access_type                 *esasite.AccessType
+	cname_zone                  *string
+	coverage                    *esasite.Coverage
+	instance_id                 *string
+	name_server_list            *string
+	plan_name                   *string
+	plan_spec_name              *string
+	site_id                     *int64
+	addsite_id                  *int64
+	site_name                   *string
+	status                      *esasite.Status
+	offline_reason              *string
+	clearedFields               map[string]struct{}
+	_config                     *int64
+	cleared_config              bool
+	records                     map[int64]struct{}
+	removedrecords              map[int64]struct{}
+	clearedrecords              bool
+	edgecontainerrecords        map[int64]struct{}
+	removededgecontainerrecords map[int64]struct{}
+	clearededgecontainerrecords bool
+	edgeroutinerecords          map[int64]struct{}
+	removededgeroutinerecords   map[int64]struct{}
+	clearededgeroutinerecords   bool
+	originpools                 map[int64]struct{}
+	removedoriginpools          map[int64]struct{}
+	clearedoriginpools          bool
+	done                        bool
+	oldValue                    func(context.Context) (*EsaSite, error)
+	predicates                  []predicate.EsaSite
 }
 
 var _ ent.Mutation = (*EsaSiteMutation)(nil)
@@ -19744,6 +19754,114 @@ func (m *EsaSiteMutation) ResetRecords() {
 	m.removedrecords = nil
 }
 
+// AddEdgecontainerrecordIDs adds the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity by ids.
+func (m *EsaSiteMutation) AddEdgecontainerrecordIDs(ids ...int64) {
+	if m.edgecontainerrecords == nil {
+		m.edgecontainerrecords = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.edgecontainerrecords[ids[i]] = struct{}{}
+	}
+}
+
+// ClearEdgecontainerrecords clears the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity.
+func (m *EsaSiteMutation) ClearEdgecontainerrecords() {
+	m.clearededgecontainerrecords = true
+}
+
+// EdgecontainerrecordsCleared reports if the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity was cleared.
+func (m *EsaSiteMutation) EdgecontainerrecordsCleared() bool {
+	return m.clearededgecontainerrecords
+}
+
+// RemoveEdgecontainerrecordIDs removes the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity by IDs.
+func (m *EsaSiteMutation) RemoveEdgecontainerrecordIDs(ids ...int64) {
+	if m.removededgecontainerrecords == nil {
+		m.removededgecontainerrecords = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.edgecontainerrecords, ids[i])
+		m.removededgecontainerrecords[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedEdgecontainerrecords returns the removed IDs of the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity.
+func (m *EsaSiteMutation) RemovedEdgecontainerrecordsIDs() (ids []int64) {
+	for id := range m.removededgecontainerrecords {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// EdgecontainerrecordsIDs returns the "edgecontainerrecords" edge IDs in the mutation.
+func (m *EsaSiteMutation) EdgecontainerrecordsIDs() (ids []int64) {
+	for id := range m.edgecontainerrecords {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetEdgecontainerrecords resets all changes to the "edgecontainerrecords" edge.
+func (m *EsaSiteMutation) ResetEdgecontainerrecords() {
+	m.edgecontainerrecords = nil
+	m.clearededgecontainerrecords = false
+	m.removededgecontainerrecords = nil
+}
+
+// AddEdgeroutinerecordIDs adds the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity by ids.
+func (m *EsaSiteMutation) AddEdgeroutinerecordIDs(ids ...int64) {
+	if m.edgeroutinerecords == nil {
+		m.edgeroutinerecords = make(map[int64]struct{})
+	}
+	for i := range ids {
+		m.edgeroutinerecords[ids[i]] = struct{}{}
+	}
+}
+
+// ClearEdgeroutinerecords clears the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity.
+func (m *EsaSiteMutation) ClearEdgeroutinerecords() {
+	m.clearededgeroutinerecords = true
+}
+
+// EdgeroutinerecordsCleared reports if the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity was cleared.
+func (m *EsaSiteMutation) EdgeroutinerecordsCleared() bool {
+	return m.clearededgeroutinerecords
+}
+
+// RemoveEdgeroutinerecordIDs removes the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity by IDs.
+func (m *EsaSiteMutation) RemoveEdgeroutinerecordIDs(ids ...int64) {
+	if m.removededgeroutinerecords == nil {
+		m.removededgeroutinerecords = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.edgeroutinerecords, ids[i])
+		m.removededgeroutinerecords[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedEdgeroutinerecords returns the removed IDs of the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity.
+func (m *EsaSiteMutation) RemovedEdgeroutinerecordsIDs() (ids []int64) {
+	for id := range m.removededgeroutinerecords {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// EdgeroutinerecordsIDs returns the "edgeroutinerecords" edge IDs in the mutation.
+func (m *EsaSiteMutation) EdgeroutinerecordsIDs() (ids []int64) {
+	for id := range m.edgeroutinerecords {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetEdgeroutinerecords resets all changes to the "edgeroutinerecords" edge.
+func (m *EsaSiteMutation) ResetEdgeroutinerecords() {
+	m.edgeroutinerecords = nil
+	m.clearededgeroutinerecords = false
+	m.removededgeroutinerecords = nil
+}
+
 // AddOriginpoolIDs adds the "originpools" edge to the EsaSiteOriginPool entity by ids.
 func (m *EsaSiteMutation) AddOriginpoolIDs(ids ...int64) {
 	if m.originpools == nil {
@@ -20276,12 +20394,18 @@ func (m *EsaSiteMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EsaSiteMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 5)
 	if m._config != nil {
 		edges = append(edges, esasite.EdgeConfig)
 	}
 	if m.records != nil {
 		edges = append(edges, esasite.EdgeRecords)
+	}
+	if m.edgecontainerrecords != nil {
+		edges = append(edges, esasite.EdgeEdgecontainerrecords)
+	}
+	if m.edgeroutinerecords != nil {
+		edges = append(edges, esasite.EdgeEdgeroutinerecords)
 	}
 	if m.originpools != nil {
 		edges = append(edges, esasite.EdgeOriginpools)
@@ -20303,6 +20427,18 @@ func (m *EsaSiteMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case esasite.EdgeEdgecontainerrecords:
+		ids := make([]ent.Value, 0, len(m.edgecontainerrecords))
+		for id := range m.edgecontainerrecords {
+			ids = append(ids, id)
+		}
+		return ids
+	case esasite.EdgeEdgeroutinerecords:
+		ids := make([]ent.Value, 0, len(m.edgeroutinerecords))
+		for id := range m.edgeroutinerecords {
+			ids = append(ids, id)
+		}
+		return ids
 	case esasite.EdgeOriginpools:
 		ids := make([]ent.Value, 0, len(m.originpools))
 		for id := range m.originpools {
@@ -20315,9 +20451,15 @@ func (m *EsaSiteMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EsaSiteMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 5)
 	if m.removedrecords != nil {
 		edges = append(edges, esasite.EdgeRecords)
+	}
+	if m.removededgecontainerrecords != nil {
+		edges = append(edges, esasite.EdgeEdgecontainerrecords)
+	}
+	if m.removededgeroutinerecords != nil {
+		edges = append(edges, esasite.EdgeEdgeroutinerecords)
 	}
 	if m.removedoriginpools != nil {
 		edges = append(edges, esasite.EdgeOriginpools)
@@ -20335,6 +20477,18 @@ func (m *EsaSiteMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case esasite.EdgeEdgecontainerrecords:
+		ids := make([]ent.Value, 0, len(m.removededgecontainerrecords))
+		for id := range m.removededgecontainerrecords {
+			ids = append(ids, id)
+		}
+		return ids
+	case esasite.EdgeEdgeroutinerecords:
+		ids := make([]ent.Value, 0, len(m.removededgeroutinerecords))
+		for id := range m.removededgeroutinerecords {
+			ids = append(ids, id)
+		}
+		return ids
 	case esasite.EdgeOriginpools:
 		ids := make([]ent.Value, 0, len(m.removedoriginpools))
 		for id := range m.removedoriginpools {
@@ -20347,12 +20501,18 @@ func (m *EsaSiteMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EsaSiteMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 5)
 	if m.cleared_config {
 		edges = append(edges, esasite.EdgeConfig)
 	}
 	if m.clearedrecords {
 		edges = append(edges, esasite.EdgeRecords)
+	}
+	if m.clearededgecontainerrecords {
+		edges = append(edges, esasite.EdgeEdgecontainerrecords)
+	}
+	if m.clearededgeroutinerecords {
+		edges = append(edges, esasite.EdgeEdgeroutinerecords)
 	}
 	if m.clearedoriginpools {
 		edges = append(edges, esasite.EdgeOriginpools)
@@ -20368,6 +20528,10 @@ func (m *EsaSiteMutation) EdgeCleared(name string) bool {
 		return m.cleared_config
 	case esasite.EdgeRecords:
 		return m.clearedrecords
+	case esasite.EdgeEdgecontainerrecords:
+		return m.clearededgecontainerrecords
+	case esasite.EdgeEdgeroutinerecords:
+		return m.clearededgeroutinerecords
 	case esasite.EdgeOriginpools:
 		return m.clearedoriginpools
 	}
@@ -20395,11 +20559,1563 @@ func (m *EsaSiteMutation) ResetEdge(name string) error {
 	case esasite.EdgeRecords:
 		m.ResetRecords()
 		return nil
+	case esasite.EdgeEdgecontainerrecords:
+		m.ResetEdgecontainerrecords()
+		return nil
+	case esasite.EdgeEdgeroutinerecords:
+		m.ResetEdgeroutinerecords()
+		return nil
 	case esasite.EdgeOriginpools:
 		m.ResetOriginpools()
 		return nil
 	}
 	return fmt.Errorf("unknown EsaSite edge %s", name)
+}
+
+// EsaSiteEdgeContainerRecordMutation represents an operation that mutates the EsaSiteEdgeContainerRecord nodes in the graph.
+type EsaSiteEdgeContainerRecordMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *int64
+	created_at        *time.Time
+	updated_at        *time.Time
+	remote_created_at *time.Time
+	sync_at           *time.Time
+	record_name       *string
+	record_cname      *string
+	clearedFields     map[string]struct{}
+	esa_site          *int64
+	clearedesa_site   bool
+	done              bool
+	oldValue          func(context.Context) (*EsaSiteEdgeContainerRecord, error)
+	predicates        []predicate.EsaSiteEdgeContainerRecord
+}
+
+var _ ent.Mutation = (*EsaSiteEdgeContainerRecordMutation)(nil)
+
+// esasiteedgecontainerrecordOption allows management of the mutation configuration using functional options.
+type esasiteedgecontainerrecordOption func(*EsaSiteEdgeContainerRecordMutation)
+
+// newEsaSiteEdgeContainerRecordMutation creates new mutation for the EsaSiteEdgeContainerRecord entity.
+func newEsaSiteEdgeContainerRecordMutation(c config, op Op, opts ...esasiteedgecontainerrecordOption) *EsaSiteEdgeContainerRecordMutation {
+	m := &EsaSiteEdgeContainerRecordMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEsaSiteEdgeContainerRecord,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEsaSiteEdgeContainerRecordID sets the ID field of the mutation.
+func withEsaSiteEdgeContainerRecordID(id int64) esasiteedgecontainerrecordOption {
+	return func(m *EsaSiteEdgeContainerRecordMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *EsaSiteEdgeContainerRecord
+		)
+		m.oldValue = func(ctx context.Context) (*EsaSiteEdgeContainerRecord, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().EsaSiteEdgeContainerRecord.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEsaSiteEdgeContainerRecord sets the old EsaSiteEdgeContainerRecord of the mutation.
+func withEsaSiteEdgeContainerRecord(node *EsaSiteEdgeContainerRecord) esasiteedgecontainerrecordOption {
+	return func(m *EsaSiteEdgeContainerRecordMutation) {
+		m.oldValue = func(context.Context) (*EsaSiteEdgeContainerRecord, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EsaSiteEdgeContainerRecordMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EsaSiteEdgeContainerRecordMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of EsaSiteEdgeContainerRecord entities.
+func (m *EsaSiteEdgeContainerRecordMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *EsaSiteEdgeContainerRecordMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().EsaSiteEdgeContainerRecord.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *EsaSiteEdgeContainerRecordMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the EsaSiteEdgeContainerRecord entity.
+// If the EsaSiteEdgeContainerRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeContainerRecordMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *EsaSiteEdgeContainerRecordMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *EsaSiteEdgeContainerRecordMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the EsaSiteEdgeContainerRecord entity.
+// If the EsaSiteEdgeContainerRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeContainerRecordMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *EsaSiteEdgeContainerRecordMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (m *EsaSiteEdgeContainerRecordMutation) SetRemoteCreatedAt(t time.Time) {
+	m.remote_created_at = &t
+}
+
+// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) RemoteCreatedAt() (r time.Time, exists bool) {
+	v := m.remote_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the EsaSiteEdgeContainerRecord entity.
+// If the EsaSiteEdgeContainerRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeContainerRecordMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
+	}
+	return oldValue.RemoteCreatedAt, nil
+}
+
+// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
+func (m *EsaSiteEdgeContainerRecordMutation) ClearRemoteCreatedAt() {
+	m.remote_created_at = nil
+	m.clearedFields[esasiteedgecontainerrecord.FieldRemoteCreatedAt] = struct{}{}
+}
+
+// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) RemoteCreatedAtCleared() bool {
+	_, ok := m.clearedFields[esasiteedgecontainerrecord.FieldRemoteCreatedAt]
+	return ok
+}
+
+// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
+func (m *EsaSiteEdgeContainerRecordMutation) ResetRemoteCreatedAt() {
+	m.remote_created_at = nil
+	delete(m.clearedFields, esasiteedgecontainerrecord.FieldRemoteCreatedAt)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (m *EsaSiteEdgeContainerRecordMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
+}
+
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncAt returns the old "sync_at" field's value of the EsaSiteEdgeContainerRecord entity.
+// If the EsaSiteEdgeContainerRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeContainerRecordMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
+	}
+	return oldValue.SyncAt, nil
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *EsaSiteEdgeContainerRecordMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[esasiteedgecontainerrecord.FieldSyncAt] = struct{}{}
+}
+
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[esasiteedgecontainerrecord.FieldSyncAt]
+	return ok
+}
+
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *EsaSiteEdgeContainerRecordMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, esasiteedgecontainerrecord.FieldSyncAt)
+}
+
+// SetEsaSiteID sets the "esa_site_id" field.
+func (m *EsaSiteEdgeContainerRecordMutation) SetEsaSiteID(i int64) {
+	m.esa_site = &i
+}
+
+// EsaSiteID returns the value of the "esa_site_id" field in the mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) EsaSiteID() (r int64, exists bool) {
+	v := m.esa_site
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEsaSiteID returns the old "esa_site_id" field's value of the EsaSiteEdgeContainerRecord entity.
+// If the EsaSiteEdgeContainerRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeContainerRecordMutation) OldEsaSiteID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEsaSiteID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEsaSiteID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEsaSiteID: %w", err)
+	}
+	return oldValue.EsaSiteID, nil
+}
+
+// ResetEsaSiteID resets all changes to the "esa_site_id" field.
+func (m *EsaSiteEdgeContainerRecordMutation) ResetEsaSiteID() {
+	m.esa_site = nil
+}
+
+// SetRecordName sets the "record_name" field.
+func (m *EsaSiteEdgeContainerRecordMutation) SetRecordName(s string) {
+	m.record_name = &s
+}
+
+// RecordName returns the value of the "record_name" field in the mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) RecordName() (r string, exists bool) {
+	v := m.record_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordName returns the old "record_name" field's value of the EsaSiteEdgeContainerRecord entity.
+// If the EsaSiteEdgeContainerRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeContainerRecordMutation) OldRecordName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordName: %w", err)
+	}
+	return oldValue.RecordName, nil
+}
+
+// ResetRecordName resets all changes to the "record_name" field.
+func (m *EsaSiteEdgeContainerRecordMutation) ResetRecordName() {
+	m.record_name = nil
+}
+
+// SetRecordCname sets the "record_cname" field.
+func (m *EsaSiteEdgeContainerRecordMutation) SetRecordCname(s string) {
+	m.record_cname = &s
+}
+
+// RecordCname returns the value of the "record_cname" field in the mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) RecordCname() (r string, exists bool) {
+	v := m.record_cname
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordCname returns the old "record_cname" field's value of the EsaSiteEdgeContainerRecord entity.
+// If the EsaSiteEdgeContainerRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeContainerRecordMutation) OldRecordCname(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordCname is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordCname requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordCname: %w", err)
+	}
+	return oldValue.RecordCname, nil
+}
+
+// ClearRecordCname clears the value of the "record_cname" field.
+func (m *EsaSiteEdgeContainerRecordMutation) ClearRecordCname() {
+	m.record_cname = nil
+	m.clearedFields[esasiteedgecontainerrecord.FieldRecordCname] = struct{}{}
+}
+
+// RecordCnameCleared returns if the "record_cname" field was cleared in this mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) RecordCnameCleared() bool {
+	_, ok := m.clearedFields[esasiteedgecontainerrecord.FieldRecordCname]
+	return ok
+}
+
+// ResetRecordCname resets all changes to the "record_cname" field.
+func (m *EsaSiteEdgeContainerRecordMutation) ResetRecordCname() {
+	m.record_cname = nil
+	delete(m.clearedFields, esasiteedgecontainerrecord.FieldRecordCname)
+}
+
+// ClearEsaSite clears the "esa_site" edge to the EsaSite entity.
+func (m *EsaSiteEdgeContainerRecordMutation) ClearEsaSite() {
+	m.clearedesa_site = true
+	m.clearedFields[esasiteedgecontainerrecord.FieldEsaSiteID] = struct{}{}
+}
+
+// EsaSiteCleared reports if the "esa_site" edge to the EsaSite entity was cleared.
+func (m *EsaSiteEdgeContainerRecordMutation) EsaSiteCleared() bool {
+	return m.clearedesa_site
+}
+
+// EsaSiteIDs returns the "esa_site" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EsaSiteID instead. It exists only for internal usage by the builders.
+func (m *EsaSiteEdgeContainerRecordMutation) EsaSiteIDs() (ids []int64) {
+	if id := m.esa_site; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEsaSite resets all changes to the "esa_site" edge.
+func (m *EsaSiteEdgeContainerRecordMutation) ResetEsaSite() {
+	m.esa_site = nil
+	m.clearedesa_site = false
+}
+
+// Where appends a list predicates to the EsaSiteEdgeContainerRecordMutation builder.
+func (m *EsaSiteEdgeContainerRecordMutation) Where(ps ...predicate.EsaSiteEdgeContainerRecord) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the EsaSiteEdgeContainerRecordMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *EsaSiteEdgeContainerRecordMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.EsaSiteEdgeContainerRecord, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *EsaSiteEdgeContainerRecordMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *EsaSiteEdgeContainerRecordMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (EsaSiteEdgeContainerRecord).
+func (m *EsaSiteEdgeContainerRecordMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EsaSiteEdgeContainerRecordMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.created_at != nil {
+		fields = append(fields, esasiteedgecontainerrecord.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, esasiteedgecontainerrecord.FieldUpdatedAt)
+	}
+	if m.remote_created_at != nil {
+		fields = append(fields, esasiteedgecontainerrecord.FieldRemoteCreatedAt)
+	}
+	if m.sync_at != nil {
+		fields = append(fields, esasiteedgecontainerrecord.FieldSyncAt)
+	}
+	if m.esa_site != nil {
+		fields = append(fields, esasiteedgecontainerrecord.FieldEsaSiteID)
+	}
+	if m.record_name != nil {
+		fields = append(fields, esasiteedgecontainerrecord.FieldRecordName)
+	}
+	if m.record_cname != nil {
+		fields = append(fields, esasiteedgecontainerrecord.FieldRecordCname)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EsaSiteEdgeContainerRecordMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case esasiteedgecontainerrecord.FieldCreatedAt:
+		return m.CreatedAt()
+	case esasiteedgecontainerrecord.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case esasiteedgecontainerrecord.FieldRemoteCreatedAt:
+		return m.RemoteCreatedAt()
+	case esasiteedgecontainerrecord.FieldSyncAt:
+		return m.SyncAt()
+	case esasiteedgecontainerrecord.FieldEsaSiteID:
+		return m.EsaSiteID()
+	case esasiteedgecontainerrecord.FieldRecordName:
+		return m.RecordName()
+	case esasiteedgecontainerrecord.FieldRecordCname:
+		return m.RecordCname()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EsaSiteEdgeContainerRecordMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case esasiteedgecontainerrecord.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case esasiteedgecontainerrecord.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case esasiteedgecontainerrecord.FieldRemoteCreatedAt:
+		return m.OldRemoteCreatedAt(ctx)
+	case esasiteedgecontainerrecord.FieldSyncAt:
+		return m.OldSyncAt(ctx)
+	case esasiteedgecontainerrecord.FieldEsaSiteID:
+		return m.OldEsaSiteID(ctx)
+	case esasiteedgecontainerrecord.FieldRecordName:
+		return m.OldRecordName(ctx)
+	case esasiteedgecontainerrecord.FieldRecordCname:
+		return m.OldRecordCname(ctx)
+	}
+	return nil, fmt.Errorf("unknown EsaSiteEdgeContainerRecord field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EsaSiteEdgeContainerRecordMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case esasiteedgecontainerrecord.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case esasiteedgecontainerrecord.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case esasiteedgecontainerrecord.FieldRemoteCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteCreatedAt(v)
+		return nil
+	case esasiteedgecontainerrecord.FieldSyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncAt(v)
+		return nil
+	case esasiteedgecontainerrecord.FieldEsaSiteID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEsaSiteID(v)
+		return nil
+	case esasiteedgecontainerrecord.FieldRecordName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordName(v)
+		return nil
+	case esasiteedgecontainerrecord.FieldRecordCname:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordCname(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeContainerRecord field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EsaSiteEdgeContainerRecordMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EsaSiteEdgeContainerRecordMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeContainerRecord numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(esasiteedgecontainerrecord.FieldRemoteCreatedAt) {
+		fields = append(fields, esasiteedgecontainerrecord.FieldRemoteCreatedAt)
+	}
+	if m.FieldCleared(esasiteedgecontainerrecord.FieldSyncAt) {
+		fields = append(fields, esasiteedgecontainerrecord.FieldSyncAt)
+	}
+	if m.FieldCleared(esasiteedgecontainerrecord.FieldRecordCname) {
+		fields = append(fields, esasiteedgecontainerrecord.FieldRecordCname)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EsaSiteEdgeContainerRecordMutation) ClearField(name string) error {
+	switch name {
+	case esasiteedgecontainerrecord.FieldRemoteCreatedAt:
+		m.ClearRemoteCreatedAt()
+		return nil
+	case esasiteedgecontainerrecord.FieldSyncAt:
+		m.ClearSyncAt()
+		return nil
+	case esasiteedgecontainerrecord.FieldRecordCname:
+		m.ClearRecordCname()
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeContainerRecord nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EsaSiteEdgeContainerRecordMutation) ResetField(name string) error {
+	switch name {
+	case esasiteedgecontainerrecord.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case esasiteedgecontainerrecord.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case esasiteedgecontainerrecord.FieldRemoteCreatedAt:
+		m.ResetRemoteCreatedAt()
+		return nil
+	case esasiteedgecontainerrecord.FieldSyncAt:
+		m.ResetSyncAt()
+		return nil
+	case esasiteedgecontainerrecord.FieldEsaSiteID:
+		m.ResetEsaSiteID()
+		return nil
+	case esasiteedgecontainerrecord.FieldRecordName:
+		m.ResetRecordName()
+		return nil
+	case esasiteedgecontainerrecord.FieldRecordCname:
+		m.ResetRecordCname()
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeContainerRecord field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.esa_site != nil {
+		edges = append(edges, esasiteedgecontainerrecord.EdgeEsaSite)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case esasiteedgecontainerrecord.EdgeEsaSite:
+		if id := m.esa_site; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedesa_site {
+		edges = append(edges, esasiteedgecontainerrecord.EdgeEsaSite)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EsaSiteEdgeContainerRecordMutation) EdgeCleared(name string) bool {
+	switch name {
+	case esasiteedgecontainerrecord.EdgeEsaSite:
+		return m.clearedesa_site
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EsaSiteEdgeContainerRecordMutation) ClearEdge(name string) error {
+	switch name {
+	case esasiteedgecontainerrecord.EdgeEsaSite:
+		m.ClearEsaSite()
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeContainerRecord unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EsaSiteEdgeContainerRecordMutation) ResetEdge(name string) error {
+	switch name {
+	case esasiteedgecontainerrecord.EdgeEsaSite:
+		m.ResetEsaSite()
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeContainerRecord edge %s", name)
+}
+
+// EsaSiteEdgeRoutineRecordMutation represents an operation that mutates the EsaSiteEdgeRoutineRecord nodes in the graph.
+type EsaSiteEdgeRoutineRecordMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *int64
+	created_at        *time.Time
+	updated_at        *time.Time
+	remote_created_at *time.Time
+	sync_at           *time.Time
+	record_name       *string
+	record_cname      *string
+	clearedFields     map[string]struct{}
+	esa_site          *int64
+	clearedesa_site   bool
+	done              bool
+	oldValue          func(context.Context) (*EsaSiteEdgeRoutineRecord, error)
+	predicates        []predicate.EsaSiteEdgeRoutineRecord
+}
+
+var _ ent.Mutation = (*EsaSiteEdgeRoutineRecordMutation)(nil)
+
+// esasiteedgeroutinerecordOption allows management of the mutation configuration using functional options.
+type esasiteedgeroutinerecordOption func(*EsaSiteEdgeRoutineRecordMutation)
+
+// newEsaSiteEdgeRoutineRecordMutation creates new mutation for the EsaSiteEdgeRoutineRecord entity.
+func newEsaSiteEdgeRoutineRecordMutation(c config, op Op, opts ...esasiteedgeroutinerecordOption) *EsaSiteEdgeRoutineRecordMutation {
+	m := &EsaSiteEdgeRoutineRecordMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEsaSiteEdgeRoutineRecord,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEsaSiteEdgeRoutineRecordID sets the ID field of the mutation.
+func withEsaSiteEdgeRoutineRecordID(id int64) esasiteedgeroutinerecordOption {
+	return func(m *EsaSiteEdgeRoutineRecordMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *EsaSiteEdgeRoutineRecord
+		)
+		m.oldValue = func(ctx context.Context) (*EsaSiteEdgeRoutineRecord, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().EsaSiteEdgeRoutineRecord.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEsaSiteEdgeRoutineRecord sets the old EsaSiteEdgeRoutineRecord of the mutation.
+func withEsaSiteEdgeRoutineRecord(node *EsaSiteEdgeRoutineRecord) esasiteedgeroutinerecordOption {
+	return func(m *EsaSiteEdgeRoutineRecordMutation) {
+		m.oldValue = func(context.Context) (*EsaSiteEdgeRoutineRecord, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EsaSiteEdgeRoutineRecordMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EsaSiteEdgeRoutineRecordMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of EsaSiteEdgeRoutineRecord entities.
+func (m *EsaSiteEdgeRoutineRecordMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *EsaSiteEdgeRoutineRecordMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().EsaSiteEdgeRoutineRecord.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the EsaSiteEdgeRoutineRecord entity.
+// If the EsaSiteEdgeRoutineRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeRoutineRecordMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the EsaSiteEdgeRoutineRecord entity.
+// If the EsaSiteEdgeRoutineRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeRoutineRecordMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetRemoteCreatedAt sets the "remote_created_at" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) SetRemoteCreatedAt(t time.Time) {
+	m.remote_created_at = &t
+}
+
+// RemoteCreatedAt returns the value of the "remote_created_at" field in the mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) RemoteCreatedAt() (r time.Time, exists bool) {
+	v := m.remote_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemoteCreatedAt returns the old "remote_created_at" field's value of the EsaSiteEdgeRoutineRecord entity.
+// If the EsaSiteEdgeRoutineRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeRoutineRecordMutation) OldRemoteCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemoteCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemoteCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemoteCreatedAt: %w", err)
+	}
+	return oldValue.RemoteCreatedAt, nil
+}
+
+// ClearRemoteCreatedAt clears the value of the "remote_created_at" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) ClearRemoteCreatedAt() {
+	m.remote_created_at = nil
+	m.clearedFields[esasiteedgeroutinerecord.FieldRemoteCreatedAt] = struct{}{}
+}
+
+// RemoteCreatedAtCleared returns if the "remote_created_at" field was cleared in this mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) RemoteCreatedAtCleared() bool {
+	_, ok := m.clearedFields[esasiteedgeroutinerecord.FieldRemoteCreatedAt]
+	return ok
+}
+
+// ResetRemoteCreatedAt resets all changes to the "remote_created_at" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) ResetRemoteCreatedAt() {
+	m.remote_created_at = nil
+	delete(m.clearedFields, esasiteedgeroutinerecord.FieldRemoteCreatedAt)
+}
+
+// SetSyncAt sets the "sync_at" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) SetSyncAt(t time.Time) {
+	m.sync_at = &t
+}
+
+// SyncAt returns the value of the "sync_at" field in the mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) SyncAt() (r time.Time, exists bool) {
+	v := m.sync_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncAt returns the old "sync_at" field's value of the EsaSiteEdgeRoutineRecord entity.
+// If the EsaSiteEdgeRoutineRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeRoutineRecordMutation) OldSyncAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncAt: %w", err)
+	}
+	return oldValue.SyncAt, nil
+}
+
+// ClearSyncAt clears the value of the "sync_at" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) ClearSyncAt() {
+	m.sync_at = nil
+	m.clearedFields[esasiteedgeroutinerecord.FieldSyncAt] = struct{}{}
+}
+
+// SyncAtCleared returns if the "sync_at" field was cleared in this mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) SyncAtCleared() bool {
+	_, ok := m.clearedFields[esasiteedgeroutinerecord.FieldSyncAt]
+	return ok
+}
+
+// ResetSyncAt resets all changes to the "sync_at" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) ResetSyncAt() {
+	m.sync_at = nil
+	delete(m.clearedFields, esasiteedgeroutinerecord.FieldSyncAt)
+}
+
+// SetEsaSiteID sets the "esa_site_id" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) SetEsaSiteID(i int64) {
+	m.esa_site = &i
+}
+
+// EsaSiteID returns the value of the "esa_site_id" field in the mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) EsaSiteID() (r int64, exists bool) {
+	v := m.esa_site
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEsaSiteID returns the old "esa_site_id" field's value of the EsaSiteEdgeRoutineRecord entity.
+// If the EsaSiteEdgeRoutineRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeRoutineRecordMutation) OldEsaSiteID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEsaSiteID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEsaSiteID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEsaSiteID: %w", err)
+	}
+	return oldValue.EsaSiteID, nil
+}
+
+// ResetEsaSiteID resets all changes to the "esa_site_id" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) ResetEsaSiteID() {
+	m.esa_site = nil
+}
+
+// SetRecordName sets the "record_name" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) SetRecordName(s string) {
+	m.record_name = &s
+}
+
+// RecordName returns the value of the "record_name" field in the mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) RecordName() (r string, exists bool) {
+	v := m.record_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordName returns the old "record_name" field's value of the EsaSiteEdgeRoutineRecord entity.
+// If the EsaSiteEdgeRoutineRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeRoutineRecordMutation) OldRecordName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordName: %w", err)
+	}
+	return oldValue.RecordName, nil
+}
+
+// ResetRecordName resets all changes to the "record_name" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) ResetRecordName() {
+	m.record_name = nil
+}
+
+// SetRecordCname sets the "record_cname" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) SetRecordCname(s string) {
+	m.record_cname = &s
+}
+
+// RecordCname returns the value of the "record_cname" field in the mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) RecordCname() (r string, exists bool) {
+	v := m.record_cname
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRecordCname returns the old "record_cname" field's value of the EsaSiteEdgeRoutineRecord entity.
+// If the EsaSiteEdgeRoutineRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteEdgeRoutineRecordMutation) OldRecordCname(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRecordCname is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRecordCname requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRecordCname: %w", err)
+	}
+	return oldValue.RecordCname, nil
+}
+
+// ClearRecordCname clears the value of the "record_cname" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) ClearRecordCname() {
+	m.record_cname = nil
+	m.clearedFields[esasiteedgeroutinerecord.FieldRecordCname] = struct{}{}
+}
+
+// RecordCnameCleared returns if the "record_cname" field was cleared in this mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) RecordCnameCleared() bool {
+	_, ok := m.clearedFields[esasiteedgeroutinerecord.FieldRecordCname]
+	return ok
+}
+
+// ResetRecordCname resets all changes to the "record_cname" field.
+func (m *EsaSiteEdgeRoutineRecordMutation) ResetRecordCname() {
+	m.record_cname = nil
+	delete(m.clearedFields, esasiteedgeroutinerecord.FieldRecordCname)
+}
+
+// ClearEsaSite clears the "esa_site" edge to the EsaSite entity.
+func (m *EsaSiteEdgeRoutineRecordMutation) ClearEsaSite() {
+	m.clearedesa_site = true
+	m.clearedFields[esasiteedgeroutinerecord.FieldEsaSiteID] = struct{}{}
+}
+
+// EsaSiteCleared reports if the "esa_site" edge to the EsaSite entity was cleared.
+func (m *EsaSiteEdgeRoutineRecordMutation) EsaSiteCleared() bool {
+	return m.clearedesa_site
+}
+
+// EsaSiteIDs returns the "esa_site" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EsaSiteID instead. It exists only for internal usage by the builders.
+func (m *EsaSiteEdgeRoutineRecordMutation) EsaSiteIDs() (ids []int64) {
+	if id := m.esa_site; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEsaSite resets all changes to the "esa_site" edge.
+func (m *EsaSiteEdgeRoutineRecordMutation) ResetEsaSite() {
+	m.esa_site = nil
+	m.clearedesa_site = false
+}
+
+// Where appends a list predicates to the EsaSiteEdgeRoutineRecordMutation builder.
+func (m *EsaSiteEdgeRoutineRecordMutation) Where(ps ...predicate.EsaSiteEdgeRoutineRecord) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the EsaSiteEdgeRoutineRecordMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *EsaSiteEdgeRoutineRecordMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.EsaSiteEdgeRoutineRecord, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *EsaSiteEdgeRoutineRecordMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *EsaSiteEdgeRoutineRecordMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (EsaSiteEdgeRoutineRecord).
+func (m *EsaSiteEdgeRoutineRecordMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EsaSiteEdgeRoutineRecordMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.created_at != nil {
+		fields = append(fields, esasiteedgeroutinerecord.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, esasiteedgeroutinerecord.FieldUpdatedAt)
+	}
+	if m.remote_created_at != nil {
+		fields = append(fields, esasiteedgeroutinerecord.FieldRemoteCreatedAt)
+	}
+	if m.sync_at != nil {
+		fields = append(fields, esasiteedgeroutinerecord.FieldSyncAt)
+	}
+	if m.esa_site != nil {
+		fields = append(fields, esasiteedgeroutinerecord.FieldEsaSiteID)
+	}
+	if m.record_name != nil {
+		fields = append(fields, esasiteedgeroutinerecord.FieldRecordName)
+	}
+	if m.record_cname != nil {
+		fields = append(fields, esasiteedgeroutinerecord.FieldRecordCname)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EsaSiteEdgeRoutineRecordMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case esasiteedgeroutinerecord.FieldCreatedAt:
+		return m.CreatedAt()
+	case esasiteedgeroutinerecord.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case esasiteedgeroutinerecord.FieldRemoteCreatedAt:
+		return m.RemoteCreatedAt()
+	case esasiteedgeroutinerecord.FieldSyncAt:
+		return m.SyncAt()
+	case esasiteedgeroutinerecord.FieldEsaSiteID:
+		return m.EsaSiteID()
+	case esasiteedgeroutinerecord.FieldRecordName:
+		return m.RecordName()
+	case esasiteedgeroutinerecord.FieldRecordCname:
+		return m.RecordCname()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EsaSiteEdgeRoutineRecordMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case esasiteedgeroutinerecord.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case esasiteedgeroutinerecord.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case esasiteedgeroutinerecord.FieldRemoteCreatedAt:
+		return m.OldRemoteCreatedAt(ctx)
+	case esasiteedgeroutinerecord.FieldSyncAt:
+		return m.OldSyncAt(ctx)
+	case esasiteedgeroutinerecord.FieldEsaSiteID:
+		return m.OldEsaSiteID(ctx)
+	case esasiteedgeroutinerecord.FieldRecordName:
+		return m.OldRecordName(ctx)
+	case esasiteedgeroutinerecord.FieldRecordCname:
+		return m.OldRecordCname(ctx)
+	}
+	return nil, fmt.Errorf("unknown EsaSiteEdgeRoutineRecord field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EsaSiteEdgeRoutineRecordMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case esasiteedgeroutinerecord.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case esasiteedgeroutinerecord.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case esasiteedgeroutinerecord.FieldRemoteCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemoteCreatedAt(v)
+		return nil
+	case esasiteedgeroutinerecord.FieldSyncAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncAt(v)
+		return nil
+	case esasiteedgeroutinerecord.FieldEsaSiteID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEsaSiteID(v)
+		return nil
+	case esasiteedgeroutinerecord.FieldRecordName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordName(v)
+		return nil
+	case esasiteedgeroutinerecord.FieldRecordCname:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRecordCname(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeRoutineRecord field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EsaSiteEdgeRoutineRecordMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EsaSiteEdgeRoutineRecordMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeRoutineRecord numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(esasiteedgeroutinerecord.FieldRemoteCreatedAt) {
+		fields = append(fields, esasiteedgeroutinerecord.FieldRemoteCreatedAt)
+	}
+	if m.FieldCleared(esasiteedgeroutinerecord.FieldSyncAt) {
+		fields = append(fields, esasiteedgeroutinerecord.FieldSyncAt)
+	}
+	if m.FieldCleared(esasiteedgeroutinerecord.FieldRecordCname) {
+		fields = append(fields, esasiteedgeroutinerecord.FieldRecordCname)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EsaSiteEdgeRoutineRecordMutation) ClearField(name string) error {
+	switch name {
+	case esasiteedgeroutinerecord.FieldRemoteCreatedAt:
+		m.ClearRemoteCreatedAt()
+		return nil
+	case esasiteedgeroutinerecord.FieldSyncAt:
+		m.ClearSyncAt()
+		return nil
+	case esasiteedgeroutinerecord.FieldRecordCname:
+		m.ClearRecordCname()
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeRoutineRecord nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EsaSiteEdgeRoutineRecordMutation) ResetField(name string) error {
+	switch name {
+	case esasiteedgeroutinerecord.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case esasiteedgeroutinerecord.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case esasiteedgeroutinerecord.FieldRemoteCreatedAt:
+		m.ResetRemoteCreatedAt()
+		return nil
+	case esasiteedgeroutinerecord.FieldSyncAt:
+		m.ResetSyncAt()
+		return nil
+	case esasiteedgeroutinerecord.FieldEsaSiteID:
+		m.ResetEsaSiteID()
+		return nil
+	case esasiteedgeroutinerecord.FieldRecordName:
+		m.ResetRecordName()
+		return nil
+	case esasiteedgeroutinerecord.FieldRecordCname:
+		m.ResetRecordCname()
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeRoutineRecord field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.esa_site != nil {
+		edges = append(edges, esasiteedgeroutinerecord.EdgeEsaSite)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case esasiteedgeroutinerecord.EdgeEsaSite:
+		if id := m.esa_site; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedesa_site {
+		edges = append(edges, esasiteedgeroutinerecord.EdgeEsaSite)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EsaSiteEdgeRoutineRecordMutation) EdgeCleared(name string) bool {
+	switch name {
+	case esasiteedgeroutinerecord.EdgeEsaSite:
+		return m.clearedesa_site
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EsaSiteEdgeRoutineRecordMutation) ClearEdge(name string) error {
+	switch name {
+	case esasiteedgeroutinerecord.EdgeEsaSite:
+		m.ClearEsaSite()
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeRoutineRecord unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EsaSiteEdgeRoutineRecordMutation) ResetEdge(name string) error {
+	switch name {
+	case esasiteedgeroutinerecord.EdgeEsaSite:
+		m.ResetEsaSite()
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteEdgeRoutineRecord edge %s", name)
 }
 
 // EsaSiteOriginPoolMutation represents an operation that mutates the EsaSiteOriginPool nodes in the graph.

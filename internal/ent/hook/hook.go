@@ -212,6 +212,30 @@ func (f EsaSiteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EsaSiteMutation", m)
 }
 
+// The EsaSiteEdgeContainerRecordFunc type is an adapter to allow the use of ordinary
+// function as EsaSiteEdgeContainerRecord mutator.
+type EsaSiteEdgeContainerRecordFunc func(context.Context, *ent.EsaSiteEdgeContainerRecordMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EsaSiteEdgeContainerRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EsaSiteEdgeContainerRecordMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EsaSiteEdgeContainerRecordMutation", m)
+}
+
+// The EsaSiteEdgeRoutineRecordFunc type is an adapter to allow the use of ordinary
+// function as EsaSiteEdgeRoutineRecord mutator.
+type EsaSiteEdgeRoutineRecordFunc func(context.Context, *ent.EsaSiteEdgeRoutineRecordMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EsaSiteEdgeRoutineRecordFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EsaSiteEdgeRoutineRecordMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EsaSiteEdgeRoutineRecordMutation", m)
+}
+
 // The EsaSiteOriginPoolFunc type is an adapter to allow the use of ordinary
 // function as EsaSiteOriginPool mutator.
 type EsaSiteOriginPoolFunc func(context.Context, *ent.EsaSiteOriginPoolMutation) (ent.Value, error)

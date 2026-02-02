@@ -1487,6 +1487,190 @@ func EsaSiteLogHook() ent.Hook {
 	)
 }
 
+// EsaSiteEdgeContainerRecordLogHook 为 EsaSiteEdgeContainerRecord 自动生成的审计日志钩子
+func EsaSiteEdgeContainerRecordLogHook() ent.Hook {
+	return hook.On(
+		func(next ent.Mutator) ent.Mutator {
+			return hook.EsaSiteEdgeContainerRecordFunc(func(ctx context.Context, m *ent.EsaSiteEdgeContainerRecordMutation) (ent.Value, error) {
+				op := m.Op()
+				opType := op.String()
+				objType := m.Type()
+
+				// 1. 从 Context 获取来源标识
+				source := GetSource(ctx)
+
+				// 2. 获取 ID (变更前抓取)
+				var objIDS []int64
+				if op.Is(ent.OpUpdate | ent.OpDelete) {
+					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
+						objIDS = cast.ToInt64Slice(ids)
+					}
+				} else if id, exists := m.ID(); exists {
+					objIDS = []int64{id}
+				}
+
+				// 3. 捕获变更字段 (New Value)
+				newV := make(map[string]any)
+				for _, f := range m.Fields() {
+					if v, exists := m.Field(f); exists {
+						newV[f] = v
+					}
+				}
+
+				// 4. 捕获旧值 (Old Value)
+				oldV := make(map[string]any)
+				for _, f := range m.Fields() {
+					if v, err := m.OldField(ctx, f); err == nil {
+						oldV[f] = v
+					}
+				}
+
+				// 5. 执行业务变更
+				result, err := next.Mutate(ctx, m)
+
+				// 6. 补偿获取 Create 后的 ID
+				if op.Is(ent.OpCreate) && err == nil && result != nil {
+					if id, ok := m.ID(); ok {
+						objIDS = []int64{id}
+					}
+				}
+
+				// 7. 异步入库记录日志
+				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+					// 状态判断
+					status := operationlog.StatusSuccess
+					msg := "操作成功"
+					if opErr != nil {
+						status = operationlog.StatusFailed
+						msg = opErr.Error()
+					}
+
+					// 使用独立的 context 保证写入
+					logErr := getLogDb().OperationLog.Create().
+						SetSource(operationlog.Source(asyncSource)).
+						SetOpType(operationlog.OpType(asyncOpType)).
+						SetObjType(operationlog.ObjType(asyncObjType)).
+						SetObjID(asyncIDS).
+						SetOldValue(asyncOv).
+						SetNewValue(asyncNv).
+						SetStatus(status).
+						SetMessage(msg).
+						SetGoVersion(runtime.Version()).
+						Exec(asyncCtx)
+					if logErr != nil {
+						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+							slog.Any("err", logErr),
+						)
+					}
+				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
+
+				// 8. 本地打印
+				if err != nil {
+					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+						slog.Any("ids", objIDS),
+						slog.Any("err", err),
+					)
+				}
+
+				return result, err
+			})
+		},
+		ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
+	)
+}
+
+// EsaSiteEdgeRoutineRecordLogHook 为 EsaSiteEdgeRoutineRecord 自动生成的审计日志钩子
+func EsaSiteEdgeRoutineRecordLogHook() ent.Hook {
+	return hook.On(
+		func(next ent.Mutator) ent.Mutator {
+			return hook.EsaSiteEdgeRoutineRecordFunc(func(ctx context.Context, m *ent.EsaSiteEdgeRoutineRecordMutation) (ent.Value, error) {
+				op := m.Op()
+				opType := op.String()
+				objType := m.Type()
+
+				// 1. 从 Context 获取来源标识
+				source := GetSource(ctx)
+
+				// 2. 获取 ID (变更前抓取)
+				var objIDS []int64
+				if op.Is(ent.OpUpdate | ent.OpDelete) {
+					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
+						objIDS = cast.ToInt64Slice(ids)
+					}
+				} else if id, exists := m.ID(); exists {
+					objIDS = []int64{id}
+				}
+
+				// 3. 捕获变更字段 (New Value)
+				newV := make(map[string]any)
+				for _, f := range m.Fields() {
+					if v, exists := m.Field(f); exists {
+						newV[f] = v
+					}
+				}
+
+				// 4. 捕获旧值 (Old Value)
+				oldV := make(map[string]any)
+				for _, f := range m.Fields() {
+					if v, err := m.OldField(ctx, f); err == nil {
+						oldV[f] = v
+					}
+				}
+
+				// 5. 执行业务变更
+				result, err := next.Mutate(ctx, m)
+
+				// 6. 补偿获取 Create 后的 ID
+				if op.Is(ent.OpCreate) && err == nil && result != nil {
+					if id, ok := m.ID(); ok {
+						objIDS = []int64{id}
+					}
+				}
+
+				// 7. 异步入库记录日志
+				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
+					// 状态判断
+					status := operationlog.StatusSuccess
+					msg := "操作成功"
+					if opErr != nil {
+						status = operationlog.StatusFailed
+						msg = opErr.Error()
+					}
+
+					// 使用独立的 context 保证写入
+					logErr := getLogDb().OperationLog.Create().
+						SetSource(operationlog.Source(asyncSource)).
+						SetOpType(operationlog.OpType(asyncOpType)).
+						SetObjType(operationlog.ObjType(asyncObjType)).
+						SetObjID(asyncIDS).
+						SetOldValue(asyncOv).
+						SetNewValue(asyncNv).
+						SetStatus(status).
+						SetMessage(msg).
+						SetGoVersion(runtime.Version()).
+						Exec(asyncCtx)
+					if logErr != nil {
+						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+							slog.Any("err", logErr),
+						)
+					}
+				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
+
+				// 8. 本地打印
+				if err != nil {
+					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+						slog.Any("ids", objIDS),
+						slog.Any("err", err),
+					)
+				}
+
+				return result, err
+			})
+		},
+		ent.OpCreate|ent.OpUpdate|ent.OpUpdateOne|ent.OpDelete|ent.OpDeleteOne,
+	)
+}
+
 // EsaSiteOriginPoolLogHook 为 EsaSiteOriginPool 自动生成的审计日志钩子
 func EsaSiteOriginPoolLogHook() ent.Hook {
 	return hook.On(
