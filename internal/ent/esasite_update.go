@@ -268,49 +268,49 @@ func (_u *EsaSiteUpdate) AddRecords(v ...*EsaSiteRecord) *EsaSiteUpdate {
 	return _u.AddRecordIDs(ids...)
 }
 
-// AddEdgecontainerrecordIDs adds the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity by IDs.
-func (_u *EsaSiteUpdate) AddEdgecontainerrecordIDs(ids ...int64) *EsaSiteUpdate {
-	_u.mutation.AddEdgecontainerrecordIDs(ids...)
+// AddEdgeContainerRecordIDs adds the "edge_container_records" edge to the EsaSiteEdgeContainerRecord entity by IDs.
+func (_u *EsaSiteUpdate) AddEdgeContainerRecordIDs(ids ...int64) *EsaSiteUpdate {
+	_u.mutation.AddEdgeContainerRecordIDs(ids...)
 	return _u
 }
 
-// AddEdgecontainerrecords adds the "edgecontainerrecords" edges to the EsaSiteEdgeContainerRecord entity.
-func (_u *EsaSiteUpdate) AddEdgecontainerrecords(v ...*EsaSiteEdgeContainerRecord) *EsaSiteUpdate {
+// AddEdgeContainerRecords adds the "edge_container_records" edges to the EsaSiteEdgeContainerRecord entity.
+func (_u *EsaSiteUpdate) AddEdgeContainerRecords(v ...*EsaSiteEdgeContainerRecord) *EsaSiteUpdate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddEdgecontainerrecordIDs(ids...)
+	return _u.AddEdgeContainerRecordIDs(ids...)
 }
 
-// AddEdgeroutinerecordIDs adds the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity by IDs.
-func (_u *EsaSiteUpdate) AddEdgeroutinerecordIDs(ids ...int64) *EsaSiteUpdate {
-	_u.mutation.AddEdgeroutinerecordIDs(ids...)
+// AddEdgeRoutineRecordIDs adds the "edge_routine_records" edge to the EsaSiteEdgeRoutineRecord entity by IDs.
+func (_u *EsaSiteUpdate) AddEdgeRoutineRecordIDs(ids ...int64) *EsaSiteUpdate {
+	_u.mutation.AddEdgeRoutineRecordIDs(ids...)
 	return _u
 }
 
-// AddEdgeroutinerecords adds the "edgeroutinerecords" edges to the EsaSiteEdgeRoutineRecord entity.
-func (_u *EsaSiteUpdate) AddEdgeroutinerecords(v ...*EsaSiteEdgeRoutineRecord) *EsaSiteUpdate {
+// AddEdgeRoutineRecords adds the "edge_routine_records" edges to the EsaSiteEdgeRoutineRecord entity.
+func (_u *EsaSiteUpdate) AddEdgeRoutineRecords(v ...*EsaSiteEdgeRoutineRecord) *EsaSiteUpdate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddEdgeroutinerecordIDs(ids...)
+	return _u.AddEdgeRoutineRecordIDs(ids...)
 }
 
-// AddOriginpoolIDs adds the "originpools" edge to the EsaSiteOriginPool entity by IDs.
-func (_u *EsaSiteUpdate) AddOriginpoolIDs(ids ...int64) *EsaSiteUpdate {
-	_u.mutation.AddOriginpoolIDs(ids...)
+// AddOriginPoolIDs adds the "origin_pools" edge to the EsaSiteOriginPool entity by IDs.
+func (_u *EsaSiteUpdate) AddOriginPoolIDs(ids ...int64) *EsaSiteUpdate {
+	_u.mutation.AddOriginPoolIDs(ids...)
 	return _u
 }
 
-// AddOriginpools adds the "originpools" edges to the EsaSiteOriginPool entity.
-func (_u *EsaSiteUpdate) AddOriginpools(v ...*EsaSiteOriginPool) *EsaSiteUpdate {
+// AddOriginPools adds the "origin_pools" edges to the EsaSiteOriginPool entity.
+func (_u *EsaSiteUpdate) AddOriginPools(v ...*EsaSiteOriginPool) *EsaSiteUpdate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddOriginpoolIDs(ids...)
+	return _u.AddOriginPoolIDs(ids...)
 }
 
 // Mutation returns the EsaSiteMutation object of the builder.
@@ -339,67 +339,67 @@ func (_u *EsaSiteUpdate) RemoveRecords(v ...*EsaSiteRecord) *EsaSiteUpdate {
 	return _u.RemoveRecordIDs(ids...)
 }
 
-// ClearEdgecontainerrecords clears all "edgecontainerrecords" edges to the EsaSiteEdgeContainerRecord entity.
-func (_u *EsaSiteUpdate) ClearEdgecontainerrecords() *EsaSiteUpdate {
-	_u.mutation.ClearEdgecontainerrecords()
+// ClearEdgeContainerRecords clears all "edge_container_records" edges to the EsaSiteEdgeContainerRecord entity.
+func (_u *EsaSiteUpdate) ClearEdgeContainerRecords() *EsaSiteUpdate {
+	_u.mutation.ClearEdgeContainerRecords()
 	return _u
 }
 
-// RemoveEdgecontainerrecordIDs removes the "edgecontainerrecords" edge to EsaSiteEdgeContainerRecord entities by IDs.
-func (_u *EsaSiteUpdate) RemoveEdgecontainerrecordIDs(ids ...int64) *EsaSiteUpdate {
-	_u.mutation.RemoveEdgecontainerrecordIDs(ids...)
+// RemoveEdgeContainerRecordIDs removes the "edge_container_records" edge to EsaSiteEdgeContainerRecord entities by IDs.
+func (_u *EsaSiteUpdate) RemoveEdgeContainerRecordIDs(ids ...int64) *EsaSiteUpdate {
+	_u.mutation.RemoveEdgeContainerRecordIDs(ids...)
 	return _u
 }
 
-// RemoveEdgecontainerrecords removes "edgecontainerrecords" edges to EsaSiteEdgeContainerRecord entities.
-func (_u *EsaSiteUpdate) RemoveEdgecontainerrecords(v ...*EsaSiteEdgeContainerRecord) *EsaSiteUpdate {
+// RemoveEdgeContainerRecords removes "edge_container_records" edges to EsaSiteEdgeContainerRecord entities.
+func (_u *EsaSiteUpdate) RemoveEdgeContainerRecords(v ...*EsaSiteEdgeContainerRecord) *EsaSiteUpdate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveEdgecontainerrecordIDs(ids...)
+	return _u.RemoveEdgeContainerRecordIDs(ids...)
 }
 
-// ClearEdgeroutinerecords clears all "edgeroutinerecords" edges to the EsaSiteEdgeRoutineRecord entity.
-func (_u *EsaSiteUpdate) ClearEdgeroutinerecords() *EsaSiteUpdate {
-	_u.mutation.ClearEdgeroutinerecords()
+// ClearEdgeRoutineRecords clears all "edge_routine_records" edges to the EsaSiteEdgeRoutineRecord entity.
+func (_u *EsaSiteUpdate) ClearEdgeRoutineRecords() *EsaSiteUpdate {
+	_u.mutation.ClearEdgeRoutineRecords()
 	return _u
 }
 
-// RemoveEdgeroutinerecordIDs removes the "edgeroutinerecords" edge to EsaSiteEdgeRoutineRecord entities by IDs.
-func (_u *EsaSiteUpdate) RemoveEdgeroutinerecordIDs(ids ...int64) *EsaSiteUpdate {
-	_u.mutation.RemoveEdgeroutinerecordIDs(ids...)
+// RemoveEdgeRoutineRecordIDs removes the "edge_routine_records" edge to EsaSiteEdgeRoutineRecord entities by IDs.
+func (_u *EsaSiteUpdate) RemoveEdgeRoutineRecordIDs(ids ...int64) *EsaSiteUpdate {
+	_u.mutation.RemoveEdgeRoutineRecordIDs(ids...)
 	return _u
 }
 
-// RemoveEdgeroutinerecords removes "edgeroutinerecords" edges to EsaSiteEdgeRoutineRecord entities.
-func (_u *EsaSiteUpdate) RemoveEdgeroutinerecords(v ...*EsaSiteEdgeRoutineRecord) *EsaSiteUpdate {
+// RemoveEdgeRoutineRecords removes "edge_routine_records" edges to EsaSiteEdgeRoutineRecord entities.
+func (_u *EsaSiteUpdate) RemoveEdgeRoutineRecords(v ...*EsaSiteEdgeRoutineRecord) *EsaSiteUpdate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveEdgeroutinerecordIDs(ids...)
+	return _u.RemoveEdgeRoutineRecordIDs(ids...)
 }
 
-// ClearOriginpools clears all "originpools" edges to the EsaSiteOriginPool entity.
-func (_u *EsaSiteUpdate) ClearOriginpools() *EsaSiteUpdate {
-	_u.mutation.ClearOriginpools()
+// ClearOriginPools clears all "origin_pools" edges to the EsaSiteOriginPool entity.
+func (_u *EsaSiteUpdate) ClearOriginPools() *EsaSiteUpdate {
+	_u.mutation.ClearOriginPools()
 	return _u
 }
 
-// RemoveOriginpoolIDs removes the "originpools" edge to EsaSiteOriginPool entities by IDs.
-func (_u *EsaSiteUpdate) RemoveOriginpoolIDs(ids ...int64) *EsaSiteUpdate {
-	_u.mutation.RemoveOriginpoolIDs(ids...)
+// RemoveOriginPoolIDs removes the "origin_pools" edge to EsaSiteOriginPool entities by IDs.
+func (_u *EsaSiteUpdate) RemoveOriginPoolIDs(ids ...int64) *EsaSiteUpdate {
+	_u.mutation.RemoveOriginPoolIDs(ids...)
 	return _u
 }
 
-// RemoveOriginpools removes "originpools" edges to EsaSiteOriginPool entities.
-func (_u *EsaSiteUpdate) RemoveOriginpools(v ...*EsaSiteOriginPool) *EsaSiteUpdate {
+// RemoveOriginPools removes "origin_pools" edges to EsaSiteOriginPool entities.
+func (_u *EsaSiteUpdate) RemoveOriginPools(v ...*EsaSiteOriginPool) *EsaSiteUpdate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveOriginpoolIDs(ids...)
+	return _u.RemoveOriginPoolIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -602,12 +602,12 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.EdgecontainerrecordsCleared() {
+	if _u.mutation.EdgeContainerRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgecontainerrecordsTable,
-			Columns: []string{esasite.EdgecontainerrecordsColumn},
+			Table:   esasite.EdgeContainerRecordsTable,
+			Columns: []string{esasite.EdgeContainerRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgecontainerrecord.FieldID, field.TypeInt64),
@@ -615,12 +615,12 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedEdgecontainerrecordsIDs(); len(nodes) > 0 && !_u.mutation.EdgecontainerrecordsCleared() {
+	if nodes := _u.mutation.RemovedEdgeContainerRecordsIDs(); len(nodes) > 0 && !_u.mutation.EdgeContainerRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgecontainerrecordsTable,
-			Columns: []string{esasite.EdgecontainerrecordsColumn},
+			Table:   esasite.EdgeContainerRecordsTable,
+			Columns: []string{esasite.EdgeContainerRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgecontainerrecord.FieldID, field.TypeInt64),
@@ -631,12 +631,12 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.EdgecontainerrecordsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.EdgeContainerRecordsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgecontainerrecordsTable,
-			Columns: []string{esasite.EdgecontainerrecordsColumn},
+			Table:   esasite.EdgeContainerRecordsTable,
+			Columns: []string{esasite.EdgeContainerRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgecontainerrecord.FieldID, field.TypeInt64),
@@ -647,12 +647,12 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.EdgeroutinerecordsCleared() {
+	if _u.mutation.EdgeRoutineRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgeroutinerecordsTable,
-			Columns: []string{esasite.EdgeroutinerecordsColumn},
+			Table:   esasite.EdgeRoutineRecordsTable,
+			Columns: []string{esasite.EdgeRoutineRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgeroutinerecord.FieldID, field.TypeInt64),
@@ -660,12 +660,12 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedEdgeroutinerecordsIDs(); len(nodes) > 0 && !_u.mutation.EdgeroutinerecordsCleared() {
+	if nodes := _u.mutation.RemovedEdgeRoutineRecordsIDs(); len(nodes) > 0 && !_u.mutation.EdgeRoutineRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgeroutinerecordsTable,
-			Columns: []string{esasite.EdgeroutinerecordsColumn},
+			Table:   esasite.EdgeRoutineRecordsTable,
+			Columns: []string{esasite.EdgeRoutineRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgeroutinerecord.FieldID, field.TypeInt64),
@@ -676,12 +676,12 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.EdgeroutinerecordsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.EdgeRoutineRecordsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgeroutinerecordsTable,
-			Columns: []string{esasite.EdgeroutinerecordsColumn},
+			Table:   esasite.EdgeRoutineRecordsTable,
+			Columns: []string{esasite.EdgeRoutineRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgeroutinerecord.FieldID, field.TypeInt64),
@@ -692,12 +692,12 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.OriginpoolsCleared() {
+	if _u.mutation.OriginPoolsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.OriginpoolsTable,
-			Columns: []string{esasite.OriginpoolsColumn},
+			Table:   esasite.OriginPoolsTable,
+			Columns: []string{esasite.OriginPoolsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteoriginpool.FieldID, field.TypeInt64),
@@ -705,12 +705,12 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedOriginpoolsIDs(); len(nodes) > 0 && !_u.mutation.OriginpoolsCleared() {
+	if nodes := _u.mutation.RemovedOriginPoolsIDs(); len(nodes) > 0 && !_u.mutation.OriginPoolsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.OriginpoolsTable,
-			Columns: []string{esasite.OriginpoolsColumn},
+			Table:   esasite.OriginPoolsTable,
+			Columns: []string{esasite.OriginPoolsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteoriginpool.FieldID, field.TypeInt64),
@@ -721,12 +721,12 @@ func (_u *EsaSiteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.OriginpoolsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OriginPoolsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.OriginpoolsTable,
-			Columns: []string{esasite.OriginpoolsColumn},
+			Table:   esasite.OriginPoolsTable,
+			Columns: []string{esasite.OriginPoolsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteoriginpool.FieldID, field.TypeInt64),
@@ -994,49 +994,49 @@ func (_u *EsaSiteUpdateOne) AddRecords(v ...*EsaSiteRecord) *EsaSiteUpdateOne {
 	return _u.AddRecordIDs(ids...)
 }
 
-// AddEdgecontainerrecordIDs adds the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity by IDs.
-func (_u *EsaSiteUpdateOne) AddEdgecontainerrecordIDs(ids ...int64) *EsaSiteUpdateOne {
-	_u.mutation.AddEdgecontainerrecordIDs(ids...)
+// AddEdgeContainerRecordIDs adds the "edge_container_records" edge to the EsaSiteEdgeContainerRecord entity by IDs.
+func (_u *EsaSiteUpdateOne) AddEdgeContainerRecordIDs(ids ...int64) *EsaSiteUpdateOne {
+	_u.mutation.AddEdgeContainerRecordIDs(ids...)
 	return _u
 }
 
-// AddEdgecontainerrecords adds the "edgecontainerrecords" edges to the EsaSiteEdgeContainerRecord entity.
-func (_u *EsaSiteUpdateOne) AddEdgecontainerrecords(v ...*EsaSiteEdgeContainerRecord) *EsaSiteUpdateOne {
+// AddEdgeContainerRecords adds the "edge_container_records" edges to the EsaSiteEdgeContainerRecord entity.
+func (_u *EsaSiteUpdateOne) AddEdgeContainerRecords(v ...*EsaSiteEdgeContainerRecord) *EsaSiteUpdateOne {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddEdgecontainerrecordIDs(ids...)
+	return _u.AddEdgeContainerRecordIDs(ids...)
 }
 
-// AddEdgeroutinerecordIDs adds the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity by IDs.
-func (_u *EsaSiteUpdateOne) AddEdgeroutinerecordIDs(ids ...int64) *EsaSiteUpdateOne {
-	_u.mutation.AddEdgeroutinerecordIDs(ids...)
+// AddEdgeRoutineRecordIDs adds the "edge_routine_records" edge to the EsaSiteEdgeRoutineRecord entity by IDs.
+func (_u *EsaSiteUpdateOne) AddEdgeRoutineRecordIDs(ids ...int64) *EsaSiteUpdateOne {
+	_u.mutation.AddEdgeRoutineRecordIDs(ids...)
 	return _u
 }
 
-// AddEdgeroutinerecords adds the "edgeroutinerecords" edges to the EsaSiteEdgeRoutineRecord entity.
-func (_u *EsaSiteUpdateOne) AddEdgeroutinerecords(v ...*EsaSiteEdgeRoutineRecord) *EsaSiteUpdateOne {
+// AddEdgeRoutineRecords adds the "edge_routine_records" edges to the EsaSiteEdgeRoutineRecord entity.
+func (_u *EsaSiteUpdateOne) AddEdgeRoutineRecords(v ...*EsaSiteEdgeRoutineRecord) *EsaSiteUpdateOne {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddEdgeroutinerecordIDs(ids...)
+	return _u.AddEdgeRoutineRecordIDs(ids...)
 }
 
-// AddOriginpoolIDs adds the "originpools" edge to the EsaSiteOriginPool entity by IDs.
-func (_u *EsaSiteUpdateOne) AddOriginpoolIDs(ids ...int64) *EsaSiteUpdateOne {
-	_u.mutation.AddOriginpoolIDs(ids...)
+// AddOriginPoolIDs adds the "origin_pools" edge to the EsaSiteOriginPool entity by IDs.
+func (_u *EsaSiteUpdateOne) AddOriginPoolIDs(ids ...int64) *EsaSiteUpdateOne {
+	_u.mutation.AddOriginPoolIDs(ids...)
 	return _u
 }
 
-// AddOriginpools adds the "originpools" edges to the EsaSiteOriginPool entity.
-func (_u *EsaSiteUpdateOne) AddOriginpools(v ...*EsaSiteOriginPool) *EsaSiteUpdateOne {
+// AddOriginPools adds the "origin_pools" edges to the EsaSiteOriginPool entity.
+func (_u *EsaSiteUpdateOne) AddOriginPools(v ...*EsaSiteOriginPool) *EsaSiteUpdateOne {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddOriginpoolIDs(ids...)
+	return _u.AddOriginPoolIDs(ids...)
 }
 
 // Mutation returns the EsaSiteMutation object of the builder.
@@ -1065,67 +1065,67 @@ func (_u *EsaSiteUpdateOne) RemoveRecords(v ...*EsaSiteRecord) *EsaSiteUpdateOne
 	return _u.RemoveRecordIDs(ids...)
 }
 
-// ClearEdgecontainerrecords clears all "edgecontainerrecords" edges to the EsaSiteEdgeContainerRecord entity.
-func (_u *EsaSiteUpdateOne) ClearEdgecontainerrecords() *EsaSiteUpdateOne {
-	_u.mutation.ClearEdgecontainerrecords()
+// ClearEdgeContainerRecords clears all "edge_container_records" edges to the EsaSiteEdgeContainerRecord entity.
+func (_u *EsaSiteUpdateOne) ClearEdgeContainerRecords() *EsaSiteUpdateOne {
+	_u.mutation.ClearEdgeContainerRecords()
 	return _u
 }
 
-// RemoveEdgecontainerrecordIDs removes the "edgecontainerrecords" edge to EsaSiteEdgeContainerRecord entities by IDs.
-func (_u *EsaSiteUpdateOne) RemoveEdgecontainerrecordIDs(ids ...int64) *EsaSiteUpdateOne {
-	_u.mutation.RemoveEdgecontainerrecordIDs(ids...)
+// RemoveEdgeContainerRecordIDs removes the "edge_container_records" edge to EsaSiteEdgeContainerRecord entities by IDs.
+func (_u *EsaSiteUpdateOne) RemoveEdgeContainerRecordIDs(ids ...int64) *EsaSiteUpdateOne {
+	_u.mutation.RemoveEdgeContainerRecordIDs(ids...)
 	return _u
 }
 
-// RemoveEdgecontainerrecords removes "edgecontainerrecords" edges to EsaSiteEdgeContainerRecord entities.
-func (_u *EsaSiteUpdateOne) RemoveEdgecontainerrecords(v ...*EsaSiteEdgeContainerRecord) *EsaSiteUpdateOne {
+// RemoveEdgeContainerRecords removes "edge_container_records" edges to EsaSiteEdgeContainerRecord entities.
+func (_u *EsaSiteUpdateOne) RemoveEdgeContainerRecords(v ...*EsaSiteEdgeContainerRecord) *EsaSiteUpdateOne {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveEdgecontainerrecordIDs(ids...)
+	return _u.RemoveEdgeContainerRecordIDs(ids...)
 }
 
-// ClearEdgeroutinerecords clears all "edgeroutinerecords" edges to the EsaSiteEdgeRoutineRecord entity.
-func (_u *EsaSiteUpdateOne) ClearEdgeroutinerecords() *EsaSiteUpdateOne {
-	_u.mutation.ClearEdgeroutinerecords()
+// ClearEdgeRoutineRecords clears all "edge_routine_records" edges to the EsaSiteEdgeRoutineRecord entity.
+func (_u *EsaSiteUpdateOne) ClearEdgeRoutineRecords() *EsaSiteUpdateOne {
+	_u.mutation.ClearEdgeRoutineRecords()
 	return _u
 }
 
-// RemoveEdgeroutinerecordIDs removes the "edgeroutinerecords" edge to EsaSiteEdgeRoutineRecord entities by IDs.
-func (_u *EsaSiteUpdateOne) RemoveEdgeroutinerecordIDs(ids ...int64) *EsaSiteUpdateOne {
-	_u.mutation.RemoveEdgeroutinerecordIDs(ids...)
+// RemoveEdgeRoutineRecordIDs removes the "edge_routine_records" edge to EsaSiteEdgeRoutineRecord entities by IDs.
+func (_u *EsaSiteUpdateOne) RemoveEdgeRoutineRecordIDs(ids ...int64) *EsaSiteUpdateOne {
+	_u.mutation.RemoveEdgeRoutineRecordIDs(ids...)
 	return _u
 }
 
-// RemoveEdgeroutinerecords removes "edgeroutinerecords" edges to EsaSiteEdgeRoutineRecord entities.
-func (_u *EsaSiteUpdateOne) RemoveEdgeroutinerecords(v ...*EsaSiteEdgeRoutineRecord) *EsaSiteUpdateOne {
+// RemoveEdgeRoutineRecords removes "edge_routine_records" edges to EsaSiteEdgeRoutineRecord entities.
+func (_u *EsaSiteUpdateOne) RemoveEdgeRoutineRecords(v ...*EsaSiteEdgeRoutineRecord) *EsaSiteUpdateOne {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveEdgeroutinerecordIDs(ids...)
+	return _u.RemoveEdgeRoutineRecordIDs(ids...)
 }
 
-// ClearOriginpools clears all "originpools" edges to the EsaSiteOriginPool entity.
-func (_u *EsaSiteUpdateOne) ClearOriginpools() *EsaSiteUpdateOne {
-	_u.mutation.ClearOriginpools()
+// ClearOriginPools clears all "origin_pools" edges to the EsaSiteOriginPool entity.
+func (_u *EsaSiteUpdateOne) ClearOriginPools() *EsaSiteUpdateOne {
+	_u.mutation.ClearOriginPools()
 	return _u
 }
 
-// RemoveOriginpoolIDs removes the "originpools" edge to EsaSiteOriginPool entities by IDs.
-func (_u *EsaSiteUpdateOne) RemoveOriginpoolIDs(ids ...int64) *EsaSiteUpdateOne {
-	_u.mutation.RemoveOriginpoolIDs(ids...)
+// RemoveOriginPoolIDs removes the "origin_pools" edge to EsaSiteOriginPool entities by IDs.
+func (_u *EsaSiteUpdateOne) RemoveOriginPoolIDs(ids ...int64) *EsaSiteUpdateOne {
+	_u.mutation.RemoveOriginPoolIDs(ids...)
 	return _u
 }
 
-// RemoveOriginpools removes "originpools" edges to EsaSiteOriginPool entities.
-func (_u *EsaSiteUpdateOne) RemoveOriginpools(v ...*EsaSiteOriginPool) *EsaSiteUpdateOne {
+// RemoveOriginPools removes "origin_pools" edges to EsaSiteOriginPool entities.
+func (_u *EsaSiteUpdateOne) RemoveOriginPools(v ...*EsaSiteOriginPool) *EsaSiteUpdateOne {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveOriginpoolIDs(ids...)
+	return _u.RemoveOriginPoolIDs(ids...)
 }
 
 // Where appends a list predicates to the EsaSiteUpdate builder.
@@ -1358,12 +1358,12 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.EdgecontainerrecordsCleared() {
+	if _u.mutation.EdgeContainerRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgecontainerrecordsTable,
-			Columns: []string{esasite.EdgecontainerrecordsColumn},
+			Table:   esasite.EdgeContainerRecordsTable,
+			Columns: []string{esasite.EdgeContainerRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgecontainerrecord.FieldID, field.TypeInt64),
@@ -1371,12 +1371,12 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedEdgecontainerrecordsIDs(); len(nodes) > 0 && !_u.mutation.EdgecontainerrecordsCleared() {
+	if nodes := _u.mutation.RemovedEdgeContainerRecordsIDs(); len(nodes) > 0 && !_u.mutation.EdgeContainerRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgecontainerrecordsTable,
-			Columns: []string{esasite.EdgecontainerrecordsColumn},
+			Table:   esasite.EdgeContainerRecordsTable,
+			Columns: []string{esasite.EdgeContainerRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgecontainerrecord.FieldID, field.TypeInt64),
@@ -1387,12 +1387,12 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.EdgecontainerrecordsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.EdgeContainerRecordsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgecontainerrecordsTable,
-			Columns: []string{esasite.EdgecontainerrecordsColumn},
+			Table:   esasite.EdgeContainerRecordsTable,
+			Columns: []string{esasite.EdgeContainerRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgecontainerrecord.FieldID, field.TypeInt64),
@@ -1403,12 +1403,12 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.EdgeroutinerecordsCleared() {
+	if _u.mutation.EdgeRoutineRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgeroutinerecordsTable,
-			Columns: []string{esasite.EdgeroutinerecordsColumn},
+			Table:   esasite.EdgeRoutineRecordsTable,
+			Columns: []string{esasite.EdgeRoutineRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgeroutinerecord.FieldID, field.TypeInt64),
@@ -1416,12 +1416,12 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedEdgeroutinerecordsIDs(); len(nodes) > 0 && !_u.mutation.EdgeroutinerecordsCleared() {
+	if nodes := _u.mutation.RemovedEdgeRoutineRecordsIDs(); len(nodes) > 0 && !_u.mutation.EdgeRoutineRecordsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgeroutinerecordsTable,
-			Columns: []string{esasite.EdgeroutinerecordsColumn},
+			Table:   esasite.EdgeRoutineRecordsTable,
+			Columns: []string{esasite.EdgeRoutineRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgeroutinerecord.FieldID, field.TypeInt64),
@@ -1432,12 +1432,12 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.EdgeroutinerecordsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.EdgeRoutineRecordsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.EdgeroutinerecordsTable,
-			Columns: []string{esasite.EdgeroutinerecordsColumn},
+			Table:   esasite.EdgeRoutineRecordsTable,
+			Columns: []string{esasite.EdgeRoutineRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteedgeroutinerecord.FieldID, field.TypeInt64),
@@ -1448,12 +1448,12 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.OriginpoolsCleared() {
+	if _u.mutation.OriginPoolsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.OriginpoolsTable,
-			Columns: []string{esasite.OriginpoolsColumn},
+			Table:   esasite.OriginPoolsTable,
+			Columns: []string{esasite.OriginPoolsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteoriginpool.FieldID, field.TypeInt64),
@@ -1461,12 +1461,12 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedOriginpoolsIDs(); len(nodes) > 0 && !_u.mutation.OriginpoolsCleared() {
+	if nodes := _u.mutation.RemovedOriginPoolsIDs(); len(nodes) > 0 && !_u.mutation.OriginPoolsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.OriginpoolsTable,
-			Columns: []string{esasite.OriginpoolsColumn},
+			Table:   esasite.OriginPoolsTable,
+			Columns: []string{esasite.OriginPoolsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteoriginpool.FieldID, field.TypeInt64),
@@ -1477,12 +1477,12 @@ func (_u *EsaSiteUpdateOne) sqlSave(ctx context.Context) (_node *EsaSite, err er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.OriginpoolsIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OriginPoolsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   esasite.OriginpoolsTable,
-			Columns: []string{esasite.OriginpoolsColumn},
+			Table:   esasite.OriginPoolsTable,
+			Columns: []string{esasite.OriginPoolsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(esasiteoriginpool.FieldID, field.TypeInt64),

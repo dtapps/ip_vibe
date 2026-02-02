@@ -42,7 +42,7 @@ func ESASite(c *gin.Context) {
 			allSite, err := global.GvaEntDb.EsaSite.Query().
 				Where(esasite.ConfigID(item.ID)).
 				WithRecords().
-				WithOriginpools().
+				WithOriginPools().
 				OrderBySiteNameAsc().
 				All(c)
 			if err == nil {
@@ -64,7 +64,7 @@ func ESASite(c *gin.Context) {
 						OfflineReason:   site.OfflineReason,
 
 						RecordCount:     len(site.Edges.Records),
-						OriginpoolCount: len(site.Edges.Originpools),
+						OriginpoolCount: len(site.Edges.OriginPools),
 					})
 				}
 			}
@@ -179,7 +179,7 @@ func ESASiteOriginPool(c *gin.Context) {
 	}
 	pageData.Item = *firstSite
 
-	allOriginpool, err := firstSite.QueryOriginpools().
+	allOriginpool, err := firstSite.QueryOriginPools().
 		OrderByNameAsc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

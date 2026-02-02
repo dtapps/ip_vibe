@@ -56,12 +56,12 @@ const (
 	FieldPaused = "paused"
 	// EdgeConfig holds the string denoting the config edge name in mutations.
 	EdgeConfig = "config"
-	// EdgeAccelerationdomains holds the string denoting the accelerationdomains edge name in mutations.
-	EdgeAccelerationdomains = "accelerationdomains"
-	// EdgeDnsrecords holds the string denoting the dnsrecords edge name in mutations.
-	EdgeDnsrecords = "dnsrecords"
-	// EdgeOrigingroups holds the string denoting the origingroups edge name in mutations.
-	EdgeOrigingroups = "origingroups"
+	// EdgeAccelerationDomains holds the string denoting the acceleration_domains edge name in mutations.
+	EdgeAccelerationDomains = "acceleration_domains"
+	// EdgeDNSRecords holds the string denoting the dns_records edge name in mutations.
+	EdgeDNSRecords = "dns_records"
+	// EdgeOriginGroups holds the string denoting the origin_groups edge name in mutations.
+	EdgeOriginGroups = "origin_groups"
 	// Table holds the table name of the edgeonezone in the database.
 	Table = "edgeone_zone"
 	// ConfigTable is the table that holds the config relation/edge.
@@ -71,27 +71,27 @@ const (
 	ConfigInverseTable = "platform_config"
 	// ConfigColumn is the table column denoting the config relation/edge.
 	ConfigColumn = "config_id"
-	// AccelerationdomainsTable is the table that holds the accelerationdomains relation/edge.
-	AccelerationdomainsTable = "edgeone_zone_accelerationdomain"
-	// AccelerationdomainsInverseTable is the table name for the EdgeOneZoneAccelerationDomain entity.
+	// AccelerationDomainsTable is the table that holds the acceleration_domains relation/edge.
+	AccelerationDomainsTable = "edgeone_zone_acceleration_domain"
+	// AccelerationDomainsInverseTable is the table name for the EdgeOneZoneAccelerationDomain entity.
 	// It exists in this package in order to avoid circular dependency with the "edgeonezoneaccelerationdomain" package.
-	AccelerationdomainsInverseTable = "edgeone_zone_accelerationdomain"
-	// AccelerationdomainsColumn is the table column denoting the accelerationdomains relation/edge.
-	AccelerationdomainsColumn = "edgeone_zone_id"
-	// DnsrecordsTable is the table that holds the dnsrecords relation/edge.
-	DnsrecordsTable = "edgeone_zone_dnsrecord"
-	// DnsrecordsInverseTable is the table name for the EdgeOneZoneDNSRecord entity.
+	AccelerationDomainsInverseTable = "edgeone_zone_acceleration_domain"
+	// AccelerationDomainsColumn is the table column denoting the acceleration_domains relation/edge.
+	AccelerationDomainsColumn = "edgeone_zone_id"
+	// DNSRecordsTable is the table that holds the dns_records relation/edge.
+	DNSRecordsTable = "edgeone_zone_dns_record"
+	// DNSRecordsInverseTable is the table name for the EdgeOneZoneDNSRecord entity.
 	// It exists in this package in order to avoid circular dependency with the "edgeonezonednsrecord" package.
-	DnsrecordsInverseTable = "edgeone_zone_dnsrecord"
-	// DnsrecordsColumn is the table column denoting the dnsrecords relation/edge.
-	DnsrecordsColumn = "edgeone_zone_id"
-	// OrigingroupsTable is the table that holds the origingroups relation/edge.
-	OrigingroupsTable = "edgeone_zone_origingroup"
-	// OrigingroupsInverseTable is the table name for the EdgeOneZoneOriginGroup entity.
+	DNSRecordsInverseTable = "edgeone_zone_dns_record"
+	// DNSRecordsColumn is the table column denoting the dns_records relation/edge.
+	DNSRecordsColumn = "edgeone_zone_id"
+	// OriginGroupsTable is the table that holds the origin_groups relation/edge.
+	OriginGroupsTable = "edgeone_zone_origin_group"
+	// OriginGroupsInverseTable is the table name for the EdgeOneZoneOriginGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "edgeonezoneorigingroup" package.
-	OrigingroupsInverseTable = "edgeone_zone_origingroup"
-	// OrigingroupsColumn is the table column denoting the origingroups relation/edge.
-	OrigingroupsColumn = "edgeone_zone_id"
+	OriginGroupsInverseTable = "edgeone_zone_origin_group"
+	// OriginGroupsColumn is the table column denoting the origin_groups relation/edge.
+	OriginGroupsColumn = "edgeone_zone_id"
 )
 
 // Columns holds all SQL columns for edgeonezone fields.
@@ -384,45 +384,45 @@ func ByConfigField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByAccelerationdomainsCount orders the results by accelerationdomains count.
-func ByAccelerationdomainsCount(opts ...sql.OrderTermOption) OrderOption {
+// ByAccelerationDomainsCount orders the results by acceleration_domains count.
+func ByAccelerationDomainsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newAccelerationdomainsStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newAccelerationDomainsStep(), opts...)
 	}
 }
 
-// ByAccelerationdomains orders the results by accelerationdomains terms.
-func ByAccelerationdomains(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByAccelerationDomains orders the results by acceleration_domains terms.
+func ByAccelerationDomains(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newAccelerationdomainsStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newAccelerationDomainsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
-// ByDnsrecordsCount orders the results by dnsrecords count.
-func ByDnsrecordsCount(opts ...sql.OrderTermOption) OrderOption {
+// ByDNSRecordsCount orders the results by dns_records count.
+func ByDNSRecordsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newDnsrecordsStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newDNSRecordsStep(), opts...)
 	}
 }
 
-// ByDnsrecords orders the results by dnsrecords terms.
-func ByDnsrecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByDNSRecords orders the results by dns_records terms.
+func ByDNSRecords(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newDnsrecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newDNSRecordsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
-// ByOrigingroupsCount orders the results by origingroups count.
-func ByOrigingroupsCount(opts ...sql.OrderTermOption) OrderOption {
+// ByOriginGroupsCount orders the results by origin_groups count.
+func ByOriginGroupsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newOrigingroupsStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newOriginGroupsStep(), opts...)
 	}
 }
 
-// ByOrigingroups orders the results by origingroups terms.
-func ByOrigingroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByOriginGroups orders the results by origin_groups terms.
+func ByOriginGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newOrigingroupsStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newOriginGroupsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newConfigStep() *sqlgraph.Step {
@@ -432,24 +432,24 @@ func newConfigStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, ConfigTable, ConfigColumn),
 	)
 }
-func newAccelerationdomainsStep() *sqlgraph.Step {
+func newAccelerationDomainsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(AccelerationdomainsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, AccelerationdomainsTable, AccelerationdomainsColumn),
+		sqlgraph.To(AccelerationDomainsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AccelerationDomainsTable, AccelerationDomainsColumn),
 	)
 }
-func newDnsrecordsStep() *sqlgraph.Step {
+func newDNSRecordsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(DnsrecordsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, DnsrecordsTable, DnsrecordsColumn),
+		sqlgraph.To(DNSRecordsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, DNSRecordsTable, DNSRecordsColumn),
 	)
 }
-func newOrigingroupsStep() *sqlgraph.Step {
+func newOriginGroupsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(OrigingroupsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, OrigingroupsTable, OrigingroupsColumn),
+		sqlgraph.To(OriginGroupsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, OriginGroupsTable, OriginGroupsColumn),
 	)
 }

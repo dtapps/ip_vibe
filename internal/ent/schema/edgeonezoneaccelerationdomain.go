@@ -22,7 +22,7 @@ type EdgeOneZoneAccelerationDomain struct {
 // Annotations of the EdgeOneZoneAccelerationDomain.
 func (EdgeOneZoneAccelerationDomain) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "edgeone_zone_accelerationdomain"},
+		entsql.Annotation{Table: "edgeone_zone_acceleration_domain"},
 		schema.Comment("EdgeOne 站点加速域名"),
 		entsql.WithComments(true),
 	}
@@ -118,7 +118,7 @@ func (EdgeOneZoneAccelerationDomain) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 一对多 EdgeOneZone -> EdgeOneZoneAccelerationDomain
 		edge.From("edgeone_zone", EdgeOneZone.Type).
-			Ref("accelerationdomains").
+			Ref("acceleration_domains").
 			Field("edgeone_zone_id").
 			Unique().
 			Required().

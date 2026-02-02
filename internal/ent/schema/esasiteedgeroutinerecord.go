@@ -67,7 +67,7 @@ func (EsaSiteEdgeRoutineRecord) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 一对多 EsaSite -> EsaSiteEdgeRoutineRecord
 		edge.From("esa_site", EsaSite.Type).
-			Ref("edgeroutinerecords").
+			Ref("edge_routine_records").
 			Field("esa_site_id").
 			Unique().
 			Required().

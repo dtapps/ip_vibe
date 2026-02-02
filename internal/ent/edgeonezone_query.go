@@ -28,13 +28,13 @@ type EdgeOneZoneQuery struct {
 	inters                       []Interceptor
 	predicates                   []predicate.EdgeOneZone
 	withConfig                   *PlatformConfigQuery
-	withAccelerationdomains      *EdgeOneZoneAccelerationDomainQuery
-	withDnsrecords               *EdgeOneZoneDNSRecordQuery
-	withOrigingroups             *EdgeOneZoneOriginGroupQuery
+	withAccelerationDomains      *EdgeOneZoneAccelerationDomainQuery
+	withDNSRecords               *EdgeOneZoneDNSRecordQuery
+	withOriginGroups             *EdgeOneZoneOriginGroupQuery
 	modifiers                    []func(*sql.Selector)
-	withNamedAccelerationdomains map[string]*EdgeOneZoneAccelerationDomainQuery
-	withNamedDnsrecords          map[string]*EdgeOneZoneDNSRecordQuery
-	withNamedOrigingroups        map[string]*EdgeOneZoneOriginGroupQuery
+	withNamedAccelerationDomains map[string]*EdgeOneZoneAccelerationDomainQuery
+	withNamedDNSRecords          map[string]*EdgeOneZoneDNSRecordQuery
+	withNamedOriginGroups        map[string]*EdgeOneZoneOriginGroupQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -93,8 +93,8 @@ func (_q *EdgeOneZoneQuery) QueryConfig() *PlatformConfigQuery {
 	return query
 }
 
-// QueryAccelerationdomains chains the current query on the "accelerationdomains" edge.
-func (_q *EdgeOneZoneQuery) QueryAccelerationdomains() *EdgeOneZoneAccelerationDomainQuery {
+// QueryAccelerationDomains chains the current query on the "acceleration_domains" edge.
+func (_q *EdgeOneZoneQuery) QueryAccelerationDomains() *EdgeOneZoneAccelerationDomainQuery {
 	query := (&EdgeOneZoneAccelerationDomainClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
@@ -107,7 +107,7 @@ func (_q *EdgeOneZoneQuery) QueryAccelerationdomains() *EdgeOneZoneAccelerationD
 		step := sqlgraph.NewStep(
 			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, selector),
 			sqlgraph.To(edgeonezoneaccelerationdomain.Table, edgeonezoneaccelerationdomain.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.AccelerationdomainsTable, edgeonezone.AccelerationdomainsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.AccelerationDomainsTable, edgeonezone.AccelerationDomainsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -115,8 +115,8 @@ func (_q *EdgeOneZoneQuery) QueryAccelerationdomains() *EdgeOneZoneAccelerationD
 	return query
 }
 
-// QueryDnsrecords chains the current query on the "dnsrecords" edge.
-func (_q *EdgeOneZoneQuery) QueryDnsrecords() *EdgeOneZoneDNSRecordQuery {
+// QueryDNSRecords chains the current query on the "dns_records" edge.
+func (_q *EdgeOneZoneQuery) QueryDNSRecords() *EdgeOneZoneDNSRecordQuery {
 	query := (&EdgeOneZoneDNSRecordClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
@@ -129,7 +129,7 @@ func (_q *EdgeOneZoneQuery) QueryDnsrecords() *EdgeOneZoneDNSRecordQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, selector),
 			sqlgraph.To(edgeonezonednsrecord.Table, edgeonezonednsrecord.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.DnsrecordsTable, edgeonezone.DnsrecordsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.DNSRecordsTable, edgeonezone.DNSRecordsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -137,8 +137,8 @@ func (_q *EdgeOneZoneQuery) QueryDnsrecords() *EdgeOneZoneDNSRecordQuery {
 	return query
 }
 
-// QueryOrigingroups chains the current query on the "origingroups" edge.
-func (_q *EdgeOneZoneQuery) QueryOrigingroups() *EdgeOneZoneOriginGroupQuery {
+// QueryOriginGroups chains the current query on the "origin_groups" edge.
+func (_q *EdgeOneZoneQuery) QueryOriginGroups() *EdgeOneZoneOriginGroupQuery {
 	query := (&EdgeOneZoneOriginGroupClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
@@ -151,7 +151,7 @@ func (_q *EdgeOneZoneQuery) QueryOrigingroups() *EdgeOneZoneOriginGroupQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, selector),
 			sqlgraph.To(edgeonezoneorigingroup.Table, edgeonezoneorigingroup.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.OrigingroupsTable, edgeonezone.OrigingroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.OriginGroupsTable, edgeonezone.OriginGroupsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -352,9 +352,9 @@ func (_q *EdgeOneZoneQuery) Clone() *EdgeOneZoneQuery {
 		inters:                  append([]Interceptor{}, _q.inters...),
 		predicates:              append([]predicate.EdgeOneZone{}, _q.predicates...),
 		withConfig:              _q.withConfig.Clone(),
-		withAccelerationdomains: _q.withAccelerationdomains.Clone(),
-		withDnsrecords:          _q.withDnsrecords.Clone(),
-		withOrigingroups:        _q.withOrigingroups.Clone(),
+		withAccelerationDomains: _q.withAccelerationDomains.Clone(),
+		withDNSRecords:          _q.withDNSRecords.Clone(),
+		withOriginGroups:        _q.withOriginGroups.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -373,36 +373,36 @@ func (_q *EdgeOneZoneQuery) WithConfig(opts ...func(*PlatformConfigQuery)) *Edge
 	return _q
 }
 
-// WithAccelerationdomains tells the query-builder to eager-load the nodes that are connected to
-// the "accelerationdomains" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *EdgeOneZoneQuery) WithAccelerationdomains(opts ...func(*EdgeOneZoneAccelerationDomainQuery)) *EdgeOneZoneQuery {
+// WithAccelerationDomains tells the query-builder to eager-load the nodes that are connected to
+// the "acceleration_domains" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *EdgeOneZoneQuery) WithAccelerationDomains(opts ...func(*EdgeOneZoneAccelerationDomainQuery)) *EdgeOneZoneQuery {
 	query := (&EdgeOneZoneAccelerationDomainClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withAccelerationdomains = query
+	_q.withAccelerationDomains = query
 	return _q
 }
 
-// WithDnsrecords tells the query-builder to eager-load the nodes that are connected to
-// the "dnsrecords" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *EdgeOneZoneQuery) WithDnsrecords(opts ...func(*EdgeOneZoneDNSRecordQuery)) *EdgeOneZoneQuery {
+// WithDNSRecords tells the query-builder to eager-load the nodes that are connected to
+// the "dns_records" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *EdgeOneZoneQuery) WithDNSRecords(opts ...func(*EdgeOneZoneDNSRecordQuery)) *EdgeOneZoneQuery {
 	query := (&EdgeOneZoneDNSRecordClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withDnsrecords = query
+	_q.withDNSRecords = query
 	return _q
 }
 
-// WithOrigingroups tells the query-builder to eager-load the nodes that are connected to
-// the "origingroups" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *EdgeOneZoneQuery) WithOrigingroups(opts ...func(*EdgeOneZoneOriginGroupQuery)) *EdgeOneZoneQuery {
+// WithOriginGroups tells the query-builder to eager-load the nodes that are connected to
+// the "origin_groups" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *EdgeOneZoneQuery) WithOriginGroups(opts ...func(*EdgeOneZoneOriginGroupQuery)) *EdgeOneZoneQuery {
 	query := (&EdgeOneZoneOriginGroupClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withOrigingroups = query
+	_q.withOriginGroups = query
 	return _q
 }
 
@@ -486,9 +486,9 @@ func (_q *EdgeOneZoneQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 		_spec       = _q.querySpec()
 		loadedTypes = [4]bool{
 			_q.withConfig != nil,
-			_q.withAccelerationdomains != nil,
-			_q.withDnsrecords != nil,
-			_q.withOrigingroups != nil,
+			_q.withAccelerationDomains != nil,
+			_q.withDNSRecords != nil,
+			_q.withOriginGroups != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -518,11 +518,11 @@ func (_q *EdgeOneZoneQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			return nil, err
 		}
 	}
-	if query := _q.withAccelerationdomains; query != nil {
-		if err := _q.loadAccelerationdomains(ctx, query, nodes,
-			func(n *EdgeOneZone) { n.Edges.Accelerationdomains = []*EdgeOneZoneAccelerationDomain{} },
+	if query := _q.withAccelerationDomains; query != nil {
+		if err := _q.loadAccelerationDomains(ctx, query, nodes,
+			func(n *EdgeOneZone) { n.Edges.AccelerationDomains = []*EdgeOneZoneAccelerationDomain{} },
 			func(n *EdgeOneZone, e *EdgeOneZoneAccelerationDomain) {
-				n.Edges.Accelerationdomains = append(n.Edges.Accelerationdomains, e)
+				n.Edges.AccelerationDomains = append(n.Edges.AccelerationDomains, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.EdgeoneZone = n
 				}
@@ -530,11 +530,11 @@ func (_q *EdgeOneZoneQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			return nil, err
 		}
 	}
-	if query := _q.withDnsrecords; query != nil {
-		if err := _q.loadDnsrecords(ctx, query, nodes,
-			func(n *EdgeOneZone) { n.Edges.Dnsrecords = []*EdgeOneZoneDNSRecord{} },
+	if query := _q.withDNSRecords; query != nil {
+		if err := _q.loadDNSRecords(ctx, query, nodes,
+			func(n *EdgeOneZone) { n.Edges.DNSRecords = []*EdgeOneZoneDNSRecord{} },
 			func(n *EdgeOneZone, e *EdgeOneZoneDNSRecord) {
-				n.Edges.Dnsrecords = append(n.Edges.Dnsrecords, e)
+				n.Edges.DNSRecords = append(n.Edges.DNSRecords, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.EdgeoneZone = n
 				}
@@ -542,11 +542,11 @@ func (_q *EdgeOneZoneQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			return nil, err
 		}
 	}
-	if query := _q.withOrigingroups; query != nil {
-		if err := _q.loadOrigingroups(ctx, query, nodes,
-			func(n *EdgeOneZone) { n.Edges.Origingroups = []*EdgeOneZoneOriginGroup{} },
+	if query := _q.withOriginGroups; query != nil {
+		if err := _q.loadOriginGroups(ctx, query, nodes,
+			func(n *EdgeOneZone) { n.Edges.OriginGroups = []*EdgeOneZoneOriginGroup{} },
 			func(n *EdgeOneZone, e *EdgeOneZoneOriginGroup) {
-				n.Edges.Origingroups = append(n.Edges.Origingroups, e)
+				n.Edges.OriginGroups = append(n.Edges.OriginGroups, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.EdgeoneZone = n
 				}
@@ -554,11 +554,11 @@ func (_q *EdgeOneZoneQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			return nil, err
 		}
 	}
-	for name, query := range _q.withNamedAccelerationdomains {
-		if err := _q.loadAccelerationdomains(ctx, query, nodes,
-			func(n *EdgeOneZone) { n.appendNamedAccelerationdomains(name) },
+	for name, query := range _q.withNamedAccelerationDomains {
+		if err := _q.loadAccelerationDomains(ctx, query, nodes,
+			func(n *EdgeOneZone) { n.appendNamedAccelerationDomains(name) },
 			func(n *EdgeOneZone, e *EdgeOneZoneAccelerationDomain) {
-				n.appendNamedAccelerationdomains(name, e)
+				n.appendNamedAccelerationDomains(name, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.EdgeoneZone = n
 				}
@@ -566,11 +566,11 @@ func (_q *EdgeOneZoneQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			return nil, err
 		}
 	}
-	for name, query := range _q.withNamedDnsrecords {
-		if err := _q.loadDnsrecords(ctx, query, nodes,
-			func(n *EdgeOneZone) { n.appendNamedDnsrecords(name) },
+	for name, query := range _q.withNamedDNSRecords {
+		if err := _q.loadDNSRecords(ctx, query, nodes,
+			func(n *EdgeOneZone) { n.appendNamedDNSRecords(name) },
 			func(n *EdgeOneZone, e *EdgeOneZoneDNSRecord) {
-				n.appendNamedDnsrecords(name, e)
+				n.appendNamedDNSRecords(name, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.EdgeoneZone = n
 				}
@@ -578,11 +578,11 @@ func (_q *EdgeOneZoneQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			return nil, err
 		}
 	}
-	for name, query := range _q.withNamedOrigingroups {
-		if err := _q.loadOrigingroups(ctx, query, nodes,
-			func(n *EdgeOneZone) { n.appendNamedOrigingroups(name) },
+	for name, query := range _q.withNamedOriginGroups {
+		if err := _q.loadOriginGroups(ctx, query, nodes,
+			func(n *EdgeOneZone) { n.appendNamedOriginGroups(name) },
 			func(n *EdgeOneZone, e *EdgeOneZoneOriginGroup) {
-				n.appendNamedOrigingroups(name, e)
+				n.appendNamedOriginGroups(name, e)
 				if !e.Edges.loadedTypes[0] {
 					e.Edges.EdgeoneZone = n
 				}
@@ -622,7 +622,7 @@ func (_q *EdgeOneZoneQuery) loadConfig(ctx context.Context, query *PlatformConfi
 	}
 	return nil
 }
-func (_q *EdgeOneZoneQuery) loadAccelerationdomains(ctx context.Context, query *EdgeOneZoneAccelerationDomainQuery, nodes []*EdgeOneZone, init func(*EdgeOneZone), assign func(*EdgeOneZone, *EdgeOneZoneAccelerationDomain)) error {
+func (_q *EdgeOneZoneQuery) loadAccelerationDomains(ctx context.Context, query *EdgeOneZoneAccelerationDomainQuery, nodes []*EdgeOneZone, init func(*EdgeOneZone), assign func(*EdgeOneZone, *EdgeOneZoneAccelerationDomain)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int64]*EdgeOneZone)
 	for i := range nodes {
@@ -636,7 +636,7 @@ func (_q *EdgeOneZoneQuery) loadAccelerationdomains(ctx context.Context, query *
 		query.ctx.AppendFieldOnce(edgeonezoneaccelerationdomain.FieldEdgeoneZoneID)
 	}
 	query.Where(predicate.EdgeOneZoneAccelerationDomain(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(edgeonezone.AccelerationdomainsColumn), fks...))
+		s.Where(sql.InValues(s.C(edgeonezone.AccelerationDomainsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -652,7 +652,7 @@ func (_q *EdgeOneZoneQuery) loadAccelerationdomains(ctx context.Context, query *
 	}
 	return nil
 }
-func (_q *EdgeOneZoneQuery) loadDnsrecords(ctx context.Context, query *EdgeOneZoneDNSRecordQuery, nodes []*EdgeOneZone, init func(*EdgeOneZone), assign func(*EdgeOneZone, *EdgeOneZoneDNSRecord)) error {
+func (_q *EdgeOneZoneQuery) loadDNSRecords(ctx context.Context, query *EdgeOneZoneDNSRecordQuery, nodes []*EdgeOneZone, init func(*EdgeOneZone), assign func(*EdgeOneZone, *EdgeOneZoneDNSRecord)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int64]*EdgeOneZone)
 	for i := range nodes {
@@ -666,7 +666,7 @@ func (_q *EdgeOneZoneQuery) loadDnsrecords(ctx context.Context, query *EdgeOneZo
 		query.ctx.AppendFieldOnce(edgeonezonednsrecord.FieldEdgeoneZoneID)
 	}
 	query.Where(predicate.EdgeOneZoneDNSRecord(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(edgeonezone.DnsrecordsColumn), fks...))
+		s.Where(sql.InValues(s.C(edgeonezone.DNSRecordsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -682,7 +682,7 @@ func (_q *EdgeOneZoneQuery) loadDnsrecords(ctx context.Context, query *EdgeOneZo
 	}
 	return nil
 }
-func (_q *EdgeOneZoneQuery) loadOrigingroups(ctx context.Context, query *EdgeOneZoneOriginGroupQuery, nodes []*EdgeOneZone, init func(*EdgeOneZone), assign func(*EdgeOneZone, *EdgeOneZoneOriginGroup)) error {
+func (_q *EdgeOneZoneQuery) loadOriginGroups(ctx context.Context, query *EdgeOneZoneOriginGroupQuery, nodes []*EdgeOneZone, init func(*EdgeOneZone), assign func(*EdgeOneZone, *EdgeOneZoneOriginGroup)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int64]*EdgeOneZone)
 	for i := range nodes {
@@ -696,7 +696,7 @@ func (_q *EdgeOneZoneQuery) loadOrigingroups(ctx context.Context, query *EdgeOne
 		query.ctx.AppendFieldOnce(edgeonezoneorigingroup.FieldEdgeoneZoneID)
 	}
 	query.Where(predicate.EdgeOneZoneOriginGroup(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(edgeonezone.OrigingroupsColumn), fks...))
+		s.Where(sql.InValues(s.C(edgeonezone.OriginGroupsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -809,45 +809,45 @@ func (_q *EdgeOneZoneQuery) Modify(modifiers ...func(s *sql.Selector)) *EdgeOneZ
 	return _q.Select()
 }
 
-// WithNamedAccelerationdomains tells the query-builder to eager-load the nodes that are connected to the "accelerationdomains"
+// WithNamedAccelerationDomains tells the query-builder to eager-load the nodes that are connected to the "acceleration_domains"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (_q *EdgeOneZoneQuery) WithNamedAccelerationdomains(name string, opts ...func(*EdgeOneZoneAccelerationDomainQuery)) *EdgeOneZoneQuery {
+func (_q *EdgeOneZoneQuery) WithNamedAccelerationDomains(name string, opts ...func(*EdgeOneZoneAccelerationDomainQuery)) *EdgeOneZoneQuery {
 	query := (&EdgeOneZoneAccelerationDomainClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	if _q.withNamedAccelerationdomains == nil {
-		_q.withNamedAccelerationdomains = make(map[string]*EdgeOneZoneAccelerationDomainQuery)
+	if _q.withNamedAccelerationDomains == nil {
+		_q.withNamedAccelerationDomains = make(map[string]*EdgeOneZoneAccelerationDomainQuery)
 	}
-	_q.withNamedAccelerationdomains[name] = query
+	_q.withNamedAccelerationDomains[name] = query
 	return _q
 }
 
-// WithNamedDnsrecords tells the query-builder to eager-load the nodes that are connected to the "dnsrecords"
+// WithNamedDNSRecords tells the query-builder to eager-load the nodes that are connected to the "dns_records"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (_q *EdgeOneZoneQuery) WithNamedDnsrecords(name string, opts ...func(*EdgeOneZoneDNSRecordQuery)) *EdgeOneZoneQuery {
+func (_q *EdgeOneZoneQuery) WithNamedDNSRecords(name string, opts ...func(*EdgeOneZoneDNSRecordQuery)) *EdgeOneZoneQuery {
 	query := (&EdgeOneZoneDNSRecordClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	if _q.withNamedDnsrecords == nil {
-		_q.withNamedDnsrecords = make(map[string]*EdgeOneZoneDNSRecordQuery)
+	if _q.withNamedDNSRecords == nil {
+		_q.withNamedDNSRecords = make(map[string]*EdgeOneZoneDNSRecordQuery)
 	}
-	_q.withNamedDnsrecords[name] = query
+	_q.withNamedDNSRecords[name] = query
 	return _q
 }
 
-// WithNamedOrigingroups tells the query-builder to eager-load the nodes that are connected to the "origingroups"
+// WithNamedOriginGroups tells the query-builder to eager-load the nodes that are connected to the "origin_groups"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (_q *EdgeOneZoneQuery) WithNamedOrigingroups(name string, opts ...func(*EdgeOneZoneOriginGroupQuery)) *EdgeOneZoneQuery {
+func (_q *EdgeOneZoneQuery) WithNamedOriginGroups(name string, opts ...func(*EdgeOneZoneOriginGroupQuery)) *EdgeOneZoneQuery {
 	query := (&EdgeOneZoneOriginGroupClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	if _q.withNamedOrigingroups == nil {
-		_q.withNamedOrigingroups = make(map[string]*EdgeOneZoneOriginGroupQuery)
+	if _q.withNamedOriginGroups == nil {
+		_q.withNamedOriginGroups = make(map[string]*EdgeOneZoneOriginGroupQuery)
 	}
-	_q.withNamedOrigingroups[name] = query
+	_q.withNamedOriginGroups[name] = query
 	return _q
 }
 

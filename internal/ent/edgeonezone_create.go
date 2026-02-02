@@ -256,49 +256,49 @@ func (_c *EdgeOneZoneCreate) SetConfig(v *PlatformConfig) *EdgeOneZoneCreate {
 	return _c.SetConfigID(v.ID)
 }
 
-// AddAccelerationdomainIDs adds the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity by IDs.
-func (_c *EdgeOneZoneCreate) AddAccelerationdomainIDs(ids ...int64) *EdgeOneZoneCreate {
-	_c.mutation.AddAccelerationdomainIDs(ids...)
+// AddAccelerationDomainIDs adds the "acceleration_domains" edge to the EdgeOneZoneAccelerationDomain entity by IDs.
+func (_c *EdgeOneZoneCreate) AddAccelerationDomainIDs(ids ...int64) *EdgeOneZoneCreate {
+	_c.mutation.AddAccelerationDomainIDs(ids...)
 	return _c
 }
 
-// AddAccelerationdomains adds the "accelerationdomains" edges to the EdgeOneZoneAccelerationDomain entity.
-func (_c *EdgeOneZoneCreate) AddAccelerationdomains(v ...*EdgeOneZoneAccelerationDomain) *EdgeOneZoneCreate {
+// AddAccelerationDomains adds the "acceleration_domains" edges to the EdgeOneZoneAccelerationDomain entity.
+func (_c *EdgeOneZoneCreate) AddAccelerationDomains(v ...*EdgeOneZoneAccelerationDomain) *EdgeOneZoneCreate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _c.AddAccelerationdomainIDs(ids...)
+	return _c.AddAccelerationDomainIDs(ids...)
 }
 
-// AddDnsrecordIDs adds the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity by IDs.
-func (_c *EdgeOneZoneCreate) AddDnsrecordIDs(ids ...int64) *EdgeOneZoneCreate {
-	_c.mutation.AddDnsrecordIDs(ids...)
+// AddDNSRecordIDs adds the "dns_records" edge to the EdgeOneZoneDNSRecord entity by IDs.
+func (_c *EdgeOneZoneCreate) AddDNSRecordIDs(ids ...int64) *EdgeOneZoneCreate {
+	_c.mutation.AddDNSRecordIDs(ids...)
 	return _c
 }
 
-// AddDnsrecords adds the "dnsrecords" edges to the EdgeOneZoneDNSRecord entity.
-func (_c *EdgeOneZoneCreate) AddDnsrecords(v ...*EdgeOneZoneDNSRecord) *EdgeOneZoneCreate {
+// AddDNSRecords adds the "dns_records" edges to the EdgeOneZoneDNSRecord entity.
+func (_c *EdgeOneZoneCreate) AddDNSRecords(v ...*EdgeOneZoneDNSRecord) *EdgeOneZoneCreate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _c.AddDnsrecordIDs(ids...)
+	return _c.AddDNSRecordIDs(ids...)
 }
 
-// AddOrigingroupIDs adds the "origingroups" edge to the EdgeOneZoneOriginGroup entity by IDs.
-func (_c *EdgeOneZoneCreate) AddOrigingroupIDs(ids ...int64) *EdgeOneZoneCreate {
-	_c.mutation.AddOrigingroupIDs(ids...)
+// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneZoneOriginGroup entity by IDs.
+func (_c *EdgeOneZoneCreate) AddOriginGroupIDs(ids ...int64) *EdgeOneZoneCreate {
+	_c.mutation.AddOriginGroupIDs(ids...)
 	return _c
 }
 
-// AddOrigingroups adds the "origingroups" edges to the EdgeOneZoneOriginGroup entity.
-func (_c *EdgeOneZoneCreate) AddOrigingroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneCreate {
+// AddOriginGroups adds the "origin_groups" edges to the EdgeOneZoneOriginGroup entity.
+func (_c *EdgeOneZoneCreate) AddOriginGroups(v ...*EdgeOneZoneOriginGroup) *EdgeOneZoneCreate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _c.AddOrigingroupIDs(ids...)
+	return _c.AddOriginGroupIDs(ids...)
 }
 
 // Mutation returns the EdgeOneZoneMutation object of the builder.
@@ -534,12 +534,12 @@ func (_c *EdgeOneZoneCreate) createSpec() (*EdgeOneZone, *sqlgraph.CreateSpec) {
 		_node.ConfigID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.AccelerationdomainsIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.AccelerationDomainsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   edgeonezone.AccelerationdomainsTable,
-			Columns: []string{edgeonezone.AccelerationdomainsColumn},
+			Table:   edgeonezone.AccelerationDomainsTable,
+			Columns: []string{edgeonezone.AccelerationDomainsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneaccelerationdomain.FieldID, field.TypeInt64),
@@ -550,12 +550,12 @@ func (_c *EdgeOneZoneCreate) createSpec() (*EdgeOneZone, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.DnsrecordsIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.DNSRecordsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   edgeonezone.DnsrecordsTable,
-			Columns: []string{edgeonezone.DnsrecordsColumn},
+			Table:   edgeonezone.DNSRecordsTable,
+			Columns: []string{edgeonezone.DNSRecordsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezonednsrecord.FieldID, field.TypeInt64),
@@ -566,12 +566,12 @@ func (_c *EdgeOneZoneCreate) createSpec() (*EdgeOneZone, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.OrigingroupsIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.OriginGroupsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   edgeonezone.OrigingroupsTable,
-			Columns: []string{edgeonezone.OrigingroupsColumn},
+			Table:   edgeonezone.OriginGroupsTable,
+			Columns: []string{edgeonezone.OriginGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(edgeonezoneorigingroup.FieldID, field.TypeInt64),

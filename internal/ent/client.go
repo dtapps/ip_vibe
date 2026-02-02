@@ -2544,15 +2544,15 @@ func (c *EdgeOneZoneClient) QueryConfig(_m *EdgeOneZone) *PlatformConfigQuery {
 	return query
 }
 
-// QueryAccelerationdomains queries the accelerationdomains edge of a EdgeOneZone.
-func (c *EdgeOneZoneClient) QueryAccelerationdomains(_m *EdgeOneZone) *EdgeOneZoneAccelerationDomainQuery {
+// QueryAccelerationDomains queries the acceleration_domains edge of a EdgeOneZone.
+func (c *EdgeOneZoneClient) QueryAccelerationDomains(_m *EdgeOneZone) *EdgeOneZoneAccelerationDomainQuery {
 	query := (&EdgeOneZoneAccelerationDomainClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, id),
 			sqlgraph.To(edgeonezoneaccelerationdomain.Table, edgeonezoneaccelerationdomain.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.AccelerationdomainsTable, edgeonezone.AccelerationdomainsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.AccelerationDomainsTable, edgeonezone.AccelerationDomainsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2560,15 +2560,15 @@ func (c *EdgeOneZoneClient) QueryAccelerationdomains(_m *EdgeOneZone) *EdgeOneZo
 	return query
 }
 
-// QueryDnsrecords queries the dnsrecords edge of a EdgeOneZone.
-func (c *EdgeOneZoneClient) QueryDnsrecords(_m *EdgeOneZone) *EdgeOneZoneDNSRecordQuery {
+// QueryDNSRecords queries the dns_records edge of a EdgeOneZone.
+func (c *EdgeOneZoneClient) QueryDNSRecords(_m *EdgeOneZone) *EdgeOneZoneDNSRecordQuery {
 	query := (&EdgeOneZoneDNSRecordClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, id),
 			sqlgraph.To(edgeonezonednsrecord.Table, edgeonezonednsrecord.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.DnsrecordsTable, edgeonezone.DnsrecordsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.DNSRecordsTable, edgeonezone.DNSRecordsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2576,15 +2576,15 @@ func (c *EdgeOneZoneClient) QueryDnsrecords(_m *EdgeOneZone) *EdgeOneZoneDNSReco
 	return query
 }
 
-// QueryOrigingroups queries the origingroups edge of a EdgeOneZone.
-func (c *EdgeOneZoneClient) QueryOrigingroups(_m *EdgeOneZone) *EdgeOneZoneOriginGroupQuery {
+// QueryOriginGroups queries the origin_groups edge of a EdgeOneZone.
+func (c *EdgeOneZoneClient) QueryOriginGroups(_m *EdgeOneZone) *EdgeOneZoneOriginGroupQuery {
 	query := (&EdgeOneZoneOriginGroupClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(edgeonezone.Table, edgeonezone.FieldID, id),
 			sqlgraph.To(edgeonezoneorigingroup.Table, edgeonezoneorigingroup.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.OrigingroupsTable, edgeonezone.OrigingroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, edgeonezone.OriginGroupsTable, edgeonezone.OriginGroupsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -3208,15 +3208,15 @@ func (c *EsaSiteClient) QueryRecords(_m *EsaSite) *EsaSiteRecordQuery {
 	return query
 }
 
-// QueryEdgecontainerrecords queries the edgecontainerrecords edge of a EsaSite.
-func (c *EsaSiteClient) QueryEdgecontainerrecords(_m *EsaSite) *EsaSiteEdgeContainerRecordQuery {
+// QueryEdgeContainerRecords queries the edge_container_records edge of a EsaSite.
+func (c *EsaSiteClient) QueryEdgeContainerRecords(_m *EsaSite) *EsaSiteEdgeContainerRecordQuery {
 	query := (&EsaSiteEdgeContainerRecordClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(esasite.Table, esasite.FieldID, id),
 			sqlgraph.To(esasiteedgecontainerrecord.Table, esasiteedgecontainerrecord.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, esasite.EdgecontainerrecordsTable, esasite.EdgecontainerrecordsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, esasite.EdgeContainerRecordsTable, esasite.EdgeContainerRecordsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -3224,15 +3224,15 @@ func (c *EsaSiteClient) QueryEdgecontainerrecords(_m *EsaSite) *EsaSiteEdgeConta
 	return query
 }
 
-// QueryEdgeroutinerecords queries the edgeroutinerecords edge of a EsaSite.
-func (c *EsaSiteClient) QueryEdgeroutinerecords(_m *EsaSite) *EsaSiteEdgeRoutineRecordQuery {
+// QueryEdgeRoutineRecords queries the edge_routine_records edge of a EsaSite.
+func (c *EsaSiteClient) QueryEdgeRoutineRecords(_m *EsaSite) *EsaSiteEdgeRoutineRecordQuery {
 	query := (&EsaSiteEdgeRoutineRecordClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(esasite.Table, esasite.FieldID, id),
 			sqlgraph.To(esasiteedgeroutinerecord.Table, esasiteedgeroutinerecord.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, esasite.EdgeroutinerecordsTable, esasite.EdgeroutinerecordsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, esasite.EdgeRoutineRecordsTable, esasite.EdgeRoutineRecordsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -3240,15 +3240,15 @@ func (c *EsaSiteClient) QueryEdgeroutinerecords(_m *EsaSite) *EsaSiteEdgeRoutine
 	return query
 }
 
-// QueryOriginpools queries the originpools edge of a EsaSite.
-func (c *EsaSiteClient) QueryOriginpools(_m *EsaSite) *EsaSiteOriginPoolQuery {
+// QueryOriginPools queries the origin_pools edge of a EsaSite.
+func (c *EsaSiteClient) QueryOriginPools(_m *EsaSite) *EsaSiteOriginPoolQuery {
 	query := (&EsaSiteOriginPoolClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(esasite.Table, esasite.FieldID, id),
 			sqlgraph.To(esasiteoriginpool.Table, esasiteoriginpool.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, esasite.OriginpoolsTable, esasite.OriginpoolsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, esasite.OriginPoolsTable, esasite.OriginPoolsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil

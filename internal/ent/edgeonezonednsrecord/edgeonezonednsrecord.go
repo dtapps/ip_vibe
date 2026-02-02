@@ -47,9 +47,9 @@ const (
 	// EdgeEdgeoneZone holds the string denoting the edgeone_zone edge name in mutations.
 	EdgeEdgeoneZone = "edgeone_zone"
 	// Table holds the table name of the edgeonezonednsrecord in the database.
-	Table = "edgeone_zone_dnsrecord"
+	Table = "edgeone_zone_dns_record"
 	// EdgeoneZoneTable is the table that holds the edgeone_zone relation/edge.
-	EdgeoneZoneTable = "edgeone_zone_dnsrecord"
+	EdgeoneZoneTable = "edgeone_zone_dns_record"
 	// EdgeoneZoneInverseTable is the table name for the EdgeOneZone entity.
 	// It exists in this package in order to avoid circular dependency with the "edgeonezone" package.
 	EdgeoneZoneInverseTable = "edgeone_zone"

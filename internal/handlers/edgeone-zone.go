@@ -41,9 +41,9 @@ func EdgeOneZone(c *gin.Context) {
 			// 查询隧道列表
 			allZone, err := global.GvaEntDb.EdgeOneZone.Query().
 				Where(edgeonezone.ConfigID(item.ID)).
-				WithAccelerationdomains().
-				WithDnsrecords().
-				WithOrigingroups().
+				WithAccelerationDomains().
+				WithDNSRecords().
+				WithOriginGroups().
 				OrderByZoneNameAsc().
 				All(c)
 			if err == nil {
@@ -61,9 +61,9 @@ func EdgeOneZone(c *gin.Context) {
 						ActiveStatus:    zone.ActiveStatus.String(),
 						Paused:          zone.Paused,
 
-						AccelerationdomainCount: len(zone.Edges.Accelerationdomains),
-						DnsrecordCount:          len(zone.Edges.Dnsrecords),
-						OrigingroupCount:        len(zone.Edges.Origingroups),
+						AccelerationdomainCount: len(zone.Edges.AccelerationDomains),
+						DnsrecordCount:          len(zone.Edges.DNSRecords),
+						OrigingroupCount:        len(zone.Edges.OriginGroups),
 					})
 				}
 			}
@@ -124,7 +124,7 @@ func EdgeOneZoneRecord(c *gin.Context) {
 	pageData.Item = *firstZone
 
 	if firstZone.Type == edgeonezone.TypeFull {
-		allRecord, err := firstZone.QueryDnsrecords().
+		allRecord, err := firstZone.QueryDNSRecords().
 			OrderByRemoteCreatedAtDesc().
 			Paginate(c, requestParams.Page, requestParams.PageSize)
 		if err == nil {
@@ -138,7 +138,7 @@ func EdgeOneZoneRecord(c *gin.Context) {
 		pageData.Total = allRecord.Total
 	}
 	if firstZone.Type == edgeonezone.TypePartial {
-		allRecord, err := firstZone.QueryAccelerationdomains().
+		allRecord, err := firstZone.QueryAccelerationDomains().
 			OrderByRemoteCreatedAtDesc().
 			Paginate(c, requestParams.Page, requestParams.PageSize)
 		if err == nil {
@@ -194,7 +194,7 @@ func EdgeOneZoneOriginGroup(c *gin.Context) {
 	}
 	pageData.Item = *firstZone
 
-	allOrigingroup, err := firstZone.QueryOrigingroups().
+	allOrigingroup, err := firstZone.QueryOriginGroups().
 		OrderByRemoteCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {

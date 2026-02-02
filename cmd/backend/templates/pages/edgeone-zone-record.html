@@ -107,7 +107,7 @@
 
                         <td class="ui-td">
                             <span class="badge badge-sm badge-neutral font-mono">
-                                {{ fieldEnumLabel "edgeone_zone_dnsrecord_type" $record.Type }}
+                                {{ fieldEnumLabel "edgeone_zone_dns_record_type" $record.Type }}
                             </span>
                         </td>
                         <td class="ui-td font-mono text-xs opacity-80 max-w-xs truncate">
@@ -119,7 +119,7 @@
                         <td class="ui-td">
                             <div
                                 class='badge badge-sm {{ if eq $record.Status "enable" }}badge-success{{ else }}badge-ghost opacity-50{{ end }} italic font-black uppercase'>
-                                {{ fieldEnumLabel "edgeone_zone_dnsrecord_status" $record.Status }}
+                                {{ fieldEnumLabel "edgeone_zone_dns_record_status" $record.Status }}
                             </div>
                         </td>
                         {{ else }}
@@ -129,7 +129,7 @@
 
                         <td class="ui-td">
                             <span class="badge badge-sm badge-success italic font-black uppercase">
-                                {{ fieldEnumLabel "edgeone_zone_accelerationdomain_domain_status" $record.DomainStatus
+                                {{ fieldEnumLabel "edgeone_zone_acceleration_domain_domain_status" $record.DomainStatus
                                 }}
                             </span>
                         </td>
@@ -140,7 +140,7 @@
 
                         {{ $originType := jsonGet $record.OriginDetail "OriginType" }}
                         <td class="ui-td uppercase text-[10px] font-bold italic">
-                            {{ fieldEnumLabel "edgeone_zone_accelerationdomain_origin_detail_origin_type" $originType
+                            {{ fieldEnumLabel "edgeone_zone_acceleration_domain_origin_detail_origin_type" $originType
                             }}
                         </td>
 

@@ -21,7 +21,7 @@ type EdgeOneZoneDNSRecord struct {
 // Annotations of the EdgeOneZoneDNSRecord.
 func (EdgeOneZoneDNSRecord) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "edgeone_zone_dnsrecord"},
+		entsql.Annotation{Table: "edgeone_zone_dns_record"},
 		schema.Comment("EdgeOne 站点DNS记录"),
 		entsql.WithComments(true),
 	}
@@ -105,7 +105,7 @@ func (EdgeOneZoneDNSRecord) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 一对多 EdgeOneZone -> EdgeOneZoneDNSRecord
 		edge.From("edgeone_zone", EdgeOneZone.Type).
-			Ref("dnsrecords").
+			Ref("dns_records").
 			Field("edgeone_zone_id").
 			Unique().
 			Required().

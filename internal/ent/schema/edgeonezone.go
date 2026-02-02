@@ -144,7 +144,7 @@ func (EdgeOneZone) Edges() []ent.Edge {
 			Annotations(entsql.WithComments(true)),
 
 		// 一对多 EdgeOneZone -> EdgeOneZoneAccelerationDomain
-		edge.To("accelerationdomains", EdgeOneZoneAccelerationDomain.Type).
+		edge.To("acceleration_domains", EdgeOneZoneAccelerationDomain.Type).
 			Comment("关联的EdgeOne站点加速域名").
 			Annotations(entsql.Annotation{
 				// 级联删除：删除 EdgeOneZone 时，其所有 EdgeOneZoneAccelerationDomain 记录也应删除
@@ -152,7 +152,7 @@ func (EdgeOneZone) Edges() []ent.Edge {
 			}, entsql.WithComments(true)),
 
 		// 一对多 EdgeOneZone -> EdgeOneZoneDNSRecord
-		edge.To("dnsrecords", EdgeOneZoneDNSRecord.Type).
+		edge.To("dns_records", EdgeOneZoneDNSRecord.Type).
 			Comment("关联的EdgeOne站点DNS记录").
 			Annotations(entsql.Annotation{
 				// 级联删除：删除 EdgeOneZone 时，其所有 EdgeOneZoneDNSRecord 记录也应删除
@@ -160,7 +160,7 @@ func (EdgeOneZone) Edges() []ent.Edge {
 			}, entsql.WithComments(true)),
 
 		// 一对多 EdgeOneZone -> EdgeOneZoneOriginGroup
-		edge.To("origingroups", EdgeOneZoneOriginGroup.Type).
+		edge.To("origin_groups", EdgeOneZoneOriginGroup.Type).
 			Comment("关联的EdgeOne站点源站组").
 			Annotations(entsql.Annotation{
 				// 级联删除：删除 EdgeOneZone 时，其所有 EdgeOneZoneOriginGroup 记录也应删除

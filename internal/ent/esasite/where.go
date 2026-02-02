@@ -1021,21 +1021,21 @@ func HasRecordsWith(preds ...predicate.EsaSiteRecord) predicate.EsaSite {
 	})
 }
 
-// HasEdgecontainerrecords applies the HasEdge predicate on the "edgecontainerrecords" edge.
-func HasEdgecontainerrecords() predicate.EsaSite {
+// HasEdgeContainerRecords applies the HasEdge predicate on the "edge_container_records" edge.
+func HasEdgeContainerRecords() predicate.EsaSite {
 	return predicate.EsaSite(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, EdgecontainerrecordsTable, EdgecontainerrecordsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, EdgeContainerRecordsTable, EdgeContainerRecordsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasEdgecontainerrecordsWith applies the HasEdge predicate on the "edgecontainerrecords" edge with a given conditions (other predicates).
-func HasEdgecontainerrecordsWith(preds ...predicate.EsaSiteEdgeContainerRecord) predicate.EsaSite {
+// HasEdgeContainerRecordsWith applies the HasEdge predicate on the "edge_container_records" edge with a given conditions (other predicates).
+func HasEdgeContainerRecordsWith(preds ...predicate.EsaSiteEdgeContainerRecord) predicate.EsaSite {
 	return predicate.EsaSite(func(s *sql.Selector) {
-		step := newEdgecontainerrecordsStep()
+		step := newEdgeContainerRecordsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1044,21 +1044,21 @@ func HasEdgecontainerrecordsWith(preds ...predicate.EsaSiteEdgeContainerRecord) 
 	})
 }
 
-// HasEdgeroutinerecords applies the HasEdge predicate on the "edgeroutinerecords" edge.
-func HasEdgeroutinerecords() predicate.EsaSite {
+// HasEdgeRoutineRecords applies the HasEdge predicate on the "edge_routine_records" edge.
+func HasEdgeRoutineRecords() predicate.EsaSite {
 	return predicate.EsaSite(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, EdgeroutinerecordsTable, EdgeroutinerecordsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, EdgeRoutineRecordsTable, EdgeRoutineRecordsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasEdgeroutinerecordsWith applies the HasEdge predicate on the "edgeroutinerecords" edge with a given conditions (other predicates).
-func HasEdgeroutinerecordsWith(preds ...predicate.EsaSiteEdgeRoutineRecord) predicate.EsaSite {
+// HasEdgeRoutineRecordsWith applies the HasEdge predicate on the "edge_routine_records" edge with a given conditions (other predicates).
+func HasEdgeRoutineRecordsWith(preds ...predicate.EsaSiteEdgeRoutineRecord) predicate.EsaSite {
 	return predicate.EsaSite(func(s *sql.Selector) {
-		step := newEdgeroutinerecordsStep()
+		step := newEdgeRoutineRecordsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1067,21 +1067,21 @@ func HasEdgeroutinerecordsWith(preds ...predicate.EsaSiteEdgeRoutineRecord) pred
 	})
 }
 
-// HasOriginpools applies the HasEdge predicate on the "originpools" edge.
-func HasOriginpools() predicate.EsaSite {
+// HasOriginPools applies the HasEdge predicate on the "origin_pools" edge.
+func HasOriginPools() predicate.EsaSite {
 	return predicate.EsaSite(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, OriginpoolsTable, OriginpoolsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, OriginPoolsTable, OriginPoolsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasOriginpoolsWith applies the HasEdge predicate on the "originpools" edge with a given conditions (other predicates).
-func HasOriginpoolsWith(preds ...predicate.EsaSiteOriginPool) predicate.EsaSite {
+// HasOriginPoolsWith applies the HasEdge predicate on the "origin_pools" edge with a given conditions (other predicates).
+func HasOriginPoolsWith(preds ...predicate.EsaSiteOriginPool) predicate.EsaSite {
 	return predicate.EsaSite(func(s *sql.Selector) {
-		step := newOriginpoolsStep()
+		step := newOriginPoolsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -21,7 +21,7 @@ type EsaSiteOriginPool struct {
 // Annotations of the EsaSiteOriginPool.
 func (EsaSiteOriginPool) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "esa_site_originpool"},
+		entsql.Annotation{Table: "esa_site_origin_pool"},
 		schema.Comment("ESA 站点源地址池"),
 		entsql.WithComments(true),
 	}
@@ -93,7 +93,7 @@ func (EsaSiteOriginPool) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 一对多 EsaSite -> EsaSiteOriginPool
 		edge.From("esa_site", EsaSite.Type).
-			Ref("originpools").
+			Ref("origin_pools").
 			Field("esa_site_id").
 			Unique().
 			Required().

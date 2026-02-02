@@ -67,7 +67,7 @@ func (EsaSiteEdgeContainerRecord) Edges() []ent.Edge {
 	return []ent.Edge{
 		// 一对多 EsaSite -> EsaSiteEdgeContainerRecord
 		edge.From("esa_site", EsaSite.Type).
-			Ref("edgecontainerrecords").
+			Ref("edge_container_records").
 			Field("esa_site_id").
 			Unique().
 			Required().

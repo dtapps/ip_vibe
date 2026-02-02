@@ -778,21 +778,21 @@ func HasConfigWith(preds ...predicate.PlatformConfig) predicate.EdgeOneZone {
 	})
 }
 
-// HasAccelerationdomains applies the HasEdge predicate on the "accelerationdomains" edge.
-func HasAccelerationdomains() predicate.EdgeOneZone {
+// HasAccelerationDomains applies the HasEdge predicate on the "acceleration_domains" edge.
+func HasAccelerationDomains() predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AccelerationdomainsTable, AccelerationdomainsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, AccelerationDomainsTable, AccelerationDomainsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasAccelerationdomainsWith applies the HasEdge predicate on the "accelerationdomains" edge with a given conditions (other predicates).
-func HasAccelerationdomainsWith(preds ...predicate.EdgeOneZoneAccelerationDomain) predicate.EdgeOneZone {
+// HasAccelerationDomainsWith applies the HasEdge predicate on the "acceleration_domains" edge with a given conditions (other predicates).
+func HasAccelerationDomainsWith(preds ...predicate.EdgeOneZoneAccelerationDomain) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(func(s *sql.Selector) {
-		step := newAccelerationdomainsStep()
+		step := newAccelerationDomainsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -801,21 +801,21 @@ func HasAccelerationdomainsWith(preds ...predicate.EdgeOneZoneAccelerationDomain
 	})
 }
 
-// HasDnsrecords applies the HasEdge predicate on the "dnsrecords" edge.
-func HasDnsrecords() predicate.EdgeOneZone {
+// HasDNSRecords applies the HasEdge predicate on the "dns_records" edge.
+func HasDNSRecords() predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, DnsrecordsTable, DnsrecordsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, DNSRecordsTable, DNSRecordsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasDnsrecordsWith applies the HasEdge predicate on the "dnsrecords" edge with a given conditions (other predicates).
-func HasDnsrecordsWith(preds ...predicate.EdgeOneZoneDNSRecord) predicate.EdgeOneZone {
+// HasDNSRecordsWith applies the HasEdge predicate on the "dns_records" edge with a given conditions (other predicates).
+func HasDNSRecordsWith(preds ...predicate.EdgeOneZoneDNSRecord) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(func(s *sql.Selector) {
-		step := newDnsrecordsStep()
+		step := newDNSRecordsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -824,21 +824,21 @@ func HasDnsrecordsWith(preds ...predicate.EdgeOneZoneDNSRecord) predicate.EdgeOn
 	})
 }
 
-// HasOrigingroups applies the HasEdge predicate on the "origingroups" edge.
-func HasOrigingroups() predicate.EdgeOneZone {
+// HasOriginGroups applies the HasEdge predicate on the "origin_groups" edge.
+func HasOriginGroups() predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, OrigingroupsTable, OrigingroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, OriginGroupsTable, OriginGroupsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasOrigingroupsWith applies the HasEdge predicate on the "origingroups" edge with a given conditions (other predicates).
-func HasOrigingroupsWith(preds ...predicate.EdgeOneZoneOriginGroup) predicate.EdgeOneZone {
+// HasOriginGroupsWith applies the HasEdge predicate on the "origin_groups" edge with a given conditions (other predicates).
+func HasOriginGroupsWith(preds ...predicate.EdgeOneZoneOriginGroup) predicate.EdgeOneZone {
 	return predicate.EdgeOneZone(func(s *sql.Selector) {
-		step := newOrigingroupsStep()
+		step := newOriginGroupsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

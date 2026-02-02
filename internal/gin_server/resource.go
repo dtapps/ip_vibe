@@ -176,42 +176,42 @@ var EnumRegistry = map[string]EnumDefinition{
 		Descriptions: schematype.GetEdgeOneZoneLockStatusDescriptions,
 	},
 	// EdgeOne 站点源站组 源站组类型
-	"edgeone_zone_origingroup_type": {
+	"edgeone_zone_origin_group_type": {
 		Values:       schematype.GetEdgeOneZoneOriginGroupTypes,
 		Descriptions: schematype.GetEdgeOneZoneOriginGroupTypeDescriptions,
 	},
 	// EdgeOne 站点DNS记录 DNS 记录类型
-	"edgeone_zone_dnsrecord_type": {
+	"edgeone_zone_dns_record_type": {
 		Values:       schematype.GetEdgeOneZoneDNSRecordTypes,
 		Descriptions: schematype.GetEdgeOneZoneDNSRecordTypeDescriptions,
 	},
 	// EdgeOne 站点DNS记录 DNS 记录解析状态
-	"edgeone_zone_dnsrecord_status": {
+	"edgeone_zone_dns_record_status": {
 		Values:       schematype.GetEdgeOneZoneDNSRecordStatuss,
 		Descriptions: schematype.GetEdgeOneZoneDNSRecordStatusDescriptions,
 	},
 	// EdgeOne 站点加速域名 加速域名状态
-	"edgeone_zone_accelerationdomain_domain_status": {
+	"edgeone_zone_acceleration_domain_domain_status": {
 		Values:       schematype.GetEdgeOneZoneAccelerationDomainDomainStatuss,
 		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainDomainStatusDescriptions,
 	},
 	// EdgeOne 站点加速域名 IPv6 状态
-	"edgeone_zone_accelerationdomain_ipv6_status": {
+	"edgeone_zone_acceleration_domain_ipv6_status": {
 		Values:       schematype.GetEdgeOneZoneAccelerationDomainIPv6Statuss,
 		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainIPv6StatusDescriptions,
 	},
 	// EdgeOne 站点加速域名 加速域名归属权验证状态
-	"edgeone_zone_accelerationdomain_identification_status": {
+	"edgeone_zone_acceleration_domain_identification_status": {
 		Values:       schematype.GetEdgeOneZoneAccelerationDomainIdentificationStatuss,
 		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainIdentificationStatusDescriptions,
 	},
 	// EdgeOne 站点加速域名 源站信息 源站类型
-	"edgeone_zone_accelerationdomain_origin_detail_origin_type": {
+	"edgeone_zone_acceleration_domain_origin_detail_origin_type": {
 		Values:       schematype.GetEdgeOneZoneAccelerationDomainOriginDetailOriginTypes,
 		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainOriginDetailOriginTypeDescriptions,
 	},
 	// EdgeOne 站点加速域名 回源协议
-	"edgeone_zone_accelerationdomain_origin_protocol": {
+	"edgeone_zone_acceleration_domain_origin_protocol": {
 		Values:       schematype.GetEdgeOneZoneAccelerationDomainOriginProtocols,
 		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainOriginProtocolDescriptions,
 	},

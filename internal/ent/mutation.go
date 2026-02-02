@@ -12776,46 +12776,46 @@ func (m *DomainMonitorMutation) ResetEdge(name string) error {
 // EdgeOneZoneMutation represents an operation that mutates the EdgeOneZone nodes in the graph.
 type EdgeOneZoneMutation struct {
 	config
-	op                         Op
-	typ                        string
-	id                         *int64
-	created_at                 *time.Time
-	updated_at                 *time.Time
-	remote_created_at          *time.Time
-	sync_at                    *time.Time
-	zone_id                    *string
-	zone_name                  *string
-	alias_zone_name            *string
-	area                       *edgeonezone.Area
-	_type                      *edgeonezone.Type
-	resources                  *json.RawMessage
-	appendresources            json.RawMessage
-	ns_detail                  *json.RawMessage
-	appendns_detail            json.RawMessage
-	cname_detail               *json.RawMessage
-	appendcname_detail         json.RawMessage
-	dnspod_detail              *json.RawMessage
-	appenddnspod_detail        json.RawMessage
-	status                     *edgeonezone.Status
-	cname_status               *edgeonezone.CnameStatus
-	active_status              *edgeonezone.ActiveStatus
-	lock_status                *edgeonezone.LockStatus
-	paused                     *bool
-	clearedFields              map[string]struct{}
-	_config                    *int64
-	cleared_config             bool
-	accelerationdomains        map[int64]struct{}
-	removedaccelerationdomains map[int64]struct{}
-	clearedaccelerationdomains bool
-	dnsrecords                 map[int64]struct{}
-	removeddnsrecords          map[int64]struct{}
-	cleareddnsrecords          bool
-	origingroups               map[int64]struct{}
-	removedorigingroups        map[int64]struct{}
-	clearedorigingroups        bool
-	done                       bool
-	oldValue                   func(context.Context) (*EdgeOneZone, error)
-	predicates                 []predicate.EdgeOneZone
+	op                          Op
+	typ                         string
+	id                          *int64
+	created_at                  *time.Time
+	updated_at                  *time.Time
+	remote_created_at           *time.Time
+	sync_at                     *time.Time
+	zone_id                     *string
+	zone_name                   *string
+	alias_zone_name             *string
+	area                        *edgeonezone.Area
+	_type                       *edgeonezone.Type
+	resources                   *json.RawMessage
+	appendresources             json.RawMessage
+	ns_detail                   *json.RawMessage
+	appendns_detail             json.RawMessage
+	cname_detail                *json.RawMessage
+	appendcname_detail          json.RawMessage
+	dnspod_detail               *json.RawMessage
+	appenddnspod_detail         json.RawMessage
+	status                      *edgeonezone.Status
+	cname_status                *edgeonezone.CnameStatus
+	active_status               *edgeonezone.ActiveStatus
+	lock_status                 *edgeonezone.LockStatus
+	paused                      *bool
+	clearedFields               map[string]struct{}
+	_config                     *int64
+	cleared_config              bool
+	acceleration_domains        map[int64]struct{}
+	removedacceleration_domains map[int64]struct{}
+	clearedacceleration_domains bool
+	dns_records                 map[int64]struct{}
+	removeddns_records          map[int64]struct{}
+	cleareddns_records          bool
+	origin_groups               map[int64]struct{}
+	removedorigin_groups        map[int64]struct{}
+	clearedorigin_groups        bool
+	done                        bool
+	oldValue                    func(context.Context) (*EdgeOneZone, error)
+	predicates                  []predicate.EdgeOneZone
 }
 
 var _ ent.Mutation = (*EdgeOneZoneMutation)(nil)
@@ -13892,166 +13892,166 @@ func (m *EdgeOneZoneMutation) ResetConfig() {
 	m.cleared_config = false
 }
 
-// AddAccelerationdomainIDs adds the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity by ids.
-func (m *EdgeOneZoneMutation) AddAccelerationdomainIDs(ids ...int64) {
-	if m.accelerationdomains == nil {
-		m.accelerationdomains = make(map[int64]struct{})
+// AddAccelerationDomainIDs adds the "acceleration_domains" edge to the EdgeOneZoneAccelerationDomain entity by ids.
+func (m *EdgeOneZoneMutation) AddAccelerationDomainIDs(ids ...int64) {
+	if m.acceleration_domains == nil {
+		m.acceleration_domains = make(map[int64]struct{})
 	}
 	for i := range ids {
-		m.accelerationdomains[ids[i]] = struct{}{}
+		m.acceleration_domains[ids[i]] = struct{}{}
 	}
 }
 
-// ClearAccelerationdomains clears the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity.
-func (m *EdgeOneZoneMutation) ClearAccelerationdomains() {
-	m.clearedaccelerationdomains = true
+// ClearAccelerationDomains clears the "acceleration_domains" edge to the EdgeOneZoneAccelerationDomain entity.
+func (m *EdgeOneZoneMutation) ClearAccelerationDomains() {
+	m.clearedacceleration_domains = true
 }
 
-// AccelerationdomainsCleared reports if the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity was cleared.
-func (m *EdgeOneZoneMutation) AccelerationdomainsCleared() bool {
-	return m.clearedaccelerationdomains
+// AccelerationDomainsCleared reports if the "acceleration_domains" edge to the EdgeOneZoneAccelerationDomain entity was cleared.
+func (m *EdgeOneZoneMutation) AccelerationDomainsCleared() bool {
+	return m.clearedacceleration_domains
 }
 
-// RemoveAccelerationdomainIDs removes the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity by IDs.
-func (m *EdgeOneZoneMutation) RemoveAccelerationdomainIDs(ids ...int64) {
-	if m.removedaccelerationdomains == nil {
-		m.removedaccelerationdomains = make(map[int64]struct{})
+// RemoveAccelerationDomainIDs removes the "acceleration_domains" edge to the EdgeOneZoneAccelerationDomain entity by IDs.
+func (m *EdgeOneZoneMutation) RemoveAccelerationDomainIDs(ids ...int64) {
+	if m.removedacceleration_domains == nil {
+		m.removedacceleration_domains = make(map[int64]struct{})
 	}
 	for i := range ids {
-		delete(m.accelerationdomains, ids[i])
-		m.removedaccelerationdomains[ids[i]] = struct{}{}
+		delete(m.acceleration_domains, ids[i])
+		m.removedacceleration_domains[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedAccelerationdomains returns the removed IDs of the "accelerationdomains" edge to the EdgeOneZoneAccelerationDomain entity.
-func (m *EdgeOneZoneMutation) RemovedAccelerationdomainsIDs() (ids []int64) {
-	for id := range m.removedaccelerationdomains {
+// RemovedAccelerationDomains returns the removed IDs of the "acceleration_domains" edge to the EdgeOneZoneAccelerationDomain entity.
+func (m *EdgeOneZoneMutation) RemovedAccelerationDomainsIDs() (ids []int64) {
+	for id := range m.removedacceleration_domains {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// AccelerationdomainsIDs returns the "accelerationdomains" edge IDs in the mutation.
-func (m *EdgeOneZoneMutation) AccelerationdomainsIDs() (ids []int64) {
-	for id := range m.accelerationdomains {
+// AccelerationDomainsIDs returns the "acceleration_domains" edge IDs in the mutation.
+func (m *EdgeOneZoneMutation) AccelerationDomainsIDs() (ids []int64) {
+	for id := range m.acceleration_domains {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetAccelerationdomains resets all changes to the "accelerationdomains" edge.
-func (m *EdgeOneZoneMutation) ResetAccelerationdomains() {
-	m.accelerationdomains = nil
-	m.clearedaccelerationdomains = false
-	m.removedaccelerationdomains = nil
+// ResetAccelerationDomains resets all changes to the "acceleration_domains" edge.
+func (m *EdgeOneZoneMutation) ResetAccelerationDomains() {
+	m.acceleration_domains = nil
+	m.clearedacceleration_domains = false
+	m.removedacceleration_domains = nil
 }
 
-// AddDnsrecordIDs adds the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity by ids.
-func (m *EdgeOneZoneMutation) AddDnsrecordIDs(ids ...int64) {
-	if m.dnsrecords == nil {
-		m.dnsrecords = make(map[int64]struct{})
+// AddDNSRecordIDs adds the "dns_records" edge to the EdgeOneZoneDNSRecord entity by ids.
+func (m *EdgeOneZoneMutation) AddDNSRecordIDs(ids ...int64) {
+	if m.dns_records == nil {
+		m.dns_records = make(map[int64]struct{})
 	}
 	for i := range ids {
-		m.dnsrecords[ids[i]] = struct{}{}
+		m.dns_records[ids[i]] = struct{}{}
 	}
 }
 
-// ClearDnsrecords clears the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity.
-func (m *EdgeOneZoneMutation) ClearDnsrecords() {
-	m.cleareddnsrecords = true
+// ClearDNSRecords clears the "dns_records" edge to the EdgeOneZoneDNSRecord entity.
+func (m *EdgeOneZoneMutation) ClearDNSRecords() {
+	m.cleareddns_records = true
 }
 
-// DnsrecordsCleared reports if the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity was cleared.
-func (m *EdgeOneZoneMutation) DnsrecordsCleared() bool {
-	return m.cleareddnsrecords
+// DNSRecordsCleared reports if the "dns_records" edge to the EdgeOneZoneDNSRecord entity was cleared.
+func (m *EdgeOneZoneMutation) DNSRecordsCleared() bool {
+	return m.cleareddns_records
 }
 
-// RemoveDnsrecordIDs removes the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity by IDs.
-func (m *EdgeOneZoneMutation) RemoveDnsrecordIDs(ids ...int64) {
-	if m.removeddnsrecords == nil {
-		m.removeddnsrecords = make(map[int64]struct{})
-	}
-	for i := range ids {
-		delete(m.dnsrecords, ids[i])
-		m.removeddnsrecords[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedDnsrecords returns the removed IDs of the "dnsrecords" edge to the EdgeOneZoneDNSRecord entity.
-func (m *EdgeOneZoneMutation) RemovedDnsrecordsIDs() (ids []int64) {
-	for id := range m.removeddnsrecords {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// DnsrecordsIDs returns the "dnsrecords" edge IDs in the mutation.
-func (m *EdgeOneZoneMutation) DnsrecordsIDs() (ids []int64) {
-	for id := range m.dnsrecords {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetDnsrecords resets all changes to the "dnsrecords" edge.
-func (m *EdgeOneZoneMutation) ResetDnsrecords() {
-	m.dnsrecords = nil
-	m.cleareddnsrecords = false
-	m.removeddnsrecords = nil
-}
-
-// AddOrigingroupIDs adds the "origingroups" edge to the EdgeOneZoneOriginGroup entity by ids.
-func (m *EdgeOneZoneMutation) AddOrigingroupIDs(ids ...int64) {
-	if m.origingroups == nil {
-		m.origingroups = make(map[int64]struct{})
+// RemoveDNSRecordIDs removes the "dns_records" edge to the EdgeOneZoneDNSRecord entity by IDs.
+func (m *EdgeOneZoneMutation) RemoveDNSRecordIDs(ids ...int64) {
+	if m.removeddns_records == nil {
+		m.removeddns_records = make(map[int64]struct{})
 	}
 	for i := range ids {
-		m.origingroups[ids[i]] = struct{}{}
+		delete(m.dns_records, ids[i])
+		m.removeddns_records[ids[i]] = struct{}{}
 	}
 }
 
-// ClearOrigingroups clears the "origingroups" edge to the EdgeOneZoneOriginGroup entity.
-func (m *EdgeOneZoneMutation) ClearOrigingroups() {
-	m.clearedorigingroups = true
+// RemovedDNSRecords returns the removed IDs of the "dns_records" edge to the EdgeOneZoneDNSRecord entity.
+func (m *EdgeOneZoneMutation) RemovedDNSRecordsIDs() (ids []int64) {
+	for id := range m.removeddns_records {
+		ids = append(ids, id)
+	}
+	return
 }
 
-// OrigingroupsCleared reports if the "origingroups" edge to the EdgeOneZoneOriginGroup entity was cleared.
-func (m *EdgeOneZoneMutation) OrigingroupsCleared() bool {
-	return m.clearedorigingroups
+// DNSRecordsIDs returns the "dns_records" edge IDs in the mutation.
+func (m *EdgeOneZoneMutation) DNSRecordsIDs() (ids []int64) {
+	for id := range m.dns_records {
+		ids = append(ids, id)
+	}
+	return
 }
 
-// RemoveOrigingroupIDs removes the "origingroups" edge to the EdgeOneZoneOriginGroup entity by IDs.
-func (m *EdgeOneZoneMutation) RemoveOrigingroupIDs(ids ...int64) {
-	if m.removedorigingroups == nil {
-		m.removedorigingroups = make(map[int64]struct{})
+// ResetDNSRecords resets all changes to the "dns_records" edge.
+func (m *EdgeOneZoneMutation) ResetDNSRecords() {
+	m.dns_records = nil
+	m.cleareddns_records = false
+	m.removeddns_records = nil
+}
+
+// AddOriginGroupIDs adds the "origin_groups" edge to the EdgeOneZoneOriginGroup entity by ids.
+func (m *EdgeOneZoneMutation) AddOriginGroupIDs(ids ...int64) {
+	if m.origin_groups == nil {
+		m.origin_groups = make(map[int64]struct{})
 	}
 	for i := range ids {
-		delete(m.origingroups, ids[i])
-		m.removedorigingroups[ids[i]] = struct{}{}
+		m.origin_groups[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedOrigingroups returns the removed IDs of the "origingroups" edge to the EdgeOneZoneOriginGroup entity.
-func (m *EdgeOneZoneMutation) RemovedOrigingroupsIDs() (ids []int64) {
-	for id := range m.removedorigingroups {
+// ClearOriginGroups clears the "origin_groups" edge to the EdgeOneZoneOriginGroup entity.
+func (m *EdgeOneZoneMutation) ClearOriginGroups() {
+	m.clearedorigin_groups = true
+}
+
+// OriginGroupsCleared reports if the "origin_groups" edge to the EdgeOneZoneOriginGroup entity was cleared.
+func (m *EdgeOneZoneMutation) OriginGroupsCleared() bool {
+	return m.clearedorigin_groups
+}
+
+// RemoveOriginGroupIDs removes the "origin_groups" edge to the EdgeOneZoneOriginGroup entity by IDs.
+func (m *EdgeOneZoneMutation) RemoveOriginGroupIDs(ids ...int64) {
+	if m.removedorigin_groups == nil {
+		m.removedorigin_groups = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.origin_groups, ids[i])
+		m.removedorigin_groups[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedOriginGroups returns the removed IDs of the "origin_groups" edge to the EdgeOneZoneOriginGroup entity.
+func (m *EdgeOneZoneMutation) RemovedOriginGroupsIDs() (ids []int64) {
+	for id := range m.removedorigin_groups {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// OrigingroupsIDs returns the "origingroups" edge IDs in the mutation.
-func (m *EdgeOneZoneMutation) OrigingroupsIDs() (ids []int64) {
-	for id := range m.origingroups {
+// OriginGroupsIDs returns the "origin_groups" edge IDs in the mutation.
+func (m *EdgeOneZoneMutation) OriginGroupsIDs() (ids []int64) {
+	for id := range m.origin_groups {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetOrigingroups resets all changes to the "origingroups" edge.
-func (m *EdgeOneZoneMutation) ResetOrigingroups() {
-	m.origingroups = nil
-	m.clearedorigingroups = false
-	m.removedorigingroups = nil
+// ResetOriginGroups resets all changes to the "origin_groups" edge.
+func (m *EdgeOneZoneMutation) ResetOriginGroups() {
+	m.origin_groups = nil
+	m.clearedorigin_groups = false
+	m.removedorigin_groups = nil
 }
 
 // Where appends a list predicates to the EdgeOneZoneMutation builder.
@@ -14593,14 +14593,14 @@ func (m *EdgeOneZoneMutation) AddedEdges() []string {
 	if m._config != nil {
 		edges = append(edges, edgeonezone.EdgeConfig)
 	}
-	if m.accelerationdomains != nil {
-		edges = append(edges, edgeonezone.EdgeAccelerationdomains)
+	if m.acceleration_domains != nil {
+		edges = append(edges, edgeonezone.EdgeAccelerationDomains)
 	}
-	if m.dnsrecords != nil {
-		edges = append(edges, edgeonezone.EdgeDnsrecords)
+	if m.dns_records != nil {
+		edges = append(edges, edgeonezone.EdgeDNSRecords)
 	}
-	if m.origingroups != nil {
-		edges = append(edges, edgeonezone.EdgeOrigingroups)
+	if m.origin_groups != nil {
+		edges = append(edges, edgeonezone.EdgeOriginGroups)
 	}
 	return edges
 }
@@ -14613,21 +14613,21 @@ func (m *EdgeOneZoneMutation) AddedIDs(name string) []ent.Value {
 		if id := m._config; id != nil {
 			return []ent.Value{*id}
 		}
-	case edgeonezone.EdgeAccelerationdomains:
-		ids := make([]ent.Value, 0, len(m.accelerationdomains))
-		for id := range m.accelerationdomains {
+	case edgeonezone.EdgeAccelerationDomains:
+		ids := make([]ent.Value, 0, len(m.acceleration_domains))
+		for id := range m.acceleration_domains {
 			ids = append(ids, id)
 		}
 		return ids
-	case edgeonezone.EdgeDnsrecords:
-		ids := make([]ent.Value, 0, len(m.dnsrecords))
-		for id := range m.dnsrecords {
+	case edgeonezone.EdgeDNSRecords:
+		ids := make([]ent.Value, 0, len(m.dns_records))
+		for id := range m.dns_records {
 			ids = append(ids, id)
 		}
 		return ids
-	case edgeonezone.EdgeOrigingroups:
-		ids := make([]ent.Value, 0, len(m.origingroups))
-		for id := range m.origingroups {
+	case edgeonezone.EdgeOriginGroups:
+		ids := make([]ent.Value, 0, len(m.origin_groups))
+		for id := range m.origin_groups {
 			ids = append(ids, id)
 		}
 		return ids
@@ -14638,14 +14638,14 @@ func (m *EdgeOneZoneMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EdgeOneZoneMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 4)
-	if m.removedaccelerationdomains != nil {
-		edges = append(edges, edgeonezone.EdgeAccelerationdomains)
+	if m.removedacceleration_domains != nil {
+		edges = append(edges, edgeonezone.EdgeAccelerationDomains)
 	}
-	if m.removeddnsrecords != nil {
-		edges = append(edges, edgeonezone.EdgeDnsrecords)
+	if m.removeddns_records != nil {
+		edges = append(edges, edgeonezone.EdgeDNSRecords)
 	}
-	if m.removedorigingroups != nil {
-		edges = append(edges, edgeonezone.EdgeOrigingroups)
+	if m.removedorigin_groups != nil {
+		edges = append(edges, edgeonezone.EdgeOriginGroups)
 	}
 	return edges
 }
@@ -14654,21 +14654,21 @@ func (m *EdgeOneZoneMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *EdgeOneZoneMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case edgeonezone.EdgeAccelerationdomains:
-		ids := make([]ent.Value, 0, len(m.removedaccelerationdomains))
-		for id := range m.removedaccelerationdomains {
+	case edgeonezone.EdgeAccelerationDomains:
+		ids := make([]ent.Value, 0, len(m.removedacceleration_domains))
+		for id := range m.removedacceleration_domains {
 			ids = append(ids, id)
 		}
 		return ids
-	case edgeonezone.EdgeDnsrecords:
-		ids := make([]ent.Value, 0, len(m.removeddnsrecords))
-		for id := range m.removeddnsrecords {
+	case edgeonezone.EdgeDNSRecords:
+		ids := make([]ent.Value, 0, len(m.removeddns_records))
+		for id := range m.removeddns_records {
 			ids = append(ids, id)
 		}
 		return ids
-	case edgeonezone.EdgeOrigingroups:
-		ids := make([]ent.Value, 0, len(m.removedorigingroups))
-		for id := range m.removedorigingroups {
+	case edgeonezone.EdgeOriginGroups:
+		ids := make([]ent.Value, 0, len(m.removedorigin_groups))
+		for id := range m.removedorigin_groups {
 			ids = append(ids, id)
 		}
 		return ids
@@ -14682,14 +14682,14 @@ func (m *EdgeOneZoneMutation) ClearedEdges() []string {
 	if m.cleared_config {
 		edges = append(edges, edgeonezone.EdgeConfig)
 	}
-	if m.clearedaccelerationdomains {
-		edges = append(edges, edgeonezone.EdgeAccelerationdomains)
+	if m.clearedacceleration_domains {
+		edges = append(edges, edgeonezone.EdgeAccelerationDomains)
 	}
-	if m.cleareddnsrecords {
-		edges = append(edges, edgeonezone.EdgeDnsrecords)
+	if m.cleareddns_records {
+		edges = append(edges, edgeonezone.EdgeDNSRecords)
 	}
-	if m.clearedorigingroups {
-		edges = append(edges, edgeonezone.EdgeOrigingroups)
+	if m.clearedorigin_groups {
+		edges = append(edges, edgeonezone.EdgeOriginGroups)
 	}
 	return edges
 }
@@ -14700,12 +14700,12 @@ func (m *EdgeOneZoneMutation) EdgeCleared(name string) bool {
 	switch name {
 	case edgeonezone.EdgeConfig:
 		return m.cleared_config
-	case edgeonezone.EdgeAccelerationdomains:
-		return m.clearedaccelerationdomains
-	case edgeonezone.EdgeDnsrecords:
-		return m.cleareddnsrecords
-	case edgeonezone.EdgeOrigingroups:
-		return m.clearedorigingroups
+	case edgeonezone.EdgeAccelerationDomains:
+		return m.clearedacceleration_domains
+	case edgeonezone.EdgeDNSRecords:
+		return m.cleareddns_records
+	case edgeonezone.EdgeOriginGroups:
+		return m.clearedorigin_groups
 	}
 	return false
 }
@@ -14728,14 +14728,14 @@ func (m *EdgeOneZoneMutation) ResetEdge(name string) error {
 	case edgeonezone.EdgeConfig:
 		m.ResetConfig()
 		return nil
-	case edgeonezone.EdgeAccelerationdomains:
-		m.ResetAccelerationdomains()
+	case edgeonezone.EdgeAccelerationDomains:
+		m.ResetAccelerationDomains()
 		return nil
-	case edgeonezone.EdgeDnsrecords:
-		m.ResetDnsrecords()
+	case edgeonezone.EdgeDNSRecords:
+		m.ResetDNSRecords()
 		return nil
-	case edgeonezone.EdgeOrigingroups:
-		m.ResetOrigingroups()
+	case edgeonezone.EdgeOriginGroups:
+		m.ResetOriginGroups()
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZone edge %s", name)
@@ -18778,43 +18778,43 @@ func (m *EdgeOneZoneOriginGroupMutation) ResetEdge(name string) error {
 // EsaSiteMutation represents an operation that mutates the EsaSite nodes in the graph.
 type EsaSiteMutation struct {
 	config
-	op                          Op
-	typ                         string
-	id                          *int64
-	created_at                  *time.Time
-	updated_at                  *time.Time
-	remote_created_at           *time.Time
-	sync_at                     *time.Time
-	access_type                 *esasite.AccessType
-	cname_zone                  *string
-	coverage                    *esasite.Coverage
-	instance_id                 *string
-	name_server_list            *string
-	plan_name                   *string
-	plan_spec_name              *string
-	site_id                     *int64
-	addsite_id                  *int64
-	site_name                   *string
-	status                      *esasite.Status
-	offline_reason              *string
-	clearedFields               map[string]struct{}
-	_config                     *int64
-	cleared_config              bool
-	records                     map[int64]struct{}
-	removedrecords              map[int64]struct{}
-	clearedrecords              bool
-	edgecontainerrecords        map[int64]struct{}
-	removededgecontainerrecords map[int64]struct{}
-	clearededgecontainerrecords bool
-	edgeroutinerecords          map[int64]struct{}
-	removededgeroutinerecords   map[int64]struct{}
-	clearededgeroutinerecords   bool
-	originpools                 map[int64]struct{}
-	removedoriginpools          map[int64]struct{}
-	clearedoriginpools          bool
-	done                        bool
-	oldValue                    func(context.Context) (*EsaSite, error)
-	predicates                  []predicate.EsaSite
+	op                            Op
+	typ                           string
+	id                            *int64
+	created_at                    *time.Time
+	updated_at                    *time.Time
+	remote_created_at             *time.Time
+	sync_at                       *time.Time
+	access_type                   *esasite.AccessType
+	cname_zone                    *string
+	coverage                      *esasite.Coverage
+	instance_id                   *string
+	name_server_list              *string
+	plan_name                     *string
+	plan_spec_name                *string
+	site_id                       *int64
+	addsite_id                    *int64
+	site_name                     *string
+	status                        *esasite.Status
+	offline_reason                *string
+	clearedFields                 map[string]struct{}
+	_config                       *int64
+	cleared_config                bool
+	records                       map[int64]struct{}
+	removedrecords                map[int64]struct{}
+	clearedrecords                bool
+	edge_container_records        map[int64]struct{}
+	removededge_container_records map[int64]struct{}
+	clearededge_container_records bool
+	edge_routine_records          map[int64]struct{}
+	removededge_routine_records   map[int64]struct{}
+	clearededge_routine_records   bool
+	origin_pools                  map[int64]struct{}
+	removedorigin_pools           map[int64]struct{}
+	clearedorigin_pools           bool
+	done                          bool
+	oldValue                      func(context.Context) (*EsaSite, error)
+	predicates                    []predicate.EsaSite
 }
 
 var _ ent.Mutation = (*EsaSiteMutation)(nil)
@@ -19754,166 +19754,166 @@ func (m *EsaSiteMutation) ResetRecords() {
 	m.removedrecords = nil
 }
 
-// AddEdgecontainerrecordIDs adds the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity by ids.
-func (m *EsaSiteMutation) AddEdgecontainerrecordIDs(ids ...int64) {
-	if m.edgecontainerrecords == nil {
-		m.edgecontainerrecords = make(map[int64]struct{})
+// AddEdgeContainerRecordIDs adds the "edge_container_records" edge to the EsaSiteEdgeContainerRecord entity by ids.
+func (m *EsaSiteMutation) AddEdgeContainerRecordIDs(ids ...int64) {
+	if m.edge_container_records == nil {
+		m.edge_container_records = make(map[int64]struct{})
 	}
 	for i := range ids {
-		m.edgecontainerrecords[ids[i]] = struct{}{}
+		m.edge_container_records[ids[i]] = struct{}{}
 	}
 }
 
-// ClearEdgecontainerrecords clears the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity.
-func (m *EsaSiteMutation) ClearEdgecontainerrecords() {
-	m.clearededgecontainerrecords = true
+// ClearEdgeContainerRecords clears the "edge_container_records" edge to the EsaSiteEdgeContainerRecord entity.
+func (m *EsaSiteMutation) ClearEdgeContainerRecords() {
+	m.clearededge_container_records = true
 }
 
-// EdgecontainerrecordsCleared reports if the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity was cleared.
-func (m *EsaSiteMutation) EdgecontainerrecordsCleared() bool {
-	return m.clearededgecontainerrecords
+// EdgeContainerRecordsCleared reports if the "edge_container_records" edge to the EsaSiteEdgeContainerRecord entity was cleared.
+func (m *EsaSiteMutation) EdgeContainerRecordsCleared() bool {
+	return m.clearededge_container_records
 }
 
-// RemoveEdgecontainerrecordIDs removes the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity by IDs.
-func (m *EsaSiteMutation) RemoveEdgecontainerrecordIDs(ids ...int64) {
-	if m.removededgecontainerrecords == nil {
-		m.removededgecontainerrecords = make(map[int64]struct{})
+// RemoveEdgeContainerRecordIDs removes the "edge_container_records" edge to the EsaSiteEdgeContainerRecord entity by IDs.
+func (m *EsaSiteMutation) RemoveEdgeContainerRecordIDs(ids ...int64) {
+	if m.removededge_container_records == nil {
+		m.removededge_container_records = make(map[int64]struct{})
 	}
 	for i := range ids {
-		delete(m.edgecontainerrecords, ids[i])
-		m.removededgecontainerrecords[ids[i]] = struct{}{}
+		delete(m.edge_container_records, ids[i])
+		m.removededge_container_records[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedEdgecontainerrecords returns the removed IDs of the "edgecontainerrecords" edge to the EsaSiteEdgeContainerRecord entity.
-func (m *EsaSiteMutation) RemovedEdgecontainerrecordsIDs() (ids []int64) {
-	for id := range m.removededgecontainerrecords {
+// RemovedEdgeContainerRecords returns the removed IDs of the "edge_container_records" edge to the EsaSiteEdgeContainerRecord entity.
+func (m *EsaSiteMutation) RemovedEdgeContainerRecordsIDs() (ids []int64) {
+	for id := range m.removededge_container_records {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// EdgecontainerrecordsIDs returns the "edgecontainerrecords" edge IDs in the mutation.
-func (m *EsaSiteMutation) EdgecontainerrecordsIDs() (ids []int64) {
-	for id := range m.edgecontainerrecords {
+// EdgeContainerRecordsIDs returns the "edge_container_records" edge IDs in the mutation.
+func (m *EsaSiteMutation) EdgeContainerRecordsIDs() (ids []int64) {
+	for id := range m.edge_container_records {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetEdgecontainerrecords resets all changes to the "edgecontainerrecords" edge.
-func (m *EsaSiteMutation) ResetEdgecontainerrecords() {
-	m.edgecontainerrecords = nil
-	m.clearededgecontainerrecords = false
-	m.removededgecontainerrecords = nil
+// ResetEdgeContainerRecords resets all changes to the "edge_container_records" edge.
+func (m *EsaSiteMutation) ResetEdgeContainerRecords() {
+	m.edge_container_records = nil
+	m.clearededge_container_records = false
+	m.removededge_container_records = nil
 }
 
-// AddEdgeroutinerecordIDs adds the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity by ids.
-func (m *EsaSiteMutation) AddEdgeroutinerecordIDs(ids ...int64) {
-	if m.edgeroutinerecords == nil {
-		m.edgeroutinerecords = make(map[int64]struct{})
+// AddEdgeRoutineRecordIDs adds the "edge_routine_records" edge to the EsaSiteEdgeRoutineRecord entity by ids.
+func (m *EsaSiteMutation) AddEdgeRoutineRecordIDs(ids ...int64) {
+	if m.edge_routine_records == nil {
+		m.edge_routine_records = make(map[int64]struct{})
 	}
 	for i := range ids {
-		m.edgeroutinerecords[ids[i]] = struct{}{}
+		m.edge_routine_records[ids[i]] = struct{}{}
 	}
 }
 
-// ClearEdgeroutinerecords clears the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity.
-func (m *EsaSiteMutation) ClearEdgeroutinerecords() {
-	m.clearededgeroutinerecords = true
+// ClearEdgeRoutineRecords clears the "edge_routine_records" edge to the EsaSiteEdgeRoutineRecord entity.
+func (m *EsaSiteMutation) ClearEdgeRoutineRecords() {
+	m.clearededge_routine_records = true
 }
 
-// EdgeroutinerecordsCleared reports if the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity was cleared.
-func (m *EsaSiteMutation) EdgeroutinerecordsCleared() bool {
-	return m.clearededgeroutinerecords
+// EdgeRoutineRecordsCleared reports if the "edge_routine_records" edge to the EsaSiteEdgeRoutineRecord entity was cleared.
+func (m *EsaSiteMutation) EdgeRoutineRecordsCleared() bool {
+	return m.clearededge_routine_records
 }
 
-// RemoveEdgeroutinerecordIDs removes the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity by IDs.
-func (m *EsaSiteMutation) RemoveEdgeroutinerecordIDs(ids ...int64) {
-	if m.removededgeroutinerecords == nil {
-		m.removededgeroutinerecords = make(map[int64]struct{})
-	}
-	for i := range ids {
-		delete(m.edgeroutinerecords, ids[i])
-		m.removededgeroutinerecords[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedEdgeroutinerecords returns the removed IDs of the "edgeroutinerecords" edge to the EsaSiteEdgeRoutineRecord entity.
-func (m *EsaSiteMutation) RemovedEdgeroutinerecordsIDs() (ids []int64) {
-	for id := range m.removededgeroutinerecords {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// EdgeroutinerecordsIDs returns the "edgeroutinerecords" edge IDs in the mutation.
-func (m *EsaSiteMutation) EdgeroutinerecordsIDs() (ids []int64) {
-	for id := range m.edgeroutinerecords {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetEdgeroutinerecords resets all changes to the "edgeroutinerecords" edge.
-func (m *EsaSiteMutation) ResetEdgeroutinerecords() {
-	m.edgeroutinerecords = nil
-	m.clearededgeroutinerecords = false
-	m.removededgeroutinerecords = nil
-}
-
-// AddOriginpoolIDs adds the "originpools" edge to the EsaSiteOriginPool entity by ids.
-func (m *EsaSiteMutation) AddOriginpoolIDs(ids ...int64) {
-	if m.originpools == nil {
-		m.originpools = make(map[int64]struct{})
+// RemoveEdgeRoutineRecordIDs removes the "edge_routine_records" edge to the EsaSiteEdgeRoutineRecord entity by IDs.
+func (m *EsaSiteMutation) RemoveEdgeRoutineRecordIDs(ids ...int64) {
+	if m.removededge_routine_records == nil {
+		m.removededge_routine_records = make(map[int64]struct{})
 	}
 	for i := range ids {
-		m.originpools[ids[i]] = struct{}{}
+		delete(m.edge_routine_records, ids[i])
+		m.removededge_routine_records[ids[i]] = struct{}{}
 	}
 }
 
-// ClearOriginpools clears the "originpools" edge to the EsaSiteOriginPool entity.
-func (m *EsaSiteMutation) ClearOriginpools() {
-	m.clearedoriginpools = true
+// RemovedEdgeRoutineRecords returns the removed IDs of the "edge_routine_records" edge to the EsaSiteEdgeRoutineRecord entity.
+func (m *EsaSiteMutation) RemovedEdgeRoutineRecordsIDs() (ids []int64) {
+	for id := range m.removededge_routine_records {
+		ids = append(ids, id)
+	}
+	return
 }
 
-// OriginpoolsCleared reports if the "originpools" edge to the EsaSiteOriginPool entity was cleared.
-func (m *EsaSiteMutation) OriginpoolsCleared() bool {
-	return m.clearedoriginpools
+// EdgeRoutineRecordsIDs returns the "edge_routine_records" edge IDs in the mutation.
+func (m *EsaSiteMutation) EdgeRoutineRecordsIDs() (ids []int64) {
+	for id := range m.edge_routine_records {
+		ids = append(ids, id)
+	}
+	return
 }
 
-// RemoveOriginpoolIDs removes the "originpools" edge to the EsaSiteOriginPool entity by IDs.
-func (m *EsaSiteMutation) RemoveOriginpoolIDs(ids ...int64) {
-	if m.removedoriginpools == nil {
-		m.removedoriginpools = make(map[int64]struct{})
+// ResetEdgeRoutineRecords resets all changes to the "edge_routine_records" edge.
+func (m *EsaSiteMutation) ResetEdgeRoutineRecords() {
+	m.edge_routine_records = nil
+	m.clearededge_routine_records = false
+	m.removededge_routine_records = nil
+}
+
+// AddOriginPoolIDs adds the "origin_pools" edge to the EsaSiteOriginPool entity by ids.
+func (m *EsaSiteMutation) AddOriginPoolIDs(ids ...int64) {
+	if m.origin_pools == nil {
+		m.origin_pools = make(map[int64]struct{})
 	}
 	for i := range ids {
-		delete(m.originpools, ids[i])
-		m.removedoriginpools[ids[i]] = struct{}{}
+		m.origin_pools[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedOriginpools returns the removed IDs of the "originpools" edge to the EsaSiteOriginPool entity.
-func (m *EsaSiteMutation) RemovedOriginpoolsIDs() (ids []int64) {
-	for id := range m.removedoriginpools {
+// ClearOriginPools clears the "origin_pools" edge to the EsaSiteOriginPool entity.
+func (m *EsaSiteMutation) ClearOriginPools() {
+	m.clearedorigin_pools = true
+}
+
+// OriginPoolsCleared reports if the "origin_pools" edge to the EsaSiteOriginPool entity was cleared.
+func (m *EsaSiteMutation) OriginPoolsCleared() bool {
+	return m.clearedorigin_pools
+}
+
+// RemoveOriginPoolIDs removes the "origin_pools" edge to the EsaSiteOriginPool entity by IDs.
+func (m *EsaSiteMutation) RemoveOriginPoolIDs(ids ...int64) {
+	if m.removedorigin_pools == nil {
+		m.removedorigin_pools = make(map[int64]struct{})
+	}
+	for i := range ids {
+		delete(m.origin_pools, ids[i])
+		m.removedorigin_pools[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedOriginPools returns the removed IDs of the "origin_pools" edge to the EsaSiteOriginPool entity.
+func (m *EsaSiteMutation) RemovedOriginPoolsIDs() (ids []int64) {
+	for id := range m.removedorigin_pools {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// OriginpoolsIDs returns the "originpools" edge IDs in the mutation.
-func (m *EsaSiteMutation) OriginpoolsIDs() (ids []int64) {
-	for id := range m.originpools {
+// OriginPoolsIDs returns the "origin_pools" edge IDs in the mutation.
+func (m *EsaSiteMutation) OriginPoolsIDs() (ids []int64) {
+	for id := range m.origin_pools {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetOriginpools resets all changes to the "originpools" edge.
-func (m *EsaSiteMutation) ResetOriginpools() {
-	m.originpools = nil
-	m.clearedoriginpools = false
-	m.removedoriginpools = nil
+// ResetOriginPools resets all changes to the "origin_pools" edge.
+func (m *EsaSiteMutation) ResetOriginPools() {
+	m.origin_pools = nil
+	m.clearedorigin_pools = false
+	m.removedorigin_pools = nil
 }
 
 // Where appends a list predicates to the EsaSiteMutation builder.
@@ -20401,14 +20401,14 @@ func (m *EsaSiteMutation) AddedEdges() []string {
 	if m.records != nil {
 		edges = append(edges, esasite.EdgeRecords)
 	}
-	if m.edgecontainerrecords != nil {
-		edges = append(edges, esasite.EdgeEdgecontainerrecords)
+	if m.edge_container_records != nil {
+		edges = append(edges, esasite.EdgeEdgeContainerRecords)
 	}
-	if m.edgeroutinerecords != nil {
-		edges = append(edges, esasite.EdgeEdgeroutinerecords)
+	if m.edge_routine_records != nil {
+		edges = append(edges, esasite.EdgeEdgeRoutineRecords)
 	}
-	if m.originpools != nil {
-		edges = append(edges, esasite.EdgeOriginpools)
+	if m.origin_pools != nil {
+		edges = append(edges, esasite.EdgeOriginPools)
 	}
 	return edges
 }
@@ -20427,21 +20427,21 @@ func (m *EsaSiteMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case esasite.EdgeEdgecontainerrecords:
-		ids := make([]ent.Value, 0, len(m.edgecontainerrecords))
-		for id := range m.edgecontainerrecords {
+	case esasite.EdgeEdgeContainerRecords:
+		ids := make([]ent.Value, 0, len(m.edge_container_records))
+		for id := range m.edge_container_records {
 			ids = append(ids, id)
 		}
 		return ids
-	case esasite.EdgeEdgeroutinerecords:
-		ids := make([]ent.Value, 0, len(m.edgeroutinerecords))
-		for id := range m.edgeroutinerecords {
+	case esasite.EdgeEdgeRoutineRecords:
+		ids := make([]ent.Value, 0, len(m.edge_routine_records))
+		for id := range m.edge_routine_records {
 			ids = append(ids, id)
 		}
 		return ids
-	case esasite.EdgeOriginpools:
-		ids := make([]ent.Value, 0, len(m.originpools))
-		for id := range m.originpools {
+	case esasite.EdgeOriginPools:
+		ids := make([]ent.Value, 0, len(m.origin_pools))
+		for id := range m.origin_pools {
 			ids = append(ids, id)
 		}
 		return ids
@@ -20455,14 +20455,14 @@ func (m *EsaSiteMutation) RemovedEdges() []string {
 	if m.removedrecords != nil {
 		edges = append(edges, esasite.EdgeRecords)
 	}
-	if m.removededgecontainerrecords != nil {
-		edges = append(edges, esasite.EdgeEdgecontainerrecords)
+	if m.removededge_container_records != nil {
+		edges = append(edges, esasite.EdgeEdgeContainerRecords)
 	}
-	if m.removededgeroutinerecords != nil {
-		edges = append(edges, esasite.EdgeEdgeroutinerecords)
+	if m.removededge_routine_records != nil {
+		edges = append(edges, esasite.EdgeEdgeRoutineRecords)
 	}
-	if m.removedoriginpools != nil {
-		edges = append(edges, esasite.EdgeOriginpools)
+	if m.removedorigin_pools != nil {
+		edges = append(edges, esasite.EdgeOriginPools)
 	}
 	return edges
 }
@@ -20477,21 +20477,21 @@ func (m *EsaSiteMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case esasite.EdgeEdgecontainerrecords:
-		ids := make([]ent.Value, 0, len(m.removededgecontainerrecords))
-		for id := range m.removededgecontainerrecords {
+	case esasite.EdgeEdgeContainerRecords:
+		ids := make([]ent.Value, 0, len(m.removededge_container_records))
+		for id := range m.removededge_container_records {
 			ids = append(ids, id)
 		}
 		return ids
-	case esasite.EdgeEdgeroutinerecords:
-		ids := make([]ent.Value, 0, len(m.removededgeroutinerecords))
-		for id := range m.removededgeroutinerecords {
+	case esasite.EdgeEdgeRoutineRecords:
+		ids := make([]ent.Value, 0, len(m.removededge_routine_records))
+		for id := range m.removededge_routine_records {
 			ids = append(ids, id)
 		}
 		return ids
-	case esasite.EdgeOriginpools:
-		ids := make([]ent.Value, 0, len(m.removedoriginpools))
-		for id := range m.removedoriginpools {
+	case esasite.EdgeOriginPools:
+		ids := make([]ent.Value, 0, len(m.removedorigin_pools))
+		for id := range m.removedorigin_pools {
 			ids = append(ids, id)
 		}
 		return ids
@@ -20508,14 +20508,14 @@ func (m *EsaSiteMutation) ClearedEdges() []string {
 	if m.clearedrecords {
 		edges = append(edges, esasite.EdgeRecords)
 	}
-	if m.clearededgecontainerrecords {
-		edges = append(edges, esasite.EdgeEdgecontainerrecords)
+	if m.clearededge_container_records {
+		edges = append(edges, esasite.EdgeEdgeContainerRecords)
 	}
-	if m.clearededgeroutinerecords {
-		edges = append(edges, esasite.EdgeEdgeroutinerecords)
+	if m.clearededge_routine_records {
+		edges = append(edges, esasite.EdgeEdgeRoutineRecords)
 	}
-	if m.clearedoriginpools {
-		edges = append(edges, esasite.EdgeOriginpools)
+	if m.clearedorigin_pools {
+		edges = append(edges, esasite.EdgeOriginPools)
 	}
 	return edges
 }
@@ -20528,12 +20528,12 @@ func (m *EsaSiteMutation) EdgeCleared(name string) bool {
 		return m.cleared_config
 	case esasite.EdgeRecords:
 		return m.clearedrecords
-	case esasite.EdgeEdgecontainerrecords:
-		return m.clearededgecontainerrecords
-	case esasite.EdgeEdgeroutinerecords:
-		return m.clearededgeroutinerecords
-	case esasite.EdgeOriginpools:
-		return m.clearedoriginpools
+	case esasite.EdgeEdgeContainerRecords:
+		return m.clearededge_container_records
+	case esasite.EdgeEdgeRoutineRecords:
+		return m.clearededge_routine_records
+	case esasite.EdgeOriginPools:
+		return m.clearedorigin_pools
 	}
 	return false
 }
@@ -20559,14 +20559,14 @@ func (m *EsaSiteMutation) ResetEdge(name string) error {
 	case esasite.EdgeRecords:
 		m.ResetRecords()
 		return nil
-	case esasite.EdgeEdgecontainerrecords:
-		m.ResetEdgecontainerrecords()
+	case esasite.EdgeEdgeContainerRecords:
+		m.ResetEdgeContainerRecords()
 		return nil
-	case esasite.EdgeEdgeroutinerecords:
-		m.ResetEdgeroutinerecords()
+	case esasite.EdgeEdgeRoutineRecords:
+		m.ResetEdgeRoutineRecords()
 		return nil
-	case esasite.EdgeOriginpools:
-		m.ResetOriginpools()
+	case esasite.EdgeOriginPools:
+		m.ResetOriginPools()
 		return nil
 	}
 	return fmt.Errorf("unknown EsaSite edge %s", name)
