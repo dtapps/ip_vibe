@@ -803,6 +803,7 @@
         grid-row-start: 1;
         aspect-ratio: 1 / 1;
         height: 100%;
+        width: 100%;
         border-radius: var(--radius-selector);
         background-color: currentcolor;
         translate: 0;
@@ -6121,6 +6122,7 @@
         grid-row-start: 1;
         aspect-ratio: 1 / 1;
         height: 100%;
+        width: 100%;
         border-radius: var(--radius-selector);
         background-color: currentcolor;
         translate: 0;
