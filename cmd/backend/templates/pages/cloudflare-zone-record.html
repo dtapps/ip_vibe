@@ -65,31 +65,35 @@
             <table class="ui-table">
                 <thead>
                     <tr>
-                        <th class="ui-th">主机记录</th>
-                        <th class="ui-th">记录类型</th>
-                        <th class="ui-th">记录值/源站</th>
-                        <th class="ui-th">TTL/Weight</th>
+                        <th class="ui-th">类型</th>
+                        <th class="ui-th">名称</th>
+                        <th class="ui-th">内容</th>
                         <th class="ui-th">状态</th>
+                        <th class="ui-th">TTL</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{ range $record := $list }}
                     <tr class="hover:bg-base-200/50 transition-colors group">
-                        <td class="ui-td font-black text-primary italic">
-                            {{ $record.Name }}
-                        </td>
                         <td class="ui-td">
                             <span class="badge badge-sm badge-neutral font-mono">
                                 {{ fieldEnumLabel "cloudflare_zone_record_type" $record.Type }}
                             </span>
                         </td>
+
+                        <td class="ui-td font-black text-primary italic">
+                            {{ $record.Name }}
+                        </td>
+
                         <td class="ui-td font-mono text-xs opacity-80 max-w-xs truncate">
                             {{ $record.Content }}
                         </td>
-                        <td class="ui-td text-[10px] opacity-40 font-bold">
-                            T:{{ $record.TTL }}
-                        </td>
+
                         <td class="ui-td">
+                        </td>
+
+                        <td class="ui-td text-[10px] opacity-40 font-bold">
+                            {{ parseRecordTTL "cloudflare-zone-record" $record.TTL }}
                         </td>
                     </tr>
                     {{ else }}

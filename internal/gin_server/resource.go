@@ -457,6 +457,28 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 			}
 			return string(b)
 		},
+		// 解析 解析记录的 ttl
+		"parseRecordTTL": func(ttlType string, ttlValue any) string {
+			// 尝试将 ttlValue 转换为整数
+			ttl := cast.ToInt(ttlValue)
+			// 根据 ttlType 进行解析
+			if ttlType == "cloudflare-zone-record" {
+				if ttl == 1 {
+					return "自动"
+				}
+				switch {
+				case ttl < 60:
+					return fmt.Sprintf("%d 秒", ttl)
+				case ttl < 3600:
+					return fmt.Sprintf("%d 分钟", ttl/60)
+				case ttl < 86400:
+					return fmt.Sprintf("%d 小时", ttl/3600)
+				default:
+					return fmt.Sprintf("%d 天", ttl/86400)
+				}
+			}
+			return fmt.Sprintf("%v", ttlValue)
+		},
 	}
 }
 
