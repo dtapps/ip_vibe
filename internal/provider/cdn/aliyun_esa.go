@@ -777,7 +777,7 @@ func (p *AliyunESAProvider) OriginPoolsRaw(ctx context.Context, site_id int64) (
 	return response.Body.OriginPools, nil
 }
 
-// RecordsRaw 获取所有解析记录
+// RecordsRaw 查询解析记录列表
 // https://next.api.aliyun.com/api/ESA/2024-09-10/ListRecords
 func (p *AliyunESAProvider) RecordsRaw(ctx context.Context, site_id int64) (records []*esa20240910.ListRecordsResponseBodyRecords, err error) {
 	request := &esa20240910.ListRecordsRequest{}
@@ -787,6 +787,34 @@ func (p *AliyunESAProvider) RecordsRaw(ctx context.Context, site_id int64) (reco
 	response, err := p.Provider.Client.ListRecordsWithContext(ctx, request, p.Provider.Runtime)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ListRecordsWithContext 失败 %w", err)
+	}
+	return response.Body.Records, nil
+}
+
+// RecordsRaw 查询边缘路由记录列表
+// https://next.api.aliyun.com/api/ESA/2024-09-10/ListEdgeRoutineRecords
+func (p *AliyunESAProvider) EdgeRoutineRecordsRaw(ctx context.Context, site_id int64) (records []*esa20240910.ListEdgeRoutineRecordsResponseBodyRecords, err error) {
+	request := &esa20240910.ListEdgeRoutineRecordsRequest{}
+	request.SiteId = tea.Int64(site_id)
+	request.PageNumber = tea.Int32(1)
+	request.PageSize = tea.Int32(500)
+	response, err := p.Provider.Client.ListEdgeRoutineRecordsWithContext(ctx, request, p.Provider.Runtime)
+	if err != nil {
+		return nil, fmt.Errorf("接口 ListEdgeRoutineRecordsWithContext 失败 %w", err)
+	}
+	return response.Body.Records, nil
+}
+
+// RecordsRaw 查询边缘容器记录列表
+// https://next.api.aliyun.com/api/ESA/2024-09-10/ListEdgeContainerRecords
+func (p *AliyunESAProvider) EdgeContainerRecordsRaw(ctx context.Context, site_id int64) (records []*esa20240910.ListEdgeContainerRecordsResponseBodyRecords, err error) {
+	request := &esa20240910.ListEdgeContainerRecordsRequest{}
+	request.SiteId = tea.Int64(site_id)
+	request.PageNumber = tea.Int32(1)
+	request.PageSize = tea.Int32(500)
+	response, err := p.Provider.Client.ListEdgeContainerRecordsWithContext(ctx, request, p.Provider.Runtime)
+	if err != nil {
+		return nil, fmt.Errorf("接口 ListEdgeContainerRecordsWithContext 失败 %w", err)
 	}
 	return response.Body.Records, nil
 }

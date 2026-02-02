@@ -130,8 +130,16 @@ func (EdgeOneZoneDNSRecord) Indexes() []ent.Index {
 		index.Fields("record_id").
 			Annotations(entsql.WithComments(true)),
 
+		// 按DNS记录名排序
+		index.Fields("name").
+			Annotations(entsql.WithComments(true)),
+
 		// 按站点ID+DNS记录ID排序
 		index.Fields("edgeone_zone_id", "record_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按站点ID+DNS记录名排序
+		index.Fields("edgeone_zone_id", "name").
 			Annotations(entsql.WithComments(true)),
 	}
 }

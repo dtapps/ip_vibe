@@ -324,9 +324,19 @@ var (
 				Columns: []*schema.Column{CloudflareZoneRecordColumns[5]},
 			},
 			{
+				Name:    "cloudflarezonerecord_name",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneRecordColumns[8]},
+			},
+			{
 				Name:    "cloudflarezonerecord_cloudflare_zone_id_record_id",
 				Unique:  false,
 				Columns: []*schema.Column{CloudflareZoneRecordColumns[14], CloudflareZoneRecordColumns[5]},
+			},
+			{
+				Name:    "cloudflarezonerecord_cloudflare_zone_id_name",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneRecordColumns[14], CloudflareZoneRecordColumns[8]},
 			},
 		},
 	}
@@ -807,9 +817,19 @@ var (
 				Columns: []*schema.Column{EdgeoneZoneDnsrecordColumns[5]},
 			},
 			{
+				Name:    "edgeonezonednsrecord_name",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneDnsrecordColumns[6]},
+			},
+			{
 				Name:    "edgeonezonednsrecord_edgeone_zone_id_record_id",
 				Unique:  false,
 				Columns: []*schema.Column{EdgeoneZoneDnsrecordColumns[14], EdgeoneZoneDnsrecordColumns[5]},
+			},
+			{
+				Name:    "edgeonezonednsrecord_edgeone_zone_id_name",
+				Unique:  false,
+				Columns: []*schema.Column{EdgeoneZoneDnsrecordColumns[14], EdgeoneZoneDnsrecordColumns[6]},
 			},
 		},
 	}
@@ -1039,9 +1059,19 @@ var (
 				Columns: []*schema.Column{EsaSiteRecordColumns[8]},
 			},
 			{
+				Name:    "esasiterecord_record_name",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteRecordColumns[10]},
+			},
+			{
 				Name:    "esasiterecord_esa_site_id_record_id",
 				Unique:  false,
 				Columns: []*schema.Column{EsaSiteRecordColumns[17], EsaSiteRecordColumns[8]},
+			},
+			{
+				Name:    "esasiterecord_esa_site_id_record_name",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteRecordColumns[17], EsaSiteRecordColumns[10]},
 			},
 		},
 	}

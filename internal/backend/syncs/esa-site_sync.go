@@ -488,13 +488,11 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 		return err
 	}
 
-	// 获取所有解析记录
+	// 查询解析记录列表
 	records, err := cdnProvider.RecordsRaw(ctx, firstEsaSite.SiteID)
 	if err != nil {
-		return fmt.Errorf("获取所有解析记录失败: %w", err)
+		return fmt.Errorf("查询解析记录列表失败: %w", err)
 	}
-
-	// 入库所有DNS记录
 	for _, record := range records {
 		// 查询解析记录
 		firstRecord, err := s.db.EsaSiteRecord.Query().
@@ -557,6 +555,84 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 			if tea.StringValue(record.HostPolicy) != "" {
 				updateOne.SetHostPolicy(esasiterecord.HostPolicy(tea.StringValue(record.HostPolicy)))
 			}
+			err = updateOne.Exec(ctx)
+			if err != nil {
+				return fmt.Errorf("更新解析记录记录失败: %w", err)
+			}
+		}
+	}
+
+	// 查询边缘路由记录列表
+	routineRecords, err := cdnProvider.EdgeRoutineRecordsRaw(ctx, firstEsaSite.SiteID)
+	if err != nil {
+		return fmt.Errorf("查询边缘路由记录列表失败: %w", err)
+	}
+	for _, routineRecord := range routineRecords {
+		// 查询解析记录
+		firstRecord, err := s.db.EsaSiteRecord.Query().
+			Where(esasiterecord.EsaSiteIDEQ(firstEsaSite.ID)).
+			Where(esasiterecord.RecordNameEQ(tea.StringValue(routineRecord.RecordName))).
+			First(ctx)
+		if err != nil {
+			if !ent.IsNotFound(err) {
+				return fmt.Errorf("查询解析记录记录失败: %w", err)
+			}
+			// 创建解析记录记录
+			createOne := s.db.EsaSiteRecord.Create()
+			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(routineRecord.CreateTime)).Time)
+			createOne.SetSyncAt(time.Now())
+			createOne.SetEsaSiteID(firstEsaSite.ID)
+			createOne.SetRecordName(tea.StringValue(routineRecord.RecordName))
+			createOne.SetRecordCname(tea.StringValue(routineRecord.RecordCname))
+			err = createOne.Exec(ctx)
+			if err != nil {
+				return fmt.Errorf("创建解析记录记录失败: %w", err)
+			}
+		} else {
+			// 更新解析记录记录
+			updateOne := s.db.EsaSiteRecord.UpdateOne(firstRecord)
+			updateOne.SetSyncAt(time.Now())
+			updateOne.SetRecordName(tea.StringValue(routineRecord.RecordName))
+			updateOne.SetRecordCname(tea.StringValue(routineRecord.RecordCname))
+			err = updateOne.Exec(ctx)
+			if err != nil {
+				return fmt.Errorf("更新解析记录记录失败: %w", err)
+			}
+		}
+	}
+
+	// 查询边缘容器记录列表
+	containerRecords, err := cdnProvider.EdgeContainerRecordsRaw(ctx, firstEsaSite.SiteID)
+	if err != nil {
+		return fmt.Errorf("查询边缘容器记录列表失败: %w", err)
+	}
+	for _, containerRecord := range containerRecords {
+		// 查询解析记录
+		firstRecord, err := s.db.EsaSiteRecord.Query().
+			Where(esasiterecord.EsaSiteIDEQ(firstEsaSite.ID)).
+			Where(esasiterecord.RecordNameEQ(tea.StringValue(containerRecord.RecordName))).
+			First(ctx)
+		if err != nil {
+			if !ent.IsNotFound(err) {
+				return fmt.Errorf("查询解析记录记录失败: %w", err)
+			}
+			// 创建解析记录记录
+			createOne := s.db.EsaSiteRecord.Create()
+			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(containerRecord.CreateTime)).Time)
+			createOne.SetSyncAt(time.Now())
+			createOne.SetEsaSiteID(firstEsaSite.ID)
+			createOne.SetRecordName(tea.StringValue(containerRecord.RecordName))
+			createOne.SetRecordCname(tea.StringValue(containerRecord.RecordCname))
+			err = createOne.Exec(ctx)
+			if err != nil {
+				return fmt.Errorf("创建解析记录记录失败: %w", err)
+			}
+		} else {
+			// 更新解析记录记录
+			updateOne := s.db.EsaSiteRecord.UpdateOne(firstRecord)
+			updateOne.SetSyncAt(time.Now())
+			updateOne.SetRecordName(tea.StringValue(containerRecord.RecordName))
+			updateOne.SetRecordCname(tea.StringValue(containerRecord.RecordCname))
 			err = updateOne.Exec(ctx)
 			if err != nil {
 				return fmt.Errorf("更新解析记录记录失败: %w", err)
