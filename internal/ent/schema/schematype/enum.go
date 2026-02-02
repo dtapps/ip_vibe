@@ -1075,6 +1075,38 @@ var GetEdgeOneZoneAccelerationDomainIdentificationStatuss = []string{
 }
 
 const (
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeIpDomain    string = "IP_DOMAIN"    // IPV4、IPV6 或域名类型源站
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeCos         string = "COS"          // 腾讯云 COS 对象存储源站
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeAwsS3       string = "AWS_S3"       // AWS S3 对象存储源站
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeOriginGroup string = "ORIGIN_GROUP" // 源站组类型源站
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeVod         string = "VOD"          // 云点播
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeSpace       string = "SPACE"        // 源站卸载
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeLb          string = "LB"           // 负载均衡
+)
+
+// GetEdgeOneZoneAccelerationDomainOriginDetailOriginTypeDescriptions 源站信息 源站类型 说明映射
+var GetEdgeOneZoneAccelerationDomainOriginDetailOriginTypeDescriptions = map[string]string{
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeIpDomain:    "IP/域名",
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeCos:         "对象存储",
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeAwsS3:       "对象存储",
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeOriginGroup: "源站组",
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeVod:         "云点播",
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeSpace:       "源站卸载",
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeLb:          "负载均衡",
+}
+
+// GetEdgeOneZoneAccelerationDomainOriginDetailOriginTypes 返回所有 源站信息 源站类型
+var GetEdgeOneZoneAccelerationDomainOriginDetailOriginTypes = []string{
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeIpDomain,
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeCos,
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeAwsS3,
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeOriginGroup,
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeVod,
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeSpace,
+	EdgeOneZoneAccelerationDomainOriginDetailOriginTypeLb,
+}
+
+const (
 	EdgeOneZoneAccelerationDomainOriginProtocolFollow string = "FOLLOW" // 协议跟随
 	EdgeOneZoneAccelerationDomainOriginProtocolHttp   string = "HTTP"   // HTTP协议回源
 	EdgeOneZoneAccelerationDomainOriginProtocolHttps  string = "HTTPS"  // HTTPS协议回源

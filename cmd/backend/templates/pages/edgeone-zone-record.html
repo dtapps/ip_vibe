@@ -88,11 +88,12 @@
                     {{ else }}
                     <tr>
                         <th class="ui-th">加速域名</th>
-                        <th class="ui-th">CNAME</th>
-                        <th class="ui-th">回源协议</th>
-                        <th class="ui-th">源站</th>
-                        <th class="ui-th">IPv6状态</th>
                         <th class="ui-th">状态</th>
+                        <th class="ui-th">CNAME</th>
+                        <th class="ui-th">源站类型</th>
+                        <th class="ui-th">源站配置</th>
+                        <th class="ui-th">拓展服务</th>
+                        <th class="ui-th">HTTPS</th>
                     </tr>
                     {{ end }}
                 </thead>
@@ -103,6 +104,7 @@
                         <td class="ui-td font-black text-primary italic">
                             {{ $record.Name }}
                         </td>
+
                         <td class="ui-td">
                             <span class="badge badge-sm badge-neutral font-mono">
                                 {{ fieldEnumLabel "edgeone_zone_dnsrecord_type" $record.Type }}
@@ -124,15 +126,25 @@
                         <td class="ui-td font-black text-primary italic">
                             {{ $record.DomainName }}
                         </td>
+
+                        <td class="ui-td">
+                            <span class="badge badge-sm badge-success italic font-black uppercase">
+                                {{ fieldEnumLabel "edgeone_zone_accelerationdomain_domain_status" $record.DomainStatus
+                                }}
+                            </span>
+                        </td>
+
                         <td class="ui-td font-mono text-[10px] opacity-40">
                             {{ $record.Cname }}
                         </td>
+
+                        {{ $originType := jsonGet $record.OriginDetail "OriginType" }}
                         <td class="ui-td uppercase text-[10px] font-bold italic">
-                            {{ fieldEnumLabel "edgeone_zone_accelerationdomain_origin_protocol" $record.OriginProtocol
+                            {{ fieldEnumLabel "edgeone_zone_accelerationdomain_origin_detail_origin_type" $originType
                             }}
                         </td>
+
                         <td class="ui-td text-xs opacity-60">
-                            {{ $originType := jsonGet $record.OriginDetail "OriginType" }}
                             {{ if eq $originType "ORIGIN_GROUP" }}
                             {{ jsonGet $record.OriginDetail "OriginGroupName" }}
                             {{ else if eq $originType "IP_DOMAIN" }}
@@ -141,14 +153,55 @@
                             {{ $originType }}
                             {{ end }}
                         </td>
-                        <td class="ui-td uppercase text-[10px] font-bold italic">
-                            {{ fieldEnumLabel "edgeone_zone_accelerationdomain_ipv6_status" $record.Ipv6Status }}
-                        </td>
+
                         <td class="ui-td">
-                            <span class="badge badge-sm badge-success italic font-black uppercase">
-                                {{ fieldEnumLabel "edgeone_zone_accelerationdomain_domain_status" $record.DomainStatus
-                                }}
-                            </span>
+                            <div class="flex items-center justify-center">
+                                {{ if eq $record.Ipv6Status "on" }}
+                                {{/* 明确开启：实心紫色药丸 */}}
+                                <div class="tooltip tooltip-top" data-tip="IPv6: 开启">
+                                    <div
+                                        class="px-1.5 py-0.5 rounded-md bg-indigo-500 text-white flex items-center shadow-sm">
+                                        <span class="text-[8px] font-black uppercase italic leading-none">
+                                            IPv6
+                                        </span>
+                                    </div>
+                                </div>
+                                {{ else if eq $record.Ipv6Status "follow" }}
+                                {{/* 遵循站点配置：蓝色虚线边框或半透明风格 */}}
+                                <div class="tooltip tooltip-top" data-tip="IPv6: 遵循站点配置">
+                                    <div
+                                        class="px-1.5 py-0.5 rounded-md bg-info/10 border border-info/40 border-dashed flex items-center gap-1">
+                                        <span class="text-[8px] font-black text-info uppercase italic leading-none">
+                                            IPv6
+                                        </span>
+                                        {{ template "icons" (dict
+                                        "Name" "i-lucide-link"
+                                        "Class" "w-2 h-2 text-info opacity-60"
+                                        ) }}
+                                    </div>
+                                </div>
+                                {{ else }}
+                                {{/* 彻底关闭：灰色 */}}
+                                <div class="tooltip tooltip-top" data-tip="IPv6: 关闭">
+                                    <div
+                                        class="px-1.5 py-0.5 rounded-md bg-base-300/30 border border-transparent opacity-20 flex items-center">
+                                        <span
+                                            class="text-[8px] font-black text-base-content uppercase italic leading-none">
+                                            IPv6
+                                        </span>
+                                    </div>
+                                </div>
+                                {{ end }}
+                            </div>
+                        </td>
+
+                        <td class="ui-td">
+                            {{ $mode := jsonGet $record.Certificate "Mode" }}
+                            {{ if eq $mode "disable" }}
+                            <div aria-label="success" class="status mr-1"></div>未配置
+                            {{ else }}
+                            <div aria-label="success" class="status status-success mr-1"></div>已部署
+                            {{ end }}
                         </td>
                         {{ end }}
                     </tr>

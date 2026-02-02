@@ -157,6 +157,7 @@ func (EsaSiteRecord) Indexes() []ent.Index {
 // Hooks of the EsaSiteRecord.
 func (EsaSiteRecord) Hooks() []ent.Hook {
 	return []ent.Hook{
+		schemahook.EsaSiteRecordDataHook(),
 		schemahook.EsaSiteRecordLogHook(),
 	}
 }

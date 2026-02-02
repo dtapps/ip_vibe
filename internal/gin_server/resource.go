@@ -195,7 +195,7 @@ var EnumRegistry = map[string]EnumDefinition{
 		Values:       schematype.GetEdgeOneZoneAccelerationDomainDomainStatuss,
 		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainDomainStatusDescriptions,
 	},
-	// EdgeOne 站点加速域名 Pv6 状态
+	// EdgeOne 站点加速域名 IPv6 状态
 	"edgeone_zone_accelerationdomain_ipv6_status": {
 		Values:       schematype.GetEdgeOneZoneAccelerationDomainIPv6Statuss,
 		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainIPv6StatusDescriptions,
@@ -204,6 +204,11 @@ var EnumRegistry = map[string]EnumDefinition{
 	"edgeone_zone_accelerationdomain_identification_status": {
 		Values:       schematype.GetEdgeOneZoneAccelerationDomainIdentificationStatuss,
 		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainIdentificationStatusDescriptions,
+	},
+	// EdgeOne 站点加速域名 源站信息 源站类型
+	"edgeone_zone_accelerationdomain_origin_detail_origin_type": {
+		Values:       schematype.GetEdgeOneZoneAccelerationDomainOriginDetailOriginTypes,
+		Descriptions: schematype.GetEdgeOneZoneAccelerationDomainOriginDetailOriginTypeDescriptions,
 	},
 	// EdgeOne 站点加速域名 回源协议
 	"edgeone_zone_accelerationdomain_origin_protocol": {
@@ -287,7 +292,9 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 		// 字符串转换为大写
 		"upper": strings.ToUpper,
 		// 字符串替换
-		"replace": strings.ReplaceAll,
+		"replace": strings.Replace,
+		// 字符串替换所有
+		"replaceAll": strings.ReplaceAll,
 		// JSON 人性化
 		"jsonify": func(v any) template.HTML {
 			jsonStr, err := json.Marshal(v)
@@ -462,7 +469,7 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 			// 尝试将 ttlValue 转换为整数
 			ttl := cast.ToInt(ttlValue)
 			// 根据 ttlType 进行解析
-			if ttlType == "cloudflare-zone-record" {
+			if ttlType == "cloudflare-zone-record" || ttlType == "esa-site-record" {
 				if ttl == 1 {
 					return "自动"
 				}

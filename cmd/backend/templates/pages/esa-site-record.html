@@ -74,31 +74,66 @@
             <table class="ui-table">
                 <thead>
                     <tr>
-                        <th class="ui-th">主机记录</th>
                         <th class="ui-th">记录类型</th>
+                        <th class="ui-th">主机记录</th>
                         <th class="ui-th">记录值/源站</th>
-                        <th class="ui-th">TTL/Weight</th>
-                        <th class="ui-th">状态</th>
+                        <th class="ui-th">HTTPS</th>
+                        <th class="ui-th">TTL</th>
+                        <th class="ui-th">代理状态</th>
+                        <th class="ui-th">CNAME 状态</th>
+                        <th class="ui-th">CNAME</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{ range $record := $list }}
                     <tr class="hover:bg-base-200/50 transition-colors group">
-                        <td class="ui-td font-black text-primary italic">
-                            {{ $record.RecordName }}
-                        </td>
                         <td class="ui-td">
                             <span class="badge badge-sm badge-neutral font-mono">
                                 {{ fieldEnumLabel "esa_site_record_record_type" $record.RecordType }}
                             </span>
                         </td>
+
+                        <td class="ui-td font-black text-primary italic">
+                            {{ replaceAll $record.RecordName (print "." $item.SiteName) "" }}
+                        </td>
+
                         <td class="ui-td font-mono text-xs opacity-80 max-w-xs truncate">
+                            {{ jsonGet $record.Data "Value" }}
+                        </td>
+
+                        <td class="ui-td">
+                        </td>
+
+                        <td class="ui-td text-[10px] opacity-40 font-bold">
+                            {{ parseRecordTTL "esa-site-record" $record.TTL }}
+                        </td>
+
+                        <td class="ui-td">
+                            <div class="flex items-center justify-center">
+                                {{ if $record.Proxied }}
+                                {{/* 开启代理：橙色发光云朵 */}}
+                                <div class="tooltip tooltip-top" data-tip="已开启边缘安全加速">
+                                    <div class="text-orange-500 drop-shadow-[0_0_5px_rgba(249,115,22,0.4)]">
+                                        {{ template "icons" (dict "Name" "i-lucide-cloud" "Class" "w-5 h-5") }}
+                                    </div>
+                                </div>
+                                {{ else }}
+                                {{/* 未开启代理：灰色半透明云朵 */}}
+                                <div class="tooltip tooltip-top" data-tip="仅DNS解析">
+                                    <div class="text-base-content/20">
+                                        {{ template "icons" (dict "Name" "i-lucide-cloud-off" "Class" "w-5 h-5") }}
+                                    </div>
+                                </div>
+                                {{ end }}
+                            </div>
+                        </td>
+
+                        <td class="ui-td text-[10px] opacity-40 font-bold">
 
                         </td>
+
                         <td class="ui-td text-[10px] opacity-40 font-bold">
-                            T:{{ $record.TTL }}
-                        </td>
-                        <td class="ui-td">
+                            {{ $record.RecordCname }}
                         </td>
                     </tr>
                     {{ else }}

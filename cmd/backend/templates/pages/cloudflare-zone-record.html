@@ -68,7 +68,7 @@
                         <th class="ui-th">类型</th>
                         <th class="ui-th">名称</th>
                         <th class="ui-th">内容</th>
-                        <th class="ui-th">状态</th>
+                        <th class="ui-th">代理状态</th>
                         <th class="ui-th">TTL</th>
                     </tr>
                 </thead>
@@ -93,14 +93,14 @@
                             <div class="flex items-center justify-center">
                                 {{ if $record.Proxied }}
                                 {{/* 开启代理：橙色发光云朵 */}}
-                                <div class="tooltip tooltip-top" data-tip="已开启边缘安全加速 (Proxied)">
+                                <div class="tooltip tooltip-top" data-tip="已开启边缘安全加速">
                                     <div class="text-orange-500 drop-shadow-[0_0_5px_rgba(249,115,22,0.4)]">
                                         {{ template "icons" (dict "Name" "i-lucide-cloud" "Class" "w-5 h-5") }}
                                     </div>
                                 </div>
                                 {{ else }}
                                 {{/* 未开启代理：灰色半透明云朵 */}}
-                                <div class="tooltip tooltip-top" data-tip="仅 DNS 解析 (DNS Only)">
+                                <div class="tooltip tooltip-top" data-tip="仅DNS解析">
                                     <div class="text-base-content/20">
                                         {{ template "icons" (dict "Name" "i-lucide-cloud-off" "Class" "w-5 h-5") }}
                                     </div>

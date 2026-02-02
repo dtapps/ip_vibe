@@ -502,6 +502,7 @@ func init() {
 	esasiterecordMixin := schema.EsaSiteRecord{}.Mixin()
 	esasiterecordHooks := schema.EsaSiteRecord{}.Hooks()
 	esasiterecord.Hooks[0] = esasiterecordHooks[0]
+	esasiterecord.Hooks[1] = esasiterecordHooks[1]
 	esasiterecordMixinFields0 := esasiterecordMixin[0].Fields()
 	_ = esasiterecordMixinFields0
 	esasiterecordFields := schema.EsaSiteRecord{}.Fields()
