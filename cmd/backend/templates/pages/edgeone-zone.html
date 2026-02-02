@@ -73,16 +73,15 @@
                             </div>
 
                             <div class="flex flex-col items-end gap-1">
-                                {{ if gt $zone.AccelerationdomainCount 0 }}
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[9px] font-bold opacity-30">CDN</span>
-                                    <div class="w-1.5 h-1.5 rounded-full bg-warning animate-pulse"></div>
-                                </div>
-                                {{ end }}
-                                {{ if gt $zone.DnsrecordCount 0 }}
+                                {{ if eq $zone.Type "full" }}
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-[9px] font-bold opacity-30">DNS</span>
                                     <div class="w-1.5 h-1.5 rounded-full bg-info"></div>
+                                </div>
+                                {{ else }}
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[9px] font-bold opacity-30">CDN</span>
+                                    <div class="w-1.5 h-1.5 rounded-full bg-warning animate-pulse"></div>
                                 </div>
                                 {{ end }}
                             </div>
@@ -99,7 +98,7 @@
                                     加速域名
                                 </div>
                                 <div class="text-sm font-mono font-bold">
-                                    {{ $zone.AccelerationdomainCount }}
+                                    {{ len $zone.Edges.AccelerationDomains }}
                                 </div>
                             </div>
                             <div class="text-center border-x border-base-300/30">
@@ -107,7 +106,7 @@
                                     DNS记录
                                 </div>
                                 <div class="text-sm font-mono font-bold">
-                                    {{ $zone.DnsrecordCount }}
+                                    {{ len $zone.Edges.DNSRecords }}
                                 </div>
                             </div>
                             <div class="text-center">
@@ -115,7 +114,7 @@
                                     源站组
                                 </div>
                                 <div class="text-sm font-mono font-bold">
-                                    {{ $zone.OrigingroupCount }}
+                                    {{ len $zone.Edges.OriginGroups }}
                                 </div>
                             </div>
                         </div>

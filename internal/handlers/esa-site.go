@@ -37,7 +37,7 @@ func ESASite(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allPlatformConfig.Items {
-			sites := make([]types.GetESASiteSite, 0)
+			sites := make([]ent.EsaSite, 0)
 			// 查询隧道列表
 			allSite, err := global.GvaEntDb.EsaSite.Query().
 				Where(esasite.ConfigID(item.ID)).
@@ -47,25 +47,7 @@ func ESASite(c *gin.Context) {
 				All(c)
 			if err == nil {
 				for _, site := range allSite {
-					sites = append(sites, types.GetESASiteSite{
-						ID:              site.ID,
-						RemoteCreatedAt: site.RemoteCreatedAt,
-						SyncAt:          site.SyncAt,
-						AccessType:      site.AccessType.String(),
-						CnameZone:       site.CnameZone,
-						Coverage:        site.Coverage.String(),
-						InstanceID:      site.InstanceID,
-						NameServerList:  site.NameServerList,
-						PlanName:        site.PlanName,
-						PlanSpecName:    site.PlanSpecName,
-						SiteID:          site.SiteID,
-						SiteName:        site.SiteName,
-						Status:          site.Status.String(),
-						OfflineReason:   site.OfflineReason,
-
-						RecordCount:     len(site.Edges.Records),
-						OriginpoolCount: len(site.Edges.OriginPools),
-					})
+					sites = append(sites, *site)
 				}
 			}
 			pageData.List = append(pageData.List, types.GetESASiteResponse{

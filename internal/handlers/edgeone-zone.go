@@ -37,7 +37,7 @@ func EdgeOneZone(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allPlatformConfig.Items {
-			zones := make([]types.GetEdgeOneZoneZone, 0)
+			zones := make([]ent.EdgeOneZone, 0)
 			// 查询隧道列表
 			allZone, err := global.GvaEntDb.EdgeOneZone.Query().
 				Where(edgeonezone.ConfigID(item.ID)).
@@ -48,23 +48,7 @@ func EdgeOneZone(c *gin.Context) {
 				All(c)
 			if err == nil {
 				for _, zone := range allZone {
-					zones = append(zones, types.GetEdgeOneZoneZone{
-						ID:              zone.ID,
-						RemoteCreatedAt: zone.RemoteCreatedAt,
-						SyncAt:          zone.SyncAt,
-						ZoneID:          zone.ZoneID,
-						ZoneName:        zone.ZoneName,
-						Area:            zone.Area.String(),
-						Type:            zone.Type.String(),
-						Status:          zone.Status.String(),
-						CnameStatus:     zone.CnameStatus.String(),
-						ActiveStatus:    zone.ActiveStatus.String(),
-						Paused:          zone.Paused,
-
-						AccelerationdomainCount: len(zone.Edges.AccelerationDomains),
-						DnsrecordCount:          len(zone.Edges.DNSRecords),
-						OrigingroupCount:        len(zone.Edges.OriginGroups),
-					})
+					zones = append(zones, *zone)
 				}
 			}
 			pageData.List = append(pageData.List, types.GetEdgeOneZoneResponse{

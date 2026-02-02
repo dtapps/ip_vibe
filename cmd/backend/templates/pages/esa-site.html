@@ -84,7 +84,7 @@
                                     DNS记录
                                 </div>
                                 <div class="text-sm font-mono font-bold">
-                                    {{ $site.RecordCount }}
+                                    {{ len $site.Edges.Records }}
                                 </div>
                             </div>
                             <div class="text-center">
@@ -92,7 +92,7 @@
                                     源地址池
                                 </div>
                                 <div class="text-sm font-mono font-bold">
-                                    {{ $site.OriginpoolCount }}
+                                    {{ len $site.Edges.OriginPools }}
                                 </div>
                             </div>
                         </div>

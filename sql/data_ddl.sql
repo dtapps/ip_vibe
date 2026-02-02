@@ -93,7 +93,7 @@ CREATE INDEX `cdnrecord_device_group_id` ON `cdn_record` (`device_group_id`);
 
 -- cloudflare_tunnel definition
 
-CREATE TABLE "cloudflare_tunnel" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `tunnel_id` text NOT NULL, `name` text NULL, `status` text NULL, `connections` json NULL, `conns_active_at` datetime NULL, `config_id` integer NOT NULL, CONSTRAINT `cloudflare_tunnel_platform_config_cloudflare_tunnels` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
+CREATE TABLE `cloudflare_tunnel` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `tunnel_id` text NOT NULL, `connections` json NULL, `conns_active_at` datetime NULL, `conns_inactive_at` datetime NULL, `name` text NULL, `status` text NULL, `tun_type` text NULL, `config_id` integer NOT NULL, CONSTRAINT `cloudflare_tunnel_platform_config_cloudflare_tunnels` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
 
 CREATE INDEX `cloudflaretunnel_created_at` ON `cloudflare_tunnel` (`created_at` DESC);
 CREATE INDEX `cloudflaretunnel_config_id` ON `cloudflare_tunnel` (`config_id`);
@@ -103,10 +103,32 @@ CREATE INDEX `cloudflaretunnel_config_id_tunnel_id` ON `cloudflare_tunnel` (`con
 
 -- cloudflare_tunnel_ingress definition
 
-CREATE TABLE "cloudflare_tunnel_ingress" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `hostname` text NULL, `service` text NULL, `path` text NULL, `origin_request` json NULL, `cloudflare_tunnel_id` integer NOT NULL, CONSTRAINT `cloudflare_tunnel_ingress_cloudflare_tunnel_ingresses` FOREIGN KEY (`cloudflare_tunnel_id`) REFERENCES `cloudflare_tunnel` (`id`) ON DELETE CASCADE);
+CREATE TABLE `cloudflare_tunnel_ingress` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `hostname` text NULL, `service` text NULL, `path` text NULL, `origin_request` json NULL, `cloudflare_tunnel_id` integer NOT NULL, CONSTRAINT `cloudflare_tunnel_ingress_cloudflare_tunnel_ingresses` FOREIGN KEY (`cloudflare_tunnel_id`) REFERENCES `cloudflare_tunnel` (`id`) ON DELETE CASCADE);
 
 CREATE INDEX `cloudflaretunnelingress_created_at` ON `cloudflare_tunnel_ingress` (`created_at` DESC);
 CREATE INDEX `cloudflaretunnelingress_cloudflare_tunnel_id` ON `cloudflare_tunnel_ingress` (`cloudflare_tunnel_id`);
+
+
+-- cloudflare_zone definition
+
+CREATE TABLE `cloudflare_zone` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `zone_id` text NOT NULL, `account` json NULL, `name` text NULL, `name_servers` json NULL, `original_dnshost` text NULL, `original_name_servers` json NULL, `original_registrar` text NULL, `paused` bool NULL, `status` text NULL, `type` text NULL, `config_id` integer NOT NULL, CONSTRAINT `cloudflare_zone_platform_config_cloudflare_zones` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
+
+CREATE INDEX `cloudflarezone_created_at` ON `cloudflare_zone` (`created_at` DESC);
+CREATE INDEX `cloudflarezone_config_id` ON `cloudflare_zone` (`config_id`);
+CREATE INDEX `cloudflarezone_zone_id` ON `cloudflare_zone` (`zone_id`);
+CREATE INDEX `cloudflarezone_config_id_zone_id` ON `cloudflare_zone` (`config_id`, `zone_id`);
+
+
+-- cloudflare_zone_record definition
+
+CREATE TABLE `cloudflare_zone_record` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `record_id` text NOT NULL, `comment` text NULL, `content` text NULL, `name` text NULL, `proxiable` bool NULL, `proxied` bool NULL, `settings` json NULL, `ttl` real NULL, `type` text NULL, `cloudflare_zone_id` integer NOT NULL, CONSTRAINT `cloudflare_zone_record_cloudflare_zone_records` FOREIGN KEY (`cloudflare_zone_id`) REFERENCES `cloudflare_zone` (`id`) ON DELETE CASCADE);
+
+CREATE INDEX `cloudflarezonerecord_created_at` ON `cloudflare_zone_record` (`created_at` DESC);
+CREATE INDEX `cloudflarezonerecord_cloudflare_zone_id` ON `cloudflare_zone_record` (`cloudflare_zone_id`);
+CREATE INDEX `cloudflarezonerecord_record_id` ON `cloudflare_zone_record` (`record_id`);
+CREATE INDEX `cloudflarezonerecord_name` ON `cloudflare_zone_record` (`name`);
+CREATE INDEX `cloudflarezonerecord_cloudflare_zone_id_record_id` ON `cloudflare_zone_record` (`cloudflare_zone_id`, `record_id`);
+CREATE INDEX `cloudflarezonerecord_cloudflare_zone_id_name` ON `cloudflare_zone_record` (`cloudflare_zone_id`, `name`);
 
 
 -- device_group_device definition
@@ -143,7 +165,7 @@ CREATE INDEX `dnsrecord_is_active` ON `dns_record` (`is_active`);
 
 -- edgeone_zone definition
 
-CREATE TABLE "edgeone_zone" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `zone_id` text NOT NULL, `name` text NULL, `area` text NULL, `type` text NULL, `status` text NULL, `cname_status` text NULL, `active_status` text NULL, `paused` bool NULL, `config_id` integer NOT NULL, CONSTRAINT `edgeone_zone_platform_config_edgeone_zones` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
+CREATE TABLE `edgeone_zone` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `zone_id` text NOT NULL, `zone_name` text NULL, `alias_zone_name` text NULL, `area` text NULL, `type` text NULL, `resources` json NULL, `ns_detail` json NULL, `cname_detail` json NULL, `dnspod_detail` json NULL, `status` text NULL, `cname_status` text NULL, `active_status` text NULL, `lock_status` text NULL, `paused` bool NULL, `config_id` integer NOT NULL, CONSTRAINT `edgeone_zone_platform_config_edgeone_zones` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
 
 CREATE INDEX `edgeonezone_created_at` ON `edgeone_zone` (`created_at` DESC);
 CREATE INDEX `edgeonezone_config_id` ON `edgeone_zone` (`config_id`);
@@ -151,39 +173,41 @@ CREATE INDEX `edgeonezone_zone_id` ON `edgeone_zone` (`zone_id`);
 CREATE INDEX `edgeonezone_config_id_zone_id` ON `edgeone_zone` (`config_id`, `zone_id`);
 
 
--- edgeone_zone_accelerationdomain definition
+-- edgeone_zone_acceleration_domain definition
 
-CREATE TABLE `edgeone_zone_accelerationdomain` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `domain_name` text NOT NULL, `domain_status` text NULL, `cname` text NULL, `ipv6_status` text NULL, `identification_status` text NULL, `ownership_verification` json NULL, `origin_detail` json NULL, `origin_protocol` text NULL, `http_origin_port` integer NULL, `https_origin_port` integer NULL, `certificate` json NULL, `edgeone_zone_id` integer NOT NULL, CONSTRAINT `edgeone_zone_accelerationdomain_edgeone_zone_accelerationdomains` FOREIGN KEY (`edgeone_zone_id`) REFERENCES `edgeone_zone` (`id`) ON DELETE CASCADE);
+CREATE TABLE `edgeone_zone_acceleration_domain` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `domain_name` text NOT NULL, `domain_status` text NULL, `cname` text NULL, `ipv6_status` text NULL, `identification_status` text NULL, `ownership_verification` json NULL, `origin_detail` json NULL, `origin_protocol` text NULL, `http_origin_port` integer NULL, `https_origin_port` integer NULL, `certificate` json NULL, `edgeone_zone_id` integer NOT NULL, CONSTRAINT `edgeone_zone_acceleration_domai_808f466c53e231858fd9e5960efd922f` FOREIGN KEY (`edgeone_zone_id`) REFERENCES `edgeone_zone` (`id`) ON DELETE CASCADE);
 
-CREATE INDEX `edgeonezoneaccelerationdomain_created_at` ON `edgeone_zone_accelerationdomain` (`created_at` DESC);
-CREATE INDEX `edgeonezoneaccelerationdomain_edgeone_zone_id` ON `edgeone_zone_accelerationdomain` (`edgeone_zone_id`);
-CREATE INDEX `edgeonezoneaccelerationdomain_domain_name` ON `edgeone_zone_accelerationdomain` (`domain_name`);
-CREATE INDEX `edgeonezoneaccelerationdomain_edgeone_zone_id_domain_name` ON `edgeone_zone_accelerationdomain` (`edgeone_zone_id`, `domain_name`);
-
-
--- edgeone_zone_dnsrecord definition
-
-CREATE TABLE `edgeone_zone_dnsrecord` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `record_id` text NOT NULL, `name` text NULL, `type` text NULL, `location` text NULL, `content` text NULL, `ttl` integer NULL, `weight` integer NULL, `priority` integer NULL, `status` text NULL, `edgeone_zone_id` integer NOT NULL, CONSTRAINT `edgeone_zone_dnsrecord_edgeone_zone_dnsrecords` FOREIGN KEY (`edgeone_zone_id`) REFERENCES `edgeone_zone` (`id`) ON DELETE CASCADE);
-
-CREATE INDEX `edgeonezonednsrecord_created_at` ON `edgeone_zone_dnsrecord` (`created_at` DESC);
-CREATE INDEX `edgeonezonednsrecord_edgeone_zone_id` ON `edgeone_zone_dnsrecord` (`edgeone_zone_id`);
-CREATE INDEX `edgeonezonednsrecord_record_id` ON `edgeone_zone_dnsrecord` (`record_id`);
-CREATE INDEX `edgeonezonednsrecord_edgeone_zone_id_record_id` ON `edgeone_zone_dnsrecord` (`edgeone_zone_id`, `record_id`);
+CREATE INDEX `edgeonezoneaccelerationdomain_created_at` ON `edgeone_zone_acceleration_domain` (`created_at` DESC);
+CREATE INDEX `edgeonezoneaccelerationdomain_edgeone_zone_id` ON `edgeone_zone_acceleration_domain` (`edgeone_zone_id`);
+CREATE INDEX `edgeonezoneaccelerationdomain_domain_name` ON `edgeone_zone_acceleration_domain` (`domain_name`);
+CREATE INDEX `edgeonezoneaccelerationdomain_edgeone_zone_id_domain_name` ON `edgeone_zone_acceleration_domain` (`edgeone_zone_id`, `domain_name`);
 
 
--- edgeone_zone_origingroup definition
+-- edgeone_zone_dns_record definition
 
-CREATE TABLE "edgeone_zone_origingroup" (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `group_id` text NOT NULL, `name` text NULL, `type` text NULL, `records` json NULL, `references` json NULL, `edgeone_zone_id` integer NOT NULL, CONSTRAINT `edgeone_zone_origingroup_edgeone_zone_origingroups` FOREIGN KEY (`edgeone_zone_id`) REFERENCES `edgeone_zone` (`id`) ON DELETE CASCADE);
+CREATE TABLE `edgeone_zone_dns_record` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `record_id` text NOT NULL, `name` text NULL, `type` text NULL, `location` text NULL, `content` text NULL, `ttl` integer NULL, `weight` integer NULL, `priority` integer NULL, `status` text NULL, `edgeone_zone_id` integer NOT NULL, CONSTRAINT `edgeone_zone_dns_record_edgeone_zone_dns_records` FOREIGN KEY (`edgeone_zone_id`) REFERENCES `edgeone_zone` (`id`) ON DELETE CASCADE);
 
-CREATE INDEX `edgeonezoneorigingroup_created_at` ON `edgeone_zone_origingroup` (`created_at` DESC);
-CREATE INDEX `edgeonezoneorigingroup_edgeone_zone_id` ON `edgeone_zone_origingroup` (`edgeone_zone_id`);
-CREATE INDEX `edgeonezoneorigingroup_group_id` ON `edgeone_zone_origingroup` (`group_id`);
-CREATE INDEX `edgeonezoneorigingroup_edgeone_zone_id_group_id` ON `edgeone_zone_origingroup` (`edgeone_zone_id`, `group_id`);
+CREATE INDEX `edgeonezonednsrecord_created_at` ON `edgeone_zone_dns_record` (`created_at` DESC);
+CREATE INDEX `edgeonezonednsrecord_edgeone_zone_id` ON `edgeone_zone_dns_record` (`edgeone_zone_id`);
+CREATE INDEX `edgeonezonednsrecord_record_id` ON `edgeone_zone_dns_record` (`record_id`);
+CREATE INDEX `edgeonezonednsrecord_name` ON `edgeone_zone_dns_record` (`name`);
+CREATE INDEX `edgeonezonednsrecord_edgeone_zone_id_record_id` ON `edgeone_zone_dns_record` (`edgeone_zone_id`, `record_id`);
+CREATE INDEX `edgeonezonednsrecord_edgeone_zone_id_name` ON `edgeone_zone_dns_record` (`edgeone_zone_id`, `name`);
+
+
+-- edgeone_zone_origin_group definition
+
+CREATE TABLE `edgeone_zone_origin_group` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `group_id` text NOT NULL, `name` text NULL, `type` text NULL, `records` json NULL, `references` json NULL, `host_header` text NULL, `edgeone_zone_id` integer NOT NULL, CONSTRAINT `edgeone_zone_origin_group_edgeone_zone_origin_groups` FOREIGN KEY (`edgeone_zone_id`) REFERENCES `edgeone_zone` (`id`) ON DELETE CASCADE);
+
+CREATE INDEX `edgeonezoneorigingroup_created_at` ON `edgeone_zone_origin_group` (`created_at` DESC);
+CREATE INDEX `edgeonezoneorigingroup_edgeone_zone_id` ON `edgeone_zone_origin_group` (`edgeone_zone_id`);
+CREATE INDEX `edgeonezoneorigingroup_group_id` ON `edgeone_zone_origin_group` (`group_id`);
+CREATE INDEX `edgeonezoneorigingroup_edgeone_zone_id_group_id` ON `edgeone_zone_origin_group` (`edgeone_zone_id`, `group_id`);
 
 
 -- esa_site definition
 
-CREATE TABLE `esa_site` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `access_type` text NULL, `coverage` text NULL, `site_id` integer NOT NULL, `site_name` text NULL, `status` text NULL, `config_id` integer NOT NULL, CONSTRAINT `esa_site_platform_config_esa_zones` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
+CREATE TABLE `esa_site` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `access_type` text NULL, `cname_zone` text NULL, `coverage` text NULL, `instance_id` text NULL, `name_server_list` text NULL, `plan_name` text NULL, `plan_spec_name` text NULL, `site_id` integer NOT NULL, `site_name` text NULL, `status` text NULL, `offline_reason` text NULL, `config_id` integer NOT NULL, CONSTRAINT `esa_site_platform_config_esa_zones` FOREIGN KEY (`config_id`) REFERENCES `platform_config` (`id`) ON DELETE CASCADE);
 
 CREATE INDEX `esasite_created_at` ON `esa_site` (`created_at` DESC);
 CREATE INDEX `esasite_config_id` ON `esa_site` (`config_id`);
@@ -191,24 +215,46 @@ CREATE INDEX `esasite_site_id` ON `esa_site` (`site_id`);
 CREATE INDEX `esasite_config_id_site_id` ON `esa_site` (`config_id`, `site_id`);
 
 
--- esa_site_originpool definition
+-- esa_site_edge_container_record definition
 
-CREATE TABLE `esa_site_originpool` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `pool_id` integer NOT NULL, `name` text NULL, `record_name` text NULL, `enabled` bool NULL, `references` json NULL, `origins` json NULL, `esa_site_id` integer NOT NULL, CONSTRAINT `esa_site_originpool_esa_site_originpools` FOREIGN KEY (`esa_site_id`) REFERENCES `esa_site` (`id`) ON DELETE CASCADE);
+CREATE TABLE `esa_site_edge_container_record` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `record_name` text NOT NULL, `record_cname` text NULL, `esa_site_id` integer NOT NULL, CONSTRAINT `esa_site_edge_container_record_esa_site_edge_container_records` FOREIGN KEY (`esa_site_id`) REFERENCES `esa_site` (`id`) ON DELETE CASCADE);
 
-CREATE INDEX `esasiteoriginpool_created_at` ON `esa_site_originpool` (`created_at` DESC);
-CREATE INDEX `esasiteoriginpool_esa_site_id` ON `esa_site_originpool` (`esa_site_id`);
-CREATE INDEX `esasiteoriginpool_pool_id` ON `esa_site_originpool` (`pool_id`);
-CREATE INDEX `esasiteoriginpool_esa_site_id_pool_id` ON `esa_site_originpool` (`esa_site_id`, `pool_id`);
+CREATE INDEX `esasiteedgecontainerrecord_created_at` ON `esa_site_edge_container_record` (`created_at` DESC);
+CREATE INDEX `esasiteedgecontainerrecord_esa_site_id` ON `esa_site_edge_container_record` (`esa_site_id`);
+CREATE INDEX `esasiteedgecontainerrecord_record_name` ON `esa_site_edge_container_record` (`record_name`);
+CREATE INDEX `esasiteedgecontainerrecord_esa_site_id_record_name` ON `esa_site_edge_container_record` (`esa_site_id`, `record_name`);
+
+
+-- esa_site_edge_routine_record definition
+
+CREATE TABLE `esa_site_edge_routine_record` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `record_name` text NOT NULL, `record_cname` text NULL, `esa_site_id` integer NOT NULL, CONSTRAINT `esa_site_edge_routine_record_esa_site_edge_routine_records` FOREIGN KEY (`esa_site_id`) REFERENCES `esa_site` (`id`) ON DELETE CASCADE);
+
+CREATE INDEX `esasiteedgeroutinerecord_created_at` ON `esa_site_edge_routine_record` (`created_at` DESC);
+CREATE INDEX `esasiteedgeroutinerecord_esa_site_id` ON `esa_site_edge_routine_record` (`esa_site_id`);
+CREATE INDEX `esasiteedgeroutinerecord_record_name` ON `esa_site_edge_routine_record` (`record_name`);
+CREATE INDEX `esasiteedgeroutinerecord_esa_site_id_record_name` ON `esa_site_edge_routine_record` (`esa_site_id`, `record_name`);
+
+
+-- esa_site_origin_pool definition
+
+CREATE TABLE `esa_site_origin_pool` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `pool_id` integer NOT NULL, `name` text NULL, `record_name` text NULL, `enabled` bool NULL, `references` json NULL, `reference_l_b_count` integer NULL, `origins` json NULL, `esa_site_id` integer NOT NULL, CONSTRAINT `esa_site_origin_pool_esa_site_origin_pools` FOREIGN KEY (`esa_site_id`) REFERENCES `esa_site` (`id`) ON DELETE CASCADE);
+
+CREATE INDEX `esasiteoriginpool_created_at` ON `esa_site_origin_pool` (`created_at` DESC);
+CREATE INDEX `esasiteoriginpool_esa_site_id` ON `esa_site_origin_pool` (`esa_site_id`);
+CREATE INDEX `esasiteoriginpool_pool_id` ON `esa_site_origin_pool` (`pool_id`);
+CREATE INDEX `esasiteoriginpool_esa_site_id_pool_id` ON `esa_site_origin_pool` (`esa_site_id`, `pool_id`);
 
 
 -- esa_site_record definition
 
-CREATE TABLE `esa_site_record` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `biz_name` text NULL, `data` json NULL, `proxied` text NULL, `record_id` text NOT NULL, `record_source_type` text NULL, `record_name` text NULL, `record_type` text NULL, `ttl` integer NULL, `record_cname` text NULL, `comment` text NULL, `auth_conf` json NULL, `host_policy` text NULL, `esa_site_id` integer NOT NULL, CONSTRAINT `esa_site_record_esa_site_records` FOREIGN KEY (`esa_site_id`) REFERENCES `esa_site` (`id`) ON DELETE CASCADE);
+CREATE TABLE `esa_site_record` (`id` integer NOT NULL PRIMARY KEY AUTOINCREMENT, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL, `remote_created_at` datetime NULL, `sync_at` datetime NULL, `biz_name` text NULL, `data` json NULL, `proxied` bool NULL, `record_id` integer NOT NULL, `record_source_type` text NULL, `record_name` text NULL, `record_type` text NULL, `ttl` integer NULL, `record_cname` text NULL, `comment` text NULL, `auth_conf` json NULL, `host_policy` text NULL, `esa_site_id` integer NOT NULL, CONSTRAINT `esa_site_record_esa_site_records` FOREIGN KEY (`esa_site_id`) REFERENCES `esa_site` (`id`) ON DELETE CASCADE);
 
 CREATE INDEX `esasiterecord_created_at` ON `esa_site_record` (`created_at` DESC);
 CREATE INDEX `esasiterecord_esa_site_id` ON `esa_site_record` (`esa_site_id`);
 CREATE INDEX `esasiterecord_record_id` ON `esa_site_record` (`record_id`);
+CREATE INDEX `esasiterecord_record_name` ON `esa_site_record` (`record_name`);
 CREATE INDEX `esasiterecord_esa_site_id_record_id` ON `esa_site_record` (`esa_site_id`, `record_id`);
+CREATE INDEX `esasiterecord_esa_site_id_record_name` ON `esa_site_record` (`esa_site_id`, `record_name`);
 
 
 -- ip_group_device definition
