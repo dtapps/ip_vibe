@@ -153,6 +153,16 @@ func Dashboard(c *gin.Context) {
 			Icon:  "i-lucide-list-todo",
 			Href:  "/task",
 		},
+		{
+			Title: "操作日志",
+			Icon:  "i-lucide-history",
+			Href:  "/log",
+		},
+		{
+			Title: "日志内容",
+			Icon:  "i-lucide-list-todo",
+			Href:  "/log-scroll-text",
+		},
 	}
 
 	// 最新操作日志

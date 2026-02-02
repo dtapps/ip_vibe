@@ -33,7 +33,7 @@ func RecoveryMiddleware(logger *slog.Logger, stack bool) gin.HandlerFunc {
 
 				if brokenPipe {
 					logger.ErrorContext(c, "[Recovery] Broken pipe",
-						slog.Any("error", err),
+						slog.Any("err", err),
 						slog.String("request", string(httpRequest)),
 					)
 					c.Error(err.(error))
