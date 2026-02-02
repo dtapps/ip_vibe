@@ -92,8 +92,7 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 	m.server = grpc.NewServer(opts...)
 
 	// 注册服务
-	grpc_service.NewIndexServer(logger).RegisterService(m.server)
-	grpc_service.NewOpenServer(logger).RegisterService(m.server)
+	grpc_service.NewOpenService(logger).RegisterService(m.server)
 	grpc_service.NewRemoteLogService(logger).RegisterService(m.server)
 
 	var err error

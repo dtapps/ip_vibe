@@ -164,11 +164,6 @@ func (m *GRPCGatewayClientManager) Conn(ctx context.Context) (err error) {
 	gwMux := runtime.NewServeMux(gwOpts...)
 
 	// 注册服务
-	if err = grpc_generated.RegisterIndexServiceHandler(ctx, gwMux, m.client); err != nil {
-		logger.ErrorContext(ctx, "注册 IndexService 网关路由失败",
-			slog.Any("err", err),
-		)
-	}
 	if err = grpc_generated.RegisterOpenServiceHandler(ctx, gwMux, m.client); err != nil {
 		logger.ErrorContext(ctx, "注册 OpenService 网关路由失败",
 			slog.Any("err", err),

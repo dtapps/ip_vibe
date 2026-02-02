@@ -13,15 +13,15 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// OpenServer 实现 gRPC 服务接口
-type OpenServer struct {
+// OpenService 实现 gRPC 服务接口
+type OpenService struct {
 	grpc_generated.UnimplementedOpenServiceServer                           // 嵌入未实现的服务
 	logger                                        *slog.Logger              // 日志记录器
 	deviceService                                 service.DeviceOpenService // 设备服务
 }
 
-// NewOpenServer 创建 gRPC 服务实例
-func NewOpenServer(logger *slog.Logger) *OpenServer {
+// NewOpenService 创建 gRPC 服务实例
+func NewOpenService(logger *slog.Logger) *OpenService {
 	// 使用与你的 HTTP 处理器相同的服务实例
 	deviceService := service.NewDeviceOpenService(
 		global.GvaEntDb,
@@ -29,19 +29,19 @@ func NewOpenServer(logger *slog.Logger) *OpenServer {
 		logger,
 	)
 
-	return &OpenServer{
+	return &OpenService{
 		logger:        logger,
 		deviceService: deviceService,
 	}
 }
 
 // RegisterService 注册服务到 gRPC
-func (s *OpenServer) RegisterService(server *grpc.Server) {
+func (s *OpenService) RegisterService(server *grpc.Server) {
 	grpc_generated.RegisterOpenServiceServer(server, s)
 }
 
 // GetSetting 实现 获取配置 方法
-func (s *OpenServer) GetSetting(ctx context.Context, req *emptypb.Empty) (*grpc_generated.GetSettingResponse, error) {
+func (s *OpenService) GetSetting(ctx context.Context, req *emptypb.Empty) (*grpc_generated.GetSettingResponse, error) {
 	// 调用服务方法
 	response, err := s.deviceService.GetSetting(ctx)
 	if err != nil {
@@ -57,7 +57,7 @@ func (s *OpenServer) GetSetting(ctx context.Context, req *emptypb.Empty) (*grpc_
 }
 
 // ReportDeviceIP 实现 设备上报 IP 方法
-func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *grpc_generated.ReportDeviceIPRequest) (*grpc_generated.ReportDeviceIPResponse, error) {
+func (s *OpenService) ReportDeviceIP(ctx context.Context, req *grpc_generated.ReportDeviceIPRequest) (*grpc_generated.ReportDeviceIPResponse, error) {
 	// 将 gRPC 请求转换为你的 types 结构
 	request := &types.DeviceReportDeviceIpRequest{
 		DevicePortForwardsRequest: types.DevicePortForwardsRequest{
@@ -82,7 +82,7 @@ func (s *OpenServer) ReportDeviceIP(ctx context.Context, req *grpc_generated.Rep
 }
 
 // GetDevicePortForwards 实现 获取设备端口转发 方法
-func (s *OpenServer) GetDevicePortForwards(ctx context.Context, req *grpc_generated.GetDevicePortForwardsRequest) (*grpc_generated.GetDevicePortForwardsResponse, error) {
+func (s *OpenService) GetDevicePortForwards(ctx context.Context, req *grpc_generated.GetDevicePortForwardsRequest) (*grpc_generated.GetDevicePortForwardsResponse, error) {
 	// 调用服务方法
 	response, err := s.deviceService.DevicePortForwards(ctx, req.DeviceCode)
 	if err != nil {
@@ -109,7 +109,7 @@ func (s *OpenServer) GetDevicePortForwards(ctx context.Context, req *grpc_genera
 }
 
 // CreatePortForwardStats 实现 创建端口转发统计 方法
-func (s *OpenServer) CreatePortForwardStats(ctx context.Context, req *grpc_generated.CreatePortForwardStatsRequest) (*emptypb.Empty, error) {
+func (s *OpenService) CreatePortForwardStats(ctx context.Context, req *grpc_generated.CreatePortForwardStatsRequest) (*emptypb.Empty, error) {
 	// 将 gRPC 请求转换为你的 types 结构
 	request := &types.CreatePortForwardStatsRequest{
 		DevicePortForwardsRequest: types.DevicePortForwardsRequest{
