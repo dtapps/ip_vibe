@@ -6,6 +6,7 @@ import (
 	"time"
 	"vibe_ip/internal/grpc_generated"
 
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -31,6 +32,11 @@ func NewAgentService(logger *slog.Logger) *AgentService {
 		logger:  logger,
 		clients: make(map[string]*ClientState),
 	}
+}
+
+// RegisterService 注册服务到 gRPC
+func (s *AgentService) RegisterService(server *grpc.Server) {
+	grpc_generated.RegisterAgentServiceServer(server, s)
 }
 
 // GetClients 返回当前在线客户端（用于调试或管理）

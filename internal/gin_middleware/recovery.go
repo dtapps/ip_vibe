@@ -43,7 +43,7 @@ func RecoveryMiddleware(logger *slog.Logger, stack bool) gin.HandlerFunc {
 
 				// 构建日志字段
 				fields := []slog.Attr{
-					slog.Any("error", err),
+					slog.Any("err", err),
 					slog.String("request", string(httpRequest)),
 				}
 

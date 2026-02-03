@@ -68,7 +68,10 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 		return
 	}
 
-	// 配置拦截器
+	// 日志拦截器
+	loggingInterceptor := grpc_interceptor.NewLoggingInterceptor(logger)
+
+	// 配置一元拦截器
 	usis := []grpc.UnaryServerInterceptor{
 		// 审计上下文
 		grpc_interceptor.AuditContextInterceptor(m.logger, operationlog.SourceGrpc),
@@ -79,12 +82,19 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 			m.config.Password,
 		),
 		// 日志
-		grpc_interceptor.LoggerUnaryInterceptor(m.logger),
+		loggingInterceptor.Unary(),
+	}
+
+	// 配置流式拦截器
+	ssis := []grpc.StreamServerInterceptor{
+		// 日志
+		loggingInterceptor.Stream(),
 	}
 
 	// 配置选项
 	opts := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(usis...),
+		grpc.ChainStreamInterceptor(ssis...),
 		grpc.MaxRecvMsgSize(10 * 1024 * 1024),
 		grpc.MaxSendMsgSize(10 * 1024 * 1024),
 	}
@@ -92,6 +102,7 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 	m.server = grpc.NewServer(opts...)
 
 	// 注册服务
+	grpc_service.NewAgentService(logger).RegisterService(m.server)
 	grpc_service.NewOpenService(logger).RegisterService(m.server)
 	grpc_service.NewRemoteLogService(logger).RegisterService(m.server)
 
