@@ -32,14 +32,23 @@ type StatsReportGRPCTask struct {
 
 	forwardAgent *forward.Agent // 端口转发器
 
+	deviceData *core.GetDeviceDataResult // 设备数据
+
 	clientBaseMD      metadata.MD                      // gRPC 客户端基础 metadata
 	grpcClient        *grpc.ClientConn                 // gRPC 客户端
 	openServiceClient grpc_generated.OpenServiceClient // gRPC 业务服务
 }
 
 // NewStatsReportGRPCTask 创建统计上报实例
-func NewStatsReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, forwardAgent *forward.Agent, grpcClient *grpc.ClientConn) *StatsReportGRPCTask {
+func NewStatsReportGRPCTask(ctx context.Context, cron gocron.Scheduler, logger *slog.Logger, forwardAgent *forward.Agent, grpcClient *grpc.ClientConn) (*StatsReportGRPCTask, error) {
 	debug := sys_env.GvaEnv.DEBUG
+
+	// 获取设备数据
+	deviceData, err := core.GetDeviceData(ctx, logger)
+	if err != nil {
+		return nil, err
+	}
+
 	return &StatsReportGRPCTask{
 		cron:      cron,
 		taskName:  "gRPC 统计上报",
@@ -47,10 +56,13 @@ func NewStatsReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, forwardA
 		logger:    logger,
 		debug:     debug,
 
-		forwardAgent:      forwardAgent,
+		forwardAgent: forwardAgent,
+
+		deviceData: deviceData,
+
 		grpcClient:        grpcClient,
 		openServiceClient: grpc_generated.NewOpenServiceClient(grpcClient),
-	}
+	}, nil
 }
 
 // Close 关闭统计上报实例，释放资源
@@ -128,20 +140,10 @@ func (s *StatsReportGRPCTask) RunPeriodicTask() {
 		return
 	}
 
-	// 获取设备数据
-	deviceData, err := core.GetDeviceData(ctx, logger)
-	if err != nil {
-		logger.ErrorContext(ctx, "获取设备数据失败",
-			slog.String("设备编号", deviceData.DeviceCode),
-			slog.Any("err", err),
-		)
-		return
-	}
-
 	// 日志记录器
 	logger = logger.With(
-		slog.String("设备编号", deviceData.DeviceCode),
-		slog.String("设备名称", deviceData.DeviceName),
+		slog.String("设备编号", s.deviceData.DeviceCode),
+		slog.String("设备名称", s.deviceData.DeviceName),
 	)
 
 	// 端口转发规则统计信息
@@ -157,16 +159,16 @@ func (s *StatsReportGRPCTask) RunPeriodicTask() {
 			slog.Int64("错误次数", stat.Errors),
 		)
 		// 请求
-		_ = s.postApi(ctx, logger, deviceData.DeviceCode, ruleID, stat)
+		_ = s.postApi(ctx, logger, ruleID, stat)
 	}
 }
 
 // postApi 请求
-func (s *StatsReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, deviceCode string, port_forward_id string, stats *forward.Stats) (err error) {
+func (s *StatsReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, port_forward_id string, stats *forward.Stats) (err error) {
 
 	// 构建gRPC请求
 	req := &grpc_generated.CreatePortForwardStatsRequest{
-		DeviceCode:    deviceCode,
+		DeviceCode:    s.deviceData.DeviceCode,
 		PortForwardId: cast.ToInt64(port_forward_id),
 		StartTime:     gotime.SetCurrent(stats.StartTime).Timestamp(),
 		ActiveConn:    stats.ActiveConn,

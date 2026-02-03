@@ -32,14 +32,23 @@ type PortForwardGRPCTask struct {
 
 	forwardAgent *forward.Agent // 端口转发器
 
+	deviceData *core.GetDeviceDataResult // 设备数据
+
 	clientBaseMD      metadata.MD                      // gRPC 客户端基础 metadata
 	grpcClient        *grpc.ClientConn                 // gRPC 客户端
 	openServiceClient grpc_generated.OpenServiceClient // gRPC 业务服务
 }
 
 // NewPortForwardGRPCTask 创建端口转发实例
-func NewPortForwardGRPCTask(cron gocron.Scheduler, logger *slog.Logger, forwardAgent *forward.Agent, grpcClient *grpc.ClientConn) *PortForwardGRPCTask {
+func NewPortForwardGRPCTask(ctx context.Context, cron gocron.Scheduler, logger *slog.Logger, forwardAgent *forward.Agent, grpcClient *grpc.ClientConn) (*PortForwardGRPCTask, error) {
 	debug := sys_env.GvaEnv.DEBUG
+
+	// 获取设备数据
+	deviceData, err := core.GetDeviceData(ctx, logger)
+	if err != nil {
+		return nil, err
+	}
+
 	return &PortForwardGRPCTask{
 		cron:      cron,
 		taskName:  "gRPC 端口转发",
@@ -47,10 +56,13 @@ func NewPortForwardGRPCTask(cron gocron.Scheduler, logger *slog.Logger, forwardA
 		logger:    logger,
 		debug:     debug,
 
-		forwardAgent:      forwardAgent,
+		forwardAgent: forwardAgent,
+
+		deviceData: deviceData,
+
 		grpcClient:        grpcClient,
 		openServiceClient: grpc_generated.NewOpenServiceClient(grpcClient),
-	}
+	}, nil
 }
 
 // Close 关闭端口转发实例，释放资源
@@ -128,24 +140,14 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 		return
 	}
 
-	// 获取设备数据
-	deviceData, err := core.GetDeviceData(ctx, logger)
-	if err != nil {
-		logger.ErrorContext(ctx, "获取设备数据失败",
-			slog.String("设备编号", deviceData.DeviceCode),
-			slog.Any("err", err),
-		)
-		return
-	}
-
 	// 日志记录器
 	logger = logger.With(
-		slog.String("设备编号", deviceData.DeviceCode),
-		slog.String("设备名称", deviceData.DeviceName),
+		slog.String("设备编号", s.deviceData.DeviceCode),
+		slog.String("设备名称", s.deviceData.DeviceName),
 	)
 
 	// 获取数据
-	list, err := s.getApi(ctx, logger, deviceData.DeviceCode)
+	list, err := s.getApi(ctx, logger)
 	if err != nil {
 		return
 	}
@@ -180,11 +182,11 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 }
 
 // getApi 请求
-func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger, deviceCode string) (list []*PortForwardTaskApiList, err error) {
+func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger) (list []*PortForwardTaskApiList, err error) {
 
 	// 构建gRPC请求
 	req := &grpc_generated.GetDevicePortForwardsRequest{
-		DeviceCode: deviceCode,
+		DeviceCode: s.deviceData.DeviceCode,
 	}
 
 	// 调用gRPC服务

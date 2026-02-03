@@ -110,11 +110,18 @@ func main() {
 		grpcClientConn := grpcMgr.GetConn()
 
 		// 创建IP上报实例
-		ipReportTask := tasks.NewIPReportGRPCTask(
+		ipReportTask, err := tasks.NewIPReportGRPCTask(
+			ctx,
 			global.GvaGoCron,
 			global.GvaGocronSlog,
 			grpcClientConn,
 		)
+		if err != nil {
+			slog.ErrorContext(ctx, "创建IP上报任务失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
 
 		// 启动IP上报任务
 		err = ipReportTask.StartPeriodicTask(ctx)

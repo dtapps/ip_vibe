@@ -114,12 +114,19 @@ func main() {
 		grpcClientConn := grpcMgr.GetConn()
 
 		// 创建端口转发实例
-		portForwardTask := tasks.NewPortForwardGRPCTask(
+		portForwardTask, err := tasks.NewPortForwardGRPCTask(
+			ctx,
 			global.GvaGoCron,
 			global.GvaGocronSlog,
 			forwardAgent,
 			grpcClientConn,
 		)
+		if err != nil {
+			slog.ErrorContext(ctx, "创建端口转发任务失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
 
 		// 启动端口转发任务
 		err = portForwardTask.StartPeriodicTask(ctx)
@@ -132,12 +139,19 @@ func main() {
 		defer portForwardTask.Close()
 
 		// 创建统计上报实例
-		statsReportTask := tasks.NewStatsReportGRPCTask(
+		statsReportTask, err := tasks.NewStatsReportGRPCTask(
+			ctx,
 			global.GvaGoCron,
 			global.GvaGocronSlog,
 			forwardAgent,
 			grpcClientConn,
 		)
+		if err != nil {
+			slog.ErrorContext(ctx, "创建统计上报任务失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
 
 		// 启动统计上报任务
 		err = statsReportTask.StartPeriodicTask(ctx)
