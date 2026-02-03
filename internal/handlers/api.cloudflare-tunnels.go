@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/backend/syncs"
 	"vibe_ip/internal/global"
@@ -12,148 +13,23 @@ import (
 	"github.com/spf13/cast"
 )
 
-// 同步全部账号Cloudflare隧道和入站规则
+// 同步Cloudflare隧道
 //
-//	@Description	同步全部账号Cloudflare隧道和入站规则
-//	@Summary		同步全部账号Cloudflare隧道和入站规则
+//	@Description	同步Cloudflare隧道
+//	@Summary		同步Cloudflare隧道
 //	@Tags			CloudflareTunnel
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}	"参数错误"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
-//	@Router			/cloudflare-tunnels/sync-all [post]
+//	@Param			request	body		types.SyncAllCloudflareTunnelsRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}							"成功响应"
+//	@Failure		400		{object}	APIResponse{}							"参数错误"
+//	@Failure		404		{object}	APIResponse{}							"错误响应"
+//	@Router			/cloudflare-tunnels/sync [post]
 func SyncAllCloudflareTunnels(c *gin.Context) {
-
-	// 创建Cloudflare Tunnel同步
-	cloudflareTunnelSync := syncs.NewCloudflareTunnelSync(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGinSlog,
-		global.GvaHttpLog,
-	)
-
-	// 调用 同步全部账号Cloudflare隧道
-	err := cloudflareTunnelSync.SyncAllCloudflareTunnels(c)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, err.Error())
-		return
-	}
-
-	// 调用 同步全部账号Cloudflare隧道入站规则
-	err = cloudflareTunnelSync.SyncAllCloudflareTunnelIngresses(c)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, err.Error())
-		return
-	}
-
-	successResponse(c, nil)
-}
-
-// 同步某个账号Cloudflare隧道和入站规则
-//
-//	@Description	同步某个账号Cloudflare隧道和入站规则
-//	@Summary		同步某个账号Cloudflare隧道和入站规则
-//	@Tags			CloudflareTunnel
-//	@Accept			application/json
-//	@Produce		application/json
-//	@Param			config_id	path		int64			true	"平台配置序号"
-//	@Success		200			{object}	APIResponse{}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}	"参数错误"
-//	@Failure		404			{object}	APIResponse{}	"错误响应"
-//	@Router			/cloudflare-tunnels/sync/{config_id} [post]
-func SyncThisCloudflareTunnels(c *gin.Context) {
 	// 请求参数
-	var requestParams types.SyncThisCloudflareTunnelsRequest
-	requestParams.ConfigID = cast.ToInt64(c.Param("config_id"))
-	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
-		return
-	}
-
-	// 创建Cloudflare Tunnel同步
-	cloudflareTunnelSync := syncs.NewCloudflareTunnelSync(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGinSlog,
-		global.GvaHttpLog,
-	)
-
-	// 调用 同步某个账号Cloudflare隧道
-	err := cloudflareTunnelSync.SyncThisCloudflareTunnels(c, requestParams.ConfigID)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, err.Error())
-		return
-	}
-
-	// 调用 同步某个账号Cloudflare隧道入站规则
-	err = cloudflareTunnelSync.SyncThisCloudflareTunnelIngresses(c, requestParams.ConfigID)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, err.Error())
-		return
-	}
-
-	successResponse(c, nil)
-}
-
-// 同步某个账号Cloudflare隧道的入站规则
-//
-//	@Description	同步某个账号Cloudflare隧道的入站规则
-//	@Summary		同步某个账号Cloudflare隧道的入站规则
-//	@Tags			CloudflareTunnel
-//	@Accept			application/json
-//	@Produce		application/json
-//	@Param			config_id	path		int64			true	"平台配置序号"
-//	@Success		200			{object}	APIResponse{}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}	"参数错误"
-//	@Failure		404			{object}	APIResponse{}	"错误响应"
-//	@Router			/cloudflare-tunnels/sync/{config_id}/ingress [post]
-func SyncThisCloudflareTunnelIngresses(c *gin.Context) {
-	// 请求参数
-	var requestParams types.SyncThisCloudflareTunnelIngressesRequest
-	requestParams.ConfigID = cast.ToInt64(c.Param("config_id"))
-	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
-		return
-	}
-
-	// 创建Cloudflare Tunnel同步
-	cloudflareTunnelSync := syncs.NewCloudflareTunnelSync(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGinSlog,
-		global.GvaHttpLog,
-	)
-
-	// 调用 同步某个账号Cloudflare隧道入站规则
-	err := cloudflareTunnelSync.SyncThisCloudflareTunnelIngresses(c, requestParams.ConfigID)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, err.Error())
-		return
-	}
-
-	successResponse(c, nil)
-}
-
-// 同步某个账号Cloudflare某个隧道的入站规则
-//
-//	@Description	同步某个账号Cloudflare某个隧道的入站规则
-//	@Summary		同步某个账号Cloudflare某个隧道的入站规则
-//	@Tags			CloudflareTunnel
-//	@Accept			application/json
-//	@Produce		application/json
-//	@Param			config_id	path		int64			true	"平台配置序号"
-//	@Param			tunnel_id	path		int64			true	"隧道序号"
-//	@Success		200			{object}	APIResponse{}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}	"参数错误"
-//	@Failure		404			{object}	APIResponse{}	"错误响应"
-//	@Router			/cloudflare-tunnels/sync/{config_id}/{tunnel_id}/ingress [post]
-func SyncThisCloudflareThisTunnelIngress(c *gin.Context) {
-	// 请求参数
-	var requestParams types.SyncThisCloudflareThisTunnelIngressRequest
-	requestParams.ConfigID = cast.ToInt64(c.Param("config_id"))
+	var requestParams types.SyncAllCloudflareTunnelsRequest
 	requestParams.TunnelID = cast.ToInt64(c.Param("tunnel_id"))
-	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return
 	}
@@ -166,11 +42,54 @@ func SyncThisCloudflareThisTunnelIngress(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 调用 同步某个账号Cloudflare隧道入站规则
-	err := cloudflareTunnelSync.SyncThisCloudflareThisTunnelIngresses(c, requestParams.ConfigID, requestParams.TunnelID)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, err.Error())
-		return
+	// 同步全部
+	if strings.EqualFold(requestParams.Type, "all") {
+
+		// 调用 同步全部账号Cloudflare隧道
+		err := cloudflareTunnelSync.SyncAllCloudflareTunnels(c)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 调用 同步全部账号Cloudflare隧道入站规则
+		err = cloudflareTunnelSync.SyncAllCloudflareTunnelIngresses(c)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+	}
+
+	// 同步某个Cloudflare隧道
+	if strings.EqualFold(requestParams.Type, "this-config") && requestParams.ConfigID > 0 {
+
+		// 调用 同步某个账号Cloudflare隧道
+		err := cloudflareTunnelSync.SyncThisCloudflareTunnels(c, requestParams.ConfigID)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 调用 同步某个账号Cloudflare隧道入站规则
+		err = cloudflareTunnelSync.SyncThisCloudflareTunnelIngresses(c, requestParams.ConfigID)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+	}
+
+	// 同步某个Cloudflare隧道入站规则
+	if strings.EqualFold(requestParams.Type, "this-tunnel") && requestParams.ConfigID > 0 && requestParams.TunnelID > 0 {
+
+		// 调用 同步某个账号Cloudflare某个隧道的入站规则
+		err := cloudflareTunnelSync.SyncThisCloudflareThisTunnelIngresses(c, requestParams.ConfigID, requestParams.TunnelID)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
 	}
 
 	successResponse(c, nil)

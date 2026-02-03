@@ -472,9 +472,9 @@
                 }
             }
         },
-        "/cloudflare-tunnels/sync-all": {
+        "/cloudflare-tunnels/sync": {
             "post": {
-                "description": "同步全部账号Cloudflare隧道和入站规则",
+                "description": "同步Cloudflare隧道",
                 "consumes": [
                     "application/json"
                 ],
@@ -484,148 +484,16 @@
                 "tags": [
                     "CloudflareTunnel"
                 ],
-                "summary": "同步全部账号Cloudflare隧道和入站规则",
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/cloudflare-tunnels/sync/{config_id}": {
-            "post": {
-                "description": "同步某个账号Cloudflare隧道和入站规则",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "CloudflareTunnel"
-                ],
-                "summary": "同步某个账号Cloudflare隧道和入站规则",
+                "summary": "同步Cloudflare隧道",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "平台配置序号",
-                        "name": "config_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.SyncAllCloudflareTunnelsRequest"
                         }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/cloudflare-tunnels/sync/{config_id}/ingress": {
-            "post": {
-                "description": "同步某个账号Cloudflare隧道的入站规则",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "CloudflareTunnel"
-                ],
-                "summary": "同步某个账号Cloudflare隧道的入站规则",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "平台配置序号",
-                        "name": "config_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/cloudflare-tunnels/sync/{config_id}/{tunnel_id}/ingress": {
-            "post": {
-                "description": "同步某个账号Cloudflare某个隧道的入站规则",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "CloudflareTunnel"
-                ],
-                "summary": "同步某个账号Cloudflare某个隧道的入站规则",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "平台配置序号",
-                        "name": "config_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "隧道序号",
-                        "name": "tunnel_id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -8757,6 +8625,26 @@
                 },
                 "schedule_detail": {
                     "description": "任务调度表达式详情",
+                    "type": "string"
+                }
+            }
+        },
+        "vibe_ip_internal_types.SyncAllCloudflareTunnelsRequest": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "config_id": {
+                    "description": "平台配置序号",
+                    "type": "integer"
+                },
+                "tunnel_id": {
+                    "description": "隧道序号",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "同步类型",
                     "type": "string"
                 }
             }

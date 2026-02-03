@@ -354,10 +354,7 @@ func (m *GinServerManager) setupApiRouter() {
 		// CloudflareTunnel 相关API
 		cloudflareTunnels := api.Group("/cloudflare-tunnels")
 		{
-			cloudflareTunnels.POST("/sync-all", handlers.SyncAllCloudflareTunnels)                                      // 同步全部账号Cloudflare隧道和入站规则
-			cloudflareTunnels.POST("/sync/:config_id", handlers.SyncThisCloudflareTunnels)                              // 同步某个账号Cloudflare隧道和入站规则
-			cloudflareTunnels.POST("/sync/:config_id/ingress", handlers.SyncThisCloudflareTunnelIngresses)              // 同步某个账号Cloudflare隧道的入站规则
-			cloudflareTunnels.POST("/sync/:config_id/:tunnel_id/ingress", handlers.SyncThisCloudflareThisTunnelIngress) // 同步某个账号Cloudflare某个隧道的入站规则
+			cloudflareTunnels.POST("/sync", handlers.SyncAllCloudflareTunnels) // 同步Cloudflare隧道
 
 			cloudflareTunnels.GET("/:tunnel_id/ingress", handlers.GetCloudflareTunnelIngress) // 获取Cloudflare隧道入站配置
 

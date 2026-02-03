@@ -21,7 +21,7 @@
 
         </h2>
         <div>
-            <button class="btn-ui-primary" onclick="handleSync(this)">
+            <button class="btn-ui-primary" data-type="all" onclick="handleSync(this)">
                 {{ template "icons" (dict "Name" "i-lucide-refresh-ccw") }} 同步所有
             </button>
         </div>
@@ -48,7 +48,8 @@
                 <div class="flex items-center gap-2">
                     <button
                         class="btn btn-sm btn-ghost gap-2 opacity-50 hover:opacity-100 hover:text-primary transition-all"
-                        data-config-id="{{ $config.ID }}" data-tips="确定同步此账号吗？" onclick="handleSync(this)">
+                        data-type="this-config" data-config-id="{{ $config.ID }}" data-tips="确定同步此账号吗？"
+                        onclick="handleSync(this)">
                         {{ template "icons" (dict "Name" "i-lucide-rotate-cw" "Class" "w-3 h-3 mr-1") }} 增量同步
                     </button>
                 </div>
@@ -134,7 +135,7 @@
                             <td class="ui-td text-right pr-8">
                                 <button type="button"
                                     class="btn btn-sm btn-ghost btn-circle text-primary opacity-20 group-hover:opacity-100 transition-all tooltip tooltip-left"
-                                    data-tip="同步此隧道配置" data-config-id="{{ $config.ID }}"
+                                    data-tip="同步此隧道配置" data-type="this-tunnel" data-config-id="{{ $config.ID }}"
                                     data-tunnel-id="{{ $tunnel.ID }}" data-tips="确定同步此隧道配置吗？"
                                     onclick="event.stopPropagation(); handleSync(this)">
                                     {{ template "icons" (dict "Name" "i-lucide-rotate-cw" "Class" "w-4 h-4") }}
@@ -190,21 +191,23 @@
                 configId = 0,
                 tunnelId = 0,
 
-                tips = "确定同步所有账号吗？",
+                tips = "",
                 reload = true,
             } = el.dataset;
 
             // 提示确认
-            const confirmed = confirm(tips);
-            if (!confirmed) {
-                return;
+            if (tips !== "") {
+                const confirmed = confirm(tips);
+                if (!confirmed) {
+                    return;
+                }
             }
 
             // 调用 同步 接口
             await API.post(`/api/cloudflare-tunnels/sync`, {
                 type: type,
-                config_id: configId ?? 0,
-                tunnel_id: tunnelId ?? 0,
+                config_id: Number(configId) ?? 0,
+                tunnel_id: Number(tunnelId) ?? 0,
             });
 
             // 刷新页面
