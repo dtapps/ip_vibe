@@ -124,6 +124,7 @@ type GetDeviceStatusRequest struct {
 
 // 获取设备状态 响应结构
 type GetDeviceStatusResponse struct {
+	Role      string `json:"role" jsonschema:"角色"`               // 角色
 	Version   string `json:"version" jsonschema:"设备的版本号"`        // 版本号
 	GitCommit string `json:"git_commit" jsonschema:"设备的Git提交哈希"` // git提交哈希
 	BuildTime string `json:"build_time" jsonschema:"设备的构建时间"`    // 构建时间

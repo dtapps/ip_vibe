@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_server"
@@ -343,10 +344,10 @@ func GetDevicePortForwardStats(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64											true	"设备序号"
-//	@Success		200	{object}	APIResponse{data=types.GetDeviceStatusResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									"参数错误"
-//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Param			id	path		int64												true	"设备序号"
+//	@Success		200	{object}	APIResponse{data=[]types.GetDeviceStatusResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}										"参数错误"
+//	@Failure		404	{object}	APIResponse{}										"错误响应"
 //	@Router			/devices/{id}/status [get]
 func GetDeviceStatus(c *gin.Context) {
 	// 请求参数
@@ -383,22 +384,29 @@ func GetDeviceStatus(c *gin.Context) {
 	// 查询全部设备状态
 	clientStates := agentService.GetClients()
 
-	for _, clientState := range clientStates {
-		global.GvaGinSlog.Info("clientState", "clientState", clientState)
+	// 查找该设备的所有角色实例
+	var roles []types.GetDeviceStatusResponse
+	prefix := device.Code + "|"
+
+	for key, state := range clientStates {
+		if strings.HasPrefix(key, prefix) {
+			info := state.Info
+			role := strings.TrimPrefix(key, prefix)
+			roles = append(roles, types.GetDeviceStatusResponse{
+				Role:      role,
+				Version:   info.Version,
+				GitCommit: info.GitCommit,
+				BuildTime: info.BuildTime,
+				GoVersion: info.GoVersion,
+				Os:        info.Os,
+			})
+		}
 	}
 
-	// 查询设备状态
-	clientState, ok := clientStates[device.Code]
-	if !ok {
-		errorResponse(c, http.StatusNotFound, fmt.Sprintf("设备 %s 未注册", device.Code))
+	if len(roles) == 0 {
+		errorResponse(c, http.StatusNotFound, fmt.Sprintf("设备 %s 无在线客户端", device.Code))
 		return
 	}
 
-	successResponse(c, types.GetDeviceStatusResponse{
-		Version:   clientState.Info.Version,
-		GitCommit: clientState.Info.GitCommit,
-		BuildTime: clientState.Info.BuildTime,
-		GoVersion: clientState.Info.GoVersion,
-		Os:        clientState.Info.Os,
-	})
+	successResponse(c, roles)
 }

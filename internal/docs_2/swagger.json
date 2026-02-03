@@ -1955,7 +1955,10 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDeviceStatusResponse"
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/vibe_ip_internal_types.GetDeviceStatusResponse"
+                                            }
                                         }
                                     }
                                 }
@@ -7892,6 +7895,10 @@
                 },
                 "os": {
                     "description": "操作系统",
+                    "type": "string"
+                },
+                "role": {
+                    "description": "角色",
                     "type": "string"
                 },
                 "version": {

@@ -246,6 +246,10 @@ func (m *ClientInfo) validate(all bool) error {
 
 	// no validation rules for DeviceCode
 
+	// no validation rules for DeviceName
+
+	// no validation rules for Role
+
 	// no validation rules for Version
 
 	// no validation rules for GitCommit

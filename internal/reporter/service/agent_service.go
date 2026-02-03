@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"time"
+	"vibe_ip/internal/core"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/sys_env"
@@ -16,20 +17,31 @@ type AgentService struct {
 	logger *slog.Logger // 日志记录器
 	debug  bool         // 是否开启调试模式
 
+	deviceData *core.GetDeviceDataResult // 设备数据
+
 	grpcClient  *grpc.ClientConn                  // gRPC 客户端
 	agentClient grpc_generated.AgentServiceClient // gRPC 业务服务
 }
 
 // NewAgentService 创建代理服务
-func NewAgentService(logger *slog.Logger, grpcClient *grpc.ClientConn) *AgentService {
+func NewAgentService(ctx context.Context, logger *slog.Logger, grpcClient *grpc.ClientConn) (*AgentService, error) {
 	debug := sys_env.GvaEnv.DEBUG
+
+	// 获取设备数据
+	deviceData, err := core.GetDeviceData(ctx, logger)
+	if err != nil {
+		return nil, err
+	}
+
 	return &AgentService{
 		logger: logger,
 		debug:  debug,
 
+		deviceData: deviceData,
+
 		grpcClient:  grpcClient,
 		agentClient: grpc_generated.NewAgentServiceClient(grpcClient),
-	}
+	}, nil
 }
 
 // StartStream 启动流式通信
@@ -46,7 +58,9 @@ func (s *AgentService) StartStream(ctx context.Context) {
 
 	// 构建 ClientInfo
 	clientInfo := &grpc_generated.ClientInfo{
-		DeviceCode: sys_env.GvaEnv.DEVICE_CODE,
+		DeviceCode: s.deviceData.DeviceCode,
+		DeviceName: s.deviceData.DeviceName,
+		Role:       "reporter",
 		Version:    global.GvaVersion,
 		GitCommit:  global.GvaGitCommit,
 		BuildTime:  global.GvaBuildTime,
@@ -87,7 +101,7 @@ func (s *AgentService) StartStream(ctx context.Context) {
 		return
 	} else {
 		s.logger.InfoContext(ctx, "成功注册",
-			slog.String("device_code", sys_env.GvaEnv.DEVICE_CODE),
+			slog.String("device_code", s.deviceData.DeviceCode),
 		)
 	}
 

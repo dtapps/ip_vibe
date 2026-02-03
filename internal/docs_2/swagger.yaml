@@ -821,6 +821,9 @@ definitions:
       os:
         description: 操作系统
         type: string
+      role:
+        description: 角色
+        type: string
       version:
         description: 版本号
         type: string
@@ -3105,7 +3108,9 @@ paths:
             - $ref: '#/definitions/internal_handlers.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDeviceStatusResponse'
+                  items:
+                    $ref: '#/definitions/vibe_ip_internal_types.GetDeviceStatusResponse'
+                  type: array
               type: object
         "400":
           description: 参数错误

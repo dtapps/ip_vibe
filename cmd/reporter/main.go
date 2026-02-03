@@ -134,7 +134,13 @@ func main() {
 		defer ipReportTask.Close()
 
 		// 代理服务 启动流式通信
-		agentService := service.NewAgentService(global.GvaGocronSlog, grpcClientConn)
+		agentService, err := service.NewAgentService(ctx, global.GvaGocronSlog, grpcClientConn)
+		if err != nil {
+			slog.ErrorContext(ctx, "创建代理服务失败",
+				slog.Any("err", err),
+			)
+			panic(err)
+		}
 		go agentService.StartStream(ctx)
 
 	} else {

@@ -24,7 +24,7 @@ type AgentService struct {
 	grpc_generated.UnimplementedAgentServiceServer              // 嵌入未实现的服务
 	logger                                         *slog.Logger // 日志记录器
 	mu                                             sync.RWMutex
-	clients                                        map[string]*ClientState // device_code -> ClientState
+	clients                                        map[string]*ClientState // device_code|role -> ClientState
 
 	// 新增：用于优雅关闭
 	shutdownCtx    context.Context
@@ -45,6 +45,11 @@ func NewAgentService(logger *slog.Logger) *AgentService {
 // RegisterService 注册服务到 gRPC
 func (s *AgentService) RegisterService(server *grpc.Server) {
 	grpc_generated.RegisterAgentServiceServer(server, s)
+}
+
+// makeClientKey 生成客户端键（device_code|role）
+func makeClientKey(deviceCode, role string) string {
+	return deviceCode + "|" + role
 }
 
 // GetClients 返回当前在线客户端（用于调试或管理）
@@ -68,17 +73,17 @@ func (s *AgentService) CloseAllStreams() {
 // Stream 处理客户端流式连接
 func (s *AgentService) Stream(stream grpc_generated.AgentService_StreamServer) error {
 
-	// 设备代码
-	var deviceCode string
+	// 客户端键（device_code|role）
+	var clientKey string
 
 	// 清理函数：当连接断开时移除客户端
 	defer func() {
-		if deviceCode != "" {
+		if clientKey != "" {
 			s.mu.Lock()
-			delete(s.clients, deviceCode)
+			delete(s.clients, clientKey)
 			s.mu.Unlock()
 			s.logger.Error("客户端 已断开",
-				slog.String("device_code", deviceCode),
+				slog.String("client_key", clientKey),
 			)
 		}
 	}()
@@ -106,7 +111,7 @@ func (s *AgentService) Stream(stream grpc_generated.AgentService_StreamServer) e
 			if err != nil {
 				// 客户端断开或出错
 				s.logger.Error("客户端 连接错误",
-					slog.String("device_code", deviceCode),
+					slog.String("client_key", clientKey),
 					slog.String("err", err.Error()),
 				)
 				return err
@@ -117,26 +122,27 @@ func (s *AgentService) Stream(stream grpc_generated.AgentService_StreamServer) e
 				info := p.Info
 
 				s.logger.Info("客户端 发送 ClientInfo",
-					slog.String("device_code", info.DeviceCode),
+					slog.String("client_key", clientKey),
 					slog.Any("info", info),
 				)
 
-				// 可选：手动验证（如果 protoc-gen-validate 未在生成时启用）
-				if info.DeviceCode == "" {
-					return status.Error(codes.InvalidArgument, "device_code is required")
+				// 手动验证
+				if info.DeviceCode == "" || info.Role == "" {
+					return status.Error(codes.InvalidArgument, "device_code and role are required")
 				}
 
-				deviceCode = info.DeviceCode
+				// 生成客户端键
+				clientKey = makeClientKey(info.DeviceCode, info.Role)
 
 				// 注册客户端
 				s.mu.Lock()
-				s.clients[deviceCode] = &ClientState{
+				s.clients[clientKey] = &ClientState{
 					Info:     info,
 					LastSeen: time.Now(),
 					Stream:   stream,
 				}
 				s.logger.Info("客户端 已连接",
-					slog.String("device_code", deviceCode),
+					slog.String("client_key", clientKey),
 				)
 				s.mu.Unlock()
 
@@ -153,12 +159,12 @@ func (s *AgentService) Stream(stream grpc_generated.AgentService_StreamServer) e
 			case *grpc_generated.ClientMessage_Heartbeat:
 
 				s.logger.Info("客户端 发送 ClientHeartbeat",
-					slog.String("device_code", deviceCode),
+					slog.String("client_key", clientKey),
 				)
 
-				if deviceCode != "" {
+				if clientKey != "" {
 					s.mu.Lock()
-					if state, ok := s.clients[deviceCode]; ok {
+					if state, ok := s.clients[clientKey]; ok {
 						state.LastSeen = time.Now()
 					}
 					s.mu.Unlock()
@@ -173,31 +179,39 @@ func (s *AgentService) Stream(stream grpc_generated.AgentService_StreamServer) e
 	}
 }
 
-// RequestFullReportToDevice 向指定设备发送“请重新上报完整信息”指令
+// RequestFullReportToDevice 向指定设备的所有角色实例发送“请重新上报完整信息”指令
 func (s *AgentService) RequestFullReportToDevice(deviceCode string) error {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	state, ok := s.clients[deviceCode]
-	if !ok {
-		return status.Errorf(codes.NotFound, "device %q is not online", deviceCode)
+	prefix := deviceCode + "|"
+	count := 0
+
+	for key, state := range s.clients {
+		if key == deviceCode || (len(key) > len(prefix) && key[:len(prefix)] == prefix) {
+			err := state.Stream.Send(&grpc_generated.ServerMessage{
+				Command: &grpc_generated.ServerMessage_RequestFullReport{
+					RequestFullReport: &grpc_generated.RequestFullReport{},
+				},
+			})
+			if err != nil {
+				s.logger.Warn("向客户端发送 RequestFullReport 失败",
+					slog.String("client_key", key),
+					slog.Any("err", err),
+				)
+				continue
+			}
+			count++
+		}
 	}
 
-	err := state.Stream.Send(&grpc_generated.ServerMessage{
-		Command: &grpc_generated.ServerMessage_RequestFullReport{
-			RequestFullReport: &grpc_generated.RequestFullReport{},
-		},
-	})
-	if err != nil {
-		s.logger.Warn("向指定客户端发送 RequestFullReport 失败",
-			slog.String("device_code", deviceCode),
-			slog.Any("err", err),
-		)
-		return status.Errorf(codes.Internal, "failed to send request to device %q: %v", deviceCode, err)
+	if count == 0 {
+		return status.Errorf(codes.NotFound, "no online client found for device %q", deviceCode)
 	}
 
-	s.logger.Info("已向指定客户端发送 RequestFullReport",
+	s.logger.Info("已向设备的所有客户端发送 RequestFullReport",
 		slog.String("device_code", deviceCode),
+		slog.Int("count", count),
 	)
 	return nil
 }

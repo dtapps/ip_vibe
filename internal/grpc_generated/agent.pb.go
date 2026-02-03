@@ -99,7 +99,7 @@ type ClientMessage_Info struct {
 }
 
 type ClientMessage_Heartbeat struct {
-	Heartbeat *Heartbeat `protobuf:"bytes,2,opt,name=heartbeat,proto3,oneof"` // 心跳（可选）
+	Heartbeat *Heartbeat `protobuf:"bytes,2,opt,name=heartbeat,proto3,oneof"` // 心跳
 }
 
 func (*ClientMessage_Info) isClientMessage_Payload() {}
@@ -111,18 +111,22 @@ type ClientInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// 设备编码
 	DeviceCode string `protobuf:"bytes,1,opt,name=device_code,json=deviceCode,proto3" json:"device_code,omitempty"`
+	// 设备名称
+	DeviceName string `protobuf:"bytes,2,opt,name=device_name,json=deviceName,proto3" json:"device_name,omitempty"`
+	// 角色
+	Role string `protobuf:"bytes,3,opt,name=role,proto3" json:"role,omitempty"`
 	// 版本号
-	Version string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
+	Version string `protobuf:"bytes,4,opt,name=version,proto3" json:"version,omitempty"`
 	// git提交哈希
-	GitCommit string `protobuf:"bytes,3,opt,name=git_commit,json=gitCommit,proto3" json:"git_commit,omitempty"`
+	GitCommit string `protobuf:"bytes,5,opt,name=git_commit,json=gitCommit,proto3" json:"git_commit,omitempty"`
 	// 构建时间
-	BuildTime string `protobuf:"bytes,4,opt,name=build_time,json=buildTime,proto3" json:"build_time,omitempty"`
+	BuildTime string `protobuf:"bytes,6,opt,name=build_time,json=buildTime,proto3" json:"build_time,omitempty"`
 	// go版本
-	GoVersion string `protobuf:"bytes,5,opt,name=go_version,json=goVersion,proto3" json:"go_version,omitempty"`
+	GoVersion string `protobuf:"bytes,7,opt,name=go_version,json=goVersion,proto3" json:"go_version,omitempty"`
 	// 操作系统
-	Os string `protobuf:"bytes,6,opt,name=os,proto3" json:"os,omitempty"`
+	Os string `protobuf:"bytes,8,opt,name=os,proto3" json:"os,omitempty"`
 	// 架构
-	Arch          string `protobuf:"bytes,7,opt,name=arch,proto3" json:"arch,omitempty"`
+	Arch          string `protobuf:"bytes,9,opt,name=arch,proto3" json:"arch,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -160,6 +164,20 @@ func (*ClientInfo) Descriptor() ([]byte, []int) {
 func (x *ClientInfo) GetDeviceCode() string {
 	if x != nil {
 		return x.DeviceCode
+	}
+	return ""
+}
+
+func (x *ClientInfo) GetDeviceName() string {
+	if x != nil {
+		return x.DeviceName
+	}
+	return ""
+}
+
+func (x *ClientInfo) GetRole() string {
+	if x != nil {
+		return x.Role
 	}
 	return ""
 }
@@ -406,20 +424,23 @@ const file_agent_proto_rawDesc = "" +
 	"\rClientMessage\x12&\n" +
 	"\x04info\x18\x01 \x01(\v2\x10.open.ClientInfoH\x00R\x04info\x12/\n" +
 	"\theartbeat\x18\x02 \x01(\v2\x0f.open.HeartbeatH\x00R\theartbeatB\t\n" +
-	"\apayload\"\xc8\x01\n" +
+	"\apayload\"\xfd\x01\n" +
 	"\n" +
 	"ClientInfo\x12\x1f\n" +
 	"\vdevice_code\x18\x01 \x01(\tR\n" +
-	"deviceCode\x12\x18\n" +
-	"\aversion\x18\x02 \x01(\tR\aversion\x12\x1d\n" +
+	"deviceCode\x12\x1f\n" +
+	"\vdevice_name\x18\x02 \x01(\tR\n" +
+	"deviceName\x12\x12\n" +
+	"\x04role\x18\x03 \x01(\tR\x04role\x12\x18\n" +
+	"\aversion\x18\x04 \x01(\tR\aversion\x12\x1d\n" +
 	"\n" +
-	"git_commit\x18\x03 \x01(\tR\tgitCommit\x12\x1d\n" +
+	"git_commit\x18\x05 \x01(\tR\tgitCommit\x12\x1d\n" +
 	"\n" +
-	"build_time\x18\x04 \x01(\tR\tbuildTime\x12\x1d\n" +
+	"build_time\x18\x06 \x01(\tR\tbuildTime\x12\x1d\n" +
 	"\n" +
-	"go_version\x18\x05 \x01(\tR\tgoVersion\x12\x0e\n" +
-	"\x02os\x18\x06 \x01(\tR\x02os\x12\x12\n" +
-	"\x04arch\x18\a \x01(\tR\x04arch\"\v\n" +
+	"go_version\x18\a \x01(\tR\tgoVersion\x12\x0e\n" +
+	"\x02os\x18\b \x01(\tR\x02os\x12\x12\n" +
+	"\x04arch\x18\t \x01(\tR\x04arch\"\v\n" +
 	"\tHeartbeat\"\x84\x01\n" +
 	"\rServerMessage\x12\x1d\n" +
 	"\x03ack\x18\x01 \x01(\v2\t.open.AckH\x00R\x03ack\x12I\n" +

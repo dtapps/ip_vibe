@@ -1213,6 +1213,10 @@
                         "description": "操作系统",
                         "type": "string"
                     },
+                    "role": {
+                        "description": "角色",
+                        "type": "string"
+                    },
                     "version": {
                         "description": "版本号",
                         "type": "string"

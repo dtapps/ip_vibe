@@ -16,26 +16,30 @@ service AgentService {
 message ClientMessage {
   oneof payload {
     ClientInfo info = 1;      // 客户端基本信息
-    Heartbeat heartbeat = 2;  // 心跳（可选）
+    Heartbeat heartbeat = 2;  // 心跳
   }
 }
 
 // 客户端基本信息
 message ClientInfo {
    // 设备编码
-  string device_code = 1;       
+  string device_code = 1;     
+  // 设备名称
+  string device_name = 2;
+  // 角色
+  string role = 3;
   // 版本号
-  string version = 2;
+  string version = 4;
   // git提交哈希
-  string git_commit = 3;
+  string git_commit = 5;
   // 构建时间
-  string build_time = 4;
+  string build_time = 6;
   // go版本
-  string go_version = 5;
+  string go_version = 7;
   // 操作系统
-  string os = 6;
+  string os = 8;
   // 架构
-  string arch = 7;
+  string arch = 9;
 }
 
 // 心跳消息（轻量，用于保活）
