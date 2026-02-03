@@ -44,18 +44,21 @@ func (s *AgentService) StartStream(ctx context.Context) {
 		return
 	}
 
+	// 构建 ClientInfo
+	clientInfo := &grpc_generated.ClientInfo{
+		DeviceCode: sys_env.GvaEnv.DEVICE_CODE,
+		Version:    global.GvaVersion,
+		GitCommit:  global.GvaGitCommit,
+		BuildTime:  global.GvaBuildTime,
+		GoVersion:  global.GvaGoVersion,
+		Os:         global.GvaOS,
+		Arch:       global.GvaArch,
+	}
+
 	// 发送 ClientInfo
 	infoMsg := &grpc_generated.ClientMessage{
 		Payload: &grpc_generated.ClientMessage_Info{
-			Info: &grpc_generated.ClientInfo{
-				DeviceCode: sys_env.GvaEnv.DEVICE_CODE,
-				Version:    global.GvaVersion,
-				GitCommit:  global.GvaGitCommit,
-				BuildTime:  global.GvaBuildTime,
-				GoVersion:  global.GvaGoVersion,
-				Os:         global.GvaOS,
-				Arch:       global.GvaArch,
-			},
+			Info: clientInfo,
 		},
 	}
 
@@ -87,6 +90,33 @@ func (s *AgentService) StartStream(ctx context.Context) {
 			slog.String("device_code", sys_env.GvaEnv.DEVICE_CODE),
 		)
 	}
+
+	// 启动 goroutine 监听服务端指令
+	go func() {
+		for {
+			msg, err := stream.Recv()
+			if err != nil {
+				// 流已关闭，退出
+				return
+			}
+
+			switch cmd := msg.GetCommand().(type) {
+			case *grpc_generated.ServerMessage_RequestFullReport:
+				s.logger.InfoContext(ctx, "收到服务端指令：重新上报完整信息")
+				// 重发 ClientInfo
+				err := stream.Send(&grpc_generated.ClientMessage{
+					Payload: &grpc_generated.ClientMessage_Info{Info: clientInfo},
+				})
+				if err != nil {
+					s.logger.ErrorContext(ctx, "重发 ClientInfo 失败", slog.Any("err", err))
+					return
+				}
+				s.logger.DebugContext(ctx, "ClientInfo 重发成功")
+			default:
+				s.logger.WarnContext(ctx, "收到未知服务端指令", slog.Any("command", cmd))
+			}
+		}
+	}()
 
 	// 启动心跳（每 30 秒）
 	ticker := time.NewTicker(30 * time.Second)

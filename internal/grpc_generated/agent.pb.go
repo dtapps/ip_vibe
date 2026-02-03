@@ -249,6 +249,7 @@ type ServerMessage struct {
 	// Types that are valid to be assigned to Command:
 	//
 	//	*ServerMessage_Ack
+	//	*ServerMessage_RequestFullReport
 	Command       isServerMessage_Command `protobuf_oneof:"command"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -300,6 +301,15 @@ func (x *ServerMessage) GetAck() *Ack {
 	return nil
 }
 
+func (x *ServerMessage) GetRequestFullReport() *RequestFullReport {
+	if x != nil {
+		if x, ok := x.Command.(*ServerMessage_RequestFullReport); ok {
+			return x.RequestFullReport
+		}
+	}
+	return nil
+}
+
 type isServerMessage_Command interface {
 	isServerMessage_Command()
 }
@@ -308,7 +318,13 @@ type ServerMessage_Ack struct {
 	Ack *Ack `protobuf:"bytes,1,opt,name=ack,proto3,oneof"`
 }
 
+type ServerMessage_RequestFullReport struct {
+	RequestFullReport *RequestFullReport `protobuf:"bytes,2,opt,name=request_full_report,json=requestFullReport,proto3,oneof"`
+}
+
 func (*ServerMessage_Ack) isServerMessage_Command() {}
+
+func (*ServerMessage_RequestFullReport) isServerMessage_Command() {}
 
 type Ack struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -346,6 +362,42 @@ func (*Ack) Descriptor() ([]byte, []int) {
 	return file_agent_proto_rawDescGZIP(), []int{4}
 }
 
+type RequestFullReport struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RequestFullReport) Reset() {
+	*x = RequestFullReport{}
+	mi := &file_agent_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestFullReport) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestFullReport) ProtoMessage() {}
+
+func (x *RequestFullReport) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestFullReport.ProtoReflect.Descriptor instead.
+func (*RequestFullReport) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{5}
+}
+
 var File_agent_proto protoreflect.FileDescriptor
 
 const file_agent_proto_rawDesc = "" +
@@ -368,11 +420,13 @@ const file_agent_proto_rawDesc = "" +
 	"go_version\x18\x05 \x01(\tR\tgoVersion\x12\x0e\n" +
 	"\x02os\x18\x06 \x01(\tR\x02os\x12\x12\n" +
 	"\x04arch\x18\a \x01(\tR\x04arch\"\v\n" +
-	"\tHeartbeat\"9\n" +
+	"\tHeartbeat\"\x84\x01\n" +
 	"\rServerMessage\x12\x1d\n" +
-	"\x03ack\x18\x01 \x01(\v2\t.open.AckH\x00R\x03ackB\t\n" +
+	"\x03ack\x18\x01 \x01(\v2\t.open.AckH\x00R\x03ack\x12I\n" +
+	"\x13request_full_report\x18\x02 \x01(\v2\x17.open.RequestFullReportH\x00R\x11requestFullReportB\t\n" +
 	"\acommand\"\x05\n" +
-	"\x03Ack2F\n" +
+	"\x03Ack\"\x13\n" +
+	"\x11RequestFullReport2F\n" +
 	"\fAgentService\x126\n" +
 	"\x06Stream\x12\x13.open.ClientMessage\x1a\x13.open.ServerMessage(\x010\x01B!Z\x1fvibe_ip/internal/grpc_generatedb\x06proto3"
 
@@ -388,25 +442,27 @@ func file_agent_proto_rawDescGZIP() []byte {
 	return file_agent_proto_rawDescData
 }
 
-var file_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_agent_proto_goTypes = []any{
-	(*ClientMessage)(nil), // 0: open.ClientMessage
-	(*ClientInfo)(nil),    // 1: open.ClientInfo
-	(*Heartbeat)(nil),     // 2: open.Heartbeat
-	(*ServerMessage)(nil), // 3: open.ServerMessage
-	(*Ack)(nil),           // 4: open.Ack
+	(*ClientMessage)(nil),     // 0: open.ClientMessage
+	(*ClientInfo)(nil),        // 1: open.ClientInfo
+	(*Heartbeat)(nil),         // 2: open.Heartbeat
+	(*ServerMessage)(nil),     // 3: open.ServerMessage
+	(*Ack)(nil),               // 4: open.Ack
+	(*RequestFullReport)(nil), // 5: open.RequestFullReport
 }
 var file_agent_proto_depIdxs = []int32{
 	1, // 0: open.ClientMessage.info:type_name -> open.ClientInfo
 	2, // 1: open.ClientMessage.heartbeat:type_name -> open.Heartbeat
 	4, // 2: open.ServerMessage.ack:type_name -> open.Ack
-	0, // 3: open.AgentService.Stream:input_type -> open.ClientMessage
-	3, // 4: open.AgentService.Stream:output_type -> open.ServerMessage
-	4, // [4:5] is the sub-list for method output_type
-	3, // [3:4] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	5, // 3: open.ServerMessage.request_full_report:type_name -> open.RequestFullReport
+	0, // 4: open.AgentService.Stream:input_type -> open.ClientMessage
+	3, // 5: open.AgentService.Stream:output_type -> open.ServerMessage
+	5, // [5:6] is the sub-list for method output_type
+	4, // [4:5] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_agent_proto_init() }
@@ -420,6 +476,7 @@ func file_agent_proto_init() {
 	}
 	file_agent_proto_msgTypes[3].OneofWrappers = []any{
 		(*ServerMessage_Ack)(nil),
+		(*ServerMessage_RequestFullReport)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -427,7 +484,7 @@ func file_agent_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_agent_proto_rawDesc), len(file_agent_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -46,7 +46,10 @@ message Heartbeat {}
 message ServerMessage {
   oneof command {
     Ack ack = 1;
+    RequestFullReport request_full_report = 2;
   }
 }
 
 message Ack {}
+
+message RequestFullReport {}
