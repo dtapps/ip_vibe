@@ -28,7 +28,6 @@ type IPReportGRPCTask struct {
 	debug     bool                     // 是否开启调试模式
 
 	deviceData *core.GetDeviceDataResult // 设备数据
-	ipData     *core.GetIPDataResult     // IP数据
 
 	clientBaseMD      metadata.MD                      // gRPC 客户端基础 metadata
 	grpcClient        *grpc.ClientConn                 // gRPC 客户端
@@ -45,12 +44,6 @@ func NewIPReportGRPCTask(ctx context.Context, cron gocron.Scheduler, logger *slo
 		return nil, err
 	}
 
-	// 获取IP数据
-	ipData, err := core.GetIPData(ctx, logger)
-	if err != nil {
-		return nil, err
-	}
-
 	return &IPReportGRPCTask{
 		cron:      cron,
 		taskName:  "gRPC IP上报",
@@ -59,7 +52,6 @@ func NewIPReportGRPCTask(ctx context.Context, cron gocron.Scheduler, logger *slo
 		debug:     debug,
 
 		deviceData: deviceData,
-		ipData:     ipData,
 
 		grpcClient:        grpcClient,
 		openServiceClient: grpc_generated.NewOpenServiceClient(grpcClient),
@@ -139,8 +131,6 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 	logger = logger.With(
 		slog.String("设备编号", s.deviceData.DeviceCode),
 		slog.String("设备名称", s.deviceData.DeviceName),
-		slog.String("IPV4地址", s.ipData.IPV4Addr),
-		slog.String("IPV6地址", s.ipData.IPV6Addr),
 	)
 
 	// 上传数据
@@ -150,12 +140,18 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 // postApi 请求
 func (s *IPReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger) (err error) {
 
+	// 获取IP数据
+	ipData, err := core.GetIPData(ctx, logger)
+	if err != nil {
+		return err
+	}
+
 	// 构建gRPC请求
 	req := &grpc_generated.ReportDeviceIPRequest{
 		DeviceCode: s.deviceData.DeviceCode,
 		DeviceName: s.deviceData.DeviceName,
-		Ipv4Addr:   s.ipData.IPV4Addr,
-		Ipv6Addr:   s.ipData.IPV6Addr,
+		Ipv4Addr:   ipData.IPV4Addr,
+		Ipv6Addr:   ipData.IPV6Addr,
 	}
 
 	// 调用gRPC服务
