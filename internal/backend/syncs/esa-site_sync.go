@@ -121,13 +121,19 @@ func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err e
 	// 获取ESA提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取ESA提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 获取所有站点
 	sites, err := cdnProvider.SitesRaw(ctx)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取所有站点失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库所有站点
@@ -211,13 +217,19 @@ func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id
 	// 获取ESA提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取ESA提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 获取所有站点
 	sites, err := cdnProvider.SitesRaw(ctx)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取所有站点失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库所有站点
@@ -361,13 +373,19 @@ func (s *ESASiteSync) SyncThisSiteOriginPool(ctx context.Context, config_id int6
 	// 获取ESA提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstEsaSite.Edges.Config.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取ESA提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 获取所有源地址池
 	originPools, err := cdnProvider.OriginPoolsRaw(ctx, firstEsaSite.SiteID)
 	if err != nil {
-		return fmt.Errorf("获取所有源地址池失败: %w", err)
+		s.logger.ErrorContext(ctx, "获取所有源地址池失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库所有源地址池
@@ -487,13 +505,19 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	// 获取ESA提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstEsaSite.Edges.Config.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取ESA提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 查询解析记录列表
 	records, err := cdnProvider.RecordsRaw(ctx, firstEsaSite.SiteID)
 	if err != nil {
-		return fmt.Errorf("查询解析记录列表失败: %w", err)
+		s.logger.ErrorContext(ctx, "查询解析记录列表失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 	for _, record := range records {
 		// 查询解析记录
@@ -567,7 +591,10 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	// 查询边缘路由记录列表
 	routineRecords, err := cdnProvider.EdgeRoutineRecordsRaw(ctx, firstEsaSite.SiteID)
 	if err != nil {
-		return fmt.Errorf("查询边缘路由记录列表失败: %w", err)
+		s.logger.ErrorContext(ctx, "查询边缘路由记录列表失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 	for _, routineRecord := range routineRecords {
 		// 查询解析记录
@@ -605,7 +632,10 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	// 查询边缘容器记录列表
 	containerRecords, err := cdnProvider.EdgeContainerRecordsRaw(ctx, firstEsaSite.SiteID)
 	if err != nil {
-		return fmt.Errorf("查询边缘容器记录列表失败: %w", err)
+		s.logger.ErrorContext(ctx, "查询边缘容器记录列表失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 	for _, containerRecord := range containerRecords {
 		// 查询解析记录

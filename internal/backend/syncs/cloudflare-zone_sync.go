@@ -48,7 +48,7 @@ func (s *CloudflareZoneSync) SetDebug(debug bool) {
 	s.debug = debug
 }
 
-// 获取ESA提供程序
+// 获取Cloudflare提供程序
 func (s *CloudflareZoneSync) GetApiClient(ctx context.Context, platformConfigJSON json.RawMessage) (*dns.CloudfareDNSProvider, error) {
 
 	// 创建Cloudflare DNS提供程序选项
@@ -115,13 +115,19 @@ func (s *CloudflareZoneSync) SyncThisZones(ctx context.Context, config_id int64)
 	// 获取Cloudflare提供程序
 	dnsProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取Cloudflare提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 获取所有站点
 	zones, err := dnsProvider.ZonesRaw(ctx)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取所有站点失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库所有站点
@@ -199,13 +205,19 @@ func (s *CloudflareZoneSync) SyncThisSite(ctx context.Context, config_id int64, 
 	// 获取Cloudflare提供程序
 	dnsProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取Cloudflare提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 获取所有站点
 	zones, err := dnsProvider.ZonesRaw(ctx)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取所有站点失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库所有站点
@@ -343,13 +355,19 @@ func (s *CloudflareZoneSync) SyncThisZoneRecord(ctx context.Context, config_id i
 	// 获取Cloudflare提供程序
 	dnsProvider, err := s.GetApiClient(ctx, firstZone.Edges.Config.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取Cloudflare提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 获取所有解析记录
 	records, err := dnsProvider.RecordsRaw(ctx, firstZone.ZoneID)
 	if err != nil {
-		return fmt.Errorf("获取所有解析记录失败: %w", err)
+		s.logger.ErrorContext(ctx, "获取所有解析记录失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库所有DNS记录

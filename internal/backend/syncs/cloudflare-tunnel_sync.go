@@ -49,7 +49,7 @@ func (s *CloudflareTunnelSync) SetDebug(debug bool) {
 	s.debug = debug
 }
 
-// 获取Cloudflare隧道提供程序
+// 获取Cloudflare提供程序
 func (s *CloudflareTunnelSync) GetApiClient(ctx context.Context, platformConfigJSON json.RawMessage) (*tun.CloudfareTUNProvider, error) {
 
 	// 创建Cloudflare TUN提供程序选项
@@ -118,16 +118,22 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 		return nil
 	}
 
-	// 获取Cloudflare隧道提供程序
+	// 获取Cloudflare提供程序
 	tunProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取Cloudflare提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 查询隧道列表
 	connectors, err := tunProvider.ConnectorsRaw(ctx)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "查询隧道列表失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库
@@ -233,16 +239,22 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnelIngresses(ctx context.Con
 				return nil
 			}
 
-			// 获取Cloudflare隧道提供程序
+			// 获取Cloudflare提供程序
 			tunProvider, err := s.GetApiClient(ctx, itemCloudflareTunnel.Edges.Config.ConfigJSON)
 			if err != nil {
-				return err
+				s.logger.ErrorContext(ctx, "获取Cloudflare提供程序失败",
+					slog.Any("err", err),
+				)
+				return nil
 			}
 
 			// 查询隧道入站规则列表
 			ingresses, err := tunProvider.IngresssRaw(egCtx, itemCloudflareTunnel.TunnelID)
 			if err != nil {
-				return err
+				s.logger.ErrorContext(ctx, "查询隧道入站规则列表失败",
+					slog.Any("err", err),
+				)
+				return nil
 			}
 
 			// 先清空旧的入站规则
@@ -308,16 +320,22 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareThisTunnelIngresses(ctx context
 		return nil
 	}
 
-	// 获取Cloudflare隧道提供程序
+	// 获取Cloudflare提供程序
 	tunProvider, err := s.GetApiClient(ctx, firstCloudflareTunnel.Edges.Config.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取Cloudflare提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 查询隧道入站规则列表
 	ingresses, err := tunProvider.IngresssRaw(ctx, firstCloudflareTunnel.TunnelID)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "查询隧道入站规则列表失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 先清空旧的入站规则

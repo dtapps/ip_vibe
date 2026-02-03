@@ -119,13 +119,19 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 	// 获取EdgeOne提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取EdgeOne提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 获取所有站点
 	zones, err := cdnProvider.ZonesRaw(ctx)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取所有站点失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库所有站点
@@ -203,13 +209,19 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 	// 获取EdgeOne提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstPlatformCofing.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取EdgeOne提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 获取所有站点
 	zones, err := cdnProvider.ZonesRaw(ctx)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取所有站点失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库所有站点
@@ -347,13 +359,19 @@ func (s *EdgeOneZoneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id
 	// 获取EdgeOne提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstEdgeOneZone.Edges.Config.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取EdgeOne提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 获取所有源站组
 	originGroups, err := cdnProvider.OriginGroupsRaw(ctx, firstEdgeOneZone.ZoneID)
 	if err != nil {
-		return fmt.Errorf("获取所有源站组失败: %w", err)
+		s.logger.ErrorContext(ctx, "获取所有源站组失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库所有源站组
@@ -476,13 +494,19 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int6
 	// 获取EdgeOne提供程序
 	cdnProvider, err := s.GetApiClient(ctx, firstEdgeOneZone.Edges.Config.ConfigJSON)
 	if err != nil {
-		return err
+		s.logger.ErrorContext(ctx, "获取EdgeOne提供程序失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 获取所有DNS记录
 	dnsRecords, err := cdnProvider.DnsRecordsRaw(ctx, firstEdgeOneZone.ZoneID)
 	if err != nil {
-		return fmt.Errorf("获取所有DNS记录失败: %w", err)
+		s.logger.ErrorContext(ctx, "获取所有DNS记录失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库所有DNS记录
@@ -544,7 +568,10 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int6
 	// 获取所有加速域名
 	accelerationDomains, err := cdnProvider.AccelerationDomainsRaw(ctx, firstEdgeOneZone.ZoneID)
 	if err != nil {
-		return fmt.Errorf("获取所有加速域名失败: %w", err)
+		s.logger.ErrorContext(ctx, "获取所有加速域名失败",
+			slog.Any("err", err),
+		)
+		return nil
 	}
 
 	// 入库所有加速域名
