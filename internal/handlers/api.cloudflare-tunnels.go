@@ -41,7 +41,6 @@ func SyncCloudflareTunnels(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 同步全部
 	if strings.EqualFold(requestParams.Type, "all") {
 
 		// 调用 同步全部账号Cloudflare隧道
@@ -60,7 +59,6 @@ func SyncCloudflareTunnels(c *gin.Context) {
 
 	}
 
-	// 同步某个Cloudflare隧道
 	if strings.EqualFold(requestParams.Type, "this-config") && requestParams.ConfigID > 0 {
 
 		// 调用 同步某个账号Cloudflare隧道
@@ -79,7 +77,6 @@ func SyncCloudflareTunnels(c *gin.Context) {
 
 	}
 
-	// 同步某个Cloudflare隧道入站规则
 	if strings.EqualFold(requestParams.Type, "this-tunnel") && requestParams.ConfigID > 0 && requestParams.TunnelID > 0 {
 
 		// 调用 同步某个账号Cloudflare某个隧道的入站规则

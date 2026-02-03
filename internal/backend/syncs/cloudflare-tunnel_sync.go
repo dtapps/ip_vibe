@@ -76,12 +76,13 @@ func (s *CloudflareTunnelSync) GetApiClient(ctx context.Context, platformConfigJ
 
 // 同步全部账号Cloudflare隧道
 func (s *CloudflareTunnelSync) SyncAllCloudflareTunnels(ctx context.Context) error {
-	// 查询全部Cloudflare平台
+
+	// 查询平台配置
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
 		IDs(ctx)
 	if err != nil {
-		return fmt.Errorf("查询全部Cloudflare平台失败: %w", err)
+		return fmt.Errorf("查询平台配置失败: %w", err)
 	}
 
 	// 并发同步
@@ -104,6 +105,7 @@ func (s *CloudflareTunnelSync) SyncAllCloudflareTunnels(ctx context.Context) err
 
 // 同步某个账号Cloudflare隧道
 func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, config_id int64) error {
+
 	// 查询Cloudflare平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -189,12 +191,13 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 
 // 同步全部账号Cloudflare隧道入站规则
 func (s *CloudflareTunnelSync) SyncAllCloudflareTunnelIngresses(ctx context.Context) error {
-	// 查询全部Cloudflare平台
+
+	// 查询平台配置
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
 		IDs(ctx)
 	if err != nil {
-		return fmt.Errorf("查询全部Cloudflare平台失败: %w", err)
+		return fmt.Errorf("查询平台配置失败: %w", err)
 	}
 
 	// 并发同步Cloudflare隧道

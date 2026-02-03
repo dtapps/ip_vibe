@@ -39,7 +39,6 @@ func SyncCloudflareZones(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 同步全部
 	if strings.EqualFold(requestParams.Type, "all") {
 
 		// 调用 同步 全部账号 所有站点
@@ -58,7 +57,6 @@ func SyncCloudflareZones(c *gin.Context) {
 
 	}
 
-	// 同步某个Cloudflare站点
 	if strings.EqualFold(requestParams.Type, "this-config") && requestParams.ConfigID > 0 {
 
 		// 调用 同步 某个账号 所有站点
@@ -70,6 +68,24 @@ func SyncCloudflareZones(c *gin.Context) {
 
 		// 调用 同步 某个账号 所有站点 所有记录
 		err = cloudflareZoneSync.SyncThisZoneRecords(c, requestParams.ConfigID)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+	}
+
+	if strings.EqualFold(requestParams.Type, "this-zone") && requestParams.ConfigID > 0 && requestParams.ZoneID > 0 {
+
+		// 调用 同步 某个账号 某个站点
+		err := cloudflareZoneSync.SyncThisSite(c, requestParams.ConfigID, requestParams.ZoneID)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 调用 同步 某个账号 某个站点 所有记录
+		err = cloudflareZoneSync.SyncThisZoneRecord(c, requestParams.ConfigID, requestParams.ZoneID)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return

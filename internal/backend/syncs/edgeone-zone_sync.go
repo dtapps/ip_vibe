@@ -79,12 +79,13 @@ func (s *EdgeOneZoneSync) GetApiClient(ctx context.Context, platformConfigJSON j
 
 // 同步 全部账号 所有站点
 func (s *EdgeOneZoneSync) SyncAllZones(ctx context.Context) (err error) {
-	// 查询全部EdgeOne平台
+
+	// 查询平台配置
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
 		IDs(ctx)
 	if err != nil {
-		return fmt.Errorf("查询全部EdgeOne平台失败: %w", err)
+		return fmt.Errorf("查询平台配置失败: %w", err)
 	}
 
 	// 并发同步
@@ -107,6 +108,7 @@ func (s *EdgeOneZoneSync) SyncAllZones(ctx context.Context) (err error) {
 
 // 同步 某个账号 所有站点
 func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (err error) {
+
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -196,7 +198,8 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 }
 
 // 同步 某个账号 某个站点
-func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id string) (err error) {
+func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id int64) (err error) {
+
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -204,6 +207,15 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 		First(ctx)
 	if err != nil {
 		return fmt.Errorf("查询平台配置失败: %w", err)
+	}
+
+	// 查询站点记录
+	firstZone, err := s.db.EdgeOneZone.Query().
+		Where(edgeonezone.IDEQ(zone_id)).
+		WithConfig().
+		First(ctx)
+	if err != nil {
+		return fmt.Errorf("查询站点记录失败: %w", err)
 	}
 
 	// 获取EdgeOne提供程序
@@ -226,62 +238,28 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 
 	// 入库所有站点
 	for _, zone := range zones {
-		if utils.PtrToString(zone.ZoneId) != zone_id {
+		if firstZone.ZoneID != utils.PtrToString(zone.ZoneId) {
 			continue
 		}
-		// 查询站点记录
-		firstZone, err := s.db.EdgeOneZone.Query().
-			Where(edgeonezone.ConfigIDEQ(config_id)).
-			Where(edgeonezone.ZoneIDEQ(utils.PtrToString(zone.ZoneId))).
-			First(ctx)
+		// 更新站点记录
+		updateOne := s.db.EdgeOneZone.UpdateOne(firstZone)
+		updateOne.SetSyncAt(time.Now())
+		updateOne.SetZoneName(utils.PtrToString(zone.ZoneName))
+		updateOne.SetAliasZoneName(utils.PtrToString(zone.AliasZoneName))
+		updateOne.SetArea(edgeonezone.Area(utils.PtrToString(zone.Area)))
+		updateOne.SetType(edgeonezone.Type(utils.PtrToString(zone.Type)))
+		updateOne.SetResources(json.RawMessage(gojson.JsonEncodeNoError(zone.Resources)))
+		updateOne.SetNsDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.NSDetail)))
+		updateOne.SetCnameDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.CNAMEDetail)))
+		updateOne.SetDnspodDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.DNSPodDetail)))
+		updateOne.SetStatus(edgeonezone.Status(utils.PtrToString(zone.Status)))
+		updateOne.SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus)))
+		updateOne.SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus)))
+		updateOne.SetLockStatus(edgeonezone.LockStatus(utils.PtrToString(zone.LockStatus)))
+		updateOne.SetPaused(utils.PtrToBool(zone.Paused))
+		err = updateOne.Exec(ctx)
 		if err != nil {
-			if !ent.IsNotFound(err) {
-				return fmt.Errorf("查询站点记录失败: %w", err)
-			}
-			// 创建站点记录
-			createOne := s.db.EdgeOneZone.Create()
-			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(zone.CreatedOn)).Time)
-			createOne.SetSyncAt(time.Now())
-			createOne.SetConfigID(firstPlatformCofing.ID)
-			createOne.SetZoneID(utils.PtrToString(zone.ZoneId))
-			createOne.SetZoneName(utils.PtrToString(zone.ZoneName))
-			createOne.SetAliasZoneName(utils.PtrToString(zone.AliasZoneName))
-			createOne.SetArea(edgeonezone.Area(utils.PtrToString(zone.Area)))
-			createOne.SetType(edgeonezone.Type(utils.PtrToString(zone.Type)))
-			createOne.SetResources(json.RawMessage(gojson.JsonEncodeNoError(zone.Resources)))
-			createOne.SetNsDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.NSDetail)))
-			createOne.SetCnameDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.CNAMEDetail)))
-			createOne.SetDnspodDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.DNSPodDetail)))
-			createOne.SetStatus(edgeonezone.Status(utils.PtrToString(zone.Status)))
-			createOne.SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus)))
-			createOne.SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus)))
-			createOne.SetLockStatus(edgeonezone.LockStatus(utils.PtrToString(zone.LockStatus)))
-			createOne.SetPaused(utils.PtrToBool(zone.Paused))
-			err = createOne.Exec(ctx)
-			if err != nil {
-				return fmt.Errorf("创建站点记录失败: %w", err)
-			}
-		} else {
-			// 更新站点记录
-			updateOne := s.db.EdgeOneZone.UpdateOne(firstZone)
-			updateOne.SetSyncAt(time.Now())
-			updateOne.SetZoneName(utils.PtrToString(zone.ZoneName))
-			updateOne.SetAliasZoneName(utils.PtrToString(zone.AliasZoneName))
-			updateOne.SetArea(edgeonezone.Area(utils.PtrToString(zone.Area)))
-			updateOne.SetType(edgeonezone.Type(utils.PtrToString(zone.Type)))
-			updateOne.SetResources(json.RawMessage(gojson.JsonEncodeNoError(zone.Resources)))
-			updateOne.SetNsDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.NSDetail)))
-			updateOne.SetCnameDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.CNAMEDetail)))
-			updateOne.SetDnspodDetail(json.RawMessage(gojson.JsonEncodeNoError(zone.DNSPodDetail)))
-			updateOne.SetStatus(edgeonezone.Status(utils.PtrToString(zone.Status)))
-			updateOne.SetCnameStatus(edgeonezone.CnameStatus(utils.PtrToString(zone.CnameStatus)))
-			updateOne.SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus)))
-			updateOne.SetLockStatus(edgeonezone.LockStatus(utils.PtrToString(zone.LockStatus)))
-			updateOne.SetPaused(utils.PtrToBool(zone.Paused))
-			err = updateOne.Exec(ctx)
-			if err != nil {
-				return fmt.Errorf("更新站点记录失败: %w", err)
-			}
+			return fmt.Errorf("更新站点记录失败: %w", err)
 		}
 	}
 
@@ -290,12 +268,13 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 
 // 同步 全部账号 所有站点 所有源站组
 func (s *EdgeOneZoneSync) SyncAllZoneOriginGroups(ctx context.Context) (err error) {
-	// 查询全部EdgeOne平台
+
+	// 查询平台配置
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
 		IDs(ctx)
 	if err != nil {
-		return fmt.Errorf("查询全部EdgeOne平台失败: %w", err)
+		return fmt.Errorf("查询平台配置失败: %w", err)
 	}
 
 	// 并发同步
@@ -347,6 +326,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneOriginGroups(ctx context.Context, config_i
 
 // 同步 某个账号 某个站点 所有源站组
 func (s *EdgeOneZoneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id int64, zone_id int64) (err error) {
+
 	// 查询站点记录
 	firstEdgeOneZone, err := s.db.EdgeOneZone.Query().
 		Where(edgeonezone.IDEQ(zone_id)).
@@ -425,12 +405,13 @@ func (s *EdgeOneZoneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id
 
 // 同步 全部账号 所有站点 所有记录
 func (s *EdgeOneZoneSync) SyncAllZoneRecords(ctx context.Context) (err error) {
-	// 查询全部EdgeOne平台
+
+	// 查询平台配置
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
 		IDs(ctx)
 	if err != nil {
-		return fmt.Errorf("查询全部EdgeOne平台失败: %w", err)
+		return fmt.Errorf("查询平台配置失败: %w", err)
 	}
 
 	// 并发同步
@@ -482,6 +463,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecords(ctx context.Context, config_id int
 
 // 同步 某个账号 某个站点 所有记录
 func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, zone_id int64) (err error) {
+
 	// 查询站点记录
 	firstEdgeOneZone, err := s.db.EdgeOneZone.Query().
 		Where(edgeonezone.IDEQ(zone_id)).

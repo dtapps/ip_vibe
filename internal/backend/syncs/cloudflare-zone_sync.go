@@ -75,12 +75,13 @@ func (s *CloudflareZoneSync) GetApiClient(ctx context.Context, platformConfigJSO
 
 // 同步 全部账号 所有站点
 func (s *CloudflareZoneSync) SyncAllZones(ctx context.Context) (err error) {
-	// 查询全部Cloudflare平台
+
+	// 查询平台配置
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
 		IDs(ctx)
 	if err != nil {
-		return fmt.Errorf("查询全部Cloudflare平台失败: %w", err)
+		return fmt.Errorf("查询平台配置失败: %w", err)
 	}
 
 	// 并发同步
@@ -103,6 +104,7 @@ func (s *CloudflareZoneSync) SyncAllZones(ctx context.Context) (err error) {
 
 // 同步 某个账号 所有站点
 func (s *CloudflareZoneSync) SyncThisZones(ctx context.Context, config_id int64) (err error) {
+
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -192,7 +194,8 @@ func (s *CloudflareZoneSync) SyncThisZones(ctx context.Context, config_id int64)
 }
 
 // 同步 某个账号 某个站点
-func (s *CloudflareZoneSync) SyncThisSite(ctx context.Context, config_id int64, zone_id string) (err error) {
+func (s *CloudflareZoneSync) SyncThisSite(ctx context.Context, config_id int64, zone_id int64) (err error) {
+
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -200,6 +203,15 @@ func (s *CloudflareZoneSync) SyncThisSite(ctx context.Context, config_id int64, 
 		First(ctx)
 	if err != nil {
 		return fmt.Errorf("查询平台配置失败: %w", err)
+	}
+
+	// 查询站点记录
+	firstZone, err := s.db.CloudflareZone.Query().
+		Where(cloudflarezone.IDEQ(zone_id)).
+		WithConfig().
+		First(ctx)
+	if err != nil {
+		return fmt.Errorf("查询站点记录失败: %w", err)
 	}
 
 	// 获取Cloudflare提供程序
@@ -222,62 +234,28 @@ func (s *CloudflareZoneSync) SyncThisSite(ctx context.Context, config_id int64, 
 
 	// 入库所有站点
 	for _, zone := range zones {
-		if zone.ID != zone_id {
+		if firstZone.ZoneID != zone.ID {
 			continue
 		}
-		// 查询站点记录
-		firstZone, err := s.db.CloudflareZone.Query().
-			Where(cloudflarezone.ConfigIDEQ(config_id)).
-			Where(cloudflarezone.ZoneIDEQ(zone.ID)).
-			First(ctx)
+		// 更新站点记录
+		updateOne := s.db.CloudflareZone.UpdateOne(firstZone)
+		updateOne.SetSyncAt(time.Now())
+		updateOne.SetAccount(json.RawMessage(gojson.JsonEncodeNoError(zone.Account)))
+		updateOne.SetName(zone.Name)
+		updateOne.SetNameServers(zone.NameServers)
+		updateOne.SetOriginalDnshost(zone.OriginalDnshost)
+		updateOne.SetOriginalNameServers(zone.OriginalNameServers)
+		updateOne.SetOriginalRegistrar(zone.OriginalRegistrar)
+		updateOne.SetPaused(zone.Paused)
+		if zone.Status != "" {
+			updateOne.SetStatus(cloudflarezone.Status(zone.Status))
+		}
+		if zone.Type != "" {
+			updateOne.SetType(cloudflarezone.Type(zone.Type))
+		}
+		err = updateOne.Exec(ctx)
 		if err != nil {
-			if !ent.IsNotFound(err) {
-				return fmt.Errorf("查询站点记录失败: %w", err)
-			}
-			// 创建站点记录
-			createOne := s.db.CloudflareZone.Create()
-			createOne.SetRemoteCreatedAt(zone.CreatedOn)
-			createOne.SetSyncAt(time.Now())
-			createOne.SetConfigID(firstPlatformCofing.ID)
-			createOne.SetZoneID(zone.ID)
-			createOne.SetAccount(json.RawMessage(gojson.JsonEncodeNoError(zone.Account)))
-			createOne.SetName(zone.Name)
-			createOne.SetNameServers(zone.NameServers)
-			createOne.SetOriginalDnshost(zone.OriginalDnshost)
-			createOne.SetOriginalNameServers(zone.OriginalNameServers)
-			createOne.SetOriginalRegistrar(zone.OriginalRegistrar)
-			createOne.SetPaused(zone.Paused)
-			if zone.Status != "" {
-				createOne.SetStatus(cloudflarezone.Status(zone.Status))
-			}
-			if zone.Type != "" {
-				createOne.SetType(cloudflarezone.Type(zone.Type))
-			}
-			err = createOne.Exec(ctx)
-			if err != nil {
-				return fmt.Errorf("创建站点记录失败: %w", err)
-			}
-		} else {
-			// 更新站点记录
-			updateOne := s.db.CloudflareZone.UpdateOne(firstZone)
-			updateOne.SetSyncAt(time.Now())
-			updateOne.SetAccount(json.RawMessage(gojson.JsonEncodeNoError(zone.Account)))
-			updateOne.SetName(zone.Name)
-			updateOne.SetNameServers(zone.NameServers)
-			updateOne.SetOriginalDnshost(zone.OriginalDnshost)
-			updateOne.SetOriginalNameServers(zone.OriginalNameServers)
-			updateOne.SetOriginalRegistrar(zone.OriginalRegistrar)
-			updateOne.SetPaused(zone.Paused)
-			if zone.Status != "" {
-				updateOne.SetStatus(cloudflarezone.Status(zone.Status))
-			}
-			if zone.Type != "" {
-				updateOne.SetType(cloudflarezone.Type(zone.Type))
-			}
-			err = updateOne.Exec(ctx)
-			if err != nil {
-				return fmt.Errorf("更新站点记录失败: %w", err)
-			}
+			return fmt.Errorf("更新站点记录失败: %w", err)
 		}
 	}
 
@@ -286,12 +264,13 @@ func (s *CloudflareZoneSync) SyncThisSite(ctx context.Context, config_id int64, 
 
 // 同步 全部账号 所有站点 所有记录
 func (s *CloudflareZoneSync) SyncAllZoneRecords(ctx context.Context) (err error) {
-	// 查询全部Cloudflare平台配置
+
+	// 查询平台配置配置
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
 		IDs(ctx)
 	if err != nil {
-		return fmt.Errorf("查询全部Cloudflare平台失败: %w", err)
+		return fmt.Errorf("查询平台配置失败: %w", err)
 	}
 
 	// 并发同步
@@ -343,6 +322,7 @@ func (s *CloudflareZoneSync) SyncThisZoneRecords(ctx context.Context, config_id 
 
 // 同步 某个账号 某个站点 所有记录
 func (s *CloudflareZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, zone_id int64) (err error) {
+
 	// 查询站点记录
 	firstZone, err := s.db.CloudflareZone.Query().
 		Where(cloudflarezone.IDEQ(zone_id)).

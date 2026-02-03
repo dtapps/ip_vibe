@@ -81,12 +81,13 @@ func (s *ESASiteSync) GetApiClient(ctx context.Context, platformConfigJSON json.
 
 // 同步 全部账号 所有站点
 func (s *ESASiteSync) SyncAllSites(ctx context.Context) (err error) {
-	// 查询全部ESA平台
+
+	// 查询平台配置
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformAliyunEsa)).
 		IDs(ctx)
 	if err != nil {
-		return fmt.Errorf("查询全部ESA平台失败: %w", err)
+		return fmt.Errorf("查询平台配置失败: %w", err)
 	}
 
 	// 并发同步
@@ -109,6 +110,7 @@ func (s *ESASiteSync) SyncAllSites(ctx context.Context) (err error) {
 
 // 同步 某个账号 所有站点
 func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err error) {
+
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -205,6 +207,7 @@ func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err e
 
 // 同步 某个账号 某个站点
 func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id int64) (err error) {
+
 	// 查询平台配置
 	firstPlatformCofing, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
@@ -212,6 +215,15 @@ func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id
 		First(ctx)
 	if err != nil {
 		return fmt.Errorf("查询平台配置失败: %w", err)
+	}
+
+	// 查询站点记录
+	firstSite, err := s.db.EsaSite.Query().
+		Where(esasite.IDEQ(site_id)).
+		WithConfig().
+		First(ctx)
+	if err != nil {
+		return fmt.Errorf("查询站点记录失败: %w", err)
 	}
 
 	// 获取ESA提供程序
@@ -234,68 +246,31 @@ func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id
 
 	// 入库所有站点
 	for _, site := range sites {
-		if tea.Int64Value(site.SiteId) != site_id {
+		if firstSite.SiteID != tea.Int64Value(site.SiteId) {
 			continue
 		}
-		// 查询站点记录
-		firstSite, err := s.db.EsaSite.Query().
-			Where(esasite.ConfigIDEQ(config_id)).
-			Where(esasite.SiteIDEQ(tea.Int64Value(site.SiteId))).
-			First(ctx)
+		// 更新站点记录
+		updateOne := s.db.EsaSite.UpdateOne(firstSite)
+		updateOne.SetSyncAt(time.Now())
+		if tea.StringValue(site.AccessType) != "" {
+			updateOne.SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType)))
+		}
+		updateOne.SetCnameZone(tea.StringValue(site.CnameZone))
+		if tea.StringValue(site.Coverage) != "" {
+			updateOne.SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage)))
+		}
+		updateOne.SetInstanceID(tea.StringValue(site.InstanceId))
+		updateOne.SetNameServerList(tea.StringValue(site.NameServerList))
+		updateOne.SetPlanName(tea.StringValue(site.PlanName))
+		updateOne.SetPlanSpecName(tea.StringValue(site.PlanSpecName))
+		updateOne.SetSiteName(tea.StringValue(site.SiteName))
+		if tea.StringValue(site.Status) != "" {
+			updateOne.SetStatus(esasite.Status(tea.StringValue(site.Status)))
+		}
+		updateOne.SetOfflineReason(tea.StringValue(site.OfflineReason))
+		err = updateOne.Exec(ctx)
 		if err != nil {
-			if !ent.IsNotFound(err) {
-				return fmt.Errorf("查询站点记录失败: %w", err)
-			}
-			// 创建站点记录
-			createOne := s.db.EsaSite.Create()
-			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(site.CreateTime)).Time)
-			createOne.SetSyncAt(time.Now())
-			createOne.SetConfigID(firstPlatformCofing.ID)
-			if tea.StringValue(site.AccessType) != "" {
-				createOne.SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType)))
-			}
-			createOne.SetCnameZone(tea.StringValue(site.CnameZone))
-			if tea.StringValue(site.Coverage) != "" {
-				createOne.SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage)))
-			}
-			createOne.SetInstanceID(tea.StringValue(site.InstanceId))
-			createOne.SetNameServerList(tea.StringValue(site.NameServerList))
-			createOne.SetPlanName(tea.StringValue(site.PlanName))
-			createOne.SetPlanSpecName(tea.StringValue(site.PlanSpecName))
-			createOne.SetSiteID(tea.Int64Value(site.SiteId))
-			createOne.SetSiteName(tea.StringValue(site.SiteName))
-			if tea.StringValue(site.Status) != "" {
-				createOne.SetStatus(esasite.Status(tea.StringValue(site.Status)))
-			}
-			createOne.SetOfflineReason(tea.StringValue(site.OfflineReason))
-			err = createOne.Exec(ctx)
-			if err != nil {
-				return fmt.Errorf("创建站点记录失败: %w", err)
-			}
-		} else {
-			// 更新站点记录
-			updateOne := s.db.EsaSite.UpdateOne(firstSite)
-			updateOne.SetSyncAt(time.Now())
-			if tea.StringValue(site.AccessType) != "" {
-				updateOne.SetAccessType(esasite.AccessType(tea.StringValue(site.AccessType)))
-			}
-			updateOne.SetCnameZone(tea.StringValue(site.CnameZone))
-			if tea.StringValue(site.Coverage) != "" {
-				updateOne.SetCoverage(esasite.Coverage(tea.StringValue(site.Coverage)))
-			}
-			updateOne.SetInstanceID(tea.StringValue(site.InstanceId))
-			updateOne.SetNameServerList(tea.StringValue(site.NameServerList))
-			updateOne.SetPlanName(tea.StringValue(site.PlanName))
-			updateOne.SetPlanSpecName(tea.StringValue(site.PlanSpecName))
-			updateOne.SetSiteName(tea.StringValue(site.SiteName))
-			if tea.StringValue(site.Status) != "" {
-				updateOne.SetStatus(esasite.Status(tea.StringValue(site.Status)))
-			}
-			updateOne.SetOfflineReason(tea.StringValue(site.OfflineReason))
-			err = updateOne.Exec(ctx)
-			if err != nil {
-				return fmt.Errorf("更新站点记录失败: %w", err)
-			}
+			return fmt.Errorf("更新站点记录失败: %w", err)
 		}
 	}
 
@@ -304,12 +279,13 @@ func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id
 
 // 同步 全部账号 所有站点 所有源地址池
 func (s *ESASiteSync) SyncAllSiteOriginPools(ctx context.Context) (err error) {
-	// 查询全部ESA平台
+
+	// 查询平台配置
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformAliyunEsa)).
 		IDs(ctx)
 	if err != nil {
-		return fmt.Errorf("查询全部ESA平台失败: %w", err)
+		return fmt.Errorf("查询平台配置失败: %w", err)
 	}
 
 	// 并发同步
@@ -361,8 +337,9 @@ func (s *ESASiteSync) SyncThisSiteOriginPools(ctx context.Context, config_id int
 
 // 同步 某个账号 某个站点 所有源地址池
 func (s *ESASiteSync) SyncThisSiteOriginPool(ctx context.Context, config_id int64, site_id int64) (err error) {
+
 	// 查询站点记录
-	firstEsaSite, err := s.db.EsaSite.Query().
+	firstSite, err := s.db.EsaSite.Query().
 		Where(esasite.IDEQ(site_id)).
 		WithConfig().
 		First(ctx)
@@ -371,7 +348,7 @@ func (s *ESASiteSync) SyncThisSiteOriginPool(ctx context.Context, config_id int6
 	}
 
 	// 获取ESA提供程序
-	cdnProvider, err := s.GetApiClient(ctx, firstEsaSite.Edges.Config.ConfigJSON)
+	cdnProvider, err := s.GetApiClient(ctx, firstSite.Edges.Config.ConfigJSON)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "获取ESA提供程序失败",
 			slog.Any("err", err),
@@ -380,7 +357,7 @@ func (s *ESASiteSync) SyncThisSiteOriginPool(ctx context.Context, config_id int6
 	}
 
 	// 获取所有源地址池
-	originPools, err := cdnProvider.OriginPoolsRaw(ctx, firstEsaSite.SiteID)
+	originPools, err := cdnProvider.OriginPoolsRaw(ctx, firstSite.SiteID)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "获取所有源地址池失败",
 			slog.Any("err", err),
@@ -392,7 +369,7 @@ func (s *ESASiteSync) SyncThisSiteOriginPool(ctx context.Context, config_id int6
 	for _, originPool := range originPools {
 		// 查询源地址池记录
 		firstOriginPool, err := s.db.EsaSiteOriginPool.Query().
-			Where(esasiteoriginpool.EsaSiteID(firstEsaSite.ID)).
+			Where(esasiteoriginpool.EsaSiteID(firstSite.ID)).
 			Where(esasiteoriginpool.PoolIDEQ(tea.Int64Value(originPool.Id))).
 			First(ctx)
 		if err != nil {
@@ -402,7 +379,7 @@ func (s *ESASiteSync) SyncThisSiteOriginPool(ctx context.Context, config_id int6
 			// 创建源地址池记录
 			createOne := s.db.EsaSiteOriginPool.Create()
 			createOne.SetSyncAt(time.Now())
-			createOne.SetEsaSiteID(firstEsaSite.ID)
+			createOne.SetEsaSiteID(firstSite.ID)
 			createOne.SetPoolID(tea.Int64Value(originPool.Id))
 			createOne.SetName(tea.StringValue(originPool.Name))
 			createOne.SetRecordName(tea.StringValue(originPool.RecordName))
@@ -436,12 +413,13 @@ func (s *ESASiteSync) SyncThisSiteOriginPool(ctx context.Context, config_id int6
 
 // 同步 全部账号 所有站点 所有记录
 func (s *ESASiteSync) SyncAllSiteRecords(ctx context.Context) (err error) {
-	// 查询全部ESA平台
+
+	// 查询平台配置
 	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformAliyunEsa)).
 		IDs(ctx)
 	if err != nil {
-		return fmt.Errorf("查询全部ESA平台失败: %w", err)
+		return fmt.Errorf("查询平台配置失败: %w", err)
 	}
 
 	// 并发同步
@@ -493,8 +471,9 @@ func (s *ESASiteSync) SyncThisSiteRecords(ctx context.Context, config_id int64) 
 
 // 同步 某个账号 某个站点 所有记录
 func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, site_id int64) (err error) {
+
 	// 查询站点记录
-	firstEsaSite, err := s.db.EsaSite.Query().
+	firstSite, err := s.db.EsaSite.Query().
 		Where(esasite.IDEQ(site_id)).
 		WithConfig().
 		First(ctx)
@@ -503,7 +482,7 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	}
 
 	// 获取ESA提供程序
-	cdnProvider, err := s.GetApiClient(ctx, firstEsaSite.Edges.Config.ConfigJSON)
+	cdnProvider, err := s.GetApiClient(ctx, firstSite.Edges.Config.ConfigJSON)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "获取ESA提供程序失败",
 			slog.Any("err", err),
@@ -512,7 +491,7 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	}
 
 	// 查询解析记录列表
-	records, err := cdnProvider.RecordsRaw(ctx, firstEsaSite.SiteID)
+	records, err := cdnProvider.RecordsRaw(ctx, firstSite.SiteID)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "查询解析记录列表失败",
 			slog.Any("err", err),
@@ -522,7 +501,7 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	for _, record := range records {
 		// 查询解析记录
 		firstRecord, err := s.db.EsaSiteRecord.Query().
-			Where(esasiterecord.EsaSiteIDEQ(firstEsaSite.ID)).
+			Where(esasiterecord.EsaSiteIDEQ(firstSite.ID)).
 			Where(esasiterecord.RecordIDEQ(tea.Int64Value(record.RecordId))).
 			First(ctx)
 		if err != nil {
@@ -533,7 +512,7 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 			createOne := s.db.EsaSiteRecord.Create()
 			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(record.CreateTime)).Time)
 			createOne.SetSyncAt(time.Now())
-			createOne.SetEsaSiteID(firstEsaSite.ID)
+			createOne.SetEsaSiteID(firstSite.ID)
 			if tea.StringValue(record.BizName) != "" {
 				createOne.SetBizName(esasiterecord.BizName(tea.StringValue(record.BizName)))
 			}
@@ -589,7 +568,7 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	}
 
 	// 查询边缘路由记录列表
-	routineRecords, err := cdnProvider.EdgeRoutineRecordsRaw(ctx, firstEsaSite.SiteID)
+	routineRecords, err := cdnProvider.EdgeRoutineRecordsRaw(ctx, firstSite.SiteID)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "查询边缘路由记录列表失败",
 			slog.Any("err", err),
@@ -599,7 +578,7 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	for _, routineRecord := range routineRecords {
 		// 查询解析记录
 		firstRecord, err := s.db.EsaSiteEdgeRoutineRecord.Query().
-			Where(esasiteedgeroutinerecord.EsaSiteIDEQ(firstEsaSite.ID)).
+			Where(esasiteedgeroutinerecord.EsaSiteIDEQ(firstSite.ID)).
 			Where(esasiteedgeroutinerecord.RecordNameEQ(tea.StringValue(routineRecord.RecordName))).
 			First(ctx)
 		if err != nil {
@@ -610,7 +589,7 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 			createOne := s.db.EsaSiteEdgeRoutineRecord.Create()
 			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(routineRecord.CreateTime)).Time)
 			createOne.SetSyncAt(time.Now())
-			createOne.SetEsaSiteID(firstEsaSite.ID)
+			createOne.SetEsaSiteID(firstSite.ID)
 			createOne.SetRecordName(tea.StringValue(routineRecord.RecordName))
 			createOne.SetRecordCname(tea.StringValue(routineRecord.RecordCname))
 			err = createOne.Exec(ctx)
@@ -630,7 +609,7 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	}
 
 	// 查询边缘容器记录列表
-	containerRecords, err := cdnProvider.EdgeContainerRecordsRaw(ctx, firstEsaSite.SiteID)
+	containerRecords, err := cdnProvider.EdgeContainerRecordsRaw(ctx, firstSite.SiteID)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "查询边缘容器记录列表失败",
 			slog.Any("err", err),
@@ -640,7 +619,7 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 	for _, containerRecord := range containerRecords {
 		// 查询解析记录
 		firstRecord, err := s.db.EsaSiteEdgeContainerRecord.Query().
-			Where(esasiteedgecontainerrecord.EsaSiteIDEQ(firstEsaSite.ID)).
+			Where(esasiteedgecontainerrecord.EsaSiteIDEQ(firstSite.ID)).
 			Where(esasiteedgecontainerrecord.RecordNameEQ(tea.StringValue(containerRecord.RecordName))).
 			First(ctx)
 		if err != nil {
@@ -651,7 +630,7 @@ func (s *ESASiteSync) SyncThisSiteRecord(ctx context.Context, config_id int64, s
 			createOne := s.db.EsaSiteEdgeContainerRecord.Create()
 			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(tea.StringValue(containerRecord.CreateTime)).Time)
 			createOne.SetSyncAt(time.Now())
-			createOne.SetEsaSiteID(firstEsaSite.ID)
+			createOne.SetEsaSiteID(firstSite.ID)
 			createOne.SetRecordName(tea.StringValue(containerRecord.RecordName))
 			createOne.SetRecordCname(tea.StringValue(containerRecord.RecordCname))
 			err = createOne.Exec(ctx)

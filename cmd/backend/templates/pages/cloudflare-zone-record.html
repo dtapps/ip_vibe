@@ -40,11 +40,12 @@
 
         <div class="flex gap-2">
             <button class="btn btn-sm btn-ghost gap-2 italic font-black uppercase" onclick="history.back()">
-                {{ template "icons" (dict "Name" "i-lucide-arrow-left" "Class" "w-4 h-4") }} Back
+                {{ template "icons" (dict "Name" "i-lucide-arrow-left" "Class" "w-4 h-4") }} 返回
             </button>
-            <button class="btn btn-sm btn-primary italic font-black uppercase" data-config-id="{{ $item.ConfigID }}"
-                data-zone-id="{{ $item.ID }}" data-type="zone" onclick="handleSync(this)">
-                {{ template "icons" (dict "Name" "i-lucide-refresh-cw" "Class" "w-3 h-3") }} Sync Site
+            <button class="btn btn-sm btn-primary italic font-black uppercase" data-type="this-zone"
+                data-config-id="{{ $item.ConfigID }}" data-zone-id="{{ $item.ID }}" data-type="zone"
+                onclick="handleSync(this)">
+                {{ template "icons" (dict "Name" "i-lucide-refresh-cw" "Class" "w-3 h-3") }} 同步站点
             </button>
         </div>
     </div>

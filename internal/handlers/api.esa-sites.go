@@ -39,7 +39,6 @@ func SyncESASites(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 同步全部
 	if strings.EqualFold(requestParams.Type, "all") {
 
 		// 调用 同步 全部账号 所有站点
@@ -65,7 +64,6 @@ func SyncESASites(c *gin.Context) {
 
 	}
 
-	// 同步某个ESA站点
 	if strings.EqualFold(requestParams.Type, "this-config") && requestParams.ConfigID > 0 {
 
 		// 调用 同步 某个账号 所有站点
@@ -84,6 +82,31 @@ func SyncESASites(c *gin.Context) {
 
 		// 调用 同步 某个账号 所有站点 所有记录
 		err = esaSiteSync.SyncThisSiteRecords(c, requestParams.ConfigID)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+	}
+
+	if strings.EqualFold(requestParams.Type, "this-site") && requestParams.ConfigID > 0 && requestParams.SiteID > 0 {
+
+		// 调用 同步 某个账号 某个站点
+		err := esaSiteSync.SyncThisSite(c, requestParams.ConfigID, requestParams.SiteID)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 调用 同步 某个账号 某个站点 所有源地址池
+		err = esaSiteSync.SyncThisSiteOriginPool(c, requestParams.ConfigID, requestParams.SiteID)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 调用 同步 某个账号 某个站点 所有记录
+		err = esaSiteSync.SyncThisSiteRecord(c, requestParams.ConfigID, requestParams.SiteID)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return

@@ -39,7 +39,6 @@ func SyncEdgeOneZones(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 同步全部
 	if strings.EqualFold(requestParams.Type, "all") {
 
 		// 调用 同步 全部账号 所有站点
@@ -65,7 +64,6 @@ func SyncEdgeOneZones(c *gin.Context) {
 
 	}
 
-	// 同步某个EdgeOne站点
 	if strings.EqualFold(requestParams.Type, "this-config") && requestParams.ConfigID > 0 {
 
 		// 调用 同步 某个账号 所有站点
@@ -84,6 +82,31 @@ func SyncEdgeOneZones(c *gin.Context) {
 
 		// 调用 同步 某个账号 所有站点 所有记录
 		err = edgeOneZoneSync.SyncThisZoneRecords(c, requestParams.ConfigID)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+	}
+
+	if strings.EqualFold(requestParams.Type, "this-zone") && requestParams.ZoneID > 0 && requestParams.ConfigID > 0 {
+
+		// 调用 同步 某个账号 某个站点
+		err := edgeOneZoneSync.SyncThisZone(c, requestParams.ConfigID, requestParams.ZoneID)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 调用 同步 某个账号 某个站点 所有源站组
+		err = edgeOneZoneSync.SyncThisZoneOriginGroup(c, requestParams.ConfigID, requestParams.ZoneID)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 调用 同步 某个账号 某个站点 所有记录
+		err = edgeOneZoneSync.SyncThisZoneRecord(c, requestParams.ConfigID, requestParams.ZoneID)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
