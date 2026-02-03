@@ -4,6 +4,13 @@ import (
 	"vibe_ip/internal/ent"
 )
 
+// 同步Cloudflare站点 请求结构
+type SyncCloudflareZonesRequest struct {
+	Type     string `json:"type" binding:"required" jsonschema:"同步类型"` // 同步类型
+	ConfigID int64  `json:"config_id" jsonschema:"平台配置序号"`             // 平台配置序号
+	ZoneID   int64  `json:"zone_id" jsonschema:"站点序号"`                 // 站点序号
+}
+
 // 获取Cloudflare站点 响应结构
 type GetCloudflareZoneResponse struct {
 	ID          int64                `json:"id"`          // 平台配置序号

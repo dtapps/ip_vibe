@@ -354,7 +354,7 @@ func (m *GinServerManager) setupApiRouter() {
 		// CloudflareTunnel 相关API
 		cloudflareTunnels := api.Group("/cloudflare-tunnels")
 		{
-			cloudflareTunnels.POST("/sync", handlers.SyncAllCloudflareTunnels) // 同步Cloudflare隧道
+			cloudflareTunnels.POST("/sync", handlers.SyncCloudflareTunnels) // 同步Cloudflare隧道
 
 			cloudflareTunnels.GET("/:tunnel_id/ingress", handlers.GetCloudflareTunnelIngress) // 获取Cloudflare隧道入站配置
 
@@ -362,6 +362,24 @@ func (m *GinServerManager) setupApiRouter() {
 			cloudflareTunnels.POST("/:tunnel_id/ingress", handlers.CreateCloudflareTunnelIngress)               // 创建Cloudflare隧道入站配置
 			cloudflareTunnels.PATCH("/:tunnel_id/ingress/:ingress_id", handlers.UpdateCloudflareTunnelIngress)  // 更新Cloudflare隧道入站配置
 			cloudflareTunnels.DELETE("/:tunnel_id/ingress/:ingress_id", handlers.DeleteCloudflareTunnelIngress) // 删除Cloudflare隧道入站配置
+		}
+
+		// CloudflareZone 相关API
+		cloudflareZones := api.Group("/cloudflare-zones")
+		{
+			cloudflareZones.POST("/sync", handlers.SyncCloudflareZones) // 同步Cloudflare站点
+		}
+
+		// EdgeOneZone 相关API
+		edgeoneZones := api.Group("/edgeone-zones")
+		{
+			edgeoneZones.POST("/sync", handlers.SyncEdgeOneZones) // 同步EdgeOne站点
+		}
+
+		// ESASite 相关API
+		esaSites := api.Group("/esa-sites")
+		{
+			esaSites.POST("/sync", handlers.SyncESASites) // 同步ESA站点
 		}
 
 		// 分组内兜底：未匹配路径返回 JSON 404（不会与 /api/d 冲突）

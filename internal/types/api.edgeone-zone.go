@@ -4,6 +4,14 @@ import (
 	"vibe_ip/internal/ent"
 )
 
+// 同步EdgeOne站点 请求结构
+type SyncEdgeOneZonesRequest struct {
+	Type     string `json:"type" binding:"required" jsonschema:"同步类型"` // 同步类型
+	ConfigID int64  `json:"config_id" jsonschema:"平台配置序号"`             // 平台配置序号
+	ZoneID   int64  `json:"zone_id" jsonschema:"站点序号"`                 // 站点序号
+	GroupID  int64  `json:"group_id" jsonschema:"源站组序号"`               // 源站组序号
+}
+
 // 获取EdgeOne站点 响应结构
 type GetEdgeOneZoneResponse struct {
 	ID          int64             `json:"id"`          // 平台配置序号

@@ -2089,7 +2089,7 @@
                 },
                 "type": "object"
             },
-            "vibe_ip_internal_types.SyncAllCloudflareTunnelsRequest": {
+            "vibe_ip_internal_types.SyncCloudflareTunnelsRequest": {
                 "properties": {
                     "config_id": {
                         "description": "平台配置序号",
@@ -2102,6 +2102,74 @@
                     "type": {
                         "description": "同步类型",
                         "type": "string"
+                    }
+                },
+                "required": [
+                    "type"
+                ],
+                "type": "object"
+            },
+            "vibe_ip_internal_types.SyncCloudflareZonesRequest": {
+                "properties": {
+                    "config_id": {
+                        "description": "平台配置序号",
+                        "type": "integer"
+                    },
+                    "type": {
+                        "description": "同步类型",
+                        "type": "string"
+                    },
+                    "zone_id": {
+                        "description": "站点序号",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "type"
+                ],
+                "type": "object"
+            },
+            "vibe_ip_internal_types.SyncESASitesRequest": {
+                "properties": {
+                    "config_id": {
+                        "description": "平台配置序号",
+                        "type": "integer"
+                    },
+                    "pool_id": {
+                        "description": "源地址池序号",
+                        "type": "integer"
+                    },
+                    "site_id": {
+                        "description": "站点序号",
+                        "type": "integer"
+                    },
+                    "type": {
+                        "description": "同步类型",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type"
+                ],
+                "type": "object"
+            },
+            "vibe_ip_internal_types.SyncEdgeOneZonesRequest": {
+                "properties": {
+                    "config_id": {
+                        "description": "平台配置序号",
+                        "type": "integer"
+                    },
+                    "group_id": {
+                        "description": "源站组序号",
+                        "type": "integer"
+                    },
+                    "type": {
+                        "description": "同步类型",
+                        "type": "string"
+                    },
+                    "zone_id": {
+                        "description": "站点序号",
+                        "type": "integer"
                     }
                 },
                 "required": [
@@ -3370,7 +3438,7 @@
                                         "type": "object"
                                     },
                                     {
-                                        "$ref": "#/components/schemas/vibe_ip_internal_types.SyncAllCloudflareTunnelsRequest",
+                                        "$ref": "#/components/schemas/vibe_ip_internal_types.SyncCloudflareTunnelsRequest",
                                         "summary": "request",
                                         "description": "请求参数"
                                     }
@@ -3770,6 +3838,67 @@
                 "summary": "更新Cloudflare隧道入站配置",
                 "tags": [
                     "CloudflareTunnel"
+                ]
+            }
+        },
+        "/cloudflare-zones/sync": {
+            "post": {
+                "description": "同步Cloudflare站点",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/vibe_ip_internal_types.SyncCloudflareZonesRequest",
+                                        "summary": "request",
+                                        "description": "请求参数"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "请求参数",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "成功响应"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "参数错误"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "错误响应"
+                    }
+                },
+                "summary": "同步Cloudflare站点",
+                "tags": [
+                    "CloudflareZone"
                 ]
             }
         },
@@ -6330,6 +6459,128 @@
                 "summary": "检查域名监控健康状态",
                 "tags": [
                     "域名监控"
+                ]
+            }
+        },
+        "/edgeone-zones/sync": {
+            "post": {
+                "description": "同步EdgeOne站点",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/vibe_ip_internal_types.SyncEdgeOneZonesRequest",
+                                        "summary": "request",
+                                        "description": "请求参数"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "请求参数",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "成功响应"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "参数错误"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "错误响应"
+                    }
+                },
+                "summary": "同步EdgeOne站点",
+                "tags": [
+                    "EdgeOneZone"
+                ]
+            }
+        },
+        "/esa-sites/sync": {
+            "post": {
+                "description": "同步Esa站点",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "oneOf": [
+                                    {
+                                        "type": "object"
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/vibe_ip_internal_types.SyncESASitesRequest",
+                                        "summary": "request",
+                                        "description": "请求参数"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "description": "请求参数",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "成功响应"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "参数错误"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "错误响应"
+                    }
+                },
+                "summary": "同步Esa站点",
+                "tags": [
+                    "ESASite"
                 ]
             }
         },

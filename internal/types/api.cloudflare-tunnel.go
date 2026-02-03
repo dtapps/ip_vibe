@@ -6,7 +6,7 @@ import (
 )
 
 // 同步Cloudflare隧道 请求结构
-type SyncAllCloudflareTunnelsRequest struct {
+type SyncCloudflareTunnelsRequest struct {
 	Type     string `json:"type" binding:"required" jsonschema:"同步类型"` // 同步类型
 	ConfigID int64  `json:"config_id" jsonschema:"平台配置序号"`             // 平台配置序号
 	TunnelID int64  `json:"tunnel_id" jsonschema:"隧道序号"`               // 隧道序号

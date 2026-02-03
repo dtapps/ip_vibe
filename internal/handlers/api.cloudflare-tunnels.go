@@ -20,15 +20,14 @@ import (
 //	@Tags			CloudflareTunnel
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	body		types.SyncAllCloudflareTunnelsRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}							"成功响应"
-//	@Failure		400		{object}	APIResponse{}							"参数错误"
-//	@Failure		404		{object}	APIResponse{}							"错误响应"
+//	@Param			request	body		types.SyncCloudflareTunnelsRequest	true	"请求参数"
+//	@Success		200		{object}	APIResponse{}						"成功响应"
+//	@Failure		400		{object}	APIResponse{}						"参数错误"
+//	@Failure		404		{object}	APIResponse{}						"错误响应"
 //	@Router			/cloudflare-tunnels/sync [post]
-func SyncAllCloudflareTunnels(c *gin.Context) {
+func SyncCloudflareTunnels(c *gin.Context) {
 	// 请求参数
-	var requestParams types.SyncAllCloudflareTunnelsRequest
-	requestParams.TunnelID = cast.ToInt64(c.Param("tunnel_id"))
+	var requestParams types.SyncCloudflareTunnelsRequest
 	if err := gin_helper.BindJSONWithDefaults(c, &requestParams); err != nil {
 		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
 		return

@@ -492,7 +492,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/vibe_ip_internal_types.SyncAllCloudflareTunnelsRequest"
+                            "$ref": "#/definitions/vibe_ip_internal_types.SyncCloudflareTunnelsRequest"
                         }
                     }
                 ],
@@ -764,6 +764,52 @@
                         "name": "ingress_id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/cloudflare-zones/sync": {
+            "post": {
+                "description": "同步Cloudflare站点",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CloudflareZone"
+                ],
+                "summary": "同步Cloudflare站点",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.SyncCloudflareZonesRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -2732,6 +2778,98 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/edgeone-zones/sync": {
+            "post": {
+                "description": "同步EdgeOne站点",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "EdgeOneZone"
+                ],
+                "summary": "同步EdgeOne站点",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.SyncEdgeOneZonesRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/esa-sites/sync": {
+            "post": {
+                "description": "同步Esa站点",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ESASite"
+                ],
+                "summary": "同步Esa站点",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.SyncESASitesRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -8629,7 +8767,7 @@
                 }
             }
         },
-        "vibe_ip_internal_types.SyncAllCloudflareTunnelsRequest": {
+        "vibe_ip_internal_types.SyncCloudflareTunnelsRequest": {
             "type": "object",
             "required": [
                 "type"
@@ -8646,6 +8784,74 @@
                 "type": {
                     "description": "同步类型",
                     "type": "string"
+                }
+            }
+        },
+        "vibe_ip_internal_types.SyncCloudflareZonesRequest": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "config_id": {
+                    "description": "平台配置序号",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "同步类型",
+                    "type": "string"
+                },
+                "zone_id": {
+                    "description": "站点序号",
+                    "type": "integer"
+                }
+            }
+        },
+        "vibe_ip_internal_types.SyncESASitesRequest": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "config_id": {
+                    "description": "平台配置序号",
+                    "type": "integer"
+                },
+                "pool_id": {
+                    "description": "源地址池序号",
+                    "type": "integer"
+                },
+                "site_id": {
+                    "description": "站点序号",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "同步类型",
+                    "type": "string"
+                }
+            }
+        },
+        "vibe_ip_internal_types.SyncEdgeOneZonesRequest": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "config_id": {
+                    "description": "平台配置序号",
+                    "type": "integer"
+                },
+                "group_id": {
+                    "description": "源站组序号",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "同步类型",
+                    "type": "string"
+                },
+                "zone_id": {
+                    "description": "站点序号",
+                    "type": "integer"
                 }
             }
         },

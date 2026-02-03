@@ -1442,7 +1442,7 @@ definitions:
         description: 任务调度表达式详情
         type: string
     type: object
-  vibe_ip_internal_types.SyncAllCloudflareTunnelsRequest:
+  vibe_ip_internal_types.SyncCloudflareTunnelsRequest:
     properties:
       config_id:
         description: 平台配置序号
@@ -1453,6 +1453,54 @@ definitions:
       type:
         description: 同步类型
         type: string
+    required:
+    - type
+    type: object
+  vibe_ip_internal_types.SyncCloudflareZonesRequest:
+    properties:
+      config_id:
+        description: 平台配置序号
+        type: integer
+      type:
+        description: 同步类型
+        type: string
+      zone_id:
+        description: 站点序号
+        type: integer
+    required:
+    - type
+    type: object
+  vibe_ip_internal_types.SyncESASitesRequest:
+    properties:
+      config_id:
+        description: 平台配置序号
+        type: integer
+      pool_id:
+        description: 源地址池序号
+        type: integer
+      site_id:
+        description: 站点序号
+        type: integer
+      type:
+        description: 同步类型
+        type: string
+    required:
+    - type
+    type: object
+  vibe_ip_internal_types.SyncEdgeOneZonesRequest:
+    properties:
+      config_id:
+        description: 平台配置序号
+        type: integer
+      group_id:
+        description: 源站组序号
+        type: integer
+      type:
+        description: 同步类型
+        type: string
+      zone_id:
+        description: 站点序号
+        type: integer
     required:
     - type
     type: object
@@ -2393,7 +2441,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/vibe_ip_internal_types.SyncAllCloudflareTunnelsRequest'
+          $ref: '#/definitions/vibe_ip_internal_types.SyncCloudflareTunnelsRequest'
       produces:
       - application/json
       responses:
@@ -2412,6 +2460,36 @@ paths:
       summary: 同步Cloudflare隧道
       tags:
       - CloudflareTunnel
+  /cloudflare-zones/sync:
+    post:
+      consumes:
+      - application/json
+      description: 同步Cloudflare站点
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.SyncCloudflareZonesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 同步Cloudflare站点
+      tags:
+      - CloudflareZone
   /cloudflares/{id}/domain:
     get:
       consumes:
@@ -3668,6 +3746,66 @@ paths:
       summary: 批量更新域名监控启用状态
       tags:
       - 域名监控
+  /edgeone-zones/sync:
+    post:
+      consumes:
+      - application/json
+      description: 同步EdgeOne站点
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.SyncEdgeOneZonesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 同步EdgeOne站点
+      tags:
+      - EdgeOneZone
+  /esa-sites/sync:
+    post:
+      consumes:
+      - application/json
+      description: 同步Esa站点
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.SyncESASitesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 同步Esa站点
+      tags:
+      - ESASite
   /ip-groups:
     get:
       consumes:

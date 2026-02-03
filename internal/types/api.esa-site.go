@@ -4,6 +4,14 @@ import (
 	"vibe_ip/internal/ent"
 )
 
+// 同步ESA站点 请求结构
+type SyncESASitesRequest struct {
+	Type     string `json:"type" binding:"required" jsonschema:"同步类型"` // 同步类型
+	ConfigID int64  `json:"config_id" jsonschema:"平台配置序号"`             // 平台配置序号
+	SiteID   int64  `json:"site_id" jsonschema:"站点序号"`                 // 站点序号
+	PoolID   int64  `json:"pool_id" jsonschema:"源地址池序号"`               // 源地址池序号
+}
+
 // 获取ESA站点 响应结构
 type GetESASiteResponse struct {
 	ID          int64         `json:"id"`          // 平台配置序号
