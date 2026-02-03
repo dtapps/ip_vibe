@@ -13,6 +13,8 @@ import (
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/reporter/service"
 	"vibe_ip/internal/reporter/tasks"
+
+	"github.com/denisbrodbeck/machineid"
 )
 
 var (
@@ -82,8 +84,10 @@ func main() {
 		slog.String("arch", global.GvaArch),
 	)
 
-	// 创建 IP 报告服务
-	ipReportService := service.NewIPReportService(global.GvaGocronSlog)
+	// 设备编码
+	if sys_env.GvaEnv.DEVICE_CODE == "" {
+		sys_env.GvaEnv.DEVICE_CODE, _ = machineid.ID()
+	}
 
 	if sys_env.GvaEnv.GRPC_URL != "" {
 
@@ -109,7 +113,6 @@ func main() {
 		ipReportTask := tasks.NewIPReportGRPCTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog,
-			ipReportService,
 			grpcClientConn,
 		)
 

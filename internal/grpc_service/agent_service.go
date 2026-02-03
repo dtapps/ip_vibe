@@ -77,6 +77,10 @@ func (s *AgentService) Stream(stream grpc_generated.AgentService_StreamServer) e
 		case *grpc_generated.ClientMessage_Info:
 			info := p.Info
 
+			s.logger.Info("Received ClientInfo",
+				slog.Any("info", info),
+			)
+
 			// 可选：手动验证（如果 protoc-gen-validate 未在生成时启用）
 			if info.DeviceCode == "" {
 				return status.Error(codes.InvalidArgument, "device_code is required")
@@ -104,6 +108,11 @@ func (s *AgentService) Stream(stream grpc_generated.AgentService_StreamServer) e
 			}
 
 		case *grpc_generated.ClientMessage_Heartbeat:
+
+			s.logger.Info("Received ClientHeartbeat",
+				slog.Any("heartbeat", p.Heartbeat),
+			)
+
 			if deviceCode != "" {
 				s.mu.Lock()
 				if state, ok := s.clients[deviceCode]; ok {

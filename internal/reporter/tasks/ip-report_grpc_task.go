@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"sync"
 	"time"
+	"vibe_ip/internal/core"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/sys_env"
-	"vibe_ip/internal/reporter/service"
 
 	"github.com/go-co-op/gocron/v2"
 	"google.golang.org/grpc"
@@ -25,9 +25,7 @@ type IPReportGRPCTask struct {
 	jobHelper *gocron_helper.JobHelper // 任务助手
 	jobOne    sync.Once                // 确保只创建一次任务
 	logger    *slog.Logger             // 日志记录器
-	config    *Config                  // 配置
-
-	service *service.IPReportService // IP报告服务
+	debug     bool                     // 是否开启调试模式
 
 	clientBaseMD      metadata.MD                      // gRPC 客户端基础 metadata
 	grpcClient        *grpc.ClientConn                 // gRPC 客户端
@@ -35,17 +33,15 @@ type IPReportGRPCTask struct {
 }
 
 // NewIPReportGRPCTask 创建IP上报实例
-func NewIPReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.IPReportService, grpcClient *grpc.ClientConn) *IPReportGRPCTask {
+func NewIPReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, grpcClient *grpc.ClientConn) *IPReportGRPCTask {
+	debug := sys_env.GvaEnv.DEBUG
 	return &IPReportGRPCTask{
 		cron:      cron,
 		taskName:  "gRPC IP上报",
 		jobHelper: gocron_helper.NewJobHelper(cron, logger),
 		logger:    logger,
-		config: &Config{
-			DeviceCode: sys_env.GvaEnv.DEVICE_CODE,
-			DeviceName: sys_env.GvaEnv.DEVICE_NAME,
-		},
-		service:           service,
+		debug:     debug,
+
 		grpcClient:        grpcClient,
 		openServiceClient: grpc_generated.NewOpenServiceClient(grpcClient),
 	}
@@ -120,36 +116,39 @@ func (s *IPReportGRPCTask) RunPeriodicTask() {
 	// 日志
 	logger := s.jobHelper.SlogWith(s.logger, s.job.ID().String(), s.job.Name())
 
-	// 获取设备数据
-	deviceData, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
-	if err != nil {
-		logger.ErrorContext(ctx, "获取设备数据失败",
-			slog.Any("err", err),
-		)
-		return
-	}
-
-	// 日志记录器
-	logger = logger.With(
-		slog.String("设备编号", deviceData.DeviceCode),
-		slog.String("设备名称", deviceData.DeviceName),
-		slog.String("IPv4地址", deviceData.IPV4Addr),
-		slog.String("IPv6地址", deviceData.IPV6Addr),
-	)
-
 	// 上传数据
-	_ = s.postApi(ctx, logger, deviceData)
+	_ = s.postApi(ctx, logger)
 }
 
 // postApi 请求
-func (s *IPReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger, deviceData *service.GetDeviceDataResult) (err error) {
+func (s *IPReportGRPCTask) postApi(ctx context.Context, logger *slog.Logger) (err error) {
+
+	// 获取设备数据
+	deviceData, err := core.GetDeviceData(ctx, logger)
+	if err != nil {
+		logger.ErrorContext(ctx, "获取设备数据失败",
+			slog.String("设备编号", deviceData.DeviceCode),
+			slog.Any("err", err),
+		)
+		return fmt.Errorf("获取设备数据失败: %w", err)
+	}
+
+	// 获取IP数据
+	ipData, err := core.GetIPData(ctx, logger)
+	if err != nil {
+		logger.ErrorContext(ctx, "获取IP数据失败",
+			slog.String("设备编号", deviceData.DeviceCode),
+			slog.Any("err", err),
+		)
+		return fmt.Errorf("获取IP数据失败: %w", err)
+	}
 
 	// 构建gRPC请求
 	req := &grpc_generated.ReportDeviceIPRequest{
 		DeviceCode: deviceData.DeviceCode,
 		DeviceName: deviceData.DeviceName,
-		Ipv4Addr:   deviceData.IPV4Addr,
-		Ipv6Addr:   deviceData.IPV6Addr,
+		Ipv4Addr:   ipData.IPV4Addr,
+		Ipv6Addr:   ipData.IPV6Addr,
 	}
 
 	// 调用gRPC服务

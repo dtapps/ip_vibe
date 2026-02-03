@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"sync"
 	"time"
+	"vibe_ip/internal/core"
 	"vibe_ip/internal/forwarder/forward"
-	"vibe_ip/internal/forwarder/service"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/sys_env"
@@ -28,10 +28,9 @@ type StatsReportGRPCTask struct {
 	jobHelper *gocron_helper.JobHelper // 任务助手
 	jobOne    sync.Once                // 确保只创建一次任务
 	logger    *slog.Logger             // 日志记录器
-	config    *Config                  // 配置
+	debug     bool                     // 是否开启调试模式
 
-	service      *service.PortForwardServer // 端口转发服务
-	forwardAgent *forward.Agent             // 端口转发器
+	forwardAgent *forward.Agent // 端口转发器
 
 	clientBaseMD      metadata.MD                      // gRPC 客户端基础 metadata
 	grpcClient        *grpc.ClientConn                 // gRPC 客户端
@@ -39,17 +38,15 @@ type StatsReportGRPCTask struct {
 }
 
 // NewStatsReportGRPCTask 创建统计上报实例
-func NewStatsReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent, grpcClient *grpc.ClientConn) *StatsReportGRPCTask {
+func NewStatsReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, forwardAgent *forward.Agent, grpcClient *grpc.ClientConn) *StatsReportGRPCTask {
+	debug := sys_env.GvaEnv.DEBUG
 	return &StatsReportGRPCTask{
 		cron:      cron,
 		taskName:  "gRPC 统计上报",
 		jobHelper: gocron_helper.NewJobHelper(cron, logger),
 		logger:    logger,
-		config: &Config{
-			DeviceCode: sys_env.GvaEnv.DEVICE_CODE,
-			DeviceName: sys_env.GvaEnv.DEVICE_NAME,
-		},
-		service:           service,
+		debug:     debug,
+
 		forwardAgent:      forwardAgent,
 		grpcClient:        grpcClient,
 		openServiceClient: grpc_generated.NewOpenServiceClient(grpcClient),
@@ -132,10 +129,10 @@ func (s *StatsReportGRPCTask) RunPeriodicTask() {
 	}
 
 	// 获取设备数据
-	deviceData, err := s.service.GetDeviceData(ctx, s.config.DeviceCode, s.config.DeviceName)
+	deviceData, err := core.GetDeviceData(ctx, logger)
 	if err != nil {
 		logger.ErrorContext(ctx, "获取设备数据失败",
-			slog.String("设备编号", s.config.DeviceCode),
+			slog.String("设备编号", deviceData.DeviceCode),
 			slog.Any("err", err),
 		)
 		return

@@ -14,6 +14,8 @@ import (
 	"vibe_ip/internal/grpc_client"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/initialize"
+
+	"github.com/denisbrodbeck/machineid"
 )
 
 var (
@@ -83,8 +85,10 @@ func main() {
 		slog.String("arch", global.GvaArch),
 	)
 
-	// 创建端口转发服务
-	portForwardServer := service.NewPortForwardServer(global.GvaGocronSlog)
+	// 设备编码
+	if sys_env.GvaEnv.DEVICE_CODE == "" {
+		sys_env.GvaEnv.DEVICE_CODE, _ = machineid.ID()
+	}
 
 	// 创建端口转发器
 	forwardAgent := forward.NewAgent(global.GvaGocronSlog)
@@ -113,7 +117,6 @@ func main() {
 		portForwardTask := tasks.NewPortForwardGRPCTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog,
-			portForwardServer,
 			forwardAgent,
 			grpcClientConn,
 		)
@@ -132,7 +135,6 @@ func main() {
 		statsReportTask := tasks.NewStatsReportGRPCTask(
 			global.GvaGoCron,
 			global.GvaGocronSlog,
-			portForwardServer,
 			forwardAgent,
 			grpcClientConn,
 		)
