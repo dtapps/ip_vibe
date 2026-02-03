@@ -74,6 +74,13 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 	// 日志拦截器
 	loggingInterceptor := grpc_interceptor.NewLoggingInterceptor(logger)
 
+	// BasicAuth 拦截器
+	basicAuthInterceptor := grpc_interceptor.NewBasicAuthInterceptor(
+		logger,
+		m.config.Username,
+		m.config.Password,
+	)
+
 	// 配置一元拦截器
 	usis := []grpc.UnaryServerInterceptor{
 		// 审计上下文
@@ -81,11 +88,7 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 		// 日志
 		loggingInterceptor.Unary(),
 		// BasicAuth
-		grpc_interceptor.BasicAuthUnaryInterceptor(
-			m.logger,
-			m.config.Username,
-			m.config.Password,
-		),
+		basicAuthInterceptor.Unary(),
 	}
 
 	// 配置流式拦截器
@@ -94,6 +97,8 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 		auditInterceptor.Stream(),
 		// 日志
 		loggingInterceptor.Stream(),
+		// BasicAuth
+		basicAuthInterceptor.Stream(),
 	}
 
 	// 配置选项
