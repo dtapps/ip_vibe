@@ -9,7 +9,6 @@
 package grpc_generated
 
 import (
-	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -351,14 +350,14 @@ var File_agent_proto protoreflect.FileDescriptor
 
 const file_agent_proto_rawDesc = "" +
 	"\n" +
-	"\vagent.proto\x12\x04open\x1a\x17validate/validate.proto\"s\n" +
+	"\vagent.proto\x12\x04open\"s\n" +
 	"\rClientMessage\x12&\n" +
 	"\x04info\x18\x01 \x01(\v2\x10.open.ClientInfoH\x00R\x04info\x12/\n" +
 	"\theartbeat\x18\x02 \x01(\v2\x0f.open.HeartbeatH\x00R\theartbeatB\t\n" +
-	"\apayload\"\xe5\x01\n" +
+	"\apayload\"\xc8\x01\n" +
 	"\n" +
-	"ClientInfo\x12<\n" +
-	"\vdevice_code\x18\x01 \x01(\tB\x1b\xfaB\x18r\x16\x10\x01\x1822\x10^[a-zA-Z0-9_-]+$R\n" +
+	"ClientInfo\x12\x1f\n" +
+	"\vdevice_code\x18\x01 \x01(\tR\n" +
 	"deviceCode\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x1d\n" +
 	"\n" +

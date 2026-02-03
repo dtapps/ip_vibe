@@ -84,12 +84,12 @@ func (m *GRPCClientManager) Conn(ctx context.Context) (err error) {
 			retry.WithCodes(codes.Unavailable),                                // 只针对 Unavailable 重试（你的 connection refused）
 			retry.WithPerRetryTimeout(5*time.Second),                          // 每个重试超时 5s
 		)),
-		grpc.WithStreamInterceptor(retry.StreamClientInterceptor(
-			retry.WithMax(5), // 最多 5 次尝试（初始 + 4 重试）
-			retry.WithBackoff(retry.BackoffExponential(100*time.Millisecond)), // 指数退避，初始 100ms
-			retry.WithCodes(codes.Unavailable),                                // 只针对 Unavailable 重试（你的 connection refused）
-			retry.WithPerRetryTimeout(5*time.Second),                          // 每个重试超时 5s
-		)),
+		// grpc.WithStreamInterceptor(retry.StreamClientInterceptor(
+		// 	retry.WithMax(5), // 最多 5 次尝试（初始 + 4 重试）
+		// 	retry.WithBackoff(retry.BackoffExponential(100*time.Millisecond)), // 指数退避，初始 100ms
+		// 	retry.WithCodes(codes.Unavailable),                                // 只针对 Unavailable 重试（你的 connection refused）
+		// 	retry.WithPerRetryTimeout(5*time.Second),                          // 每个重试超时 5s
+		// )),
 	}
 
 	// 连接 gRPC 服务器

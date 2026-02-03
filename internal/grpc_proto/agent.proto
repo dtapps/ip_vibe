@@ -6,9 +6,6 @@ package open;
 // Go 包路径：路径;包名（匹配输出目录，避免子包冲突）option go_package = ".;grpc_generated"
 option go_package = "vibe_ip/internal/grpc_generated";
 
-// 引入验证规则（用于 protoc-gen-validate）
-import "validate/validate.proto";
-
 // 代理服务
 service AgentService {
   // 客户端通过此流注册并保持连接，服务端可感知在线状态并下发指令
@@ -26,13 +23,7 @@ message ClientMessage {
 // 客户端基本信息
 message ClientInfo {
    // 设备编码
-  string device_code = 1[
-    (validate.rules).string = {
-      min_len: 1,
-      max_len: 50,
-      pattern: "^[a-zA-Z0-9_-]+$"  // 只允许字母、数字、下划线、连字符
-    }
-  ];       
+  string device_code = 1;       
   // 版本号
   string version = 2;
   // git提交哈希

@@ -244,27 +244,7 @@ func (m *ClientInfo) validate(all bool) error {
 
 	var errors []error
 
-	if l := utf8.RuneCountInString(m.GetDeviceCode()); l < 1 || l > 50 {
-		err := ClientInfoValidationError{
-			field:  "DeviceCode",
-			reason: "value length must be between 1 and 50 runes, inclusive",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if !_ClientInfo_DeviceCode_Pattern.MatchString(m.GetDeviceCode()) {
-		err := ClientInfoValidationError{
-			field:  "DeviceCode",
-			reason: "value does not match regex pattern \"^[a-zA-Z0-9_-]+$\"",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
+	// no validation rules for DeviceCode
 
 	// no validation rules for Version
 
@@ -354,8 +334,6 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ClientInfoValidationError{}
-
-var _ClientInfo_DeviceCode_Pattern = regexp.MustCompile("^[a-zA-Z0-9_-]+$")
 
 // Validate checks the field values on Heartbeat with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
