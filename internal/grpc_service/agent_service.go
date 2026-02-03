@@ -173,6 +173,35 @@ func (s *AgentService) Stream(stream grpc_generated.AgentService_StreamServer) e
 	}
 }
 
+// RequestFullReportToDevice 向指定设备发送“请重新上报完整信息”指令
+func (s *AgentService) RequestFullReportToDevice(deviceCode string) error {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	state, ok := s.clients[deviceCode]
+	if !ok {
+		return status.Errorf(codes.NotFound, "device %q is not online", deviceCode)
+	}
+
+	err := state.Stream.Send(&grpc_generated.ServerMessage{
+		Command: &grpc_generated.ServerMessage_RequestFullReport{
+			RequestFullReport: &grpc_generated.RequestFullReport{},
+		},
+	})
+	if err != nil {
+		s.logger.Warn("向指定客户端发送 RequestFullReport 失败",
+			slog.String("device_code", deviceCode),
+			slog.Any("err", err),
+		)
+		return status.Errorf(codes.Internal, "failed to send request to device %q: %v", deviceCode, err)
+	}
+
+	s.logger.Info("已向指定客户端发送 RequestFullReport",
+		slog.String("device_code", deviceCode),
+	)
+	return nil
+}
+
 // RequestFullReportToAll 向所有在线客户端发送“请重新上报完整信息”指令
 func (s *AgentService) RequestFullReportToAll() error {
 	s.mu.RLock()

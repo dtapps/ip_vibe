@@ -377,6 +377,9 @@ func GetDeviceStatus(c *gin.Context) {
 	// 获取 AgentService 实例
 	agentService := grpcMgr.GetAgentService()
 
+	// 请求全部设备状态
+	agentService.RequestFullReportToDevice(device.Code)
+
 	// 查询全部设备状态
 	clientStates := agentService.GetClients()
 
