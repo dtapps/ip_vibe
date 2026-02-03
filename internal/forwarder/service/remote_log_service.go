@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"vibe_ip/internal/grpc_generated"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/pkg/utils"
 
 	"google.golang.org/grpc"
@@ -17,14 +18,18 @@ import (
 // RemoteLogService 远程日志服务
 type RemoteLogService struct {
 	logger *slog.Logger // 日志记录器
+	debug  bool         // 是否开启调试模式
 
 	grpcClient      *grpc.ClientConn                      // gRPC 客户端
 	remoteLogClient grpc_generated.RemoteLogServiceClient // gRPC 业务服务
 }
 
 func NewRemoteLogService(logger *slog.Logger, grpcClient *grpc.ClientConn) *RemoteLogService {
+	debug := sys_env.GvaEnv.DEBUG
 	return &RemoteLogService{
-		logger:          logger.With("component", "remote-log-service"),
+		logger: logger,
+		debug:  debug,
+
 		grpcClient:      grpcClient,
 		remoteLogClient: grpc_generated.NewRemoteLogServiceClient(grpcClient),
 	}

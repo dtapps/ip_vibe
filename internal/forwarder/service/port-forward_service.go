@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"log/slog"
+	"vibe_ip/internal/helper/sys_env"
 
 	"github.com/denisbrodbeck/machineid"
 )
@@ -10,12 +11,15 @@ import (
 // PortForwardServer 端口转发服务
 type PortForwardServer struct {
 	logger *slog.Logger // 日志记录器
+	debug  bool         // 是否开启调试模式
 }
 
 // NewPortForwardServer 创建端口转发服务
 func NewPortForwardServer(logger *slog.Logger) *PortForwardServer {
+	debug := sys_env.GvaEnv.DEBUG
 	return &PortForwardServer{
-		logger: logger.With("component", "port-forward-server"),
+		logger: logger,
+		debug:  debug,
 	}
 }
 

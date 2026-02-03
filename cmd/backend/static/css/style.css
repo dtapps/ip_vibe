@@ -2205,19 +2205,6 @@
     mask-size: 100% 100%;
     --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cg fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'%3E%3Cpath d='M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z'/%3E%3Cpath d='M14 2v5a1 1 0 0 0 1 1h5M9 15h6m-3 3v-6'/%3E%3C/g%3E%3C/svg%3E");
   }
-  .i-lucide-fingerprint {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    background-color: currentColor;
-    -webkit-mask-image: var(--svg);
-    mask-image: var(--svg);
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-size: 100% 100%;
-    mask-size: 100% 100%;
-    --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cg fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'%3E%3Cpath d='M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4M14 13.12c0 2.38 0 6.38-1 8.88m4.29-.98c.12-.6.43-2.3.5-3.02M2 12a10 10 0 0 1 18-6M2 16h.01m19.79 0c.2-2 .131-5.354 0-6'/%3E%3Cpath d='M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2m2.31 12c.21-.66.45-1.32.57-2M9 6.8a6 6 0 0 1 9 5.2v2'/%3E%3C/g%3E%3C/svg%3E");
-  }
   .i-lucide-flask-conical {
     display: inline-block;
     width: 1em;
@@ -3387,12 +3374,6 @@
       border-color: color-mix(in oklab, var(--color-green-500) 20%, transparent);
     }
   }
-  .border-indigo-500\/20 {
-    border-color: color-mix(in srgb, oklch(58.5% 0.233 277.117) 20%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      border-color: color-mix(in oklab, var(--color-indigo-500) 20%, transparent);
-    }
-  }
   .border-info\/40 {
     border-color: var(--color-info);
     @supports (color: color-mix(in lab, red, red)) {
@@ -4137,9 +4118,6 @@
   }
   .text-green-600 {
     color: var(--color-green-600);
-  }
-  .text-indigo-500 {
-    color: var(--color-indigo-500);
   }
   .text-indigo-600 {
     color: var(--color-indigo-600);

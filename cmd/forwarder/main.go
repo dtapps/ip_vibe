@@ -83,18 +83,6 @@ func main() {
 		slog.String("arch", global.GvaArch),
 	)
 
-	// 配置
-	config := &tasks.PortForwardTaskConfig{
-		DeviceCode: sys_env.GvaEnv.DEVICE_CODE,
-		DeviceName: sys_env.GvaEnv.DEVICE_NAME,
-		Version:    global.GvaVersion,
-		GitCommit:  global.GvaGitCommit,
-		BuildTime:  global.GvaBuildTime,
-		GoVersion:  global.GvaGoVersion,
-		OS:         global.GvaOS,
-		Arch:       global.GvaArch,
-	}
-
 	// 创建端口转发服务
 	portForwardServer := service.NewPortForwardServer(global.GvaGocronSlog)
 
@@ -129,7 +117,6 @@ func main() {
 			forwardAgent,
 			grpcClientConn,
 		)
-		portForwardTask.SetConfig(config)
 
 		// 启动端口转发任务
 		err = portForwardTask.StartPeriodicTask(ctx)
@@ -149,7 +136,6 @@ func main() {
 			forwardAgent,
 			grpcClientConn,
 		)
-		statsReportTask.SetConfig(config)
 
 		// 启动统计上报任务
 		err = statsReportTask.StartPeriodicTask(ctx)
@@ -161,9 +147,9 @@ func main() {
 		}
 		defer statsReportTask.Close()
 
-		// 启动远程日志隧道
-		remoteLogService := service.NewRemoteLogService(global.GvaGocronSlog, grpcClientConn)
-		go remoteLogService.StartTunnel(ctx, config.DeviceCode)
+		// 代理服务 启动流式通信
+		agentService := service.NewAgentService(global.GvaGocronSlog, grpcClientConn)
+		go agentService.StartStream(ctx)
 
 	} else {
 		slog.ErrorContext(ctx, "服务启动失败: GRPC_URL 未配置")

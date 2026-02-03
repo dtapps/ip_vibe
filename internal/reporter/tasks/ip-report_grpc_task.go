@@ -8,6 +8,7 @@ import (
 	"time"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/reporter/service"
 
 	"github.com/go-co-op/gocron/v2"
@@ -24,7 +25,7 @@ type IPReportGRPCTask struct {
 	jobHelper *gocron_helper.JobHelper // 任务助手
 	jobOne    sync.Once                // 确保只创建一次任务
 	logger    *slog.Logger             // 日志记录器
-	config    *IPReportTaskConfig      // 配置
+	config    *Config                  // 配置
 
 	service *service.IPReportService // IP报告服务
 
@@ -36,10 +37,14 @@ type IPReportGRPCTask struct {
 // NewIPReportGRPCTask 创建IP上报实例
 func NewIPReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.IPReportService, grpcClient *grpc.ClientConn) *IPReportGRPCTask {
 	return &IPReportGRPCTask{
-		cron:              cron,
-		taskName:          "gRPC IP上报",
-		jobHelper:         gocron_helper.NewJobHelper(cron, logger),
-		logger:            logger.With("component", "ip-report-grpc"),
+		cron:      cron,
+		taskName:  "gRPC IP上报",
+		jobHelper: gocron_helper.NewJobHelper(cron, logger),
+		logger:    logger,
+		config: &Config{
+			DeviceCode: sys_env.GvaEnv.DEVICE_CODE,
+			DeviceName: sys_env.GvaEnv.DEVICE_NAME,
+		},
 		service:           service,
 		grpcClient:        grpcClient,
 		openServiceClient: grpc_generated.NewOpenServiceClient(grpcClient),
@@ -51,21 +56,6 @@ func (s *IPReportGRPCTask) Close() {
 	if s.cron != nil && s.job != nil && s.jobHelper != nil {
 		_ = s.jobHelper.DeleteJob(s.job.ID().String())
 	}
-}
-
-// SetConfig 设置任务配置
-func (s *IPReportGRPCTask) SetConfig(config *IPReportTaskConfig) *IPReportGRPCTask {
-	s.config = config
-	// 设置基础 metadata（相当于HTTP headers）
-	s.clientBaseMD = metadata.Pairs(
-		"x-version", config.Version,
-		"x-git-commit", config.GitCommit,
-		"x-build-time", config.BuildTime,
-		"x-go-version", config.GoVersion,
-		"x-os", config.OS,
-		"x-arch", config.Arch,
-	)
-	return s
 }
 
 // StartPeriodicTask 启动周期任务

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"vibe_ip/internal/helper/ip_helper"
+	"vibe_ip/internal/helper/sys_env"
 
 	"github.com/denisbrodbeck/machineid"
 )
@@ -15,9 +16,10 @@ type IPReportService struct {
 }
 
 // NewIPReportService 创建IP报告服务
-func NewIPReportService(logger *slog.Logger, debug bool) *IPReportService {
+func NewIPReportService(logger *slog.Logger) *IPReportService {
+	debug := sys_env.GvaEnv.DEBUG
 	return &IPReportService{
-		logger: logger.With("component", "ip-report-service"),
+		logger: logger,
 		debug:  debug,
 	}
 }

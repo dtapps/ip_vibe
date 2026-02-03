@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/forwarder/service"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/gocron_helper"
+	"vibe_ip/internal/helper/sys_env"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
@@ -27,7 +28,7 @@ type StatsReportGRPCTask struct {
 	jobHelper *gocron_helper.JobHelper // 任务助手
 	jobOne    sync.Once                // 确保只创建一次任务
 	logger    *slog.Logger             // 日志记录器
-	config    *PortForwardTaskConfig   // 配置
+	config    *Config                  // 配置
 
 	service      *service.PortForwardServer // 端口转发服务
 	forwardAgent *forward.Agent             // 端口转发器
@@ -40,10 +41,14 @@ type StatsReportGRPCTask struct {
 // NewStatsReportGRPCTask 创建统计上报实例
 func NewStatsReportGRPCTask(cron gocron.Scheduler, logger *slog.Logger, service *service.PortForwardServer, forwardAgent *forward.Agent, grpcClient *grpc.ClientConn) *StatsReportGRPCTask {
 	return &StatsReportGRPCTask{
-		cron:              cron,
-		taskName:          "gRPC 统计上报",
-		jobHelper:         gocron_helper.NewJobHelper(cron, logger),
-		logger:            logger.With("component", "stats-report-grpc"),
+		cron:      cron,
+		taskName:  "gRPC 统计上报",
+		jobHelper: gocron_helper.NewJobHelper(cron, logger),
+		logger:    logger,
+		config: &Config{
+			DeviceCode: sys_env.GvaEnv.DEVICE_CODE,
+			DeviceName: sys_env.GvaEnv.DEVICE_NAME,
+		},
 		service:           service,
 		forwardAgent:      forwardAgent,
 		grpcClient:        grpcClient,
@@ -56,21 +61,6 @@ func (s *StatsReportGRPCTask) Close() {
 	if s.cron != nil && s.job != nil && s.jobHelper != nil {
 		_ = s.jobHelper.DeleteJob(s.job.ID().String())
 	}
-}
-
-// SetConfig 设置任务配置
-func (s *StatsReportGRPCTask) SetConfig(config *PortForwardTaskConfig) *StatsReportGRPCTask {
-	s.config = config
-	// 设置基础 metadata（相当于HTTP headers）
-	s.clientBaseMD = metadata.Pairs(
-		"x-version", config.Version,
-		"x-git-commit", config.GitCommit,
-		"x-build-time", config.BuildTime,
-		"x-go-version", config.GoVersion,
-		"x-os", config.OS,
-		"x-arch", config.Arch,
-	)
-	return s
 }
 
 // StartPeriodicTask 启动周期任务
