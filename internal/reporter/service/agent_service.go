@@ -7,7 +7,6 @@ import (
 	"vibe_ip/internal/core"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_generated"
-	"vibe_ip/internal/helper/sys_env"
 
 	"google.golang.org/grpc"
 )
@@ -15,8 +14,8 @@ import (
 // AgentService 代理服务
 type AgentService struct {
 	logger *slog.Logger // 日志记录器
-	debug  bool         // 是否开启调试模式
 
+	role       string                    // 角色
 	deviceData *core.GetDeviceDataResult // 设备数据
 
 	grpcClient  *grpc.ClientConn                  // gRPC 客户端
@@ -25,7 +24,6 @@ type AgentService struct {
 
 // NewAgentService 创建代理服务
 func NewAgentService(ctx context.Context, logger *slog.Logger, grpcClient *grpc.ClientConn) (*AgentService, error) {
-	debug := sys_env.GvaEnv.DEBUG
 
 	// 获取设备数据
 	deviceData, err := core.GetDeviceData(ctx, logger)
@@ -35,8 +33,8 @@ func NewAgentService(ctx context.Context, logger *slog.Logger, grpcClient *grpc.
 
 	return &AgentService{
 		logger: logger,
-		debug:  debug,
 
+		role:       "reporter",
 		deviceData: deviceData,
 
 		grpcClient:  grpcClient,
@@ -60,7 +58,7 @@ func (s *AgentService) StartStream(ctx context.Context) {
 	clientInfo := &grpc_generated.ClientInfo{
 		DeviceCode: s.deviceData.DeviceCode,
 		DeviceName: s.deviceData.DeviceName,
-		Role:       "reporter",
+		Role:       s.role,
 		Version:    global.GvaVersion,
 		GitCommit:  global.GvaGitCommit,
 		BuildTime:  global.GvaBuildTime,
@@ -136,11 +134,15 @@ func (s *AgentService) StartStream(ctx context.Context) {
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
 
-	// 主循环：发送心跳
+	// 启动全量上报（每 10 分钟）
+	fullReportTicker := time.NewTicker(10 * time.Minute)
+	defer fullReportTicker.Stop()
+
+	// 主循环：发送心跳 + 定期重发 ClientInfo
 	for {
 		select {
 		case <-ctx.Done():
-			s.logger.ErrorContext(ctx, "流上下文已取消，正在退出")
+			s.logger.InfoContext(ctx, "流上下文已取消，正在退出")
 			return
 		case <-ticker.C:
 			heartbeatMsg := &grpc_generated.ClientMessage{
@@ -155,6 +157,21 @@ func (s *AgentService) StartStream(ctx context.Context) {
 				return
 			}
 			s.logger.InfoContext(ctx, "心跳发送成功")
+
+		case <-fullReportTicker.C:
+			// 重新发送 ClientInfo
+			infoMsg := &grpc_generated.ClientMessage{
+				Payload: &grpc_generated.ClientMessage_Info{
+					Info: clientInfo,
+				},
+			}
+			if err := stream.Send(infoMsg); err != nil {
+				s.logger.ErrorContext(ctx, "定期重发 ClientInfo 失败",
+					slog.Any("err", err),
+				)
+				return
+			}
+			s.logger.DebugContext(ctx, "ClientInfo 定期重发成功")
 		}
 	}
 }
