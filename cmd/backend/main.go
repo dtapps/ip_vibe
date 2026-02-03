@@ -338,21 +338,28 @@ func gracefulShutdown() {
 	shutdownOnce.Do(func() {
 		slog.Info("开始优雅关闭所有服务...")
 
-		// 1. 创建上下文，设置超时时间为 30 秒
+		// 创建上下文，设置超时时间为 30 秒
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 
-		// 2. 优雅关闭 Gin 服务
-		gin_server.NewManager(global.GvaGinSlog, gin_server.Config{}).Stop(ctx)
+		// 优雅关闭 Gin 服务
+		ginMgr := gin_server.NewManager(global.GvaGinSlog, gin_server.Config{})
+		ginMgr.Stop(ctx)
 
-		// 3. 优雅关闭 MCP 服务
-		mcp_server.NewManager(global.GvaMcpSlog, mcp_server.Config{}, nil).Stop(ctx)
+		// 优雅关闭 MCP 服务
+		mcpMgr := mcp_server.NewManager(global.GvaMcpSlog, mcp_server.Config{}, nil)
+		mcpMgr.Stop(ctx)
 
-		// 4. 优雅关闭 gRPC-Gateway 服务
+		// 优雅关闭 gRPC-Gateway 服务
 		// grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{}, nil).Stop(ctx)
 
-		// 5. 优雅关闭 gRPC 服务
-		grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{}).Stop(ctx)
+		// 优雅关闭 gRPC 服务
+		grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{})
+		if agentSvc := grpcMgr.GetAgentService(); agentSvc != nil {
+			// 主动关闭所有流
+			agentSvc.CloseAllStreams()
+		}
+		grpcMgr.Stop(ctx)
 
 		// 6. 关闭数据库连接和其他资源（
 		slog.Info("开始关闭数据库连接...")

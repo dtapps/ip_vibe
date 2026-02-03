@@ -262,6 +262,7 @@ func (m *GinServerManager) setupApiRouter() {
 			devices.GET("/:id/ip-history", handlers.GetDeviceIpHistory)                // 获取设备IP历史记录
 			devices.GET("/:id/health-check", handlers.HealthCheckDevice)               // 检查设备健康状态
 			devices.GET("/:id/port-forward/stats", handlers.GetDevicePortForwardStats) // 获取设备端口转发统计数据
+			devices.GET("/:id/status", handlers.GetDeviceStatus)                       // 获取设备状态
 		}
 
 		// 设备组相关API

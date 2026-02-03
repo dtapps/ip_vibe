@@ -1920,6 +1920,63 @@
                 }
             }
         },
+        "/devices/{id}/status": {
+            "get": {
+                "description": "获取设备状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设备"
+                ],
+                "summary": "获取设备状态",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "设备序号",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDeviceStatusResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/dns-records": {
             "get": {
                 "description": "获取全部DNS记录",
@@ -7815,6 +7872,31 @@
                     "items": {
                         "type": "integer"
                     }
+                }
+            }
+        },
+        "vibe_ip_internal_types.GetDeviceStatusResponse": {
+            "type": "object",
+            "properties": {
+                "build_time": {
+                    "description": "构建时间",
+                    "type": "string"
+                },
+                "git_commit": {
+                    "description": "git提交哈希",
+                    "type": "string"
+                },
+                "go_version": {
+                    "description": "go版本",
+                    "type": "string"
+                },
+                "os": {
+                    "description": "操作系统",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
                 }
             }
         },

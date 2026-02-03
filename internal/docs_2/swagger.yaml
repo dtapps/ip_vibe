@@ -807,6 +807,24 @@ definitions:
           type: integer
         type: array
     type: object
+  vibe_ip_internal_types.GetDeviceStatusResponse:
+    properties:
+      build_time:
+        description: 构建时间
+        type: string
+      git_commit:
+        description: git提交哈希
+        type: string
+      go_version:
+        description: go版本
+        type: string
+      os:
+        description: 操作系统
+        type: string
+      version:
+        description: 版本号
+        type: string
+    type: object
   vibe_ip_internal_types.GetDnsRecordResponse:
     properties:
       cdn_record_cdn_domain:
@@ -3063,6 +3081,41 @@ paths:
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 获取设备端口转发统计数据
+      tags:
+      - 设备
+  /devices/{id}/status:
+    get:
+      consumes:
+      - application/json
+      description: 获取设备状态
+      parameters:
+      - description: 设备序号
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            allOf:
+            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/vibe_ip_internal_types.GetDeviceStatusResponse'
+              type: object
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 获取设备状态
       tags:
       - 设备
   /devices/batch:

@@ -116,3 +116,17 @@ type GetDevicePortForwardStatsResponse struct {
 	Delta   GetDevicePortForwardStatsDelta   `json:"delta"`    // 所选时间范围内的增量
 	Rates   []GetDevicePortForwardStatsRates `json:"rates"`    // 速率趋势数据
 }
+
+// 获取设备状态 请求结构
+type GetDeviceStatusRequest struct {
+	GetDeviceRequest
+}
+
+// 获取设备状态 响应结构
+type GetDeviceStatusResponse struct {
+	Version   string `json:"version" jsonschema:"设备的版本号"`        // 版本号
+	GitCommit string `json:"git_commit" jsonschema:"设备的Git提交哈希"` // git提交哈希
+	BuildTime string `json:"build_time" jsonschema:"设备的构建时间"`    // 构建时间
+	GoVersion string `json:"go_version" jsonschema:"设备的Go版本"`    // go版本
+	Os        string `json:"os" jsonschema:"设备的操作系统"`            // 操作系统
+}

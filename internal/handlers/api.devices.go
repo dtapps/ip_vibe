@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/grpc_server"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
@@ -332,4 +334,68 @@ func GetDevicePortForwardStats(c *gin.Context) {
 		return
 	}
 	successResponse(c, response)
+}
+
+// 获取设备状态
+//
+//	@Description	获取设备状态
+//	@Summary		获取设备状态
+//	@Tags			设备
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Param			id	path		int64											true	"设备序号"
+//	@Success		200	{object}	APIResponse{data=types.GetDeviceStatusResponse}	"成功响应"
+//	@Failure		400	{object}	APIResponse{}									"参数错误"
+//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Router			/devices/{id}/status [get]
+func GetDeviceStatus(c *gin.Context) {
+	// 请求参数
+	var requestParams types.GetDeviceStatusRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 创建服务
+	service := service.NewDeviceService(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGinSlog,
+	)
+
+	// 调用 获取单个设备
+	device, err := service.GetDevice(c, requestParams.ID)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+
+	// 创建 gRPC 服务
+	grpcMgr := grpc_server.NewManager(nil, grpc_server.Config{})
+
+	// 获取 AgentService 实例
+	agentService := grpcMgr.GetAgentService()
+
+	// 查询全部设备状态
+	clientStates := agentService.GetClients()
+
+	for _, clientState := range clientStates {
+		global.GvaGinSlog.Info("clientState", "clientState", clientState)
+	}
+
+	// 查询设备状态
+	clientState, ok := clientStates[device.Code]
+	if !ok {
+		errorResponse(c, http.StatusNotFound, fmt.Sprintf("设备 %s 未注册", device.Code))
+		return
+	}
+
+	successResponse(c, types.GetDeviceStatusResponse{
+		Version:   clientState.Info.Version,
+		GitCommit: clientState.Info.GitCommit,
+		BuildTime: clientState.Info.BuildTime,
+		GoVersion: clientState.Info.GoVersion,
+		Os:        clientState.Info.Os,
+	})
 }

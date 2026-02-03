@@ -25,6 +25,10 @@ type GRPCServerManager struct {
 	listener net.Listener // 监听套接字
 	logger   *slog.Logger // 日志记录器
 	config   Config       // gRPC 服务配置参数
+
+	agentService     *grpc_service.AgentService
+	openService      *grpc_service.OpenService
+	remoteLogService *grpc_service.RemoteLogService
 }
 
 var (
@@ -112,9 +116,12 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 	m.server = grpc.NewServer(opts...)
 
 	// 注册服务
-	grpc_service.NewAgentService(logger).RegisterService(m.server)
-	grpc_service.NewOpenService(logger).RegisterService(m.server)
-	grpc_service.NewRemoteLogService(logger).RegisterService(m.server)
+	m.agentService = grpc_service.NewAgentService(logger)
+	m.openService = grpc_service.NewOpenService(logger)
+	m.remoteLogService = grpc_service.NewRemoteLogService(logger)
+	m.agentService.RegisterService(m.server)
+	m.openService.RegisterService(m.server)
+	m.remoteLogService.RegisterService(m.server)
 
 	var err error
 	m.listener, err = net.Listen("tcp", m.config.Addr)
@@ -149,4 +156,9 @@ func (m *GRPCServerManager) Stop(ctx context.Context) {
 		}
 	}
 	m.logger.InfoContext(ctx, "gRPC 服务已安全停止")
+}
+
+// GetAgentService 返回 AgentService 实例
+func (m *GRPCServerManager) GetAgentService() *grpc_service.AgentService {
+	return m.agentService
 }

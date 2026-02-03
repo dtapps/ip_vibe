@@ -856,6 +856,24 @@ components:
           type: array
           uniqueItems: false
       type: object
+    vibe_ip_internal_types.GetDeviceStatusResponse:
+      properties:
+        build_time:
+          description: 构建时间
+          type: string
+        git_commit:
+          description: git提交哈希
+          type: string
+        go_version:
+          description: go版本
+          type: string
+        os:
+          description: 操作系统
+          type: string
+        version:
+          description: 版本号
+          type: string
+      type: object
     vibe_ip_internal_types.GetDnsRecordResponse:
       properties:
         cdn_record_cdn_domain:
@@ -3406,6 +3424,51 @@ paths:
                 $ref: '#/components/schemas/internal_handlers.APIResponse'
           description: 错误响应
       summary: 获取设备端口转发统计数据
+      tags:
+      - 设备
+  /devices/{id}/status:
+    get:
+      description: 获取设备状态
+      parameters:
+      - description: 设备序号
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/data'
+                properties:
+                  code:
+                    type: integer
+                  data: {}
+                  message:
+                    type: string
+                type: object
+          description: 成功响应
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 参数错误
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/internal_handlers.APIResponse'
+          description: 错误响应
+      summary: 获取设备状态
       tags:
       - 设备
   /devices/batch:

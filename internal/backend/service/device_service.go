@@ -33,6 +33,7 @@ type DeviceService interface {
 	GetDeviceIpHistory(ctx context.Context, id int64) ([]*types.GetDeviceIpHistoryResponse, error)
 	HealthcheckDevice(ctx context.Context, id int64) ([][]ToPairsStruct, error)
 	GetDevicePortForwardStats(ctx context.Context, id int64, request *types.GetDevicePortForwardStatsRequest) (*types.GetDevicePortForwardStatsResponse, error)
+	// GetDeviceStatus(ctx context.Context, id int64) (*types.GetDeviceStatusResponse, error)
 }
 
 // DeviceServiceImpl 设备服务实现
@@ -41,6 +42,8 @@ type DeviceServiceImpl struct {
 	logDb  *ent_log.Client // 日志数据库客户端
 	logger *slog.Logger    // 日志记录器
 	debug  bool            // 调试模式
+
+	// agentService *grpc_service.AgentService // 代理服务
 }
 
 // NewDeviceService 创建设备服务实例
@@ -49,11 +52,14 @@ func NewDeviceService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
+	// agentService := grpc_service.NewAgentService(logger)
 	return &DeviceServiceImpl{
 		db:     db,
 		logDb:  logDb,
 		logger: logger,
 		debug:  debug,
+
+		// agentService: agentService,
 	}
 }
 
@@ -555,3 +561,29 @@ func (s *DeviceServiceImpl) calculatePortForwardStats(raw []*ent_log.PortForward
 
 	return &res
 }
+
+// GetDeviceStatus 获取设备状态
+// func (s *DeviceServiceImpl) GetDeviceStatus(ctx context.Context, id int64) (*types.GetDeviceStatusResponse, error) {
+// 	// 查询设备
+// 	device, err := s.db.Device.Query().
+// 		Where(device.IDEQ(id)).
+// 		First(ctx)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("查询设备失败: %w", err)
+// 	}
+
+// 	// 查询设备状态
+// 	clientState, ok := s.agentService.GetClients()[device.Code]
+// 	if !ok {
+// 		return nil, fmt.Errorf("设备 %s 未注册", device.Code)
+// 	}
+
+// 	// 返回结果
+// 	return &types.GetDeviceStatusResponse{
+// 		Version:   clientState.Info.Version,
+// 		GitCommit: clientState.Info.GitCommit,
+// 		BuildTime: clientState.Info.BuildTime,
+// 		GoVersion: clientState.Info.GoVersion,
+// 		Os:        clientState.Info.Os,
+// 	}, nil
+// }
