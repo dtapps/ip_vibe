@@ -46,7 +46,7 @@ require (
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.186
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
-	github.com/kingsoftcloud/sdk-go/v2 v2.2.67
+	github.com/kingsoftcloud/sdk-go/v2 v2.2.70
 	github.com/miekg/dns v1.1.72
 	github.com/modelcontextprotocol/go-sdk v1.2.0
 	github.com/qiniu/go-sdk/v7 v7.25.6
@@ -57,9 +57,9 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.36
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.42
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.43
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.41
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.43
 	github.com/tidwall/gjson v1.18.0
 	github.com/volcengine/volcengine-go-sdk v1.2.10
 	github.com/wdcbot/qingfeng v1.6.3
@@ -83,8 +83,8 @@ require (
 	go.dtapp.net/library/utils/gotime v1.0.17
 	golang.org/x/net v0.49.0
 	golang.org/x/sync v0.19.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20260128011058-8636f8732409
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260128011058-8636f8732409
+	google.golang.org/genproto/googleapis/api v0.0.0-20260202165425-ce8ad4cf556b
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260202165425-ce8ad4cf556b
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
