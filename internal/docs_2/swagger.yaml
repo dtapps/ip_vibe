@@ -815,6 +815,9 @@ definitions:
       build_time:
         description: 构建时间
         type: string
+      get_time:
+        description: 获取时间
+        type: string
       git_commit:
         description: git提交哈希
         type: string
@@ -826,6 +829,9 @@ definitions:
         type: string
       role:
         description: 角色
+        type: string
+      start_time:
+        description: 启动时间
         type: string
       version:
         description: 版本号

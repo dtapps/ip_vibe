@@ -2,6 +2,7 @@ package global
 
 import (
 	"log/slog"
+	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
 
@@ -23,12 +24,13 @@ var (
 
 // GvaConfig 变量
 var (
-	GvaVersion   string // 版本号
-	GvaGitCommit string // Git 提交 ID
-	GvaBuildTime string // 构建时间
-	GvaGoVersion string // Go 版本
-	GvaOS        string // 操作系统
-	GvaArch      string // CPU 架构
+	GvaVersion   string    // 版本号
+	GvaGitCommit string    // Git 提交 ID
+	GvaBuildTime string    // 构建时间
+	GvaGoVersion string    // Go 版本
+	GvaOS        string    // 操作系统
+	GvaArch      string    // CPU 架构
+	GvaStartTime time.Time // 启动时间
 
 	GvaSlog       *slog.Logger // slog 日志
 	GvaEntSlog    *slog.Logger // ent 日志

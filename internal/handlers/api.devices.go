@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_server"
@@ -400,6 +401,8 @@ func GetDeviceStatus(c *gin.Context) {
 				GoVersion: info.GoVersion,
 				Os:        info.Os,
 				Arch:      info.Arch,
+				StartTime: info.StartTime.AsTime().Format(time.DateTime),
+				GetTime:   info.GetTime.AsTime().Format(time.DateTime),
 			})
 		}
 	}

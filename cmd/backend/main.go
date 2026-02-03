@@ -42,6 +42,7 @@ func init() {
 	global.GvaGoVersion = runtime.Version()
 	global.GvaOS = runtime.GOOS
 	global.GvaArch = runtime.GOARCH
+	global.GvaStartTime = time.Now()
 }
 
 // @title			IPVibe

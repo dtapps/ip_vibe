@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/grpc_generated"
 
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // AgentService 代理服务
@@ -65,6 +66,8 @@ func (s *AgentService) StartStream(ctx context.Context) {
 		GoVersion:  global.GvaGoVersion,
 		Os:         global.GvaOS,
 		Arch:       global.GvaArch,
+		StartTime:  timestamppb.New(global.GvaStartTime),
+		GetTime:    timestamppb.New(time.Now()),
 	}
 
 	// 发送 ClientInfo
@@ -116,8 +119,11 @@ func (s *AgentService) StartStream(ctx context.Context) {
 			case *grpc_generated.ServerMessage_RequestFullReport:
 				s.logger.InfoContext(ctx, "收到服务端指令：重新上报完整信息")
 				// 重发 ClientInfo
+				clientInfo.GetTime = timestamppb.New(time.Now())
 				err := stream.Send(&grpc_generated.ClientMessage{
-					Payload: &grpc_generated.ClientMessage_Info{Info: clientInfo},
+					Payload: &grpc_generated.ClientMessage_Info{
+						Info: clientInfo,
+					},
 				})
 				if err != nil {
 					s.logger.ErrorContext(ctx, "重发 ClientInfo 失败", slog.Any("err", err))
@@ -160,6 +166,7 @@ func (s *AgentService) StartStream(ctx context.Context) {
 
 		case <-fullReportTicker.C:
 			// 重新发送 ClientInfo
+			clientInfo.GetTime = timestamppb.New(time.Now())
 			infoMsg := &grpc_generated.ClientMessage{
 				Payload: &grpc_generated.ClientMessage_Info{
 					Info: clientInfo,
