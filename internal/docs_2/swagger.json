@@ -7881,6 +7881,10 @@
         "vibe_ip_internal_types.GetDeviceStatusResponse": {
             "type": "object",
             "properties": {
+                "arch": {
+                    "description": "架构",
+                    "type": "string"
+                },
                 "build_time": {
                     "description": "构建时间",
                     "type": "string"

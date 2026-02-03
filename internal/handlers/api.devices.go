@@ -399,6 +399,7 @@ func GetDeviceStatus(c *gin.Context) {
 				BuildTime: info.BuildTime,
 				GoVersion: info.GoVersion,
 				Os:        info.Os,
+				Arch:      info.Arch,
 			})
 		}
 	}

@@ -167,7 +167,7 @@ async function onHealthcheckPopup(id) {
     );
     console.log("deviceHealthcheck", deviceHealthcheck);
     if (!deviceHealthcheck) {
-      alert("设备检测数据异常");
+      alert("接口异常");
       return;
     }
     if (deviceHealthcheck.length === 0) {
@@ -183,9 +183,9 @@ async function onHealthcheckPopup(id) {
       deviceHealthcheck.length,
       { resetClosedState: true },
     );
-  } catch (error) {
-    alert(`加载设备检测信息失败: ${error.message}`);
-    console.error("查看设备检测信息失败", error);
+  } catch (err) {
+    alert(`打开 检测 弹窗失败: ${err.message}`);
+    console.error(err);
   }
 }
 
@@ -197,7 +197,7 @@ async function onHistoryIPPopup(id, name) {
     );
     console.log("deviceIpHistory", deviceIpHistory);
     if (!deviceIpHistory) {
-      alert("设备数据异常");
+      alert("接口异常");
       return;
     }
     if (deviceIpHistory.length === 0) {
@@ -205,7 +205,7 @@ async function onHistoryIPPopup(id, name) {
       return;
     }
 
-    // 格式化 IP 列表
+    // 格式化
     const preList = deviceIpHistory.map(
       (d) => `${fmtDate(d.created_at)} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`,
     );
@@ -217,31 +217,41 @@ async function onHistoryIPPopup(id, name) {
       preList.join("\n"),
       deviceIpHistory.length,
     );
-  } catch (error) {
-    alert(`加载设备IP历史失败: ${error.message}`);
-    console.error("查看设备IP历史失败", error);
+  } catch (err) {
+    alert(`打开 历史IP 弹窗失败: ${err.message}`);
+    console.error(err);
   }
 }
 
-// document.addEventListener("DOMContentLoaded", function () {
-//   const now = Math.floor(Date.now() / 1000);
-//   console.log("当前时间戳（秒）:", now);
-//   const tenMinutes = 12 * 60;
+// 打开 设备信息 弹窗
+async function onDeviceInfoPopup(id, name) {
+  try {
+    const { data: deviceStatus } = await API.get(`/api/devices/${id}/status`);
+    console.log("deviceStatus", deviceStatus);
+    if (!deviceStatus) {
+      alert("接口异常");
+      return;
+    }
+    if (deviceStatus.length === 0) {
+      alert("当前设备无状态数据");
+      return;
+    }
 
-//   document.querySelectorAll("#table tr[data-last-heartbeat]").forEach((row) => {
-//     const heartbeatAt = parseInt(row.getAttribute("data-last-heartbeat"));
-//     console.log("设备心跳时间戳:", heartbeatAt, "差值:", now - heartbeatAt);
+    // 格式化
+    const preList = deviceStatus.map(
+      (d) =>
+        `${d.role} - ${d.version || "-"} / ${d.go_version || "-"} (${d.os}/${d.arch})`,
+    );
 
-//     // 如果是零值（从未心跳），heartbeatAt <= 0
-//     if (heartbeatAt <= 0) {
-//       row.classList.add("status-heartbeat-never");
-//       return;
-//     }
-
-//     if (now - heartbeatAt > tenMinutes) {
-//       row.classList.add("status-heartbeat-offline");
-//     } else {
-//       row.classList.remove("status-heartbeat-offline");
-//     }
-//   });
-// });
+    // 显示弹窗内容
+    showPopupContent(
+      "popup",
+      `设备状态 - ${name}`,
+      preList.join("\n"),
+      deviceStatus.length,
+    );
+  } catch (err) {
+    alert(`打开 设备信息 弹窗失败: ${err.message}`);
+    console.error(err);
+  }
+}
