@@ -329,3 +329,16 @@ func (p *TencentDNSProvider) ListLines(ctx context.Context) (lines []*TencentDNS
 	}
 	return lines, nil
 }
+
+// 获取域名列表
+// https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeDomainList
+func (p *TencentDNSProvider) DescribeDomainList(ctx context.Context) ([]*dnspod.DomainListItem, error) {
+	request := dnspod.NewDescribeDomainListRequest()
+	request.Offset = common.Int64Ptr(0)
+	request.Limit = common.Int64Ptr(3000)
+	response, err := p.Provider.Client.DescribeDomainListWithContext(ctx, request)
+	if err != nil {
+		return nil, fmt.Errorf("接口 DescribeDomainListWithContext 失败 %w", err)
+	}
+	return response.Response.DomainList, nil
+}

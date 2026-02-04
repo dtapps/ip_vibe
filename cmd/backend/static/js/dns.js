@@ -17,10 +17,19 @@ async function onConfigSelect(el) {
 
   // 从后端接口获取指定平台的动态 Schema，并更新 DNS_SCHEMA
   switch (platform) {
+    case "cloudFlare":
+      await fetchAndReplaceDnsSchema(platform, id);
+      break;
     case "tencent_dns":
       await fetchAndReplaceDnsSchema(platform, id);
       break;
     case "aliyun_dns":
+      await fetchAndReplaceDnsSchema(platform, id);
+      break;
+    case "baidu_dns":
+      await fetchAndReplaceDnsSchema(platform, id);
+      break;
+    case "huawei_dns":
       await fetchAndReplaceDnsSchema(platform, id);
       break;
     case "volcengine_dns":

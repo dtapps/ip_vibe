@@ -166,7 +166,7 @@ func Dashboard(c *gin.Context) {
 		{
 			Title: "日志内容",
 			Icon:  "i-lucide-list-todo",
-			Href:  "/log-scroll-text",
+			Href:  "/log-content",
 		},
 	}
 

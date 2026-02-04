@@ -124,6 +124,65 @@ func GetDnsRecordSchema(c *gin.Context) {
 	}
 
 	switch firstConfig.Platform {
+	case platformconfig.PlatformCloudflare:
+
+		dnsProviderCfg := dns.NewDefaultCloudfareDNSConfig()
+		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		dnsProvider, err := dns.NewCloudfareDNSProviderRaw(c, global.GvaGocronSlog.With(), dnsProviderCfg, dnsProviderOpts...)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 并发检查
+		eg, egCtx := errgroup.WithContext(c)
+		eg.SetLimit(10) // 最多 10 个并发
+
+		// 准备选项
+		zoneOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 查询线路列表
+			zones, err := dnsProvider.ZonesRaw(egCtx)
+			if err != nil {
+				return err
+			}
+			for _, zone := range zones {
+				zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
+					Value: zone.ID,
+					Label: zone.Name,
+				})
+			}
+			return nil
+		})
+
+		if err = eg.Wait(); err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 构造字段
+		fields = append(fields, types.SCHEMAField{
+			ID:          "zone",
+			Label:       "域名",
+			Type:        "select",
+			Placeholder: "请选择域名",
+			Required:    true,
+			Options:     zoneOptions,
+		})
+		fields = append(fields, []types.SCHEMAField{
+			{
+				ID:          "comment",
+				Label:       "描述",
+				Type:        "text",
+				Placeholder: "请输入描述",
+				Required:    false,
+			},
+		})
+
 	case platformconfig.PlatformTencentDNS:
 
 		dnsProviderCfg := dns.NewDefaultTencentDNSConfig()
@@ -142,16 +201,30 @@ func GetDnsRecordSchema(c *gin.Context) {
 		eg, egCtx := errgroup.WithContext(c)
 		eg.SetLimit(10) // 最多 10 个并发
 
-		// 准备线路选项
+		// 准备选项
+		domainOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 获取域名列表
+			domains, err := dnsProvider.DescribeDomainList(egCtx)
+			if err != nil {
+				return err
+			}
+			for _, domain := range domains {
+				domainOptions = append(domainOptions, types.SCHEMAFieldOption{
+					Value: utils.PtrToUint64(domain.DomainId),
+					Label: utils.PtrToString(domain.Name),
+				})
+			}
+			return nil
+		})
+
+		// 准备选项
 		recordLineOptions := make([]types.SCHEMAFieldOption, 0)
 		eg.Go(func() error {
 			// 查询线路列表
 			lines, err := dnsProvider.ListLines(egCtx)
 			if err != nil {
 				return err
-			}
-			if len(lines) == 0 {
-				return fmt.Errorf("未查询到线路")
 			}
 			for _, line := range lines {
 				recordLineOptions = append(recordLineOptions, types.SCHEMAFieldOption{
@@ -168,6 +241,14 @@ func GetDnsRecordSchema(c *gin.Context) {
 		}
 
 		// 构造字段
+		fields = append(fields, types.SCHEMAField{
+			ID:          "domain",
+			Label:       "域名",
+			Type:        "select",
+			Placeholder: "请选择域名",
+			Required:    true,
+			Options:     domainOptions,
+		})
 		fields = append(fields, []types.SCHEMAField{
 			{
 				ID:          "record_line",
@@ -204,16 +285,30 @@ func GetDnsRecordSchema(c *gin.Context) {
 		eg, egCtx := errgroup.WithContext(c)
 		eg.SetLimit(10) // 最多 10 个并发
 
-		// 准备线路选项
+		// 准备选项
+		domainOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 获取域名列表
+			lines, err := dnsProvider.DescribeDomains(egCtx)
+			if err != nil {
+				return err
+			}
+			for _, line := range lines {
+				domainOptions = append(domainOptions, types.SCHEMAFieldOption{
+					Value: utils.PtrToString(line.DomainId),
+					Label: utils.PtrToString(line.DomainName),
+				})
+			}
+			return nil
+		})
+
+		// 准备选项
 		lineOptions := make([]types.SCHEMAFieldOption, 0)
 		eg.Go(func() error {
 			// 查询线路列表
 			lines, err := dnsProvider.ListLines(egCtx)
 			if err != nil {
 				return err
-			}
-			if len(lines) == 0 {
-				return fmt.Errorf("未查询到线路")
 			}
 			for _, line := range lines {
 				lineOptions = append(lineOptions, types.SCHEMAFieldOption{
@@ -231,12 +326,170 @@ func GetDnsRecordSchema(c *gin.Context) {
 
 		// 构造字段
 		fields = append(fields, types.SCHEMAField{
+			ID:          "domain",
+			Label:       "域名",
+			Type:        "select",
+			Placeholder: "请选择域名",
+			Required:    true,
+			Options:     domainOptions,
+		})
+		fields = append(fields, []types.SCHEMAField{{
 			ID:          "line",
 			Label:       "线路",
 			Type:        "select",
 			Placeholder: "请选择线路",
 			Required:    true,
 			Options:     lineOptions,
+		}})
+
+	case platformconfig.PlatformBaiduDNS:
+
+		dnsProviderCfg := dns.NewDefaultBaiduDNSConfig()
+		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		dnsProvider, err := dns.NewBaiduDNSProviderRaw(c, global.GvaGocronSlog.With(), dnsProviderCfg, dnsProviderOpts...)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 并发检查
+		eg, egCtx := errgroup.WithContext(c)
+		eg.SetLimit(10) // 最多 10 个并发
+
+		// 准备选项
+		zoneOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 获取域名列表
+			lines, err := dnsProvider.ListZone(egCtx)
+			if err != nil {
+				return err
+			}
+			for _, line := range lines {
+				zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
+					Value: line.Id,
+					Label: line.Name,
+				})
+			}
+			return nil
+		})
+
+		// 准备选项
+		lineOptions := make([]types.SCHEMAFieldOption, 0)
+		lineOptions = append(lineOptions, types.SCHEMAFieldOption{
+			Value: "default",
+			Label: "默认",
+		})
+		lineOptions = append(lineOptions, types.SCHEMAFieldOption{
+			Value: "ct",
+			Label: "电信",
+		})
+		lineOptions = append(lineOptions, types.SCHEMAFieldOption{
+			Value: "cmnet",
+			Label: "移动",
+		})
+		lineOptions = append(lineOptions, types.SCHEMAFieldOption{
+			Value: "cnc",
+			Label: "联通",
+		})
+		lineOptions = append(lineOptions, types.SCHEMAFieldOption{
+			Value: "edu",
+			Label: "教育网",
+		})
+		lineOptions = append(lineOptions, types.SCHEMAFieldOption{
+			Value: "search",
+			Label: "搜索引擎(百度)",
+		})
+
+		if err = eg.Wait(); err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 构造字段
+		fields = append(fields, types.SCHEMAField{
+			ID:          "zone",
+			Label:       "域名",
+			Type:        "select",
+			Placeholder: "请选择域名",
+			Required:    true,
+			Options:     zoneOptions,
+		})
+		fields = append(fields, []types.SCHEMAField{{
+			ID:          "line",
+			Label:       "线路",
+			Type:        "select",
+			Placeholder: "请选择线路",
+			Required:    true,
+			Options:     lineOptions,
+		}, {
+			ID:          "description",
+			Label:       "描述",
+			Type:        "text",
+			Placeholder: "请输入描述",
+			Required:    false,
+		}})
+
+	case platformconfig.PlatformHuaweiDNS:
+
+		dnsProviderCfg := dns.NewDefaultHuaweiDNSConfig()
+		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		dnsProvider, err := dns.NewHuaweiDNSProviderRaw(c, global.GvaGocronSlog.With(), dnsProviderCfg, dnsProviderOpts...)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 并发检查
+		eg, egCtx := errgroup.WithContext(c)
+		eg.SetLimit(10) // 最多 10 个并发
+
+		// 准备选项
+		zoneOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 查询域名列表
+			zones, err := dnsProvider.ListPublicZones(egCtx)
+			if err != nil {
+				return err
+			}
+			for _, zone := range *zones {
+				zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
+					Value: zone.Id,
+					Label: *zone.Name,
+				})
+			}
+			return nil
+		})
+
+		if err = eg.Wait(); err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 构造字段
+		fields = append(fields, types.SCHEMAField{
+			ID:          "zone",
+			Label:       "域名",
+			Type:        "select",
+			Placeholder: "请输入域名",
+			Required:    true,
+			Options:     zoneOptions,
+		})
+		fields = append(fields, []types.SCHEMAField{
+			{
+				ID:          "description",
+				Label:       "描述",
+				Type:        "text",
+				Placeholder: "请输入描述",
+				Required:    false,
+			},
 		})
 
 	case platformconfig.PlatformVolcengineDNS:
@@ -257,7 +510,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 		eg, egCtx := errgroup.WithContext(c)
 		eg.SetLimit(10) // 最多 10 个并发
 
-		// 准备线路选项
+		// 准备选项
 		lineOptions := make([]types.SCHEMAFieldOption, 0)
 		eg.Go(func() error {
 			// 查询线路列表
@@ -277,7 +530,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			return nil
 		})
 
-		// 准备域名选项
+		// 准备选项
 		zoneOptions := make([]types.SCHEMAFieldOption, 0)
 		eg.Go(func() error {
 			// 查询域名列表
@@ -432,7 +685,7 @@ func GetTunRecordSchema(c *gin.Context) {
 			return nil
 		})
 
-		// 准备域名选项
+		// 准备选项
 		zoneOptions := make([]types.SCHEMAFieldOption, 0)
 		eg.Go(func() error {
 			// 查询域名列表

@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
+	"github.com/baidubce/bce-sdk-go/util"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth/basic"
@@ -319,4 +320,18 @@ func (p *HuaweiDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err 
 		return fmt.Errorf("解析自定义配置失败 %w", err)
 	}
 	return nil
+}
+
+// 查询公网域名列表
+// https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/sdk?api=ListPublicZones
+func (p *HuaweiDNSProvider) ListPublicZones(ctx context.Context) (*[]model.PublicZoneResp, error) {
+	// 查询线路列表
+	request := &model.ListPublicZonesRequest{}
+	request.Limit = util.PtrInt32(500)
+	request.Offset = util.PtrInt32(0)
+	response, err := p.Provider.Client.ListPublicZones(request)
+	if err != nil {
+		return nil, fmt.Errorf("接口 ListPublicZones 失败 %w", err)
+	}
+	return response.Zones, nil
 }

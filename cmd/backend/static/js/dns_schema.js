@@ -4,17 +4,35 @@ const DNS_SCHEMA = {
     label: "CloudFlare",
     fields: [
       {
-        id: "comment",
-        label: "描述",
-        type: "text",
-        placeholder: "请输入描述",
-        required: false,
+        id: "zone",
+        label: "域名",
+        type: "select",
+        placeholder: "请选择域名",
+        required: true,
+        options: [],
       },
+      [
+        {
+          id: "comment",
+          label: "描述",
+          type: "text",
+          placeholder: "请输入描述",
+          required: false,
+        },
+      ],
     ],
   },
   tencent_dns: {
     label: "腾讯云 DNS",
     fields: [
+      {
+        id: "domain",
+        label: "域名",
+        type: "select",
+        placeholder: "请选择域名",
+        required: true,
+        options: [],
+      },
       [
         {
           id: "record_line",
@@ -43,23 +61,41 @@ const DNS_SCHEMA = {
     label: "阿里云 DNS",
     fields: [
       {
-        id: "line",
-        label: "线路",
+        id: "domain",
+        label: "域名",
         type: "select",
-        placeholder: "请选择线路",
+        placeholder: "请选择域名",
         required: true,
-        options: [
-          {
-            value: "default",
-            label: "默认",
-          },
-        ],
+        options: [],
       },
+      [
+        {
+          id: "line",
+          label: "线路",
+          type: "select",
+          placeholder: "请选择线路",
+          required: true,
+          options: [
+            {
+              value: "default",
+              label: "默认",
+            },
+          ],
+        },
+      ],
     ],
   },
   baidu_dns: {
     label: "百度云 DNS",
     fields: [
+      {
+        id: "zone",
+        label: "域名",
+        type: "select",
+        placeholder: "请选择域名",
+        required: true,
+        options: [],
+      },
       [
         {
           id: "line",
@@ -108,12 +144,22 @@ const DNS_SCHEMA = {
     label: "华为云 DNS",
     fields: [
       {
-        id: "description",
-        label: "描述",
-        type: "text",
-        placeholder: "请输入描述",
-        required: false,
+        id: "zone",
+        label: "域名",
+        type: "select",
+        placeholder: "请选择域名",
+        required: true,
+        options: [],
       },
+      [
+        {
+          id: "description",
+          label: "描述",
+          type: "text",
+          placeholder: "请输入描述",
+          required: false,
+        },
+      ],
     ],
   },
   volcengine_dns: {

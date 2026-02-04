@@ -323,3 +323,17 @@ func (p *AliyunDNSProvider) ListLines(ctx context.Context) (lines []*AliyunDNSPr
 	}
 	return lines, nil
 }
+
+// 获取域名列表
+// https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomains
+func (p *AliyunDNSProvider) DescribeDomains(ctx context.Context) ([]*alidns20150109.DescribeDomainsResponseBodyDomainsDomain, error) {
+	// 查询线路列表
+	request := &alidns20150109.DescribeDomainsRequest{}
+	request.PageNumber = tea.Int64(1)
+	request.PageSize = tea.Int64(100)
+	response, err := p.Provider.Client.DescribeDomainsWithContext(ctx, request, p.Provider.Runtime)
+	if err != nil {
+		return nil, fmt.Errorf("接口 DescribeDomainsWithContext 失败 %w", err)
+	}
+	return response.GetBody().GetDomains().GetDomain(), nil
+}

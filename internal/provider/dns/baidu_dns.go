@@ -277,3 +277,15 @@ func (p *BaiduDNSProvider) ParseCustomConfig(config_json json.RawMessage) (err e
 	}
 	return nil
 }
+
+// 查询域名列表
+// https://cloud.baidu.com/doc/DNS/s/kl4s7g11z#查询域名列表
+func (p *BaiduDNSProvider) ListZone(ctx context.Context) ([]dns.Zone, error) {
+	// 查询线路列表
+	request := &dns.ListZoneRequest{}
+	response, err := p.Provider.Client.ListZone(request)
+	if err != nil {
+		return nil, fmt.Errorf("接口 ListZone 失败 %w", err)
+	}
+	return response.Zones, nil
+}
