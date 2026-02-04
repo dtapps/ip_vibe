@@ -2,10 +2,18 @@
 function changeCapability(el) {
   console.log("changeCapability", el);
 
-  const platform = document.getElementById("platform").value.trim();
+  // 获取表单元素
+  const form = document.getElementById("form");
+  if (!form) {
+    throw new Error("未找到表单");
+  }
+
+  // 表单elements集合
+  const els = form.elements;
+
+  const platform = els.platform.value.trim();
   const capability = el.value.trim();
-  const original_config_json =
-    document.getElementById("original_config_json").value.trim() || "{}";
+  const original_config_json = els.original_config_json.value.trim() || "{}";
 
   // 重新渲染字段
   renderPlatformFields(platform, capability, JSON.parse(original_config_json));
@@ -15,11 +23,17 @@ function changeCapability(el) {
 function changePlatform(el) {
   console.log("changePlatform", el);
 
-  const platform = el.value.trim();
-  const capability = document.getElementById("capability").value.trim();
-  const original_config_json = document
-    .getElementById("original_config_json")
-    .value.trim();
+  // 获取表单元素
+  const form = document.getElementById("form");
+  if (!form) {
+    throw new Error("未找到表单");
+  }
+
+  // 表单elements集合
+  const els = form.elements;
+
+  const platform = els.platform.value.trim();
+  const capability = els.capability.value.trim();
 
   // 重新渲染字段
   renderPlatformFields(platform, capability);
@@ -32,67 +46,72 @@ function changePlatform(el) {
  * @returns
  */
 async function openFormModal(id, action = "") {
-  document.getElementById("form").reset();
-
-  // 编辑
-  if (id) {
-    const { data: config } = await API.get(`/api/platform-configs/${id}`);
-    console.log("config", config);
-    if (!config) {
-      alert("配置数据异常");
-      return;
-    }
-
-    document.getElementById("id").value = config.id;
-    document.getElementById("id").disabled = true;
-    document.getElementById("capability").value = config.capability;
-    document.getElementById("name").value = config.name;
-    document.getElementById("platform").value = config.platform;
-    document.getElementById("platform").disabled = true;
-
-    // 渲染字段，回填数据
-    document.getElementById("original_config_json").value = JSON.stringify(
-      config.config_json || {},
-    );
-    renderPlatformFields(
-      config.platform,
-      config.capability,
-      config.config_json || {},
-    );
-
-    // 如果是复制操作，清空 id 字段
-    if (action === "copy") {
-      document.getElementById("id").value = "";
-      document.getElementById("id").disabled = false;
-
-      showModal("formModal", "modalTitle", "复制 平台配置");
-    } else {
-      showModal("formModal", "modalTitle", "编辑 平台配置");
-    }
+  const form = document.getElementById("form");
+  if (!form) {
+    throw new Error("未找到表单");
   }
 
-  // 创建
-  if (!id) {
-    updateFormFields([
-      {
-        id: "id",
-        value: 0,
-        disabled: true,
-      },
-      {
-        id: "platform",
-        value: "",
-        disabled: false,
-      },
-    ]);
+  // 重置表单
+  form.reset();
 
-    // 默认渲染字段
-    renderPlatformFields(
-      document.getElementById("platform").value.trim() || "",
-      document.getElementById("capability").value.trim() || "all",
-    );
+  try {
+    // 表单elements集合
+    const els = form.elements;
 
-    showModal("formModal", "modalTitle", "添加 平台配置");
+    // 编辑
+    if (id) {
+      const { data: config } = await API.get(`/api/platform-configs/${id}`);
+      console.log("config", config);
+      if (!config) {
+        alert("配置数据异常");
+        return;
+      }
+
+      els.id.value = config.id;
+      els.id.disabled = true;
+      els.capability.value = config.capability;
+      els.name.value = config.name;
+      els.platform.value = config.platform;
+      els.platform.disabled = true;
+
+      // 渲染字段，回填数据
+      els.original_config_json.value = JSON.stringify(config.config_json || {});
+      renderPlatformFields(
+        config.platform,
+        config.capability,
+        config.config_json || {},
+      );
+
+      // 如果是复制操作，清空 id 字段
+      if (action === "copy") {
+        els.id.value = "";
+        els.id.disabled = false;
+
+        showModal("formModal", "modalTitle", "复制 平台配置");
+      } else {
+        showModal("formModal", "modalTitle", "编辑 平台配置");
+      }
+    }
+
+    // 创建
+    if (!id) {
+      els.id.value = 0;
+      els.id.disabled = true;
+      els.platform.value = "";
+      els.platform.disabled = false;
+
+      // 默认渲染字段
+      renderPlatformFields(
+        els.platform.value.trim() || "",
+        els.capability.value.trim() || "all",
+      );
+
+      showModal("formModal", "modalTitle", "添加 平台配置");
+    }
+  } catch (err) {
+    alert(`打开 表单 失败: ${err.message}`);
+    console.error(err);
+    return;
   }
 }
 
@@ -100,35 +119,37 @@ async function openFormModal(id, action = "") {
 const form = document.getElementById("form");
 if (form) {
   form.onsubmit = async (e) => {
-    e.preventDefault();
-
-    // 自动从动态字段中组装 JSON
-    buildConfigFromPlatformFields(
-      document.getElementById("platform").value.trim(),
-    );
-
-    // 表单数据
-    const form_id = Number(document.getElementById("id").value.trim());
-    const form_data = {
-      capability: document.getElementById("capability").value.trim(),
-      name: document.getElementById("name").value.trim(),
-      platform: document.getElementById("platform").value.trim(),
-      config_json: document.getElementById("config_json").value.trim(),
-    };
-    console.log("form_id, form_data", form_id, form_data);
-
-    // 校验
-    if (!form_data.capability) {
-      return alert("请选择服务能力");
-    }
-    if (!form_data.name) {
-      return alert("请输入组名");
-    }
-    if (!form_data.platform) {
-      return alert("请选择平台");
-    }
-
     try {
+      // 阻止事件默认行为
+      e.preventDefault();
+
+      // 表单elements集合
+      const els = form.elements;
+
+      // 自动从动态字段中组装 JSON
+      buildConfigFromPlatformFields(els.platform.value.trim());
+
+      // 表单数据
+      const form_id = Number(els.id.value.trim());
+      const form_data = {
+        capability: els.capability.value.trim(),
+        name: els.name.value.trim(),
+        platform: els.platform.value.trim(),
+        config_json: els.config_json.value.trim(),
+      };
+      console.log("form_id, form_data", form_id, form_data);
+
+      // 校验
+      if (!form_data.capability) {
+        return alert("请选择服务能力");
+      }
+      if (!form_data.name) {
+        return alert("请输入组名");
+      }
+      if (!form_data.platform) {
+        return alert("请选择平台");
+      }
+
       // 提交
       if (isNaN(form_id) || form_id <= 0) {
         await API.post("/api/platform-configs", form_data);
@@ -138,11 +159,9 @@ if (form) {
 
       // 刷新页面
       location.reload();
-    } catch (error) {
-      alert(`操作失败: ${error.message}`);
-      console.error("配置操作失败", error);
+    } catch (err) {
+      alert(`操作失败: ${err.message}`);
+      console.error(err);
     }
   };
-} else {
-  console.warn("未找到表单，跳过 onsubmit 绑定");
 }

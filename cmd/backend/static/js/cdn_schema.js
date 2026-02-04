@@ -799,4 +799,25 @@ function handleSelectChange(selectEl) {
   if (platform_el) {
     platform_el.value = platform;
   }
+
+  // 动态更新域名显示
+  domain_name_el = document.getElementById("domain_name");
+  if (domain_name_el && platform && key && text) {
+    switch (platform) {
+      case "tencent_eo":
+        if (key === "zone") {
+          // domain_name_el.innerText = `.${text}`;
+          domain_name_el.value = `.${text}`;
+          domain_name_el.disabled = true;
+        }
+        break;
+      case "aliyun_esa":
+        if (key === "site") {
+          // domain_name_el.innerText = `.${text}`;
+          domain_name_el.value = `.${text}`;
+          domain_name_el.disabled = true;
+        }
+        break;
+    }
+  }
 }

@@ -466,32 +466,44 @@ function handleSelectChange(selectEl) {
     switch (platform) {
       case "cloudflare":
         if (key === "zone") {
-          domain_name_el.innerText = text;
+          // domain_name_el.innerText = `.${text}`;
+          domain_name_el.value = `.${text}`;
+          domain_name_el.disabled = true;
         }
         break;
       case "tencent_dns":
         if (key === "domain") {
-          domain_name_el.innerText = text;
+          // domain_name_el.innerText = `.${text}`;
+          domain_name_el.value = `.${text}`;
+          domain_name_el.disabled = true;
         }
         break;
       case "aliyun_dns":
         if (key === "domain") {
-          domain_name_el.innerText = text;
+          // domain_name_el.innerText = `.${text}`;
+          domain_name_el.value = `.${text}`;
+          domain_name_el.disabled = true;
         }
         break;
       case "baidu_dns":
         if (key === "zone") {
-          domain_name_el.innerText = text;
+          // domain_name_el.innerText = `.${text}`;
+          domain_name_el.value = `.${text}`;
+          domain_name_el.disabled = true;
         }
         break;
       case "huawei_dns":
         if (key === "zone") {
-          domain_name_el.innerText = text;
+          // domain_name_el.innerText = `.${text}`;
+          domain_name_el.value = `.${text}`;
+          domain_name_el.disabled = true;
         }
         break;
       case "volcengine_dns":
         if (key === "zone") {
-          domain_name_el.innerText = text;
+          // domain_name_el.innerText = `.${text}`;
+          domain_name_el.value = `.${text}`;
+          domain_name_el.disabled = true;
         }
         break;
     }

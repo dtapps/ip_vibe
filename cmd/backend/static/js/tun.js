@@ -164,9 +164,9 @@ async function openFormModal(id, action = "") {
         els.id.value = "";
         els.id.disabled = false;
 
-        showModal("formModal", "modalTitle", "复制 DNS记录");
+        showModal("formModal", "modalTitle", "复制 TUN 记录");
       } else {
-        showModal("formModal", "modalTitle", "编辑 DNS记录");
+        showModal("formModal", "modalTitle", "编辑 TUN 记录");
       }
     }
 
@@ -183,13 +183,13 @@ async function openFormModal(id, action = "") {
       selectId2.val(null).trigger("change");
 
       // 默认渲染字段
-      renderTunFields(document.getElementById("platform").value.trim() || "");
+      renderTunFields(els.platform.value.trim() || "");
 
-      showModal("formModal", "modalTitle", "添加 DNS记录");
+      showModal("formModal", "modalTitle", "添加 TUN 记录");
     }
-  } catch (error) {
-    alert(`加载数据失败: ${error.message}`);
-    console.error("打开DNS记录模态框失败", error);
+  } catch (err) {
+    alert(`打开 表单 失败: ${err.message}`);
+    console.error(err);
     return;
   }
 }
@@ -284,7 +284,7 @@ if (form) {
       location.reload();
     } catch (err) {
       alert(`操作失败: ${err.message}`);
-      console.error("onsubmit failed", err);
+      console.error(err);
     }
   };
 }
