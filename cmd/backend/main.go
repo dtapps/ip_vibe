@@ -21,6 +21,7 @@ import (
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/initialize"
+	"vibe_ip/internal/manager"
 	"vibe_ip/internal/mcp_server"
 )
 
@@ -113,13 +114,18 @@ func main() {
 		slog.String("arch", global.GvaArch),
 	)
 
-	// 获取 Gin 服务
+	// 创建 Gin 服务
 	ginMgr := gin_server.NewManager(global.GvaGinSlog, gin_server.Config{
-		Addr:     sys_env.GvaEnv.HTTP_ADDR,
 		Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
 		Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
 		Debug:    sys_env.GvaEnv.DEBUG,
 		Version:  global.GvaVersion,
+	})
+
+	// 创建 gRPC 服务
+	grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{
+		Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
+		Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
 	})
 
 	// 初始化 Gin 资源、路由
@@ -136,9 +142,6 @@ func main() {
 	// 聚合所有路由注册
 	ginMgr.InitRoutes()
 
-	// 启动 Gin 服务
-	go ginMgr.Run(ctx)
-
 	// 启动 MCP 服务
 	mcpMgr := mcp_server.NewManager(global.GvaMcpSlog, mcp_server.Config{
 		Name:    "IPVibe",
@@ -147,21 +150,14 @@ func main() {
 	}, router)
 	go mcpMgr.Run(ctx)
 
-	// 启动 gRPC 服务
-	grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{
-		Addr:     sys_env.GvaEnv.GRPC_ADDR,
-		Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
-		Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
-	})
-	go grpcMgr.Run(ctx)
-
-	// 连接 gRPC-Gateway 服务
-	// grpcGwMgr := grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{
-	// 	Addr:     sys_env.GvaEnv.GRPC_ADDR,
-	// 	Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
-	// 	Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
-	// }, router)
-	// go grpcGwMgr.Conn(ctx)
+	// 启动 混合 服务
+	mixedMgr := manager.NewMixedServerManager(
+		sys_env.GvaEnv.SERVER_ADDR,
+		ginMgr,
+		grpcMgr,
+		global.GvaSlog,
+	)
+	go mixedMgr.Run(ctx)
 
 	// 启动 GoCron 调度器
 	initialize.StartGoCron(ctx, global.GvaGocronSlog)
@@ -343,38 +339,37 @@ func gracefulShutdown() {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 
-		// 优雅关闭 Gin 服务
+		// 创建 Gin 服务
 		ginMgr := gin_server.NewManager(global.GvaGinSlog, gin_server.Config{})
-		ginMgr.Stop(ctx)
+
+		// 创建 gRPC 服务
+		grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{})
+
+		// 关闭 gRPC所有流
+		if agentSvc := grpcMgr.GetAgentService(); agentSvc != nil {
+			agentSvc.CloseAllStreams()
+		}
+
+		// 关闭 混合 服务
+		mixedMgr := manager.NewMixedServerManager(
+			sys_env.GvaEnv.SERVER_ADDR,
+			ginMgr,
+			grpcMgr,
+			global.GvaSlog,
+		)
+		go mixedMgr.Stop(ctx)
 
 		// 优雅关闭 MCP 服务
 		mcpMgr := mcp_server.NewManager(global.GvaMcpSlog, mcp_server.Config{}, nil)
 		mcpMgr.Stop(ctx)
 
-		// 优雅关闭 gRPC-Gateway 服务
-		// grpc_gateway_client.NewManager(global.GvaGrpcSlog, grpc_gateway_client.Config{}, nil).Stop(ctx)
-
-		// 优雅关闭 gRPC 服务
-		grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{})
-		if agentSvc := grpcMgr.GetAgentService(); agentSvc != nil {
-			// 主动关闭所有流
-			agentSvc.CloseAllStreams()
-		}
-		grpcMgr.Stop(ctx)
-
-		// 6. 关闭数据库连接和其他资源（
-		slog.Info("开始关闭数据库连接...")
-
-		// 7. 关闭 GoCron 调度器
+		// 关闭 GoCron 调度器
 		initialize.CloseGoCron(ctx, global.GvaGocronSlog)
 
-		// 8. 等待一段时间让 goroutine 完成
-		time.Sleep(1 * time.Second)
-
-		// 9. 关闭 业务数据库
+		// 关闭 业务数据库
 		initialize.CloseEntDb(ctx, global.GvaEntSlog)
 
-		// 10. 关闭 日志数据库
+		// 关闭 日志数据库
 		initialize.CloseEntLogDb(ctx, global.GvaEntLogSlog)
 
 		slog.Info("所有资源已优雅关闭")

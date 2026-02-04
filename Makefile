@@ -58,7 +58,7 @@ generate_ent:
 	ent generate --feature namedges,bidiedges,sql/modifier,sql/execquery,sql/upsert ./ent/schema
 
 ent_new:
-	ent new Device --target ./internal/ent/schema
+	ent new EsaSiteEdgeRoutineRecord EsaSiteEdgeContainerRecord --target ./internal/ent/schema
 
 ent_new_log:
 	ent new RestyLog --target ./internal/ent_log/schema
@@ -100,8 +100,15 @@ pnpm_update:
 # 	make grpc_generate_connect
 # 	make grpc_generate_openapi
 grpc_generate_all:
+	make grpc_generate_rm
 	make grpc_generate_pb
 	make grpc_generate_gateway
+
+# 生成 gRPC 核心代码（包括 protobuf、gRPC、Validate）
+grpc_generate_rm:
+	@echo "rm internal/grpc_generated catalogue"
+	rm -rf ./internal/grpc_generated/*
+	@echo "rm internal/grpc_generated catalogue done"
 
 # 生成 gRPC 核心代码（包括 protobuf、gRPC、Validate）
 grpc_generate_pb:
@@ -190,10 +197,9 @@ BUILD_DIR=bin
 # 环境参数
 ENV_DEBUG=true
 
-ENV_HTTP_ADDR=0.0.0.0:9999
-ENV_GRPC_ADDR=0.0.0.0:9998
+ENV_SERVER_ADDR=0.0.0.0:9999
 
-ENV_GRPC_URL=localhost:9998
+ENV_BACKEND_ENDPOINT=localhost:9999
 
 ENV_BASIC_AUTH_USERNAME=admin
 ENV_BASIC_AUTH_PASSWORD=123456
@@ -212,15 +218,13 @@ dev_frontend:
 # 启动后端服务
 dev_backend:
 	export DEBUG=$(ENV_DEBUG) && \
-	export HTTP_ADDR=$(ENV_HTTP_ADDR) && \
-	export GRPC_ADDR=$(ENV_GRPC_ADDR) && \
+	export SERVER_ADDR=$(ENV_SERVER_ADDR) && \
 	go run cmd/$(BINARY_NAME_BACKEND)/main.go
 
 # 启动后端服务（启用 Basic Auth）
 dev_backend_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
-	export HTTP_ADDR=$(ENV_HTTP_ADDR) && \
-	export GRPC_ADDR=$(ENV_GRPC_ADDR) && \
+	export SERVER_ADDR=$(ENV_SERVER_ADDR) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_BACKEND)/main.go
@@ -228,13 +232,13 @@ dev_backend_basic_auth:
 # 启动IP上报服务
 dev_reporter:
 	export DEBUG=$(ENV_DEBUG) && \
-	export GRPC_URL=$(ENV_GRPC_URL) && \
+	export BACKEND_ENDPOINT=$(ENV_BACKEND_ENDPOINT) && \
 	go run cmd/$(BINARY_NAME_REPORTER)/main.go
 
 # 启动IP上报服务（启用 Basic Auth）
 dev_reporter_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
-	export GRPC_URL=$(ENV_GRPC_URL) && \
+	export BACKEND_ENDPOINT=$(ENV_BACKEND_ENDPOINT) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_REPORTER)/main.go
@@ -242,13 +246,13 @@ dev_reporter_basic_auth:
 # 启动端口转发服务
 dev_forwarder:
 	export DEBUG=$(ENV_DEBUG) && \
-	export GRPC_URL=$(ENV_GRPC_URL) && \
+	export BACKEND_ENDPOINT=$(ENV_BACKEND_ENDPOINT) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
 
 # 启动端口转发服务（启用 Basic Auth）
 dev_forwarder_basic_auth:
 	export DEBUG=$(ENV_DEBUG) && \
-	export GRPC_URL=$(ENV_GRPC_URL) && \
+	export BACKEND_ENDPOINT=$(ENV_BACKEND_ENDPOINT) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go

@@ -154,6 +154,11 @@ func Dashboard(c *gin.Context) {
 			Href:  "/task",
 		},
 		{
+			Title: "开放接口",
+			Icon:  "i-lucide-api",
+			Href:  "/interface",
+		},
+		{
 			Title: "操作日志",
 			Icon:  "i-lucide-history",
 			Href:  "/log",

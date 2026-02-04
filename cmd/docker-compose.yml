@@ -13,7 +13,7 @@ services:
       start_period: 10s  # 在启动后的前 10 秒内，如果检查失败不算入重试次数
     environment:
       - "DEBUG=true"  # 开启调试模式
-      - "HTTP_PORT=8080"  # HTTP 端口号，默认 8080
+      - "SERVER_ADDR=0.0.0.0:8080"  # HTTP / gRPC 端口号，默认 8080
       - "BASIC_AUTH_USERNAME="  # 基本认证用户名，可留空
       - "BASIC_AUTH_PASSWORD="  # 基本认证密码，可留空
       - "DEVICE_CODE="  # 设备编号，留空则自动生成（根据 /etc/machine-id 生成）
@@ -33,7 +33,7 @@ services:
       - backend
     environment:
       - "DEBUG=true"  # 开启调试模式
-      - "HTTP_URL=http://backend:8080"  # backend 服务的 HTTP 地址
+      - "BACKEND_ENDPOINT=backend:8080" # backend 服务的 HTTP / gRPC 地址
       - "BASIC_AUTH_USERNAME="  # 基本认证用户名，可留空
       - "BASIC_AUTH_PASSWORD="  # 基本认证密码，可留空
       - "DEVICE_CODE="  # 设备编号，留空则自动生成（根据 /etc/machine-id 生成）
@@ -52,7 +52,7 @@ services:
       - backend
     environment:
       - "DEBUG=true"  # 开启调试模式
-      - "HTTP_URL=http://backend:8080"  # backend 服务的 HTTP 地址
+      - "BACKEND_ENDPOINT=backend:8080" # backend 服务的 HTTP / gRPC 地址
       - "BASIC_AUTH_USERNAME="  # 基本认证用户名，可留空
       - "BASIC_AUTH_PASSWORD="  # 基本认证密码，可留空
       - "DEVICE_CODE="  # 设备编号，留空则自动生成（根据 /etc/machine-id 生成）

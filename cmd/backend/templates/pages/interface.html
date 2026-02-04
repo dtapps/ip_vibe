@@ -89,27 +89,16 @@
                     <code class="text-xs font-mono opacity-80 break-all">
                         {{ if eq $data.CurrentProto "api" }}
 
-                        {{ if $data.HttpAddr }}
-                        {{ $data.HttpAddr }}/api
-                        {{ else }}
-                        未配置 HTTP 地址
-                        {{ end}}
+                        {{ $data.ServerAddr }}/api
 
                         {{ else if eq $data.CurrentProto "mcp" }}
 
-                        {{ if $data.HttpAddr }}
-                        {{ $data.HttpAddr }}/mcp
-                        {{ else }}
-                        未配置 HTTP 地址
-                        {{ end}}
+                        {{ $data.ServerAddr }}/mcp
                         
                         {{ else if eq $data.CurrentProto "grpc" }}
 
-                        {{ if $data.GrpcAddr }}
-                        {{ $data.GrpcAddr }}
-                        {{ else }}
-                        未配置 gRPC 地址
-                        {{ end}}
+                        {{ $data.ServerAddr }}
+                        
                         {{ end }}
                     </code>
                 </div>

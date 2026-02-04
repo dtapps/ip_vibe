@@ -94,11 +94,11 @@ func main() {
 	// 创建端口转发器
 	forwardAgent := forward.NewAgent(global.GvaGocronSlog)
 
-	if sys_env.GvaEnv.GRPC_URL != "" {
+	if sys_env.GvaEnv.BACKEND_ENDPOINT != "" {
 
 		// 连接 gRPC 客户端
 		grpcMgr := grpc_client.NewManager(global.GvaGrpcSlog, grpc_client.Config{
-			Addr:     sys_env.GvaEnv.GRPC_URL,
+			Addr:     sys_env.GvaEnv.BACKEND_ENDPOINT,
 			Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
 			Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
 		})
@@ -175,8 +175,8 @@ func main() {
 		go agentService.StartStream(ctx)
 
 	} else {
-		slog.ErrorContext(ctx, "服务启动失败: GRPC_URL 未配置")
-		panic("服务启动失败: GRPC_URL 未配置")
+		slog.ErrorContext(ctx, "服务启动失败: BACKEND_ENDPOINT 未配置")
+		panic("服务启动失败: BACKEND_ENDPOINT 未配置")
 	}
 
 	// 启动 GoCron 调度器

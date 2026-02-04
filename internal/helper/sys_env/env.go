@@ -10,13 +10,11 @@ type Env struct {
 	// [backend][reporter][forwarder] 是否开启调试模式
 	DEBUG bool `json:"debug" env:"DEBUG"`
 
-	// [backend] HTTP 地址
-	HTTP_ADDR string `json:"http_addr" env:"HTTP_ADDR"`
-	// [backend] gRPC 地址
-	GRPC_ADDR string `json:"grpc_addr" env:"GRPC_ADDR"`
+	// [backend] 服务地址
+	SERVER_ADDR string `json:"server_addr" env:"SERVER_ADDR"`
 
-	// [reporter][forwarder] gRPC URL
-	GRPC_URL string `json:"grpc_url" env:"GRPC_URL"`
+	// [reporter][forwarder] 后端服务地址
+	BACKEND_ENDPOINT string `json:"backend_endpoint" env:"BACKEND_ENDPOINT"`
 
 	// [backend][reporter][forwarder] 基本认证用户名
 	BASIC_AUTH_USERNAME string `json:"basic_auth_username" env:"BASIC_AUTH_USERNAME"`
@@ -44,9 +42,8 @@ func init() {
 	// 设置变量
 	GvaEnv = new(Env)
 	GvaEnv.DEBUG = getVal("DEBUG", "false") == "true"
-	GvaEnv.HTTP_ADDR = getVal("HTTP_ADDR", "0.0.0.0:8080")
-	GvaEnv.GRPC_ADDR = getVal("GRPC_ADDR", "")
-	GvaEnv.GRPC_URL = getVal("GRPC_URL", "")
+	GvaEnv.SERVER_ADDR = getVal("SERVER_ADDR", "0.0.0.0:8080")
+	GvaEnv.BACKEND_ENDPOINT = getVal("BACKEND_ENDPOINT", "127.0.0.1:8080")
 	GvaEnv.BASIC_AUTH_USERNAME = getVal("BASIC_AUTH_USERNAME", "")
 	GvaEnv.BASIC_AUTH_PASSWORD = getVal("BASIC_AUTH_PASSWORD", "")
 	GvaEnv.DEVICE_CODE = getVal("DEVICE_CODE", "")
