@@ -19,8 +19,8 @@ type AgentService struct {
 	role       string                    // 角色
 	deviceData *core.GetDeviceDataResult // 设备数据
 
-	grpcClient  *grpc.ClientConn                  // gRPC 客户端
-	agentClient grpc_generated.AgentServiceClient // gRPC 业务服务
+	grpcClient   *grpc.ClientConn                   // gRPC 客户端
+	deviceClient grpc_generated.DeviceServiceClient // gRPC 业务服务
 }
 
 // NewAgentService 创建代理服务
@@ -35,11 +35,11 @@ func NewAgentService(ctx context.Context, logger *slog.Logger, grpcClient *grpc.
 	return &AgentService{
 		logger: logger,
 
-		role:       "forwarder",
+		role:       "reporter",
 		deviceData: deviceData,
 
-		grpcClient:  grpcClient,
-		agentClient: grpc_generated.NewAgentServiceClient(grpcClient),
+		grpcClient:   grpcClient,
+		deviceClient: grpc_generated.NewDeviceServiceClient(grpcClient),
 	}, nil
 }
 
@@ -47,7 +47,7 @@ func NewAgentService(ctx context.Context, logger *slog.Logger, grpcClient *grpc.
 func (s *AgentService) StartStream(ctx context.Context) {
 
 	// 启动
-	stream, err := s.agentClient.Stream(ctx)
+	stream, err := s.deviceClient.Stream(ctx)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "启动流式通信失败",
 			slog.Any("err", err),

@@ -345,9 +345,9 @@ func gracefulShutdown() {
 		// 创建 gRPC 服务
 		grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{})
 
-		// 关闭 gRPC所有流
-		if agentSvc := grpcMgr.GetAgentService(); agentSvc != nil {
-			agentSvc.CloseAllStreams()
+		// 关闭 gRPC 所有流
+		if deviceService := grpcMgr.GetDeviceService(); deviceService != nil {
+			deviceService.CloseAllStreams()
 		}
 
 		// 关闭 混合 服务

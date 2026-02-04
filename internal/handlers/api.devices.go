@@ -376,14 +376,14 @@ func GetDeviceStatus(c *gin.Context) {
 	// 创建 gRPC 服务
 	grpcMgr := grpc_server.NewManager(nil, grpc_server.Config{})
 
-	// 获取 AgentService 实例
-	agentService := grpcMgr.GetAgentService()
+	// 获取 DeviceService 实例
+	deviceService := grpcMgr.GetDeviceService()
 
 	// 请求全部设备状态
-	agentService.RequestFullReportToDevice(device.Code)
+	deviceService.RequestFullReportToDevice(device.Code)
 
 	// 查询全部设备状态
-	clientStates := agentService.GetClients()
+	clientStates := deviceService.GetClients()
 
 	// 查找该设备的所有角色实例
 	var roles []types.GetDeviceStatusResponse

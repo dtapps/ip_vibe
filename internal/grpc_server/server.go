@@ -26,7 +26,7 @@ type GRPCServerManager struct {
 	logger   *slog.Logger // 日志记录器
 	config   Config       // gRPC 服务配置参数
 
-	agentService     *grpc_service.AgentService
+	deviceService    *grpc_service.DeviceService
 	openService      *grpc_service.OpenService
 	remoteLogService *grpc_service.RemoteLogService
 }
@@ -107,10 +107,10 @@ func (m *GRPCServerManager) initServer() {
 	m.server = grpc.NewServer(opts...)
 
 	// 注册服务
-	m.agentService = grpc_service.NewAgentService(m.logger)
+	m.deviceService = grpc_service.NewDeviceService(m.logger)
 	m.openService = grpc_service.NewOpenService(m.logger)
 	m.remoteLogService = grpc_service.NewRemoteLogService(m.logger)
-	m.agentService.RegisterService(m.server)
+	m.deviceService.RegisterService(m.server)
 	m.openService.RegisterService(m.server)
 	m.remoteLogService.RegisterService(m.server)
 }
@@ -175,7 +175,17 @@ func (m *GRPCServerManager) Stop(ctx context.Context) {
 	m.logger.InfoContext(ctx, "gRPC 服务已安全停止")
 }
 
-// GetAgentService 返回 AgentService 实例
-func (m *GRPCServerManager) GetAgentService() *grpc_service.AgentService {
-	return m.agentService
+// GetDeviceService 返回 DeviceService 实例
+func (m *GRPCServerManager) GetDeviceService() *grpc_service.DeviceService {
+	return m.deviceService
+}
+
+// GetOpenService 返回 OpenService 实例
+func (m *GRPCServerManager) GetOpenService() *grpc_service.OpenService {
+	return m.openService
+}
+
+// GetRemoteLogService 返回 RemoteLogService 实例
+func (m *GRPCServerManager) GetRemoteLogService() *grpc_service.RemoteLogService {
+	return m.remoteLogService
 }

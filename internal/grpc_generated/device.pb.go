@@ -2,13 +2,14 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.2
-// source: agent.proto
+// source: device.proto
 
 // 包名
 
 package grpc_generated
 
 import (
+	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -38,7 +39,7 @@ type ClientMessage struct {
 
 func (x *ClientMessage) Reset() {
 	*x = ClientMessage{}
-	mi := &file_agent_proto_msgTypes[0]
+	mi := &file_device_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -50,7 +51,7 @@ func (x *ClientMessage) String() string {
 func (*ClientMessage) ProtoMessage() {}
 
 func (x *ClientMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_proto_msgTypes[0]
+	mi := &file_device_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -63,7 +64,7 @@ func (x *ClientMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClientMessage.ProtoReflect.Descriptor instead.
 func (*ClientMessage) Descriptor() ([]byte, []int) {
-	return file_agent_proto_rawDescGZIP(), []int{0}
+	return file_device_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ClientMessage) GetPayload() isClientMessage_Payload {
@@ -100,7 +101,7 @@ type ClientMessage_Info struct {
 }
 
 type ClientMessage_Heartbeat struct {
-	Heartbeat *Heartbeat `protobuf:"bytes,2,opt,name=heartbeat,proto3,oneof"` // 心跳
+	Heartbeat *Heartbeat `protobuf:"bytes,2,opt,name=heartbeat,proto3,oneof"` // 客户端心跳消息
 }
 
 func (*ClientMessage_Info) isClientMessage_Payload() {}
@@ -138,7 +139,7 @@ type ClientInfo struct {
 
 func (x *ClientInfo) Reset() {
 	*x = ClientInfo{}
-	mi := &file_agent_proto_msgTypes[1]
+	mi := &file_device_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -150,7 +151,7 @@ func (x *ClientInfo) String() string {
 func (*ClientInfo) ProtoMessage() {}
 
 func (x *ClientInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_proto_msgTypes[1]
+	mi := &file_device_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -163,7 +164,7 @@ func (x *ClientInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClientInfo.ProtoReflect.Descriptor instead.
 func (*ClientInfo) Descriptor() ([]byte, []int) {
-	return file_agent_proto_rawDescGZIP(), []int{1}
+	return file_device_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ClientInfo) GetDeviceCode() string {
@@ -252,7 +253,7 @@ type Heartbeat struct {
 
 func (x *Heartbeat) Reset() {
 	*x = Heartbeat{}
-	mi := &file_agent_proto_msgTypes[2]
+	mi := &file_device_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -264,7 +265,7 @@ func (x *Heartbeat) String() string {
 func (*Heartbeat) ProtoMessage() {}
 
 func (x *Heartbeat) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_proto_msgTypes[2]
+	mi := &file_device_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -277,7 +278,7 @@ func (x *Heartbeat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Heartbeat.ProtoReflect.Descriptor instead.
 func (*Heartbeat) Descriptor() ([]byte, []int) {
-	return file_agent_proto_rawDescGZIP(), []int{2}
+	return file_device_proto_rawDescGZIP(), []int{2}
 }
 
 // 服务端下发的消息
@@ -294,7 +295,7 @@ type ServerMessage struct {
 
 func (x *ServerMessage) Reset() {
 	*x = ServerMessage{}
-	mi := &file_agent_proto_msgTypes[3]
+	mi := &file_device_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -306,7 +307,7 @@ func (x *ServerMessage) String() string {
 func (*ServerMessage) ProtoMessage() {}
 
 func (x *ServerMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_proto_msgTypes[3]
+	mi := &file_device_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -319,7 +320,7 @@ func (x *ServerMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerMessage.ProtoReflect.Descriptor instead.
 func (*ServerMessage) Descriptor() ([]byte, []int) {
-	return file_agent_proto_rawDescGZIP(), []int{3}
+	return file_device_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ServerMessage) GetCommand() isServerMessage_Command {
@@ -371,7 +372,7 @@ type Ack struct {
 
 func (x *Ack) Reset() {
 	*x = Ack{}
-	mi := &file_agent_proto_msgTypes[4]
+	mi := &file_device_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -383,7 +384,7 @@ func (x *Ack) String() string {
 func (*Ack) ProtoMessage() {}
 
 func (x *Ack) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_proto_msgTypes[4]
+	mi := &file_device_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -396,7 +397,7 @@ func (x *Ack) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Ack.ProtoReflect.Descriptor instead.
 func (*Ack) Descriptor() ([]byte, []int) {
-	return file_agent_proto_rawDescGZIP(), []int{4}
+	return file_device_proto_rawDescGZIP(), []int{4}
 }
 
 type RequestFullReport struct {
@@ -407,7 +408,7 @@ type RequestFullReport struct {
 
 func (x *RequestFullReport) Reset() {
 	*x = RequestFullReport{}
-	mi := &file_agent_proto_msgTypes[5]
+	mi := &file_device_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -419,7 +420,7 @@ func (x *RequestFullReport) String() string {
 func (*RequestFullReport) ProtoMessage() {}
 
 func (x *RequestFullReport) ProtoReflect() protoreflect.Message {
-	mi := &file_agent_proto_msgTypes[5]
+	mi := &file_device_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -432,21 +433,21 @@ func (x *RequestFullReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestFullReport.ProtoReflect.Descriptor instead.
 func (*RequestFullReport) Descriptor() ([]byte, []int) {
-	return file_agent_proto_rawDescGZIP(), []int{5}
+	return file_device_proto_rawDescGZIP(), []int{5}
 }
 
-var File_agent_proto protoreflect.FileDescriptor
+var File_device_proto protoreflect.FileDescriptor
 
-const file_agent_proto_rawDesc = "" +
+const file_device_proto_rawDesc = "" +
 	"\n" +
-	"\vagent.proto\x12\x04open\x1a\x1fgoogle/protobuf/timestamp.proto\"s\n" +
+	"\fdevice.proto\x12\x04open\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17validate/validate.proto\"s\n" +
 	"\rClientMessage\x12&\n" +
 	"\x04info\x18\x01 \x01(\v2\x10.open.ClientInfoH\x00R\x04info\x12/\n" +
 	"\theartbeat\x18\x02 \x01(\v2\x0f.open.HeartbeatH\x00R\theartbeatB\t\n" +
-	"\apayload\"\xef\x02\n" +
+	"\apayload\"\x8c\x03\n" +
 	"\n" +
-	"ClientInfo\x12\x1f\n" +
-	"\vdevice_code\x18\x01 \x01(\tR\n" +
+	"ClientInfo\x12<\n" +
+	"\vdevice_code\x18\x01 \x01(\tB\x1b\xfaB\x18r\x16\x10\x01\x1822\x10^[a-zA-Z0-9_-]+$R\n" +
 	"deviceCode\x12\x1f\n" +
 	"\vdevice_name\x18\x02 \x01(\tR\n" +
 	"deviceName\x12\x12\n" +
@@ -470,24 +471,24 @@ const file_agent_proto_rawDesc = "" +
 	"\x13request_full_report\x18\x02 \x01(\v2\x17.open.RequestFullReportH\x00R\x11requestFullReportB\t\n" +
 	"\acommand\"\x05\n" +
 	"\x03Ack\"\x13\n" +
-	"\x11RequestFullReport2F\n" +
-	"\fAgentService\x126\n" +
+	"\x11RequestFullReport2G\n" +
+	"\rDeviceService\x126\n" +
 	"\x06Stream\x12\x13.open.ClientMessage\x1a\x13.open.ServerMessage(\x010\x01B!Z\x1fvibe_ip/internal/grpc_generatedb\x06proto3"
 
 var (
-	file_agent_proto_rawDescOnce sync.Once
-	file_agent_proto_rawDescData []byte
+	file_device_proto_rawDescOnce sync.Once
+	file_device_proto_rawDescData []byte
 )
 
-func file_agent_proto_rawDescGZIP() []byte {
-	file_agent_proto_rawDescOnce.Do(func() {
-		file_agent_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_agent_proto_rawDesc), len(file_agent_proto_rawDesc)))
+func file_device_proto_rawDescGZIP() []byte {
+	file_device_proto_rawDescOnce.Do(func() {
+		file_device_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_device_proto_rawDesc), len(file_device_proto_rawDesc)))
 	})
-	return file_agent_proto_rawDescData
+	return file_device_proto_rawDescData
 }
 
-var file_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_agent_proto_goTypes = []any{
+var file_device_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_device_proto_goTypes = []any{
 	(*ClientMessage)(nil),         // 0: open.ClientMessage
 	(*ClientInfo)(nil),            // 1: open.ClientInfo
 	(*Heartbeat)(nil),             // 2: open.Heartbeat
@@ -496,15 +497,15 @@ var file_agent_proto_goTypes = []any{
 	(*RequestFullReport)(nil),     // 5: open.RequestFullReport
 	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
 }
-var file_agent_proto_depIdxs = []int32{
+var file_device_proto_depIdxs = []int32{
 	1, // 0: open.ClientMessage.info:type_name -> open.ClientInfo
 	2, // 1: open.ClientMessage.heartbeat:type_name -> open.Heartbeat
 	6, // 2: open.ClientInfo.start_time:type_name -> google.protobuf.Timestamp
 	6, // 3: open.ClientInfo.get_time:type_name -> google.protobuf.Timestamp
 	4, // 4: open.ServerMessage.ack:type_name -> open.Ack
 	5, // 5: open.ServerMessage.request_full_report:type_name -> open.RequestFullReport
-	0, // 6: open.AgentService.Stream:input_type -> open.ClientMessage
-	3, // 7: open.AgentService.Stream:output_type -> open.ServerMessage
+	0, // 6: open.DeviceService.Stream:input_type -> open.ClientMessage
+	3, // 7: open.DeviceService.Stream:output_type -> open.ServerMessage
 	7, // [7:8] is the sub-list for method output_type
 	6, // [6:7] is the sub-list for method input_type
 	6, // [6:6] is the sub-list for extension type_name
@@ -512,16 +513,16 @@ var file_agent_proto_depIdxs = []int32{
 	0, // [0:6] is the sub-list for field type_name
 }
 
-func init() { file_agent_proto_init() }
-func file_agent_proto_init() {
-	if File_agent_proto != nil {
+func init() { file_device_proto_init() }
+func file_device_proto_init() {
+	if File_device_proto != nil {
 		return
 	}
-	file_agent_proto_msgTypes[0].OneofWrappers = []any{
+	file_device_proto_msgTypes[0].OneofWrappers = []any{
 		(*ClientMessage_Info)(nil),
 		(*ClientMessage_Heartbeat)(nil),
 	}
-	file_agent_proto_msgTypes[3].OneofWrappers = []any{
+	file_device_proto_msgTypes[3].OneofWrappers = []any{
 		(*ServerMessage_Ack)(nil),
 		(*ServerMessage_RequestFullReport)(nil),
 	}
@@ -529,17 +530,17 @@ func file_agent_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_agent_proto_rawDesc), len(file_agent_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_device_proto_rawDesc), len(file_device_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_agent_proto_goTypes,
-		DependencyIndexes: file_agent_proto_depIdxs,
-		MessageInfos:      file_agent_proto_msgTypes,
+		GoTypes:           file_device_proto_goTypes,
+		DependencyIndexes: file_device_proto_depIdxs,
+		MessageInfos:      file_device_proto_msgTypes,
 	}.Build()
-	File_agent_proto = out.File
-	file_agent_proto_goTypes = nil
-	file_agent_proto_depIdxs = nil
+	File_device_proto = out.File
+	file_device_proto_goTypes = nil
+	file_device_proto_depIdxs = nil
 }

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v6.33.2
-// source: agent.proto
+// source: device.proto
 
 // 包名
 
@@ -21,30 +21,30 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AgentService_Stream_FullMethodName = "/open.AgentService/Stream"
+	DeviceService_Stream_FullMethodName = "/open.DeviceService/Stream"
 )
 
-// AgentServiceClient is the client API for AgentService service.
+// DeviceServiceClient is the client API for DeviceService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// 代理服务
-type AgentServiceClient interface {
+// 设备服务
+type DeviceServiceClient interface {
 	// 客户端通过此流注册并保持连接，服务端可感知在线状态并下发指令
 	Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ClientMessage, ServerMessage], error)
 }
 
-type agentServiceClient struct {
+type deviceServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewAgentServiceClient(cc grpc.ClientConnInterface) AgentServiceClient {
-	return &agentServiceClient{cc}
+func NewDeviceServiceClient(cc grpc.ClientConnInterface) DeviceServiceClient {
+	return &deviceServiceClient{cc}
 }
 
-func (c *agentServiceClient) Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ClientMessage, ServerMessage], error) {
+func (c *deviceServiceClient) Stream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ClientMessage, ServerMessage], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &AgentService_ServiceDesc.Streams[0], AgentService_Stream_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &DeviceService_ServiceDesc.Streams[0], DeviceService_Stream_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -53,71 +53,71 @@ func (c *agentServiceClient) Stream(ctx context.Context, opts ...grpc.CallOption
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type AgentService_StreamClient = grpc.BidiStreamingClient[ClientMessage, ServerMessage]
+type DeviceService_StreamClient = grpc.BidiStreamingClient[ClientMessage, ServerMessage]
 
-// AgentServiceServer is the server API for AgentService service.
-// All implementations must embed UnimplementedAgentServiceServer
+// DeviceServiceServer is the server API for DeviceService service.
+// All implementations must embed UnimplementedDeviceServiceServer
 // for forward compatibility.
 //
-// 代理服务
-type AgentServiceServer interface {
+// 设备服务
+type DeviceServiceServer interface {
 	// 客户端通过此流注册并保持连接，服务端可感知在线状态并下发指令
 	Stream(grpc.BidiStreamingServer[ClientMessage, ServerMessage]) error
-	mustEmbedUnimplementedAgentServiceServer()
+	mustEmbedUnimplementedDeviceServiceServer()
 }
 
-// UnimplementedAgentServiceServer must be embedded to have
+// UnimplementedDeviceServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedAgentServiceServer struct{}
+type UnimplementedDeviceServiceServer struct{}
 
-func (UnimplementedAgentServiceServer) Stream(grpc.BidiStreamingServer[ClientMessage, ServerMessage]) error {
+func (UnimplementedDeviceServiceServer) Stream(grpc.BidiStreamingServer[ClientMessage, ServerMessage]) error {
 	return status.Error(codes.Unimplemented, "method Stream not implemented")
 }
-func (UnimplementedAgentServiceServer) mustEmbedUnimplementedAgentServiceServer() {}
-func (UnimplementedAgentServiceServer) testEmbeddedByValue()                      {}
+func (UnimplementedDeviceServiceServer) mustEmbedUnimplementedDeviceServiceServer() {}
+func (UnimplementedDeviceServiceServer) testEmbeddedByValue()                       {}
 
-// UnsafeAgentServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to AgentServiceServer will
+// UnsafeDeviceServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to DeviceServiceServer will
 // result in compilation errors.
-type UnsafeAgentServiceServer interface {
-	mustEmbedUnimplementedAgentServiceServer()
+type UnsafeDeviceServiceServer interface {
+	mustEmbedUnimplementedDeviceServiceServer()
 }
 
-func RegisterAgentServiceServer(s grpc.ServiceRegistrar, srv AgentServiceServer) {
-	// If the following call panics, it indicates UnimplementedAgentServiceServer was
+func RegisterDeviceServiceServer(s grpc.ServiceRegistrar, srv DeviceServiceServer) {
+	// If the following call panics, it indicates UnimplementedDeviceServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&AgentService_ServiceDesc, srv)
+	s.RegisterService(&DeviceService_ServiceDesc, srv)
 }
 
-func _AgentService_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(AgentServiceServer).Stream(&grpc.GenericServerStream[ClientMessage, ServerMessage]{ServerStream: stream})
+func _DeviceService_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(DeviceServiceServer).Stream(&grpc.GenericServerStream[ClientMessage, ServerMessage]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type AgentService_StreamServer = grpc.BidiStreamingServer[ClientMessage, ServerMessage]
+type DeviceService_StreamServer = grpc.BidiStreamingServer[ClientMessage, ServerMessage]
 
-// AgentService_ServiceDesc is the grpc.ServiceDesc for AgentService service.
+// DeviceService_ServiceDesc is the grpc.ServiceDesc for DeviceService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var AgentService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "open.AgentService",
-	HandlerType: (*AgentServiceServer)(nil),
+var DeviceService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "open.DeviceService",
+	HandlerType: (*DeviceServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "Stream",
-			Handler:       _AgentService_Stream_Handler,
+			Handler:       _DeviceService_Stream_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},
-	Metadata: "agent.proto",
+	Metadata: "device.proto",
 }

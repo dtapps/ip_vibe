@@ -16,25 +16,25 @@ import (
 type ClientState struct {
 	Info     *grpc_generated.ClientInfo
 	LastSeen time.Time
-	Stream   grpc_generated.AgentService_StreamServer
+	Stream   grpc_generated.DeviceService_StreamServer
 }
 
-// AgentService 实现 gRPC 服务
-type AgentService struct {
-	grpc_generated.UnimplementedAgentServiceServer              // 嵌入未实现的服务
-	logger                                         *slog.Logger // 日志记录器
-	mu                                             sync.RWMutex
-	clients                                        map[string]*ClientState // device_code|role -> ClientState
+// DeviceService 实现 gRPC 服务
+type DeviceService struct {
+	grpc_generated.UnimplementedDeviceServiceServer              // 嵌入未实现的服务
+	logger                                          *slog.Logger // 日志记录器
+	mu                                              sync.RWMutex
+	clients                                         map[string]*ClientState // device_code|role -> ClientState
 
 	// 新增：用于优雅关闭
 	shutdownCtx    context.Context
 	shutdownCancel context.CancelFunc
 }
 
-// NewAgentService 创建一个新的 AgentService 实例
-func NewAgentService(logger *slog.Logger) *AgentService {
+// NewDeviceService 创建一个新的 DeviceService 实例
+func NewDeviceService(logger *slog.Logger) *DeviceService {
 	ctx, cancel := context.WithCancel(context.Background())
-	return &AgentService{
+	return &DeviceService{
 		logger:         logger,
 		clients:        make(map[string]*ClientState),
 		shutdownCtx:    ctx,
@@ -43,8 +43,8 @@ func NewAgentService(logger *slog.Logger) *AgentService {
 }
 
 // RegisterService 注册服务到 gRPC
-func (s *AgentService) RegisterService(server *grpc.Server) {
-	grpc_generated.RegisterAgentServiceServer(server, s)
+func (s *DeviceService) RegisterService(server *grpc.Server) {
+	grpc_generated.RegisterDeviceServiceServer(server, s)
 }
 
 // makeClientKey 生成客户端键（device_code|role）
@@ -53,7 +53,7 @@ func makeClientKey(deviceCode, role string) string {
 }
 
 // GetClients 返回当前在线客户端（用于调试或管理）
-func (s *AgentService) GetClients() map[string]*ClientState {
+func (s *DeviceService) GetClients() map[string]*ClientState {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -66,12 +66,12 @@ func (s *AgentService) GetClients() map[string]*ClientState {
 }
 
 // CloseAllStreams 主动关闭所有客户端流（用于优雅关闭）
-func (s *AgentService) CloseAllStreams() {
+func (s *DeviceService) CloseAllStreams() {
 	s.shutdownCancel()
 }
 
 // Stream 处理客户端流式连接
-func (s *AgentService) Stream(stream grpc_generated.AgentService_StreamServer) error {
+func (s *DeviceService) Stream(stream grpc_generated.DeviceService_StreamServer) error {
 
 	// 客户端键（device_code|role）
 	var clientKey string
@@ -180,7 +180,7 @@ func (s *AgentService) Stream(stream grpc_generated.AgentService_StreamServer) e
 }
 
 // RequestFullReportToDevice 向指定设备的所有角色实例发送“请重新上报完整信息”指令
-func (s *AgentService) RequestFullReportToDevice(deviceCode string) error {
+func (s *DeviceService) RequestFullReportToDevice(deviceCode string) error {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -217,7 +217,7 @@ func (s *AgentService) RequestFullReportToDevice(deviceCode string) error {
 }
 
 // RequestFullReportToAll 向所有在线客户端发送“请重新上报完整信息”指令
-func (s *AgentService) RequestFullReportToAll() error {
+func (s *DeviceService) RequestFullReportToAll() error {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
