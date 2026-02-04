@@ -153,7 +153,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			for _, zone := range zones {
 				zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
 					Value: zone.ID,
-					Label: zone.Name,
+					Label: utils.TrimDots(zone.Name),
 				})
 			}
 			return nil
@@ -212,7 +212,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			for _, domain := range domains {
 				domainOptions = append(domainOptions, types.SCHEMAFieldOption{
 					Value: utils.PtrToUint64(domain.DomainId),
-					Label: utils.PtrToString(domain.Name),
+					Label: utils.TrimDotsPrt(domain.Name),
 				})
 			}
 			return nil
@@ -296,7 +296,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			for _, line := range lines {
 				domainOptions = append(domainOptions, types.SCHEMAFieldOption{
 					Value: utils.PtrToString(line.DomainId),
-					Label: utils.PtrToString(line.DomainName),
+					Label: utils.TrimDotsPrt(line.DomainName),
 				})
 			}
 			return nil
@@ -371,7 +371,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			for _, line := range lines {
 				zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
 					Value: line.Id,
-					Label: line.Name,
+					Label: utils.TrimDots(line.Name),
 				})
 			}
 			return nil
@@ -462,7 +462,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			for _, zone := range *zones {
 				zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
 					Value: zone.Id,
-					Label: *zone.Name,
+					Label: utils.TrimDotsPrt(zone.Name),
 				})
 			}
 			return nil
@@ -541,7 +541,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			for _, zone := range zones {
 				zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
 					Value: utils.PtrToInt32(zone.ZID),
-					Label: utils.PtrToString(zone.ZoneName),
+					Label: utils.TrimDotsPrt(zone.ZoneName),
 				})
 			}
 			return nil
