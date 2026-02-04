@@ -119,6 +119,14 @@ const DNS_SCHEMA = {
   volcengine_dns: {
     label: "火山引擎 DNS",
     fields: [
+      {
+        id: "zone",
+        label: "域名",
+        type: "select",
+        placeholder: "请选择域名",
+        required: true,
+        options: [],
+      },
       [
         {
           id: "line",

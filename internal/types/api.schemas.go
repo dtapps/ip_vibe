@@ -3,7 +3,7 @@ package types
 import "encoding/json"
 
 type SCHEMAFieldOption struct {
-	Value string `json:"value"` // 选项值
+	Value any    `json:"value"` // 选项值
 	Label string `json:"label"` // 选项标签
 }
 

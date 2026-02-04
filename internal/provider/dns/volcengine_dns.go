@@ -345,3 +345,17 @@ func (p *VolcengineDNSProvider) ListLines(ctx context.Context) (lines []*Volceng
 	}
 	return lines, nil
 }
+
+// 获取域名的列表
+// https://api.volcengine.com/api-explorer?action=ListZones
+func (p *VolcengineDNSProvider) ListZones(ctx context.Context) (lines []*dns.ZoneForListZonesOutput, err error) {
+	// 查询线路列表
+	request := &dns.ListZonesInput{}
+	request.PageNumber = volcengine.Int32(1)
+	request.PageSize = volcengine.Int32(500)
+	response, err := p.Provider.Client.ListZonesWithContext(ctx, request)
+	if err != nil {
+		return nil, fmt.Errorf("接口 ListZonesWithContext 失败 %w", err)
+	}
+	return response.Zones, nil
+}

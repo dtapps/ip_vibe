@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/provider/dns"
 	"vibe_ip/internal/provider/tun"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -124,8 +125,6 @@ func GetDnsRecordSchema(c *gin.Context) {
 
 	switch firstConfig.Platform {
 	case platformconfig.PlatformTencentDNS:
-		var multipleFields any
-		var singleField any
 
 		dnsProviderCfg := dns.NewDefaultTencentDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
@@ -169,7 +168,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 		}
 
 		// 构造字段
-		multipleFields = []types.SCHEMAField{
+		fields = append(fields, []types.SCHEMAField{
 			{
 				ID:          "record_line",
 				Label:       "线路",
@@ -185,16 +184,9 @@ func GetDnsRecordSchema(c *gin.Context) {
 				Placeholder: "请输入备注",
 				Required:    false,
 			},
-		}
-		if multipleFields != nil {
-			fields = append(fields, multipleFields)
-		}
-		if singleField != nil {
-			fields = append(fields, singleField)
-		}
+		})
+
 	case platformconfig.PlatformAliyunDNS:
-		var multipleFields any
-		var singleField any
 
 		dnsProviderCfg := dns.NewDefaultAliyunDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
@@ -237,24 +229,17 @@ func GetDnsRecordSchema(c *gin.Context) {
 			return
 		}
 
-		// 构造字段组
-		multipleFields = types.SCHEMAField{
+		// 构造字段
+		fields = append(fields, types.SCHEMAField{
 			ID:          "line",
 			Label:       "线路",
 			Type:        "select",
 			Placeholder: "请选择线路",
 			Required:    true,
 			Options:     lineOptions,
-		}
-		if multipleFields != nil {
-			fields = append(fields, multipleFields)
-		}
-		if singleField != nil {
-			fields = append(fields, singleField)
-		}
+		})
+
 	case platformconfig.PlatformVolcengineDNS:
-		var multipleFields any
-		var singleField any
 
 		dnsProviderCfg := dns.NewDefaultVolcengineDNSConfig()
 		err = dnsProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
@@ -292,13 +277,38 @@ func GetDnsRecordSchema(c *gin.Context) {
 			return nil
 		})
 
+		// 准备域名选项
+		zoneOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 查询域名列表
+			zones, err := dnsProvider.ListZones(egCtx)
+			if err != nil {
+				return err
+			}
+			for _, zone := range zones {
+				zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
+					Value: utils.PtrToInt32(zone.ZID),
+					Label: utils.PtrToString(zone.ZoneName),
+				})
+			}
+			return nil
+		})
+
 		if err = eg.Wait(); err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
 
 		// 构造字段
-		multipleFields = []types.SCHEMAField{
+		fields = append(fields, types.SCHEMAField{
+			ID:          "zone",
+			Label:       "域名",
+			Type:        "select",
+			Placeholder: "请输入域名",
+			Required:    true,
+			Options:     zoneOptions,
+		})
+		fields = append(fields, []types.SCHEMAField{
 			{
 				ID:          "line",
 				Label:       "线路",
@@ -314,13 +324,8 @@ func GetDnsRecordSchema(c *gin.Context) {
 				Placeholder: "请输入备注",
 				Required:    false,
 			},
-		}
-		if multipleFields != nil {
-			fields = append(fields, multipleFields)
-		}
-		if singleField != nil {
-			fields = append(fields, singleField)
-		}
+		})
+
 	default:
 		errorResponse(c, http.StatusBadRequest, "未知的平台类型")
 		return
@@ -390,8 +395,6 @@ func GetTunRecordSchema(c *gin.Context) {
 
 	switch firstConfig.Platform {
 	case platformconfig.PlatformCloudflare:
-		var multipleFields any
-		var singleField any
 
 		tunProviderCfg := tun.NewDefaultCloudfareTUNConfig()
 		err = tunProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
@@ -455,7 +458,7 @@ func GetTunRecordSchema(c *gin.Context) {
 		}
 
 		// 构造字段
-		multipleFields = []types.SCHEMAField{
+		fields = append(fields, []types.SCHEMAField{
 			{
 				ID:          "tunnel_id",
 				Label:       "隧道",
@@ -472,20 +475,15 @@ func GetTunRecordSchema(c *gin.Context) {
 				Required:    true,
 				Options:     zoneOptions,
 			},
-		}
-		singleField = types.SCHEMAField{
+		})
+		fields = append(fields, types.SCHEMAField{
 			ID:          "remark",
 			Label:       "备注",
 			Type:        "text",
 			Placeholder: "请输入备注",
 			Required:    false,
-		}
-		if multipleFields != nil {
-			fields = append(fields, multipleFields)
-		}
-		if singleField != nil {
-			fields = append(fields, singleField)
-		}
+		})
+
 	default:
 		errorResponse(c, http.StatusBadRequest, "未知的平台类型")
 		return
