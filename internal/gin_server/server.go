@@ -63,15 +63,8 @@ func NewManager(logger *slog.Logger, cfg Config) *GinServerManager {
 	return instance
 }
 
-// GetEngine 获取 Gin 引擎，方便其他服务（如 MCP/Gateway）挂载路由
-func (m *GinServerManager) GetEngine() *gin.Engine {
-	if m.engine == nil {
-		m.initEngine()
-	}
-	return m.engine
-}
-
-func (m *GinServerManager) initEngine() {
+// initServer 初始化 Gin 服务
+func (m *GinServerManager) initServer() {
 
 	if m.logger != nil {
 		// 禁用控制台颜色
@@ -128,16 +121,30 @@ func (m *GinServerManager) initEngine() {
 
 }
 
+// GetServer 获取 Gin 服务，方便其他服务使用
+func (m *GinServerManager) GetServer() *gin.Engine {
+	if m.engine == nil {
+		m.initServer()
+	}
+	return m.engine
+}
+
 // Run 启动 Gin 服务
 func (m *GinServerManager) Run(ctx context.Context) {
 
 	// 确保 engine 已初始化
-	m.GetEngine()
+	m.GetServer()
 
 	// 日志
 	logger := m.logger.With(
 		slog.String("addr", m.config.Addr),
 	)
+
+	// 检查地址
+	if m.config.Addr == "" {
+		logger.ErrorContext(ctx, "Gin 服务启动错误，未配置地址")
+		return
+	}
 
 	m.server = &http.Server{
 		Addr:    m.config.Addr,

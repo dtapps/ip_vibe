@@ -123,7 +123,7 @@ func main() {
 	})
 
 	// 初始化 Gin 资源、路由
-	router := ginMgr.GetEngine()
+	router := ginMgr.GetServer()
 	ginMgr.InitResource(ctx, embeddedFiles)
 
 	// 配置 BasicAuth 中间件

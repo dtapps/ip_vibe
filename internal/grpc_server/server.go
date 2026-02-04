@@ -50,37 +50,28 @@ func NewManager(logger *slog.Logger, cfg Config) *GRPCServerManager {
 	return instance
 }
 
-// GetServer 获取底层的 gRPC 服务实例
-func (m *GRPCServerManager) GetServer() *grpc.Server {
+// GetGRPCServer 获取底层的 gRPC 服务实例
+func (m *GRPCServerManager) GetGRPCServer() *grpc.Server {
 	if m.server == nil {
 		return nil
 	}
 	return m.server
 }
 
-// Run 启动 gRPC 服务
-func (m *GRPCServerManager) Run(ctx context.Context) {
-
-	// 日志
-	logger := m.logger.With(
-		slog.String("addr", m.config.Addr),
+// initServer 初始化 gRPC 服务
+func (m *GRPCServerManager) initServer() {
+	// 审计上下文拦截器
+	auditInterceptor := grpc_interceptor.NewAuditContextInterceptor(
+		m.logger,
+		operationlog.SourceGrpc,
 	)
 
-	// 检查地址
-	if m.config.Addr == "" {
-		logger.ErrorContext(ctx, "gRPC 服务启动错误，未配置地址")
-		return
-	}
-
-	// 审计上下文拦截器
-	auditInterceptor := grpc_interceptor.NewAuditContextInterceptor(logger, operationlog.SourceGrpc)
-
 	// 日志拦截器
-	loggingInterceptor := grpc_interceptor.NewLoggingInterceptor(logger)
+	loggingInterceptor := grpc_interceptor.NewLoggingInterceptor(m.logger)
 
 	// BasicAuth 拦截器
 	basicAuthInterceptor := grpc_interceptor.NewBasicAuthInterceptor(
-		logger,
+		m.logger,
 		m.config.Username,
 		m.config.Password,
 	)
@@ -116,12 +107,38 @@ func (m *GRPCServerManager) Run(ctx context.Context) {
 	m.server = grpc.NewServer(opts...)
 
 	// 注册服务
-	m.agentService = grpc_service.NewAgentService(logger)
-	m.openService = grpc_service.NewOpenService(logger)
-	m.remoteLogService = grpc_service.NewRemoteLogService(logger)
+	m.agentService = grpc_service.NewAgentService(m.logger)
+	m.openService = grpc_service.NewOpenService(m.logger)
+	m.remoteLogService = grpc_service.NewRemoteLogService(m.logger)
 	m.agentService.RegisterService(m.server)
 	m.openService.RegisterService(m.server)
 	m.remoteLogService.RegisterService(m.server)
+}
+
+// GetServer 获取 gRPC 服务，方便其他服务使用
+func (m *GRPCServerManager) GetServer() *grpc.Server {
+	if m.server == nil {
+		m.initServer()
+	}
+	return m.server
+}
+
+// Run 启动 gRPC 服务
+func (m *GRPCServerManager) Run(ctx context.Context) {
+
+	// 确保 server 已初始化
+	m.GetServer()
+
+	// 日志
+	logger := m.logger.With(
+		slog.String("addr", m.config.Addr),
+	)
+
+	// 检查地址
+	if m.config.Addr == "" {
+		logger.ErrorContext(ctx, "gRPC 服务启动错误，未配置地址")
+		return
+	}
 
 	var err error
 	m.listener, err = net.Listen("tcp", m.config.Addr)

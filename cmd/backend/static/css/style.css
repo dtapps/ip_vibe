@@ -581,6 +581,9 @@
         width: unset;
       }
     }
+    .prose :where(a&:not(.btn-link)):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+      text-decoration-line: none;
+    }
     @layer daisyui.l1.l2.l3 {
       display: inline-flex;
       flex-shrink: 0;
@@ -5668,6 +5671,9 @@
         width: unset;
       }
     }
+    .prose :where(a&:not(.btn-link)):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+      text-decoration-line: none;
+    }
     @layer daisyui.l1.l2.l3 {
       display: inline-flex;
       flex-shrink: 0;
@@ -5816,6 +5822,9 @@
       @layer daisyui.l1.l2.l3 {
         width: unset;
       }
+    }
+    .prose :where(a&:not(.btn-link)):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+      text-decoration-line: none;
     }
     @layer daisyui.l1.l2.l3 {
       display: inline-flex;
@@ -5966,6 +5975,9 @@
       @layer daisyui.l1.l2.l3 {
         width: unset;
       }
+    }
+    .prose :where(a&:not(.btn-link)):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+      text-decoration-line: none;
     }
     @layer daisyui.l1.l2.l3 {
       display: inline-flex;
@@ -6351,6 +6363,9 @@
       @layer daisyui.l1.l2.l3 {
         width: unset;
       }
+    }
+    .prose :where(a&:not(.btn-link)):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+      text-decoration-line: none;
     }
     @layer daisyui.l1.l2.l3 {
       display: inline-flex;
