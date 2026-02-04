@@ -638,26 +638,33 @@ function renderPlatformFields(platform, capability, initialData = {}) {
 
       html += `<div class="form-group ${groupClassName}" data-platform="${platform}">`;
       item.forEach((subField) => {
-        html += generatePlatformFieldHtml(subField, data, capability);
+        html += generatePlatformFieldHtml(platform, subField, data, capability);
       });
       html += `</div>`;
     } else {
       // 普通非分组字段
-      html += generatePlatformFieldHtml(item, data, capability);
+      html += generatePlatformFieldHtml(platform, item, data, capability);
     }
   });
 
   container.innerHTML = html;
+
+  // 触发所有 select 的初始化处理
+  const selects = container.querySelectorAll("select.dynamic-input");
+  selects.forEach((select) => {
+    handleSelectChange(select);
+  });
 }
 
 /**
  * 生成单个字段 HTML，通过 ID 自动映射特殊属性
+ * @param {string} platform - 平台 key (如 cloudflare)
  * @param {Object} field - 字段定义对象
  * @param {Object} data - 表单数据对象
  * @param {string} capability - 服务能力 (all, cdn, dns, ssl)
  * @returns {string} - 生成的 HTML 字符串
  */
-function generatePlatformFieldHtml(field, data, capability) {
+function generatePlatformFieldHtml(platform, field, data, capability) {
   // 1. 自动属性映射 (根据 ID 直接映射)
   let specialClass = "";
   let dataTypeAttr = "";
@@ -684,29 +691,29 @@ function generatePlatformFieldHtml(field, data, capability) {
   if (field.type === "password") {
     inputHtml = `
       <div class="flex items-center gap-2">
-        <input type="password" class="ui-input dynamic-input" data-key="${field.id}" value="${value}" placeholder="${field.placeholder}" ${requiredAttr} autocomplete="new-password" />
+        <input type="password" class="ui-input dynamic-input" data-platform="${platform}" data-key="${field.id}" value="${value}" placeholder="${field.placeholder}" ${requiredAttr} autocomplete="new-password" />
         <button type="button" class="btn btn-square btn-sm btn-ghost" onclick="togglePasswordVisibilityByPrev(this)">
           <span class="i-lucide-eye w-4 h-4"></span>
         </button>
       </div>`;
   } else if (field.type === "select") {
     inputHtml = `
-          <select class="ui-select dynamic-input" data-key="${
+          <select class="ui-select dynamic-input" data-platform="${platform}" data-key="${
             field.id
-          }" ${requiredAttr}>
+          }" ${requiredAttr} onchange="handleSelectChange(this)">
             ${(field.options || [])
               .map(
                 (opt) =>
                   `<option value="${opt.value}" ${
                     opt.value == value ? "selected" : ""
-                  }>${opt.label}</option>`,
+                  } data-label="${opt.label}" data-value="${opt.value}">${opt.label}</option>`,
               )
               .join("")}
           </select>`;
   } else {
     inputHtml = `<input type="${
       field.type
-    }" class="ui-input dynamic-input ${specialClass}" data-key="${
+    }" class="ui-input dynamic-input ${specialClass}" data-platform="${platform}" data-key="${
       field.id
     }" value="${value}" 
                   placeholder="${field.placeholder}" ${
@@ -752,4 +759,23 @@ function buildConfigFromPlatformFields(platform = "") {
   });
 
   document.getElementById("config_json").value = JSON.stringify(config);
+}
+
+/**
+ * 处理选择框变化事件
+ * @param {HTMLSelectElement} selectEl - 触发事件的选择框元素
+ */
+function handleSelectChange(selectEl) {
+  const platform = selectEl.getAttribute("data-platform");
+  const key = selectEl.getAttribute("data-key");
+  const selectedValue = selectEl.value;
+  const opt = selectEl.options[selectEl.selectedIndex];
+  const label = opt.getAttribute("data-label");
+  const value = opt.getAttribute("data-value");
+
+  console.log("platform", platform);
+  console.log("key", key);
+  console.log("selectedValue", selectedValue);
+  console.log("label", label);
+  console.log("value", value);
 }
