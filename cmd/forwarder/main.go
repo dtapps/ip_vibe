@@ -164,15 +164,15 @@ func main() {
 		}
 		defer statsReportTask.Close()
 
-		// 代理服务 启动流式通信
-		agentService, err := service.NewAgentService(ctx, global.GvaGocronSlog, grpcClientConn)
+		// 设备服务 启动流式通信
+		deviceService, err := service.NewDeviceService(ctx, global.GvaGocronSlog, grpcClientConn)
 		if err != nil {
-			slog.ErrorContext(ctx, "创建代理服务失败",
+			slog.ErrorContext(ctx, "创建设备服务失败",
 				slog.Any("err", err),
 			)
 			panic(err)
 		}
-		go agentService.StartStream(ctx)
+		go deviceService.Run(ctx)
 
 	} else {
 		slog.ErrorContext(ctx, "服务启动失败: BACKEND_ENDPOINT 未配置")

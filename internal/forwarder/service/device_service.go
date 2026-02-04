@@ -12,8 +12,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// AgentService 代理服务
-type AgentService struct {
+// DeviceService 设备服务
+type DeviceService struct {
 	logger *slog.Logger // 日志记录器
 
 	role       string                    // 角色
@@ -23,8 +23,8 @@ type AgentService struct {
 	deviceClient grpc_generated.DeviceServiceClient // gRPC 业务服务
 }
 
-// NewAgentService 创建代理服务
-func NewAgentService(ctx context.Context, logger *slog.Logger, grpcClient *grpc.ClientConn) (*AgentService, error) {
+// NewDeviceService 创建设备服务
+func NewDeviceService(ctx context.Context, logger *slog.Logger, grpcClient *grpc.ClientConn) (*DeviceService, error) {
 
 	// 获取设备数据
 	deviceData, err := core.GetDeviceData(ctx, logger)
@@ -32,7 +32,7 @@ func NewAgentService(ctx context.Context, logger *slog.Logger, grpcClient *grpc.
 		return nil, err
 	}
 
-	return &AgentService{
+	return &DeviceService{
 		logger: logger,
 
 		role:       "forwarder",
@@ -43,16 +43,58 @@ func NewAgentService(ctx context.Context, logger *slog.Logger, grpcClient *grpc.
 	}, nil
 }
 
-// StartStream 启动流式通信
-func (s *AgentService) StartStream(ctx context.Context) {
+// Run 开始运行服务
+func (s *DeviceService) Run(ctx context.Context) {
+
+	// 初始重连等待时间
+	retryInterval := 1 * time.Second
+	maxRetryInterval := 30 * time.Second
+
+	for {
+		select {
+		case <-ctx.Done():
+			s.logger.InfoContext(ctx, "DeviceService 停止运行")
+			return
+		default:
+			// 尝试执行流逻辑
+			err := s.executeStream(ctx)
+
+			// 如果连接正常返回（没有错误），说明是 context 取消，直接重置并继续/退出
+			if err == nil {
+				retryInterval = 1 * time.Second
+				continue
+			}
+
+			s.logger.ErrorContext(ctx, "流连接断开，准备重连",
+				slog.Duration("after", retryInterval),
+				slog.Any("err", err),
+			)
+
+			// 等待重连
+			select {
+			case <-ctx.Done():
+				return
+			case <-time.After(retryInterval):
+				// 每次重连失败，增加等待时间，最高 30s
+				retryInterval *= 2
+				if retryInterval > maxRetryInterval {
+					retryInterval = maxRetryInterval
+				}
+			}
+		}
+	}
+}
+
+// executeStream 处理单次连接
+func (s *DeviceService) executeStream(ctx context.Context) error {
 
 	// 启动
 	stream, err := s.deviceClient.Stream(ctx)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "启动流式通信失败",
+		s.logger.ErrorContext(ctx, "流式通信失败",
 			slog.Any("err", err),
 		)
-		return
+		return err
 	}
 
 	// 构建 ClientInfo
@@ -70,55 +112,59 @@ func (s *AgentService) StartStream(ctx context.Context) {
 		GetTime:    timestamppb.New(time.Now()),
 	}
 
-	// 发送 ClientInfo
+	// 准备 ClientInfo 信息
 	infoMsg := &grpc_generated.ClientMessage{
 		Payload: &grpc_generated.ClientMessage_Info{
 			Info: clientInfo,
 		},
 	}
 
-	// 发送 ClientInfo
+	// 发送 ClientInfo 信息
 	err = stream.Send(infoMsg)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "发送 ClientInfo 失败",
+		s.logger.ErrorContext(ctx, "发送 ClientInfo 信息 失败",
 			slog.Any("err", err),
 		)
-		return
+		return err
 	}
 
-	// 等待 Ack
+	// 等待 Ack 消息
 	resp, err := stream.Recv()
 	if err != nil {
-		s.logger.ErrorContext(ctx, "接收 Ack 失败",
+		s.logger.ErrorContext(ctx, "等待 Ack 消息 失败",
 			slog.Any("err", err),
 		)
-		return
+		return err
 	}
 
-	if _, ok := resp.GetCommand().(*grpc_generated.ServerMessage_Ack); !ok {
-		s.logger.ErrorContext(ctx, "接收 Ack 失败",
+	// 接收 Ack 消息
+	_, ok := resp.GetCommand().(*grpc_generated.ServerMessage_Ack)
+	if !ok {
+		s.logger.ErrorContext(ctx, "接收 Ack 消息 失败",
 			slog.Any("err", err),
 		)
-		return
-	} else {
-		s.logger.InfoContext(ctx, "成功注册",
-			slog.String("device_code", s.deviceData.DeviceCode),
-		)
+		return err
 	}
 
-	// 启动 goroutine 监听服务端指令
+	// 捕获异步协程的错误
+	errChan := make(chan error, 1)
+
+	// 启动监听协程
 	go func() {
 		for {
 			msg, err := stream.Recv()
 			if err != nil {
 				// 流已关闭，退出
+				errChan <- err
+				s.logger.ErrorContext(ctx, "流已关闭，退出",
+					slog.Any("err", err),
+				)
 				return
 			}
 
 			switch cmd := msg.GetCommand().(type) {
 			case *grpc_generated.ServerMessage_RequestFullReport:
-				s.logger.InfoContext(ctx, "收到服务端指令：重新上报完整信息")
-				// 重发 ClientInfo
+				// 重发 ClientInfo 信息
 				clientInfo.GetTime = timestamppb.New(time.Now())
 				err := stream.Send(&grpc_generated.ClientMessage{
 					Payload: &grpc_generated.ClientMessage_Info{
@@ -126,12 +172,17 @@ func (s *AgentService) StartStream(ctx context.Context) {
 					},
 				})
 				if err != nil {
-					s.logger.ErrorContext(ctx, "重发 ClientInfo 失败", slog.Any("err", err))
+					errChan <- err
+					s.logger.ErrorContext(ctx, "重发 ClientInfo 信息 失败",
+						slog.Any("err", err),
+					)
 					return
 				}
-				s.logger.DebugContext(ctx, "ClientInfo 重发成功")
+				s.logger.DebugContext(ctx, "重发 ClientInfo 信息 成功")
 			default:
-				s.logger.WarnContext(ctx, "收到未知服务端指令", slog.Any("command", cmd))
+				s.logger.WarnContext(ctx, "收到未知服务端指令",
+					slog.Any("command", cmd),
+				)
 			}
 		}
 	}()
@@ -140,45 +191,55 @@ func (s *AgentService) StartStream(ctx context.Context) {
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
 
-	// 启动全量上报（每 10 分钟）
-	fullReportTicker := time.NewTicker(10 * time.Minute)
+	// 启动全量上报（每 30 分钟）
+	fullReportTicker := time.NewTicker(30 * time.Minute)
 	defer fullReportTicker.Stop()
 
-	// 主循环：发送心跳 + 定期重发 ClientInfo
+	// 主循环：发送心跳 + 定期重发 ClientInfo 信息
 	for {
 		select {
 		case <-ctx.Done():
-			s.logger.InfoContext(ctx, "流上下文已取消，正在退出")
-			return
+			s.logger.InfoContext(ctx, "流上下文已取消，正在退出",
+				slog.Any("err", ctx.Err()),
+			)
+			return ctx.Err()
+		case err := <-errChan:
+			// 接收协程出错了（服务端断开）
+			s.logger.InfoContext(ctx, "接收协程出错了（服务端断开）",
+				slog.Any("err", err),
+			)
+			return err
 		case <-ticker.C:
 			heartbeatMsg := &grpc_generated.ClientMessage{
 				Payload: &grpc_generated.ClientMessage_Heartbeat{
 					Heartbeat: &grpc_generated.Heartbeat{},
 				},
 			}
-			if err := stream.Send(heartbeatMsg); err != nil {
-				s.logger.ErrorContext(ctx, "发送心跳失败",
+			err = stream.Send(heartbeatMsg)
+			if err != nil {
+				s.logger.ErrorContext(ctx, "发送心跳 失败",
 					slog.Any("err", err),
 				)
-				return
+				return err
 			}
-			s.logger.InfoContext(ctx, "心跳发送成功")
+			s.logger.DebugContext(ctx, "心跳发送 成功")
 
 		case <-fullReportTicker.C:
-			// 重新发送 ClientInfo
+			// 重新发送 ClientInfo 信息
 			clientInfo.GetTime = timestamppb.New(time.Now())
 			infoMsg := &grpc_generated.ClientMessage{
 				Payload: &grpc_generated.ClientMessage_Info{
 					Info: clientInfo,
 				},
 			}
-			if err := stream.Send(infoMsg); err != nil {
-				s.logger.ErrorContext(ctx, "定期重发 ClientInfo 失败",
+			err = stream.Send(infoMsg)
+			if err != nil {
+				s.logger.ErrorContext(ctx, "定期重发 ClientInfo 信息 失败",
 					slog.Any("err", err),
 				)
-				return
+				return err
 			}
-			s.logger.DebugContext(ctx, "ClientInfo 定期重发成功")
+			s.logger.DebugContext(ctx, "定期重发 ClientInfo 信息成功")
 		}
 	}
 }
