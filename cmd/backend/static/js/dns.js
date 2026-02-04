@@ -55,12 +55,7 @@ function onTypeSelect(el) {
 function onIpGroupSelect(el) {
   console.log("onIpGroupSelect", el);
 
-  const opt = el.options[sel.selectedIndex];
-
-  const code = opt.dataset.code || "";
-  if (code) {
-    document.getElementById("ip_group_code").value = code;
-  }
+  const opt = el.options[el.selectedIndex];
 }
 
 // 选择 CDN记录 cdn_record_id
@@ -195,9 +190,6 @@ async function openFormModal(id, action = "") {
       document.getElementById("id").disabled = true;
       document.getElementById("platform").value = dnsRecord.platform;
       document.getElementById("platform").disabled = true;
-      document.getElementById("ip_group_code").value =
-        dnsRecord.config_json?.ip_group_code ?? "";
-      document.getElementById("ip_group_code").disabled = true;
       document.getElementById("config_id").value = dnsRecord.config_id;
       document.getElementById("config_id").disabled = true;
       document.getElementById("sub_domain").value = dnsRecord.sub_domain;
@@ -225,25 +217,50 @@ async function openFormModal(id, action = "") {
         selectId2.val(null).trigger("change");
       }
 
-      // 从后端接口获取指定平台的动态 Schema，并更新 DNS_SCHEMA
+      // 从后端接口获取指定平台的动态 Schema
+      const disabledKeys = [];
       switch (dnsRecord.platform) {
+        case "cloudflare":
+          await fetchAndReplaceDnsSchema(
+            dnsRecord.platform,
+            dnsRecord.config_id,
+          );
+          disabledKeys.push("zone");
+          break;
         case "tencent_dns":
           await fetchAndReplaceDnsSchema(
             dnsRecord.platform,
             dnsRecord.config_id,
           );
+          disabledKeys.push("domain");
           break;
         case "aliyun_dns":
           await fetchAndReplaceDnsSchema(
             dnsRecord.platform,
             dnsRecord.config_id,
           );
+          disabledKeys.push("domain");
+          break;
+        case "baidu_dns":
+          await fetchAndReplaceDnsSchema(
+            dnsRecord.platform,
+            dnsRecord.config_id,
+          );
+          disabledKeys.push("zone");
+          break;
+        case "huawei_dns":
+          await fetchAndReplaceDnsSchema(
+            dnsRecord.platform,
+            dnsRecord.config_id,
+          );
+          disabledKeys.push("zone");
           break;
         case "volcengine_dns":
           await fetchAndReplaceDnsSchema(
             dnsRecord.platform,
             dnsRecord.config_id,
           );
+          disabledKeys.push("zone");
           break;
       }
 
@@ -251,7 +268,11 @@ async function openFormModal(id, action = "") {
       document.getElementById("original_config_json").value = JSON.stringify(
         dnsRecord.config_json || {},
       );
-      renderDnsFields(dnsRecord.platform, dnsRecord.config_json || {});
+      renderDnsFields(
+        dnsRecord.platform,
+        dnsRecord.config_json || {},
+        disabledKeys,
+      );
 
       // 如果是复制操作，清空 id 字段，取消 sub_domain 禁用
       if (action === "copy") {
@@ -275,11 +296,6 @@ async function openFormModal(id, action = "") {
         },
         {
           id: "platform",
-          value: "",
-          disabled: true,
-        },
-        {
-          id: "ip_group_code",
           value: "",
           disabled: true,
         },

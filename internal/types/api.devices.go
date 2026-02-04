@@ -131,6 +131,7 @@ type GetDeviceStatusResponse struct {
 	GoVersion string `json:"go_version" jsonschema:"go版本"`    // go版本
 	Os        string `json:"os" jsonschema:"操作系统"`            // 操作系统
 	Arch      string `json:"arch" jsonschema:"架构"`            // 架构
+	RunTime   string `json:"run_time" jsonschema:"运行时间"`      // 运行时间
 	StartTime string `json:"start_time" jsonschema:"启动时间"`    // 启动时间
 	GetTime   string `json:"get_time" jsonschema:"获取时间"`      // 获取时间
 }

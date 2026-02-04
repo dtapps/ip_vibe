@@ -1,17 +1,22 @@
 // 选择 配置 config_id
-function onConfigSelect(el) {
+async function onConfigSelect(el) {
   console.log("onConfigSelect", el);
 
   const opt = el.options[el.selectedIndex];
 
+  const id = opt.value || 0;
   const platform = opt.dataset.platform || "";
-  const domain_name = opt.dataset.domain_name || "";
 
-  if (platform) {
-    document.getElementById("platform").value = platform;
-  }
-  if (domain_name) {
-    document.getElementById("domain_name").innerHTML = "." + domain_name;
+  // 从后端接口获取指定平台的动态 Schema
+  if (id > 0 && platform) {
+    switch (platform) {
+      case "tencent_eo":
+        await fetchAndReplaceCdnSchema(platform, id);
+        break;
+      case "aliyun_esa":
+        await fetchAndReplaceCdnSchema(platform, id);
+        break;
+    }
   }
 
   // 重新渲染字段
@@ -30,11 +35,6 @@ function onIpGroupSelect(el) {
   console.log("onIpGroupSelect", el);
 
   const opt = el.options[el.selectedIndex];
-
-  const code = opt.dataset.code || "";
-  if (code) {
-    document.getElementById("ip_group_code").value = code;
-  }
 }
 
 /**
@@ -144,9 +144,6 @@ async function openFormModal(id, action = "") {
       document.getElementById("id").disabled = true;
       document.getElementById("platform").value = cdnRecord.platform;
       document.getElementById("platform").disabled = true;
-      document.getElementById("ip_group_code").value =
-        cdnRecord.config_json?.ip_group_code ?? "";
-      document.getElementById("ip_group_code").disabled = true;
       document.getElementById("config_id").value = cdnRecord.config_id;
       document.getElementById("config_id").disabled = true;
       document.getElementById("sub_domain").value = cdnRecord.sub_domain;
@@ -166,11 +163,34 @@ async function openFormModal(id, action = "") {
         selectId2.val(null).trigger("change");
       }
 
+      // 从后端接口获取指定平台的动态 Schema
+      const disabledKeys = [];
+      switch (cdnRecord.platform) {
+        case "tencent_eo":
+          await fetchAndReplaceCdnSchema(
+            cdnRecord.platform,
+            cdnRecord.config_id,
+          );
+          disabledKeys.push("zone");
+          break;
+        case "aliyun_esa":
+          await fetchAndReplaceCdnSchema(
+            cdnRecord.platform,
+            cdnRecord.config_id,
+          );
+          disabledKeys.push("site");
+          break;
+      }
+
       // 渲染字段，回填数据
       document.getElementById("original_config_json").value = JSON.stringify(
         cdnRecord.config_json || {},
       );
-      renderCdnFields(cdnRecord.platform, cdnRecord.config_json || {});
+      renderCdnFields(
+        cdnRecord.platform,
+        cdnRecord.config_json || {},
+        disabledKeys,
+      );
 
       // 如果是复制操作，清空 id 字段，取消 sub_domain 禁用
       if (action === "copy") {
@@ -194,11 +214,6 @@ async function openFormModal(id, action = "") {
         },
         {
           id: "platform",
-          value: "",
-          disabled: true,
-        },
-        {
-          id: "ip_group_code",
           value: "",
           disabled: true,
         },

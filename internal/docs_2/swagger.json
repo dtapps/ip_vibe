@@ -4270,7 +4270,13 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetCdnRecordSchemaResponse"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "integer"
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -4334,7 +4340,13 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetDnsRecordSchemaResponse"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "integer"
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -4390,7 +4402,13 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetPlatformConfigSchemaResponse"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "integer"
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -4454,7 +4472,13 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.GetTunRecordSchemaResponse"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "integer"
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -7604,21 +7628,6 @@
                 }
             }
         },
-        "vibe_ip_internal_types.GetCdnRecordSchemaResponse": {
-            "type": "object",
-            "properties": {
-                "fields": {
-                    "description": "字段列表",
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
         "vibe_ip_internal_types.GetCloudflareDomainResponse": {
             "type": "object",
             "properties": {
@@ -7915,6 +7924,10 @@
                     "description": "角色",
                     "type": "string"
                 },
+                "run_time": {
+                    "description": "运行时间",
+                    "type": "string"
+                },
                 "start_time": {
                     "description": "启动时间",
                     "type": "string"
@@ -7995,21 +8008,6 @@
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetDnsRecordSchemaResponse": {
-            "type": "object",
-            "properties": {
-                "fields": {
-                    "description": "字段列表",
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        }
                     }
                 }
             }
@@ -8257,21 +8255,6 @@
                 "platform": {
                     "description": "配置平台",
                     "type": "string"
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetPlatformConfigSchemaResponse": {
-            "type": "object",
-            "properties": {
-                "fields": {
-                    "description": "字段列表",
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        }
-                    }
                 }
             }
         },
@@ -8595,21 +8578,6 @@
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
-                }
-            }
-        },
-        "vibe_ip_internal_types.GetTunRecordSchemaResponse": {
-            "type": "object",
-            "properties": {
-                "fields": {
-                    "description": "字段列表",
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        }
                     }
                 }
             }

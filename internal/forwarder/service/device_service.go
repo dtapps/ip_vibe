@@ -18,6 +18,7 @@ type DeviceService struct {
 
 	role       string                    // 角色
 	deviceData *core.GetDeviceDataResult // 设备数据
+	startTime  time.Time                 // 启动时间
 
 	grpcClient   *grpc.ClientConn                   // gRPC 客户端
 	deviceClient grpc_generated.DeviceServiceClient // gRPC 业务服务
@@ -37,6 +38,7 @@ func NewDeviceService(ctx context.Context, logger *slog.Logger, grpcClient *grpc
 
 		role:       "forwarder",
 		deviceData: deviceData,
+		startTime:  time.Now().UTC(),
 
 		grpcClient:   grpcClient,
 		deviceClient: grpc_generated.NewDeviceServiceClient(grpcClient),
@@ -108,8 +110,9 @@ func (s *DeviceService) executeStream(ctx context.Context) error {
 		GoVersion:  global.GvaGoVersion,
 		Os:         global.GvaOS,
 		Arch:       global.GvaArch,
-		StartTime:  timestamppb.New(global.GvaStartTime),
-		GetTime:    timestamppb.New(time.Now()),
+		RunTime:    timestamppb.New(global.GvaStartTime),
+		StartTime:  timestamppb.New(s.startTime),
+		GetTime:    timestamppb.Now(),
 	}
 
 	// 准备 ClientInfo 信息
@@ -165,7 +168,7 @@ func (s *DeviceService) executeStream(ctx context.Context) error {
 			switch cmd := msg.GetCommand().(type) {
 			case *grpc_generated.ServerMessage_RequestFullReport:
 				// 重发 ClientInfo 信息
-				clientInfo.GetTime = timestamppb.New(time.Now())
+				clientInfo.GetTime = timestamppb.Now()
 				err := stream.Send(&grpc_generated.ClientMessage{
 					Payload: &grpc_generated.ClientMessage_Info{
 						Info: clientInfo,
@@ -226,7 +229,7 @@ func (s *DeviceService) executeStream(ctx context.Context) error {
 
 		case <-fullReportTicker.C:
 			// 重新发送 ClientInfo 信息
-			clientInfo.GetTime = timestamppb.New(time.Now())
+			clientInfo.GetTime = timestamppb.Now()
 			infoMsg := &grpc_generated.ClientMessage{
 				Payload: &grpc_generated.ClientMessage_Info{
 					Info: clientInfo,

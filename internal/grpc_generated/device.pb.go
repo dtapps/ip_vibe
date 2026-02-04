@@ -129,10 +129,12 @@ type ClientInfo struct {
 	Os string `protobuf:"bytes,8,opt,name=os,proto3" json:"os,omitempty"`
 	// 架构
 	Arch string `protobuf:"bytes,9,opt,name=arch,proto3" json:"arch,omitempty"`
+	// 运行时间
+	RunTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=run_time,json=runTime,proto3" json:"run_time,omitempty"`
 	// 启动时间
-	StartTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	StartTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 	// 获取时间
-	GetTime       *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=get_time,json=getTime,proto3" json:"get_time,omitempty"`
+	GetTime       *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=get_time,json=getTime,proto3" json:"get_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -228,6 +230,13 @@ func (x *ClientInfo) GetArch() string {
 		return x.Arch
 	}
 	return ""
+}
+
+func (x *ClientInfo) GetRunTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.RunTime
+	}
+	return nil
 }
 
 func (x *ClientInfo) GetStartTime() *timestamppb.Timestamp {
@@ -444,7 +453,7 @@ const file_device_proto_rawDesc = "" +
 	"\rClientMessage\x12&\n" +
 	"\x04info\x18\x01 \x01(\v2\x10.open.ClientInfoH\x00R\x04info\x12/\n" +
 	"\theartbeat\x18\x02 \x01(\v2\x0f.open.HeartbeatH\x00R\theartbeatB\t\n" +
-	"\apayload\"\x8c\x03\n" +
+	"\apayload\"\xc3\x03\n" +
 	"\n" +
 	"ClientInfo\x12<\n" +
 	"\vdevice_code\x18\x01 \x01(\tB\x1b\xfaB\x18r\x16\x10\x01\x1822\x10^[a-zA-Z0-9_-]+$R\n" +
@@ -460,11 +469,12 @@ const file_device_proto_rawDesc = "" +
 	"\n" +
 	"go_version\x18\a \x01(\tR\tgoVersion\x12\x0e\n" +
 	"\x02os\x18\b \x01(\tR\x02os\x12\x12\n" +
-	"\x04arch\x18\t \x01(\tR\x04arch\x129\n" +
+	"\x04arch\x18\t \x01(\tR\x04arch\x125\n" +
+	"\brun_time\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\arunTime\x129\n" +
 	"\n" +
-	"start_time\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
-	"\bget_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\agetTime\"\v\n" +
+	"start_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x125\n" +
+	"\bget_time\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\agetTime\"\v\n" +
 	"\tHeartbeat\"\x84\x01\n" +
 	"\rServerMessage\x12\x1d\n" +
 	"\x03ack\x18\x01 \x01(\v2\t.open.AckH\x00R\x03ack\x12I\n" +
@@ -500,17 +510,18 @@ var file_device_proto_goTypes = []any{
 var file_device_proto_depIdxs = []int32{
 	1, // 0: open.ClientMessage.info:type_name -> open.ClientInfo
 	2, // 1: open.ClientMessage.heartbeat:type_name -> open.Heartbeat
-	6, // 2: open.ClientInfo.start_time:type_name -> google.protobuf.Timestamp
-	6, // 3: open.ClientInfo.get_time:type_name -> google.protobuf.Timestamp
-	4, // 4: open.ServerMessage.ack:type_name -> open.Ack
-	5, // 5: open.ServerMessage.request_full_report:type_name -> open.RequestFullReport
-	0, // 6: open.DeviceService.Stream:input_type -> open.ClientMessage
-	3, // 7: open.DeviceService.Stream:output_type -> open.ServerMessage
-	7, // [7:8] is the sub-list for method output_type
-	6, // [6:7] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	6, // 2: open.ClientInfo.run_time:type_name -> google.protobuf.Timestamp
+	6, // 3: open.ClientInfo.start_time:type_name -> google.protobuf.Timestamp
+	6, // 4: open.ClientInfo.get_time:type_name -> google.protobuf.Timestamp
+	4, // 5: open.ServerMessage.ack:type_name -> open.Ack
+	5, // 6: open.ServerMessage.request_full_report:type_name -> open.RequestFullReport
+	0, // 7: open.DeviceService.Stream:input_type -> open.ClientMessage
+	3, // 8: open.DeviceService.Stream:output_type -> open.ServerMessage
+	8, // [8:9] is the sub-list for method output_type
+	7, // [7:8] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_device_proto_init() }

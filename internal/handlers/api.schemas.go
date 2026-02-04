@@ -2,12 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/provider/cdn"
 	"vibe_ip/internal/provider/dns"
 	"vibe_ip/internal/provider/tun"
 	"vibe_ip/internal/types"
@@ -25,10 +25,10 @@ import (
 //	@Tags			Schema
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			config_type	path		string													true	"平台类型"
-//	@Success		200			{object}	APIResponse{data=types.GetPlatformConfigSchemaResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}											"参数错误"
-//	@Failure		404			{object}	APIResponse{}											"错误响应"
+//	@Param			config_type	path		string																		true	"平台类型"
+//	@Success		200			{object}	APIResponse{data=[]json.RawMessage{types.GetPlatformConfigSchemaResponse}}	"成功响应"
+//	@Failure		400			{object}	APIResponse{}																"参数错误"
+//	@Failure		404			{object}	APIResponse{}																"错误响应"
 //	@Router			/schemas/{config_type}/platform-config [get]
 func GetPlatformConfigSchema(c *gin.Context) {
 	// 请求参数
@@ -52,11 +52,11 @@ func GetPlatformConfigSchema(c *gin.Context) {
 //	@Tags			Schema
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			config_type	path		string												true	"平台类型"
-//	@Param			config_id	path		int64												true	"平台配置ID"
-//	@Success		200			{object}	APIResponse{data=types.GetCdnRecordSchemaResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}										"参数错误"
-//	@Failure		404			{object}	APIResponse{}										"错误响应"
+//	@Param			config_type	path		string																	true	"平台类型"
+//	@Param			config_id	path		int64																	true	"平台配置ID"
+//	@Success		200			{object}	APIResponse{data=[]json.RawMessage{types.GetCdnRecordSchemaResponse}}	"成功响应"
+//	@Failure		400			{object}	APIResponse{}															"参数错误"
+//	@Failure		404			{object}	APIResponse{}															"错误响应"
 //	@Router			/schemas/{config_type}/cdn-record/{config_id} [get]
 func GetCdnRecordSchema(c *gin.Context) {
 	// 请求参数
@@ -71,6 +71,273 @@ func GetCdnRecordSchema(c *gin.Context) {
 	// 准备响应
 	response := &types.GetCdnRecordSchemaResponse{}
 
+	// 查询平台配置
+	firstConfig, err := global.GvaEntDb.PlatformConfig.Query().
+		Where(platformconfig.IDEQ(requestParams.ConfigID)).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "配置不存在")
+		return
+	}
+
+	// 判断平台类型是否匹配
+	if !strings.EqualFold(requestParams.ConfigType, firstConfig.Platform.String()) {
+		errorResponse(c, http.StatusBadRequest, "平台类型与配置类型不匹配")
+		return
+	}
+
+	// 准备字段组
+	fields := make([]any, 0)
+
+	var cdnProviderOpts = make([]cdn.Option, 0, 1)
+	if global.GvaHttpLog != nil {
+		cdnProviderOpts = append(cdnProviderOpts, cdn.WithHttpTransport(global.GvaHttpLog))
+	}
+
+	switch firstConfig.Platform {
+	case platformconfig.PlatformTencentEo:
+
+		cdnProviderCfg := cdn.NewDefaultTencentEOConfig()
+		err = cdnProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		cdnProvider, err := cdn.NewTencentEOProviderRaw(c, global.GvaGocronSlog.With(), cdnProviderCfg, cdnProviderOpts...)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 并发检查
+		eg, egCtx := errgroup.WithContext(c)
+		eg.SetLimit(10) // 最多 10 个并发
+
+		// 准备选项
+		zoneOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 获取域名列表
+			zones, err := cdnProvider.ZonesRaw(egCtx)
+			if err != nil {
+				return err
+			}
+			for _, zone := range zones {
+				zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{
+					Value: utils.PtrToString(zone.ZoneId),
+					Label: utils.TrimDotsPrt(zone.ZoneName),
+				})
+			}
+			return nil
+		})
+
+		if err = eg.Wait(); err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 构造字段
+		fields = append(fields, types.SCHEMAField{
+			ID:          "zone",
+			Label:       "站点",
+			Type:        "select",
+			Placeholder: "请选择站点",
+			Required:    true,
+			Options:     zoneOptions,
+		})
+		fields = append(fields, []types.SCHEMAField{
+			{
+				ID:          "ipv6_status",
+				Label:       "IPv6 状态",
+				Type:        "select",
+				Placeholder: "请选择 IPv6 状态",
+				Required:    true,
+				Options: []types.SCHEMAFieldOption{
+					{
+						Value: "follow",
+						Label: "遵循站点",
+					},
+					{
+						Value: "on",
+						Label: "开启",
+					},
+					{
+						Value: "off",
+						Label: "关闭",
+					},
+				},
+			},
+			{
+				ID:          "origin_protocol",
+				Label:       "回源协议",
+				Type:        "select",
+				Placeholder: "请选择回源协议",
+				Required:    true,
+				Options: []types.SCHEMAFieldOption{
+					{
+						Value: "FOLLOW",
+						Label: "协议跟随",
+					},
+					{
+						Value: "HTTP",
+						Label: "HTTP协议回源",
+					},
+					{
+						Value: "HTTPS",
+						Label: "HTTPS协议回源",
+					},
+				},
+			},
+		})
+		fields = append(fields, []types.SCHEMAField{
+			{
+				ID:          "http_port",
+				Label:       "HTTP端口",
+				Type:        "number",
+				Placeholder: "如 80",
+				Required:    true,
+			},
+			{
+				ID:          "https_port",
+				Label:       "HTTPS端口",
+				Type:        "number",
+				Placeholder: "如 443",
+				Required:    true,
+			},
+		})
+
+	case platformconfig.PlatformAliyunEsa:
+
+		cdnProviderCfg := cdn.NewDefaultAliyunESAConfig()
+		err = cdnProviderCfg.ParseCustomConfig(firstConfig.ConfigJSON)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+		cdnProvider, err := cdn.NewAliyunESAProviderRaw(c, global.GvaGocronSlog.With(), cdnProviderCfg, cdnProviderOpts...)
+		if err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 并发检查
+		eg, egCtx := errgroup.WithContext(c)
+		eg.SetLimit(10) // 最多 10 个并发
+
+		// 准备选项
+		siteOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 获取域名列表
+			sites, err := cdnProvider.SitesRaw(egCtx)
+			if err != nil {
+				return err
+			}
+			for _, zonesite := range sites {
+				siteOptions = append(siteOptions, types.SCHEMAFieldOption{
+					Value: utils.PtrToInt64(zonesite.SiteId),
+					Label: utils.TrimDotsPrt(zonesite.SiteName),
+				})
+			}
+			return nil
+		})
+
+		if err = eg.Wait(); err != nil {
+			errorResponse(c, http.StatusNotFound, err.Error())
+			return
+		}
+
+		// 构造字段
+		fields = append(fields, types.SCHEMAField{
+			ID:          "site",
+			Label:       "站点",
+			Type:        "select",
+			ValueType:   "number",
+			Placeholder: "请选择站点",
+			Required:    true,
+			Options:     siteOptions,
+		})
+		fields = append(fields, []types.SCHEMAField{
+			{
+				ID:          "biz_name",
+				Label:       "业务场景",
+				Type:        "select",
+				Placeholder: "请选择业务场景",
+				Required:    true,
+				Options: []types.SCHEMAFieldOption{
+					{
+						Value: "web",
+						Label: "web网页",
+					},
+					{
+						Value: "api",
+						Label: "api接口",
+					},
+					{
+						Value: "video_image",
+						Label: "视频图片",
+					},
+				},
+			},
+			{
+				ID:          "origin_scheme",
+				Label:       "回源协议",
+				Type:        "select",
+				Placeholder: "请选择回源协议",
+				Required:    true,
+				Options: []types.SCHEMAFieldOption{
+					{
+						Value: "follow",
+						Label: "协议跟随",
+					},
+					{
+						Value: "http",
+						Label: "HTTP协议回源",
+					},
+					{
+						Value: "https",
+						Label: "HTTPS协议回源",
+					},
+				},
+			},
+		})
+		fields = append(fields, []types.SCHEMAField{
+			{
+				ID:          "origin_http_port",
+				Label:       "HTTP端口",
+				Type:        "number",
+				Placeholder: "如 80",
+				Required:    true,
+			},
+			{
+				ID:          "origin_https_port",
+				Label:       "HTTPS端口",
+				Type:        "number",
+				Placeholder: "如 443",
+				Required:    true,
+			},
+		})
+		fields = append(fields, types.SCHEMAField{
+			ID:          "comment",
+			Label:       "备注",
+			Type:        "text",
+			Placeholder: "请输入备注",
+			Required:    false,
+		})
+
+	default:
+		errorResponse(c, http.StatusBadRequest, "未知的平台类型")
+		return
+	}
+
+	// 把 multipleFields + singleField 整体 marshal 成一个 JSON 数组
+	rawFields, err := json.Marshal(fields)
+	if err != nil {
+		errorResponse(c, http.StatusInternalServerError, "序列化字段失败: "+err.Error())
+		return
+	}
+
+	// 然后放进 []json.RawMessage
+	response.Fields = []json.RawMessage{rawFields}
+
 	successResponse(c, response)
 }
 
@@ -81,11 +348,11 @@ func GetCdnRecordSchema(c *gin.Context) {
 //	@Tags			Schema
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			config_type	path		string												true	"平台类型"
-//	@Param			config_id	path		int64												true	"平台配置ID"
-//	@Success		200			{object}	APIResponse{data=types.GetDnsRecordSchemaResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}										"参数错误"
-//	@Failure		404			{object}	APIResponse{}										"错误响应"
+//	@Param			config_type	path		string																	true	"平台类型"
+//	@Param			config_id	path		int64																	true	"平台配置ID"
+//	@Success		200			{object}	APIResponse{data=[]json.RawMessage{types.GetDnsRecordSchemaResponse}}	"成功响应"
+//	@Failure		400			{object}	APIResponse{}															"参数错误"
+//	@Failure		404			{object}	APIResponse{}															"错误响应"
 //	@Router			/schemas/{config_type}/dns-record/{config_id} [get]
 func GetDnsRecordSchema(c *gin.Context) {
 	// 请求参数
@@ -145,7 +412,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 		// 准备选项
 		zoneOptions := make([]types.SCHEMAFieldOption, 0)
 		eg.Go(func() error {
-			// 查询线路列表
+			// 获取所有站点
 			zones, err := dnsProvider.ZonesRaw(egCtx)
 			if err != nil {
 				return err
@@ -245,6 +512,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			ID:          "domain",
 			Label:       "域名",
 			Type:        "select",
+			ValueType:   "number",
 			Placeholder: "请选择域名",
 			Required:    true,
 			Options:     domainOptions,
@@ -511,26 +779,6 @@ func GetDnsRecordSchema(c *gin.Context) {
 		eg.SetLimit(10) // 最多 10 个并发
 
 		// 准备选项
-		lineOptions := make([]types.SCHEMAFieldOption, 0)
-		eg.Go(func() error {
-			// 查询线路列表
-			lines, err := dnsProvider.ListLines(egCtx)
-			if err != nil {
-				return err
-			}
-			if len(lines) == 0 {
-				return fmt.Errorf("未查询到线路")
-			}
-			for _, line := range lines {
-				lineOptions = append(lineOptions, types.SCHEMAFieldOption{
-					Value: line.LineID,
-					Label: line.LineName,
-				})
-			}
-			return nil
-		})
-
-		// 准备选项
 		zoneOptions := make([]types.SCHEMAFieldOption, 0)
 		eg.Go(func() error {
 			// 查询域名列表
@@ -547,6 +795,23 @@ func GetDnsRecordSchema(c *gin.Context) {
 			return nil
 		})
 
+		// 准备选项
+		lineOptions := make([]types.SCHEMAFieldOption, 0)
+		eg.Go(func() error {
+			// 查询线路列表
+			lines, err := dnsProvider.ListLines(egCtx)
+			if err != nil {
+				return err
+			}
+			for _, line := range lines {
+				lineOptions = append(lineOptions, types.SCHEMAFieldOption{
+					Value: line.LineID,
+					Label: line.LineName,
+				})
+			}
+			return nil
+		})
+
 		if err = eg.Wait(); err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -557,6 +822,7 @@ func GetDnsRecordSchema(c *gin.Context) {
 			ID:          "zone",
 			Label:       "域名",
 			Type:        "select",
+			ValueType:   "number",
 			Placeholder: "请输入域名",
 			Required:    true,
 			Options:     zoneOptions,
@@ -604,11 +870,11 @@ func GetDnsRecordSchema(c *gin.Context) {
 //	@Tags			Schema
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			config_type	path		string												true	"平台类型"
-//	@Param			config_id	path		int64												true	"平台配置ID"
-//	@Success		200			{object}	APIResponse{data=types.GetTunRecordSchemaResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}										"参数错误"
-//	@Failure		404			{object}	APIResponse{}										"错误响应"
+//	@Param			config_type	path		string																	true	"平台类型"
+//	@Param			config_id	path		int64																	true	"平台配置ID"
+//	@Success		200			{object}	APIResponse{data=[]json.RawMessage{types.GetTunRecordSchemaResponse}}	"成功响应"
+//	@Failure		400			{object}	APIResponse{}															"参数错误"
+//	@Failure		404			{object}	APIResponse{}															"错误响应"
 //	@Router			/schemas/{config_type}/tun-record/{config_id} [get]
 func GetTunRecordSchema(c *gin.Context) {
 	// 请求参数
@@ -673,9 +939,6 @@ func GetTunRecordSchema(c *gin.Context) {
 			if err != nil {
 				return err
 			}
-			if len(connectors) == 0 {
-				return fmt.Errorf("未查询到隧道")
-			}
 			for _, connector := range connectors {
 				tunnelOptions = append(tunnelOptions, types.SCHEMAFieldOption{
 					Value: connector.ID,
@@ -692,9 +955,6 @@ func GetTunRecordSchema(c *gin.Context) {
 			zones, err := tunProvider.Zones(egCtx)
 			if err != nil {
 				return err
-			}
-			if len(zones) == 0 {
-				return fmt.Errorf("未查询到域名")
 			}
 			for _, zone := range zones {
 				zoneOptions = append(zoneOptions, types.SCHEMAFieldOption{

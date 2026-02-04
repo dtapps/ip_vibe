@@ -11,6 +11,7 @@ type SCHEMAField struct {
 	ID          string              `json:"id"`                    // 字段ID
 	Label       string              `json:"label"`                 // 字段名称
 	Type        string              `json:"type"`                  // 字段类型
+	ValueType   string              `json:"value_type,omitempty"`  // 字段值类型
 	Placeholder string              `json:"placeholder,omitempty"` // 字段描述
 	Required    bool                `json:"required"`              // 是否必填
 	Pattern     string              `json:"pattern,omitempty"`     // 正则表达式
@@ -30,8 +31,8 @@ type GetPlatformConfigSchemaResponse struct {
 
 // 获取CDN记录Schema 请求结构
 type GetCdnRecordSchemaRequest struct {
-	ConfigType string `uri:"config_type" json:"config_type" form:"config_type" binding:"required" jsonschema:"平台类型"` // 平台类型
-	ConfigID   int64  `uri:"config_id" json:"config_id" form:"config_id" binding:"required" jsonschema:"平台配置ID"`     // 平台配置ID
+	GetPlatformConfigSchemaRequest
+	ConfigID int64 `uri:"config_id" json:"config_id" form:"config_id" binding:"required" jsonschema:"平台配置ID"` // 平台配置ID
 }
 
 // 获取CDN记录Schema 响应结构
@@ -41,8 +42,8 @@ type GetCdnRecordSchemaResponse struct {
 
 // 获取DNS记录Schema 请求结构
 type GetDnsRecordSchemaRequest struct {
-	ConfigType string `uri:"config_type" json:"config_type" form:"config_type" binding:"required" jsonschema:"平台类型"` // 平台类型
-	ConfigID   int64  `uri:"config_id" json:"config_id" form:"config_id" binding:"required" jsonschema:"平台配置ID"`     // 平台配置ID
+	GetPlatformConfigSchemaRequest
+	ConfigID int64 `uri:"config_id" json:"config_id" form:"config_id" binding:"required" jsonschema:"平台配置ID"` // 平台配置ID
 }
 
 // 获取DNS记录Schema 响应结构
@@ -52,8 +53,8 @@ type GetDnsRecordSchemaResponse struct {
 
 // 获取TUN记录Schema 请求结构
 type GetTunRecordSchemaRequest struct {
-	ConfigType string `uri:"config_type" json:"config_type" form:"config_type" binding:"required" jsonschema:"平台类型"` // 平台类型
-	ConfigID   int64  `uri:"config_id" json:"config_id" form:"config_id" binding:"required" jsonschema:"平台配置ID"`     // 平台配置ID
+	GetPlatformConfigSchemaRequest
+	ConfigID int64 `uri:"config_id" json:"config_id" form:"config_id" binding:"required" jsonschema:"平台配置ID"` // 平台配置ID
 }
 
 // 获取TUN记录Schema 响应结构

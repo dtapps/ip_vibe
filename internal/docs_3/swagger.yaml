@@ -653,17 +653,6 @@ components:
           type: array
           uniqueItems: false
       type: object
-    vibe_ip_internal_types.GetCdnRecordSchemaResponse:
-      properties:
-        fields:
-          description: 字段列表
-          items:
-            items:
-              type: integer
-            type: array
-          type: array
-          uniqueItems: false
-      type: object
     vibe_ip_internal_types.GetCloudflareDomainResponse:
       properties:
         zone_id:
@@ -879,6 +868,9 @@ components:
         role:
           description: 角色
           type: string
+        run_time:
+          description: 运行时间
+          type: string
         start_time:
           description: 启动时间
           type: string
@@ -939,17 +931,6 @@ components:
           description: 关联的 Webhook 列表
           items:
             type: integer
-          type: array
-          uniqueItems: false
-      type: object
-    vibe_ip_internal_types.GetDnsRecordSchemaResponse:
-      properties:
-        fields:
-          description: 字段列表
-          items:
-            items:
-              type: integer
-            type: array
           type: array
           uniqueItems: false
       type: object
@@ -1132,17 +1113,6 @@ components:
         platform:
           description: 配置平台
           type: string
-      type: object
-    vibe_ip_internal_types.GetPlatformConfigSchemaResponse:
-      properties:
-        fields:
-          description: 字段列表
-          items:
-            items:
-              type: integer
-            type: array
-          type: array
-          uniqueItems: false
       type: object
     vibe_ip_internal_types.GetPortForwardResponse:
       properties:
@@ -1382,17 +1352,6 @@ components:
           description: 关联的 Webhook 列表
           items:
             type: integer
-          type: array
-          uniqueItems: false
-      type: object
-    vibe_ip_internal_types.GetTunRecordSchemaResponse:
-      properties:
-        fields:
-          description: 字段列表
-          items:
-            items:
-              type: integer
-            type: array
           type: array
           uniqueItems: false
       type: object

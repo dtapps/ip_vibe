@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_server"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gotime"
 )
 
 // 获取全部设备
@@ -401,8 +401,9 @@ func GetDeviceStatus(c *gin.Context) {
 				GoVersion: info.GoVersion,
 				Os:        info.Os,
 				Arch:      info.Arch,
-				StartTime: info.StartTime.AsTime().Format(time.DateTime),
-				GetTime:   info.GetTime.AsTime().Format(time.DateTime),
+				RunTime:   gotime.SetCurrent(info.RunTime.AsTime()).Format(),
+				StartTime: gotime.SetCurrent(info.StartTime.AsTime()).Format(),
+				GetTime:   gotime.SetCurrent(info.GetTime.AsTime()).Format(),
 			})
 		}
 	}

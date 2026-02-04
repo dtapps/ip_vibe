@@ -604,10 +604,16 @@ const PLATFORM_SCHEMA = {
 /**
  * 动态渲染字段
  * @param {string} platform - 平台 key (如 cloudflare)
- * @param {string} capability - 服务能力 (all, cdn, dns, ssl)
+ * @param {string} capability - 服务能力 (all, cdn, dns, ssl, tun)
  * @param {Object} initialData - 编辑模式下的初始数据 (可选)
+ * @param {string[]} disabledKeys - 禁用的字段 key 列表 (可选)
  */
-function renderPlatformFields(platform, capability, initialData = {}) {
+function renderPlatformFields(
+  platform,
+  capability,
+  initialData = {},
+  disabledKeys = [],
+) {
   const container = document.getElementById("dynamic_fields_container");
   const schema = PLATFORM_SCHEMA[platform];
 
@@ -636,14 +642,26 @@ function renderPlatformFields(platform, capability, initialData = {}) {
       // 直接使用 ID 拼接类名，例如：domain_name-or-email-group
       const groupClassName = item.map((f) => f.id).join("-or-") + "-group";
 
-      html += `<div class="form-group ${groupClassName}" data-platform="${platform}">`;
+      html += `<div class="form-group ${groupClassName} ${groupClassName} grid grid-cols-${item.length}" data-platform="${platform}">`;
       item.forEach((subField) => {
-        html += generatePlatformFieldHtml(platform, subField, data, capability);
+        html += generatePlatformFieldHtml(
+          platform,
+          capability,
+          subField,
+          data,
+          disabledKeys,
+        );
       });
       html += `</div>`;
     } else {
       // 普通非分组字段
-      html += generatePlatformFieldHtml(platform, item, data, capability);
+      html += generatePlatformFieldHtml(
+        platform,
+        capability,
+        item,
+        data,
+        disabledKeys,
+      );
     }
   });
 
@@ -659,13 +677,20 @@ function renderPlatformFields(platform, capability, initialData = {}) {
 /**
  * 生成单个字段 HTML，通过 ID 自动映射特殊属性
  * @param {string} platform - 平台 key (如 cloudflare)
+ * @param {string} capability - 服务能力 (all, cdn, dns, ssl)
  * @param {Object} field - 字段定义对象
  * @param {Object} data - 表单数据对象
- * @param {string} capability - 服务能力 (all, cdn, dns, ssl)
+ * @param {string[]} disabledKeys - 禁用的字段 key 列表
  * @returns {string} - 生成的 HTML 字符串
  */
-function generatePlatformFieldHtml(platform, field, data, capability) {
-  // 1. 自动属性映射 (根据 ID 直接映射)
+function generatePlatformFieldHtml(
+  platform,
+  capability,
+  field,
+  data = {},
+  disabledKeys = [],
+) {
+  // 自动属性映射 (根据 ID 直接映射)
   let specialClass = "";
   let dataTypeAttr = "";
   let isHidden = false;
@@ -686,12 +711,13 @@ function generatePlatformFieldHtml(platform, field, data, capability) {
 
   const value = data[field.id] !== undefined ? data[field.id] : "";
   const requiredAttr = field.required && !isHidden ? "required" : "";
+  const disabledAttr = disabledKeys.includes(field.id) ? "disabled" : "";
 
   let inputHtml = "";
   if (field.type === "password") {
     inputHtml = `
       <div class="flex items-center gap-2">
-        <input type="password" class="ui-input dynamic-input" data-platform="${platform}" data-key="${field.id}" value="${value}" placeholder="${field.placeholder}" ${requiredAttr} autocomplete="new-password" />
+        <input type="password" class="ui-input dynamic-input" data-platform="${platform}" data-key="${field.id}" value="${value}" placeholder="${field.placeholder}" ${requiredAttr} ${disabledAttr} autocomplete="new-password" />
         <button type="button" class="btn btn-square btn-sm btn-ghost" onclick="togglePasswordVisibilityByPrev(this)">
           <span class="i-lucide-eye w-4 h-4"></span>
         </button>
@@ -700,7 +726,7 @@ function generatePlatformFieldHtml(platform, field, data, capability) {
     inputHtml = `
           <select class="ui-select dynamic-input" data-platform="${platform}" data-key="${
             field.id
-          }" ${requiredAttr} onchange="handleSelectChange(this)">
+          }" ${requiredAttr} ${disabledAttr} onchange="handleSelectChange(this)">
             ${(field.options || [])
               .map(
                 (opt) =>
@@ -721,7 +747,7 @@ function generatePlatformFieldHtml(platform, field, data, capability) {
                   } 
                   ${
                     field.title ? `title="${field.title}"` : ""
-                  } ${requiredAttr} />`;
+                  } ${requiredAttr} ${disabledAttr} />`;
   }
 
   return `
@@ -755,7 +781,25 @@ function buildConfigFromPlatformFields(platform = "") {
     if (fieldSchema?.type === "number" && val !== "") {
       val = Number(val);
     }
-    config[key] = val;
+
+    // 处理 select，额外保存 text 和 value
+    if (fieldSchema?.type === "select") {
+      const selectedOption = el.options[el.selectedIndex];
+      const text = selectedOption ? selectedOption.text : "";
+
+      config[key] = val;
+      config[`${key}_text`] = text;
+      config[`${key}_value`] = val;
+
+      // 如果有 valueType，根据类型转换
+      if (fieldSchema?.valueType === "number" && val !== "") {
+        config[`${key}_value`] = Number(val);
+      } else if (fieldSchema?.valueType === "boolean") {
+        config[`${key}_value`] = val === "true" || val === "1" || val === "yes";
+      }
+    } else {
+      config[key] = val;
+    }
   });
 
   document.getElementById("config_json").value = JSON.stringify(config);

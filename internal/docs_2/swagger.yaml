@@ -611,16 +611,6 @@ definitions:
           type: integer
         type: array
     type: object
-  vibe_ip_internal_types.GetCdnRecordSchemaResponse:
-    properties:
-      fields:
-        description: 字段列表
-        items:
-          items:
-            type: integer
-          type: array
-        type: array
-    type: object
   vibe_ip_internal_types.GetCloudflareDomainResponse:
     properties:
       zone_id:
@@ -830,6 +820,9 @@ definitions:
       role:
         description: 角色
         type: string
+      run_time:
+        description: 运行时间
+        type: string
       start_time:
         description: 启动时间
         type: string
@@ -889,16 +882,6 @@ definitions:
         description: 关联的 Webhook 列表
         items:
           type: integer
-        type: array
-    type: object
-  vibe_ip_internal_types.GetDnsRecordSchemaResponse:
-    properties:
-      fields:
-        description: 字段列表
-        items:
-          items:
-            type: integer
-          type: array
         type: array
     type: object
   vibe_ip_internal_types.GetDomainMonitorResponse:
@@ -1073,16 +1056,6 @@ definitions:
       platform:
         description: 配置平台
         type: string
-    type: object
-  vibe_ip_internal_types.GetPlatformConfigSchemaResponse:
-    properties:
-      fields:
-        description: 字段列表
-        items:
-          items:
-            type: integer
-          type: array
-        type: array
     type: object
   vibe_ip_internal_types.GetPortForwardResponse:
     properties:
@@ -1319,16 +1292,6 @@ definitions:
         description: 关联的 Webhook 列表
         items:
           type: integer
-        type: array
-    type: object
-  vibe_ip_internal_types.GetTunRecordSchemaResponse:
-    properties:
-      fields:
-        description: 字段列表
-        items:
-          items:
-            type: integer
-          type: array
         type: array
     type: object
   vibe_ip_internal_types.GetWebhookResponse:
@@ -4692,7 +4655,11 @@ paths:
             - $ref: '#/definitions/internal_handlers.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordSchemaResponse'
+                  items:
+                    items:
+                      type: integer
+                    type: array
+                  type: array
               type: object
         "400":
           description: 参数错误
@@ -4732,7 +4699,11 @@ paths:
             - $ref: '#/definitions/internal_handlers.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordSchemaResponse'
+                  items:
+                    items:
+                      type: integer
+                    type: array
+                  type: array
               type: object
         "400":
           description: 参数错误
@@ -4766,7 +4737,11 @@ paths:
             - $ref: '#/definitions/internal_handlers.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetPlatformConfigSchemaResponse'
+                  items:
+                    items:
+                      type: integer
+                    type: array
+                  type: array
               type: object
         "400":
           description: 参数错误
@@ -4806,7 +4781,11 @@ paths:
             - $ref: '#/definitions/internal_handlers.APIResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/vibe_ip_internal_types.GetTunRecordSchemaResponse'
+                  items:
+                    items:
+                      type: integer
+                    type: array
+                  type: array
               type: object
         "400":
           description: 参数错误

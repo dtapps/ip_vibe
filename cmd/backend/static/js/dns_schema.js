@@ -236,8 +236,9 @@ async function fetchAndReplaceDnsSchema(platform, configId) {
  * 动态渲染字段
  * @param {string} platform - 平台 key (如 cloudflare)
  * @param {Object} initialData - 编辑模式下的初始数据 (可选)
+ * @param {string[]} disabledKeys - 禁用的字段 key 列表 (可选)
  */
-function renderDnsFields(platform, initialData = {}) {
+function renderDnsFields(platform, initialData = {}, disabledKeys = []) {
   const container = document.getElementById("dynamic_fields_container");
   const schema = DNS_SCHEMA[platform];
 
@@ -267,14 +268,14 @@ function renderDnsFields(platform, initialData = {}) {
       // 直接使用 ID 拼接类名，例如：domain_name-or-email-group
       const groupClassName = item.map((f) => f.id).join("-or-") + "-group";
 
-      html += `<div class="form-group ${groupClassName}" data-platform="${platform}">`;
+      html += `<div class="form-group ${groupClassName} grid grid-cols-${item.length}" data-platform="${platform}">`;
       item.forEach((subField) => {
-        html += generateDnsFieldHtml(platform, subField, data);
+        html += generateDnsFieldHtml(platform, subField, data, disabledKeys);
       });
       html += `</div>`;
     } else {
       // 普通非分组字段
-      html += generateDnsFieldHtml(platform, item, data);
+      html += generateDnsFieldHtml(platform, item, data, disabledKeys);
     }
   });
 
@@ -292,22 +293,24 @@ function renderDnsFields(platform, initialData = {}) {
  * @param {string} platform - 平台 key (如 cloudflare)
  * @param {Object} field - 字段定义对象
  * @param {Object} data - 表单数据对象
+ * @param {string[]} disabledKeys - 禁用的字段 key 列表
  * @returns {string} - 生成的 HTML 字符串
  */
-function generateDnsFieldHtml(platform, field, data) {
-  // 1. 自动属性映射 (根据 ID 直接映射)
+function generateDnsFieldHtml(platform, field, data = {}, disabledKeys = []) {
+  // 自动属性映射 (根据 ID 直接映射)
   let specialClass = "";
   let dataTypeAttr = "";
   let isHidden = false;
 
   const value = data[field.id] !== undefined ? data[field.id] : "";
   const requiredAttr = field.required && !isHidden ? "required" : "";
+  const disabledAttr = disabledKeys.includes(field.id) ? "disabled" : "";
 
   let inputHtml = "";
   if (field.type === "password") {
     inputHtml = `
       <div class="flex items-center gap-2">
-        <input type="password" class="ui-input dynamic-input" data-platform="${platform}" data-key="${field.id}" value="${value}" placeholder="${field.placeholder}" ${requiredAttr} autocomplete="new-password" />
+        <input type="password" class="ui-input dynamic-input" data-platform="${platform}" data-key="${field.id}" value="${value}" placeholder="${field.placeholder}" ${requiredAttr} ${disabledAttr} autocomplete="new-password" />
         <button type="button" class="btn btn-square btn-sm btn-ghost" onclick="togglePasswordVisibilityByPrev(this)">
           <span class="i-lucide-eye w-4 h-4"></span>
         </button>
@@ -316,7 +319,7 @@ function generateDnsFieldHtml(platform, field, data) {
     inputHtml = `
           <select class="ui-select dynamic-input" data-platform="${platform}" data-key="${
             field.id
-          }" ${requiredAttr} onchange="handleSelectChange(this)">
+          }" ${requiredAttr} ${disabledAttr} onchange="handleSelectChange(this)">
             ${(field.options || [])
               .map(
                 (opt) =>
@@ -337,7 +340,7 @@ function generateDnsFieldHtml(platform, field, data) {
                   } 
                   ${
                     field.title ? `title="${field.title}"` : ""
-                  } ${requiredAttr} />`;
+                  } ${requiredAttr} ${disabledAttr} />`;
   }
 
   return `
@@ -372,15 +375,59 @@ function buildConfigFromDnsFields(platform = "") {
     if (fieldSchema?.type === "number") {
       val = Number(val);
     }
-    config[key] = val;
+
+    // 处理 select，额外保存 text 和 value
+    if (fieldSchema?.type === "select") {
+      const selectedOption = el.options[el.selectedIndex];
+      const text = selectedOption ? selectedOption.text : "";
+
+      config[key] = val;
+      config[`${key}_text`] = text;
+      config[`${key}_value`] = val;
+
+      // 如果有 valueType，根据类型转换
+      if (fieldSchema?.valueType === "number" && val !== "") {
+        config[`${key}_value`] = Number(val);
+      } else if (fieldSchema?.valueType === "boolean") {
+        config[`${key}_value`] = val === "true" || val === "1" || val === "yes";
+      }
+    } else {
+      config[key] = val;
+    }
   });
 
-  // 判断 document 是否有 ip_group_code 字段，如存在就加上
-  ip_group_code_el = document.getElementById("ip_group_code");
-  if (ip_group_code_el) {
-    config.ip_group_code = document
-      .getElementById("ip_group_code")
-      .value.trim();
+  // 处理 IP 组 select
+  const ip_group_el = document.getElementById("ip_group_id");
+  if (ip_group_el) {
+    const selectedOption = ip_group_el.options[ip_group_el.selectedIndex];
+    const value = ip_group_el.value.trim();
+    const text = selectedOption ? selectedOption.text : "";
+    const code = selectedOption ? selectedOption.dataset.code : "";
+
+    if (value !== "") {
+      config.ip_group_id = value;
+      config.ip_group_id_text = text;
+      config.ip_group_id_value = Number(value);
+
+      // 如果有 code，也保存
+      if (code) {
+        config.ip_group_id_code = code;
+      }
+    }
+  }
+
+  // 处理 CDN 记录 select
+  const cdn_record_id = document.getElementById("cdn_record_id");
+  if (cdn_record_id) {
+    const selectedOption = cdn_record_id.options[cdn_record_id.selectedIndex];
+    const value = cdn_record_id.value.trim();
+    const text = selectedOption ? selectedOption.text : "";
+
+    if (value !== "") {
+      config.cdn_record_id = value;
+      config.cdn_record_id_text = text;
+      config.cdn_record_id_value = Number(value);
+    }
   }
 
   document.getElementById("config_json").value = JSON.stringify(config);

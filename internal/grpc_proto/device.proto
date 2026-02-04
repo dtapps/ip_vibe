@@ -52,10 +52,12 @@ message ClientInfo {
   string os = 8;
   // 架构
   string arch = 9;
+  // 运行时间
+  google.protobuf.Timestamp run_time = 10;
   // 启动时间
-  google.protobuf.Timestamp start_time = 10;
+  google.protobuf.Timestamp start_time = 11;
   // 获取时间
-  google.protobuf.Timestamp get_time = 11;
+  google.protobuf.Timestamp get_time = 12;
 }
 
 // 心跳消息（轻量，用于保活）

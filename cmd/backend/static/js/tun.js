@@ -7,15 +7,13 @@ async function onConfigSelect(el) {
   const id = opt.value || 0;
   const platform = opt.dataset.platform || "";
 
-  if (platform) {
-    document.getElementById("platform").value = platform;
-  }
-
-  // 从后端接口获取指定平台的动态 Schema，并更新 DNS_SCHEMA
-  switch (platform) {
-    case "cloudflare":
-      await fetchAndReplaceTunSchema(platform, id);
-      break;
+  // 从后端接口获取指定平台的动态 Schema
+  if (id > 0 && platform) {
+    switch (platform) {
+      case "cloudflare":
+        await fetchAndReplaceTunSchema(platform, id);
+        break;
+    }
   }
 
   // 重新渲染字段
@@ -138,13 +136,16 @@ async function openFormModal(id, action = "") {
         selectId2.val(null).trigger("change");
       }
 
-      // 从后端接口获取指定平台的动态 Schema，并更新 DNS_SCHEMA
+      // 从后端接口获取指定平台的动态 Schema
+      const disabledKeys = [];
       switch (tunRecord.platform) {
         case "cloudflare":
           await fetchAndReplaceTunSchema(
             tunRecord.platform,
             tunRecord.config_id,
           );
+          disabledKeys.push("tunnel_id");
+          disabledKeys.push("zone_id");
           break;
       }
 
@@ -152,7 +153,11 @@ async function openFormModal(id, action = "") {
       els.original_config_json.value = JSON.stringify(
         tunRecord.config_json || {},
       );
-      renderTunFields(tunRecord.platform, tunRecord.config_json || {});
+      renderTunFields(
+        tunRecord.platform,
+        tunRecord.config_json || {},
+        disabledKeys,
+      );
 
       // 如果是复制操作，清空 id 字段
       if (action === "copy") {

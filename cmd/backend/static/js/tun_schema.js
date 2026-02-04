@@ -69,8 +69,9 @@ async function fetchAndReplaceTunSchema(platform, configId) {
  * 动态渲染字段
  * @param {string} platform - 平台 key (如 cloudflare)
  * @param {Object} initialData - 编辑模式下的初始数据 (可选)
+ * @param {string[]} disabledKeys - 禁用的字段 key 列表 (可选)
  */
-function renderTunFields(platform, initialData = {}) {
+function renderTunFields(platform, initialData = {}, disabledKeys = []) {
   const container = document.getElementById("dynamic_fields_container");
   const schema = TUN_SCHEMA[platform];
 
@@ -100,49 +101,58 @@ function renderTunFields(platform, initialData = {}) {
       // 直接使用 ID 拼接类名，例如：domain_name-or-email-group
       const groupClassName = item.map((f) => f.id).join("-or-") + "-group";
 
-      html += `<div class="form-group ${groupClassName}" data-platform="${platform}">`;
+      html += `<div class="form-group ${groupClassName} grid grid-cols-${item.length}" data-platform="${platform}">`;
       item.forEach((subField) => {
-        html += generateTunFieldHtml(subField, data);
+        html += generateTunFieldHtml(platform, subField, data, disabledKeys);
       });
       html += `</div>`;
     } else {
       // 普通非分组字段
-      html += generateTunFieldHtml(item, data);
+      html += generateTunFieldHtml(platform, item, data, disabledKeys);
     }
   });
 
   container.innerHTML = html;
+
+  // 触发所有 select 的初始化处理
+  const selects = container.querySelectorAll("select.dynamic-input");
+  selects.forEach((select) => {
+    handleSelectChange(select);
+  });
 }
 
 /**
  * 生成单个字段 HTML，通过 ID 自动映射特殊属性
+ * @param {string} platform - 平台 key (如 cloudflare)
  * @param {Object} field - 字段定义对象
  * @param {Object} data - 表单数据对象
+ * @param {string[]} disabledKeys - 禁用的字段 key 列表
  * @returns {string} - 生成的 HTML 字符串
  */
-function generateTunFieldHtml(field, data) {
-  // 1. 自动属性映射 (根据 ID 直接映射)
+function generateTunFieldHtml(platform, field, data = {}, disabledKeys = []) {
+  // 自动属性映射 (根据 ID 直接映射)
   let specialClass = "";
   let dataTypeAttr = "";
   let isHidden = false;
 
   const value = data[field.id] !== undefined ? data[field.id] : "";
   const requiredAttr = field.required && !isHidden ? "required" : "";
+  const disabledAttr = disabledKeys.includes(field.id) ? "disabled" : "";
 
   let inputHtml = "";
   if (field.type === "password") {
     inputHtml = `
       <div class="flex items-center gap-2">
-        <input type="password" class="ui-input dynamic-input" data-key="${field.id}" value="${value}" placeholder="${field.placeholder}" ${requiredAttr} autocomplete="new-password" />
+        <input type="password" class="ui-input dynamic-input" data-platform="${platform}" data-key="${field.id}" value="${value}" placeholder="${field.placeholder}" ${requiredAttr} ${disabledAttr} autocomplete="new-password" />
         <button type="button" class="btn btn-square btn-sm btn-ghost" onclick="togglePasswordVisibilityByPrev(this)">
           <span class="i-lucide-eye w-4 h-4"></span>
         </button>
       </div>`;
   } else if (field.type === "select") {
     inputHtml = `
-          <select class="ui-select dynamic-input" data-key="${
+          <select class="ui-select dynamic-input" data-platform="${platform}" data-key="${
             field.id
-          }" ${requiredAttr}>
+          }" ${requiredAttr} ${disabledAttr}>
             ${(field.options || [])
               .map(
                 (opt) =>
@@ -155,7 +165,7 @@ function generateTunFieldHtml(field, data) {
   } else {
     inputHtml = `<input type="${
       field.type
-    }" class="ui-input dynamic-input ${specialClass}" data-key="${
+    }" class="ui-input dynamic-input ${specialClass}" data-platform="${platform}" data-key="${
       field.id
     }" value="${value}" 
                   placeholder="${field.placeholder}" ${
@@ -163,7 +173,7 @@ function generateTunFieldHtml(field, data) {
                   } 
                   ${
                     field.title ? `title="${field.title}"` : ""
-                  } ${requiredAttr} />`;
+                  } ${requiredAttr} ${disabledAttr} />`;
   }
 
   return `
@@ -198,8 +208,54 @@ function buildConfigFromTunFields(platform = "") {
     if (fieldSchema?.type === "number") {
       val = Number(val);
     }
-    config[key] = val;
+
+    // 处理 select，额外保存 text 和 value
+    if (fieldSchema?.type === "select") {
+      const selectedOption = el.options[el.selectedIndex];
+      const text = selectedOption ? selectedOption.text : "";
+
+      config[key] = val;
+      config[`${key}_text`] = text;
+      config[`${key}_value`] = val;
+
+      // 如果有 valueType，根据类型转换
+      if (fieldSchema?.valueType === "number" && val !== "") {
+        config[`${key}_value`] = Number(val);
+      } else if (fieldSchema?.valueType === "boolean") {
+        config[`${key}_value`] = val === "true" || val === "1" || val === "yes";
+      }
+    } else {
+      config[key] = val;
+    }
   });
 
   document.getElementById("config_json").value = JSON.stringify(config);
+}
+
+/**
+ * 处理选择框变化事件
+ * @param {HTMLSelectElement} selectEl - 触发事件的选择框元素
+ */
+function handleSelectChange(selectEl) {
+  console.log("handleSelectChange", selectEl);
+
+  // 获取选择框的平台、键和当前选中值
+  const platform = selectEl.getAttribute("data-platform");
+  const key = selectEl.getAttribute("data-key");
+  const selectedValue = selectEl.value;
+  console.log("platform", platform);
+  console.log("key", key);
+  console.log("selectedValue", selectedValue);
+
+  // 获取选项的 text 和 value
+  const opt = selectEl.options[selectEl.selectedIndex];
+  const text = opt ? opt.text : "";
+  const value = opt ? opt.value : "";
+  console.log("text", text);
+  console.log("value", value);
+
+  platform_el = document.getElementById("platform");
+  if (platform_el) {
+    platform_el.value = platform;
+  }
 }
