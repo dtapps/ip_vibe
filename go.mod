@@ -57,12 +57,12 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.36
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.43
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.44
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.43
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.44
 	github.com/tidwall/gjson v1.18.0
 	github.com/volcengine/volcengine-go-sdk v1.2.10
-	github.com/wdcbot/qingfeng v1.6.3
+	github.com/wdcbot/qingfeng v1.6.4
 	go.dtapp.net/library/contrib/http_log v1.0.11
 	go.dtapp.net/library/contrib/req_log v1.0.4
 	go.dtapp.net/library/contrib/resty_log v1.0.15
@@ -83,8 +83,8 @@ require (
 	go.dtapp.net/library/utils/gotime v1.0.17
 	golang.org/x/net v0.49.0
 	golang.org/x/sync v0.19.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20260202165425-ce8ad4cf556b
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260202165425-ce8ad4cf556b
+	google.golang.org/genproto/googleapis/api v0.0.0-20260203192932-546029d2fa20
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260203192932-546029d2fa20
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -192,6 +192,7 @@ require (
 	go.mongodb.org/mongo-driver v1.17.8 // indirect
 	go.opentelemetry.io/otel v1.39.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.39.0 // indirect
+	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.23.0 // indirect
 	golang.org/x/crypto v0.47.0 // indirect
@@ -208,4 +209,5 @@ require (
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	rsc.io/binaryregexp v0.2.0 // indirect
+	sigs.k8s.io/yaml v1.6.0 // indirect
 )

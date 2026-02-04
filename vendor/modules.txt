@@ -842,10 +842,11 @@ github.com/swaggo/swag
 # github.com/swaggo/swag/v2 v2.0.0-rc5
 ## explicit; go 1.18
 github.com/swaggo/swag/v2
+github.com/swaggo/swag/v2/gen
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.36
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.43
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.44
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -856,7 +857,7 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/regions
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.43
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.44
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901
 # github.com/tidwall/gjson v1.18.0
@@ -944,7 +945,7 @@ github.com/volcengine/volcengine-go-sdk/volcengine/volcenginebody
 github.com/volcengine/volcengine-go-sdk/volcengine/volcengineerr
 github.com/volcengine/volcengine-go-sdk/volcengine/volcenginequery
 github.com/volcengine/volcengine-go-sdk/volcengine/volcengineutil
-# github.com/wdcbot/qingfeng v1.6.3
+# github.com/wdcbot/qingfeng v1.6.4
 ## explicit; go 1.20
 github.com/wdcbot/qingfeng
 # github.com/yosida95/uritemplate/v3 v3.0.2
@@ -1034,6 +1035,9 @@ go.mongodb.org/mongo-driver/x/bsonx/bsoncore
 ## explicit; go 1.24.0
 # go.opentelemetry.io/otel/sdk/metric v1.39.0
 ## explicit; go 1.24.0
+# go.yaml.in/yaml/v2 v2.4.3
+## explicit; go 1.15
+go.yaml.in/yaml/v2
 # go.yaml.in/yaml/v3 v3.0.4
 ## explicit; go 1.16
 go.yaml.in/yaml/v3
@@ -1099,6 +1103,7 @@ golang.org/x/sys/windows
 golang.org/x/sys/windows/registry
 # golang.org/x/text v0.33.0
 ## explicit; go 1.24.0
+golang.org/x/text/cases
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
 golang.org/x/text/encoding/htmlindex
@@ -1110,6 +1115,7 @@ golang.org/x/text/encoding/korean
 golang.org/x/text/encoding/simplifiedchinese
 golang.org/x/text/encoding/traditionalchinese
 golang.org/x/text/encoding/unicode
+golang.org/x/text/internal
 golang.org/x/text/internal/language
 golang.org/x/text/internal/language/compact
 golang.org/x/text/internal/tag
@@ -1150,12 +1156,12 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typeparams
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/api v0.0.0-20260202165425-ce8ad4cf556b
+# google.golang.org/genproto/googleapis/api v0.0.0-20260203192932-546029d2fa20
 ## explicit; go 1.24.0
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20260202165425-ce8ad4cf556b
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20260203192932-546029d2fa20
 ## explicit; go 1.24.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.78.0
@@ -1319,6 +1325,9 @@ resty.dev/v3
 ## explicit; go 1.12
 rsc.io/binaryregexp
 rsc.io/binaryregexp/syntax
+# sigs.k8s.io/yaml v1.6.0
+## explicit; go 1.22
+sigs.k8s.io/yaml
 # github.com/quic-go/qpack => github.com/quic-go/qpack v0.6.0
 # github.com/quic-go/quic-go => github.com/quic-go/quic-go v0.58.0
 # github.com/imroc/req/v3 => github.com/imroc/req/v3 v3.57.0
