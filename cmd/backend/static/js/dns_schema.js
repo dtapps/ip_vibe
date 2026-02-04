@@ -322,7 +322,7 @@ function generateDnsFieldHtml(platform, field, data) {
                 (opt) =>
                   `<option value="${opt.value}" ${
                     opt.value == value ? "selected" : ""
-                  } data-label="${opt.label}" data-value="${opt.value}">${opt.label}</option>`,
+                  }>${opt.label}</option>`,
               )
               .join("")}
           </select>`;
@@ -391,16 +391,62 @@ function buildConfigFromDnsFields(platform = "") {
  * @param {HTMLSelectElement} selectEl - 触发事件的选择框元素
  */
 function handleSelectChange(selectEl) {
+  console.log("handleSelectChange", selectEl);
+
+  // 获取选择框的平台、键和当前选中值
   const platform = selectEl.getAttribute("data-platform");
   const key = selectEl.getAttribute("data-key");
   const selectedValue = selectEl.value;
-  const opt = selectEl.options[selectEl.selectedIndex];
-  const label = opt.getAttribute("data-label");
-  const value = opt.getAttribute("data-value");
-
   console.log("platform", platform);
   console.log("key", key);
   console.log("selectedValue", selectedValue);
-  console.log("label", label);
+
+  // 获取选项的 text 和 value
+  const opt = selectEl.options[selectEl.selectedIndex];
+  const text = opt ? opt.text : "";
+  const value = opt ? opt.value : "";
+  console.log("text", text);
   console.log("value", value);
+
+  platform_el = document.getElementById("platform");
+  if (platform_el) {
+    platform_el.value = platform;
+  }
+
+  // 动态更新域名显示
+  domain_name_el = document.getElementById("domain_name");
+  if (domain_name_el && platform && key && text) {
+    switch (platform) {
+      case "cloudflare":
+        if (key === "zone") {
+          domain_name_el.innerText = text;
+        }
+        break;
+      case "tencent_dns":
+        if (key === "domain") {
+          domain_name_el.innerText = text;
+        }
+        break;
+      case "aliyun_dns":
+        if (key === "domain") {
+          domain_name_el.innerText = text;
+        }
+        break;
+      case "baidu_dns":
+        if (key === "zone") {
+          domain_name_el.innerText = text;
+        }
+        break;
+      case "huawei_dns":
+        if (key === "zone") {
+          domain_name_el.innerText = text;
+        }
+        break;
+      case "volcengine_dns":
+        if (key === "zone") {
+          domain_name_el.innerText = text;
+        }
+        break;
+    }
+  }
 }

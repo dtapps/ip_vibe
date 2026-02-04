@@ -6,35 +6,29 @@ async function onConfigSelect(el) {
 
   const id = opt.value || 0;
   const platform = opt.dataset.platform || "";
-  const domain_name = opt.dataset.domain_name || "";
 
-  if (platform) {
-    document.getElementById("platform").value = platform;
-  }
-  if (domain_name) {
-    document.getElementById("domain_name").innerHTML = "." + domain_name;
-  }
-
-  // 从后端接口获取指定平台的动态 Schema，并更新 DNS_SCHEMA
-  switch (platform) {
-    case "cloudFlare":
-      await fetchAndReplaceDnsSchema(platform, id);
-      break;
-    case "tencent_dns":
-      await fetchAndReplaceDnsSchema(platform, id);
-      break;
-    case "aliyun_dns":
-      await fetchAndReplaceDnsSchema(platform, id);
-      break;
-    case "baidu_dns":
-      await fetchAndReplaceDnsSchema(platform, id);
-      break;
-    case "huawei_dns":
-      await fetchAndReplaceDnsSchema(platform, id);
-      break;
-    case "volcengine_dns":
-      await fetchAndReplaceDnsSchema(platform, id);
-      break;
+  // 从后端接口获取指定平台的动态 Schema
+  if (id > 0 && platform) {
+    switch (platform) {
+      case "cloudflare":
+        await fetchAndReplaceDnsSchema(platform, id);
+        break;
+      case "tencent_dns":
+        await fetchAndReplaceDnsSchema(platform, id);
+        break;
+      case "aliyun_dns":
+        await fetchAndReplaceDnsSchema(platform, id);
+        break;
+      case "baidu_dns":
+        await fetchAndReplaceDnsSchema(platform, id);
+        break;
+      case "huawei_dns":
+        await fetchAndReplaceDnsSchema(platform, id);
+        break;
+      case "volcengine_dns":
+        await fetchAndReplaceDnsSchema(platform, id);
+        break;
+    }
   }
 
   // 重新渲染字段
@@ -111,7 +105,7 @@ async function openFormModal(id, action = "") {
           opt.dataset.email = d.config_json?.email ?? "";
           opt.dataset.account_id = d.config_json?.account_id ?? "";
           opt.value = d.id;
-          opt.text = `${d.name}（${opt.dataset.domain_name}）`;
+          opt.text = `${d.name}`;
           configSelect.appendChild(opt);
         }
       });
