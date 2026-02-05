@@ -214,7 +214,7 @@ const PLATFORM_SCHEMA = {
         label: "区域类型",
         type: "select",
         placeholder: "请选择区域类型",
-        required: false,
+        required: true,
         options: [
           {
             value: "cn",
