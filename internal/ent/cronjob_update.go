@@ -90,6 +90,67 @@ func (_u *CronJobUpdate) SetNillableJobType(v *cronjob.JobType) *CronJobUpdate {
 	return _u
 }
 
+// SetJobCategory sets the "job_category" field.
+func (_u *CronJobUpdate) SetJobCategory(v cronjob.JobCategory) *CronJobUpdate {
+	_u.mutation.SetJobCategory(v)
+	return _u
+}
+
+// SetNillableJobCategory sets the "job_category" field if the given value is not nil.
+func (_u *CronJobUpdate) SetNillableJobCategory(v *cronjob.JobCategory) *CronJobUpdate {
+	if v != nil {
+		_u.SetJobCategory(*v)
+	}
+	return _u
+}
+
+// SetBusinessType sets the "business_type" field.
+func (_u *CronJobUpdate) SetBusinessType(v cronjob.BusinessType) *CronJobUpdate {
+	_u.mutation.SetBusinessType(v)
+	return _u
+}
+
+// SetNillableBusinessType sets the "business_type" field if the given value is not nil.
+func (_u *CronJobUpdate) SetNillableBusinessType(v *cronjob.BusinessType) *CronJobUpdate {
+	if v != nil {
+		_u.SetBusinessType(*v)
+	}
+	return _u
+}
+
+// ClearBusinessType clears the value of the "business_type" field.
+func (_u *CronJobUpdate) ClearBusinessType() *CronJobUpdate {
+	_u.mutation.ClearBusinessType()
+	return _u
+}
+
+// SetBusinessID sets the "business_id" field.
+func (_u *CronJobUpdate) SetBusinessID(v int64) *CronJobUpdate {
+	_u.mutation.ResetBusinessID()
+	_u.mutation.SetBusinessID(v)
+	return _u
+}
+
+// SetNillableBusinessID sets the "business_id" field if the given value is not nil.
+func (_u *CronJobUpdate) SetNillableBusinessID(v *int64) *CronJobUpdate {
+	if v != nil {
+		_u.SetBusinessID(*v)
+	}
+	return _u
+}
+
+// AddBusinessID adds value to the "business_id" field.
+func (_u *CronJobUpdate) AddBusinessID(v int64) *CronJobUpdate {
+	_u.mutation.AddBusinessID(v)
+	return _u
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (_u *CronJobUpdate) ClearBusinessID() *CronJobUpdate {
+	_u.mutation.ClearBusinessID()
+	return _u
+}
+
 // SetCronExpr sets the "cron_expr" field.
 func (_u *CronJobUpdate) SetCronExpr(v string) *CronJobUpdate {
 	_u.mutation.SetCronExpr(v)
@@ -305,6 +366,16 @@ func (_u *CronJobUpdate) check() error {
 			return &ValidationError{Name: "job_type", err: fmt.Errorf(`ent: validator failed for field "CronJob.job_type": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.JobCategory(); ok {
+		if err := cronjob.JobCategoryValidator(v); err != nil {
+			return &ValidationError{Name: "job_category", err: fmt.Errorf(`ent: validator failed for field "CronJob.job_category": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.BusinessType(); ok {
+		if err := cronjob.BusinessTypeValidator(v); err != nil {
+			return &ValidationError{Name: "business_type", err: fmt.Errorf(`ent: validator failed for field "CronJob.business_type": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.MinInterval(); ok {
 		if err := cronjob.MinIntervalValidator(v); err != nil {
 			return &ValidationError{Name: "min_interval", err: fmt.Errorf(`ent: validator failed for field "CronJob.min_interval": %w`, err)}
@@ -363,6 +434,24 @@ func (_u *CronJobUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.JobType(); ok {
 		_spec.SetField(cronjob.FieldJobType, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.JobCategory(); ok {
+		_spec.SetField(cronjob.FieldJobCategory, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.BusinessType(); ok {
+		_spec.SetField(cronjob.FieldBusinessType, field.TypeEnum, value)
+	}
+	if _u.mutation.BusinessTypeCleared() {
+		_spec.ClearField(cronjob.FieldBusinessType, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.BusinessID(); ok {
+		_spec.SetField(cronjob.FieldBusinessID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedBusinessID(); ok {
+		_spec.AddField(cronjob.FieldBusinessID, field.TypeInt64, value)
+	}
+	if _u.mutation.BusinessIDCleared() {
+		_spec.ClearField(cronjob.FieldBusinessID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.CronExpr(); ok {
 		_spec.SetField(cronjob.FieldCronExpr, field.TypeString, value)
@@ -488,6 +577,67 @@ func (_u *CronJobUpdateOne) SetNillableJobType(v *cronjob.JobType) *CronJobUpdat
 	if v != nil {
 		_u.SetJobType(*v)
 	}
+	return _u
+}
+
+// SetJobCategory sets the "job_category" field.
+func (_u *CronJobUpdateOne) SetJobCategory(v cronjob.JobCategory) *CronJobUpdateOne {
+	_u.mutation.SetJobCategory(v)
+	return _u
+}
+
+// SetNillableJobCategory sets the "job_category" field if the given value is not nil.
+func (_u *CronJobUpdateOne) SetNillableJobCategory(v *cronjob.JobCategory) *CronJobUpdateOne {
+	if v != nil {
+		_u.SetJobCategory(*v)
+	}
+	return _u
+}
+
+// SetBusinessType sets the "business_type" field.
+func (_u *CronJobUpdateOne) SetBusinessType(v cronjob.BusinessType) *CronJobUpdateOne {
+	_u.mutation.SetBusinessType(v)
+	return _u
+}
+
+// SetNillableBusinessType sets the "business_type" field if the given value is not nil.
+func (_u *CronJobUpdateOne) SetNillableBusinessType(v *cronjob.BusinessType) *CronJobUpdateOne {
+	if v != nil {
+		_u.SetBusinessType(*v)
+	}
+	return _u
+}
+
+// ClearBusinessType clears the value of the "business_type" field.
+func (_u *CronJobUpdateOne) ClearBusinessType() *CronJobUpdateOne {
+	_u.mutation.ClearBusinessType()
+	return _u
+}
+
+// SetBusinessID sets the "business_id" field.
+func (_u *CronJobUpdateOne) SetBusinessID(v int64) *CronJobUpdateOne {
+	_u.mutation.ResetBusinessID()
+	_u.mutation.SetBusinessID(v)
+	return _u
+}
+
+// SetNillableBusinessID sets the "business_id" field if the given value is not nil.
+func (_u *CronJobUpdateOne) SetNillableBusinessID(v *int64) *CronJobUpdateOne {
+	if v != nil {
+		_u.SetBusinessID(*v)
+	}
+	return _u
+}
+
+// AddBusinessID adds value to the "business_id" field.
+func (_u *CronJobUpdateOne) AddBusinessID(v int64) *CronJobUpdateOne {
+	_u.mutation.AddBusinessID(v)
+	return _u
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (_u *CronJobUpdateOne) ClearBusinessID() *CronJobUpdateOne {
+	_u.mutation.ClearBusinessID()
 	return _u
 }
 
@@ -719,6 +869,16 @@ func (_u *CronJobUpdateOne) check() error {
 			return &ValidationError{Name: "job_type", err: fmt.Errorf(`ent: validator failed for field "CronJob.job_type": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.JobCategory(); ok {
+		if err := cronjob.JobCategoryValidator(v); err != nil {
+			return &ValidationError{Name: "job_category", err: fmt.Errorf(`ent: validator failed for field "CronJob.job_category": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.BusinessType(); ok {
+		if err := cronjob.BusinessTypeValidator(v); err != nil {
+			return &ValidationError{Name: "business_type", err: fmt.Errorf(`ent: validator failed for field "CronJob.business_type": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.MinInterval(); ok {
 		if err := cronjob.MinIntervalValidator(v); err != nil {
 			return &ValidationError{Name: "min_interval", err: fmt.Errorf(`ent: validator failed for field "CronJob.min_interval": %w`, err)}
@@ -794,6 +954,24 @@ func (_u *CronJobUpdateOne) sqlSave(ctx context.Context) (_node *CronJob, err er
 	}
 	if value, ok := _u.mutation.JobType(); ok {
 		_spec.SetField(cronjob.FieldJobType, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.JobCategory(); ok {
+		_spec.SetField(cronjob.FieldJobCategory, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.BusinessType(); ok {
+		_spec.SetField(cronjob.FieldBusinessType, field.TypeEnum, value)
+	}
+	if _u.mutation.BusinessTypeCleared() {
+		_spec.ClearField(cronjob.FieldBusinessType, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.BusinessID(); ok {
+		_spec.SetField(cronjob.FieldBusinessID, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedBusinessID(); ok {
+		_spec.AddField(cronjob.FieldBusinessID, field.TypeInt64, value)
+	}
+	if _u.mutation.BusinessIDCleared() {
+		_spec.ClearField(cronjob.FieldBusinessID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.CronExpr(); ok {
 		_spec.SetField(cronjob.FieldCronExpr, field.TypeString, value)

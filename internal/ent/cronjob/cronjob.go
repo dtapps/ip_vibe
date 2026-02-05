@@ -29,6 +29,12 @@ const (
 	FieldHandlerArgs = "handler_args"
 	// FieldJobType holds the string denoting the job_type field in the database.
 	FieldJobType = "job_type"
+	// FieldJobCategory holds the string denoting the job_category field in the database.
+	FieldJobCategory = "job_category"
+	// FieldBusinessType holds the string denoting the business_type field in the database.
+	FieldBusinessType = "business_type"
+	// FieldBusinessID holds the string denoting the business_id field in the database.
+	FieldBusinessID = "business_id"
 	// FieldCronExpr holds the string denoting the cron_expr field in the database.
 	FieldCronExpr = "cron_expr"
 	// FieldWithSeconds holds the string denoting the with_seconds field in the database.
@@ -59,6 +65,9 @@ var Columns = []string{
 	FieldHandlerName,
 	FieldHandlerArgs,
 	FieldJobType,
+	FieldJobCategory,
+	FieldBusinessType,
+	FieldBusinessID,
 	FieldCronExpr,
 	FieldWithSeconds,
 	FieldIntervalValue,
@@ -129,6 +138,54 @@ func JobTypeValidator(jt JobType) error {
 	}
 }
 
+// JobCategory defines the type for the "job_category" enum field.
+type JobCategory string
+
+// JobCategory values.
+const (
+	JobCategorySystem JobCategory = "system"
+	JobCategoryCustom JobCategory = "custom"
+)
+
+func (jc JobCategory) String() string {
+	return string(jc)
+}
+
+// JobCategoryValidator is a validator for the "job_category" field enum values. It is called by the builders before save.
+func JobCategoryValidator(jc JobCategory) error {
+	switch jc {
+	case JobCategorySystem, JobCategoryCustom:
+		return nil
+	default:
+		return fmt.Errorf("cronjob: invalid enum value for job_category field: %q", jc)
+	}
+}
+
+// BusinessType defines the type for the "business_type" enum field.
+type BusinessType string
+
+// BusinessType values.
+const (
+	BusinessTypeCdn    BusinessType = "cdn"
+	BusinessTypeDNS    BusinessType = "dns"
+	BusinessTypeSsl    BusinessType = "ssl"
+	BusinessTypeSystem BusinessType = "system"
+)
+
+func (bt BusinessType) String() string {
+	return string(bt)
+}
+
+// BusinessTypeValidator is a validator for the "business_type" field enum values. It is called by the builders before save.
+func BusinessTypeValidator(bt BusinessType) error {
+	switch bt {
+	case BusinessTypeCdn, BusinessTypeDNS, BusinessTypeSsl, BusinessTypeSystem:
+		return nil
+	default:
+		return fmt.Errorf("cronjob: invalid enum value for business_type field: %q", bt)
+	}
+}
+
 // IntervalUnit defines the type for the "interval_unit" enum field.
 type IntervalUnit string
 
@@ -161,8 +218,8 @@ func IntervalUnitValidator(iu IntervalUnit) error {
 // Status defines the type for the "status" enum field.
 type Status string
 
-// StatusRunning is the default value of the Status enum.
-const DefaultStatus = StatusRunning
+// StatusStopped is the default value of the Status enum.
+const DefaultStatus = StatusStopped
 
 // Status values.
 const (
@@ -220,6 +277,21 @@ func ByHandlerName(opts ...sql.OrderTermOption) OrderOption {
 // ByJobType orders the results by the job_type field.
 func ByJobType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldJobType, opts...).ToFunc()
+}
+
+// ByJobCategory orders the results by the job_category field.
+func ByJobCategory(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldJobCategory, opts...).ToFunc()
+}
+
+// ByBusinessType orders the results by the business_type field.
+func ByBusinessType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBusinessType, opts...).ToFunc()
+}
+
+// ByBusinessID orders the results by the business_id field.
+func ByBusinessID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBusinessID, opts...).ToFunc()
 }
 
 // ByCronExpr orders the results by the cron_expr field.

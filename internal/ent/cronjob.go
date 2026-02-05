@@ -32,8 +32,14 @@ type CronJob struct {
 	HandlerName string `json:"handler_name,omitempty"`
 	// 任务处理函数参数
 	HandlerArgs json.RawMessage `json:"handler_args,omitempty"`
-	// 任务类型
+	// 任务类型: cron cron 表达式, duration 固定间隔, random 随机间隔
 	JobType cronjob.JobType `json:"job_type,omitempty"`
+	// 任务分类: system 系统内置, custom 用户自定义
+	JobCategory cronjob.JobCategory `json:"job_category,omitempty"`
+	// 业务类型: cdn, dns, ssl, system
+	BusinessType cronjob.BusinessType `json:"business_type,omitempty"`
+	// 业务序号
+	BusinessID int64 `json:"business_id,omitempty"`
 	// cron 表达式
 	CronExpr string `json:"cron_expr,omitempty"`
 	// 是否包含秒
@@ -62,9 +68,9 @@ func (*CronJob) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case cronjob.FieldWithSeconds, cronjob.FieldIsSingleton:
 			values[i] = new(sql.NullBool)
-		case cronjob.FieldID, cronjob.FieldIntervalValue, cronjob.FieldMinInterval, cronjob.FieldMaxInterval:
+		case cronjob.FieldID, cronjob.FieldBusinessID, cronjob.FieldIntervalValue, cronjob.FieldMinInterval, cronjob.FieldMaxInterval:
 			values[i] = new(sql.NullInt64)
-		case cronjob.FieldName, cronjob.FieldHandlerName, cronjob.FieldJobType, cronjob.FieldCronExpr, cronjob.FieldIntervalUnit, cronjob.FieldStatus:
+		case cronjob.FieldName, cronjob.FieldHandlerName, cronjob.FieldJobType, cronjob.FieldJobCategory, cronjob.FieldBusinessType, cronjob.FieldCronExpr, cronjob.FieldIntervalUnit, cronjob.FieldStatus:
 			values[i] = new(sql.NullString)
 		case cronjob.FieldCreatedAt, cronjob.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -134,6 +140,24 @@ func (_m *CronJob) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field job_type", values[i])
 			} else if value.Valid {
 				_m.JobType = cronjob.JobType(value.String)
+			}
+		case cronjob.FieldJobCategory:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field job_category", values[i])
+			} else if value.Valid {
+				_m.JobCategory = cronjob.JobCategory(value.String)
+			}
+		case cronjob.FieldBusinessType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field business_type", values[i])
+			} else if value.Valid {
+				_m.BusinessType = cronjob.BusinessType(value.String)
+			}
+		case cronjob.FieldBusinessID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field business_id", values[i])
+			} else if value.Valid {
+				_m.BusinessID = value.Int64
 			}
 		case cronjob.FieldCronExpr:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -239,6 +263,15 @@ func (_m *CronJob) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("job_type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.JobType))
+	builder.WriteString(", ")
+	builder.WriteString("job_category=")
+	builder.WriteString(fmt.Sprintf("%v", _m.JobCategory))
+	builder.WriteString(", ")
+	builder.WriteString("business_type=")
+	builder.WriteString(fmt.Sprintf("%v", _m.BusinessType))
+	builder.WriteString(", ")
+	builder.WriteString("business_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.BusinessID))
 	builder.WriteString(", ")
 	builder.WriteString("cron_expr=")
 	builder.WriteString(_m.CronExpr)

@@ -1910,6 +1910,81 @@ func (q *CronJobQuery) OrderByJobTypeAsc() *CronJobQuery {
 	return q.Order(Asc(cronjob.FieldJobType))
 }
 
+// OrderByJobCategoryDesc 按字段 job_category 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJob.Query().
+//	    OrderByJobCategoryDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobQuery) OrderByJobCategoryDesc() *CronJobQuery {
+	return q.Order(Desc(cronjob.FieldJobCategory))
+}
+
+// OrderByJobCategoryAsc 按字段 job_category 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJob.Query().
+//	    OrderByJobCategoryAsc().
+//	    All(ctx)
+func (q *CronJobQuery) OrderByJobCategoryAsc() *CronJobQuery {
+	return q.Order(Asc(cronjob.FieldJobCategory))
+}
+
+// OrderByBusinessTypeDesc 按字段 business_type 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJob.Query().
+//	    OrderByBusinessTypeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobQuery) OrderByBusinessTypeDesc() *CronJobQuery {
+	return q.Order(Desc(cronjob.FieldBusinessType))
+}
+
+// OrderByBusinessTypeAsc 按字段 business_type 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJob.Query().
+//	    OrderByBusinessTypeAsc().
+//	    All(ctx)
+func (q *CronJobQuery) OrderByBusinessTypeAsc() *CronJobQuery {
+	return q.Order(Asc(cronjob.FieldBusinessType))
+}
+
+// OrderByBusinessIDDesc 按字段 business_id 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJob.Query().
+//	    OrderByBusinessIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobQuery) OrderByBusinessIDDesc() *CronJobQuery {
+	return q.Order(Desc(cronjob.FieldBusinessID))
+}
+
+// OrderByBusinessIDAsc 按字段 business_id 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJob.Query().
+//	    OrderByBusinessIDAsc().
+//	    All(ctx)
+func (q *CronJobQuery) OrderByBusinessIDAsc() *CronJobQuery {
+	return q.Order(Asc(cronjob.FieldBusinessID))
+}
+
 // OrderByCronExprDesc 按字段 cron_expr 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *CronJobQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

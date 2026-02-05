@@ -32,7 +32,7 @@ type CronJobLog struct {
 	FinishedAt *time.Time `json:"finished_at,omitempty"`
 	// 耗时(ms)
 	Duration int64 `json:"duration,omitempty"`
-	// 状态
+	// 状态: running 运行中, success 成功, failed 失败
 	Status cronjoblog.Status `json:"status,omitempty"`
 	// 错误信息
 	ErrorInfo string `json:"error_info,omitempty"`

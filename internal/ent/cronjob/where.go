@@ -80,6 +80,11 @@ func HandlerName(v string) predicate.CronJob {
 	return predicate.CronJob(sql.FieldEQ(FieldHandlerName, v))
 }
 
+// BusinessID applies equality check predicate on the "business_id" field. It's identical to BusinessIDEQ.
+func BusinessID(v int64) predicate.CronJob {
+	return predicate.CronJob(sql.FieldEQ(FieldBusinessID, v))
+}
+
 // CronExpr applies equality check predicate on the "cron_expr" field. It's identical to CronExprEQ.
 func CronExpr(v string) predicate.CronJob {
 	return predicate.CronJob(sql.FieldEQ(FieldCronExpr, v))
@@ -388,6 +393,106 @@ func JobTypeIn(vs ...JobType) predicate.CronJob {
 // JobTypeNotIn applies the NotIn predicate on the "job_type" field.
 func JobTypeNotIn(vs ...JobType) predicate.CronJob {
 	return predicate.CronJob(sql.FieldNotIn(FieldJobType, vs...))
+}
+
+// JobCategoryEQ applies the EQ predicate on the "job_category" field.
+func JobCategoryEQ(v JobCategory) predicate.CronJob {
+	return predicate.CronJob(sql.FieldEQ(FieldJobCategory, v))
+}
+
+// JobCategoryNEQ applies the NEQ predicate on the "job_category" field.
+func JobCategoryNEQ(v JobCategory) predicate.CronJob {
+	return predicate.CronJob(sql.FieldNEQ(FieldJobCategory, v))
+}
+
+// JobCategoryIn applies the In predicate on the "job_category" field.
+func JobCategoryIn(vs ...JobCategory) predicate.CronJob {
+	return predicate.CronJob(sql.FieldIn(FieldJobCategory, vs...))
+}
+
+// JobCategoryNotIn applies the NotIn predicate on the "job_category" field.
+func JobCategoryNotIn(vs ...JobCategory) predicate.CronJob {
+	return predicate.CronJob(sql.FieldNotIn(FieldJobCategory, vs...))
+}
+
+// BusinessTypeEQ applies the EQ predicate on the "business_type" field.
+func BusinessTypeEQ(v BusinessType) predicate.CronJob {
+	return predicate.CronJob(sql.FieldEQ(FieldBusinessType, v))
+}
+
+// BusinessTypeNEQ applies the NEQ predicate on the "business_type" field.
+func BusinessTypeNEQ(v BusinessType) predicate.CronJob {
+	return predicate.CronJob(sql.FieldNEQ(FieldBusinessType, v))
+}
+
+// BusinessTypeIn applies the In predicate on the "business_type" field.
+func BusinessTypeIn(vs ...BusinessType) predicate.CronJob {
+	return predicate.CronJob(sql.FieldIn(FieldBusinessType, vs...))
+}
+
+// BusinessTypeNotIn applies the NotIn predicate on the "business_type" field.
+func BusinessTypeNotIn(vs ...BusinessType) predicate.CronJob {
+	return predicate.CronJob(sql.FieldNotIn(FieldBusinessType, vs...))
+}
+
+// BusinessTypeIsNil applies the IsNil predicate on the "business_type" field.
+func BusinessTypeIsNil() predicate.CronJob {
+	return predicate.CronJob(sql.FieldIsNull(FieldBusinessType))
+}
+
+// BusinessTypeNotNil applies the NotNil predicate on the "business_type" field.
+func BusinessTypeNotNil() predicate.CronJob {
+	return predicate.CronJob(sql.FieldNotNull(FieldBusinessType))
+}
+
+// BusinessIDEQ applies the EQ predicate on the "business_id" field.
+func BusinessIDEQ(v int64) predicate.CronJob {
+	return predicate.CronJob(sql.FieldEQ(FieldBusinessID, v))
+}
+
+// BusinessIDNEQ applies the NEQ predicate on the "business_id" field.
+func BusinessIDNEQ(v int64) predicate.CronJob {
+	return predicate.CronJob(sql.FieldNEQ(FieldBusinessID, v))
+}
+
+// BusinessIDIn applies the In predicate on the "business_id" field.
+func BusinessIDIn(vs ...int64) predicate.CronJob {
+	return predicate.CronJob(sql.FieldIn(FieldBusinessID, vs...))
+}
+
+// BusinessIDNotIn applies the NotIn predicate on the "business_id" field.
+func BusinessIDNotIn(vs ...int64) predicate.CronJob {
+	return predicate.CronJob(sql.FieldNotIn(FieldBusinessID, vs...))
+}
+
+// BusinessIDGT applies the GT predicate on the "business_id" field.
+func BusinessIDGT(v int64) predicate.CronJob {
+	return predicate.CronJob(sql.FieldGT(FieldBusinessID, v))
+}
+
+// BusinessIDGTE applies the GTE predicate on the "business_id" field.
+func BusinessIDGTE(v int64) predicate.CronJob {
+	return predicate.CronJob(sql.FieldGTE(FieldBusinessID, v))
+}
+
+// BusinessIDLT applies the LT predicate on the "business_id" field.
+func BusinessIDLT(v int64) predicate.CronJob {
+	return predicate.CronJob(sql.FieldLT(FieldBusinessID, v))
+}
+
+// BusinessIDLTE applies the LTE predicate on the "business_id" field.
+func BusinessIDLTE(v int64) predicate.CronJob {
+	return predicate.CronJob(sql.FieldLTE(FieldBusinessID, v))
+}
+
+// BusinessIDIsNil applies the IsNil predicate on the "business_id" field.
+func BusinessIDIsNil() predicate.CronJob {
+	return predicate.CronJob(sql.FieldIsNull(FieldBusinessID))
+}
+
+// BusinessIDNotNil applies the NotNil predicate on the "business_id" field.
+func BusinessIDNotNil() predicate.CronJob {
+	return predicate.CronJob(sql.FieldNotNull(FieldBusinessID))
 }
 
 // CronExprEQ applies the EQ predicate on the "cron_expr" field.

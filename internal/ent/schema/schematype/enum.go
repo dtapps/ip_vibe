@@ -1378,6 +1378,46 @@ var GetCronJobJobTypes = []string{
 }
 
 const (
+	CronJobJobCategorySystem string = "system" // 系统内置
+	CronJobJobCategoryCustom string = "custom" // 用户自定义
+)
+
+// GetCronJobJobCategoryDescriptions 任务分类 说明映射
+var GetCronJobJobCategoryDescriptions = map[string]string{
+	CronJobJobCategorySystem: "系统内置",
+	CronJobJobCategoryCustom: "用户自定义",
+}
+
+// GetCronJobJobCategorys 返回所有 任务分类
+var GetCronJobJobCategorys = []string{
+	CronJobJobCategorySystem,
+	CronJobJobCategoryCustom,
+}
+
+const (
+	CronJobBusinessTypeCdn    string = "cdn"    // cdn
+	CronJobBusinessTypeDns    string = "dns"    // dns
+	CronJobBusinessTypeSsl    string = "ssl"    // ssl
+	CronJobBusinessTypeSystem string = "system" // system
+)
+
+// GetCronJobBusinessTypeDescriptions 业务类型 说明映射
+var GetCronJobBusinessTypeDescriptions = map[string]string{
+	CronJobBusinessTypeCdn:    "cdn",
+	CronJobBusinessTypeDns:    "dns",
+	CronJobBusinessTypeSsl:    "ssl",
+	CronJobBusinessTypeSystem: "system",
+}
+
+// GetCronJobBusinessTypes 返回所有 业务类型
+var GetCronJobBusinessTypes = []string{
+	CronJobBusinessTypeCdn,
+	CronJobBusinessTypeDns,
+	CronJobBusinessTypeSsl,
+	CronJobBusinessTypeSystem,
+}
+
+const (
 	CronJobIntervalUnitSeconds string = "seconds" // 秒
 	CronJobIntervalUnitMinutes string = "minutes" // 分钟
 	CronJobIntervalUnitHours   string = "hours"   // 小时

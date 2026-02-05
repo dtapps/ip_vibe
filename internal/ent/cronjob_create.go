@@ -98,6 +98,40 @@ func (_c *CronJobCreate) SetNillableJobType(v *cronjob.JobType) *CronJobCreate {
 	return _c
 }
 
+// SetJobCategory sets the "job_category" field.
+func (_c *CronJobCreate) SetJobCategory(v cronjob.JobCategory) *CronJobCreate {
+	_c.mutation.SetJobCategory(v)
+	return _c
+}
+
+// SetBusinessType sets the "business_type" field.
+func (_c *CronJobCreate) SetBusinessType(v cronjob.BusinessType) *CronJobCreate {
+	_c.mutation.SetBusinessType(v)
+	return _c
+}
+
+// SetNillableBusinessType sets the "business_type" field if the given value is not nil.
+func (_c *CronJobCreate) SetNillableBusinessType(v *cronjob.BusinessType) *CronJobCreate {
+	if v != nil {
+		_c.SetBusinessType(*v)
+	}
+	return _c
+}
+
+// SetBusinessID sets the "business_id" field.
+func (_c *CronJobCreate) SetBusinessID(v int64) *CronJobCreate {
+	_c.mutation.SetBusinessID(v)
+	return _c
+}
+
+// SetNillableBusinessID sets the "business_id" field if the given value is not nil.
+func (_c *CronJobCreate) SetNillableBusinessID(v *int64) *CronJobCreate {
+	if v != nil {
+		_c.SetBusinessID(*v)
+	}
+	return _c
+}
+
 // SetCronExpr sets the "cron_expr" field.
 func (_c *CronJobCreate) SetCronExpr(v string) *CronJobCreate {
 	_c.mutation.SetCronExpr(v)
@@ -320,6 +354,19 @@ func (_c *CronJobCreate) check() error {
 			return &ValidationError{Name: "job_type", err: fmt.Errorf(`ent: validator failed for field "CronJob.job_type": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.JobCategory(); !ok {
+		return &ValidationError{Name: "job_category", err: errors.New(`ent: missing required field "CronJob.job_category"`)}
+	}
+	if v, ok := _c.mutation.JobCategory(); ok {
+		if err := cronjob.JobCategoryValidator(v); err != nil {
+			return &ValidationError{Name: "job_category", err: fmt.Errorf(`ent: validator failed for field "CronJob.job_category": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.BusinessType(); ok {
+		if err := cronjob.BusinessTypeValidator(v); err != nil {
+			return &ValidationError{Name: "business_type", err: fmt.Errorf(`ent: validator failed for field "CronJob.business_type": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.WithSeconds(); !ok {
 		return &ValidationError{Name: "with_seconds", err: errors.New(`ent: missing required field "CronJob.with_seconds"`)}
 	}
@@ -412,6 +459,18 @@ func (_c *CronJobCreate) createSpec() (*CronJob, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.JobType(); ok {
 		_spec.SetField(cronjob.FieldJobType, field.TypeEnum, value)
 		_node.JobType = value
+	}
+	if value, ok := _c.mutation.JobCategory(); ok {
+		_spec.SetField(cronjob.FieldJobCategory, field.TypeEnum, value)
+		_node.JobCategory = value
+	}
+	if value, ok := _c.mutation.BusinessType(); ok {
+		_spec.SetField(cronjob.FieldBusinessType, field.TypeEnum, value)
+		_node.BusinessType = value
+	}
+	if value, ok := _c.mutation.BusinessID(); ok {
+		_spec.SetField(cronjob.FieldBusinessID, field.TypeInt64, value)
+		_node.BusinessID = value
 	}
 	if value, ok := _c.mutation.CronExpr(); ok {
 		_spec.SetField(cronjob.FieldCronExpr, field.TypeString, value)
@@ -548,6 +607,60 @@ func (u *CronJobUpsert) SetJobType(v cronjob.JobType) *CronJobUpsert {
 // UpdateJobType sets the "job_type" field to the value that was provided on create.
 func (u *CronJobUpsert) UpdateJobType() *CronJobUpsert {
 	u.SetExcluded(cronjob.FieldJobType)
+	return u
+}
+
+// SetJobCategory sets the "job_category" field.
+func (u *CronJobUpsert) SetJobCategory(v cronjob.JobCategory) *CronJobUpsert {
+	u.Set(cronjob.FieldJobCategory, v)
+	return u
+}
+
+// UpdateJobCategory sets the "job_category" field to the value that was provided on create.
+func (u *CronJobUpsert) UpdateJobCategory() *CronJobUpsert {
+	u.SetExcluded(cronjob.FieldJobCategory)
+	return u
+}
+
+// SetBusinessType sets the "business_type" field.
+func (u *CronJobUpsert) SetBusinessType(v cronjob.BusinessType) *CronJobUpsert {
+	u.Set(cronjob.FieldBusinessType, v)
+	return u
+}
+
+// UpdateBusinessType sets the "business_type" field to the value that was provided on create.
+func (u *CronJobUpsert) UpdateBusinessType() *CronJobUpsert {
+	u.SetExcluded(cronjob.FieldBusinessType)
+	return u
+}
+
+// ClearBusinessType clears the value of the "business_type" field.
+func (u *CronJobUpsert) ClearBusinessType() *CronJobUpsert {
+	u.SetNull(cronjob.FieldBusinessType)
+	return u
+}
+
+// SetBusinessID sets the "business_id" field.
+func (u *CronJobUpsert) SetBusinessID(v int64) *CronJobUpsert {
+	u.Set(cronjob.FieldBusinessID, v)
+	return u
+}
+
+// UpdateBusinessID sets the "business_id" field to the value that was provided on create.
+func (u *CronJobUpsert) UpdateBusinessID() *CronJobUpsert {
+	u.SetExcluded(cronjob.FieldBusinessID)
+	return u
+}
+
+// AddBusinessID adds v to the "business_id" field.
+func (u *CronJobUpsert) AddBusinessID(v int64) *CronJobUpsert {
+	u.Add(cronjob.FieldBusinessID, v)
+	return u
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (u *CronJobUpsert) ClearBusinessID() *CronJobUpsert {
+	u.SetNull(cronjob.FieldBusinessID)
 	return u
 }
 
@@ -806,6 +919,69 @@ func (u *CronJobUpsertOne) SetJobType(v cronjob.JobType) *CronJobUpsertOne {
 func (u *CronJobUpsertOne) UpdateJobType() *CronJobUpsertOne {
 	return u.Update(func(s *CronJobUpsert) {
 		s.UpdateJobType()
+	})
+}
+
+// SetJobCategory sets the "job_category" field.
+func (u *CronJobUpsertOne) SetJobCategory(v cronjob.JobCategory) *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetJobCategory(v)
+	})
+}
+
+// UpdateJobCategory sets the "job_category" field to the value that was provided on create.
+func (u *CronJobUpsertOne) UpdateJobCategory() *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateJobCategory()
+	})
+}
+
+// SetBusinessType sets the "business_type" field.
+func (u *CronJobUpsertOne) SetBusinessType(v cronjob.BusinessType) *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetBusinessType(v)
+	})
+}
+
+// UpdateBusinessType sets the "business_type" field to the value that was provided on create.
+func (u *CronJobUpsertOne) UpdateBusinessType() *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateBusinessType()
+	})
+}
+
+// ClearBusinessType clears the value of the "business_type" field.
+func (u *CronJobUpsertOne) ClearBusinessType() *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.ClearBusinessType()
+	})
+}
+
+// SetBusinessID sets the "business_id" field.
+func (u *CronJobUpsertOne) SetBusinessID(v int64) *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetBusinessID(v)
+	})
+}
+
+// AddBusinessID adds v to the "business_id" field.
+func (u *CronJobUpsertOne) AddBusinessID(v int64) *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.AddBusinessID(v)
+	})
+}
+
+// UpdateBusinessID sets the "business_id" field to the value that was provided on create.
+func (u *CronJobUpsertOne) UpdateBusinessID() *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateBusinessID()
+	})
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (u *CronJobUpsertOne) ClearBusinessID() *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.ClearBusinessID()
 	})
 }
 
@@ -1253,6 +1429,69 @@ func (u *CronJobUpsertBulk) SetJobType(v cronjob.JobType) *CronJobUpsertBulk {
 func (u *CronJobUpsertBulk) UpdateJobType() *CronJobUpsertBulk {
 	return u.Update(func(s *CronJobUpsert) {
 		s.UpdateJobType()
+	})
+}
+
+// SetJobCategory sets the "job_category" field.
+func (u *CronJobUpsertBulk) SetJobCategory(v cronjob.JobCategory) *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetJobCategory(v)
+	})
+}
+
+// UpdateJobCategory sets the "job_category" field to the value that was provided on create.
+func (u *CronJobUpsertBulk) UpdateJobCategory() *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateJobCategory()
+	})
+}
+
+// SetBusinessType sets the "business_type" field.
+func (u *CronJobUpsertBulk) SetBusinessType(v cronjob.BusinessType) *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetBusinessType(v)
+	})
+}
+
+// UpdateBusinessType sets the "business_type" field to the value that was provided on create.
+func (u *CronJobUpsertBulk) UpdateBusinessType() *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateBusinessType()
+	})
+}
+
+// ClearBusinessType clears the value of the "business_type" field.
+func (u *CronJobUpsertBulk) ClearBusinessType() *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.ClearBusinessType()
+	})
+}
+
+// SetBusinessID sets the "business_id" field.
+func (u *CronJobUpsertBulk) SetBusinessID(v int64) *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetBusinessID(v)
+	})
+}
+
+// AddBusinessID adds v to the "business_id" field.
+func (u *CronJobUpsertBulk) AddBusinessID(v int64) *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.AddBusinessID(v)
+	})
+}
+
+// UpdateBusinessID sets the "business_id" field to the value that was provided on create.
+func (u *CronJobUpsertBulk) UpdateBusinessID() *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateBusinessID()
+	})
+}
+
+// ClearBusinessID clears the value of the "business_id" field.
+func (u *CronJobUpsertBulk) ClearBusinessID() *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.ClearBusinessID()
 	})
 }
 

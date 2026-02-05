@@ -70,8 +70,23 @@ func (CronJob) Fields() []ent.Field {
 		field.Enum("job_type").
 			Values(schematype.GetCronJobJobTypes...).
 			Default(schematype.CronJobJobTypeCron).
-			Comment("任务类型").
+			Comment("任务类型: cron cron 表达式, duration 固定间隔, random 随机间隔").
 			Annotations(entsql.WithComments(true)),
+
+		field.Enum("job_category").
+			Values(schematype.GetCronJobJobCategorys...).
+			Comment("任务分类: system 系统内置, custom 用户自定义").
+			Annotations(entsql.WithComments(true)),
+
+		field.Enum("business_type").
+			Values(schematype.GetCronJobBusinessTypes...).
+			Optional().
+			Comment("业务类型: cdn, dns, ssl, system").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("business_id").
+			Optional().
+			Comment("业务序号"),
 
 		field.String("cron_expr").
 			Optional().
@@ -107,7 +122,7 @@ func (CronJob) Fields() []ent.Field {
 
 		field.Enum("status").
 			Values(schematype.GetCronJobStatuss...).
-			Default(schematype.CronJobStatusRunning).
+			Default(schematype.CronJobStatusStopped).
 			Comment("状态: running 运行中, stopped 已停止").
 			Annotations(entsql.WithComments(true)),
 
@@ -134,8 +149,24 @@ func (CronJob) Indexes() []ent.Index {
 		index.Fields("job_type").
 			Annotations(entsql.WithComments(true)),
 
+		// 按任务分类排序
+		index.Fields("job_category").
+			Annotations(entsql.WithComments(true)),
+
+		// 按业务类型排序
+		index.Fields("business_type").
+			Annotations(entsql.WithComments(true)),
+
 		// 按状态排序
 		index.Fields("status").
+			Annotations(entsql.WithComments(true)),
+
+		// 按业务类型+业务序号排序
+		index.Fields("business_type", "business_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按任务分类+业务类型+业务序号排序
+		index.Fields("job_category", "business_type", "business_id").
 			Annotations(entsql.WithComments(true)),
 	}
 }
