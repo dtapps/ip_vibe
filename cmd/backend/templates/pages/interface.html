@@ -4,7 +4,9 @@
 {{ $protocols := slice "api" "mcp" "grpc" }}
 {{ $data := .Data }}
 
-<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">🔌 接口接入说明</h1>
+<h1 class="text-3xl font-black mb-10 pl-4 text-base-content transition-colors">
+    {{ template "icons" (dict "Name" "i-lucide-blocks" "Class" "w-8 h-8 text-primary") }} 接口接入说明
+</h1>
 
 <div class="ui-panel">
     <div class="bg-base-200/30 px-8 pt-6 border-b border-base-200">

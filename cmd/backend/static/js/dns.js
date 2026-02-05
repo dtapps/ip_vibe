@@ -214,6 +214,7 @@ async function openFormModal(id, action = "") {
       els.sub_domain.disabled = true;
       els.domain_name.value = dnsRecord.domain_name;
       els.domain_name.disabled = true;
+      els.domain_name.dataset.mode = "edit"; // 标记为编辑模式
       els.type.value = dnsRecord.type;
 
       if (dnsRecord.type === "CNAME") {
@@ -278,6 +279,9 @@ async function openFormModal(id, action = "") {
             dnsRecord.config_id,
           );
           disabledKeys.push("zone");
+          break;
+        default:
+          els.domain_name.disabled = true;
           break;
       }
 

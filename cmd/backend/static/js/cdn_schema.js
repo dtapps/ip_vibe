@@ -804,6 +804,8 @@ function handleSelectChange(selectEl) {
   const domain_name_el = document.getElementById("domain_name");
   // const domain_name_label = document.getElementById("domain_name_label");
   if (domain_name_el && platform && key && text) {
+    const isCreateMode = domain_name_el?.dataset?.mode === "create";
+    const isEditMode = domain_name_el?.dataset?.mode === "edit";
     // 隐藏标题
     // if (domain_name_label) {
     //   domain_name_label.style.display = "none";
@@ -824,7 +826,9 @@ function handleSelectChange(selectEl) {
         }
         break;
       default:
-        domain_name_el.disabled = false;
+        if (!isEditMode) {
+          domain_name_el.disabled = false;
+        }
         break;
     }
   }

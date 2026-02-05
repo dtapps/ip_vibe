@@ -159,6 +159,7 @@ async function openFormModal(id, action = "") {
       els.sub_domain.disabled = true;
       els.domain_name.value = cdnRecord.domain_name;
       els.domain_name.disabled = true;
+      els.domain_name.dataset.mode = "edit"; // 标记为编辑模式
       els.type.value = cdnRecord.type;
       els.ip_group_id.value = cdnRecord.ip_group_id;
 
@@ -188,6 +189,9 @@ async function openFormModal(id, action = "") {
             cdnRecord.config_id,
           );
           disabledKeys.push("site");
+          break;
+        default:
+          els.domain_name.disabled = true;
           break;
       }
 
