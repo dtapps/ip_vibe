@@ -511,6 +511,9 @@ function handleSelectChange(selectEl) {
           domain_name_el.disabled = true;
         }
         break;
+      default:
+        domain_name_el.disabled = false;
+        break;
     }
   }
 }
