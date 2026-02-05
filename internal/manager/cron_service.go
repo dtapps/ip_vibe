@@ -28,6 +28,7 @@ type CronServerManager struct {
 	taskRegistry  *provider.TaskTask            // 任务注册中心
 	mu            sync.Mutex                    // 引入读写锁
 	runningJobs   map[int64]gocron.Job          // 正在运行的任务映射
+	jobConfigs    map[int64]string              // 任务配置映射
 }
 
 var (
@@ -52,6 +53,7 @@ func NewCronServerManager(ctx context.Context, db *ent.Client, logDb *ent_log.Cl
 			httpTransport: httpTransport,
 			taskRegistry:  taskRegistry,
 			runningJobs:   make(map[int64]gocron.Job),
+			jobConfigs:    make(map[int64]string),
 		}
 	})
 	return instanceCronServer, nil
@@ -121,6 +123,7 @@ func (m *CronServerManager) RunHandler(jobID int64, handlerName string, args jso
 	}
 }
 
+// LoadAllJobs 从数据库加载所有状态为 running 的任务到 gocron
 func (m *CronServerManager) LoadAllJobs(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -145,28 +148,69 @@ func (m *CronServerManager) LoadAllJobs(ctx context.Context) error {
 	return nil
 }
 
-// SyncJob 同步单个任务的状态到 gocron 引擎
-func (m *CronServerManager) SyncJob(ctx context.Context, jobID int64) error {
+// SyncAllJobs 从数据库全量同步任务状态到内存调度器
+func (m *CronServerManager) SyncAllJobs(ctx context.Context) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	// 从数据库读取最新状态
-	j, err := m.db.CronJob.Get(ctx, jobID)
+	// 从数据库获取所有当前应该运行的任务
+	dbJobs, err := m.db.CronJob.Query().
+		Where(cronjob.StatusEQ(cronjob.StatusRunning)).
+		All(ctx)
 	if err != nil {
-		// 如果数据库没了，尝试从 cron 移除
-		m.removeJobFromCron(jobID)
-		return nil
+		return fmt.Errorf("query running jobs failed: %w", err)
 	}
 
-	// 如果状态是停止，直接移除
-	if j.Status != cronjob.StatusRunning {
-		m.removeJobFromCron(jobID)
-		return nil
+	// 将数据库任务转为 Map 方便查找
+	dbJobMap := make(map[int64]*ent.CronJob)
+	for _, j := range dbJobs {
+		dbJobMap[j.ID] = j
 	}
 
-	// 如果已经在跑，先移除旧的（为了处理频率/参数变更），再重新添加
-	m.removeJobFromCron(jobID)
-	return m.addJobToCron(j)
+	// 2. 处理【删除】和【更新】
+	// 遍历内存中正在运行的任务
+	for id := range m.runningJobs {
+		dbJob, exists := dbJobMap[id]
+
+		// 如果数据库里已经没有这个任务，或者状态不再是 running
+		if !exists {
+			m.logger.Info("任务已停用或删除，正在从调度器移除", slog.Int64("id", id))
+			m.removeJobFromCron(id)
+			continue
+		}
+
+		// 如果任务还在，对比指纹看参数是否变了
+		currentFingerprint := m.generateFingerprint(dbJob)
+		if oldFingerprint, ok := m.jobConfigs[id]; ok && oldFingerprint != currentFingerprint {
+			m.logger.Info("任务配置已变更，正在重启计时器", slog.Int64("id", id))
+			m.removeJobFromCron(id)
+			if err := m.addJobToCron(dbJob); err == nil {
+				m.jobConfigs[id] = currentFingerprint
+			}
+		}
+	}
+
+	// 3. 处理【新增】
+	// 遍历数据库任务，如果内存里没有，则添加
+	for id, dbJob := range dbJobMap {
+		if _, running := m.runningJobs[id]; !running {
+			m.logger.Info("发现新任务，正在加入调度器", slog.Int64("id", id))
+			if err := m.addJobToCron(dbJob); err == nil {
+				m.jobConfigs[id] = m.generateFingerprint(dbJob)
+			} else {
+				m.logger.Error("启动新任务失败", slog.Int64("id", id), slog.Any("err", err))
+			}
+		}
+	}
+
+	return nil
+}
+
+// 辅助方法：生成配置指纹
+func (m *CronServerManager) generateFingerprint(j *ent.CronJob) string {
+	return fmt.Sprintf("%v-%v-%v-%v-%v-%v-%v-%s",
+		j.JobType, j.TaskType, j.IntervalValue, j.IntervalUnit,
+		j.MinInterval, j.MaxInterval, j.CronExpr, string(j.HandlerArgs))
 }
 
 // 内部方法：真正把任务塞进 gocron
@@ -263,6 +307,7 @@ func (m *CronServerManager) removeJobFromCron(jobID int64) {
 	if oldJob, ok := m.runningJobs[jobID]; ok {
 		_ = m.cron.RemoveJob(oldJob.ID())
 		delete(m.runningJobs, jobID)
+		delete(m.jobConfigs, jobID)
 	}
 }
 
