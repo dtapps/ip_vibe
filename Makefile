@@ -45,10 +45,7 @@ verify-tools:
 # 项目目录
 PROJECT_ROOT := $(CURDIR)
 
-mod:
-	mod_update
-	mod_tidy
-	mod_vendor
+mod: mod_update mod_tidy mod_vendor
 
 mod_update:
 	go get -u -v ./...

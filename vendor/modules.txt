@@ -1019,7 +1019,7 @@ go.dtapp.net/library/utils/gorequest
 # go.dtapp.net/library/utils/gostring v1.0.32
 ## explicit; go 1.23
 go.dtapp.net/library/utils/gostring
-# go.dtapp.net/library/utils/gotime v1.0.17
+# go.dtapp.net/library/utils/gotime v1.0.18
 ## explicit; go 1.22.5
 go.dtapp.net/library/utils/gotime
 # go.mongodb.org/mongo-driver v1.17.8

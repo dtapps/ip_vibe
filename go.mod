@@ -80,7 +80,7 @@ require (
 	go.dtapp.net/library/utils/gorandom v1.0.5
 	go.dtapp.net/library/utils/gorequest v1.1.3
 	go.dtapp.net/library/utils/gostring v1.0.32
-	go.dtapp.net/library/utils/gotime v1.0.17
+	go.dtapp.net/library/utils/gotime v1.0.18
 	golang.org/x/net v0.49.0
 	golang.org/x/sync v0.19.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260203192932-546029d2fa20
