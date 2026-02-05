@@ -23,12 +23,12 @@ type PlatformConfig struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// 更新时间
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// 平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）
-	Capability platformconfig.Capability `json:"capability,omitempty"`
 	// 平台配置名称
 	Name string `json:"name,omitempty"`
 	// 平台配置描述
 	Description string `json:"description,omitempty"`
+	// 平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）
+	Capability platformconfig.Capability `json:"capability,omitempty"`
 	// 平台类型
 	Platform platformconfig.Platform `json:"platform,omitempty"`
 	// 平台密钥等敏感信息（JSON）
@@ -151,7 +151,7 @@ func (*PlatformConfig) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case platformconfig.FieldID:
 			values[i] = new(sql.NullInt64)
-		case platformconfig.FieldCapability, platformconfig.FieldName, platformconfig.FieldDescription, platformconfig.FieldPlatform:
+		case platformconfig.FieldName, platformconfig.FieldDescription, platformconfig.FieldCapability, platformconfig.FieldPlatform:
 			values[i] = new(sql.NullString)
 		case platformconfig.FieldCreatedAt, platformconfig.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -188,12 +188,6 @@ func (_m *PlatformConfig) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
 			}
-		case platformconfig.FieldCapability:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field capability", values[i])
-			} else if value.Valid {
-				_m.Capability = platformconfig.Capability(value.String)
-			}
 		case platformconfig.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -205,6 +199,12 @@ func (_m *PlatformConfig) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				_m.Description = value.String
+			}
+		case platformconfig.FieldCapability:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field capability", values[i])
+			} else if value.Valid {
+				_m.Capability = platformconfig.Capability(value.String)
 			}
 		case platformconfig.FieldPlatform:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -302,14 +302,14 @@ func (_m *PlatformConfig) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("capability=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Capability))
-	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(_m.Description)
+	builder.WriteString(", ")
+	builder.WriteString("capability=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Capability))
 	builder.WriteString(", ")
 	builder.WriteString("platform=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Platform))

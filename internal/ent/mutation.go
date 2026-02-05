@@ -26507,9 +26507,9 @@ type PlatformConfigMutation struct {
 	id                        *int64
 	created_at                *time.Time
 	updated_at                *time.Time
-	capability                *platformconfig.Capability
 	name                      *string
 	description               *string
+	capability                *platformconfig.Capability
 	platform                  *platformconfig.Platform
 	config_json               *json.RawMessage
 	appendconfig_json         json.RawMessage
@@ -26719,42 +26719,6 @@ func (m *PlatformConfigMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetCapability sets the "capability" field.
-func (m *PlatformConfigMutation) SetCapability(pl platformconfig.Capability) {
-	m.capability = &pl
-}
-
-// Capability returns the value of the "capability" field in the mutation.
-func (m *PlatformConfigMutation) Capability() (r platformconfig.Capability, exists bool) {
-	v := m.capability
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCapability returns the old "capability" field's value of the PlatformConfig entity.
-// If the PlatformConfig object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PlatformConfigMutation) OldCapability(ctx context.Context) (v platformconfig.Capability, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCapability is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCapability requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCapability: %w", err)
-	}
-	return oldValue.Capability, nil
-}
-
-// ResetCapability resets all changes to the "capability" field.
-func (m *PlatformConfigMutation) ResetCapability() {
-	m.capability = nil
-}
-
 // SetName sets the "name" field.
 func (m *PlatformConfigMutation) SetName(s string) {
 	m.name = &s
@@ -26838,6 +26802,42 @@ func (m *PlatformConfigMutation) DescriptionCleared() bool {
 func (m *PlatformConfigMutation) ResetDescription() {
 	m.description = nil
 	delete(m.clearedFields, platformconfig.FieldDescription)
+}
+
+// SetCapability sets the "capability" field.
+func (m *PlatformConfigMutation) SetCapability(pl platformconfig.Capability) {
+	m.capability = &pl
+}
+
+// Capability returns the value of the "capability" field in the mutation.
+func (m *PlatformConfigMutation) Capability() (r platformconfig.Capability, exists bool) {
+	v := m.capability
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCapability returns the old "capability" field's value of the PlatformConfig entity.
+// If the PlatformConfig object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlatformConfigMutation) OldCapability(ctx context.Context) (v platformconfig.Capability, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCapability is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCapability requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCapability: %w", err)
+	}
+	return oldValue.Capability, nil
+}
+
+// ResetCapability resets all changes to the "capability" field.
+func (m *PlatformConfigMutation) ResetCapability() {
+	m.capability = nil
 }
 
 // SetPlatform sets the "platform" field.
@@ -27414,14 +27414,14 @@ func (m *PlatformConfigMutation) Fields() []string {
 	if m.updated_at != nil {
 		fields = append(fields, platformconfig.FieldUpdatedAt)
 	}
-	if m.capability != nil {
-		fields = append(fields, platformconfig.FieldCapability)
-	}
 	if m.name != nil {
 		fields = append(fields, platformconfig.FieldName)
 	}
 	if m.description != nil {
 		fields = append(fields, platformconfig.FieldDescription)
+	}
+	if m.capability != nil {
+		fields = append(fields, platformconfig.FieldCapability)
 	}
 	if m.platform != nil {
 		fields = append(fields, platformconfig.FieldPlatform)
@@ -27441,12 +27441,12 @@ func (m *PlatformConfigMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case platformconfig.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case platformconfig.FieldCapability:
-		return m.Capability()
 	case platformconfig.FieldName:
 		return m.Name()
 	case platformconfig.FieldDescription:
 		return m.Description()
+	case platformconfig.FieldCapability:
+		return m.Capability()
 	case platformconfig.FieldPlatform:
 		return m.Platform()
 	case platformconfig.FieldConfigJSON:
@@ -27464,12 +27464,12 @@ func (m *PlatformConfigMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldCreatedAt(ctx)
 	case platformconfig.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case platformconfig.FieldCapability:
-		return m.OldCapability(ctx)
 	case platformconfig.FieldName:
 		return m.OldName(ctx)
 	case platformconfig.FieldDescription:
 		return m.OldDescription(ctx)
+	case platformconfig.FieldCapability:
+		return m.OldCapability(ctx)
 	case platformconfig.FieldPlatform:
 		return m.OldPlatform(ctx)
 	case platformconfig.FieldConfigJSON:
@@ -27497,13 +27497,6 @@ func (m *PlatformConfigMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case platformconfig.FieldCapability:
-		v, ok := value.(platformconfig.Capability)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCapability(v)
-		return nil
 	case platformconfig.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -27517,6 +27510,13 @@ func (m *PlatformConfigMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case platformconfig.FieldCapability:
+		v, ok := value.(platformconfig.Capability)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCapability(v)
 		return nil
 	case platformconfig.FieldPlatform:
 		v, ok := value.(platformconfig.Platform)
@@ -27602,14 +27602,14 @@ func (m *PlatformConfigMutation) ResetField(name string) error {
 	case platformconfig.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case platformconfig.FieldCapability:
-		m.ResetCapability()
-		return nil
 	case platformconfig.FieldName:
 		m.ResetName()
 		return nil
 	case platformconfig.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case platformconfig.FieldCapability:
+		m.ResetCapability()
 		return nil
 	case platformconfig.FieldPlatform:
 		m.ResetPlatform()

@@ -240,14 +240,6 @@ func (_c *ReqLogCreate) defaults() {
 		v := reqlog.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.GoVersion(); !ok {
-		v := reqlog.DefaultGoVersion
-		_c.mutation.SetGoVersion(v)
-	}
-	if _, ok := _c.mutation.PluginVersion(); !ok {
-		v := reqlog.DefaultPluginVersion
-		_c.mutation.SetPluginVersion(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.

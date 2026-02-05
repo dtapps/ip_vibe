@@ -20,12 +20,12 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldCapability holds the string denoting the capability field in the database.
-	FieldCapability = "capability"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldCapability holds the string denoting the capability field in the database.
+	FieldCapability = "capability"
 	// FieldPlatform holds the string denoting the platform field in the database.
 	FieldPlatform = "platform"
 	// FieldConfigJSON holds the string denoting the config_json field in the database.
@@ -111,9 +111,9 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldCapability,
 	FieldName,
 	FieldDescription,
+	FieldCapability,
 	FieldPlatform,
 	FieldConfigJSON,
 }
@@ -229,11 +229,6 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByCapability orders the results by the capability field.
-func ByCapability(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCapability, opts...).ToFunc()
-}
-
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
@@ -242,6 +237,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByCapability orders the results by the capability field.
+func ByCapability(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCapability, opts...).ToFunc()
 }
 
 // ByPlatform orders the results by the platform field.

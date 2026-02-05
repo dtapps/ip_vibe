@@ -68,14 +68,6 @@ func init() {
 	httplogDescCreatedAt := httplogFields[11].Descriptor()
 	// httplog.DefaultCreatedAt holds the default value on creation for the created_at field.
 	httplog.DefaultCreatedAt = httplogDescCreatedAt.Default.(func() time.Time)
-	// httplogDescGoVersion is the schema descriptor for go_version field.
-	httplogDescGoVersion := httplogFields[12].Descriptor()
-	// httplog.DefaultGoVersion holds the default value on creation for the go_version field.
-	httplog.DefaultGoVersion = httplogDescGoVersion.Default.(string)
-	// httplogDescPluginVersion is the schema descriptor for plugin_version field.
-	httplogDescPluginVersion := httplogFields[13].Descriptor()
-	// httplog.DefaultPluginVersion holds the default value on creation for the plugin_version field.
-	httplog.DefaultPluginVersion = httplogDescPluginVersion.Default.(string)
 	// httplogDescID is the schema descriptor for id field.
 	httplogDescID := httplogFields[0].Descriptor()
 	// httplog.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -128,14 +120,6 @@ func init() {
 	reqlogDescCreatedAt := reqlogFields[14].Descriptor()
 	// reqlog.DefaultCreatedAt holds the default value on creation for the created_at field.
 	reqlog.DefaultCreatedAt = reqlogDescCreatedAt.Default.(func() time.Time)
-	// reqlogDescGoVersion is the schema descriptor for go_version field.
-	reqlogDescGoVersion := reqlogFields[15].Descriptor()
-	// reqlog.DefaultGoVersion holds the default value on creation for the go_version field.
-	reqlog.DefaultGoVersion = reqlogDescGoVersion.Default.(string)
-	// reqlogDescPluginVersion is the schema descriptor for plugin_version field.
-	reqlogDescPluginVersion := reqlogFields[16].Descriptor()
-	// reqlog.DefaultPluginVersion holds the default value on creation for the plugin_version field.
-	reqlog.DefaultPluginVersion = reqlogDescPluginVersion.Default.(string)
 	// reqlogDescID is the schema descriptor for id field.
 	reqlogDescID := reqlogFields[0].Descriptor()
 	// reqlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -150,18 +134,6 @@ func init() {
 	restylogDescCreatedAt := restylogFields[14].Descriptor()
 	// restylog.DefaultCreatedAt holds the default value on creation for the created_at field.
 	restylog.DefaultCreatedAt = restylogDescCreatedAt.Default.(func() time.Time)
-	// restylogDescGoVersion is the schema descriptor for go_version field.
-	restylogDescGoVersion := restylogFields[15].Descriptor()
-	// restylog.DefaultGoVersion holds the default value on creation for the go_version field.
-	restylog.DefaultGoVersion = restylogDescGoVersion.Default.(string)
-	// restylogDescPluginVersion is the schema descriptor for plugin_version field.
-	restylogDescPluginVersion := restylogFields[16].Descriptor()
-	// restylog.DefaultPluginVersion holds the default value on creation for the plugin_version field.
-	restylog.DefaultPluginVersion = restylogDescPluginVersion.Default.(string)
-	// restylogDescRestyVersion is the schema descriptor for resty_version field.
-	restylogDescRestyVersion := restylogFields[17].Descriptor()
-	// restylog.DefaultRestyVersion holds the default value on creation for the resty_version field.
-	restylog.DefaultRestyVersion = restylogDescRestyVersion.Default.(string)
 	// restylogDescID is the schema descriptor for id field.
 	restylogDescID := restylogFields[0].Descriptor()
 	// restylog.IDValidator is a validator for the "id" field. It is called by the builders before save.

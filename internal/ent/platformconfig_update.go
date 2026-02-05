@@ -38,20 +38,6 @@ func (_u *PlatformConfigUpdate) Where(ps ...predicate.PlatformConfig) *PlatformC
 	return _u
 }
 
-// SetCapability sets the "capability" field.
-func (_u *PlatformConfigUpdate) SetCapability(v platformconfig.Capability) *PlatformConfigUpdate {
-	_u.mutation.SetCapability(v)
-	return _u
-}
-
-// SetNillableCapability sets the "capability" field if the given value is not nil.
-func (_u *PlatformConfigUpdate) SetNillableCapability(v *platformconfig.Capability) *PlatformConfigUpdate {
-	if v != nil {
-		_u.SetCapability(*v)
-	}
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *PlatformConfigUpdate) SetName(v string) *PlatformConfigUpdate {
 	_u.mutation.SetName(v)
@@ -83,6 +69,20 @@ func (_u *PlatformConfigUpdate) SetNillableDescription(v *string) *PlatformConfi
 // ClearDescription clears the value of the "description" field.
 func (_u *PlatformConfigUpdate) ClearDescription() *PlatformConfigUpdate {
 	_u.mutation.ClearDescription()
+	return _u
+}
+
+// SetCapability sets the "capability" field.
+func (_u *PlatformConfigUpdate) SetCapability(v platformconfig.Capability) *PlatformConfigUpdate {
+	_u.mutation.SetCapability(v)
+	return _u
+}
+
+// SetNillableCapability sets the "capability" field if the given value is not nil.
+func (_u *PlatformConfigUpdate) SetNillableCapability(v *platformconfig.Capability) *PlatformConfigUpdate {
+	if v != nil {
+		_u.SetCapability(*v)
+	}
 	return _u
 }
 
@@ -470,9 +470,6 @@ func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err err
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(platformconfig.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.Capability(); ok {
-		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(platformconfig.FieldName, field.TypeString, value)
 	}
@@ -481,6 +478,9 @@ func (_u *PlatformConfigUpdate) sqlSave(ctx context.Context) (_node int, err err
 	}
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(platformconfig.FieldDescription, field.TypeString)
+	}
+	if value, ok := _u.mutation.Capability(); ok {
+		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.ConfigJSON(); ok {
 		_spec.SetField(platformconfig.FieldConfigJSON, field.TypeJSON, value)
@@ -875,20 +875,6 @@ type PlatformConfigUpdateOne struct {
 	modifiers []func(*sql.UpdateBuilder)
 }
 
-// SetCapability sets the "capability" field.
-func (_u *PlatformConfigUpdateOne) SetCapability(v platformconfig.Capability) *PlatformConfigUpdateOne {
-	_u.mutation.SetCapability(v)
-	return _u
-}
-
-// SetNillableCapability sets the "capability" field if the given value is not nil.
-func (_u *PlatformConfigUpdateOne) SetNillableCapability(v *platformconfig.Capability) *PlatformConfigUpdateOne {
-	if v != nil {
-		_u.SetCapability(*v)
-	}
-	return _u
-}
-
 // SetName sets the "name" field.
 func (_u *PlatformConfigUpdateOne) SetName(v string) *PlatformConfigUpdateOne {
 	_u.mutation.SetName(v)
@@ -920,6 +906,20 @@ func (_u *PlatformConfigUpdateOne) SetNillableDescription(v *string) *PlatformCo
 // ClearDescription clears the value of the "description" field.
 func (_u *PlatformConfigUpdateOne) ClearDescription() *PlatformConfigUpdateOne {
 	_u.mutation.ClearDescription()
+	return _u
+}
+
+// SetCapability sets the "capability" field.
+func (_u *PlatformConfigUpdateOne) SetCapability(v platformconfig.Capability) *PlatformConfigUpdateOne {
+	_u.mutation.SetCapability(v)
+	return _u
+}
+
+// SetNillableCapability sets the "capability" field if the given value is not nil.
+func (_u *PlatformConfigUpdateOne) SetNillableCapability(v *platformconfig.Capability) *PlatformConfigUpdateOne {
+	if v != nil {
+		_u.SetCapability(*v)
+	}
 	return _u
 }
 
@@ -1337,9 +1337,6 @@ func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *Platform
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(platformconfig.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.Capability(); ok {
-		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(platformconfig.FieldName, field.TypeString, value)
 	}
@@ -1348,6 +1345,9 @@ func (_u *PlatformConfigUpdateOne) sqlSave(ctx context.Context) (_node *Platform
 	}
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(platformconfig.FieldDescription, field.TypeString)
+	}
+	if value, ok := _u.mutation.Capability(); ok {
+		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.ConfigJSON(); ok {
 		_spec.SetField(platformconfig.FieldConfigJSON, field.TypeJSON, value)

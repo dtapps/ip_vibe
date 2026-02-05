@@ -2,7 +2,6 @@ package schema
 
 import (
 	"encoding/json"
-	"runtime"
 	"time"
 
 	"entgo.io/ent"
@@ -10,7 +9,6 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"go.dtapp.net/library/contrib/req_log"
 )
 
 // ReqLog holds the schema definition for the ReqLog entity.
@@ -123,14 +121,12 @@ func (ReqLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("go_version").
-			Default(runtime.Version()).
 			Optional().
 			Immutable().
 			Comment("Go 版本").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("plugin_version").
-			Default(req_log.Version).
 			Optional().
 			Immutable().
 			Comment("插件版本").

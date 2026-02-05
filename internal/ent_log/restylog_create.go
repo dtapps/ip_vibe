@@ -254,18 +254,6 @@ func (_c *RestyLogCreate) defaults() {
 		v := restylog.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.GoVersion(); !ok {
-		v := restylog.DefaultGoVersion
-		_c.mutation.SetGoVersion(v)
-	}
-	if _, ok := _c.mutation.PluginVersion(); !ok {
-		v := restylog.DefaultPluginVersion
-		_c.mutation.SetPluginVersion(v)
-	}
-	if _, ok := _c.mutation.RestyVersion(); !ok {
-		v := restylog.DefaultRestyVersion
-		_c.mutation.SetRestyVersion(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.

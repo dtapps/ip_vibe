@@ -155,26 +155,6 @@ func UpdatedAtLTE(v time.Time) predicate.PlatformConfig {
 	return predicate.PlatformConfig(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// CapabilityEQ applies the EQ predicate on the "capability" field.
-func CapabilityEQ(v Capability) predicate.PlatformConfig {
-	return predicate.PlatformConfig(sql.FieldEQ(FieldCapability, v))
-}
-
-// CapabilityNEQ applies the NEQ predicate on the "capability" field.
-func CapabilityNEQ(v Capability) predicate.PlatformConfig {
-	return predicate.PlatformConfig(sql.FieldNEQ(FieldCapability, v))
-}
-
-// CapabilityIn applies the In predicate on the "capability" field.
-func CapabilityIn(vs ...Capability) predicate.PlatformConfig {
-	return predicate.PlatformConfig(sql.FieldIn(FieldCapability, vs...))
-}
-
-// CapabilityNotIn applies the NotIn predicate on the "capability" field.
-func CapabilityNotIn(vs ...Capability) predicate.PlatformConfig {
-	return predicate.PlatformConfig(sql.FieldNotIn(FieldCapability, vs...))
-}
-
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.PlatformConfig {
 	return predicate.PlatformConfig(sql.FieldEQ(FieldName, v))
@@ -313,6 +293,26 @@ func DescriptionEqualFold(v string) predicate.PlatformConfig {
 // DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
 func DescriptionContainsFold(v string) predicate.PlatformConfig {
 	return predicate.PlatformConfig(sql.FieldContainsFold(FieldDescription, v))
+}
+
+// CapabilityEQ applies the EQ predicate on the "capability" field.
+func CapabilityEQ(v Capability) predicate.PlatformConfig {
+	return predicate.PlatformConfig(sql.FieldEQ(FieldCapability, v))
+}
+
+// CapabilityNEQ applies the NEQ predicate on the "capability" field.
+func CapabilityNEQ(v Capability) predicate.PlatformConfig {
+	return predicate.PlatformConfig(sql.FieldNEQ(FieldCapability, v))
+}
+
+// CapabilityIn applies the In predicate on the "capability" field.
+func CapabilityIn(vs ...Capability) predicate.PlatformConfig {
+	return predicate.PlatformConfig(sql.FieldIn(FieldCapability, vs...))
+}
+
+// CapabilityNotIn applies the NotIn predicate on the "capability" field.
+func CapabilityNotIn(vs ...Capability) predicate.PlatformConfig {
+	return predicate.PlatformConfig(sql.FieldNotIn(FieldCapability, vs...))
 }
 
 // PlatformEQ applies the EQ predicate on the "platform" field.

@@ -1264,9 +1264,9 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "平台配置序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
-		{Name: "capability", Type: field.TypeEnum, Comment: "平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）", Enums: []string{"all", "dns", "cdn", "ssl", "tun"}, Default: "all"},
 		{Name: "name", Type: field.TypeString, Comment: "平台配置名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "平台配置描述"},
+		{Name: "capability", Type: field.TypeEnum, Comment: "平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）", Enums: []string{"all", "dns", "cdn", "ssl", "tun"}, Default: "all"},
 		{Name: "platform", Type: field.TypeEnum, Comment: "平台类型", Enums: []string{"cloudflare", "tencent_dns", "tencent_cdn", "tencent_eo", "aliyun_dns", "aliyun_cdn", "aliyun_esa", "baidu_dns", "baidu_cdn", "huawei_dns", "huawei_cdn", "volcengine_dns", "jdcloud_cdn", "ksyun_cdn", "qiniu_cdn", "upyun_cdn"}},
 		{Name: "config_json", Type: field.TypeJSON, Nullable: true, Comment: "平台密钥等敏感信息（JSON）"},
 	}
@@ -1288,7 +1288,7 @@ var (
 			{
 				Name:    "platformconfig_capability",
 				Unique:  false,
-				Columns: []*schema.Column{PlatformConfigColumns[3]},
+				Columns: []*schema.Column{PlatformConfigColumns[5]},
 			},
 			{
 				Name:    "platformconfig_platform",

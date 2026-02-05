@@ -222,14 +222,6 @@ func (_c *HttpLogCreate) defaults() {
 		v := httplog.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := _c.mutation.GoVersion(); !ok {
-		v := httplog.DefaultGoVersion
-		_c.mutation.SetGoVersion(v)
-	}
-	if _, ok := _c.mutation.PluginVersion(); !ok {
-		v := httplog.DefaultPluginVersion
-		_c.mutation.SetPluginVersion(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.

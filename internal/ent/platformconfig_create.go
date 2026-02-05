@@ -59,20 +59,6 @@ func (_c *PlatformConfigCreate) SetNillableUpdatedAt(v *time.Time) *PlatformConf
 	return _c
 }
 
-// SetCapability sets the "capability" field.
-func (_c *PlatformConfigCreate) SetCapability(v platformconfig.Capability) *PlatformConfigCreate {
-	_c.mutation.SetCapability(v)
-	return _c
-}
-
-// SetNillableCapability sets the "capability" field if the given value is not nil.
-func (_c *PlatformConfigCreate) SetNillableCapability(v *platformconfig.Capability) *PlatformConfigCreate {
-	if v != nil {
-		_c.SetCapability(*v)
-	}
-	return _c
-}
-
 // SetName sets the "name" field.
 func (_c *PlatformConfigCreate) SetName(v string) *PlatformConfigCreate {
 	_c.mutation.SetName(v)
@@ -89,6 +75,20 @@ func (_c *PlatformConfigCreate) SetDescription(v string) *PlatformConfigCreate {
 func (_c *PlatformConfigCreate) SetNillableDescription(v *string) *PlatformConfigCreate {
 	if v != nil {
 		_c.SetDescription(*v)
+	}
+	return _c
+}
+
+// SetCapability sets the "capability" field.
+func (_c *PlatformConfigCreate) SetCapability(v platformconfig.Capability) *PlatformConfigCreate {
+	_c.mutation.SetCapability(v)
+	return _c
+}
+
+// SetNillableCapability sets the "capability" field if the given value is not nil.
+func (_c *PlatformConfigCreate) SetNillableCapability(v *platformconfig.Capability) *PlatformConfigCreate {
+	if v != nil {
+		_c.SetCapability(*v)
 	}
 	return _c
 }
@@ -297,6 +297,9 @@ func (_c *PlatformConfigCreate) check() error {
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "PlatformConfig.updated_at"`)}
 	}
+	if _, ok := _c.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "PlatformConfig.name"`)}
+	}
 	if _, ok := _c.mutation.Capability(); !ok {
 		return &ValidationError{Name: "capability", err: errors.New(`ent: missing required field "PlatformConfig.capability"`)}
 	}
@@ -304,9 +307,6 @@ func (_c *PlatformConfigCreate) check() error {
 		if err := platformconfig.CapabilityValidator(v); err != nil {
 			return &ValidationError{Name: "capability", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.capability": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "PlatformConfig.name"`)}
 	}
 	if _, ok := _c.mutation.Platform(); !ok {
 		return &ValidationError{Name: "platform", err: errors.New(`ent: missing required field "PlatformConfig.platform"`)}
@@ -362,10 +362,6 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 		_spec.SetField(platformconfig.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := _c.mutation.Capability(); ok {
-		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
-		_node.Capability = value
-	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(platformconfig.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -373,6 +369,10 @@ func (_c *PlatformConfigCreate) createSpec() (*PlatformConfig, *sqlgraph.CreateS
 	if value, ok := _c.mutation.Description(); ok {
 		_spec.SetField(platformconfig.FieldDescription, field.TypeString, value)
 		_node.Description = value
+	}
+	if value, ok := _c.mutation.Capability(); ok {
+		_spec.SetField(platformconfig.FieldCapability, field.TypeEnum, value)
+		_node.Capability = value
 	}
 	if value, ok := _c.mutation.Platform(); ok {
 		_spec.SetField(platformconfig.FieldPlatform, field.TypeEnum, value)
@@ -562,18 +562,6 @@ type (
 	}
 )
 
-// SetCapability sets the "capability" field.
-func (u *PlatformConfigUpsert) SetCapability(v platformconfig.Capability) *PlatformConfigUpsert {
-	u.Set(platformconfig.FieldCapability, v)
-	return u
-}
-
-// UpdateCapability sets the "capability" field to the value that was provided on create.
-func (u *PlatformConfigUpsert) UpdateCapability() *PlatformConfigUpsert {
-	u.SetExcluded(platformconfig.FieldCapability)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *PlatformConfigUpsert) SetName(v string) *PlatformConfigUpsert {
 	u.Set(platformconfig.FieldName, v)
@@ -601,6 +589,18 @@ func (u *PlatformConfigUpsert) UpdateDescription() *PlatformConfigUpsert {
 // ClearDescription clears the value of the "description" field.
 func (u *PlatformConfigUpsert) ClearDescription() *PlatformConfigUpsert {
 	u.SetNull(platformconfig.FieldDescription)
+	return u
+}
+
+// SetCapability sets the "capability" field.
+func (u *PlatformConfigUpsert) SetCapability(v platformconfig.Capability) *PlatformConfigUpsert {
+	u.Set(platformconfig.FieldCapability, v)
+	return u
+}
+
+// UpdateCapability sets the "capability" field to the value that was provided on create.
+func (u *PlatformConfigUpsert) UpdateCapability() *PlatformConfigUpsert {
+	u.SetExcluded(platformconfig.FieldCapability)
 	return u
 }
 
@@ -679,20 +679,6 @@ func (u *PlatformConfigUpsertOne) Update(set func(*PlatformConfigUpsert)) *Platf
 	return u
 }
 
-// SetCapability sets the "capability" field.
-func (u *PlatformConfigUpsertOne) SetCapability(v platformconfig.Capability) *PlatformConfigUpsertOne {
-	return u.Update(func(s *PlatformConfigUpsert) {
-		s.SetCapability(v)
-	})
-}
-
-// UpdateCapability sets the "capability" field to the value that was provided on create.
-func (u *PlatformConfigUpsertOne) UpdateCapability() *PlatformConfigUpsertOne {
-	return u.Update(func(s *PlatformConfigUpsert) {
-		s.UpdateCapability()
-	})
-}
-
 // SetName sets the "name" field.
 func (u *PlatformConfigUpsertOne) SetName(v string) *PlatformConfigUpsertOne {
 	return u.Update(func(s *PlatformConfigUpsert) {
@@ -725,6 +711,20 @@ func (u *PlatformConfigUpsertOne) UpdateDescription() *PlatformConfigUpsertOne {
 func (u *PlatformConfigUpsertOne) ClearDescription() *PlatformConfigUpsertOne {
 	return u.Update(func(s *PlatformConfigUpsert) {
 		s.ClearDescription()
+	})
+}
+
+// SetCapability sets the "capability" field.
+func (u *PlatformConfigUpsertOne) SetCapability(v platformconfig.Capability) *PlatformConfigUpsertOne {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.SetCapability(v)
+	})
+}
+
+// UpdateCapability sets the "capability" field to the value that was provided on create.
+func (u *PlatformConfigUpsertOne) UpdateCapability() *PlatformConfigUpsertOne {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.UpdateCapability()
 	})
 }
 
@@ -972,20 +972,6 @@ func (u *PlatformConfigUpsertBulk) Update(set func(*PlatformConfigUpsert)) *Plat
 	return u
 }
 
-// SetCapability sets the "capability" field.
-func (u *PlatformConfigUpsertBulk) SetCapability(v platformconfig.Capability) *PlatformConfigUpsertBulk {
-	return u.Update(func(s *PlatformConfigUpsert) {
-		s.SetCapability(v)
-	})
-}
-
-// UpdateCapability sets the "capability" field to the value that was provided on create.
-func (u *PlatformConfigUpsertBulk) UpdateCapability() *PlatformConfigUpsertBulk {
-	return u.Update(func(s *PlatformConfigUpsert) {
-		s.UpdateCapability()
-	})
-}
-
 // SetName sets the "name" field.
 func (u *PlatformConfigUpsertBulk) SetName(v string) *PlatformConfigUpsertBulk {
 	return u.Update(func(s *PlatformConfigUpsert) {
@@ -1018,6 +1004,20 @@ func (u *PlatformConfigUpsertBulk) UpdateDescription() *PlatformConfigUpsertBulk
 func (u *PlatformConfigUpsertBulk) ClearDescription() *PlatformConfigUpsertBulk {
 	return u.Update(func(s *PlatformConfigUpsert) {
 		s.ClearDescription()
+	})
+}
+
+// SetCapability sets the "capability" field.
+func (u *PlatformConfigUpsertBulk) SetCapability(v platformconfig.Capability) *PlatformConfigUpsertBulk {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.SetCapability(v)
+	})
+}
+
+// UpdateCapability sets the "capability" field to the value that was provided on create.
+func (u *PlatformConfigUpsertBulk) UpdateCapability() *PlatformConfigUpsertBulk {
+	return u.Update(func(s *PlatformConfigUpsert) {
+		s.UpdateCapability()
 	})
 }
 
