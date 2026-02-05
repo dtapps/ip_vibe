@@ -81,6 +81,34 @@ func (_c *CDNRecordCreate) SetSubDomain(v string) *CDNRecordCreate {
 	return _c
 }
 
+// SetDomainName sets the "domain_name" field.
+func (_c *CDNRecordCreate) SetDomainName(v string) *CDNRecordCreate {
+	_c.mutation.SetDomainName(v)
+	return _c
+}
+
+// SetNillableDomainName sets the "domain_name" field if the given value is not nil.
+func (_c *CDNRecordCreate) SetNillableDomainName(v *string) *CDNRecordCreate {
+	if v != nil {
+		_c.SetDomainName(*v)
+	}
+	return _c
+}
+
+// SetFullDomain sets the "full_domain" field.
+func (_c *CDNRecordCreate) SetFullDomain(v string) *CDNRecordCreate {
+	_c.mutation.SetFullDomain(v)
+	return _c
+}
+
+// SetNillableFullDomain sets the "full_domain" field if the given value is not nil.
+func (_c *CDNRecordCreate) SetNillableFullDomain(v *string) *CDNRecordCreate {
+	if v != nil {
+		_c.SetFullDomain(*v)
+	}
+	return _c
+}
+
 // SetType sets the "type" field.
 func (_c *CDNRecordCreate) SetType(v cdnrecord.Type) *CDNRecordCreate {
 	_c.mutation.SetType(v)
@@ -372,6 +400,14 @@ func (_c *CDNRecordCreate) createSpec() (*CDNRecord, *sqlgraph.CreateSpec) {
 		_spec.SetField(cdnrecord.FieldSubDomain, field.TypeString, value)
 		_node.SubDomain = value
 	}
+	if value, ok := _c.mutation.DomainName(); ok {
+		_spec.SetField(cdnrecord.FieldDomainName, field.TypeString, value)
+		_node.DomainName = value
+	}
+	if value, ok := _c.mutation.FullDomain(); ok {
+		_spec.SetField(cdnrecord.FieldFullDomain, field.TypeString, value)
+		_node.FullDomain = value
+	}
 	if value, ok := _c.mutation.GetType(); ok {
 		_spec.SetField(cdnrecord.FieldType, field.TypeEnum, value)
 		_node.Type = value
@@ -534,6 +570,42 @@ func (u *CDNRecordUpsert) UpdateRecordID() *CDNRecordUpsert {
 // ClearRecordID clears the value of the "record_id" field.
 func (u *CDNRecordUpsert) ClearRecordID() *CDNRecordUpsert {
 	u.SetNull(cdnrecord.FieldRecordID)
+	return u
+}
+
+// SetDomainName sets the "domain_name" field.
+func (u *CDNRecordUpsert) SetDomainName(v string) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldDomainName, v)
+	return u
+}
+
+// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateDomainName() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldDomainName)
+	return u
+}
+
+// ClearDomainName clears the value of the "domain_name" field.
+func (u *CDNRecordUpsert) ClearDomainName() *CDNRecordUpsert {
+	u.SetNull(cdnrecord.FieldDomainName)
+	return u
+}
+
+// SetFullDomain sets the "full_domain" field.
+func (u *CDNRecordUpsert) SetFullDomain(v string) *CDNRecordUpsert {
+	u.Set(cdnrecord.FieldFullDomain, v)
+	return u
+}
+
+// UpdateFullDomain sets the "full_domain" field to the value that was provided on create.
+func (u *CDNRecordUpsert) UpdateFullDomain() *CDNRecordUpsert {
+	u.SetExcluded(cdnrecord.FieldFullDomain)
+	return u
+}
+
+// ClearFullDomain clears the value of the "full_domain" field.
+func (u *CDNRecordUpsert) ClearFullDomain() *CDNRecordUpsert {
+	u.SetNull(cdnrecord.FieldFullDomain)
 	return u
 }
 
@@ -765,6 +837,48 @@ func (u *CDNRecordUpsertOne) UpdateRecordID() *CDNRecordUpsertOne {
 func (u *CDNRecordUpsertOne) ClearRecordID() *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearRecordID()
+	})
+}
+
+// SetDomainName sets the "domain_name" field.
+func (u *CDNRecordUpsertOne) SetDomainName(v string) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetDomainName(v)
+	})
+}
+
+// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateDomainName() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateDomainName()
+	})
+}
+
+// ClearDomainName clears the value of the "domain_name" field.
+func (u *CDNRecordUpsertOne) ClearDomainName() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearDomainName()
+	})
+}
+
+// SetFullDomain sets the "full_domain" field.
+func (u *CDNRecordUpsertOne) SetFullDomain(v string) *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetFullDomain(v)
+	})
+}
+
+// UpdateFullDomain sets the "full_domain" field to the value that was provided on create.
+func (u *CDNRecordUpsertOne) UpdateFullDomain() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateFullDomain()
+	})
+}
+
+// ClearFullDomain clears the value of the "full_domain" field.
+func (u *CDNRecordUpsertOne) ClearFullDomain() *CDNRecordUpsertOne {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearFullDomain()
 	})
 }
 
@@ -1187,6 +1301,48 @@ func (u *CDNRecordUpsertBulk) UpdateRecordID() *CDNRecordUpsertBulk {
 func (u *CDNRecordUpsertBulk) ClearRecordID() *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearRecordID()
+	})
+}
+
+// SetDomainName sets the "domain_name" field.
+func (u *CDNRecordUpsertBulk) SetDomainName(v string) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetDomainName(v)
+	})
+}
+
+// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateDomainName() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateDomainName()
+	})
+}
+
+// ClearDomainName clears the value of the "domain_name" field.
+func (u *CDNRecordUpsertBulk) ClearDomainName() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearDomainName()
+	})
+}
+
+// SetFullDomain sets the "full_domain" field.
+func (u *CDNRecordUpsertBulk) SetFullDomain(v string) *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.SetFullDomain(v)
+	})
+}
+
+// UpdateFullDomain sets the "full_domain" field to the value that was provided on create.
+func (u *CDNRecordUpsertBulk) UpdateFullDomain() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.UpdateFullDomain()
+	})
+}
+
+// ClearFullDomain clears the value of the "full_domain" field.
+func (u *CDNRecordUpsertBulk) ClearFullDomain() *CDNRecordUpsertBulk {
+	return u.Update(func(s *CDNRecordUpsert) {
+		s.ClearFullDomain()
 	})
 }
 

@@ -94,6 +94,8 @@ type CDNRecordMutation struct {
 	updated_at           *time.Time
 	record_id            *string
 	sub_domain           *string
+	domain_name          *string
+	full_domain          *string
 	_type                *cdnrecord.Type
 	config_json          *json.RawMessage
 	appendconfig_json    json.RawMessage
@@ -412,6 +414,104 @@ func (m *CDNRecordMutation) OldSubDomain(ctx context.Context) (v string, err err
 // ResetSubDomain resets all changes to the "sub_domain" field.
 func (m *CDNRecordMutation) ResetSubDomain() {
 	m.sub_domain = nil
+}
+
+// SetDomainName sets the "domain_name" field.
+func (m *CDNRecordMutation) SetDomainName(s string) {
+	m.domain_name = &s
+}
+
+// DomainName returns the value of the "domain_name" field in the mutation.
+func (m *CDNRecordMutation) DomainName() (r string, exists bool) {
+	v := m.domain_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomainName returns the old "domain_name" field's value of the CDNRecord entity.
+// If the CDNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CDNRecordMutation) OldDomainName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDomainName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDomainName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomainName: %w", err)
+	}
+	return oldValue.DomainName, nil
+}
+
+// ClearDomainName clears the value of the "domain_name" field.
+func (m *CDNRecordMutation) ClearDomainName() {
+	m.domain_name = nil
+	m.clearedFields[cdnrecord.FieldDomainName] = struct{}{}
+}
+
+// DomainNameCleared returns if the "domain_name" field was cleared in this mutation.
+func (m *CDNRecordMutation) DomainNameCleared() bool {
+	_, ok := m.clearedFields[cdnrecord.FieldDomainName]
+	return ok
+}
+
+// ResetDomainName resets all changes to the "domain_name" field.
+func (m *CDNRecordMutation) ResetDomainName() {
+	m.domain_name = nil
+	delete(m.clearedFields, cdnrecord.FieldDomainName)
+}
+
+// SetFullDomain sets the "full_domain" field.
+func (m *CDNRecordMutation) SetFullDomain(s string) {
+	m.full_domain = &s
+}
+
+// FullDomain returns the value of the "full_domain" field in the mutation.
+func (m *CDNRecordMutation) FullDomain() (r string, exists bool) {
+	v := m.full_domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFullDomain returns the old "full_domain" field's value of the CDNRecord entity.
+// If the CDNRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CDNRecordMutation) OldFullDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFullDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFullDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFullDomain: %w", err)
+	}
+	return oldValue.FullDomain, nil
+}
+
+// ClearFullDomain clears the value of the "full_domain" field.
+func (m *CDNRecordMutation) ClearFullDomain() {
+	m.full_domain = nil
+	m.clearedFields[cdnrecord.FieldFullDomain] = struct{}{}
+}
+
+// FullDomainCleared returns if the "full_domain" field was cleared in this mutation.
+func (m *CDNRecordMutation) FullDomainCleared() bool {
+	_, ok := m.clearedFields[cdnrecord.FieldFullDomain]
+	return ok
+}
+
+// ResetFullDomain resets all changes to the "full_domain" field.
+func (m *CDNRecordMutation) ResetFullDomain() {
+	m.full_domain = nil
+	delete(m.clearedFields, cdnrecord.FieldFullDomain)
 }
 
 // SetType sets the "type" field.
@@ -1014,7 +1114,7 @@ func (m *CDNRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CDNRecordMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, cdnrecord.FieldCreatedAt)
 	}
@@ -1029,6 +1129,12 @@ func (m *CDNRecordMutation) Fields() []string {
 	}
 	if m.sub_domain != nil {
 		fields = append(fields, cdnrecord.FieldSubDomain)
+	}
+	if m.domain_name != nil {
+		fields = append(fields, cdnrecord.FieldDomainName)
+	}
+	if m.full_domain != nil {
+		fields = append(fields, cdnrecord.FieldFullDomain)
 	}
 	if m._type != nil {
 		fields = append(fields, cdnrecord.FieldType)
@@ -1075,6 +1181,10 @@ func (m *CDNRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.RecordID()
 	case cdnrecord.FieldSubDomain:
 		return m.SubDomain()
+	case cdnrecord.FieldDomainName:
+		return m.DomainName()
+	case cdnrecord.FieldFullDomain:
+		return m.FullDomain()
 	case cdnrecord.FieldType:
 		return m.GetType()
 	case cdnrecord.FieldConfigJSON:
@@ -1112,6 +1222,10 @@ func (m *CDNRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldRecordID(ctx)
 	case cdnrecord.FieldSubDomain:
 		return m.OldSubDomain(ctx)
+	case cdnrecord.FieldDomainName:
+		return m.OldDomainName(ctx)
+	case cdnrecord.FieldFullDomain:
+		return m.OldFullDomain(ctx)
 	case cdnrecord.FieldType:
 		return m.OldType(ctx)
 	case cdnrecord.FieldConfigJSON:
@@ -1173,6 +1287,20 @@ func (m *CDNRecordMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSubDomain(v)
+		return nil
+	case cdnrecord.FieldDomainName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomainName(v)
+		return nil
+	case cdnrecord.FieldFullDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFullDomain(v)
 		return nil
 	case cdnrecord.FieldType:
 		v, ok := value.(cdnrecord.Type)
@@ -1273,6 +1401,12 @@ func (m *CDNRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(cdnrecord.FieldRecordID) {
 		fields = append(fields, cdnrecord.FieldRecordID)
 	}
+	if m.FieldCleared(cdnrecord.FieldDomainName) {
+		fields = append(fields, cdnrecord.FieldDomainName)
+	}
+	if m.FieldCleared(cdnrecord.FieldFullDomain) {
+		fields = append(fields, cdnrecord.FieldFullDomain)
+	}
 	if m.FieldCleared(cdnrecord.FieldConfigJSON) {
 		fields = append(fields, cdnrecord.FieldConfigJSON)
 	}
@@ -1310,6 +1444,12 @@ func (m *CDNRecordMutation) ClearField(name string) error {
 	switch name {
 	case cdnrecord.FieldRecordID:
 		m.ClearRecordID()
+		return nil
+	case cdnrecord.FieldDomainName:
+		m.ClearDomainName()
+		return nil
+	case cdnrecord.FieldFullDomain:
+		m.ClearFullDomain()
 		return nil
 	case cdnrecord.FieldConfigJSON:
 		m.ClearConfigJSON()
@@ -1354,6 +1494,12 @@ func (m *CDNRecordMutation) ResetField(name string) error {
 		return nil
 	case cdnrecord.FieldSubDomain:
 		m.ResetSubDomain()
+		return nil
+	case cdnrecord.FieldDomainName:
+		m.ResetDomainName()
+		return nil
+	case cdnrecord.FieldFullDomain:
+		m.ResetFullDomain()
 		return nil
 	case cdnrecord.FieldType:
 		m.ResetType()
@@ -6965,6 +7111,8 @@ type DNSRecordMutation struct {
 	updated_at           *time.Time
 	record_id            *string
 	sub_domain           *string
+	domain_name          *string
+	full_domain          *string
 	_type                *dnsrecord.Type
 	config_json          *json.RawMessage
 	appendconfig_json    json.RawMessage
@@ -7281,6 +7429,104 @@ func (m *DNSRecordMutation) OldSubDomain(ctx context.Context) (v string, err err
 // ResetSubDomain resets all changes to the "sub_domain" field.
 func (m *DNSRecordMutation) ResetSubDomain() {
 	m.sub_domain = nil
+}
+
+// SetDomainName sets the "domain_name" field.
+func (m *DNSRecordMutation) SetDomainName(s string) {
+	m.domain_name = &s
+}
+
+// DomainName returns the value of the "domain_name" field in the mutation.
+func (m *DNSRecordMutation) DomainName() (r string, exists bool) {
+	v := m.domain_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomainName returns the old "domain_name" field's value of the DNSRecord entity.
+// If the DNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DNSRecordMutation) OldDomainName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDomainName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDomainName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomainName: %w", err)
+	}
+	return oldValue.DomainName, nil
+}
+
+// ClearDomainName clears the value of the "domain_name" field.
+func (m *DNSRecordMutation) ClearDomainName() {
+	m.domain_name = nil
+	m.clearedFields[dnsrecord.FieldDomainName] = struct{}{}
+}
+
+// DomainNameCleared returns if the "domain_name" field was cleared in this mutation.
+func (m *DNSRecordMutation) DomainNameCleared() bool {
+	_, ok := m.clearedFields[dnsrecord.FieldDomainName]
+	return ok
+}
+
+// ResetDomainName resets all changes to the "domain_name" field.
+func (m *DNSRecordMutation) ResetDomainName() {
+	m.domain_name = nil
+	delete(m.clearedFields, dnsrecord.FieldDomainName)
+}
+
+// SetFullDomain sets the "full_domain" field.
+func (m *DNSRecordMutation) SetFullDomain(s string) {
+	m.full_domain = &s
+}
+
+// FullDomain returns the value of the "full_domain" field in the mutation.
+func (m *DNSRecordMutation) FullDomain() (r string, exists bool) {
+	v := m.full_domain
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFullDomain returns the old "full_domain" field's value of the DNSRecord entity.
+// If the DNSRecord object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DNSRecordMutation) OldFullDomain(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFullDomain is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFullDomain requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFullDomain: %w", err)
+	}
+	return oldValue.FullDomain, nil
+}
+
+// ClearFullDomain clears the value of the "full_domain" field.
+func (m *DNSRecordMutation) ClearFullDomain() {
+	m.full_domain = nil
+	m.clearedFields[dnsrecord.FieldFullDomain] = struct{}{}
+}
+
+// FullDomainCleared returns if the "full_domain" field was cleared in this mutation.
+func (m *DNSRecordMutation) FullDomainCleared() bool {
+	_, ok := m.clearedFields[dnsrecord.FieldFullDomain]
+	return ok
+}
+
+// ResetFullDomain resets all changes to the "full_domain" field.
+func (m *DNSRecordMutation) ResetFullDomain() {
+	m.full_domain = nil
+	delete(m.clearedFields, dnsrecord.FieldFullDomain)
 }
 
 // SetType sets the "type" field.
@@ -7856,7 +8102,7 @@ func (m *DNSRecordMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DNSRecordMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, dnsrecord.FieldCreatedAt)
 	}
@@ -7871,6 +8117,12 @@ func (m *DNSRecordMutation) Fields() []string {
 	}
 	if m.sub_domain != nil {
 		fields = append(fields, dnsrecord.FieldSubDomain)
+	}
+	if m.domain_name != nil {
+		fields = append(fields, dnsrecord.FieldDomainName)
+	}
+	if m.full_domain != nil {
+		fields = append(fields, dnsrecord.FieldFullDomain)
 	}
 	if m._type != nil {
 		fields = append(fields, dnsrecord.FieldType)
@@ -7917,6 +8169,10 @@ func (m *DNSRecordMutation) Field(name string) (ent.Value, bool) {
 		return m.RecordID()
 	case dnsrecord.FieldSubDomain:
 		return m.SubDomain()
+	case dnsrecord.FieldDomainName:
+		return m.DomainName()
+	case dnsrecord.FieldFullDomain:
+		return m.FullDomain()
 	case dnsrecord.FieldType:
 		return m.GetType()
 	case dnsrecord.FieldConfigJSON:
@@ -7954,6 +8210,10 @@ func (m *DNSRecordMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldRecordID(ctx)
 	case dnsrecord.FieldSubDomain:
 		return m.OldSubDomain(ctx)
+	case dnsrecord.FieldDomainName:
+		return m.OldDomainName(ctx)
+	case dnsrecord.FieldFullDomain:
+		return m.OldFullDomain(ctx)
 	case dnsrecord.FieldType:
 		return m.OldType(ctx)
 	case dnsrecord.FieldConfigJSON:
@@ -8015,6 +8275,20 @@ func (m *DNSRecordMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSubDomain(v)
+		return nil
+	case dnsrecord.FieldDomainName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomainName(v)
+		return nil
+	case dnsrecord.FieldFullDomain:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFullDomain(v)
 		return nil
 	case dnsrecord.FieldType:
 		v, ok := value.(dnsrecord.Type)
@@ -8115,6 +8389,12 @@ func (m *DNSRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(dnsrecord.FieldRecordID) {
 		fields = append(fields, dnsrecord.FieldRecordID)
 	}
+	if m.FieldCleared(dnsrecord.FieldDomainName) {
+		fields = append(fields, dnsrecord.FieldDomainName)
+	}
+	if m.FieldCleared(dnsrecord.FieldFullDomain) {
+		fields = append(fields, dnsrecord.FieldFullDomain)
+	}
 	if m.FieldCleared(dnsrecord.FieldConfigJSON) {
 		fields = append(fields, dnsrecord.FieldConfigJSON)
 	}
@@ -8152,6 +8432,12 @@ func (m *DNSRecordMutation) ClearField(name string) error {
 	switch name {
 	case dnsrecord.FieldRecordID:
 		m.ClearRecordID()
+		return nil
+	case dnsrecord.FieldDomainName:
+		m.ClearDomainName()
+		return nil
+	case dnsrecord.FieldFullDomain:
+		m.ClearFullDomain()
 		return nil
 	case dnsrecord.FieldConfigJSON:
 		m.ClearConfigJSON()
@@ -8196,6 +8482,12 @@ func (m *DNSRecordMutation) ResetField(name string) error {
 		return nil
 	case dnsrecord.FieldSubDomain:
 		m.ResetSubDomain()
+		return nil
+	case dnsrecord.FieldDomainName:
+		m.ResetDomainName()
+		return nil
+	case dnsrecord.FieldFullDomain:
+		m.ResetFullDomain()
 		return nil
 	case dnsrecord.FieldType:
 		m.ResetType()

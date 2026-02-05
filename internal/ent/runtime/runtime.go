@@ -62,7 +62,7 @@ func init() {
 	// cdnrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
 	cdnrecord.ConfigIDValidator = cdnrecordDescConfigID.Validators[0].(func(int64) error)
 	// cdnrecordDescIsActive is the schema descriptor for is_active field.
-	cdnrecordDescIsActive := cdnrecordFields[9].Descriptor()
+	cdnrecordDescIsActive := cdnrecordFields[11].Descriptor()
 	// cdnrecord.DefaultIsActive holds the default value on creation for the is_active field.
 	cdnrecord.DefaultIsActive = cdnrecordDescIsActive.Default.(bool)
 	// cdnrecordDescID is the schema descriptor for id field.
@@ -199,7 +199,7 @@ func init() {
 	// dnsrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
 	dnsrecord.ConfigIDValidator = dnsrecordDescConfigID.Validators[0].(func(int64) error)
 	// dnsrecordDescIsActive is the schema descriptor for is_active field.
-	dnsrecordDescIsActive := dnsrecordFields[9].Descriptor()
+	dnsrecordDescIsActive := dnsrecordFields[11].Descriptor()
 	// dnsrecord.DefaultIsActive holds the default value on creation for the is_active field.
 	dnsrecord.DefaultIsActive = dnsrecordDescIsActive.Default.(bool)
 	// dnsrecordDescID is the schema descriptor for id field.

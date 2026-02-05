@@ -13,6 +13,7 @@ import (
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
@@ -157,10 +158,18 @@ func (s *CDNRecordServiceImpl) GetCdnRecord(ctx context.Context, id int64) (*typ
 
 // CreateCdnRecord 创建 CDN 记录
 func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *types.CreateCdnRecordRequest) error {
+
+	// 拼接完整域名，确保没有多余的点
+	request.SubDomain = utils.TrimDots(request.SubDomain)
+	request.DomainName = utils.TrimDots(request.DomainName)
+	fullDomain := request.SubDomain + "." + request.DomainName
+
 	// 创建CDN记录
 	saveCdnRecord, err := s.db.CDNRecord.Create().
 		SetConfigID(request.ConfigID).
 		SetSubDomain(request.SubDomain).
+		SetDomainName(request.DomainName).
+		SetFullDomain(fullDomain).
 		SetType(cdnrecord.Type(request.Type)).
 		SetConfigJSON([]byte(request.ConfigJSON)).
 		SetIPGroupID(request.IPGroupID).
@@ -180,6 +189,12 @@ func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *typ
 
 // UpdateCdnRecord 更新 CDN 记录
 func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) error {
+
+	// 拼接完整域名，确保没有多余的点
+	request.SubDomain = utils.TrimDots(request.SubDomain)
+	request.DomainName = utils.TrimDots(request.DomainName)
+	fullDomain := request.SubDomain + "." + request.DomainName
+
 	// 查询CDN记录
 	firstCdnRecord, err := s.db.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(request.ID)).
@@ -192,17 +207,24 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 	}
 
 	// 更新CDN记录
-	saveCdnRecord, err := s.db.CDNRecord.UpdateOne(firstCdnRecord).
-		SetType(cdnrecord.Type(request.Type)).
-		SetConfigJSON([]byte(request.ConfigJSON)).
-		SetIPGroupID(request.IPGroupID).
-		Save(ctx)
+	updateCdnRecord := s.db.CDNRecord.UpdateOne(firstCdnRecord)
+
+	if request.SubDomain != "" && request.DomainName != "" {
+		// updateCdnRecord.SetSubDomain(request.SubDomain)
+		updateCdnRecord.SetDomainName(request.DomainName)
+		updateCdnRecord.SetFullDomain(fullDomain)
+	}
+
+	updateCdnRecord.SetType(cdnrecord.Type(request.Type))
+	updateCdnRecord.SetConfigJSON([]byte(request.ConfigJSON))
+	updateCdnRecord.SetIPGroupID(request.IPGroupID)
+	err = updateCdnRecord.Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("更新CDN记录失败: %w", err)
 	}
 
 	// 更新通知订阅
-	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, saveCdnRecord.ID)
+	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeCdnRecord, request.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("更新通知订阅失败: %s\n", err.Error())

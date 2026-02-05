@@ -54,6 +54,46 @@ func (_u *CDNRecordUpdate) ClearRecordID() *CDNRecordUpdate {
 	return _u
 }
 
+// SetDomainName sets the "domain_name" field.
+func (_u *CDNRecordUpdate) SetDomainName(v string) *CDNRecordUpdate {
+	_u.mutation.SetDomainName(v)
+	return _u
+}
+
+// SetNillableDomainName sets the "domain_name" field if the given value is not nil.
+func (_u *CDNRecordUpdate) SetNillableDomainName(v *string) *CDNRecordUpdate {
+	if v != nil {
+		_u.SetDomainName(*v)
+	}
+	return _u
+}
+
+// ClearDomainName clears the value of the "domain_name" field.
+func (_u *CDNRecordUpdate) ClearDomainName() *CDNRecordUpdate {
+	_u.mutation.ClearDomainName()
+	return _u
+}
+
+// SetFullDomain sets the "full_domain" field.
+func (_u *CDNRecordUpdate) SetFullDomain(v string) *CDNRecordUpdate {
+	_u.mutation.SetFullDomain(v)
+	return _u
+}
+
+// SetNillableFullDomain sets the "full_domain" field if the given value is not nil.
+func (_u *CDNRecordUpdate) SetNillableFullDomain(v *string) *CDNRecordUpdate {
+	if v != nil {
+		_u.SetFullDomain(*v)
+	}
+	return _u
+}
+
+// ClearFullDomain clears the value of the "full_domain" field.
+func (_u *CDNRecordUpdate) ClearFullDomain() *CDNRecordUpdate {
+	_u.mutation.ClearFullDomain()
+	return _u
+}
+
 // SetType sets the "type" field.
 func (_u *CDNRecordUpdate) SetType(v cdnrecord.Type) *CDNRecordUpdate {
 	_u.mutation.SetType(v)
@@ -365,6 +405,18 @@ func (_u *CDNRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.RecordIDCleared() {
 		_spec.ClearField(cdnrecord.FieldRecordID, field.TypeString)
 	}
+	if value, ok := _u.mutation.DomainName(); ok {
+		_spec.SetField(cdnrecord.FieldDomainName, field.TypeString, value)
+	}
+	if _u.mutation.DomainNameCleared() {
+		_spec.ClearField(cdnrecord.FieldDomainName, field.TypeString)
+	}
+	if value, ok := _u.mutation.FullDomain(); ok {
+		_spec.SetField(cdnrecord.FieldFullDomain, field.TypeString, value)
+	}
+	if _u.mutation.FullDomainCleared() {
+		_spec.ClearField(cdnrecord.FieldFullDomain, field.TypeString)
+	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(cdnrecord.FieldType, field.TypeEnum, value)
 	}
@@ -548,6 +600,46 @@ func (_u *CDNRecordUpdateOne) SetNillableRecordID(v *string) *CDNRecordUpdateOne
 // ClearRecordID clears the value of the "record_id" field.
 func (_u *CDNRecordUpdateOne) ClearRecordID() *CDNRecordUpdateOne {
 	_u.mutation.ClearRecordID()
+	return _u
+}
+
+// SetDomainName sets the "domain_name" field.
+func (_u *CDNRecordUpdateOne) SetDomainName(v string) *CDNRecordUpdateOne {
+	_u.mutation.SetDomainName(v)
+	return _u
+}
+
+// SetNillableDomainName sets the "domain_name" field if the given value is not nil.
+func (_u *CDNRecordUpdateOne) SetNillableDomainName(v *string) *CDNRecordUpdateOne {
+	if v != nil {
+		_u.SetDomainName(*v)
+	}
+	return _u
+}
+
+// ClearDomainName clears the value of the "domain_name" field.
+func (_u *CDNRecordUpdateOne) ClearDomainName() *CDNRecordUpdateOne {
+	_u.mutation.ClearDomainName()
+	return _u
+}
+
+// SetFullDomain sets the "full_domain" field.
+func (_u *CDNRecordUpdateOne) SetFullDomain(v string) *CDNRecordUpdateOne {
+	_u.mutation.SetFullDomain(v)
+	return _u
+}
+
+// SetNillableFullDomain sets the "full_domain" field if the given value is not nil.
+func (_u *CDNRecordUpdateOne) SetNillableFullDomain(v *string) *CDNRecordUpdateOne {
+	if v != nil {
+		_u.SetFullDomain(*v)
+	}
+	return _u
+}
+
+// ClearFullDomain clears the value of the "full_domain" field.
+func (_u *CDNRecordUpdateOne) ClearFullDomain() *CDNRecordUpdateOne {
+	_u.mutation.ClearFullDomain()
 	return _u
 }
 
@@ -891,6 +983,18 @@ func (_u *CDNRecordUpdateOne) sqlSave(ctx context.Context) (_node *CDNRecord, er
 	}
 	if _u.mutation.RecordIDCleared() {
 		_spec.ClearField(cdnrecord.FieldRecordID, field.TypeString)
+	}
+	if value, ok := _u.mutation.DomainName(); ok {
+		_spec.SetField(cdnrecord.FieldDomainName, field.TypeString, value)
+	}
+	if _u.mutation.DomainNameCleared() {
+		_spec.ClearField(cdnrecord.FieldDomainName, field.TypeString)
+	}
+	if value, ok := _u.mutation.FullDomain(); ok {
+		_spec.SetField(cdnrecord.FieldFullDomain, field.TypeString, value)
+	}
+	if _u.mutation.FullDomainCleared() {
+		_spec.ClearField(cdnrecord.FieldFullDomain, field.TypeString)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(cdnrecord.FieldType, field.TypeEnum, value)

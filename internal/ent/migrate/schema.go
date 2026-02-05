@@ -16,6 +16,8 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录ID"},
 		{Name: "sub_domain", Type: field.TypeString, Comment: "子域名（如 www, blog, api）"},
+		{Name: "domain_name", Type: field.TypeString, Nullable: true, Comment: "域名名称（如 example.com）"},
+		{Name: "full_domain", Type: field.TypeString, Nullable: true, Comment: "完整域名（如 www.example.com）"},
 		{Name: "type", Type: field.TypeEnum, Comment: "记录类型（A、AAAA）", Enums: []string{"A", "AAAA"}},
 		{Name: "config_json", Type: field.TypeJSON, Nullable: true, Comment: "CDN记录配置（JSON）"},
 		{Name: "cdn_domain", Type: field.TypeString, Nullable: true, Comment: "CDN边缘域名（平台提供）"},
@@ -36,19 +38,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cdn_record_device_group_cdn_records",
-				Columns:    []*schema.Column{CdnRecordColumns[12]},
+				Columns:    []*schema.Column{CdnRecordColumns[14]},
 				RefColumns: []*schema.Column{DeviceGroupColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cdn_record_ip_group_cdn_records",
-				Columns:    []*schema.Column{CdnRecordColumns[13]},
+				Columns:    []*schema.Column{CdnRecordColumns[15]},
 				RefColumns: []*schema.Column{IPGroupColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cdn_record_platform_config_cdn_records",
-				Columns:    []*schema.Column{CdnRecordColumns[14]},
+				Columns:    []*schema.Column{CdnRecordColumns[16]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -65,7 +67,7 @@ var (
 			{
 				Name:    "cdnrecord_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[14]},
+				Columns: []*schema.Column{CdnRecordColumns[16]},
 			},
 			{
 				Name:    "cdnrecord_sub_domain",
@@ -75,22 +77,22 @@ var (
 			{
 				Name:    "cdnrecord_type",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[5]},
+				Columns: []*schema.Column{CdnRecordColumns[7]},
 			},
 			{
 				Name:    "cdnrecord_ip_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[13]},
+				Columns: []*schema.Column{CdnRecordColumns[15]},
 			},
 			{
 				Name:    "cdnrecord_device_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[12]},
+				Columns: []*schema.Column{CdnRecordColumns[14]},
 			},
 			{
 				Name:    "cdnrecord_is_active",
 				Unique:  false,
-				Columns: []*schema.Column{CdnRecordColumns[8]},
+				Columns: []*schema.Column{CdnRecordColumns[10]},
 			},
 		},
 	}
@@ -347,6 +349,8 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "record_id", Type: field.TypeString, Nullable: true, Comment: "平台侧记录ID"},
 		{Name: "sub_domain", Type: field.TypeString, Comment: "子域名（如 www, blog, api）"},
+		{Name: "domain_name", Type: field.TypeString, Nullable: true, Comment: "域名名称（如 example.com）"},
+		{Name: "full_domain", Type: field.TypeString, Nullable: true, Comment: "完整域名（如 www.example.com）"},
 		{Name: "type", Type: field.TypeEnum, Comment: "记录类型（A、AAAA、CNAME）", Enums: []string{"A", "AAAA", "CNAME"}},
 		{Name: "config_json", Type: field.TypeJSON, Nullable: true, Comment: "DNS记录配置（JSON）"},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
@@ -367,25 +371,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "dns_record_cdn_record_dns_records",
-				Columns:    []*schema.Column{DNSRecordColumns[11]},
+				Columns:    []*schema.Column{DNSRecordColumns[13]},
 				RefColumns: []*schema.Column{CdnRecordColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "dns_record_device_group_dns_records",
-				Columns:    []*schema.Column{DNSRecordColumns[12]},
+				Columns:    []*schema.Column{DNSRecordColumns[14]},
 				RefColumns: []*schema.Column{DeviceGroupColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "dns_record_ip_group_dns_records",
-				Columns:    []*schema.Column{DNSRecordColumns[13]},
+				Columns:    []*schema.Column{DNSRecordColumns[15]},
 				RefColumns: []*schema.Column{IPGroupColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "dns_record_platform_config_dns_records",
-				Columns:    []*schema.Column{DNSRecordColumns[14]},
+				Columns:    []*schema.Column{DNSRecordColumns[16]},
 				RefColumns: []*schema.Column{PlatformConfigColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -402,7 +406,7 @@ var (
 			{
 				Name:    "dnsrecord_config_id",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[14]},
+				Columns: []*schema.Column{DNSRecordColumns[16]},
 			},
 			{
 				Name:    "dnsrecord_sub_domain",
@@ -412,27 +416,27 @@ var (
 			{
 				Name:    "dnsrecord_type",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[5]},
+				Columns: []*schema.Column{DNSRecordColumns[7]},
 			},
 			{
 				Name:    "dnsrecord_ip_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[13]},
+				Columns: []*schema.Column{DNSRecordColumns[15]},
 			},
 			{
 				Name:    "dnsrecord_device_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[12]},
+				Columns: []*schema.Column{DNSRecordColumns[14]},
 			},
 			{
 				Name:    "dnsrecord_cdn_record_id",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[11]},
+				Columns: []*schema.Column{DNSRecordColumns[13]},
 			},
 			{
 				Name:    "dnsrecord_is_active",
 				Unique:  false,
-				Columns: []*schema.Column{DNSRecordColumns[7]},
+				Columns: []*schema.Column{DNSRecordColumns[9]},
 			},
 		},
 	}

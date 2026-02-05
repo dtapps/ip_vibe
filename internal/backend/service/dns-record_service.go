@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/types"
+	"vibe_ip/internal/utils"
 
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
@@ -165,10 +166,18 @@ func (s *DNSRecordServiceImpl) GetDnsRecord(ctx context.Context, id int64) (*typ
 
 // CreateDnsRecord 创建DNS记录
 func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *types.CreateDnsRecordRequest) error {
+
+	// 拼接完整域名，确保没有多余的点
+	request.SubDomain = utils.TrimDots(request.SubDomain)
+	request.DomainName = utils.TrimDots(request.DomainName)
+	fullDomain := request.SubDomain + "." + request.DomainName
+
 	// 创建DNS记录
 	createDnsRecord := s.db.DNSRecord.Create().
 		SetConfigID(request.ConfigID).
 		SetSubDomain(request.SubDomain).
+		SetDomainName(request.DomainName).
+		SetFullDomain(fullDomain).
 		SetType(dnsrecord.Type(request.Type)).
 		SetConfigJSON([]byte(request.ConfigJSON))
 	if request.IPGroupID > 0 {
@@ -196,6 +205,12 @@ func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *typ
 
 // UpdateDnsRecord 更新DNS记录
 func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *types.UpdateDnsRecordRequest) error {
+
+	// 拼接完整域名，确保没有多余的点
+	request.SubDomain = utils.TrimDots(request.SubDomain)
+	request.DomainName = utils.TrimDots(request.DomainName)
+	fullDomain := request.SubDomain + "." + request.DomainName
+
 	// 查询DNS记录
 	firstDnsRecord, err := s.db.DNSRecord.Query().
 		Where(dnsrecord.IDEQ(request.ID)).
@@ -208,9 +223,16 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 	}
 
 	// 更新DNS记录
-	updateDnsRecord := s.db.DNSRecord.UpdateOne(firstDnsRecord).
-		SetType(dnsrecord.Type(request.Type)).
-		SetConfigJSON([]byte(request.ConfigJSON))
+	updateDnsRecord := s.db.DNSRecord.UpdateOne(firstDnsRecord)
+
+	if request.SubDomain != "" && request.DomainName != "" {
+		// updateDnsRecord.SetSubDomain(request.SubDomain)
+		updateDnsRecord.SetDomainName(request.DomainName)
+		updateDnsRecord.SetFullDomain(fullDomain)
+	}
+
+	updateDnsRecord.SetType(dnsrecord.Type(request.Type))
+	updateDnsRecord.SetConfigJSON([]byte(request.ConfigJSON))
 	if request.IPGroupID > 0 {
 		updateDnsRecord.SetIPGroupID(request.IPGroupID)
 		updateDnsRecord.ClearCdnRecordID()
@@ -220,13 +242,13 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 		updateDnsRecord.SetCdnRecordID(request.CdnRecordID)
 	}
 
-	saveDnsRecord, err := updateDnsRecord.Save(ctx)
+	err = updateDnsRecord.Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("更新DNS记录失败: %w", err)
 	}
 
 	// 更新通知订阅
-	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, saveDnsRecord.ID)
+	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDNSRecord, request.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("更新通知订阅失败: %s\n", err.Error())

@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/swaggo/swag/v2"
 	"github.com/swaggo/swag/v2/gen"
 )
 
@@ -71,15 +70,15 @@ func runBuiltinGenerator(cfg generatorConfig) ([]byte, error) {
 
 	// 配置 swag 生成器
 	genConfig := &gen.Config{
-		SearchDir:          cfg.SearchDir,
-		MainAPIFile:        cfg.MainFile,
-		OutputDir:          cfg.OutputDir,
-		OutputTypes:        []string{"json"}, // 只生成 JSON
-		PropNamingStrategy: "camelcase",
-		ParseDepth:         cfg.ParseDepth,
-		ParseDependency:    1, // 解析依赖中的 models
+		SearchDir:           cfg.SearchDir,
+		MainAPIFile:         cfg.MainFile,
+		OutputDir:           cfg.OutputDir,
+		OutputTypes:         []string{"json"}, // 只生成 JSON
+		PropNamingStrategy:  "camelcase",
+		ParseDepth:          cfg.ParseDepth,
+		ParseDependency:     1, // 解析依赖中的 models
 		GenerateOpenAPI3Doc: cfg.OpenAPI3,
-		ParseGoList:        true,
+		ParseGoList:         true,
 	}
 
 	g := gen.New()

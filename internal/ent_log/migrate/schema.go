@@ -120,7 +120,7 @@ var (
 		{Name: "elapse_time", Type: field.TypeInt64, Nullable: true, Comment: "耗时, 单位:毫秒"},
 		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否出错（如 5xx、4xx）", Default: false},
 		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
-		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc2"},
+		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc3"},
 		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "插件版本", Default: "1.0.11"},
 	}
 	// HTTPLogTable holds the schema information for the "http_log" table.
@@ -172,7 +172,7 @@ var (
 		{Name: "new_value", Type: field.TypeJSON, Nullable: true, Comment: "新值"},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"unknown", "success", "failed"}, Default: "unknown"},
 		{Name: "message", Type: field.TypeString, Nullable: true, Comment: "详情"},
-		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc2"},
+		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc3"},
 	}
 	// OperationLogTable holds the schema information for the "operation_log" table.
 	OperationLogTable = &schema.Table{
@@ -298,7 +298,7 @@ var (
 		{Name: "elapse_time", Type: field.TypeInt64, Nullable: true, Comment: "耗时, 单位:毫秒"},
 		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否错误（如 5xx、4xx）", Default: false},
 		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
-		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc2"},
+		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc3"},
 		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "插件版本", Default: "1.0.4"},
 	}
 	// ReqLogTable holds the schema information for the "req_log" table.
@@ -355,7 +355,7 @@ var (
 		{Name: "elapse_time", Type: field.TypeInt64, Nullable: true, Comment: "耗时, 单位:毫秒"},
 		{Name: "is_error", Type: field.TypeBool, Nullable: true, Comment: "是否错误（如 5xx、4xx）", Default: false},
 		{Name: "created_at", Type: field.TypeTime, Comment: "请求时间"},
-		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc2"},
+		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc3"},
 		{Name: "plugin_version", Type: field.TypeString, Nullable: true, Comment: "插件版本", Default: "1.0.15"},
 		{Name: "resty_version", Type: field.TypeString, Nullable: true, Comment: "Resty 版本", Default: "3.0.0-beta.6"},
 	}

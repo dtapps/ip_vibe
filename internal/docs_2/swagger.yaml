@@ -256,6 +256,9 @@ definitions:
       config_json:
         description: CDN记录配置（JSON）
         type: string
+      domain_name:
+        description: 域名（如 example.com）
+        type: string
       ip_group_id:
         description: IP 组序号
         type: integer
@@ -272,6 +275,7 @@ definitions:
         type: array
     required:
     - config_id
+    - domain_name
     - ip_group_id
     - sub_domain
     - type
@@ -335,6 +339,9 @@ definitions:
       config_json:
         description: DNS记录配置（JSON）
         type: string
+      domain_name:
+        description: 域名（如 example.com）
+        type: string
       ip_group_id:
         description: IP 组序号（与 cdn_record_id 二选一）
         type: integer
@@ -351,6 +358,7 @@ definitions:
         type: array
     required:
     - config_id
+    - domain_name
     - sub_domain
     - type
     type: object
@@ -1489,12 +1497,18 @@ definitions:
       config_json:
         description: CDN记录配置（JSON）
         type: string
+      domain_name:
+        description: 域名（如 example.com）
+        type: string
       id:
         description: CDN记录序号
         type: integer
       ip_group_id:
         description: IP 组序号
         type: integer
+      sub_domain:
+        description: 子域名（如 www, blog, api）
+        type: string
       type:
         description: 记录类型（A、AAAA）
         type: string
@@ -1579,12 +1593,18 @@ definitions:
       config_json:
         description: DNS记录配置（JSON）
         type: string
+      domain_name:
+        description: 域名（如 example.com）
+        type: string
       id:
         description: DNS记录序号
         type: integer
       ip_group_id:
         description: IP 组序号（与 cdn_record_id 二选一）
         type: integer
+      sub_domain:
+        description: 子域名（如 www, blog, api）
+        type: string
       type:
         description: 记录类型（A、AAAA、CNAME）
         type: string

@@ -33,6 +33,10 @@ type DNSRecord struct {
 	RecordID string `json:"record_id,omitempty"`
 	// 子域名（如 www, blog, api）
 	SubDomain string `json:"sub_domain,omitempty"`
+	// 域名名称（如 example.com）
+	DomainName string `json:"domain_name,omitempty"`
+	// 完整域名（如 www.example.com）
+	FullDomain string `json:"full_domain,omitempty"`
 	// 记录类型（A、AAAA、CNAME）
 	Type dnsrecord.Type `json:"type,omitempty"`
 	// DNS记录配置（JSON）
@@ -127,7 +131,7 @@ func (*DNSRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case dnsrecord.FieldID, dnsrecord.FieldConfigID, dnsrecord.FieldIPGroupID, dnsrecord.FieldDeviceGroupID, dnsrecord.FieldCdnRecordID:
 			values[i] = new(sql.NullInt64)
-		case dnsrecord.FieldRecordID, dnsrecord.FieldSubDomain, dnsrecord.FieldType, dnsrecord.FieldLastAPIResponse:
+		case dnsrecord.FieldRecordID, dnsrecord.FieldSubDomain, dnsrecord.FieldDomainName, dnsrecord.FieldFullDomain, dnsrecord.FieldType, dnsrecord.FieldLastAPIResponse:
 			values[i] = new(sql.NullString)
 		case dnsrecord.FieldCreatedAt, dnsrecord.FieldUpdatedAt, dnsrecord.FieldLastRefreshAt, dnsrecord.FieldLastAPIResponseAt:
 			values[i] = new(sql.NullTime)
@@ -181,6 +185,18 @@ func (_m *DNSRecord) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field sub_domain", values[i])
 			} else if value.Valid {
 				_m.SubDomain = value.String
+			}
+		case dnsrecord.FieldDomainName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field domain_name", values[i])
+			} else if value.Valid {
+				_m.DomainName = value.String
+			}
+		case dnsrecord.FieldFullDomain:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field full_domain", values[i])
+			} else if value.Valid {
+				_m.FullDomain = value.String
 			}
 		case dnsrecord.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -308,6 +324,12 @@ func (_m *DNSRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("sub_domain=")
 	builder.WriteString(_m.SubDomain)
+	builder.WriteString(", ")
+	builder.WriteString("domain_name=")
+	builder.WriteString(_m.DomainName)
+	builder.WriteString(", ")
+	builder.WriteString("full_domain=")
+	builder.WriteString(_m.FullDomain)
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Type))

@@ -159,6 +159,56 @@ func (q *CDNRecordQuery) OrderBySubDomainAsc() *CDNRecordQuery {
 	return q.Order(Asc(cdnrecord.FieldSubDomain))
 }
 
+// OrderByDomainNameDesc 按字段 domain_name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CDNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CDNRecord.Query().
+//	    OrderByDomainNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CDNRecordQuery) OrderByDomainNameDesc() *CDNRecordQuery {
+	return q.Order(Desc(cdnrecord.FieldDomainName))
+}
+
+// OrderByDomainNameAsc 按字段 domain_name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CDNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CDNRecord.Query().
+//	    OrderByDomainNameAsc().
+//	    All(ctx)
+func (q *CDNRecordQuery) OrderByDomainNameAsc() *CDNRecordQuery {
+	return q.Order(Asc(cdnrecord.FieldDomainName))
+}
+
+// OrderByFullDomainDesc 按字段 full_domain 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CDNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CDNRecord.Query().
+//	    OrderByFullDomainDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CDNRecordQuery) OrderByFullDomainDesc() *CDNRecordQuery {
+	return q.Order(Desc(cdnrecord.FieldFullDomain))
+}
+
+// OrderByFullDomainAsc 按字段 full_domain 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CDNRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CDNRecord.Query().
+//	    OrderByFullDomainAsc().
+//	    All(ctx)
+func (q *CDNRecordQuery) OrderByFullDomainAsc() *CDNRecordQuery {
+	return q.Order(Asc(cdnrecord.FieldFullDomain))
+}
+
 // OrderByTypeDesc 按字段 type 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *CDNRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
@@ -1782,6 +1832,56 @@ func (q *DNSRecordQuery) OrderBySubDomainDesc() *DNSRecordQuery {
 //	    All(ctx)
 func (q *DNSRecordQuery) OrderBySubDomainAsc() *DNSRecordQuery {
 	return q.Order(Asc(dnsrecord.FieldSubDomain))
+}
+
+// OrderByDomainNameDesc 按字段 domain_name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DNSRecord.Query().
+//	    OrderByDomainNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DNSRecordQuery) OrderByDomainNameDesc() *DNSRecordQuery {
+	return q.Order(Desc(dnsrecord.FieldDomainName))
+}
+
+// OrderByDomainNameAsc 按字段 domain_name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DNSRecord.Query().
+//	    OrderByDomainNameAsc().
+//	    All(ctx)
+func (q *DNSRecordQuery) OrderByDomainNameAsc() *DNSRecordQuery {
+	return q.Order(Asc(dnsrecord.FieldDomainName))
+}
+
+// OrderByFullDomainDesc 按字段 full_domain 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *DNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.DNSRecord.Query().
+//	    OrderByFullDomainDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *DNSRecordQuery) OrderByFullDomainDesc() *DNSRecordQuery {
+	return q.Order(Desc(dnsrecord.FieldFullDomain))
+}
+
+// OrderByFullDomainAsc 按字段 full_domain 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *DNSRecordQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.DNSRecord.Query().
+//	    OrderByFullDomainAsc().
+//	    All(ctx)
+func (q *DNSRecordQuery) OrderByFullDomainAsc() *DNSRecordQuery {
+	return q.Order(Asc(dnsrecord.FieldFullDomain))
 }
 
 // OrderByTypeDesc 按字段 type 降序排列查询结果。

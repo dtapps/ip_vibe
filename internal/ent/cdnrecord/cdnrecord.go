@@ -26,6 +26,10 @@ const (
 	FieldRecordID = "record_id"
 	// FieldSubDomain holds the string denoting the sub_domain field in the database.
 	FieldSubDomain = "sub_domain"
+	// FieldDomainName holds the string denoting the domain_name field in the database.
+	FieldDomainName = "domain_name"
+	// FieldFullDomain holds the string denoting the full_domain field in the database.
+	FieldFullDomain = "full_domain"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldConfigJSON holds the string denoting the config_json field in the database.
@@ -92,6 +96,8 @@ var Columns = []string{
 	FieldConfigID,
 	FieldRecordID,
 	FieldSubDomain,
+	FieldDomainName,
+	FieldFullDomain,
 	FieldType,
 	FieldConfigJSON,
 	FieldCdnDomain,
@@ -188,6 +194,16 @@ func ByRecordID(opts ...sql.OrderTermOption) OrderOption {
 // BySubDomain orders the results by the sub_domain field.
 func BySubDomain(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSubDomain, opts...).ToFunc()
+}
+
+// ByDomainName orders the results by the domain_name field.
+func ByDomainName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDomainName, opts...).ToFunc()
+}
+
+// ByFullDomain orders the results by the full_domain field.
+func ByFullDomain(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFullDomain, opts...).ToFunc()
 }
 
 // ByType orders the results by the type field.
