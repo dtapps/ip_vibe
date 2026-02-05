@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"vibe_ip/internal/ent/cronjob"
@@ -11,6 +12,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -57,16 +59,14 @@ func (_u *CronJobUpdate) SetNillableHandlerName(v *string) *CronJobUpdate {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (_u *CronJobUpdate) SetHandlerArgs(v string) *CronJobUpdate {
+func (_u *CronJobUpdate) SetHandlerArgs(v json.RawMessage) *CronJobUpdate {
 	_u.mutation.SetHandlerArgs(v)
 	return _u
 }
 
-// SetNillableHandlerArgs sets the "handler_args" field if the given value is not nil.
-func (_u *CronJobUpdate) SetNillableHandlerArgs(v *string) *CronJobUpdate {
-	if v != nil {
-		_u.SetHandlerArgs(*v)
-	}
+// AppendHandlerArgs appends value to the "handler_args" field.
+func (_u *CronJobUpdate) AppendHandlerArgs(v json.RawMessage) *CronJobUpdate {
+	_u.mutation.AppendHandlerArgs(v)
 	return _u
 }
 
@@ -351,10 +351,15 @@ func (_u *CronJobUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.SetField(cronjob.FieldHandlerName, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.HandlerArgs(); ok {
-		_spec.SetField(cronjob.FieldHandlerArgs, field.TypeString, value)
+		_spec.SetField(cronjob.FieldHandlerArgs, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedHandlerArgs(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, cronjob.FieldHandlerArgs, value)
+		})
 	}
 	if _u.mutation.HandlerArgsCleared() {
-		_spec.ClearField(cronjob.FieldHandlerArgs, field.TypeString)
+		_spec.ClearField(cronjob.FieldHandlerArgs, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.JobType(); ok {
 		_spec.SetField(cronjob.FieldJobType, field.TypeEnum, value)
@@ -455,16 +460,14 @@ func (_u *CronJobUpdateOne) SetNillableHandlerName(v *string) *CronJobUpdateOne 
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (_u *CronJobUpdateOne) SetHandlerArgs(v string) *CronJobUpdateOne {
+func (_u *CronJobUpdateOne) SetHandlerArgs(v json.RawMessage) *CronJobUpdateOne {
 	_u.mutation.SetHandlerArgs(v)
 	return _u
 }
 
-// SetNillableHandlerArgs sets the "handler_args" field if the given value is not nil.
-func (_u *CronJobUpdateOne) SetNillableHandlerArgs(v *string) *CronJobUpdateOne {
-	if v != nil {
-		_u.SetHandlerArgs(*v)
-	}
+// AppendHandlerArgs appends value to the "handler_args" field.
+func (_u *CronJobUpdateOne) AppendHandlerArgs(v json.RawMessage) *CronJobUpdateOne {
+	_u.mutation.AppendHandlerArgs(v)
 	return _u
 }
 
@@ -779,10 +782,15 @@ func (_u *CronJobUpdateOne) sqlSave(ctx context.Context) (_node *CronJob, err er
 		_spec.SetField(cronjob.FieldHandlerName, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.HandlerArgs(); ok {
-		_spec.SetField(cronjob.FieldHandlerArgs, field.TypeString, value)
+		_spec.SetField(cronjob.FieldHandlerArgs, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedHandlerArgs(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, cronjob.FieldHandlerArgs, value)
+		})
 	}
 	if _u.mutation.HandlerArgsCleared() {
-		_spec.ClearField(cronjob.FieldHandlerArgs, field.TypeString)
+		_spec.ClearField(cronjob.FieldHandlerArgs, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.JobType(); ok {
 		_spec.SetField(cronjob.FieldJobType, field.TypeEnum, value)

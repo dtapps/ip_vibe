@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -30,7 +31,7 @@ type CronJob struct {
 	// 任务处理函数
 	HandlerName string `json:"handler_name,omitempty"`
 	// 任务处理函数参数
-	HandlerArgs string `json:"handler_args,omitempty"`
+	HandlerArgs json.RawMessage `json:"handler_args,omitempty"`
 	// 任务类型
 	JobType cronjob.JobType `json:"job_type,omitempty"`
 	// cron 表达式
@@ -57,11 +58,13 @@ func (*CronJob) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case cronjob.FieldHandlerArgs:
+			values[i] = new([]byte)
 		case cronjob.FieldWithSeconds, cronjob.FieldIsSingleton:
 			values[i] = new(sql.NullBool)
 		case cronjob.FieldID, cronjob.FieldIntervalValue, cronjob.FieldMinInterval, cronjob.FieldMaxInterval:
 			values[i] = new(sql.NullInt64)
-		case cronjob.FieldName, cronjob.FieldHandlerName, cronjob.FieldHandlerArgs, cronjob.FieldJobType, cronjob.FieldCronExpr, cronjob.FieldIntervalUnit, cronjob.FieldStatus:
+		case cronjob.FieldName, cronjob.FieldHandlerName, cronjob.FieldJobType, cronjob.FieldCronExpr, cronjob.FieldIntervalUnit, cronjob.FieldStatus:
 			values[i] = new(sql.NullString)
 		case cronjob.FieldCreatedAt, cronjob.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -119,10 +122,12 @@ func (_m *CronJob) assignValues(columns []string, values []any) error {
 				_m.HandlerName = value.String
 			}
 		case cronjob.FieldHandlerArgs:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field handler_args", values[i])
-			} else if value.Valid {
-				_m.HandlerArgs = value.String
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.HandlerArgs); err != nil {
+					return fmt.Errorf("unmarshal field handler_args: %w", err)
+				}
 			}
 		case cronjob.FieldJobType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -230,7 +235,7 @@ func (_m *CronJob) String() string {
 	builder.WriteString(_m.HandlerName)
 	builder.WriteString(", ")
 	builder.WriteString("handler_args=")
-	builder.WriteString(_m.HandlerArgs)
+	builder.WriteString(fmt.Sprintf("%v", _m.HandlerArgs))
 	builder.WriteString(", ")
 	builder.WriteString("job_type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.JobType))

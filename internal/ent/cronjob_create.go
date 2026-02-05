@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -78,16 +79,8 @@ func (_c *CronJobCreate) SetHandlerName(v string) *CronJobCreate {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (_c *CronJobCreate) SetHandlerArgs(v string) *CronJobCreate {
+func (_c *CronJobCreate) SetHandlerArgs(v json.RawMessage) *CronJobCreate {
 	_c.mutation.SetHandlerArgs(v)
-	return _c
-}
-
-// SetNillableHandlerArgs sets the "handler_args" field if the given value is not nil.
-func (_c *CronJobCreate) SetNillableHandlerArgs(v *string) *CronJobCreate {
-	if v != nil {
-		_c.SetHandlerArgs(*v)
-	}
 	return _c
 }
 
@@ -413,7 +406,7 @@ func (_c *CronJobCreate) createSpec() (*CronJob, *sqlgraph.CreateSpec) {
 		_node.HandlerName = value
 	}
 	if value, ok := _c.mutation.HandlerArgs(); ok {
-		_spec.SetField(cronjob.FieldHandlerArgs, field.TypeString, value)
+		_spec.SetField(cronjob.FieldHandlerArgs, field.TypeJSON, value)
 		_node.HandlerArgs = value
 	}
 	if value, ok := _c.mutation.JobType(); ok {
@@ -529,7 +522,7 @@ func (u *CronJobUpsert) UpdateHandlerName() *CronJobUpsert {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (u *CronJobUpsert) SetHandlerArgs(v string) *CronJobUpsert {
+func (u *CronJobUpsert) SetHandlerArgs(v json.RawMessage) *CronJobUpsert {
 	u.Set(cronjob.FieldHandlerArgs, v)
 	return u
 }
@@ -782,7 +775,7 @@ func (u *CronJobUpsertOne) UpdateHandlerName() *CronJobUpsertOne {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (u *CronJobUpsertOne) SetHandlerArgs(v string) *CronJobUpsertOne {
+func (u *CronJobUpsertOne) SetHandlerArgs(v json.RawMessage) *CronJobUpsertOne {
 	return u.Update(func(s *CronJobUpsert) {
 		s.SetHandlerArgs(v)
 	})
@@ -1229,7 +1222,7 @@ func (u *CronJobUpsertBulk) UpdateHandlerName() *CronJobUpsertBulk {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (u *CronJobUpsertBulk) SetHandlerArgs(v string) *CronJobUpsertBulk {
+func (u *CronJobUpsertBulk) SetHandlerArgs(v json.RawMessage) *CronJobUpsertBulk {
 	return u.Update(func(s *CronJobUpsert) {
 		s.SetHandlerArgs(v)
 	})

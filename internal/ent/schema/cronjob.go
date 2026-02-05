@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"vibe_ip/internal/ent/schema/schemadefault"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
@@ -61,7 +62,7 @@ func (CronJob) Fields() []ent.Field {
 			Comment("任务处理函数").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("handler_args").
+		field.JSON("handler_args", json.RawMessage{}).
 			Optional().
 			Comment("任务处理函数参数").
 			Annotations(entsql.WithComments(true)),

@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/cloudflarezone"
 	"vibe_ip/internal/ent/cloudflarezonerecord"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/deviceportforward"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -1143,6 +1144,166 @@ func (q *CloudflareZoneRecordQuery) WhereSettingsContainsFieldExistsAndNotEmpty(
 func (q *CloudflareZoneRecordQuery) WhereSettingsContainsFieldExistsAndNotEmptyIf(condition bool, path string) *CloudflareZoneRecordQuery {
 	if condition {
 		return q.WhereSettingsContainsFieldExistsAndNotEmpty(path)
+	}
+	return q
+}
+
+// WhereHandlerArgsContains 扩展了查询构建器，支持 JSON 数组的包含查询。
+// 自动适配 MySQL (JSON_CONTAINS), PostgreSQL (@>), SQLite (json_each)。
+func (q *CronJobQuery) WhereHandlerArgsContains(val any) *CronJobQuery {
+	return q.Where(predicate.CronJob(func(s *sql.Selector) {
+		column := cronjob.FieldHandlerArgs
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_CONTAINS("+column+", ?)", val))
+		case dialect.Postgres:
+			// PG 需要将值包装在数组格式内
+			s.Where(sql.ExprP(column+" @> ?", fmt.Sprintf("[%v]", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("EXISTS (SELECT 1 FROM json_each("+column+") WHERE value = ?)", val))
+		default:
+			// 兜底：模糊匹配
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%v\"%%", val)))
+		}
+	}))
+}
+
+// WhereHandlerArgsContainsIf 只有在 condition 为 true 时才调用 WhereHandlerArgsContains。
+func (q *CronJobQuery) WhereHandlerArgsContainsIf(condition bool, val any) *CronJobQuery {
+	if condition {
+		return q.WhereHandlerArgsContains(val)
+	}
+	return q
+}
+
+// WhereHandlerArgsContainsFieldNotEmpty 判断 JSON 对象中指定路径的值存在且非空（非 null 且非空字符串）。
+// 支持嵌套路径：如 "user.profile.account_id" 会转换为 "$.user.profile.account_id"。
+// 安全提示：path 参数自动转义，防止 SQL 注入。
+func (q *CronJobQuery) WhereHandlerArgsContainsFieldNotEmpty(path string) *CronJobQuery {
+	return q.Where(predicate.CronJob(func(s *sql.Selector) {
+		column := cronjob.FieldHandlerArgs
+		jsonPath := buildJSONPath(path)
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// JSON_UNQUOTE 去引号后判断非空，同时校验非 NULL
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != '' AND JSON_EXTRACT("+column+", ?) IS NOT NULL",
+				jsonPath, jsonPath,
+			))
+		case dialect.Postgres:
+			// ->> 提取文本，判断非 NULL 且非空字符串
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+		case dialect.SQLite:
+			// json_type 判断存在，同时排除空字符串（注意：SQLite 中空字符串为 '""'）
+			s.Where(sql.ExprP(
+				"(json_type("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+		default:
+			// 兜底：模糊匹配字段名+非空值（不精确，仅兼容）
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", path)))
+		}
+	}))
+}
+
+// WhereHandlerArgsContainsFieldNotEmptyIf 只有在 condition 为 true 时才调用 WhereHandlerArgsContainsFieldNotEmpty。
+func (q *CronJobQuery) WhereHandlerArgsContainsFieldNotEmptyIf(condition bool, path string) *CronJobQuery {
+	if condition {
+		return q.WhereHandlerArgsContainsFieldNotEmpty(path)
+	}
+	return q
+}
+
+// WhereHandlerArgsContainsFieldEquals 按 JSON 路径精确匹配值（支持字符串/数字/布尔值）。
+// 示例：WhereConfigJSONFieldEquals("account_id", "000")
+func (q *CronJobQuery) WhereHandlerArgsContainsFieldEquals(path string, val any) *CronJobQuery {
+	return q.Where(predicate.CronJob(func(s *sql.Selector) {
+		column := cronjob.FieldHandlerArgs
+		jsonPath := buildJSONPath(path)
+
+		// 将 val 转为 JSON 兼容字符串（数字/布尔值不加引号，字符串加引号）
+		jsonVal := marshalJSONValue(val)
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			s.Where(sql.ExprP("JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) = ?", jsonPath, jsonVal))
+		case dialect.Postgres:
+			s.Where(sql.ExprP(column+"->>? = ?", path, fmt.Sprintf("%v", val)))
+		case dialect.SQLite:
+			s.Where(sql.ExprP("json_extract("+column+", ?) = ?", jsonPath, jsonVal))
+		default:
+			// 兜底：模糊匹配（不推荐）
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\":\"%v\"%%", path, val)))
+		}
+	}))
+}
+
+// WhereHandlerArgsContainsFieldEqualsIf 只有在 condition 为 true 时才调用 WhereHandlerArgsContainsFieldEquals。
+func (q *CronJobQuery) WhereHandlerArgsContainsFieldEqualsIf(condition bool, path string, val any) *CronJobQuery {
+	if condition {
+		return q.WhereHandlerArgsContainsFieldEquals(path, val)
+	}
+	return q
+}
+
+// WhereHandlerArgsContainsFieldExistsAndNotEmpty 判断 JSON 中指定路径的字段存在、非 null 且非空字符串。
+// 同时排除以下情况：
+//   - 字段不存在（如 {} 中查询 account_id）
+//   - 字段值为 null（如 {"account_id": null}）
+//   - 字段值为空字符串（如 {"account_id": ""}）
+//
+// 支持嵌套路径：如 "user.profile.account_id"
+func (q *CronJobQuery) WhereHandlerArgsContainsFieldExistsAndNotEmpty(path string) *CronJobQuery {
+	return q.Where(predicate.CronJob(func(s *sql.Selector) {
+		column := cronjob.FieldHandlerArgs
+		jsonPath := "$." + strings.ReplaceAll(path, ".", ".") // 简单转义，实际建议用 buildJSONPath
+
+		switch s.Dialect() {
+		case dialect.MySQL:
+			// 关键逻辑：
+			// 1. JSON_EXTRACT(...) IS NOT NULL → 排除字段不存在 + 值为 null（经 UNQUOTE 后为 NULL）
+			// 2. JSON_UNQUOTE(...) != '' → 排除空字符串
+			// 注意：MySQL 中 JSON_EXTRACT(null_val) = "null" → UNQUOTE → NULL，因此 IS NOT NULL 可同时排除不存在和 null
+			s.Where(sql.ExprP(
+				"JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) IS NOT NULL AND JSON_UNQUOTE(JSON_EXTRACT("+column+", ?)) != ''",
+				jsonPath, jsonPath,
+			))
+
+		case dialect.Postgres:
+			// PG 中 ->> 对不存在字段和 null 值均返回 NULL，直接判断即可
+			s.Where(sql.ExprP(
+				"("+column+"->>? IS NOT NULL AND "+column+"->>? != '')",
+				path, path,
+			))
+
+		case dialect.SQLite:
+			// SQLite 特殊处理：
+			// - 字段不存在 → json_extract = NULL
+			// - 值为 null → json_extract = 'null' (字符串)
+			// - 空字符串 → json_extract = '""'
+			// 需同时排除这三种情况
+			s.Where(sql.ExprP(
+				"(json_extract("+column+", ?) IS NOT NULL AND json_extract("+column+", ?) NOT IN ('null', '\"\"', ''))",
+				jsonPath, jsonPath,
+			))
+
+		default:
+			// 兜底：模糊匹配（不精确，仅兼容）
+			escapedPath := strings.ReplaceAll(path, `"`, `\"`)
+			s.Where(sql.ExprP(column+" LIKE ?", fmt.Sprintf("%%\"%s\"%%", escapedPath)))
+		}
+	}))
+}
+
+// WhereHandlerArgsContainsFieldExistsAndNotEmptyIf 条件版本
+func (q *CronJobQuery) WhereHandlerArgsContainsFieldExistsAndNotEmptyIf(condition bool, path string) *CronJobQuery {
+	if condition {
+		return q.WhereHandlerArgsContainsFieldExistsAndNotEmpty(path)
 	}
 	return q
 }

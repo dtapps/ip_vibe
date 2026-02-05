@@ -217,11 +217,6 @@ func ByHandlerName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldHandlerName, opts...).ToFunc()
 }
 
-// ByHandlerArgs orders the results by the handler_args field.
-func ByHandlerArgs(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldHandlerArgs, opts...).ToFunc()
-}
-
 // ByJobType orders the results by the job_type field.
 func ByJobType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldJobType, opts...).ToFunc()

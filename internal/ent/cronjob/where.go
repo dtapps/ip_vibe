@@ -80,11 +80,6 @@ func HandlerName(v string) predicate.CronJob {
 	return predicate.CronJob(sql.FieldEQ(FieldHandlerName, v))
 }
 
-// HandlerArgs applies equality check predicate on the "handler_args" field. It's identical to HandlerArgsEQ.
-func HandlerArgs(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldEQ(FieldHandlerArgs, v))
-}
-
 // CronExpr applies equality check predicate on the "cron_expr" field. It's identical to CronExprEQ.
 func CronExpr(v string) predicate.CronJob {
 	return predicate.CronJob(sql.FieldEQ(FieldCronExpr, v))
@@ -365,61 +360,6 @@ func HandlerNameContainsFold(v string) predicate.CronJob {
 	return predicate.CronJob(sql.FieldContainsFold(FieldHandlerName, v))
 }
 
-// HandlerArgsEQ applies the EQ predicate on the "handler_args" field.
-func HandlerArgsEQ(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldEQ(FieldHandlerArgs, v))
-}
-
-// HandlerArgsNEQ applies the NEQ predicate on the "handler_args" field.
-func HandlerArgsNEQ(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldNEQ(FieldHandlerArgs, v))
-}
-
-// HandlerArgsIn applies the In predicate on the "handler_args" field.
-func HandlerArgsIn(vs ...string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldIn(FieldHandlerArgs, vs...))
-}
-
-// HandlerArgsNotIn applies the NotIn predicate on the "handler_args" field.
-func HandlerArgsNotIn(vs ...string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldNotIn(FieldHandlerArgs, vs...))
-}
-
-// HandlerArgsGT applies the GT predicate on the "handler_args" field.
-func HandlerArgsGT(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldGT(FieldHandlerArgs, v))
-}
-
-// HandlerArgsGTE applies the GTE predicate on the "handler_args" field.
-func HandlerArgsGTE(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldGTE(FieldHandlerArgs, v))
-}
-
-// HandlerArgsLT applies the LT predicate on the "handler_args" field.
-func HandlerArgsLT(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldLT(FieldHandlerArgs, v))
-}
-
-// HandlerArgsLTE applies the LTE predicate on the "handler_args" field.
-func HandlerArgsLTE(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldLTE(FieldHandlerArgs, v))
-}
-
-// HandlerArgsContains applies the Contains predicate on the "handler_args" field.
-func HandlerArgsContains(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldContains(FieldHandlerArgs, v))
-}
-
-// HandlerArgsHasPrefix applies the HasPrefix predicate on the "handler_args" field.
-func HandlerArgsHasPrefix(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldHasPrefix(FieldHandlerArgs, v))
-}
-
-// HandlerArgsHasSuffix applies the HasSuffix predicate on the "handler_args" field.
-func HandlerArgsHasSuffix(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldHasSuffix(FieldHandlerArgs, v))
-}
-
 // HandlerArgsIsNil applies the IsNil predicate on the "handler_args" field.
 func HandlerArgsIsNil() predicate.CronJob {
 	return predicate.CronJob(sql.FieldIsNull(FieldHandlerArgs))
@@ -428,16 +368,6 @@ func HandlerArgsIsNil() predicate.CronJob {
 // HandlerArgsNotNil applies the NotNil predicate on the "handler_args" field.
 func HandlerArgsNotNil() predicate.CronJob {
 	return predicate.CronJob(sql.FieldNotNull(FieldHandlerArgs))
-}
-
-// HandlerArgsEqualFold applies the EqualFold predicate on the "handler_args" field.
-func HandlerArgsEqualFold(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldEqualFold(FieldHandlerArgs, v))
-}
-
-// HandlerArgsContainsFold applies the ContainsFold predicate on the "handler_args" field.
-func HandlerArgsContainsFold(v string) predicate.CronJob {
-	return predicate.CronJob(sql.FieldContainsFold(FieldHandlerArgs, v))
 }
 
 // JobTypeEQ applies the EQ predicate on the "job_type" field.

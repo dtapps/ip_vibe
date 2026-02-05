@@ -92,6 +92,8 @@ func (t *CronJob) ToMap() map[string]any {
 	m := make(map[string]any)
 	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
 	m["entry_id"] = t.EntryID
+	// 非 Optional，或 JSON/Other 类型（即使 Optional 也是非指针）
+	m["handler_args"] = t.HandlerArgs
 	return m
 }
 

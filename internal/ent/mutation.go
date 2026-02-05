@@ -7069,31 +7069,32 @@ func (m *CloudflareZoneRecordMutation) ResetEdge(name string) error {
 // CronJobMutation represents an operation that mutates the CronJob nodes in the graph.
 type CronJobMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int64
-	created_at        *time.Time
-	updated_at        *time.Time
-	entry_id          *uuid.UUID
-	name              *string
-	handler_name      *string
-	handler_args      *string
-	job_type          *cronjob.JobType
-	cron_expr         *string
-	with_seconds      *bool
-	interval_value    *int
-	addinterval_value *int
-	min_interval      *int
-	addmin_interval   *int
-	max_interval      *int
-	addmax_interval   *int
-	interval_unit     *cronjob.IntervalUnit
-	status            *cronjob.Status
-	is_singleton      *bool
-	clearedFields     map[string]struct{}
-	done              bool
-	oldValue          func(context.Context) (*CronJob, error)
-	predicates        []predicate.CronJob
+	op                 Op
+	typ                string
+	id                 *int64
+	created_at         *time.Time
+	updated_at         *time.Time
+	entry_id           *uuid.UUID
+	name               *string
+	handler_name       *string
+	handler_args       *json.RawMessage
+	appendhandler_args json.RawMessage
+	job_type           *cronjob.JobType
+	cron_expr          *string
+	with_seconds       *bool
+	interval_value     *int
+	addinterval_value  *int
+	min_interval       *int
+	addmin_interval    *int
+	max_interval       *int
+	addmax_interval    *int
+	interval_unit      *cronjob.IntervalUnit
+	status             *cronjob.Status
+	is_singleton       *bool
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*CronJob, error)
+	predicates         []predicate.CronJob
 }
 
 var _ ent.Mutation = (*CronJobMutation)(nil)
@@ -7381,12 +7382,13 @@ func (m *CronJobMutation) ResetHandlerName() {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (m *CronJobMutation) SetHandlerArgs(s string) {
-	m.handler_args = &s
+func (m *CronJobMutation) SetHandlerArgs(jm json.RawMessage) {
+	m.handler_args = &jm
+	m.appendhandler_args = nil
 }
 
 // HandlerArgs returns the value of the "handler_args" field in the mutation.
-func (m *CronJobMutation) HandlerArgs() (r string, exists bool) {
+func (m *CronJobMutation) HandlerArgs() (r json.RawMessage, exists bool) {
 	v := m.handler_args
 	if v == nil {
 		return
@@ -7397,7 +7399,7 @@ func (m *CronJobMutation) HandlerArgs() (r string, exists bool) {
 // OldHandlerArgs returns the old "handler_args" field's value of the CronJob entity.
 // If the CronJob object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CronJobMutation) OldHandlerArgs(ctx context.Context) (v string, err error) {
+func (m *CronJobMutation) OldHandlerArgs(ctx context.Context) (v json.RawMessage, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldHandlerArgs is only allowed on UpdateOne operations")
 	}
@@ -7411,9 +7413,23 @@ func (m *CronJobMutation) OldHandlerArgs(ctx context.Context) (v string, err err
 	return oldValue.HandlerArgs, nil
 }
 
+// AppendHandlerArgs adds jm to the "handler_args" field.
+func (m *CronJobMutation) AppendHandlerArgs(jm json.RawMessage) {
+	m.appendhandler_args = append(m.appendhandler_args, jm...)
+}
+
+// AppendedHandlerArgs returns the list of values that were appended to the "handler_args" field in this mutation.
+func (m *CronJobMutation) AppendedHandlerArgs() (json.RawMessage, bool) {
+	if len(m.appendhandler_args) == 0 {
+		return nil, false
+	}
+	return m.appendhandler_args, true
+}
+
 // ClearHandlerArgs clears the value of the "handler_args" field.
 func (m *CronJobMutation) ClearHandlerArgs() {
 	m.handler_args = nil
+	m.appendhandler_args = nil
 	m.clearedFields[cronjob.FieldHandlerArgs] = struct{}{}
 }
 
@@ -7426,6 +7442,7 @@ func (m *CronJobMutation) HandlerArgsCleared() bool {
 // ResetHandlerArgs resets all changes to the "handler_args" field.
 func (m *CronJobMutation) ResetHandlerArgs() {
 	m.handler_args = nil
+	m.appendhandler_args = nil
 	delete(m.clearedFields, cronjob.FieldHandlerArgs)
 }
 
@@ -8070,7 +8087,7 @@ func (m *CronJobMutation) SetField(name string, value ent.Value) error {
 		m.SetHandlerName(v)
 		return nil
 	case cronjob.FieldHandlerArgs:
-		v, ok := value.(string)
+		v, ok := value.(json.RawMessage)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

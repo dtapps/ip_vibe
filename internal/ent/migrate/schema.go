@@ -350,7 +350,7 @@ var (
 		{Name: "entry_id", Type: field.TypeUUID, Unique: true, Comment: "任务编号"},
 		{Name: "name", Type: field.TypeString, Comment: "任务名称"},
 		{Name: "handler_name", Type: field.TypeString, Comment: "任务处理函数"},
-		{Name: "handler_args", Type: field.TypeString, Nullable: true, Comment: "任务处理函数参数"},
+		{Name: "handler_args", Type: field.TypeJSON, Nullable: true, Comment: "任务处理函数参数"},
 		{Name: "job_type", Type: field.TypeEnum, Comment: "任务类型", Enums: []string{"cron", "duration", "random"}, Default: "cron"},
 		{Name: "cron_expr", Type: field.TypeString, Nullable: true, Comment: "cron 表达式"},
 		{Name: "with_seconds", Type: field.TypeBool, Comment: "是否包含秒", Default: false},
