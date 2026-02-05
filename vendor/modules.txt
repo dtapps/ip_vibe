@@ -1,4 +1,4 @@
-# ariga.io/atlas v1.0.0
+# ariga.io/atlas v1.1.0
 ## explicit; go 1.24.11
 ariga.io/atlas/schemahcl
 ariga.io/atlas/sql/internal/specutil
@@ -49,7 +49,7 @@ github.com/agext/levenshtein
 # github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5
 ## explicit; go 1.14
 github.com/alibabacloud-go/alibabacloud-gateway-spi/client
-# github.com/alibabacloud-go/alidns-20150109/v5 v5.3.0
+# github.com/alibabacloud-go/alidns-20150109/v5 v5.3.1
 ## explicit; go 1.14
 github.com/alibabacloud-go/alidns-20150109/v5/client
 # github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
@@ -682,7 +682,7 @@ github.com/jonboulle/clockwork
 # github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
 ## explicit; go 1.12
 github.com/json-iterator/go
-# github.com/kingsoftcloud/sdk-go/v2 v2.2.71
+# github.com/kingsoftcloud/sdk-go/v2 v2.2.75
 ## explicit; go 1.17
 github.com/kingsoftcloud/sdk-go/v2/ksyun/client/cdn/v3
 github.com/kingsoftcloud/sdk-go/v2/ksyun/common
@@ -709,7 +709,7 @@ github.com/leodido/go-urn/scim/schema
 # github.com/lufia/plan9stats v0.0.0-20251013123823-9fd1530e3ec3
 ## explicit; go 1.21
 github.com/lufia/plan9stats
-# github.com/magefile/mage v1.15.1-0.20241126214340-bdc92f694516
+# github.com/magefile/mage v1.15.1-0.20250615140142-78acbaf2e3ae
 ## explicit; go 1.12
 github.com/magefile/mage/mg
 github.com/magefile/mage/sh
@@ -846,7 +846,7 @@ github.com/swaggo/swag/v2/gen
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.36
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.44
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.45
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -857,7 +857,7 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/regions
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.44
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.45
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901
 # github.com/tidwall/gjson v1.18.0

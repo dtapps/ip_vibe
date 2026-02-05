@@ -18,7 +18,7 @@ replace github.com/imroc/req/v3 => github.com/imroc/req/v3 v3.57.0
 
 require (
 	entgo.io/ent v0.14.5
-	github.com/alibabacloud-go/alidns-20150109/v5 v5.3.0
+	github.com/alibabacloud-go/alidns-20150109/v5 v5.3.1
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.14
 	github.com/alibabacloud-go/esa-20240910/v2 v2.47.0
@@ -46,7 +46,7 @@ require (
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.186
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
-	github.com/kingsoftcloud/sdk-go/v2 v2.2.71
+	github.com/kingsoftcloud/sdk-go/v2 v2.2.75
 	github.com/miekg/dns v1.1.72
 	github.com/modelcontextprotocol/go-sdk v1.2.0
 	github.com/qiniu/go-sdk/v7 v7.25.6
@@ -57,9 +57,9 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.36
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.44
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.45
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.44
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.45
 	github.com/tidwall/gjson v1.18.0
 	github.com/volcengine/volcengine-go-sdk v1.2.10
 	github.com/wdcbot/qingfeng v1.6.5
@@ -93,7 +93,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v1.0.0 // indirect
+	ariga.io/atlas v1.1.0 // indirect
 	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/MercuryEngineering/CookieMonster v0.0.0-20180304172713-1584578b3403 // indirect
@@ -156,7 +156,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20251013123823-9fd1530e3ec3 // indirect
-	github.com/magefile/mage v1.15.1-0.20241126214340-bdc92f694516 // indirect
+	github.com/magefile/mage v1.15.1-0.20250615140142-78acbaf2e3ae // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
