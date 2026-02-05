@@ -62,7 +62,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.44
 	github.com/tidwall/gjson v1.18.0
 	github.com/volcengine/volcengine-go-sdk v1.2.10
-	github.com/wdcbot/qingfeng v1.6.4
+	github.com/wdcbot/qingfeng v1.6.5
 	go.dtapp.net/library/contrib/http_log v1.0.11
 	go.dtapp.net/library/contrib/req_log v1.0.4
 	go.dtapp.net/library/contrib/resty_log v1.0.15

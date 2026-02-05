@@ -945,7 +945,7 @@ github.com/volcengine/volcengine-go-sdk/volcengine/volcenginebody
 github.com/volcengine/volcengine-go-sdk/volcengine/volcengineerr
 github.com/volcengine/volcengine-go-sdk/volcengine/volcenginequery
 github.com/volcengine/volcengine-go-sdk/volcengine/volcengineutil
-# github.com/wdcbot/qingfeng v1.6.4
+# github.com/wdcbot/qingfeng v1.6.5
 ## explicit; go 1.20
 github.com/wdcbot/qingfeng
 # github.com/yosida95/uritemplate/v3 v3.0.2
