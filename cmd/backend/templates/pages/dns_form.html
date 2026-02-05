@@ -17,11 +17,20 @@
       </div>
 
       <div class="ui-form-control">
-        <label class="ui-label-text">子域名部分 <span class="text-error">*</span></label>
-        <div class="flex items-center gap-2">
-          <input type="text" name="sub_domain" id="sub_domain" class="ui-input" required
-            placeholder="例如 www, blog, api" />
-          <input name="domain_name" id="domain_name" disabled class="text-sm font-mono opacity-60"></input>
+        <div class="flex items-end gap-2">
+          <div class="flex-1">
+            <label class="ui-label-text mb-2 block">子域名 <span class="text-error">*</span></label>
+            <input type="text" name="sub_domain" id="sub_domain" class="ui-input w-full" required
+              placeholder="例如 @, www, blog, api" />
+          </div>
+
+          <div class="mb-3 text-base-content/40 font-bold">.</div>
+
+          <div class="flex-1">
+            <!-- <label class="ui-label-text mb-2 block" id="domain_name_label" style="display: none;">域名名称</label> -->
+            <label class="ui-label-text mb-2 block opacity-50">域名名称</label>
+            <input type="text" name="domain_name" id="domain_name" class="ui-input w-full" disabled />
+          </div>
         </div>
       </div>
 

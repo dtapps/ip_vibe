@@ -326,6 +326,12 @@ async function openFormModal(id, action = "") {
       // 默认渲染字段
       renderDnsFields(els.platform.value.trim() || "");
 
+      // 显示域名名称标签
+      // const domain_name_label = document.getElementById("domain_name_label");
+      // if (domain_name_label) {
+      //   domain_name_label.style.display = "block";
+      // }
+
       showModal("formModal", "modalTitle", "添加 DNS 记录");
     }
   } catch (err) {

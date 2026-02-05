@@ -254,7 +254,7 @@ function handleSelectChange(selectEl) {
   console.log("text", text);
   console.log("value", value);
 
-  platform_el = document.getElementById("platform");
+  const platform_el = document.getElementById("platform");
   if (platform_el) {
     platform_el.value = platform;
   }

@@ -455,54 +455,59 @@ function handleSelectChange(selectEl) {
   console.log("text", text);
   console.log("value", value);
 
-  platform_el = document.getElementById("platform");
+  const platform_el = document.getElementById("platform");
   if (platform_el) {
     platform_el.value = platform;
   }
 
   // 动态更新域名显示
-  domain_name_el = document.getElementById("domain_name");
+  const domain_name_el = document.getElementById("domain_name");
+  // const domain_name_label = document.getElementById("domain_name_label");
   if (domain_name_el && platform && key && text) {
+    // 隐藏标题
+    // if (domain_name_label) {
+    //   domain_name_label.style.display = "none";
+    // }
     switch (platform) {
       case "cloudflare":
         if (key === "zone") {
           // domain_name_el.innerText = `.${text}`;
-          domain_name_el.value = `.${text}`;
+          domain_name_el.value = text;
           domain_name_el.disabled = true;
         }
         break;
       case "tencent_dns":
         if (key === "domain") {
           // domain_name_el.innerText = `.${text}`;
-          domain_name_el.value = `.${text}`;
+          domain_name_el.value = text;
           domain_name_el.disabled = true;
         }
         break;
       case "aliyun_dns":
         if (key === "domain") {
           // domain_name_el.innerText = `.${text}`;
-          domain_name_el.value = `.${text}`;
+          domain_name_el.value = text;
           domain_name_el.disabled = true;
         }
         break;
       case "baidu_dns":
         if (key === "zone") {
           // domain_name_el.innerText = `.${text}`;
-          domain_name_el.value = `.${text}`;
+          domain_name_el.value = text;
           domain_name_el.disabled = true;
         }
         break;
       case "huawei_dns":
         if (key === "zone") {
           // domain_name_el.innerText = `.${text}`;
-          domain_name_el.value = `.${text}`;
+          domain_name_el.value = text;
           domain_name_el.disabled = true;
         }
         break;
       case "volcengine_dns":
         if (key === "zone") {
           // domain_name_el.innerText = `.${text}`;
-          domain_name_el.value = `.${text}`;
+          domain_name_el.value = text;
           domain_name_el.disabled = true;
         }
         break;

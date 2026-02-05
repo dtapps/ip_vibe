@@ -57,12 +57,12 @@ func (TUNRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("sub_domain").
-			Comment("子域名（如 www, blog, api）").
+			Comment("子域名（例如 @, www, blog, api）").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("domain_path").
 			Optional().
-			Comment("域名路径（如 /api/v1）").
+			Comment("域名路径（例如 /api/v1）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("serve_type").
@@ -72,7 +72,7 @@ func (TUNRecord) Fields() []ent.Field {
 
 		field.String("serve_uri").
 			Optional().
-			Comment("服务URI（如 127.0.0.1:8080）").
+			Comment("服务URI（例如 127.0.0.1:8080）").
 			Annotations(entsql.WithComments(true)),
 
 		field.JSON("config_json", json.RawMessage{}).

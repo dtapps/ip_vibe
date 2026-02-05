@@ -7150,7 +7150,7 @@
                     "type": "string"
                 },
                 "domain_name": {
-                    "description": "域名（如 example.com）",
+                    "description": "域名（例如 example.com）",
                     "type": "string"
                 },
                 "ip_group_id": {
@@ -7158,7 +7158,7 @@
                     "type": "integer"
                 },
                 "sub_domain": {
-                    "description": "子域名（如 www, blog, api）",
+                    "description": "子域名（例如 @, www, blog, api）",
                     "type": "string"
                 },
                 "type": {
@@ -7263,7 +7263,7 @@
                     "type": "string"
                 },
                 "domain_name": {
-                    "description": "域名（如 example.com）",
+                    "description": "域名（例如 example.com）",
                     "type": "string"
                 },
                 "ip_group_id": {
@@ -7271,7 +7271,7 @@
                     "type": "integer"
                 },
                 "sub_domain": {
-                    "description": "子域名（如 www, blog, api）",
+                    "description": "子域名（例如 @, www, blog, api）",
                     "type": "string"
                 },
                 "type": {
@@ -7505,19 +7505,19 @@
                     "type": "string"
                 },
                 "domain_path": {
-                    "description": "域名路径（如 /api/v1）",
+                    "description": "域名路径（例如 /api/v1）",
                     "type": "string"
                 },
                 "serve_type": {
-                    "description": "服务类型（如 HTTP、HTTPS）",
+                    "description": "服务类型（例如 HTTP、HTTPS）",
                     "type": "string"
                 },
                 "serve_uri": {
-                    "description": "服务URI（如 127.0.0.1:8080）",
+                    "description": "服务URI（例如 127.0.0.1:8080）",
                     "type": "string"
                 },
                 "sub_domain": {
-                    "description": "子域名（如 www, blog, api）",
+                    "description": "子域名（例如 @, www, blog, api）",
                     "type": "string"
                 },
                 "webhook_ids": {
@@ -7591,7 +7591,7 @@
                     "type": "string"
                 },
                 "domain_name": {
-                    "description": "域名（如 www.example.com）",
+                    "description": "域名（例如 www.example.com）",
                     "type": "string"
                 },
                 "id": {
@@ -7622,7 +7622,7 @@
                     "description": "平台侧记录ID"
                 },
                 "sub_domain": {
-                    "description": "子域名（如 www, blog, api）",
+                    "description": "子域名（例如 @, www, blog, api）",
                     "type": "string"
                 },
                 "type": {
@@ -7952,7 +7952,7 @@
             "type": "object",
             "properties": {
                 "cdn_record_cdn_domain": {
-                    "description": "CDN记录域名（如 cdn.example.com）",
+                    "description": "CDN记录域名（例如 cdn.example.com）",
                     "type": "string"
                 },
                 "cdn_record_id": {
@@ -7975,7 +7975,7 @@
                     "type": "string"
                 },
                 "domain_name": {
-                    "description": "域名（如 www.example.com）",
+                    "description": "域名（例如 www.example.com）",
                     "type": "string"
                 },
                 "id": {
@@ -8006,7 +8006,7 @@
                     "description": "平台侧记录ID"
                 },
                 "sub_domain": {
-                    "description": "子域名（如 www, blog, api）",
+                    "description": "子域名（例如 @, www, blog, api）",
                     "type": "string"
                 },
                 "type": {
@@ -8549,7 +8549,7 @@
                     "type": "string"
                 },
                 "domain_path": {
-                    "description": "域名路径（如 /api/v1）",
+                    "description": "域名路径（例如 /api/v1）",
                     "type": "string"
                 },
                 "id": {
@@ -8572,15 +8572,15 @@
                     "description": "平台侧记录ID"
                 },
                 "serve_type": {
-                    "description": "服务类型（如 HTTP、HTTPS）",
+                    "description": "服务类型（例如 HTTP、HTTPS）",
                     "type": "string"
                 },
                 "serve_uri": {
-                    "description": "服务URI（如 127.0.0.1:8080）",
+                    "description": "服务URI（例如 127.0.0.1:8080）",
                     "type": "string"
                 },
                 "sub_domain": {
-                    "description": "子域名（如 www, blog, api）",
+                    "description": "子域名（例如 @, www, blog, api）",
                     "type": "string"
                 },
                 "webhooks": {
@@ -8870,7 +8870,7 @@
                     "type": "string"
                 },
                 "domain_name": {
-                    "description": "域名（如 example.com）",
+                    "description": "域名（例如 example.com）",
                     "type": "string"
                 },
                 "id": {
@@ -8882,7 +8882,7 @@
                     "type": "integer"
                 },
                 "sub_domain": {
-                    "description": "子域名（如 www, blog, api）",
+                    "description": "子域名（例如 @, www, blog, api）",
                     "type": "string"
                 },
                 "type": {
@@ -9002,7 +9002,7 @@
                     "type": "string"
                 },
                 "domain_name": {
-                    "description": "域名（如 example.com）",
+                    "description": "域名（例如 example.com）",
                     "type": "string"
                 },
                 "id": {
@@ -9014,7 +9014,7 @@
                     "type": "integer"
                 },
                 "sub_domain": {
-                    "description": "子域名（如 www, blog, api）",
+                    "description": "子域名（例如 @, www, blog, api）",
                     "type": "string"
                 },
                 "type": {
@@ -9375,7 +9375,7 @@
                     "type": "string"
                 },
                 "domain_path": {
-                    "description": "域名路径（如 /api/v1）",
+                    "description": "域名路径（例如 /api/v1）",
                     "type": "string"
                 },
                 "id": {
@@ -9383,15 +9383,15 @@
                     "type": "integer"
                 },
                 "serve_type": {
-                    "description": "服务类型（如 HTTP、HTTPS）",
+                    "description": "服务类型（例如 HTTP、HTTPS）",
                     "type": "string"
                 },
                 "serve_uri": {
-                    "description": "服务URI（如 127.0.0.1:8080）",
+                    "description": "服务URI（例如 127.0.0.1:8080）",
                     "type": "string"
                 },
                 "sub_domain": {
-                    "description": "子域名（如 www, blog, api）",
+                    "description": "子域名（例如 @, www, blog, api）",
                     "type": "string"
                 },
                 "webhook_ids": {

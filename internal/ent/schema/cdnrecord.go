@@ -58,19 +58,19 @@ func (CDNRecord) Fields() []ent.Field {
 
 		field.String("sub_domain").
 			Immutable().
-			Comment("子域名（如 www, blog, api）").
+			Comment("子域名（例如 @, www, blog, api）").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("domain_name").
 			Optional().
 			// Immutable(). // 先兼容旧数据
-			Comment("域名名称（如 example.com）").
+			Comment("域名名称（例如 example.com）").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("full_domain").
 			Optional().
 			// Immutable(). // 先兼容旧数据
-			Comment("完整域名（如 www.example.com）").
+			Comment("完整域名（例如 www.example.com）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("type").

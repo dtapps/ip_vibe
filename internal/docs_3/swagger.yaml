@@ -285,13 +285,13 @@ components:
           description: CDN记录配置（JSON）
           type: string
         domain_name:
-          description: 域名（如 example.com）
+          description: 域名（例如 example.com）
           type: string
         ip_group_id:
           description: IP 组序号
           type: integer
         sub_domain:
-          description: 子域名（如 www, blog, api）
+          description: 子域名（例如 @, www, blog, api）
           type: string
         type:
           description: 记录类型（A、AAAA）
@@ -372,13 +372,13 @@ components:
           description: DNS记录配置（JSON）
           type: string
         domain_name:
-          description: 域名（如 example.com）
+          description: 域名（例如 example.com）
           type: string
         ip_group_id:
           description: IP 组序号（与 cdn_record_id 二选一）
           type: integer
         sub_domain:
-          description: 子域名（如 www, blog, api）
+          description: 子域名（例如 @, www, blog, api）
           type: string
         type:
           description: 记录类型（A、AAAA、CNAME）
@@ -556,16 +556,16 @@ components:
           description: TUN记录配置（JSON）
           type: string
         domain_path:
-          description: 域名路径（如 /api/v1）
+          description: 域名路径（例如 /api/v1）
           type: string
         serve_type:
-          description: 服务类型（如 HTTP、HTTPS）
+          description: 服务类型（例如 HTTP、HTTPS）
           type: string
         serve_uri:
-          description: 服务URI（如 127.0.0.1:8080）
+          description: 服务URI（例如 127.0.0.1:8080）
           type: string
         sub_domain:
-          description: 子域名（如 www, blog, api）
+          description: 子域名（例如 @, www, blog, api）
           type: string
         webhook_ids:
           description: 关联的 Webhook 列表
@@ -626,7 +626,7 @@ components:
           description: 平台配置名称
           type: string
         domain_name:
-          description: 域名（如 www.example.com）
+          description: 域名（例如 www.example.com）
           type: string
         id:
           description: CDN记录序号
@@ -649,7 +649,7 @@ components:
         record_id:
           description: 平台侧记录ID
         sub_domain:
-          description: 子域名（如 www, blog, api）
+          description: 子域名（例如 @, www, blog, api）
           type: string
         type:
           description: 记录类型（A、AAAA）
@@ -889,7 +889,7 @@ components:
     vibe_ip_internal_types.GetDnsRecordResponse:
       properties:
         cdn_record_cdn_domain:
-          description: CDN记录域名（如 cdn.example.com）
+          description: CDN记录域名（例如 cdn.example.com）
           type: string
         cdn_record_id:
           description: CDN记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
@@ -907,7 +907,7 @@ components:
           description: 平台配置名称
           type: string
         domain_name:
-          description: 域名（如 www.example.com）
+          description: 域名（例如 www.example.com）
           type: string
         id:
           description: DNS记录序号
@@ -930,7 +930,7 @@ components:
         record_id:
           description: 平台侧记录ID
         sub_domain:
-          description: 子域名（如 www, blog, api）
+          description: 子域名（例如 @, www, blog, api）
           type: string
         type:
           description: 记录类型（A、AAAA、CNAME）
@@ -1331,7 +1331,7 @@ components:
           description: 平台配置名称
           type: string
         domain_path:
-          description: 域名路径（如 /api/v1）
+          description: 域名路径（例如 /api/v1）
           type: string
         id:
           description: TUN记录序号
@@ -1348,13 +1348,13 @@ components:
         record_id:
           description: 平台侧记录ID
         serve_type:
-          description: 服务类型（如 HTTP、HTTPS）
+          description: 服务类型（例如 HTTP、HTTPS）
           type: string
         serve_uri:
-          description: 服务URI（如 127.0.0.1:8080）
+          description: 服务URI（例如 127.0.0.1:8080）
           type: string
         sub_domain:
-          description: 子域名（如 www, blog, api）
+          description: 子域名（例如 @, www, blog, api）
           type: string
         webhooks:
           description: 关联的 Webhook 列表
@@ -1560,7 +1560,7 @@ components:
           description: CDN记录配置（JSON）
           type: string
         domain_name:
-          description: 域名（如 example.com）
+          description: 域名（例如 example.com）
           type: string
         id:
           description: CDN记录序号
@@ -1569,7 +1569,7 @@ components:
           description: IP 组序号
           type: integer
         sub_domain:
-          description: 子域名（如 www, blog, api）
+          description: 子域名（例如 @, www, blog, api）
           type: string
         type:
           description: 记录类型（A、AAAA）
@@ -1660,7 +1660,7 @@ components:
           description: DNS记录配置（JSON）
           type: string
         domain_name:
-          description: 域名（如 example.com）
+          description: 域名（例如 example.com）
           type: string
         id:
           description: DNS记录序号
@@ -1669,7 +1669,7 @@ components:
           description: IP 组序号（与 cdn_record_id 二选一）
           type: integer
         sub_domain:
-          description: 子域名（如 www, blog, api）
+          description: 子域名（例如 @, www, blog, api）
           type: string
         type:
           description: 记录类型（A、AAAA、CNAME）
@@ -1934,19 +1934,19 @@ components:
           description: TUN记录配置（JSON）
           type: string
         domain_path:
-          description: 域名路径（如 /api/v1）
+          description: 域名路径（例如 /api/v1）
           type: string
         id:
           description: TUN记录序号
           type: integer
         serve_type:
-          description: 服务类型（如 HTTP、HTTPS）
+          description: 服务类型（例如 HTTP、HTTPS）
           type: string
         serve_uri:
-          description: 服务URI（如 127.0.0.1:8080）
+          description: 服务URI（例如 127.0.0.1:8080）
           type: string
         sub_domain:
-          description: 子域名（如 www, blog, api）
+          description: 子域名（例如 @, www, blog, api）
           type: string
         webhook_ids:
           description: 关联的 Webhook 列表
