@@ -47,6 +47,17 @@
             make mod_tidy
             make mod_vendor
 
+            # 2. 补丁：修复 vendor 中未使用的 swag 引用报错
+            echo "🩹 正在修复 vendor 依赖错误..."
+            TARGET_FILE="vendor/github.com/wdcbot/qingfeng/generator.go"
+            if [ -f "$TARGET_FILE" ]; then
+                # $ 表示行尾，确保不会删掉带 /gen 的行
+                sed -i '/"github.com\/swaggo\/swag\/v2"$/d' "$TARGET_FILE"
+                echo "✅ 已移除 $TARGET_FILE 中的无效引用（保留了 gen 引用）"
+            else
+                echo "⚠️ 未找到目标文件，跳过补丁"
+            fi
+
             # 2. 清理并构建
             echo "清理并构建..."
             make clean
