@@ -1,5 +1,5 @@
 # 使用 golang 镜像作为基础
-FROM golang:1.26rc2-trixie
+FROM golang:1.26rc3-trixie
 
 # 1. 替换 Debian APT 加速源
 RUN sed -i 's|deb.debian.org|mirrors.cloud.tencent.com|g' /etc/apt/sources.list.d/debian.sources 2>/dev/null || \

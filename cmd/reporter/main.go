@@ -81,8 +81,6 @@ func main() {
 		slog.String("git_commit", global.GvaGitCommit),
 		slog.String("build_time", global.GvaBuildTime),
 		slog.String("go_version", global.GvaGoVersion),
-		slog.String("os", global.GvaOS),
-		slog.String("arch", global.GvaArch),
 	)
 
 	// 设备编码
