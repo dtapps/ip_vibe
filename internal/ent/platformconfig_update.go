@@ -441,6 +441,11 @@ func (_u *PlatformConfigUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *PlatformConfigUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := platformconfig.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.name": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Capability(); ok {
 		if err := platformconfig.CapabilityValidator(v); err != nil {
 			return &ValidationError{Name: "capability", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.capability": %w`, err)}
@@ -1291,6 +1296,11 @@ func (_u *PlatformConfigUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *PlatformConfigUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := platformconfig.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.name": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Capability(); ok {
 		if err := platformconfig.CapabilityValidator(v); err != nil {
 			return &ValidationError{Name: "capability", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.capability": %w`, err)}

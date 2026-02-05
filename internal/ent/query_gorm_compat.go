@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/cloudflarezone"
 	"vibe_ip/internal/ent/cloudflarezonerecord"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/deviceportforward"
@@ -146,6 +147,25 @@ func (q *CloudflareZoneRecordQuery) Last(ctx context.Context) (*CloudflareZoneRe
 // Find 获取所有匹配的记录。
 // 行为类比 GORM 的 Find(ctx, &dest)，此处直接返回 []*T。
 func (q *CloudflareZoneRecordQuery) Find(ctx context.Context) ([]*CloudflareZoneRecord, error) {
+	return q.All(ctx)
+}
+
+// Take 获取任意一条记录（不保证顺序），等价于 LIMIT 1。
+// 行为与 GORM 的 Take(ctx) 一致：不添加 ORDER，仅限制结果为 1 行。
+func (q *CronJobQuery) Take(ctx context.Context) (*CronJob, error) {
+	return q.Limit(1).First(ctx)
+}
+
+// Last 获取最后一条记录，按主键降序排列（ORDER BY id DESC LIMIT 1）。
+// 行为与 GORM 的 Last(ctx) 一致。
+// 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
+func (q *CronJobQuery) Last(ctx context.Context) (*CronJob, error) {
+	return q.Order(cronjob.ByID(sql.OrderDesc())).First(ctx)
+}
+
+// Find 获取所有匹配的记录。
+// 行为类比 GORM 的 Find(ctx, &dest)，此处直接返回 []*T。
+func (q *CronJobQuery) Find(ctx context.Context) ([]*CronJob, error) {
 	return q.All(ctx)
 }
 

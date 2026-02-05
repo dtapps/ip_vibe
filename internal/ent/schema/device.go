@@ -46,11 +46,13 @@ func (Device) Fields() []ent.Field {
 
 		field.String("code").
 			Unique().
+			NotEmpty().
 			Immutable().
 			Comment("设备编号").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
+			NotEmpty().
 			Comment("设备名称").
 			Annotations(entsql.WithComments(true)),
 

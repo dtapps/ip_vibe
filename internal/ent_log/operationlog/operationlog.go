@@ -153,6 +153,7 @@ const (
 	ObjTypeCloudflareZoneRecord          ObjType = "CloudflareZoneRecord"
 	ObjTypeCDNRecord                     ObjType = "CDNRecord"
 	ObjTypeDNSRecord                     ObjType = "DNSRecord"
+	ObjTypeCronJob                       ObjType = "CronJob"
 	ObjTypeDevice                        ObjType = "Device"
 	ObjTypeDeviceGroup                   ObjType = "DeviceGroup"
 	ObjTypeDeviceGroupDevice             ObjType = "DeviceGroupDevice"
@@ -192,7 +193,7 @@ func (ot ObjType) String() string {
 // ObjTypeValidator is a validator for the "obj_type" field enum values. It is called by the builders before save.
 func ObjTypeValidator(ot ObjType) error {
 	switch ot {
-	case ObjTypeUnknown, ObjTypeCache, ObjTypeCloudflareTunnel, ObjTypeCloudflareTunnelIngress, ObjTypeCloudflareZone, ObjTypeCloudflareZoneRecord, ObjTypeCDNRecord, ObjTypeDNSRecord, ObjTypeDevice, ObjTypeDeviceGroup, ObjTypeDeviceGroupDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeEdgeOneZone, ObjTypeEdgeOneZoneAccelerationDomain, ObjTypeEdgeOneZoneDNSRecord, ObjTypeEdgeOneZoneOriginGroup, ObjTypeEsaSite, ObjTypeEsaSiteOriginPool, ObjTypeEsaSiteEdgeContainerRecord, ObjTypeEsaSiteEdgeRoutineRecord, ObjTypeEsaSiteRecord, ObjTypeIpGroup, ObjTypeIpGroupDevice, ObjTypePlatformConfig, ObjTypeSSLImport, ObjTypeSSLRecord, ObjTypeTUNRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIpReport, ObjTypeDomainMonitorHistory, ObjTypeHttpLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSSLCertificateHistory, ObjTypeWebhookHistory:
+	case ObjTypeUnknown, ObjTypeCache, ObjTypeCloudflareTunnel, ObjTypeCloudflareTunnelIngress, ObjTypeCloudflareZone, ObjTypeCloudflareZoneRecord, ObjTypeCDNRecord, ObjTypeDNSRecord, ObjTypeCronJob, ObjTypeDevice, ObjTypeDeviceGroup, ObjTypeDeviceGroupDevice, ObjTypeDevicePortForward, ObjTypeDomainMonitor, ObjTypeEdgeOneZone, ObjTypeEdgeOneZoneAccelerationDomain, ObjTypeEdgeOneZoneDNSRecord, ObjTypeEdgeOneZoneOriginGroup, ObjTypeEsaSite, ObjTypeEsaSiteOriginPool, ObjTypeEsaSiteEdgeContainerRecord, ObjTypeEsaSiteEdgeRoutineRecord, ObjTypeEsaSiteRecord, ObjTypeIpGroup, ObjTypeIpGroupDevice, ObjTypePlatformConfig, ObjTypeSSLImport, ObjTypeSSLRecord, ObjTypeTUNRecord, ObjTypeWebhook, ObjTypeWebhookSubscription, ObjTypeDeviceIpReport, ObjTypeDomainMonitorHistory, ObjTypeHttpLog, ObjTypeOperationLog, ObjTypePortForwardStats, ObjTypeRestyLog, ObjTypeSSLCertificateHistory, ObjTypeWebhookHistory:
 		return nil
 	default:
 		return fmt.Errorf("operationlog: invalid enum value for obj_type field: %q", ot)

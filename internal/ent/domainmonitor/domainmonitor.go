@@ -83,6 +83,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// NameValidator is a validator for the "name" field. It is called by the builders before save.
+	NameValidator func(string) error
+	// DomainValidator is a validator for the "domain" field. It is called by the builders before save.
+	DomainValidator func(string) error
 	// DefaultCheckInterval holds the default value on creation for the "check_interval" field.
 	DefaultCheckInterval int
 	// DefaultIsActive holds the default value on creation for the "is_active" field.

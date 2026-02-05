@@ -303,6 +303,11 @@ func (_u *DeviceUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DeviceUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := device.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Device.name": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.IPV4(); ok {
 		if err := device.IPV4Validator(v); err != nil {
 			return &ValidationError{Name: "ip_v4", err: fmt.Errorf(`ent: validator failed for field "Device.ip_v4": %w`, err)}
@@ -835,6 +840,11 @@ func (_u *DeviceUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DeviceUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := device.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Device.name": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.IPV4(); ok {
 		if err := device.IPV4Validator(v); err != nil {
 			return &ValidationError{Name: "ip_v4", err: fmt.Errorf(`ent: validator failed for field "Device.ip_v4": %w`, err)}

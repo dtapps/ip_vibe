@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// CronJobLog is the predicate function for cronjoblog builders.
+type CronJobLog func(*sql.Selector)
+
 // DeviceIpReport is the predicate function for deviceipreport builders.
 type DeviceIpReport func(*sql.Selector)
 

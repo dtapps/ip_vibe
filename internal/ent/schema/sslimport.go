@@ -51,12 +51,14 @@ func (SSLImport) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("domain").
+			NotEmpty().
 			Immutable().
 			Comment("域名").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("serial_number").
 			Unique().
+			NotEmpty().
 			Immutable().
 			Comment("证书序列号").
 			Annotations(entsql.WithComments(true)),

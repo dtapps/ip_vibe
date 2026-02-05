@@ -44,6 +44,7 @@ func (DevicePortForward) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
+			NotEmpty().
 			Comment("设备端口转发名称").
 			Annotations(entsql.WithComments(true)),
 

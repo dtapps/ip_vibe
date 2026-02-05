@@ -251,8 +251,18 @@ func (_c *DeviceCreate) check() error {
 	if _, ok := _c.mutation.Code(); !ok {
 		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "Device.code"`)}
 	}
+	if v, ok := _c.mutation.Code(); ok {
+		if err := device.CodeValidator(v); err != nil {
+			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "Device.code": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Device.name"`)}
+	}
+	if v, ok := _c.mutation.Name(); ok {
+		if err := device.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Device.name": %w`, err)}
+		}
 	}
 	if v, ok := _c.mutation.IPV4(); ok {
 		if err := device.IPV4Validator(v); err != nil {

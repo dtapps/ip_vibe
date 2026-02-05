@@ -92,6 +92,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// NameValidator is a validator for the "name" field. It is called by the builders before save.
+	NameValidator func(string) error
 	// WebhookIDValidator is a validator for the "webhook_id" field. It is called by the builders before save.
 	WebhookIDValidator func(int64) error
 	// ObjIDValidator is a validator for the "obj_id" field. It is called by the builders before save.

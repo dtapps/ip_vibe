@@ -8,6 +8,18 @@ import (
 	"vibe_ip/internal/ent_log"
 )
 
+// The CronJobLogFunc type is an adapter to allow the use of ordinary
+// function as CronJobLog mutator.
+type CronJobLogFunc func(context.Context, *ent_log.CronJobLogMutation) (ent_log.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CronJobLogFunc) Mutate(ctx context.Context, m ent_log.Mutation) (ent_log.Value, error) {
+	if mv, ok := m.(*ent_log.CronJobLogMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_log.CronJobLogMutation", m)
+}
+
 // The DeviceIpReportFunc type is an adapter to allow the use of ordinary
 // function as DeviceIpReport mutator.
 type DeviceIpReportFunc func(context.Context, *ent_log.DeviceIpReportMutation) (ent_log.Value, error)

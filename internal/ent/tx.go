@@ -26,6 +26,8 @@ type Tx struct {
 	CloudflareZone *CloudflareZoneClient
 	// CloudflareZoneRecord is the client for interacting with the CloudflareZoneRecord builders.
 	CloudflareZoneRecord *CloudflareZoneRecordClient
+	// CronJob is the client for interacting with the CronJob builders.
+	CronJob *CronJobClient
 	// DNSRecord is the client for interacting with the DNSRecord builders.
 	DNSRecord *DNSRecordClient
 	// Device is the client for interacting with the Device builders.
@@ -209,6 +211,7 @@ func (tx *Tx) init() {
 	tx.CloudflareTunnelIngress = NewCloudflareTunnelIngressClient(tx.config)
 	tx.CloudflareZone = NewCloudflareZoneClient(tx.config)
 	tx.CloudflareZoneRecord = NewCloudflareZoneRecordClient(tx.config)
+	tx.CronJob = NewCronJobClient(tx.config)
 	tx.DNSRecord = NewDNSRecordClient(tx.config)
 	tx.Device = NewDeviceClient(tx.config)
 	tx.DeviceGroup = NewDeviceGroupClient(tx.config)

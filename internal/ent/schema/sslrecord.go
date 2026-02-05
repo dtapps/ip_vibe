@@ -51,6 +51,7 @@ func (SSLRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("domain").
+			NotEmpty().
 			Immutable().
 			Comment("域名（支持通配符 *.example.com 或精确域名，多个域名之间用逗号分隔）").
 			Annotations(entsql.WithComments(true)),

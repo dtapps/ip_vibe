@@ -104,6 +104,10 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultCode holds the default value on creation for the "code" field.
 	DefaultCode func() string
+	// CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	CodeValidator func(string) error
+	// NameValidator is a validator for the "name" field. It is called by the builders before save.
+	NameValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )

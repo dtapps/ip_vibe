@@ -124,6 +124,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	CodeValidator func(string) error
+	// NameValidator is a validator for the "name" field. It is called by the builders before save.
+	NameValidator func(string) error
 	// IPV4Validator is a validator for the "ip_v4" field. It is called by the builders before save.
 	IPV4Validator func(string) error
 	// IPV6Validator is a validator for the "ip_v6" field. It is called by the builders before save.

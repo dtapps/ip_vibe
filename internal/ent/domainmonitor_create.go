@@ -241,8 +241,18 @@ func (_c *DomainMonitorCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "DomainMonitor.name"`)}
 	}
+	if v, ok := _c.mutation.Name(); ok {
+		if err := domainmonitor.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.name": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Domain(); !ok {
 		return &ValidationError{Name: "domain", err: errors.New(`ent: missing required field "DomainMonitor.domain"`)}
+	}
+	if v, ok := _c.mutation.Domain(); ok {
+		if err := domainmonitor.DomainValidator(v); err != nil {
+			return &ValidationError{Name: "domain", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.domain": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.CheckInterval(); !ok {
 		return &ValidationError{Name: "check_interval", err: errors.New(`ent: missing required field "DomainMonitor.check_interval"`)}

@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/cloudflarezone"
 	"vibe_ip/internal/ent/cloudflarezonerecord"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -34,6 +35,8 @@ import (
 	"vibe_ip/internal/ent/tunrecord"
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
+
+	"github.com/google/uuid"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -64,15 +67,57 @@ func init() {
 	// cdnrecordDescSubDomain is the schema descriptor for sub_domain field.
 	cdnrecordDescSubDomain := cdnrecordFields[3].Descriptor()
 	// cdnrecord.SubDomainValidator is a validator for the "sub_domain" field. It is called by the builders before save.
-	cdnrecord.SubDomainValidator = cdnrecordDescSubDomain.Validators[0].(func(string) error)
+	cdnrecord.SubDomainValidator = func() func(string) error {
+		validators := cdnrecordDescSubDomain.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(sub_domain string) error {
+			for _, fn := range fns {
+				if err := fn(sub_domain); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// cdnrecordDescDomainName is the schema descriptor for domain_name field.
 	cdnrecordDescDomainName := cdnrecordFields[4].Descriptor()
 	// cdnrecord.DomainNameValidator is a validator for the "domain_name" field. It is called by the builders before save.
-	cdnrecord.DomainNameValidator = cdnrecordDescDomainName.Validators[0].(func(string) error)
+	cdnrecord.DomainNameValidator = func() func(string) error {
+		validators := cdnrecordDescDomainName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(domain_name string) error {
+			for _, fn := range fns {
+				if err := fn(domain_name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// cdnrecordDescFullDomain is the schema descriptor for full_domain field.
 	cdnrecordDescFullDomain := cdnrecordFields[5].Descriptor()
 	// cdnrecord.FullDomainValidator is a validator for the "full_domain" field. It is called by the builders before save.
-	cdnrecord.FullDomainValidator = cdnrecordDescFullDomain.Validators[0].(func(string) error)
+	cdnrecord.FullDomainValidator = func() func(string) error {
+		validators := cdnrecordDescFullDomain.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(full_domain string) error {
+			for _, fn := range fns {
+				if err := fn(full_domain); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// cdnrecordDescIsActive is the schema descriptor for is_active field.
 	cdnrecordDescIsActive := cdnrecordFields[11].Descriptor()
 	// cdnrecord.DefaultIsActive holds the default value on creation for the is_active field.
@@ -85,6 +130,10 @@ func init() {
 	cache.Hooks[0] = cacheHooks[0]
 	cacheFields := schema.Cache{}.Fields()
 	_ = cacheFields
+	// cacheDescKey is the schema descriptor for key field.
+	cacheDescKey := cacheFields[1].Descriptor()
+	// cache.KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	cache.KeyValidator = cacheDescKey.Validators[0].(func(string) error)
 	// cacheDescID is the schema descriptor for id field.
 	cacheDescID := cacheFields[0].Descriptor()
 	// cache.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -189,6 +238,49 @@ func init() {
 	cloudflarezonerecordDescID := cloudflarezonerecordFields[0].Descriptor()
 	// cloudflarezonerecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	cloudflarezonerecord.IDValidator = cloudflarezonerecordDescID.Validators[0].(func(int64) error)
+	cronjobMixin := schema.CronJob{}.Mixin()
+	cronjobMixinFields0 := cronjobMixin[0].Fields()
+	_ = cronjobMixinFields0
+	cronjobFields := schema.CronJob{}.Fields()
+	_ = cronjobFields
+	// cronjobDescCreatedAt is the schema descriptor for created_at field.
+	cronjobDescCreatedAt := cronjobMixinFields0[0].Descriptor()
+	// cronjob.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cronjob.DefaultCreatedAt = cronjobDescCreatedAt.Default.(func() time.Time)
+	// cronjobDescUpdatedAt is the schema descriptor for updated_at field.
+	cronjobDescUpdatedAt := cronjobMixinFields0[1].Descriptor()
+	// cronjob.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cronjob.DefaultUpdatedAt = cronjobDescUpdatedAt.Default.(func() time.Time)
+	// cronjob.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cronjob.UpdateDefaultUpdatedAt = cronjobDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cronjobDescEntryID is the schema descriptor for entry_id field.
+	cronjobDescEntryID := cronjobFields[1].Descriptor()
+	// cronjob.DefaultEntryID holds the default value on creation for the entry_id field.
+	cronjob.DefaultEntryID = cronjobDescEntryID.Default.(func() uuid.UUID)
+	// cronjobDescName is the schema descriptor for name field.
+	cronjobDescName := cronjobFields[2].Descriptor()
+	// cronjob.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	cronjob.NameValidator = cronjobDescName.Validators[0].(func(string) error)
+	// cronjobDescHandlerName is the schema descriptor for handler_name field.
+	cronjobDescHandlerName := cronjobFields[3].Descriptor()
+	// cronjob.HandlerNameValidator is a validator for the "handler_name" field. It is called by the builders before save.
+	cronjob.HandlerNameValidator = cronjobDescHandlerName.Validators[0].(func(string) error)
+	// cronjobDescWithSeconds is the schema descriptor for with_seconds field.
+	cronjobDescWithSeconds := cronjobFields[7].Descriptor()
+	// cronjob.DefaultWithSeconds holds the default value on creation for the with_seconds field.
+	cronjob.DefaultWithSeconds = cronjobDescWithSeconds.Default.(bool)
+	// cronjobDescMinInterval is the schema descriptor for min_interval field.
+	cronjobDescMinInterval := cronjobFields[9].Descriptor()
+	// cronjob.MinIntervalValidator is a validator for the "min_interval" field. It is called by the builders before save.
+	cronjob.MinIntervalValidator = cronjobDescMinInterval.Validators[0].(func(int) error)
+	// cronjobDescIsSingleton is the schema descriptor for is_singleton field.
+	cronjobDescIsSingleton := cronjobFields[13].Descriptor()
+	// cronjob.DefaultIsSingleton holds the default value on creation for the is_singleton field.
+	cronjob.DefaultIsSingleton = cronjobDescIsSingleton.Default.(bool)
+	// cronjobDescID is the schema descriptor for id field.
+	cronjobDescID := cronjobFields[0].Descriptor()
+	// cronjob.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	cronjob.IDValidator = cronjobDescID.Validators[0].(func(int64) error)
 	dnsrecordMixin := schema.DNSRecord{}.Mixin()
 	dnsrecordHooks := schema.DNSRecord{}.Hooks()
 	dnsrecord.Hooks[0] = dnsrecordHooks[0]
@@ -213,15 +305,57 @@ func init() {
 	// dnsrecordDescSubDomain is the schema descriptor for sub_domain field.
 	dnsrecordDescSubDomain := dnsrecordFields[3].Descriptor()
 	// dnsrecord.SubDomainValidator is a validator for the "sub_domain" field. It is called by the builders before save.
-	dnsrecord.SubDomainValidator = dnsrecordDescSubDomain.Validators[0].(func(string) error)
+	dnsrecord.SubDomainValidator = func() func(string) error {
+		validators := dnsrecordDescSubDomain.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(sub_domain string) error {
+			for _, fn := range fns {
+				if err := fn(sub_domain); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// dnsrecordDescDomainName is the schema descriptor for domain_name field.
 	dnsrecordDescDomainName := dnsrecordFields[4].Descriptor()
 	// dnsrecord.DomainNameValidator is a validator for the "domain_name" field. It is called by the builders before save.
-	dnsrecord.DomainNameValidator = dnsrecordDescDomainName.Validators[0].(func(string) error)
+	dnsrecord.DomainNameValidator = func() func(string) error {
+		validators := dnsrecordDescDomainName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(domain_name string) error {
+			for _, fn := range fns {
+				if err := fn(domain_name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// dnsrecordDescFullDomain is the schema descriptor for full_domain field.
 	dnsrecordDescFullDomain := dnsrecordFields[5].Descriptor()
 	// dnsrecord.FullDomainValidator is a validator for the "full_domain" field. It is called by the builders before save.
-	dnsrecord.FullDomainValidator = dnsrecordDescFullDomain.Validators[0].(func(string) error)
+	dnsrecord.FullDomainValidator = func() func(string) error {
+		validators := dnsrecordDescFullDomain.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(full_domain string) error {
+			for _, fn := range fns {
+				if err := fn(full_domain); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// dnsrecordDescIsActive is the schema descriptor for is_active field.
 	dnsrecordDescIsActive := dnsrecordFields[11].Descriptor()
 	// dnsrecord.DefaultIsActive holds the default value on creation for the is_active field.
@@ -247,6 +381,14 @@ func init() {
 	device.DefaultUpdatedAt = deviceDescUpdatedAt.Default.(func() time.Time)
 	// device.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	device.UpdateDefaultUpdatedAt = deviceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// deviceDescCode is the schema descriptor for code field.
+	deviceDescCode := deviceFields[1].Descriptor()
+	// device.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	device.CodeValidator = deviceDescCode.Validators[0].(func(string) error)
+	// deviceDescName is the schema descriptor for name field.
+	deviceDescName := deviceFields[2].Descriptor()
+	// device.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	device.NameValidator = deviceDescName.Validators[0].(func(string) error)
 	// deviceDescIPV4 is the schema descriptor for ip_v4 field.
 	deviceDescIPV4 := deviceFields[4].Descriptor()
 	// device.IPV4Validator is a validator for the "ip_v4" field. It is called by the builders before save.
@@ -280,6 +422,12 @@ func init() {
 	devicegroupDescCode := devicegroupFields[1].Descriptor()
 	// devicegroup.DefaultCode holds the default value on creation for the code field.
 	devicegroup.DefaultCode = devicegroupDescCode.Default.(func() string)
+	// devicegroup.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	devicegroup.CodeValidator = devicegroupDescCode.Validators[0].(func(string) error)
+	// devicegroupDescName is the schema descriptor for name field.
+	devicegroupDescName := devicegroupFields[2].Descriptor()
+	// devicegroup.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	devicegroup.NameValidator = devicegroupDescName.Validators[0].(func(string) error)
 	// devicegroupDescID is the schema descriptor for id field.
 	devicegroupDescID := devicegroupFields[0].Descriptor()
 	// devicegroup.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -318,6 +466,10 @@ func init() {
 	deviceportforward.DefaultUpdatedAt = deviceportforwardDescUpdatedAt.Default.(func() time.Time)
 	// deviceportforward.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	deviceportforward.UpdateDefaultUpdatedAt = deviceportforwardDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// deviceportforwardDescName is the schema descriptor for name field.
+	deviceportforwardDescName := deviceportforwardFields[1].Descriptor()
+	// deviceportforward.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	deviceportforward.NameValidator = deviceportforwardDescName.Validators[0].(func(string) error)
 	// deviceportforwardDescLocalPort is the schema descriptor for local_port field.
 	deviceportforwardDescLocalPort := deviceportforwardFields[3].Descriptor()
 	// deviceportforward.LocalPortValidator is a validator for the "local_port" field. It is called by the builders before save.
@@ -363,6 +515,14 @@ func init() {
 	domainmonitor.DefaultUpdatedAt = domainmonitorDescUpdatedAt.Default.(func() time.Time)
 	// domainmonitor.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	domainmonitor.UpdateDefaultUpdatedAt = domainmonitorDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// domainmonitorDescName is the schema descriptor for name field.
+	domainmonitorDescName := domainmonitorFields[1].Descriptor()
+	// domainmonitor.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	domainmonitor.NameValidator = domainmonitorDescName.Validators[0].(func(string) error)
+	// domainmonitorDescDomain is the schema descriptor for domain field.
+	domainmonitorDescDomain := domainmonitorFields[3].Descriptor()
+	// domainmonitor.DomainValidator is a validator for the "domain" field. It is called by the builders before save.
+	domainmonitor.DomainValidator = domainmonitorDescDomain.Validators[0].(func(string) error)
 	// domainmonitorDescCheckInterval is the schema descriptor for check_interval field.
 	domainmonitorDescCheckInterval := domainmonitorFields[5].Descriptor()
 	// domainmonitor.DefaultCheckInterval holds the default value on creation for the check_interval field.
@@ -622,6 +782,12 @@ func init() {
 	ipgroupDescCode := ipgroupFields[1].Descriptor()
 	// ipgroup.DefaultCode holds the default value on creation for the code field.
 	ipgroup.DefaultCode = ipgroupDescCode.Default.(func() string)
+	// ipgroup.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	ipgroup.CodeValidator = ipgroupDescCode.Validators[0].(func(string) error)
+	// ipgroupDescName is the schema descriptor for name field.
+	ipgroupDescName := ipgroupFields[2].Descriptor()
+	// ipgroup.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	ipgroup.NameValidator = ipgroupDescName.Validators[0].(func(string) error)
 	// ipgroupDescID is the schema descriptor for id field.
 	ipgroupDescID := ipgroupFields[0].Descriptor()
 	// ipgroup.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -660,6 +826,10 @@ func init() {
 	platformconfig.DefaultUpdatedAt = platformconfigDescUpdatedAt.Default.(func() time.Time)
 	// platformconfig.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	platformconfig.UpdateDefaultUpdatedAt = platformconfigDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// platformconfigDescName is the schema descriptor for name field.
+	platformconfigDescName := platformconfigFields[1].Descriptor()
+	// platformconfig.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	platformconfig.NameValidator = platformconfigDescName.Validators[0].(func(string) error)
 	// platformconfigDescID is the schema descriptor for id field.
 	platformconfigDescID := platformconfigFields[0].Descriptor()
 	// platformconfig.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -681,6 +851,14 @@ func init() {
 	sslimport.DefaultUpdatedAt = sslimportDescUpdatedAt.Default.(func() time.Time)
 	// sslimport.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	sslimport.UpdateDefaultUpdatedAt = sslimportDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// sslimportDescDomain is the schema descriptor for domain field.
+	sslimportDescDomain := sslimportFields[2].Descriptor()
+	// sslimport.DomainValidator is a validator for the "domain" field. It is called by the builders before save.
+	sslimport.DomainValidator = sslimportDescDomain.Validators[0].(func(string) error)
+	// sslimportDescSerialNumber is the schema descriptor for serial_number field.
+	sslimportDescSerialNumber := sslimportFields[3].Descriptor()
+	// sslimport.SerialNumberValidator is a validator for the "serial_number" field. It is called by the builders before save.
+	sslimport.SerialNumberValidator = sslimportDescSerialNumber.Validators[0].(func(string) error)
 	// sslimportDescID is the schema descriptor for id field.
 	sslimportDescID := sslimportFields[0].Descriptor()
 	// sslimport.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -706,6 +884,10 @@ func init() {
 	sslrecordDescConfigID := sslrecordFields[1].Descriptor()
 	// sslrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
 	sslrecord.ConfigIDValidator = sslrecordDescConfigID.Validators[0].(func(int64) error)
+	// sslrecordDescDomain is the schema descriptor for domain field.
+	sslrecordDescDomain := sslrecordFields[2].Descriptor()
+	// sslrecord.DomainValidator is a validator for the "domain" field. It is called by the builders before save.
+	sslrecord.DomainValidator = sslrecordDescDomain.Validators[0].(func(string) error)
 	// sslrecordDescIsActive is the schema descriptor for is_active field.
 	sslrecordDescIsActive := sslrecordFields[14].Descriptor()
 	// sslrecord.DefaultIsActive holds the default value on creation for the is_active field.
@@ -743,6 +925,24 @@ func init() {
 	tunrecordDescConfigID := tunrecordFields[1].Descriptor()
 	// tunrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
 	tunrecord.ConfigIDValidator = tunrecordDescConfigID.Validators[0].(func(int64) error)
+	// tunrecordDescSubDomain is the schema descriptor for sub_domain field.
+	tunrecordDescSubDomain := tunrecordFields[3].Descriptor()
+	// tunrecord.SubDomainValidator is a validator for the "sub_domain" field. It is called by the builders before save.
+	tunrecord.SubDomainValidator = func() func(string) error {
+		validators := tunrecordDescSubDomain.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(sub_domain string) error {
+			for _, fn := range fns {
+				if err := fn(sub_domain); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// tunrecordDescIsActive is the schema descriptor for is_active field.
 	tunrecordDescIsActive := tunrecordFields[8].Descriptor()
 	// tunrecord.DefaultIsActive holds the default value on creation for the is_active field.
@@ -768,6 +968,14 @@ func init() {
 	webhook.DefaultUpdatedAt = webhookDescUpdatedAt.Default.(func() time.Time)
 	// webhook.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	webhook.UpdateDefaultUpdatedAt = webhookDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// webhookDescName is the schema descriptor for name field.
+	webhookDescName := webhookFields[1].Descriptor()
+	// webhook.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	webhook.NameValidator = webhookDescName.Validators[0].(func(string) error)
+	// webhookDescURL is the schema descriptor for url field.
+	webhookDescURL := webhookFields[4].Descriptor()
+	// webhook.URLValidator is a validator for the "url" field. It is called by the builders before save.
+	webhook.URLValidator = webhookDescURL.Validators[0].(func(string) error)
 	// webhookDescIsActive is the schema descriptor for is_active field.
 	webhookDescIsActive := webhookFields[8].Descriptor()
 	// webhook.DefaultIsActive holds the default value on creation for the is_active field.
@@ -793,6 +1001,10 @@ func init() {
 	webhooksubscription.DefaultUpdatedAt = webhooksubscriptionDescUpdatedAt.Default.(func() time.Time)
 	// webhooksubscription.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	webhooksubscription.UpdateDefaultUpdatedAt = webhooksubscriptionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// webhooksubscriptionDescName is the schema descriptor for name field.
+	webhooksubscriptionDescName := webhooksubscriptionFields[1].Descriptor()
+	// webhooksubscription.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	webhooksubscription.NameValidator = webhooksubscriptionDescName.Validators[0].(func(string) error)
 	// webhooksubscriptionDescWebhookID is the schema descriptor for webhook_id field.
 	webhooksubscriptionDescWebhookID := webhooksubscriptionFields[3].Descriptor()
 	// webhooksubscription.WebhookIDValidator is a validator for the "webhook_id" field. It is called by the builders before save.

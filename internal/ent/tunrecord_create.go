@@ -262,6 +262,11 @@ func (_c *TUNRecordCreate) check() error {
 	if _, ok := _c.mutation.SubDomain(); !ok {
 		return &ValidationError{Name: "sub_domain", err: errors.New(`ent: missing required field "TUNRecord.sub_domain"`)}
 	}
+	if v, ok := _c.mutation.SubDomain(); ok {
+		if err := tunrecord.SubDomainValidator(v); err != nil {
+			return &ValidationError{Name: "sub_domain", err: fmt.Errorf(`ent: validator failed for field "TUNRecord.sub_domain": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.ServeType(); !ok {
 		return &ValidationError{Name: "serve_type", err: errors.New(`ent: missing required field "TUNRecord.serve_type"`)}
 	}

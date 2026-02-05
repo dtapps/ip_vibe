@@ -201,8 +201,18 @@ func (_c *SSLImportCreate) check() error {
 	if _, ok := _c.mutation.Domain(); !ok {
 		return &ValidationError{Name: "domain", err: errors.New(`ent: missing required field "SSLImport.domain"`)}
 	}
+	if v, ok := _c.mutation.Domain(); ok {
+		if err := sslimport.DomainValidator(v); err != nil {
+			return &ValidationError{Name: "domain", err: fmt.Errorf(`ent: validator failed for field "SSLImport.domain": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.SerialNumber(); !ok {
 		return &ValidationError{Name: "serial_number", err: errors.New(`ent: missing required field "SSLImport.serial_number"`)}
+	}
+	if v, ok := _c.mutation.SerialNumber(); ok {
+		if err := sslimport.SerialNumberValidator(v); err != nil {
+			return &ValidationError{Name: "serial_number", err: fmt.Errorf(`ent: validator failed for field "SSLImport.serial_number": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.Certificate(); !ok {
 		return &ValidationError{Name: "certificate", err: errors.New(`ent: missing required field "SSLImport.certificate"`)}

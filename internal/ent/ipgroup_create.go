@@ -210,8 +210,18 @@ func (_c *IpGroupCreate) check() error {
 	if _, ok := _c.mutation.Code(); !ok {
 		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "IpGroup.code"`)}
 	}
+	if v, ok := _c.mutation.Code(); ok {
+		if err := ipgroup.CodeValidator(v); err != nil {
+			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "IpGroup.code": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "IpGroup.name"`)}
+	}
+	if v, ok := _c.mutation.Name(); ok {
+		if err := ipgroup.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "IpGroup.name": %w`, err)}
+		}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := ipgroup.IDValidator(v); err != nil {

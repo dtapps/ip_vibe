@@ -45,6 +45,7 @@ func (Webhook) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
+			NotEmpty().
 			Comment("通知名称").
 			Annotations(entsql.WithComments(true)),
 
@@ -60,6 +61,7 @@ func (Webhook) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("url").
+			NotEmpty().
 			Comment("Webhook URL").
 			Annotations(entsql.WithComments(true)),
 

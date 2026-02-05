@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/cloudflarezone"
 	"vibe_ip/internal/ent/cloudflarezonerecord"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -148,6 +149,26 @@ func (q *CloudflareZoneRecordQuery) OrderIf(condition bool, o cloudflarezonereco
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *CloudflareZoneRecordQuery) OrderIfs(condition bool, o ...cloudflarezonerecord.OrderOption) *CloudflareZoneRecordQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *CronJobQuery) OrderIf(condition bool, o cronjob.OrderOption) *CronJobQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *CronJobQuery) OrderIfs(condition bool, o ...cronjob.OrderOption) *CronJobQuery {
 	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)

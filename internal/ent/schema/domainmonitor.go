@@ -44,6 +44,7 @@ func (DomainMonitor) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
+			NotEmpty().
 			Comment("域名监控名称").
 			Annotations(entsql.WithComments(true)),
 
@@ -53,6 +54,7 @@ func (DomainMonitor) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("domain").
+			NotEmpty().
 			Immutable().
 			Comment("域名").
 			Annotations(entsql.WithComments(true)),

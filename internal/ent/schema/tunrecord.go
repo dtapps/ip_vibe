@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
+	"vibe_ip/internal/ent/schema/schemavalidate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -57,6 +58,8 @@ func (TUNRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("sub_domain").
+			Validate(schemavalidate.ValidateSubDomain).
+			NotEmpty().
 			Comment("子域名（例如 @, www, blog, api）").
 			Annotations(entsql.WithComments(true)),
 

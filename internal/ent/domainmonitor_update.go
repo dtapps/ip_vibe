@@ -234,6 +234,11 @@ func (_u *DomainMonitorUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DomainMonitorUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := domainmonitor.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.name": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.CheckProtocol(); ok {
 		if err := domainmonitor.CheckProtocolValidator(v); err != nil {
 			return &ValidationError{Name: "check_protocol", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.check_protocol": %w`, err)}
@@ -554,6 +559,11 @@ func (_u *DomainMonitorUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DomainMonitorUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := domainmonitor.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.name": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.CheckProtocol(); ok {
 		if err := domainmonitor.CheckProtocolValidator(v); err != nil {
 			return &ValidationError{Name: "check_protocol", err: fmt.Errorf(`ent: validator failed for field "DomainMonitor.check_protocol": %w`, err)}

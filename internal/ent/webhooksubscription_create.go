@@ -183,6 +183,11 @@ func (_c *WebhookSubscriptionCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "WebhookSubscription.name"`)}
 	}
+	if v, ok := _c.mutation.Name(); ok {
+		if err := webhooksubscription.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "WebhookSubscription.name": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.WebhookID(); !ok {
 		return &ValidationError{Name: "webhook_id", err: errors.New(`ent: missing required field "WebhookSubscription.webhook_id"`)}
 	}

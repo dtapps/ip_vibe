@@ -217,6 +217,11 @@ func (_c *DevicePortForwardCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "DevicePortForward.name"`)}
 	}
+	if v, ok := _c.mutation.Name(); ok {
+		if err := deviceportforward.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "DevicePortForward.name": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.LocalPort(); !ok {
 		return &ValidationError{Name: "local_port", err: errors.New(`ent: missing required field "DevicePortForward.local_port"`)}
 	}

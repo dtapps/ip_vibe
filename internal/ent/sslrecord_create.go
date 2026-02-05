@@ -405,6 +405,11 @@ func (_c *SSLRecordCreate) check() error {
 	if _, ok := _c.mutation.Domain(); !ok {
 		return &ValidationError{Name: "domain", err: errors.New(`ent: missing required field "SSLRecord.domain"`)}
 	}
+	if v, ok := _c.mutation.Domain(); ok {
+		if err := sslrecord.DomainValidator(v); err != nil {
+			return &ValidationError{Name: "domain", err: fmt.Errorf(`ent: validator failed for field "SSLRecord.domain": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "SSLRecord.status"`)}
 	}

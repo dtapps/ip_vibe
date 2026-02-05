@@ -220,6 +220,16 @@ func (_u *DeviceGroupUpdate) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *DeviceGroupUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := devicegroup.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "DeviceGroup.name": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *DeviceGroupUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *DeviceGroupUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -227,6 +237,9 @@ func (_u *DeviceGroupUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *De
 }
 
 func (_u *DeviceGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(devicegroup.Table, devicegroup.Columns, sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -618,6 +631,16 @@ func (_u *DeviceGroupUpdateOne) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *DeviceGroupUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := devicegroup.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "DeviceGroup.name": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *DeviceGroupUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *DeviceGroupUpdateOne {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -625,6 +648,9 @@ func (_u *DeviceGroupUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) 
 }
 
 func (_u *DeviceGroupUpdateOne) sqlSave(ctx context.Context) (_node *DeviceGroup, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(devicegroup.Table, devicegroup.Columns, sqlgraph.NewFieldSpec(devicegroup.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {

@@ -76,6 +76,11 @@ func (_c *CacheCreate) check() error {
 	if _, ok := _c.mutation.Key(); !ok {
 		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "Cache.key"`)}
 	}
+	if v, ok := _c.mutation.Key(); ok {
+		if err := cache.KeyValidator(v); err != nil {
+			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "Cache.key": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := cache.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Cache.id": %w`, err)}

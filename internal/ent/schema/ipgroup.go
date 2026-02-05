@@ -46,11 +46,13 @@ func (IpGroup) Fields() []ent.Field {
 
 		field.String("code").
 			DefaultFunc(schemadefault.DefaultCode).
+			NotEmpty().
 			Immutable().
 			Comment("IP组编码").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
+			NotEmpty().
 			Comment("IP组名称").
 			Annotations(entsql.WithComments(true)),
 

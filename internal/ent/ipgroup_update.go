@@ -220,6 +220,16 @@ func (_u *IpGroupUpdate) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *IpGroupUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := ipgroup.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "IpGroup.name": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *IpGroupUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *IpGroupUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -227,6 +237,9 @@ func (_u *IpGroupUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *IpGrou
 }
 
 func (_u *IpGroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(ipgroup.Table, ipgroup.Columns, sqlgraph.NewFieldSpec(ipgroup.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -618,6 +631,16 @@ func (_u *IpGroupUpdateOne) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *IpGroupUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := ipgroup.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "IpGroup.name": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *IpGroupUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *IpGroupUpdateOne {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -625,6 +648,9 @@ func (_u *IpGroupUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *IpG
 }
 
 func (_u *IpGroupUpdateOne) sqlSave(ctx context.Context) (_node *IpGroup, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(ipgroup.Table, ipgroup.Columns, sqlgraph.NewFieldSpec(ipgroup.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {

@@ -229,6 +229,11 @@ func (_c *WebhookCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Webhook.name"`)}
 	}
+	if v, ok := _c.mutation.Name(); ok {
+		if err := webhook.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Webhook.name": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Platform(); !ok {
 		return &ValidationError{Name: "platform", err: errors.New(`ent: missing required field "Webhook.platform"`)}
 	}
@@ -239,6 +244,11 @@ func (_c *WebhookCreate) check() error {
 	}
 	if _, ok := _c.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent: missing required field "Webhook.url"`)}
+	}
+	if v, ok := _c.mutation.URL(); ok {
+		if err := webhook.URLValidator(v); err != nil {
+			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Webhook.url": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "Webhook.is_active"`)}

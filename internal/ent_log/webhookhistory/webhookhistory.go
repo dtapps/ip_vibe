@@ -62,6 +62,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// URLValidator is a validator for the "url" field. It is called by the builders before save.
+	URLValidator func(string) error
 	// DefaultSuccess holds the default value on creation for the "success" field.
 	DefaultSuccess bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.

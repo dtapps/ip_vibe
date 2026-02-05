@@ -9,6 +9,58 @@ import (
 )
 
 var (
+	// CronJobLogColumns holds the columns for the "cron_job_log" table.
+	CronJobLogColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "任务日志序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "cron_job_id", Type: field.TypeInt64, Comment: "关联 定时任务 序号"},
+		{Name: "handler_name", Type: field.TypeString, Comment: "执行时的处理器名"},
+		{Name: "started_at", Type: field.TypeTime, Comment: "开始时间"},
+		{Name: "finished_at", Type: field.TypeTime, Nullable: true, Comment: "完成时间"},
+		{Name: "duration", Type: field.TypeInt64, Nullable: true, Comment: "耗时(ms)"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"success", "failed", "running"}, Default: "running"},
+		{Name: "error_info", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "错误信息"},
+		{Name: "output", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "执行输出结果"},
+	}
+	// CronJobLogTable holds the schema information for the "cron_job_log" table.
+	CronJobLogTable = &schema.Table{
+		Name:       "cron_job_log",
+		Comment:    "定时任务日志",
+		Columns:    CronJobLogColumns,
+		PrimaryKey: []*schema.Column{CronJobLogColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cronjoblog_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CronJobLogColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "cronjoblog_cron_job_id",
+				Unique:  false,
+				Columns: []*schema.Column{CronJobLogColumns[3]},
+			},
+			{
+				Name:    "cronjoblog_started_at",
+				Unique:  false,
+				Columns: []*schema.Column{CronJobLogColumns[5]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "cronjoblog_status",
+				Unique:  false,
+				Columns: []*schema.Column{CronJobLogColumns[8]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+		},
+	}
 	// DeviceIPReportColumns holds the columns for the "device_ip_report" table.
 	DeviceIPReportColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "IP报告序号"},
@@ -166,7 +218,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "source", Type: field.TypeEnum, Nullable: true, Comment: "操作来源", Enums: []string{"unknown", "system", "task", "user", "gin", "api", "mcp", "grpc", "thrift", "dubbo", "tars"}, Default: "unknown"},
 		{Name: "op_type", Type: field.TypeEnum, Nullable: true, Comment: "操作类型", Enums: []string{"Unknown", "OpCreate", "OpUpdate", "OpUpdateOne", "OpDelete", "OpDeleteOne"}, Default: "Unknown"},
-		{Name: "obj_type", Type: field.TypeEnum, Nullable: true, Comment: "对象类型", Enums: []string{"Unknown", "Cache", "CloudflareTunnel", "CloudflareTunnelIngress", "CloudflareZone", "CloudflareZoneRecord", "CDNRecord", "DNSRecord", "Device", "DeviceGroup", "DeviceGroupDevice", "DevicePortForward", "DomainMonitor", "EdgeOneZone", "EdgeOneZoneAccelerationDomain", "EdgeOneZoneDNSRecord", "EdgeOneZoneOriginGroup", "EsaSite", "EsaSiteOriginPool", "EsaSiteEdgeContainerRecord", "EsaSiteEdgeRoutineRecord", "EsaSiteRecord", "IpGroup", "IpGroupDevice", "PlatformConfig", "SSLImport", "SSLRecord", "TUNRecord", "Webhook", "WebhookSubscription", "DeviceIpReport", "DomainMonitorHistory", "HttpLog", "OperationLog", "PortForwardStats", "RestyLog", "SSLCertificateHistory", "WebhookHistory"}, Default: "Unknown"},
+		{Name: "obj_type", Type: field.TypeEnum, Nullable: true, Comment: "对象类型", Enums: []string{"Unknown", "Cache", "CloudflareTunnel", "CloudflareTunnelIngress", "CloudflareZone", "CloudflareZoneRecord", "CDNRecord", "DNSRecord", "CronJob", "Device", "DeviceGroup", "DeviceGroupDevice", "DevicePortForward", "DomainMonitor", "EdgeOneZone", "EdgeOneZoneAccelerationDomain", "EdgeOneZoneDNSRecord", "EdgeOneZoneOriginGroup", "EsaSite", "EsaSiteOriginPool", "EsaSiteEdgeContainerRecord", "EsaSiteEdgeRoutineRecord", "EsaSiteRecord", "IpGroup", "IpGroupDevice", "PlatformConfig", "SSLImport", "SSLRecord", "TUNRecord", "Webhook", "WebhookSubscription", "DeviceIpReport", "DomainMonitorHistory", "HttpLog", "OperationLog", "PortForwardStats", "RestyLog", "SSLCertificateHistory", "WebhookHistory"}, Default: "Unknown"},
 		{Name: "obj_id", Type: field.TypeJSON, Nullable: true, Comment: "对象主键"},
 		{Name: "old_value", Type: field.TypeJSON, Nullable: true, Comment: "旧值"},
 		{Name: "new_value", Type: field.TypeJSON, Nullable: true, Comment: "新值"},
@@ -497,6 +549,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		CronJobLogTable,
 		DeviceIPReportTable,
 		DomainMonitorHistoryTable,
 		HTTPLogTable,
@@ -510,6 +563,9 @@ var (
 )
 
 func init() {
+	CronJobLogTable.Annotation = &entsql.Annotation{
+		Table: "cron_job_log",
+	}
 	DeviceIPReportTable.Annotation = &entsql.Annotation{
 		Table: "device_ip_report",
 	}

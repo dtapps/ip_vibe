@@ -14,6 +14,8 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// CronJobLog is the client for interacting with the CronJobLog builders.
+	CronJobLog *CronJobLogClient
 	// DeviceIpReport is the client for interacting with the DeviceIpReport builders.
 	DeviceIpReport *DeviceIpReportClient
 	// DomainMonitorHistory is the client for interacting with the DomainMonitorHistory builders.
@@ -163,6 +165,7 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.CronJobLog = NewCronJobLogClient(tx.config)
 	tx.DeviceIpReport = NewDeviceIpReportClient(tx.config)
 	tx.DomainMonitorHistory = NewDomainMonitorHistoryClient(tx.config)
 	tx.HttpLog = NewHttpLogClient(tx.config)
@@ -181,7 +184,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: DeviceIpReport.QueryXXX(), the query will be executed
+// applies a query, for example: CronJobLog.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

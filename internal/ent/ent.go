@@ -14,6 +14,7 @@ import (
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/cloudflarezone"
 	"vibe_ip/internal/ent/cloudflarezonerecord"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -107,6 +108,7 @@ func checkColumn(t, c string) error {
 			cloudflaretunnelingress.Table:       cloudflaretunnelingress.ValidColumn,
 			cloudflarezone.Table:                cloudflarezone.ValidColumn,
 			cloudflarezonerecord.Table:          cloudflarezonerecord.ValidColumn,
+			cronjob.Table:                       cronjob.ValidColumn,
 			dnsrecord.Table:                     dnsrecord.ValidColumn,
 			device.Table:                        device.ValidColumn,
 			devicegroup.Table:                   devicegroup.ValidColumn,

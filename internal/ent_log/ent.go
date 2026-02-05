@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+	"vibe_ip/internal/ent_log/cronjoblog"
 	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/httplog"
@@ -81,6 +82,7 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			cronjoblog.Table:            cronjoblog.ValidColumn,
 			deviceipreport.Table:        deviceipreport.ValidColumn,
 			domainmonitorhistory.Table:  domainmonitorhistory.ValidColumn,
 			httplog.Table:               httplog.ValidColumn,

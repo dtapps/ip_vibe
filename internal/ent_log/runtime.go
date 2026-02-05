@@ -4,6 +4,7 @@ package ent_log
 
 import (
 	"time"
+	"vibe_ip/internal/ent_log/cronjoblog"
 	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/httplog"
@@ -20,6 +21,29 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	cronjoblogMixin := schema.CronJobLog{}.Mixin()
+	cronjoblogMixinFields0 := cronjoblogMixin[0].Fields()
+	_ = cronjoblogMixinFields0
+	cronjoblogFields := schema.CronJobLog{}.Fields()
+	_ = cronjoblogFields
+	// cronjoblogDescCreatedAt is the schema descriptor for created_at field.
+	cronjoblogDescCreatedAt := cronjoblogMixinFields0[0].Descriptor()
+	// cronjoblog.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cronjoblog.DefaultCreatedAt = cronjoblogDescCreatedAt.Default.(func() time.Time)
+	// cronjoblogDescUpdatedAt is the schema descriptor for updated_at field.
+	cronjoblogDescUpdatedAt := cronjoblogMixinFields0[1].Descriptor()
+	// cronjoblog.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cronjoblog.DefaultUpdatedAt = cronjoblogDescUpdatedAt.Default.(func() time.Time)
+	// cronjoblog.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cronjoblog.UpdateDefaultUpdatedAt = cronjoblogDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cronjoblogDescStartedAt is the schema descriptor for started_at field.
+	cronjoblogDescStartedAt := cronjoblogFields[3].Descriptor()
+	// cronjoblog.DefaultStartedAt holds the default value on creation for the started_at field.
+	cronjoblog.DefaultStartedAt = cronjoblogDescStartedAt.Default.(func() time.Time)
+	// cronjoblogDescID is the schema descriptor for id field.
+	cronjoblogDescID := cronjoblogFields[0].Descriptor()
+	// cronjoblog.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	cronjoblog.IDValidator = cronjoblogDescID.Validators[0].(func(int64) error)
 	deviceipreportMixin := schema.DeviceIpReport{}.Mixin()
 	deviceipreportMixinFields0 := deviceipreportMixin[0].Fields()
 	_ = deviceipreportMixinFields0
@@ -160,6 +184,10 @@ func init() {
 	webhookhistoryDescCreatedAt := webhookhistoryMixinFields0[0].Descriptor()
 	// webhookhistory.DefaultCreatedAt holds the default value on creation for the created_at field.
 	webhookhistory.DefaultCreatedAt = webhookhistoryDescCreatedAt.Default.(func() time.Time)
+	// webhookhistoryDescURL is the schema descriptor for url field.
+	webhookhistoryDescURL := webhookhistoryFields[3].Descriptor()
+	// webhookhistory.URLValidator is a validator for the "url" field. It is called by the builders before save.
+	webhookhistory.URLValidator = webhookhistoryDescURL.Validators[0].(func(string) error)
 	// webhookhistoryDescSuccess is the schema descriptor for success field.
 	webhookhistoryDescSuccess := webhookhistoryFields[7].Descriptor()
 	// webhookhistory.DefaultSuccess holds the default value on creation for the success field.

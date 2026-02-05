@@ -187,6 +187,11 @@ func (_c *WebhookHistoryCreate) check() error {
 	if _, ok := _c.mutation.URL(); !ok {
 		return &ValidationError{Name: "url", err: errors.New(`ent_log: missing required field "WebhookHistory.url"`)}
 	}
+	if v, ok := _c.mutation.URL(); ok {
+		if err := webhookhistory.URLValidator(v); err != nil {
+			return &ValidationError{Name: "url", err: fmt.Errorf(`ent_log: validator failed for field "WebhookHistory.url": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Success(); !ok {
 		return &ValidationError{Name: "success", err: errors.New(`ent_log: missing required field "WebhookHistory.success"`)}
 	}

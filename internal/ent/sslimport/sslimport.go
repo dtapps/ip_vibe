@@ -77,6 +77,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DomainValidator is a validator for the "domain" field. It is called by the builders before save.
+	DomainValidator func(string) error
+	// SerialNumberValidator is a validator for the "serial_number" field. It is called by the builders before save.
+	SerialNumberValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )

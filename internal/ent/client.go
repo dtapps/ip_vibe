@@ -17,6 +17,7 @@ import (
 	"vibe_ip/internal/ent/cloudflaretunnelingress"
 	"vibe_ip/internal/ent/cloudflarezone"
 	"vibe_ip/internal/ent/cloudflarezonerecord"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/devicegroupdevice"
@@ -66,6 +67,8 @@ type Client struct {
 	CloudflareZone *CloudflareZoneClient
 	// CloudflareZoneRecord is the client for interacting with the CloudflareZoneRecord builders.
 	CloudflareZoneRecord *CloudflareZoneRecordClient
+	// CronJob is the client for interacting with the CronJob builders.
+	CronJob *CronJobClient
 	// DNSRecord is the client for interacting with the DNSRecord builders.
 	DNSRecord *DNSRecordClient
 	// Device is the client for interacting with the Device builders.
@@ -129,6 +132,7 @@ func (c *Client) init() {
 	c.CloudflareTunnelIngress = NewCloudflareTunnelIngressClient(c.config)
 	c.CloudflareZone = NewCloudflareZoneClient(c.config)
 	c.CloudflareZoneRecord = NewCloudflareZoneRecordClient(c.config)
+	c.CronJob = NewCronJobClient(c.config)
 	c.DNSRecord = NewDNSRecordClient(c.config)
 	c.Device = NewDeviceClient(c.config)
 	c.DeviceGroup = NewDeviceGroupClient(c.config)
@@ -250,6 +254,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CloudflareTunnelIngress:       NewCloudflareTunnelIngressClient(cfg),
 		CloudflareZone:                NewCloudflareZoneClient(cfg),
 		CloudflareZoneRecord:          NewCloudflareZoneRecordClient(cfg),
+		CronJob:                       NewCronJobClient(cfg),
 		DNSRecord:                     NewDNSRecordClient(cfg),
 		Device:                        NewDeviceClient(cfg),
 		DeviceGroup:                   NewDeviceGroupClient(cfg),
@@ -298,6 +303,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CloudflareTunnelIngress:       NewCloudflareTunnelIngressClient(cfg),
 		CloudflareZone:                NewCloudflareZoneClient(cfg),
 		CloudflareZoneRecord:          NewCloudflareZoneRecordClient(cfg),
+		CronJob:                       NewCronJobClient(cfg),
 		DNSRecord:                     NewDNSRecordClient(cfg),
 		Device:                        NewDeviceClient(cfg),
 		DeviceGroup:                   NewDeviceGroupClient(cfg),
@@ -351,9 +357,9 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
-		c.CloudflareZone, c.CloudflareZoneRecord, c.DNSRecord, c.Device, c.DeviceGroup,
-		c.DeviceGroupDevice, c.DevicePortForward, c.DomainMonitor, c.EdgeOneZone,
-		c.EdgeOneZoneAccelerationDomain, c.EdgeOneZoneDNSRecord,
+		c.CloudflareZone, c.CloudflareZoneRecord, c.CronJob, c.DNSRecord, c.Device,
+		c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward, c.DomainMonitor,
+		c.EdgeOneZone, c.EdgeOneZoneAccelerationDomain, c.EdgeOneZoneDNSRecord,
 		c.EdgeOneZoneOriginGroup, c.EsaSite, c.EsaSiteEdgeContainerRecord,
 		c.EsaSiteEdgeRoutineRecord, c.EsaSiteOriginPool, c.EsaSiteRecord, c.IpGroup,
 		c.IpGroupDevice, c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord,
@@ -368,9 +374,9 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CDNRecord, c.Cache, c.CloudflareTunnel, c.CloudflareTunnelIngress,
-		c.CloudflareZone, c.CloudflareZoneRecord, c.DNSRecord, c.Device, c.DeviceGroup,
-		c.DeviceGroupDevice, c.DevicePortForward, c.DomainMonitor, c.EdgeOneZone,
-		c.EdgeOneZoneAccelerationDomain, c.EdgeOneZoneDNSRecord,
+		c.CloudflareZone, c.CloudflareZoneRecord, c.CronJob, c.DNSRecord, c.Device,
+		c.DeviceGroup, c.DeviceGroupDevice, c.DevicePortForward, c.DomainMonitor,
+		c.EdgeOneZone, c.EdgeOneZoneAccelerationDomain, c.EdgeOneZoneDNSRecord,
 		c.EdgeOneZoneOriginGroup, c.EsaSite, c.EsaSiteEdgeContainerRecord,
 		c.EsaSiteEdgeRoutineRecord, c.EsaSiteOriginPool, c.EsaSiteRecord, c.IpGroup,
 		c.IpGroupDevice, c.PlatformConfig, c.SSLImport, c.SSLRecord, c.TUNRecord,
@@ -395,6 +401,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.CloudflareZone.mutate(ctx, m)
 	case *CloudflareZoneRecordMutation:
 		return c.CloudflareZoneRecord.mutate(ctx, m)
+	case *CronJobMutation:
+		return c.CronJob.mutate(ctx, m)
 	case *DNSRecordMutation:
 		return c.DNSRecord.mutate(ctx, m)
 	case *DeviceMutation:
@@ -1407,6 +1415,139 @@ func (c *CloudflareZoneRecordClient) mutate(ctx context.Context, m *CloudflareZo
 		return (&CloudflareZoneRecordDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown CloudflareZoneRecord mutation op: %q", m.Op())
+	}
+}
+
+// CronJobClient is a client for the CronJob schema.
+type CronJobClient struct {
+	config
+}
+
+// NewCronJobClient returns a client for the CronJob from the given config.
+func NewCronJobClient(c config) *CronJobClient {
+	return &CronJobClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `cronjob.Hooks(f(g(h())))`.
+func (c *CronJobClient) Use(hooks ...Hook) {
+	c.hooks.CronJob = append(c.hooks.CronJob, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `cronjob.Intercept(f(g(h())))`.
+func (c *CronJobClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CronJob = append(c.inters.CronJob, interceptors...)
+}
+
+// Create returns a builder for creating a CronJob entity.
+func (c *CronJobClient) Create() *CronJobCreate {
+	mutation := newCronJobMutation(c.config, OpCreate)
+	return &CronJobCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CronJob entities.
+func (c *CronJobClient) CreateBulk(builders ...*CronJobCreate) *CronJobCreateBulk {
+	return &CronJobCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CronJobClient) MapCreateBulk(slice any, setFunc func(*CronJobCreate, int)) *CronJobCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CronJobCreateBulk{err: fmt.Errorf("calling to CronJobClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CronJobCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CronJobCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CronJob.
+func (c *CronJobClient) Update() *CronJobUpdate {
+	mutation := newCronJobMutation(c.config, OpUpdate)
+	return &CronJobUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CronJobClient) UpdateOne(_m *CronJob) *CronJobUpdateOne {
+	mutation := newCronJobMutation(c.config, OpUpdateOne, withCronJob(_m))
+	return &CronJobUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CronJobClient) UpdateOneID(id int64) *CronJobUpdateOne {
+	mutation := newCronJobMutation(c.config, OpUpdateOne, withCronJobID(id))
+	return &CronJobUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CronJob.
+func (c *CronJobClient) Delete() *CronJobDelete {
+	mutation := newCronJobMutation(c.config, OpDelete)
+	return &CronJobDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CronJobClient) DeleteOne(_m *CronJob) *CronJobDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CronJobClient) DeleteOneID(id int64) *CronJobDeleteOne {
+	builder := c.Delete().Where(cronjob.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CronJobDeleteOne{builder}
+}
+
+// Query returns a query builder for CronJob.
+func (c *CronJobClient) Query() *CronJobQuery {
+	return &CronJobQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCronJob},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CronJob entity by its id.
+func (c *CronJobClient) Get(ctx context.Context, id int64) (*CronJob, error) {
+	return c.Query().Where(cronjob.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CronJobClient) GetX(ctx context.Context, id int64) *CronJob {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CronJobClient) Hooks() []Hook {
+	return c.hooks.CronJob
+}
+
+// Interceptors returns the client interceptors.
+func (c *CronJobClient) Interceptors() []Interceptor {
+	return c.inters.CronJob
+}
+
+func (c *CronJobClient) mutate(ctx context.Context, m *CronJobMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CronJobCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CronJobUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CronJobUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CronJobDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CronJob mutation op: %q", m.Op())
 	}
 }
 
@@ -5196,21 +5337,21 @@ func (c *WebhookSubscriptionClient) mutate(ctx context.Context, m *WebhookSubscr
 type (
 	hooks struct {
 		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, CloudflareZone,
-		CloudflareZoneRecord, DNSRecord, Device, DeviceGroup, DeviceGroupDevice,
-		DevicePortForward, DomainMonitor, EdgeOneZone, EdgeOneZoneAccelerationDomain,
-		EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup, EsaSite,
-		EsaSiteEdgeContainerRecord, EsaSiteEdgeRoutineRecord, EsaSiteOriginPool,
-		EsaSiteRecord, IpGroup, IpGroupDevice, PlatformConfig, SSLImport, SSLRecord,
-		TUNRecord, Webhook, WebhookSubscription []ent.Hook
+		CloudflareZoneRecord, CronJob, DNSRecord, Device, DeviceGroup,
+		DeviceGroupDevice, DevicePortForward, DomainMonitor, EdgeOneZone,
+		EdgeOneZoneAccelerationDomain, EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup,
+		EsaSite, EsaSiteEdgeContainerRecord, EsaSiteEdgeRoutineRecord,
+		EsaSiteOriginPool, EsaSiteRecord, IpGroup, IpGroupDevice, PlatformConfig,
+		SSLImport, SSLRecord, TUNRecord, Webhook, WebhookSubscription []ent.Hook
 	}
 	inters struct {
 		CDNRecord, Cache, CloudflareTunnel, CloudflareTunnelIngress, CloudflareZone,
-		CloudflareZoneRecord, DNSRecord, Device, DeviceGroup, DeviceGroupDevice,
-		DevicePortForward, DomainMonitor, EdgeOneZone, EdgeOneZoneAccelerationDomain,
-		EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup, EsaSite,
-		EsaSiteEdgeContainerRecord, EsaSiteEdgeRoutineRecord, EsaSiteOriginPool,
-		EsaSiteRecord, IpGroup, IpGroupDevice, PlatformConfig, SSLImport, SSLRecord,
-		TUNRecord, Webhook, WebhookSubscription []ent.Interceptor
+		CloudflareZoneRecord, CronJob, DNSRecord, Device, DeviceGroup,
+		DeviceGroupDevice, DevicePortForward, DomainMonitor, EdgeOneZone,
+		EdgeOneZoneAccelerationDomain, EdgeOneZoneDNSRecord, EdgeOneZoneOriginGroup,
+		EsaSite, EsaSiteEdgeContainerRecord, EsaSiteEdgeRoutineRecord,
+		EsaSiteOriginPool, EsaSiteRecord, IpGroup, IpGroupDevice, PlatformConfig,
+		SSLImport, SSLRecord, TUNRecord, Webhook, WebhookSubscription []ent.Interceptor
 	}
 )
 

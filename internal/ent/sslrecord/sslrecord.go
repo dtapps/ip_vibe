@@ -122,6 +122,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
 	ConfigIDValidator func(int64) error
+	// DomainValidator is a validator for the "domain" field. It is called by the builders before save.
+	DomainValidator func(string) error
 	// DefaultIsActive holds the default value on creation for the "is_active" field.
 	DefaultIsActive bool
 	// DefaultRenewalDays holds the default value on creation for the "renewal_days" field.

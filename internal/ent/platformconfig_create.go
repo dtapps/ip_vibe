@@ -300,6 +300,11 @@ func (_c *PlatformConfigCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "PlatformConfig.name"`)}
 	}
+	if v, ok := _c.mutation.Name(); ok {
+		if err := platformconfig.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "PlatformConfig.name": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Capability(); !ok {
 		return &ValidationError{Name: "capability", err: errors.New(`ent: missing required field "PlatformConfig.capability"`)}
 	}

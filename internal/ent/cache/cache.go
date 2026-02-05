@@ -44,6 +44,8 @@ func ValidColumn(column string) bool {
 //	import _ "vibe_ip/internal/ent/runtime"
 var (
 	Hooks [1]ent.Hook
+	// KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	KeyValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )

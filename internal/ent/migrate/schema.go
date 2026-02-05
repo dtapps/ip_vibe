@@ -342,6 +342,52 @@ var (
 			},
 		},
 	}
+	// CronJobColumns holds the columns for the "cron_job" table.
+	CronJobColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "任务序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
+		{Name: "entry_id", Type: field.TypeUUID, Unique: true, Comment: "任务编号"},
+		{Name: "name", Type: field.TypeString, Comment: "任务名称"},
+		{Name: "handler_name", Type: field.TypeString, Comment: "任务处理函数"},
+		{Name: "handler_args", Type: field.TypeString, Nullable: true, Comment: "任务处理函数参数"},
+		{Name: "job_type", Type: field.TypeEnum, Comment: "任务类型", Enums: []string{"cron", "duration", "random"}, Default: "cron"},
+		{Name: "cron_expr", Type: field.TypeString, Nullable: true, Comment: "cron 表达式"},
+		{Name: "with_seconds", Type: field.TypeBool, Comment: "是否包含秒", Default: false},
+		{Name: "interval_value", Type: field.TypeInt, Nullable: true, Comment: "固定间隔值 (配合 interval_unit 使用)"},
+		{Name: "min_interval", Type: field.TypeInt, Nullable: true, Comment: "随机最小值 (配合 interval_unit 使用)"},
+		{Name: "max_interval", Type: field.TypeInt, Nullable: true, Comment: "随机最大值 (配合 interval_unit 使用)"},
+		{Name: "interval_unit", Type: field.TypeEnum, Comment: "间隔时间单位 (用于 duration 和 random 模式)", Enums: []string{"seconds", "minutes", "hours", "days", "weeks"}, Default: "minutes"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态: running 运行中, stopped 已停止", Enums: []string{"running", "stopped"}, Default: "running"},
+		{Name: "is_singleton", Type: field.TypeBool, Comment: "是否单例", Default: true},
+	}
+	// CronJobTable holds the schema information for the "cron_job" table.
+	CronJobTable = &schema.Table{
+		Name:       "cron_job",
+		Comment:    "定时任务",
+		Columns:    CronJobColumns,
+		PrimaryKey: []*schema.Column{CronJobColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cronjob_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CronJobColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "cronjob_job_type",
+				Unique:  false,
+				Columns: []*schema.Column{CronJobColumns[7]},
+			},
+			{
+				Name:    "cronjob_status",
+				Unique:  false,
+				Columns: []*schema.Column{CronJobColumns[14]},
+			},
+		},
+	}
 	// DNSRecordColumns holds the columns for the "dns_record" table.
 	DNSRecordColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "DNS记录序号"},
@@ -1606,6 +1652,7 @@ var (
 		CloudflareTunnelIngressTable,
 		CloudflareZoneTable,
 		CloudflareZoneRecordTable,
+		CronJobTable,
 		DNSRecordTable,
 		DeviceTable,
 		DeviceGroupTable,
@@ -1657,6 +1704,9 @@ func init() {
 	CloudflareZoneRecordTable.ForeignKeys[0].RefTable = CloudflareZoneTable
 	CloudflareZoneRecordTable.Annotation = &entsql.Annotation{
 		Table: "cloudflare_zone_record",
+	}
+	CronJobTable.Annotation = &entsql.Annotation{
+		Table: "cron_job",
 	}
 	DNSRecordTable.ForeignKeys[0].RefTable = CdnRecordTable
 	DNSRecordTable.ForeignKeys[1].RefTable = DeviceGroupTable

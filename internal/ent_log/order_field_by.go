@@ -3,6 +3,7 @@
 package ent_log
 
 import (
+	"vibe_ip/internal/ent_log/cronjoblog"
 	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/ent_log/domainmonitorhistory"
 	"vibe_ip/internal/ent_log/httplog"
@@ -13,6 +14,281 @@ import (
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
 	"vibe_ip/internal/ent_log/webhookhistory"
 )
+
+// OrderByIDDesc 按主键 ID 降序排列查询结果。
+// 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByIDDesc() *CronJobLogQuery {
+	return q.Order(Desc(cronjoblog.FieldID))
+}
+
+// OrderByIDAsc 按主键 ID 升序排列查询结果。
+// 升序排列表示从小到大的顺序，通常用于按创建时间正序获取记录（自增ID场景下）。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByIDAsc().
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByIDAsc() *CronJobLogQuery {
+	return q.Order(Asc(cronjoblog.FieldID))
+}
+
+// OrderByCreatedAtDesc 按字段 created_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByCreatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByCreatedAtDesc() *CronJobLogQuery {
+	return q.Order(Desc(cronjoblog.FieldCreatedAt))
+}
+
+// OrderByCreatedAtAsc 按字段 created_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByCreatedAtAsc().
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByCreatedAtAsc() *CronJobLogQuery {
+	return q.Order(Asc(cronjoblog.FieldCreatedAt))
+}
+
+// OrderByUpdatedAtDesc 按字段 updated_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByUpdatedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByUpdatedAtDesc() *CronJobLogQuery {
+	return q.Order(Desc(cronjoblog.FieldUpdatedAt))
+}
+
+// OrderByUpdatedAtAsc 按字段 updated_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByUpdatedAtAsc().
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByUpdatedAtAsc() *CronJobLogQuery {
+	return q.Order(Asc(cronjoblog.FieldUpdatedAt))
+}
+
+// OrderByCronJobIDDesc 按字段 cron_job_id 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByCronJobIDDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByCronJobIDDesc() *CronJobLogQuery {
+	return q.Order(Desc(cronjoblog.FieldCronJobID))
+}
+
+// OrderByCronJobIDAsc 按字段 cron_job_id 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByCronJobIDAsc().
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByCronJobIDAsc() *CronJobLogQuery {
+	return q.Order(Asc(cronjoblog.FieldCronJobID))
+}
+
+// OrderByHandlerNameDesc 按字段 handler_name 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByHandlerNameDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByHandlerNameDesc() *CronJobLogQuery {
+	return q.Order(Desc(cronjoblog.FieldHandlerName))
+}
+
+// OrderByHandlerNameAsc 按字段 handler_name 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByHandlerNameAsc().
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByHandlerNameAsc() *CronJobLogQuery {
+	return q.Order(Asc(cronjoblog.FieldHandlerName))
+}
+
+// OrderByStartedAtDesc 按字段 started_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByStartedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByStartedAtDesc() *CronJobLogQuery {
+	return q.Order(Desc(cronjoblog.FieldStartedAt))
+}
+
+// OrderByStartedAtAsc 按字段 started_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByStartedAtAsc().
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByStartedAtAsc() *CronJobLogQuery {
+	return q.Order(Asc(cronjoblog.FieldStartedAt))
+}
+
+// OrderByFinishedAtDesc 按字段 finished_at 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByFinishedAtDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByFinishedAtDesc() *CronJobLogQuery {
+	return q.Order(Desc(cronjoblog.FieldFinishedAt))
+}
+
+// OrderByFinishedAtAsc 按字段 finished_at 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByFinishedAtAsc().
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByFinishedAtAsc() *CronJobLogQuery {
+	return q.Order(Asc(cronjoblog.FieldFinishedAt))
+}
+
+// OrderByDurationDesc 按字段 duration 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByDurationDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByDurationDesc() *CronJobLogQuery {
+	return q.Order(Desc(cronjoblog.FieldDuration))
+}
+
+// OrderByDurationAsc 按字段 duration 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByDurationAsc().
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByDurationAsc() *CronJobLogQuery {
+	return q.Order(Asc(cronjoblog.FieldDuration))
+}
+
+// OrderByStatusDesc 按字段 status 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByStatusDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByStatusDesc() *CronJobLogQuery {
+	return q.Order(Desc(cronjoblog.FieldStatus))
+}
+
+// OrderByStatusAsc 按字段 status 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByStatusAsc().
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByStatusAsc() *CronJobLogQuery {
+	return q.Order(Asc(cronjoblog.FieldStatus))
+}
+
+// OrderByErrorInfoDesc 按字段 error_info 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByErrorInfoDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByErrorInfoDesc() *CronJobLogQuery {
+	return q.Order(Desc(cronjoblog.FieldErrorInfo))
+}
+
+// OrderByErrorInfoAsc 按字段 error_info 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByErrorInfoAsc().
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByErrorInfoAsc() *CronJobLogQuery {
+	return q.Order(Asc(cronjoblog.FieldErrorInfo))
+}
+
+// OrderByOutputDesc 按字段 output 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByOutputDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByOutputDesc() *CronJobLogQuery {
+	return q.Order(Desc(cronjoblog.FieldOutput))
+}
+
+// OrderByOutputAsc 按字段 output 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobLogQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJobLog.Query().
+//	    OrderByOutputAsc().
+//	    All(ctx)
+func (q *CronJobLogQuery) OrderByOutputAsc() *CronJobLogQuery {
+	return q.Order(Asc(cronjoblog.FieldOutput))
+}
 
 // OrderByIDDesc 按主键 ID 降序排列查询结果。
 // 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。

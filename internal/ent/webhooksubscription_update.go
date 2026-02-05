@@ -125,6 +125,11 @@ func (_u *WebhookSubscriptionUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *WebhookSubscriptionUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := webhooksubscription.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "WebhookSubscription.name": %w`, err)}
+		}
+	}
 	if _u.mutation.WebhookCleared() && len(_u.mutation.WebhookIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "WebhookSubscription.webhook"`)
 	}
@@ -296,6 +301,11 @@ func (_u *WebhookSubscriptionUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *WebhookSubscriptionUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := webhooksubscription.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "WebhookSubscription.name": %w`, err)}
+		}
+	}
 	if _u.mutation.WebhookCleared() && len(_u.mutation.WebhookIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "WebhookSubscription.webhook"`)
 	}

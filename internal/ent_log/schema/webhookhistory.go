@@ -54,6 +54,7 @@ func (WebhookHistory) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("url").
+			NotEmpty().
 			Immutable().
 			Comment("发送的URL").
 			Annotations(entsql.WithComments(true)),

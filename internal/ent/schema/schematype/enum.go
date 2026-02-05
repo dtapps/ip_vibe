@@ -363,6 +363,7 @@ const (
 	LogObjTypeCloudflareZone                 string = "CloudflareZone"                // Cloudflare区域
 	LogObjTypeCloudflareZoneRecord           string = "CloudflareZoneRecord"          // Cloudflare区域记录
 	LogObjTypeDNSRecord                      string = "DNSRecord"                     // DNS记录
+	LogObjTypeCronJob                        string = "CronJob"                       // 定时任务
 	LogObjTypeDevice                         string = "Device"                        // 设备
 	LogObjTypeDeviceGroup                    string = "DeviceGroup"                   // 设备组
 	LogObjTypeDeviceGroupDevice              string = "DeviceGroupDevice"             // 设备组设备
@@ -410,6 +411,7 @@ var GetLogObjTypeDescriptions = map[string]string{
 	LogObjTypeCloudflareZoneRecord:           "Cloudflare区域记录",
 	LogObjTypeCDNRecord:                      "CDN记录",
 	LogObjTypeDNSRecord:                      "DNS记录",
+	LogObjTypeCronJob:                        "定时任务",
 	LogObjTypeDevice:                         "设备",
 	LogObjTypeDeviceGroup:                    "设备组",
 	LogObjTypeDeviceGroupDevice:              "设备组设备",
@@ -454,6 +456,7 @@ var GetLogObjTypes = []string{
 	LogObjTypeCloudflareZoneRecord,
 	LogObjTypeCDNRecord,
 	LogObjTypeDNSRecord,
+	LogObjTypeCronJob,
 	LogObjTypeDevice,
 	LogObjTypeDeviceGroup,
 	LogObjTypeDeviceGroupDevice,
@@ -1350,4 +1353,91 @@ var GetEsaSiteRecordHostPolicyDescriptions = map[string]string{
 var GetEsaSiteRecordHostPolicys = []string{
 	EsaSiteRecordHostPolicyFollowHostname,
 	EsaSiteRecordHostPolicyFollowOriginDomain,
+}
+
+// --------
+
+const (
+	CronJobJobTypeCron     string = "cron"     // cron 表达式
+	CronJobJobTypeDuration string = "duration" // 固定间隔
+	CronJobJobTypeRandom   string = "random"   // 随机间隔
+)
+
+// GetCronJobJobTypeDescriptions 任务类型 说明映射
+var GetCronJobJobTypeDescriptions = map[string]string{
+	CronJobJobTypeCron:     "cron 表达式",
+	CronJobJobTypeDuration: "固定间隔",
+	CronJobJobTypeRandom:   "随机间隔",
+}
+
+// GetCronJobJobTypes 返回所有 任务类型
+var GetCronJobJobTypes = []string{
+	CronJobJobTypeCron,
+	CronJobJobTypeDuration,
+	CronJobJobTypeRandom,
+}
+
+const (
+	CronJobIntervalUnitSeconds string = "seconds" // 秒
+	CronJobIntervalUnitMinutes string = "minutes" // 分钟
+	CronJobIntervalUnitHours   string = "hours"   // 小时
+	CronJobIntervalUnitDays    string = "days"    // 天
+	CronJobIntervalUnitWeeks   string = "weeks"   // 周
+)
+
+// GetCronJobIntervalUnitDescriptions 间隔时间单位 说明映射
+var GetCronJobIntervalUnitDescriptions = map[string]string{
+	CronJobIntervalUnitSeconds: "秒",
+	CronJobIntervalUnitMinutes: "分钟",
+	CronJobIntervalUnitHours:   "小时",
+	CronJobIntervalUnitDays:    "天",
+	CronJobIntervalUnitWeeks:   "周",
+}
+
+// GetCronJobIntervalUnits 返回所有 间隔时间单位
+var GetCronJobIntervalUnits = []string{
+	CronJobIntervalUnitSeconds,
+	CronJobIntervalUnitMinutes,
+	CronJobIntervalUnitHours,
+	CronJobIntervalUnitDays,
+	CronJobIntervalUnitWeeks,
+}
+
+const (
+	CronJobStatusRunning string = "running" // 运行中
+	CronJobStatusStopped string = "stopped" // 已停止
+)
+
+// GetCronJobStatusDescriptions 状态 说明映射
+var GetCronJobStatusDescriptions = map[string]string{
+	CronJobStatusRunning: "运行中",
+	CronJobStatusStopped: "已停止",
+}
+
+// GetCronJobStatuss 返回所有 状态
+var GetCronJobStatuss = []string{
+	CronJobStatusRunning,
+	CronJobStatusStopped,
+}
+
+// --------
+
+const (
+	CronJobLogStatusSuccess string = "success" // 成功
+	CronJobLogStatusFailed  string = "failed"  // 失败
+	CronJobLogStatusRunning string = "running" // 运行
+)
+
+// GetCronJobLogStatusDescriptions 状态 说明映射
+var GetCronJobLogStatusDescriptions = map[string]string{
+	CronJobLogStatusSuccess: "成功",
+	CronJobLogStatusFailed:  "失败",
+	CronJobLogStatusRunning: "运行",
+}
+
+// GetCronJobLogStatuss 返回所有 状态
+var GetCronJobLogStatuss = []string{
+	CronJobLogStatusSuccess,
+	CronJobLogStatusFailed,
+	CronJobLogStatusRunning,
 }

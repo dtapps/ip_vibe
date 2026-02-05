@@ -260,6 +260,11 @@ func (_u *TUNRecordUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *TUNRecordUpdate) check() error {
+	if v, ok := _u.mutation.SubDomain(); ok {
+		if err := tunrecord.SubDomainValidator(v); err != nil {
+			return &ValidationError{Name: "sub_domain", err: fmt.Errorf(`ent: validator failed for field "TUNRecord.sub_domain": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.ServeType(); ok {
 		if err := tunrecord.ServeTypeValidator(v); err != nil {
 			return &ValidationError{Name: "serve_type", err: fmt.Errorf(`ent: validator failed for field "TUNRecord.serve_type": %w`, err)}
@@ -612,6 +617,11 @@ func (_u *TUNRecordUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *TUNRecordUpdateOne) check() error {
+	if v, ok := _u.mutation.SubDomain(); ok {
+		if err := tunrecord.SubDomainValidator(v); err != nil {
+			return &ValidationError{Name: "sub_domain", err: fmt.Errorf(`ent: validator failed for field "TUNRecord.sub_domain": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.ServeType(); ok {
 		if err := tunrecord.ServeTypeValidator(v); err != nil {
 			return &ValidationError{Name: "serve_type", err: fmt.Errorf(`ent: validator failed for field "TUNRecord.serve_type": %w`, err)}

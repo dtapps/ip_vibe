@@ -41,6 +41,7 @@ func (Cache) Fields() []ent.Field {
 
 		field.String("key").
 			Unique().
+			NotEmpty().
 			Immutable().
 			Comment("缓存键").
 			Annotations(entsql.WithComments(true)),

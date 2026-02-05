@@ -234,6 +234,21 @@ func (_u *WebhookUpdate) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *WebhookUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := webhook.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Webhook.name": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.URL(); ok {
+		if err := webhook.URLValidator(v); err != nil {
+			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Webhook.url": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *WebhookUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *WebhookUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -241,6 +256,9 @@ func (_u *WebhookUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Webhoo
 }
 
 func (_u *WebhookUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(webhook.Table, webhook.Columns, sqlgraph.NewFieldSpec(webhook.FieldID, field.TypeInt64))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -570,6 +588,21 @@ func (_u *WebhookUpdateOne) defaults() error {
 	return nil
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *WebhookUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := webhook.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Webhook.name": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.URL(); ok {
+		if err := webhook.URLValidator(v); err != nil {
+			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Webhook.url": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *WebhookUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *WebhookUpdateOne {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -577,6 +610,9 @@ func (_u *WebhookUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Web
 }
 
 func (_u *WebhookUpdateOne) sqlSave(ctx context.Context) (_node *Webhook, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(webhook.Table, webhook.Columns, sqlgraph.NewFieldSpec(webhook.FieldID, field.TypeInt64))
 	id, ok := _u.mutation.ID()
 	if !ok {

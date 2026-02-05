@@ -45,6 +45,7 @@ func (WebhookSubscription) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
+			NotEmpty().
 			Comment("通知订阅名称").
 			Annotations(entsql.WithComments(true)),
 

@@ -24,6 +24,9 @@ type CloudflareZone func(*sql.Selector)
 // CloudflareZoneRecord is the predicate function for cloudflarezonerecord builders.
 type CloudflareZoneRecord func(*sql.Selector)
 
+// CronJob is the predicate function for cronjob builders.
+type CronJob func(*sql.Selector)
+
 // DNSRecord is the predicate function for dnsrecord builders.
 type DNSRecord func(*sql.Selector)
 

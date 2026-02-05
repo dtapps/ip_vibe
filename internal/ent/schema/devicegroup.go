@@ -46,11 +46,13 @@ func (DeviceGroup) Fields() []ent.Field {
 
 		field.String("code").
 			DefaultFunc(schemadefault.DefaultCode).
+			NotEmpty().
 			Immutable().
 			Comment("设备组编码").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
+			NotEmpty().
 			Comment("设备组名称").
 			Annotations(entsql.WithComments(true)),
 

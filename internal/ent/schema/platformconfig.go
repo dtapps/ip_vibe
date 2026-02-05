@@ -46,6 +46,7 @@ func (PlatformConfig) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("name").
+			NotEmpty().
 			Comment("平台配置名称").
 			Annotations(entsql.WithComments(true)),
 

@@ -226,6 +226,11 @@ func (_u *DevicePortForwardUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DevicePortForwardUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := deviceportforward.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "DevicePortForward.name": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.LocalPort(); ok {
 		if err := deviceportforward.LocalPortValidator(v); err != nil {
 			return &ValidationError{Name: "local_port", err: fmt.Errorf(`ent: validator failed for field "DevicePortForward.local_port": %w`, err)}
@@ -566,6 +571,11 @@ func (_u *DevicePortForwardUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DevicePortForwardUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := deviceportforward.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "DevicePortForward.name": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.LocalPort(); ok {
 		if err := deviceportforward.LocalPortValidator(v); err != nil {
 			return &ValidationError{Name: "local_port", err: fmt.Errorf(`ent: validator failed for field "DevicePortForward.local_port": %w`, err)}
