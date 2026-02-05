@@ -155,7 +155,7 @@ func Dashboard(c *gin.Context) {
 		},
 		{
 			Title: "开放接口",
-			Icon:  "i-lucide-api",
+			Icon:  "i-lucide-blocks",
 			Href:  "/interface",
 		},
 		{
