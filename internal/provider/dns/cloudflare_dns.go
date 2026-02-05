@@ -272,8 +272,8 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdom
 
 // Cloudfare DNS 自定义配置
 type CloudfareDNSCustomConfig struct {
-	Comment     string `json:"comment"`                 // 记录集的描述信息
-	IPGroupCode string `json:"ip_group_code,omitempty"` // IP 分组代码
+	Comment       string `json:"comment"`                    // 记录集的描述信息
+	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

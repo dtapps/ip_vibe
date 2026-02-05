@@ -262,9 +262,9 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, domain string, subdomain 
 
 // 百度云 DNS 自定义配置
 type BaiduDNSCustomConfig struct {
-	Line        string `json:"line"`                    // 解析线路
-	Description string `json:"description,omitempty"`   // 解析记录描述
-	IPGroupCode string `json:"ip_group_code,omitempty"` // IP 分组代码
+	Line          string `json:"line"`                       // 解析线路
+	Description   string `json:"description,omitempty"`      // 解析记录描述
+	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

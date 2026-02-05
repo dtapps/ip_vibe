@@ -348,12 +348,12 @@ func (p *HuaweiCDNProvider) Update(ctx context.Context, domain string, subdomain
 
 // 华为云 CDN 自定义配置
 type HuaweiCDNCustomConfig struct {
-	BusinessType string `json:"business_type"`           // 域名业务类型
-	ServiceArea  string `json:"service_area"`            // 服务区域
-	HttpPort     int    `json:"http_port,omitempty"`     // HTTP 端口
-	HttpsPort    int    `json:"https_port,omitempty"`    // HTTPS 端口
-	Remark       string `json:"remark,omitempty"`        // 备注
-	IPGroupCode  string `json:"ip_group_code,omitempty"` // IP 分组代码
+	BusinessType  string `json:"business_type"`              // 域名业务类型
+	ServiceArea   string `json:"service_area"`               // 服务区域
+	HttpPort      int    `json:"http_port,omitempty"`        // HTTP 端口
+	HttpsPort     int    `json:"https_port,omitempty"`       // HTTPS 端口
+	Remark        string `json:"remark,omitempty"`           // 备注
+	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

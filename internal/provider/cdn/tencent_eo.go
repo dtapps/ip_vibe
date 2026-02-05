@@ -392,7 +392,7 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 	requestGroupQuery.Filters = make([]*teo.AdvancedFilter, 0, 1)
 	requestGroupQuery.Filters = append(requestGroupQuery.Filters, &teo.AdvancedFilter{
 		Name:   common.StringPtr("origin-group-name"), // 按照源站组名称进行过滤
-		Values: common.StringPtrs([]string{p.CustomConfig.IPGroupCode}),
+		Values: common.StringPtrs([]string{p.CustomConfig.IPGroupIDCode}),
 	})
 	responseGroupQuery, err := p.Provider.Client.DescribeOriginGroupWithContext(ctx, requestGroupQuery)
 	if err != nil {
@@ -408,7 +408,7 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 	for _, item := range responseGroupQuery.Response.OriginGroups {
 		// 查找源站组名称
 		itemGroupName := utils.PtrToString(item.Name)
-		if utils.EqualDomainIgnoreCase(itemGroupName, p.CustomConfig.IPGroupCode) {
+		if utils.EqualDomainIgnoreCase(itemGroupName, p.CustomConfig.IPGroupIDCode) {
 
 			// 查找记录值列表
 			itemOriginValues := make([]string, 0, len(item.Records))
@@ -445,8 +445,8 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 				Type:   common.StringPtr("IP_DOMAIN"),
 			})
 		}
-		requestGroupCreate.Name = common.StringPtr(p.CustomConfig.IPGroupCode) // 源站组名称
-		requestGroupCreate.Type = common.StringPtr("GENERAL")                  // 源站组类型
+		requestGroupCreate.Name = common.StringPtr(p.CustomConfig.IPGroupIDCode) // 源站组名称
+		requestGroupCreate.Type = common.StringPtr("GENERAL")                    // 源站组类型
 		responseGroupCreate, err := p.Provider.Client.CreateOriginGroupWithContext(ctx, requestGroupCreate)
 		if err != nil {
 			return nil, fmt.Errorf("接口 CreateOriginGroupWithContext 失败 %w", err)
@@ -480,11 +480,11 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 // 腾讯云 EO 自定义配置
 type TencentEOCustomConfig struct {
-	OriginProtocol string `json:"origin_protocol"`         // 回源协议
-	HttpPort       uint64 `json:"http_port,omitempty"`     // HTTP回源端口
-	HttpsPort      uint64 `json:"https_port,omitempty"`    // HTTPS回源端口
-	IPv6Status     string `json:"ipv6_status,omitempty"`   // IPv6状态
-	IPGroupCode    string `json:"ip_group_code,omitempty"` // IP 分组代码
+	OriginProtocol string `json:"origin_protocol"`            // 回源协议
+	HttpPort       uint64 `json:"http_port,omitempty"`        // HTTP回源端口
+	HttpsPort      uint64 `json:"https_port,omitempty"`       // HTTPS回源端口
+	IPv6Status     string `json:"ipv6_status,omitempty"`      // IPv6状态
+	IPGroupIDCode  string `json:"ip_group_id_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

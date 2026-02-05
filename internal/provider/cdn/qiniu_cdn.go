@@ -325,12 +325,12 @@ func (p *QiniuCDNProvider) Update(ctx context.Context, domain string, subdomain 
 
 // 七牛云 CDN 自定义配置
 type QiniuCDNCustomConfig struct {
-	Platform        string `json:"platform"`                // 平台类型
-	GeoCover        string `json:"geo_cover"`               // 地域
-	SourceURLScheme string `json:"source_url_scheme"`       // 回源协议
-	HttpPort        int    `json:"http_port,omitempty"`     // HTTP 端口
-	HttpsPort       int    `json:"https_port,omitempty"`    // HTTPS 端口
-	IPGroupCode     string `json:"ip_group_code,omitempty"` // IP 分组代码
+	Platform        string `json:"platform"`                   // 平台类型
+	GeoCover        string `json:"geo_cover"`                  // 地域
+	SourceURLScheme string `json:"source_url_scheme"`          // 回源协议
+	HttpPort        int    `json:"http_port,omitempty"`        // HTTP 端口
+	HttpsPort       int    `json:"https_port,omitempty"`       // HTTPS 端口
+	IPGroupIDCode   string `json:"ip_group_id_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

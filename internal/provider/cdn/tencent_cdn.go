@@ -307,10 +307,10 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomai
 
 // 腾讯云 CDN 自定义配置
 type TencentCDNCustomConfig struct {
-	ServiceType        string `json:"service_type"`            // 加速域名业务类型
-	Area               string `json:"area"`                    // 区域
-	OriginPullProtocol string `json:"origin_pull_protocol"`    // 回源协议
-	IPGroupCode        string `json:"ip_group_code,omitempty"` // IP 分组代码
+	ServiceType        string `json:"service_type"`               // 加速域名业务类型
+	Area               string `json:"area"`                       // 区域
+	OriginPullProtocol string `json:"origin_pull_protocol"`       // 回源协议
+	IPGroupIDCode      string `json:"ip_group_id_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

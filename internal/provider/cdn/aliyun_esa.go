@@ -418,9 +418,9 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 	// 查询源站组
 	requestGroupQuery := &esa20240910.ListOriginPoolsRequest{}
-	requestGroupQuery.SiteId = tea.Int64(p.cfg.SiteID)              // 站点ID
-	requestGroupQuery.Name = tea.String(p.CustomConfig.IPGroupCode) // 源地址池名称
-	requestGroupQuery.MatchType = tea.String("exact")               // 按名称匹配查询类型
+	requestGroupQuery.SiteId = tea.Int64(p.cfg.SiteID)                // 站点ID
+	requestGroupQuery.Name = tea.String(p.CustomConfig.IPGroupIDCode) // 源地址池名称
+	requestGroupQuery.MatchType = tea.String("exact")                 // 按名称匹配查询类型
 	responseGroupQuery, err := p.Provider.Client.ListOriginPoolsWithContext(ctx, requestGroupQuery, p.Provider.Runtime)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ListOriginPoolsWithContext 失败 %w", err)
@@ -435,7 +435,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 	for _, item := range responseGroupQuery.GetBody().GetOriginPools() {
 		// 查找源站组名称
 		itemGroupName := tea.StringValue(item.GetName())
-		if utils.EqualDomainIgnoreCase(itemGroupName, p.CustomConfig.IPGroupCode) {
+		if utils.EqualDomainIgnoreCase(itemGroupName, p.CustomConfig.IPGroupIDCode) {
 
 			// 查找记录值列表
 			itemOriginValues := make([]string, 0, len(item.GetOrigins()))
@@ -466,7 +466,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 		// 创建源站组
 		requestGroupCreate := &esa20240910.CreateOriginPoolRequest{}
-		requestGroupCreate.Name = tea.String(p.CustomConfig.IPGroupCode)                                          // 列表名称
+		requestGroupCreate.Name = tea.String(p.CustomConfig.IPGroupIDCode)                                        // 列表名称
 		requestGroupCreate.Enabled = tea.Bool(true)                                                               // 源地址池是否启用
 		requestGroupCreate.SiteId = tea.Int64(p.cfg.SiteID)                                                       // 站点ID
 		requestGroupCreate.Origins = make([]*esa20240910.CreateOriginPoolRequestOrigins, 0, len(newOriginValues)) // 源地址池里添加的源站信息
@@ -730,12 +730,12 @@ func BuildRuleFromDomains(fullDomain string) string {
 
 // 阿里云 ESA 自定义配置
 type AliyunESACustomConfig struct {
-	BizName         string `json:"biz_name"`                // 用于标记DNS记录的业务场景
-	Comment         string `json:"comment,omitempty"`       // 记录的备注信息
-	OriginScheme    string `json:"origin_scheme"`           // 回源请求使用的协议
-	OriginHttpPort  int    `json:"origin_http_port"`        // 使用HTTP协议回源时访问的源站端口
-	OriginHttpsPort int    `json:"origin_https_port"`       // 使用HTTPS协议回源时访问的源站端口
-	IPGroupCode     string `json:"ip_group_code,omitempty"` // IP 分组代码
+	BizName         string `json:"biz_name"`                   // 用于标记DNS记录的业务场景
+	Comment         string `json:"comment,omitempty"`          // 记录的备注信息
+	OriginScheme    string `json:"origin_scheme"`              // 回源请求使用的协议
+	OriginHttpPort  int    `json:"origin_http_port"`           // 使用HTTP协议回源时访问的源站端口
+	OriginHttpsPort int    `json:"origin_https_port"`          // 使用HTTPS协议回源时访问的源站端口
+	IPGroupIDCode   string `json:"ip_group_id_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

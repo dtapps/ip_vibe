@@ -307,8 +307,8 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, domain string, subdomain
 
 // 华为云 DNS 自定义配置
 type HuaweiDNSCustomConfig struct {
-	Description string `json:"description"`             // 记录集的描述信息
-	IPGroupCode string `json:"ip_group_code,omitempty"` // IP 分组代码
+	Description   string `json:"description"`                // 记录集的描述信息
+	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置
