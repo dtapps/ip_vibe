@@ -168,6 +168,10 @@
   }
 
   /* 表单 */
+  .ui-form-container {
+    /* -8 space-y-5 max-h-[75vh] overflow-y-auto */
+    @apply p-8 space-y-5 overflow-y-auto max-h-[75vh];
+  }
   .ui-form-control {
     @apply flex flex-col gap-2 w-full;
   }

@@ -45,12 +45,6 @@ func (PlatformConfig) Fields() []ent.Field {
 			Comment("平台配置序号").
 			Annotations(entsql.WithComments(true)),
 
-		field.Enum("capability").
-			Default(schematype.ConfigCapabilityAll).
-			Values(schematype.GetConfigCapabilitys...).
-			Comment("平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）").
-			Annotations(entsql.WithComments(true)),
-
 		field.String("name").
 			Comment("平台配置名称").
 			Annotations(entsql.WithComments(true)),
@@ -58,6 +52,12 @@ func (PlatformConfig) Fields() []ent.Field {
 		field.String("description").
 			Optional().
 			Comment("平台配置描述").
+			Annotations(entsql.WithComments(true)),
+
+		field.Enum("capability").
+			Default(schematype.ConfigCapabilityAll).
+			Values(schematype.GetConfigCapabilitys...).
+			Comment("平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("platform").

@@ -10,7 +10,8 @@
       </button>
     </div>
 
-    <form id="form" class="p-8 space-y-5">
+    <form id="form" class="ui-form-container">
+
       <div class="ui-form-control">
         <label class="ui-label-text">编号 <span class="text-error">*</span></label>
         <input type="text" name="code" id="code" class="ui-input" required placeholder="如: xxxx-x-x-x-xxxx" />
@@ -53,6 +54,7 @@
           {{ template "icons" (dict "Name" "i-lucide-save") }} 保存
         </button>
       </div>
+
     </form>
   </div>
 </div>

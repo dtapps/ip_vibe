@@ -60,9 +60,9 @@ func (s *PlatformConfigServiceImpl) BuildResponse(ctx context.Context, item *ent
 	_ = json.Unmarshal(item.ConfigJSON, &configJson)
 	resp := &types.GetPlatformConfigResponse{
 		ID:                   item.ID,
-		Capability:           item.Capability.String(),
 		Name:                 item.Name,
 		Description:          item.Description,
+		Capability:           item.Capability.String(),
 		Platform:             item.Platform.String(),
 		ConfigJSON:           item.ConfigJSON,
 		ConfigJSONDomainName: configJson.DomainName,
@@ -124,9 +124,9 @@ func (s *PlatformConfigServiceImpl) CreateConfig(ctx context.Context, request *t
 	err := s.db.PlatformConfig.Create().
 		SetName(request.Name).
 		SetDescription(request.Description).
+		SetCapability(platformconfig.Capability(request.Capability)).
 		SetPlatform(platformconfig.Platform(request.Platform)).
 		SetConfigJSON([]byte(request.ConfigJSON)).
-		SetCapability(platformconfig.Capability(request.Capability)).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("创建配置失败: %w", err)
@@ -152,8 +152,8 @@ func (s *PlatformConfigServiceImpl) UpdateConfig(ctx context.Context, request *t
 	err = s.db.PlatformConfig.UpdateOne(firstConfig).
 		SetName(request.Name).
 		SetDescription(request.Description).
-		SetConfigJSON([]byte(request.ConfigJSON)).
 		SetCapability(platformconfig.Capability(request.Capability)).
+		SetConfigJSON([]byte(request.ConfigJSON)).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("更新配置失败: %w", err)

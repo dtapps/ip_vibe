@@ -69,8 +69,9 @@ async function openFormModal(id, action = "") {
 
       els.id.value = config.id;
       els.id.disabled = true;
-      els.capability.value = config.capability;
       els.name.value = config.name;
+      els.description.value = config.description || "";
+      els.capability.value = config.capability;
       els.platform.value = config.platform;
       els.platform.disabled = true;
 
@@ -132,8 +133,9 @@ if (form) {
       // 表单数据
       const form_id = Number(els.id.value.trim());
       const form_data = {
-        capability: els.capability.value.trim(),
         name: els.name.value.trim(),
+        description: els.description.value.trim(),
+        capability: els.capability.value.trim(),
         platform: els.platform.value.trim(),
         config_json: els.config_json.value.trim(),
       };

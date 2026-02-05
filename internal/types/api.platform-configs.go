@@ -11,10 +11,10 @@ type GetPlatformConfigsRequest struct {
 
 // 获取平台配置 响应结构
 type GetPlatformConfigResponse struct {
-	ID          int64           `json:"id" jsonschema:"配置序号"`                                                          // 配置序号
+	ID          int64           `json:"id" jsonschema:"平台配置序号"`                                                        // 平台配置序号
+	Name        string          `json:"name" jsonschema:"平台配置名称"`                                                      // 平台配置名称
+	Description string          `json:"description" jsonschema:"平台配置描述"`                                               // 平台配置描述
 	Capability  string          `json:"capability" jsonschema:"平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）"` // 平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）
-	Name        string          `json:"name" jsonschema:"配置名称"`                                                        // 配置名称
-	Description string          `json:"description" jsonschema:"配置描述"`                                                 // 配置描述
 	Platform    string          `json:"platform" jsonschema:"配置平台"`                                                    // 配置平台
 	ConfigJSON  json.RawMessage `json:"config_json,omitempty" jsonschema:"平台密钥等敏感信息（JSON）"`                            // 平台密钥等敏感信息（JSON）
 
@@ -33,9 +33,9 @@ type GetPlatformConfigRequest struct {
 
 // 创建平台配置 请求结构
 type CreatePlatformConfigRequest struct {
+	Name        string `json:"name" binding:"required" jsonschema:"平台配置名称"`                                                      // 平台配置名称
+	Description string `json:"description,omitempty" jsonschema:"平台配置描述"`                                                        // 平台配置描述
 	Capability  string `json:"capability" binding:"required" jsonschema:"平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）"` // 平台支持的服务能力：all（全部）dns（仅DNS）cdn（仅CDN）ssl（仅SSL）tun（仅TUN）
-	Name        string `json:"name" binding:"required" jsonschema:"配置名称"`                                                        // 配置名称
-	Description string `json:"description,omitempty" jsonschema:"配置描述"`                                                          // 配置描述
 	Platform    string `json:"platform" binding:"required" jsonschema:"配置平台"`                                                    // 配置平台
 	ConfigJSON  string `json:"config_json" binding:"required" jsonschema:"配置平台密钥等敏感信息（JSON）"`                                    // 配置平台密钥等敏感信息（JSON）
 }
