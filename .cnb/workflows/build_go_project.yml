@@ -41,7 +41,8 @@
             # 1. 下载 依赖
             echo "下载 依赖..."
             make pnpm_update
-            make mod
+            make mod_tidy
+            make mod_vendor
 
             # 2. 清理并构建所有平台
             echo "清理并构建所有平台..."

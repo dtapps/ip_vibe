@@ -46,8 +46,17 @@ verify-tools:
 PROJECT_ROOT := $(CURDIR)
 
 mod:
+	mod_update
+	mod_tidy
+	mod_vendor
+
+mod_update:
 	go get -u -v ./...
+
+mod_tidy:
 	go mod tidy
+
+mod_vendor:
 	go mod vendor
 
 # generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
