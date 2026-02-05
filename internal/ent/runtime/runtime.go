@@ -214,6 +214,10 @@ func init() {
 	dnsrecordDescSubDomain := dnsrecordFields[3].Descriptor()
 	// dnsrecord.SubDomainValidator is a validator for the "sub_domain" field. It is called by the builders before save.
 	dnsrecord.SubDomainValidator = dnsrecordDescSubDomain.Validators[0].(func(string) error)
+	// dnsrecordDescDomainName is the schema descriptor for domain_name field.
+	dnsrecordDescDomainName := dnsrecordFields[4].Descriptor()
+	// dnsrecord.DomainNameValidator is a validator for the "domain_name" field. It is called by the builders before save.
+	dnsrecord.DomainNameValidator = dnsrecordDescDomainName.Validators[0].(func(string) error)
 	// dnsrecordDescFullDomain is the schema descriptor for full_domain field.
 	dnsrecordDescFullDomain := dnsrecordFields[5].Descriptor()
 	// dnsrecord.FullDomainValidator is a validator for the "full_domain" field. It is called by the builders before save.

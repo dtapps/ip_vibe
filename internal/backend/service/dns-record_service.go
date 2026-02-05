@@ -206,11 +206,6 @@ func (s *DNSRecordServiceImpl) CreateDnsRecord(ctx context.Context, request *typ
 // UpdateDnsRecord 更新DNS记录
 func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *types.UpdateDnsRecordRequest) error {
 
-	// 拼接完整域名，确保没有多余的点
-	request.SubDomain = utils.TrimDots(request.SubDomain)
-	request.DomainName = utils.TrimDots(request.DomainName)
-	fullDomain := request.SubDomain + "." + request.DomainName
-
 	// 查询DNS记录
 	firstDnsRecord, err := s.db.DNSRecord.Query().
 		Where(dnsrecord.IDEQ(request.ID)).
@@ -224,12 +219,6 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 
 	// 更新DNS记录
 	updateDnsRecord := s.db.DNSRecord.UpdateOne(firstDnsRecord)
-
-	if request.SubDomain != "" && request.DomainName != "" {
-		// updateDnsRecord.SetSubDomain(request.SubDomain)
-		updateDnsRecord.SetDomainName(request.DomainName)
-		updateDnsRecord.SetFullDomain(fullDomain)
-	}
 
 	updateDnsRecord.SetType(dnsrecord.Type(request.Type))
 	updateDnsRecord.SetConfigJSON([]byte(request.ConfigJSON))

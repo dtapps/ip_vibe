@@ -87,25 +87,9 @@ func (_c *CDNRecordCreate) SetDomainName(v string) *CDNRecordCreate {
 	return _c
 }
 
-// SetNillableDomainName sets the "domain_name" field if the given value is not nil.
-func (_c *CDNRecordCreate) SetNillableDomainName(v *string) *CDNRecordCreate {
-	if v != nil {
-		_c.SetDomainName(*v)
-	}
-	return _c
-}
-
 // SetFullDomain sets the "full_domain" field.
 func (_c *CDNRecordCreate) SetFullDomain(v string) *CDNRecordCreate {
 	_c.mutation.SetFullDomain(v)
-	return _c
-}
-
-// SetNillableFullDomain sets the "full_domain" field if the given value is not nil.
-func (_c *CDNRecordCreate) SetNillableFullDomain(v *string) *CDNRecordCreate {
-	if v != nil {
-		_c.SetFullDomain(*v)
-	}
 	return _c
 }
 
@@ -337,10 +321,16 @@ func (_c *CDNRecordCreate) check() error {
 			return &ValidationError{Name: "sub_domain", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.sub_domain": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.DomainName(); !ok {
+		return &ValidationError{Name: "domain_name", err: errors.New(`ent: missing required field "CDNRecord.domain_name"`)}
+	}
 	if v, ok := _c.mutation.DomainName(); ok {
 		if err := cdnrecord.DomainNameValidator(v); err != nil {
 			return &ValidationError{Name: "domain_name", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.domain_name": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.FullDomain(); !ok {
+		return &ValidationError{Name: "full_domain", err: errors.New(`ent: missing required field "CDNRecord.full_domain"`)}
 	}
 	if v, ok := _c.mutation.FullDomain(); ok {
 		if err := cdnrecord.FullDomainValidator(v); err != nil {
@@ -588,42 +578,6 @@ func (u *CDNRecordUpsert) ClearRecordID() *CDNRecordUpsert {
 	return u
 }
 
-// SetDomainName sets the "domain_name" field.
-func (u *CDNRecordUpsert) SetDomainName(v string) *CDNRecordUpsert {
-	u.Set(cdnrecord.FieldDomainName, v)
-	return u
-}
-
-// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
-func (u *CDNRecordUpsert) UpdateDomainName() *CDNRecordUpsert {
-	u.SetExcluded(cdnrecord.FieldDomainName)
-	return u
-}
-
-// ClearDomainName clears the value of the "domain_name" field.
-func (u *CDNRecordUpsert) ClearDomainName() *CDNRecordUpsert {
-	u.SetNull(cdnrecord.FieldDomainName)
-	return u
-}
-
-// SetFullDomain sets the "full_domain" field.
-func (u *CDNRecordUpsert) SetFullDomain(v string) *CDNRecordUpsert {
-	u.Set(cdnrecord.FieldFullDomain, v)
-	return u
-}
-
-// UpdateFullDomain sets the "full_domain" field to the value that was provided on create.
-func (u *CDNRecordUpsert) UpdateFullDomain() *CDNRecordUpsert {
-	u.SetExcluded(cdnrecord.FieldFullDomain)
-	return u
-}
-
-// ClearFullDomain clears the value of the "full_domain" field.
-func (u *CDNRecordUpsert) ClearFullDomain() *CDNRecordUpsert {
-	u.SetNull(cdnrecord.FieldFullDomain)
-	return u
-}
-
 // SetType sets the "type" field.
 func (u *CDNRecordUpsert) SetType(v cdnrecord.Type) *CDNRecordUpsert {
 	u.Set(cdnrecord.FieldType, v)
@@ -803,6 +757,12 @@ func (u *CDNRecordUpsertOne) UpdateNewValues() *CDNRecordUpsertOne {
 		if _, exists := u.create.mutation.SubDomain(); exists {
 			s.SetIgnore(cdnrecord.FieldSubDomain)
 		}
+		if _, exists := u.create.mutation.DomainName(); exists {
+			s.SetIgnore(cdnrecord.FieldDomainName)
+		}
+		if _, exists := u.create.mutation.FullDomain(); exists {
+			s.SetIgnore(cdnrecord.FieldFullDomain)
+		}
 	}))
 	return u
 }
@@ -852,48 +812,6 @@ func (u *CDNRecordUpsertOne) UpdateRecordID() *CDNRecordUpsertOne {
 func (u *CDNRecordUpsertOne) ClearRecordID() *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearRecordID()
-	})
-}
-
-// SetDomainName sets the "domain_name" field.
-func (u *CDNRecordUpsertOne) SetDomainName(v string) *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetDomainName(v)
-	})
-}
-
-// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
-func (u *CDNRecordUpsertOne) UpdateDomainName() *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateDomainName()
-	})
-}
-
-// ClearDomainName clears the value of the "domain_name" field.
-func (u *CDNRecordUpsertOne) ClearDomainName() *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.ClearDomainName()
-	})
-}
-
-// SetFullDomain sets the "full_domain" field.
-func (u *CDNRecordUpsertOne) SetFullDomain(v string) *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetFullDomain(v)
-	})
-}
-
-// UpdateFullDomain sets the "full_domain" field to the value that was provided on create.
-func (u *CDNRecordUpsertOne) UpdateFullDomain() *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateFullDomain()
-	})
-}
-
-// ClearFullDomain clears the value of the "full_domain" field.
-func (u *CDNRecordUpsertOne) ClearFullDomain() *CDNRecordUpsertOne {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.ClearFullDomain()
 	})
 }
 
@@ -1266,6 +1184,12 @@ func (u *CDNRecordUpsertBulk) UpdateNewValues() *CDNRecordUpsertBulk {
 			if _, exists := b.mutation.SubDomain(); exists {
 				s.SetIgnore(cdnrecord.FieldSubDomain)
 			}
+			if _, exists := b.mutation.DomainName(); exists {
+				s.SetIgnore(cdnrecord.FieldDomainName)
+			}
+			if _, exists := b.mutation.FullDomain(); exists {
+				s.SetIgnore(cdnrecord.FieldFullDomain)
+			}
 		}
 	}))
 	return u
@@ -1316,48 +1240,6 @@ func (u *CDNRecordUpsertBulk) UpdateRecordID() *CDNRecordUpsertBulk {
 func (u *CDNRecordUpsertBulk) ClearRecordID() *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.ClearRecordID()
-	})
-}
-
-// SetDomainName sets the "domain_name" field.
-func (u *CDNRecordUpsertBulk) SetDomainName(v string) *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetDomainName(v)
-	})
-}
-
-// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
-func (u *CDNRecordUpsertBulk) UpdateDomainName() *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateDomainName()
-	})
-}
-
-// ClearDomainName clears the value of the "domain_name" field.
-func (u *CDNRecordUpsertBulk) ClearDomainName() *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.ClearDomainName()
-	})
-}
-
-// SetFullDomain sets the "full_domain" field.
-func (u *CDNRecordUpsertBulk) SetFullDomain(v string) *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.SetFullDomain(v)
-	})
-}
-
-// UpdateFullDomain sets the "full_domain" field to the value that was provided on create.
-func (u *CDNRecordUpsertBulk) UpdateFullDomain() *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.UpdateFullDomain()
-	})
-}
-
-// ClearFullDomain clears the value of the "full_domain" field.
-func (u *CDNRecordUpsertBulk) ClearFullDomain() *CDNRecordUpsertBulk {
-	return u.Update(func(s *CDNRecordUpsert) {
-		s.ClearFullDomain()
 	})
 }
 

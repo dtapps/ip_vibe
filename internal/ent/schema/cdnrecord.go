@@ -64,16 +64,16 @@ func (CDNRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("domain_name").
-			Optional().
+			// Optional(). // 先兼容旧数据
 			Validate(schemavalidate.ValidateDomainName).
-			// Immutable(). // 先兼容旧数据
+			Immutable(). // 先兼容旧数据
 			Comment("域名名称（例如 example.com）").
 			Annotations(entsql.WithComments(true)),
 
 		field.String("full_domain").
-			Optional().
+			// Optional(). // 先兼容旧数据
 			Validate(schemavalidate.ValidateFullDomain).
-			// Immutable(). // 先兼容旧数据
+			Immutable(). // 先兼容旧数据
 			Comment("完整域名（例如 www.example.com）").
 			Annotations(entsql.WithComments(true)),
 

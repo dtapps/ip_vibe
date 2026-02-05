@@ -87,25 +87,9 @@ func (_c *DNSRecordCreate) SetDomainName(v string) *DNSRecordCreate {
 	return _c
 }
 
-// SetNillableDomainName sets the "domain_name" field if the given value is not nil.
-func (_c *DNSRecordCreate) SetNillableDomainName(v *string) *DNSRecordCreate {
-	if v != nil {
-		_c.SetDomainName(*v)
-	}
-	return _c
-}
-
 // SetFullDomain sets the "full_domain" field.
 func (_c *DNSRecordCreate) SetFullDomain(v string) *DNSRecordCreate {
 	_c.mutation.SetFullDomain(v)
-	return _c
-}
-
-// SetNillableFullDomain sets the "full_domain" field if the given value is not nil.
-func (_c *DNSRecordCreate) SetNillableFullDomain(v *string) *DNSRecordCreate {
-	if v != nil {
-		_c.SetFullDomain(*v)
-	}
 	return _c
 }
 
@@ -326,6 +310,17 @@ func (_c *DNSRecordCreate) check() error {
 		if err := dnsrecord.SubDomainValidator(v); err != nil {
 			return &ValidationError{Name: "sub_domain", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.sub_domain": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.DomainName(); !ok {
+		return &ValidationError{Name: "domain_name", err: errors.New(`ent: missing required field "DNSRecord.domain_name"`)}
+	}
+	if v, ok := _c.mutation.DomainName(); ok {
+		if err := dnsrecord.DomainNameValidator(v); err != nil {
+			return &ValidationError{Name: "domain_name", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.domain_name": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.FullDomain(); !ok {
+		return &ValidationError{Name: "full_domain", err: errors.New(`ent: missing required field "DNSRecord.full_domain"`)}
 	}
 	if v, ok := _c.mutation.FullDomain(); ok {
 		if err := dnsrecord.FullDomainValidator(v); err != nil {
@@ -570,42 +565,6 @@ func (u *DNSRecordUpsert) ClearRecordID() *DNSRecordUpsert {
 	return u
 }
 
-// SetDomainName sets the "domain_name" field.
-func (u *DNSRecordUpsert) SetDomainName(v string) *DNSRecordUpsert {
-	u.Set(dnsrecord.FieldDomainName, v)
-	return u
-}
-
-// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
-func (u *DNSRecordUpsert) UpdateDomainName() *DNSRecordUpsert {
-	u.SetExcluded(dnsrecord.FieldDomainName)
-	return u
-}
-
-// ClearDomainName clears the value of the "domain_name" field.
-func (u *DNSRecordUpsert) ClearDomainName() *DNSRecordUpsert {
-	u.SetNull(dnsrecord.FieldDomainName)
-	return u
-}
-
-// SetFullDomain sets the "full_domain" field.
-func (u *DNSRecordUpsert) SetFullDomain(v string) *DNSRecordUpsert {
-	u.Set(dnsrecord.FieldFullDomain, v)
-	return u
-}
-
-// UpdateFullDomain sets the "full_domain" field to the value that was provided on create.
-func (u *DNSRecordUpsert) UpdateFullDomain() *DNSRecordUpsert {
-	u.SetExcluded(dnsrecord.FieldFullDomain)
-	return u
-}
-
-// ClearFullDomain clears the value of the "full_domain" field.
-func (u *DNSRecordUpsert) ClearFullDomain() *DNSRecordUpsert {
-	u.SetNull(dnsrecord.FieldFullDomain)
-	return u
-}
-
 // SetType sets the "type" field.
 func (u *DNSRecordUpsert) SetType(v dnsrecord.Type) *DNSRecordUpsert {
 	u.Set(dnsrecord.FieldType, v)
@@ -785,6 +744,12 @@ func (u *DNSRecordUpsertOne) UpdateNewValues() *DNSRecordUpsertOne {
 		if _, exists := u.create.mutation.SubDomain(); exists {
 			s.SetIgnore(dnsrecord.FieldSubDomain)
 		}
+		if _, exists := u.create.mutation.DomainName(); exists {
+			s.SetIgnore(dnsrecord.FieldDomainName)
+		}
+		if _, exists := u.create.mutation.FullDomain(); exists {
+			s.SetIgnore(dnsrecord.FieldFullDomain)
+		}
 	}))
 	return u
 }
@@ -834,48 +799,6 @@ func (u *DNSRecordUpsertOne) UpdateRecordID() *DNSRecordUpsertOne {
 func (u *DNSRecordUpsertOne) ClearRecordID() *DNSRecordUpsertOne {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.ClearRecordID()
-	})
-}
-
-// SetDomainName sets the "domain_name" field.
-func (u *DNSRecordUpsertOne) SetDomainName(v string) *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetDomainName(v)
-	})
-}
-
-// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
-func (u *DNSRecordUpsertOne) UpdateDomainName() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateDomainName()
-	})
-}
-
-// ClearDomainName clears the value of the "domain_name" field.
-func (u *DNSRecordUpsertOne) ClearDomainName() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearDomainName()
-	})
-}
-
-// SetFullDomain sets the "full_domain" field.
-func (u *DNSRecordUpsertOne) SetFullDomain(v string) *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetFullDomain(v)
-	})
-}
-
-// UpdateFullDomain sets the "full_domain" field to the value that was provided on create.
-func (u *DNSRecordUpsertOne) UpdateFullDomain() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateFullDomain()
-	})
-}
-
-// ClearFullDomain clears the value of the "full_domain" field.
-func (u *DNSRecordUpsertOne) ClearFullDomain() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearFullDomain()
 	})
 }
 
@@ -1248,6 +1171,12 @@ func (u *DNSRecordUpsertBulk) UpdateNewValues() *DNSRecordUpsertBulk {
 			if _, exists := b.mutation.SubDomain(); exists {
 				s.SetIgnore(dnsrecord.FieldSubDomain)
 			}
+			if _, exists := b.mutation.DomainName(); exists {
+				s.SetIgnore(dnsrecord.FieldDomainName)
+			}
+			if _, exists := b.mutation.FullDomain(); exists {
+				s.SetIgnore(dnsrecord.FieldFullDomain)
+			}
 		}
 	}))
 	return u
@@ -1298,48 +1227,6 @@ func (u *DNSRecordUpsertBulk) UpdateRecordID() *DNSRecordUpsertBulk {
 func (u *DNSRecordUpsertBulk) ClearRecordID() *DNSRecordUpsertBulk {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.ClearRecordID()
-	})
-}
-
-// SetDomainName sets the "domain_name" field.
-func (u *DNSRecordUpsertBulk) SetDomainName(v string) *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetDomainName(v)
-	})
-}
-
-// UpdateDomainName sets the "domain_name" field to the value that was provided on create.
-func (u *DNSRecordUpsertBulk) UpdateDomainName() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateDomainName()
-	})
-}
-
-// ClearDomainName clears the value of the "domain_name" field.
-func (u *DNSRecordUpsertBulk) ClearDomainName() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearDomainName()
-	})
-}
-
-// SetFullDomain sets the "full_domain" field.
-func (u *DNSRecordUpsertBulk) SetFullDomain(v string) *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetFullDomain(v)
-	})
-}
-
-// UpdateFullDomain sets the "full_domain" field to the value that was provided on create.
-func (u *DNSRecordUpsertBulk) UpdateFullDomain() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateFullDomain()
-	})
-}
-
-// ClearFullDomain clears the value of the "full_domain" field.
-func (u *DNSRecordUpsertBulk) ClearFullDomain() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearFullDomain()
 	})
 }
 

@@ -447,22 +447,9 @@ func (m *CDNRecordMutation) OldDomainName(ctx context.Context) (v string, err er
 	return oldValue.DomainName, nil
 }
 
-// ClearDomainName clears the value of the "domain_name" field.
-func (m *CDNRecordMutation) ClearDomainName() {
-	m.domain_name = nil
-	m.clearedFields[cdnrecord.FieldDomainName] = struct{}{}
-}
-
-// DomainNameCleared returns if the "domain_name" field was cleared in this mutation.
-func (m *CDNRecordMutation) DomainNameCleared() bool {
-	_, ok := m.clearedFields[cdnrecord.FieldDomainName]
-	return ok
-}
-
 // ResetDomainName resets all changes to the "domain_name" field.
 func (m *CDNRecordMutation) ResetDomainName() {
 	m.domain_name = nil
-	delete(m.clearedFields, cdnrecord.FieldDomainName)
 }
 
 // SetFullDomain sets the "full_domain" field.
@@ -496,22 +483,9 @@ func (m *CDNRecordMutation) OldFullDomain(ctx context.Context) (v string, err er
 	return oldValue.FullDomain, nil
 }
 
-// ClearFullDomain clears the value of the "full_domain" field.
-func (m *CDNRecordMutation) ClearFullDomain() {
-	m.full_domain = nil
-	m.clearedFields[cdnrecord.FieldFullDomain] = struct{}{}
-}
-
-// FullDomainCleared returns if the "full_domain" field was cleared in this mutation.
-func (m *CDNRecordMutation) FullDomainCleared() bool {
-	_, ok := m.clearedFields[cdnrecord.FieldFullDomain]
-	return ok
-}
-
 // ResetFullDomain resets all changes to the "full_domain" field.
 func (m *CDNRecordMutation) ResetFullDomain() {
 	m.full_domain = nil
-	delete(m.clearedFields, cdnrecord.FieldFullDomain)
 }
 
 // SetType sets the "type" field.
@@ -1401,12 +1375,6 @@ func (m *CDNRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(cdnrecord.FieldRecordID) {
 		fields = append(fields, cdnrecord.FieldRecordID)
 	}
-	if m.FieldCleared(cdnrecord.FieldDomainName) {
-		fields = append(fields, cdnrecord.FieldDomainName)
-	}
-	if m.FieldCleared(cdnrecord.FieldFullDomain) {
-		fields = append(fields, cdnrecord.FieldFullDomain)
-	}
 	if m.FieldCleared(cdnrecord.FieldConfigJSON) {
 		fields = append(fields, cdnrecord.FieldConfigJSON)
 	}
@@ -1444,12 +1412,6 @@ func (m *CDNRecordMutation) ClearField(name string) error {
 	switch name {
 	case cdnrecord.FieldRecordID:
 		m.ClearRecordID()
-		return nil
-	case cdnrecord.FieldDomainName:
-		m.ClearDomainName()
-		return nil
-	case cdnrecord.FieldFullDomain:
-		m.ClearFullDomain()
 		return nil
 	case cdnrecord.FieldConfigJSON:
 		m.ClearConfigJSON()
@@ -7462,22 +7424,9 @@ func (m *DNSRecordMutation) OldDomainName(ctx context.Context) (v string, err er
 	return oldValue.DomainName, nil
 }
 
-// ClearDomainName clears the value of the "domain_name" field.
-func (m *DNSRecordMutation) ClearDomainName() {
-	m.domain_name = nil
-	m.clearedFields[dnsrecord.FieldDomainName] = struct{}{}
-}
-
-// DomainNameCleared returns if the "domain_name" field was cleared in this mutation.
-func (m *DNSRecordMutation) DomainNameCleared() bool {
-	_, ok := m.clearedFields[dnsrecord.FieldDomainName]
-	return ok
-}
-
 // ResetDomainName resets all changes to the "domain_name" field.
 func (m *DNSRecordMutation) ResetDomainName() {
 	m.domain_name = nil
-	delete(m.clearedFields, dnsrecord.FieldDomainName)
 }
 
 // SetFullDomain sets the "full_domain" field.
@@ -7511,22 +7460,9 @@ func (m *DNSRecordMutation) OldFullDomain(ctx context.Context) (v string, err er
 	return oldValue.FullDomain, nil
 }
 
-// ClearFullDomain clears the value of the "full_domain" field.
-func (m *DNSRecordMutation) ClearFullDomain() {
-	m.full_domain = nil
-	m.clearedFields[dnsrecord.FieldFullDomain] = struct{}{}
-}
-
-// FullDomainCleared returns if the "full_domain" field was cleared in this mutation.
-func (m *DNSRecordMutation) FullDomainCleared() bool {
-	_, ok := m.clearedFields[dnsrecord.FieldFullDomain]
-	return ok
-}
-
 // ResetFullDomain resets all changes to the "full_domain" field.
 func (m *DNSRecordMutation) ResetFullDomain() {
 	m.full_domain = nil
-	delete(m.clearedFields, dnsrecord.FieldFullDomain)
 }
 
 // SetType sets the "type" field.
@@ -8389,12 +8325,6 @@ func (m *DNSRecordMutation) ClearedFields() []string {
 	if m.FieldCleared(dnsrecord.FieldRecordID) {
 		fields = append(fields, dnsrecord.FieldRecordID)
 	}
-	if m.FieldCleared(dnsrecord.FieldDomainName) {
-		fields = append(fields, dnsrecord.FieldDomainName)
-	}
-	if m.FieldCleared(dnsrecord.FieldFullDomain) {
-		fields = append(fields, dnsrecord.FieldFullDomain)
-	}
 	if m.FieldCleared(dnsrecord.FieldConfigJSON) {
 		fields = append(fields, dnsrecord.FieldConfigJSON)
 	}
@@ -8432,12 +8362,6 @@ func (m *DNSRecordMutation) ClearField(name string) error {
 	switch name {
 	case dnsrecord.FieldRecordID:
 		m.ClearRecordID()
-		return nil
-	case dnsrecord.FieldDomainName:
-		m.ClearDomainName()
-		return nil
-	case dnsrecord.FieldFullDomain:
-		m.ClearFullDomain()
 		return nil
 	case dnsrecord.FieldConfigJSON:
 		m.ClearConfigJSON()

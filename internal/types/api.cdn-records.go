@@ -56,11 +56,9 @@ type CreateCdnRecordRequest struct {
 // 更新CDN记录 请求结构
 type UpdateCdnRecordRequest struct {
 	GetCdnRecordRequest
-	SubDomain  string `json:"sub_domain,omitempty" jsonschema:"子域名（例如 @, www, blog, api）"` // 子域名（例如 @, www, blog, api）
-	DomainName string `json:"domain_name,omitempty" jsonschema:"域名名称（例如 example.com）"`     // 域名（例如 example.com）
-	Type       string `json:"type" binding:"required" jsonschema:"记录类型（A、AAAA）"`           // 记录类型（A、AAAA）
-	ConfigJSON string `json:"config_json,omitempty" jsonschema:"CDN记录配置（JSON）"`            // CDN记录配置（JSON）
-	IPGroupID  int64  `json:"ip_group_id" binding:"required" jsonschema:"关联的IP组序号"`        // IP 组序号
+	Type       string `json:"type" binding:"required" jsonschema:"记录类型（A、AAAA）"`    // 记录类型（A、AAAA）
+	ConfigJSON string `json:"config_json,omitempty" jsonschema:"CDN记录配置（JSON）"`     // CDN记录配置（JSON）
+	IPGroupID  int64  `json:"ip_group_id" binding:"required" jsonschema:"关联的IP组序号"` // IP 组序号
 
 	WebhookIDs []int64 `json:"webhook_ids,omitempty" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
 }

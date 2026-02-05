@@ -649,11 +649,11 @@
                         "type": "string"
                     },
                     "description": {
-                        "description": "配置描述",
+                        "description": "平台配置描述",
                         "type": "string"
                     },
                     "name": {
-                        "description": "配置名称",
+                        "description": "平台配置名称",
                         "type": "string"
                     },
                     "platform": {
@@ -1539,15 +1539,15 @@
                         "uniqueItems": false
                     },
                     "description": {
-                        "description": "配置描述",
+                        "description": "平台配置描述",
                         "type": "string"
                     },
                     "id": {
-                        "description": "配置序号",
+                        "description": "平台配置序号",
                         "type": "integer"
                     },
                     "name": {
-                        "description": "配置名称",
+                        "description": "平台配置名称",
                         "type": "string"
                     },
                     "platform": {
@@ -2157,10 +2157,6 @@
                         "description": "CDN记录配置（JSON）",
                         "type": "string"
                     },
-                    "domain_name": {
-                        "description": "域名（例如 example.com）",
-                        "type": "string"
-                    },
                     "id": {
                         "description": "CDN记录序号",
                         "type": "integer"
@@ -2168,10 +2164,6 @@
                     "ip_group_id": {
                         "description": "IP 组序号",
                         "type": "integer"
-                    },
-                    "sub_domain": {
-                        "description": "子域名（例如 @, www, blog, api）",
-                        "type": "string"
                     },
                     "type": {
                         "description": "记录类型（A、AAAA）",
@@ -2294,10 +2286,6 @@
                         "description": "DNS记录配置（JSON）",
                         "type": "string"
                     },
-                    "domain_name": {
-                        "description": "域名（例如 example.com）",
-                        "type": "string"
-                    },
                     "id": {
                         "description": "DNS记录序号",
                         "type": "integer"
@@ -2305,10 +2293,6 @@
                     "ip_group_id": {
                         "description": "IP 组序号（与 cdn_record_id 二选一）",
                         "type": "integer"
-                    },
-                    "sub_domain": {
-                        "description": "子域名（例如 @, www, blog, api）",
-                        "type": "string"
                     },
                     "type": {
                         "description": "记录类型（A、AAAA、CNAME）",

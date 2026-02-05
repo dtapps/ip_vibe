@@ -420,16 +420,6 @@ func DomainNameHasSuffix(v string) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldHasSuffix(FieldDomainName, v))
 }
 
-// DomainNameIsNil applies the IsNil predicate on the "domain_name" field.
-func DomainNameIsNil() predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldIsNull(FieldDomainName))
-}
-
-// DomainNameNotNil applies the NotNil predicate on the "domain_name" field.
-func DomainNameNotNil() predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldNotNull(FieldDomainName))
-}
-
 // DomainNameEqualFold applies the EqualFold predicate on the "domain_name" field.
 func DomainNameEqualFold(v string) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldEqualFold(FieldDomainName, v))
@@ -493,16 +483,6 @@ func FullDomainHasPrefix(v string) predicate.CDNRecord {
 // FullDomainHasSuffix applies the HasSuffix predicate on the "full_domain" field.
 func FullDomainHasSuffix(v string) predicate.CDNRecord {
 	return predicate.CDNRecord(sql.FieldHasSuffix(FieldFullDomain, v))
-}
-
-// FullDomainIsNil applies the IsNil predicate on the "full_domain" field.
-func FullDomainIsNil() predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldIsNull(FieldFullDomain))
-}
-
-// FullDomainNotNil applies the NotNil predicate on the "full_domain" field.
-func FullDomainNotNil() predicate.CDNRecord {
-	return predicate.CDNRecord(sql.FieldNotNull(FieldFullDomain))
 }
 
 // FullDomainEqualFold applies the EqualFold predicate on the "full_domain" field.

@@ -190,11 +190,6 @@ func (s *CDNRecordServiceImpl) CreateCdnRecord(ctx context.Context, request *typ
 // UpdateCdnRecord 更新 CDN 记录
 func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *types.UpdateCdnRecordRequest) error {
 
-	// 拼接完整域名，确保没有多余的点
-	request.SubDomain = utils.TrimDots(request.SubDomain)
-	request.DomainName = utils.TrimDots(request.DomainName)
-	fullDomain := request.SubDomain + "." + request.DomainName
-
 	// 查询CDN记录
 	firstCdnRecord, err := s.db.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(request.ID)).
@@ -208,12 +203,6 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 
 	// 更新CDN记录
 	updateCdnRecord := s.db.CDNRecord.UpdateOne(firstCdnRecord)
-
-	if request.SubDomain != "" && request.DomainName != "" {
-		// updateCdnRecord.SetSubDomain(request.SubDomain)
-		updateCdnRecord.SetDomainName(request.DomainName)
-		updateCdnRecord.SetFullDomain(fullDomain)
-	}
 
 	updateCdnRecord.SetType(cdnrecord.Type(request.Type))
 	updateCdnRecord.SetConfigJSON([]byte(request.ConfigJSON))

@@ -59,8 +59,6 @@ type CreateDnsRecordRequest struct {
 // 更新DNS记录 请求结构
 type UpdateDnsRecordRequest struct {
 	GetDnsRecordRequest
-	SubDomain   string `json:"sub_domain,omitempty" jsonschema:"子域名（例如 @, www, blog, api）"`                  // 子域名（例如 @, www, blog, api）
-	DomainName  string `json:"domain_name,omitempty" jsonschema:"域名名称（例如 example.com）"`                      // 域名（例如 example.com）
 	Type        string `json:"type" binding:"required" jsonschema:"记录类型（A、AAAA、CNAME）"`                      // 记录类型（A、AAAA、CNAME）
 	ConfigJSON  string `json:"config_json,omitempty" jsonschema:"DNS记录配置（JSON）"`                             // DNS记录配置（JSON）
 	IPGroupID   int64  `json:"ip_group_id,omitempty" jsonschema:"关联的IP组序号（与CDN记录序号二选一）"`                     // IP 组序号（与 cdn_record_id 二选一）
