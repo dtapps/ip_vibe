@@ -48,6 +48,7 @@ func (CronJobLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("handler_name").
+			Optional().
 			Comment("执行时的处理器名").
 			Annotations(entsql.WithComments(true)),
 

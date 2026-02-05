@@ -84,6 +84,20 @@ func (_c *CronJobCreate) SetHandlerArgs(v json.RawMessage) *CronJobCreate {
 	return _c
 }
 
+// SetTaskType sets the "task_type" field.
+func (_c *CronJobCreate) SetTaskType(v cronjob.TaskType) *CronJobCreate {
+	_c.mutation.SetTaskType(v)
+	return _c
+}
+
+// SetNillableTaskType sets the "task_type" field if the given value is not nil.
+func (_c *CronJobCreate) SetNillableTaskType(v *cronjob.TaskType) *CronJobCreate {
+	if v != nil {
+		_c.SetTaskType(*v)
+	}
+	return _c
+}
+
 // SetJobType sets the "job_type" field.
 func (_c *CronJobCreate) SetJobType(v cronjob.JobType) *CronJobCreate {
 	_c.mutation.SetJobType(v)
@@ -257,7 +271,9 @@ func (_c *CronJobCreate) Mutation() *CronJobMutation {
 
 // Save creates the CronJob in the database.
 func (_c *CronJobCreate) Save(ctx context.Context) (*CronJob, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -284,18 +300,31 @@ func (_c *CronJobCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *CronJobCreate) defaults() {
+func (_c *CronJobCreate) defaults() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if cronjob.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cronjob.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := cronjob.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if cronjob.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cronjob.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cronjob.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := _c.mutation.EntryID(); !ok {
+		if cronjob.DefaultEntryID == nil {
+			return fmt.Errorf("ent: uninitialized cronjob.DefaultEntryID (forgotten import ent/runtime?)")
+		}
 		v := cronjob.DefaultEntryID()
 		_c.mutation.SetEntryID(v)
+	}
+	if _, ok := _c.mutation.TaskType(); !ok {
+		v := cronjob.DefaultTaskType
+		_c.mutation.SetTaskType(v)
 	}
 	if _, ok := _c.mutation.JobType(); !ok {
 		v := cronjob.DefaultJobType
@@ -317,6 +346,7 @@ func (_c *CronJobCreate) defaults() {
 		v := cronjob.DefaultIsSingleton
 		_c.mutation.SetIsSingleton(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -344,6 +374,14 @@ func (_c *CronJobCreate) check() error {
 	if v, ok := _c.mutation.HandlerName(); ok {
 		if err := cronjob.HandlerNameValidator(v); err != nil {
 			return &ValidationError{Name: "handler_name", err: fmt.Errorf(`ent: validator failed for field "CronJob.handler_name": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.TaskType(); !ok {
+		return &ValidationError{Name: "task_type", err: errors.New(`ent: missing required field "CronJob.task_type"`)}
+	}
+	if v, ok := _c.mutation.TaskType(); ok {
+		if err := cronjob.TaskTypeValidator(v); err != nil {
+			return &ValidationError{Name: "task_type", err: fmt.Errorf(`ent: validator failed for field "CronJob.task_type": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.JobType(); !ok {
@@ -455,6 +493,10 @@ func (_c *CronJobCreate) createSpec() (*CronJob, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.HandlerArgs(); ok {
 		_spec.SetField(cronjob.FieldHandlerArgs, field.TypeJSON, value)
 		_node.HandlerArgs = value
+	}
+	if value, ok := _c.mutation.TaskType(); ok {
+		_spec.SetField(cronjob.FieldTaskType, field.TypeEnum, value)
+		_node.TaskType = value
 	}
 	if value, ok := _c.mutation.JobType(); ok {
 		_spec.SetField(cronjob.FieldJobType, field.TypeEnum, value)
@@ -595,6 +637,18 @@ func (u *CronJobUpsert) UpdateHandlerArgs() *CronJobUpsert {
 // ClearHandlerArgs clears the value of the "handler_args" field.
 func (u *CronJobUpsert) ClearHandlerArgs() *CronJobUpsert {
 	u.SetNull(cronjob.FieldHandlerArgs)
+	return u
+}
+
+// SetTaskType sets the "task_type" field.
+func (u *CronJobUpsert) SetTaskType(v cronjob.TaskType) *CronJobUpsert {
+	u.Set(cronjob.FieldTaskType, v)
+	return u
+}
+
+// UpdateTaskType sets the "task_type" field to the value that was provided on create.
+func (u *CronJobUpsert) UpdateTaskType() *CronJobUpsert {
+	u.SetExcluded(cronjob.FieldTaskType)
 	return u
 }
 
@@ -905,6 +959,20 @@ func (u *CronJobUpsertOne) UpdateHandlerArgs() *CronJobUpsertOne {
 func (u *CronJobUpsertOne) ClearHandlerArgs() *CronJobUpsertOne {
 	return u.Update(func(s *CronJobUpsert) {
 		s.ClearHandlerArgs()
+	})
+}
+
+// SetTaskType sets the "task_type" field.
+func (u *CronJobUpsertOne) SetTaskType(v cronjob.TaskType) *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetTaskType(v)
+	})
+}
+
+// UpdateTaskType sets the "task_type" field to the value that was provided on create.
+func (u *CronJobUpsertOne) UpdateTaskType() *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateTaskType()
 	})
 }
 
@@ -1415,6 +1483,20 @@ func (u *CronJobUpsertBulk) UpdateHandlerArgs() *CronJobUpsertBulk {
 func (u *CronJobUpsertBulk) ClearHandlerArgs() *CronJobUpsertBulk {
 	return u.Update(func(s *CronJobUpsert) {
 		s.ClearHandlerArgs()
+	})
+}
+
+// SetTaskType sets the "task_type" field.
+func (u *CronJobUpsertBulk) SetTaskType(v cronjob.TaskType) *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetTaskType(v)
+	})
+}
+
+// UpdateTaskType sets the "task_type" field to the value that was provided on create.
+func (u *CronJobUpsertBulk) UpdateTaskType() *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateTaskType()
 	})
 }
 

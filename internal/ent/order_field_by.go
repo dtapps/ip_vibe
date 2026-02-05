@@ -1885,6 +1885,31 @@ func (q *CronJobQuery) OrderByHandlerArgsAsc() *CronJobQuery {
 	return q.Order(Asc(cronjob.FieldHandlerArgs))
 }
 
+// OrderByTaskTypeDesc 按字段 task_type 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJob.Query().
+//	    OrderByTaskTypeDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobQuery) OrderByTaskTypeDesc() *CronJobQuery {
+	return q.Order(Desc(cronjob.FieldTaskType))
+}
+
+// OrderByTaskTypeAsc 按字段 task_type 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJob.Query().
+//	    OrderByTaskTypeAsc().
+//	    All(ctx)
+func (q *CronJobQuery) OrderByTaskTypeAsc() *CronJobQuery {
+	return q.Order(Asc(cronjob.FieldTaskType))
+}
+
 // OrderByJobTypeDesc 按字段 job_type 降序排列查询结果。
 // 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
 // 返回值类型为 *CronJobQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

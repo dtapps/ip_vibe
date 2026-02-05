@@ -7,16 +7,19 @@ import (
 	"log/slog"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
+	"vibe_ip/internal/provider/task"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
+	"go.dtapp.net/library/utils/gojson"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -244,32 +247,58 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, id int
 		return fmt.Errorf("更新CDN记录状态失败: %w", err)
 	}
 
-	return nil
+	// 同步任务状态
+	return s.handleCdnTaskStatus(ctx, s.db, firstCdnRecord, isActive)
 }
 
 // BatchUpdateCdnRecordActive 批量更新 CDN 记录启用状态
 func (s *CDNRecordServiceImpl) BatchUpdateCdnRecordActive(ctx context.Context, ids []int64, isActive bool) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
 	// 查询CDN记录
-	allCdnRecord, err := s.db.CDNRecord.Query().
+	allCdnRecord, err := tx.CDNRecord.Query().
 		Where(cdnrecord.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
+		tx.Rollback()
 		if ent.IsNotFound(err) {
 			return fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
 		}
 		return fmt.Errorf("查询CDN记录失败: %w", err)
 	}
 	if len(allCdnRecord) != len(ids) {
+		tx.Rollback()
 		return fmt.Errorf("查询CDN记录失败: 数量 %d 与请求数量 %d 不匹配", len(allCdnRecord), len(ids))
 	}
 
 	// 更新CDN记录状态
-	err = s.db.CDNRecord.Update().
+	err = tx.CDNRecord.Update().
 		Where(cdnrecord.IDIn(ids...)).
 		SetIsActive(isActive).
 		Exec(ctx)
 	if err != nil {
+		tx.Rollback()
 		return fmt.Errorf("更新CDN记录状态失败: %w", err)
+	}
+
+	// 同步任务状态
+	for _, record := range allCdnRecord {
+		err = s.handleCdnTaskStatus(ctx, tx.Client(), record, isActive)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("同步CDN任务状态失败: %w", err)
+		}
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
 	}
 
 	return nil
@@ -416,4 +445,58 @@ func (s *CDNRecordServiceImpl) HealthcheckCdnRecord(ctx context.Context, id int6
 	}
 
 	return results, nil
+}
+
+// handleCdnTaskStatus 处理 CDN 任务的状态同步
+func (s *CDNRecordServiceImpl) handleCdnTaskStatus(ctx context.Context, db *ent.Client, record *ent.CDNRecord, isActive bool) error {
+
+	// 状态
+	targetStatus := cronjob.StatusStopped
+	if isActive {
+		targetStatus = cronjob.StatusRunning
+	}
+
+	// 查找任务
+	job, err := db.CronJob.Query().
+		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeCdn)).
+		Where(cronjob.BusinessIDEQ(record.ID)).
+		First(ctx)
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return fmt.Errorf("查找任务失败: %w", err)
+		}
+
+		// 创建任务
+		err = db.CronJob.Create().
+			SetName("CDN同步: " + record.FullDomain).
+			SetHandlerName("cdn_sync").
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.CDNTaskArgs{
+				ID: record.ID,
+			}))).
+			SetTaskType(cronjob.TaskTypeRecurring).
+			SetJobType(cronjob.JobTypeRandom).
+			SetJobCategory(cronjob.JobCategorySystem).
+			SetBusinessType(cronjob.BusinessTypeCdn).
+			SetBusinessID(record.ID).
+			SetMinInterval(10).
+			SetMaxInterval(30).
+			SetIntervalUnit(cronjob.IntervalUnitMinutes).
+			SetStatus(targetStatus).
+			SetIsSingleton(true).
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("创建任务失败: %w", err)
+		}
+
+		return nil
+	}
+
+	err = db.CronJob.UpdateOne(job).
+		SetStatus(targetStatus).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新任务状态失败: %w", err)
+	}
+
+	return nil
 }

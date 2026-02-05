@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 )
@@ -27,6 +28,8 @@ const (
 	FieldHandlerName = "handler_name"
 	// FieldHandlerArgs holds the string denoting the handler_args field in the database.
 	FieldHandlerArgs = "handler_args"
+	// FieldTaskType holds the string denoting the task_type field in the database.
+	FieldTaskType = "task_type"
 	// FieldJobType holds the string denoting the job_type field in the database.
 	FieldJobType = "job_type"
 	// FieldJobCategory holds the string denoting the job_category field in the database.
@@ -64,6 +67,7 @@ var Columns = []string{
 	FieldName,
 	FieldHandlerName,
 	FieldHandlerArgs,
+	FieldTaskType,
 	FieldJobType,
 	FieldJobCategory,
 	FieldBusinessType,
@@ -88,7 +92,13 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "vibe_ip/internal/ent/runtime"
 var (
+	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -110,6 +120,32 @@ var (
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )
+
+// TaskType defines the type for the "task_type" enum field.
+type TaskType string
+
+// TaskTypeRecurring is the default value of the TaskType enum.
+const DefaultTaskType = TaskTypeRecurring
+
+// TaskType values.
+const (
+	TaskTypeOneOff    TaskType = "one_off"
+	TaskTypeRecurring TaskType = "recurring"
+)
+
+func (tt TaskType) String() string {
+	return string(tt)
+}
+
+// TaskTypeValidator is a validator for the "task_type" field enum values. It is called by the builders before save.
+func TaskTypeValidator(tt TaskType) error {
+	switch tt {
+	case TaskTypeOneOff, TaskTypeRecurring:
+		return nil
+	default:
+		return fmt.Errorf("cronjob: invalid enum value for task_type field: %q", tt)
+	}
+}
 
 // JobType defines the type for the "job_type" enum field.
 type JobType string
@@ -272,6 +308,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByHandlerName orders the results by the handler_name field.
 func ByHandlerName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldHandlerName, opts...).ToFunc()
+}
+
+// ByTaskType orders the results by the task_type field.
+func ByTaskType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTaskType, opts...).ToFunc()
 }
 
 // ByJobType orders the results by the job_type field.

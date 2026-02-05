@@ -351,6 +351,7 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "任务名称"},
 		{Name: "handler_name", Type: field.TypeString, Comment: "任务处理函数"},
 		{Name: "handler_args", Type: field.TypeJSON, Nullable: true, Comment: "任务处理函数参数"},
+		{Name: "task_type", Type: field.TypeEnum, Comment: "任务类型: one_off 一次性, recurring 周期性", Enums: []string{"one_off", "recurring"}, Default: "recurring"},
 		{Name: "job_type", Type: field.TypeEnum, Comment: "任务类型: cron cron 表达式, duration 固定间隔, random 随机间隔", Enums: []string{"cron", "duration", "random"}, Default: "cron"},
 		{Name: "job_category", Type: field.TypeEnum, Comment: "任务分类: system 系统内置, custom 用户自定义", Enums: []string{"system", "custom"}},
 		{Name: "business_type", Type: field.TypeEnum, Nullable: true, Comment: "业务类型: cdn, dns, ssl, system", Enums: []string{"cdn", "dns", "ssl", "system"}},
@@ -382,32 +383,32 @@ var (
 			{
 				Name:    "cronjob_job_type",
 				Unique:  false,
-				Columns: []*schema.Column{CronJobColumns[7]},
+				Columns: []*schema.Column{CronJobColumns[8]},
 			},
 			{
 				Name:    "cronjob_job_category",
 				Unique:  false,
-				Columns: []*schema.Column{CronJobColumns[8]},
+				Columns: []*schema.Column{CronJobColumns[9]},
 			},
 			{
 				Name:    "cronjob_business_type",
 				Unique:  false,
-				Columns: []*schema.Column{CronJobColumns[9]},
+				Columns: []*schema.Column{CronJobColumns[10]},
 			},
 			{
 				Name:    "cronjob_status",
 				Unique:  false,
-				Columns: []*schema.Column{CronJobColumns[17]},
+				Columns: []*schema.Column{CronJobColumns[18]},
 			},
 			{
 				Name:    "cronjob_business_type_business_id",
 				Unique:  false,
-				Columns: []*schema.Column{CronJobColumns[9], CronJobColumns[10]},
+				Columns: []*schema.Column{CronJobColumns[10], CronJobColumns[11]},
 			},
 			{
 				Name:    "cronjob_job_category_business_type_business_id",
 				Unique:  false,
-				Columns: []*schema.Column{CronJobColumns[8], CronJobColumns[9], CronJobColumns[10]},
+				Columns: []*schema.Column{CronJobColumns[9], CronJobColumns[10], CronJobColumns[11]},
 			},
 		},
 	}

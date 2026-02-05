@@ -1358,6 +1358,23 @@ var GetEsaSiteRecordHostPolicys = []string{
 // --------
 
 const (
+	CronJobTaskTypeOneOff    string = "one_off"   // 一次性
+	CronJobTaskTypeRecurring string = "recurring" // 周期性
+)
+
+// GetCronJobTaskTypeDescriptions 任务类型 说明映射
+var GetCronJobTaskTypeDescriptions = map[string]string{
+	CronJobTaskTypeOneOff:    "一次性",
+	CronJobTaskTypeRecurring: "周期性",
+}
+
+// GetCronJobTaskTypes 返回所有 任务类型
+var GetCronJobTaskTypes = []string{
+	CronJobTaskTypeOneOff,
+	CronJobTaskTypeRecurring,
+}
+
+const (
 	CronJobJobTypeCron     string = "cron"     // cron 表达式
 	CronJobJobTypeDuration string = "duration" // 固定间隔
 	CronJobJobTypeRandom   string = "random"   // 随机间隔

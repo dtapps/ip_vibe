@@ -1528,7 +1528,8 @@ func (c *CronJobClient) GetX(ctx context.Context, id int64) *CronJob {
 
 // Hooks returns the client hooks.
 func (c *CronJobClient) Hooks() []Hook {
-	return c.hooks.CronJob
+	hooks := c.hooks.CronJob
+	return append(hooks[:len(hooks):len(hooks)], cronjob.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

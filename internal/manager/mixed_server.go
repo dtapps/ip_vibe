@@ -23,23 +23,23 @@ type MixedServerManager struct {
 }
 
 var (
-	instance *MixedServerManager
-	once     sync.Once
+	instanceMixedServer *MixedServerManager
+	onceMixedServer     sync.Once
 )
 
 func NewMixedServerManager(addr string, ginMgr *gin_server.GinServerManager, grpcMgr *grpc_server.GRPCServerManager, logger *slog.Logger) *MixedServerManager {
-	once.Do(func() {
+	onceMixedServer.Do(func() {
 		if logger == nil {
 			logger = slog.Default()
 		}
-		instance = &MixedServerManager{
+		instanceMixedServer = &MixedServerManager{
 			addr:    addr,
 			ginMgr:  ginMgr,
 			grpcMgr: grpcMgr,
 			logger:  logger,
 		}
 	})
-	return instance
+	return instanceMixedServer
 }
 
 // Run 同时启动 Gin 和 gRPC 在同一个端口

@@ -76,6 +76,20 @@ func (_u *CronJobUpdate) ClearHandlerArgs() *CronJobUpdate {
 	return _u
 }
 
+// SetTaskType sets the "task_type" field.
+func (_u *CronJobUpdate) SetTaskType(v cronjob.TaskType) *CronJobUpdate {
+	_u.mutation.SetTaskType(v)
+	return _u
+}
+
+// SetNillableTaskType sets the "task_type" field if the given value is not nil.
+func (_u *CronJobUpdate) SetNillableTaskType(v *cronjob.TaskType) *CronJobUpdate {
+	if v != nil {
+		_u.SetTaskType(*v)
+	}
+	return _u
+}
+
 // SetJobType sets the "job_type" field.
 func (_u *CronJobUpdate) SetJobType(v cronjob.JobType) *CronJobUpdate {
 	_u.mutation.SetJobType(v)
@@ -315,7 +329,9 @@ func (_u *CronJobUpdate) Mutation() *CronJobMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *CronJobUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -342,11 +358,15 @@ func (_u *CronJobUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *CronJobUpdate) defaults() {
+func (_u *CronJobUpdate) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if cronjob.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cronjob.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cronjob.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -359,6 +379,11 @@ func (_u *CronJobUpdate) check() error {
 	if v, ok := _u.mutation.HandlerName(); ok {
 		if err := cronjob.HandlerNameValidator(v); err != nil {
 			return &ValidationError{Name: "handler_name", err: fmt.Errorf(`ent: validator failed for field "CronJob.handler_name": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.TaskType(); ok {
+		if err := cronjob.TaskTypeValidator(v); err != nil {
+			return &ValidationError{Name: "task_type", err: fmt.Errorf(`ent: validator failed for field "CronJob.task_type": %w`, err)}
 		}
 	}
 	if v, ok := _u.mutation.JobType(); ok {
@@ -431,6 +456,9 @@ func (_u *CronJobUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.HandlerArgsCleared() {
 		_spec.ClearField(cronjob.FieldHandlerArgs, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.TaskType(); ok {
+		_spec.SetField(cronjob.FieldTaskType, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.JobType(); ok {
 		_spec.SetField(cronjob.FieldJobType, field.TypeEnum, value)
@@ -563,6 +591,20 @@ func (_u *CronJobUpdateOne) AppendHandlerArgs(v json.RawMessage) *CronJobUpdateO
 // ClearHandlerArgs clears the value of the "handler_args" field.
 func (_u *CronJobUpdateOne) ClearHandlerArgs() *CronJobUpdateOne {
 	_u.mutation.ClearHandlerArgs()
+	return _u
+}
+
+// SetTaskType sets the "task_type" field.
+func (_u *CronJobUpdateOne) SetTaskType(v cronjob.TaskType) *CronJobUpdateOne {
+	_u.mutation.SetTaskType(v)
+	return _u
+}
+
+// SetNillableTaskType sets the "task_type" field if the given value is not nil.
+func (_u *CronJobUpdateOne) SetNillableTaskType(v *cronjob.TaskType) *CronJobUpdateOne {
+	if v != nil {
+		_u.SetTaskType(*v)
+	}
 	return _u
 }
 
@@ -818,7 +860,9 @@ func (_u *CronJobUpdateOne) Select(field string, fields ...string) *CronJobUpdat
 
 // Save executes the query and returns the updated CronJob entity.
 func (_u *CronJobUpdateOne) Save(ctx context.Context) (*CronJob, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -845,11 +889,15 @@ func (_u *CronJobUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *CronJobUpdateOne) defaults() {
+func (_u *CronJobUpdateOne) defaults() error {
 	if _, ok := _u.mutation.UpdatedAt(); !ok {
+		if cronjob.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cronjob.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cronjob.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -862,6 +910,11 @@ func (_u *CronJobUpdateOne) check() error {
 	if v, ok := _u.mutation.HandlerName(); ok {
 		if err := cronjob.HandlerNameValidator(v); err != nil {
 			return &ValidationError{Name: "handler_name", err: fmt.Errorf(`ent: validator failed for field "CronJob.handler_name": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.TaskType(); ok {
+		if err := cronjob.TaskTypeValidator(v); err != nil {
+			return &ValidationError{Name: "task_type", err: fmt.Errorf(`ent: validator failed for field "CronJob.task_type": %w`, err)}
 		}
 	}
 	if v, ok := _u.mutation.JobType(); ok {
@@ -951,6 +1004,9 @@ func (_u *CronJobUpdateOne) sqlSave(ctx context.Context) (_node *CronJob, err er
 	}
 	if _u.mutation.HandlerArgsCleared() {
 		_spec.ClearField(cronjob.FieldHandlerArgs, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.TaskType(); ok {
+		_spec.SetField(cronjob.FieldTaskType, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.JobType(); ok {
 		_spec.SetField(cronjob.FieldJobType, field.TypeEnum, value)

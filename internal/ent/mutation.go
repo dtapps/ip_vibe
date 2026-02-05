@@ -7079,6 +7079,7 @@ type CronJobMutation struct {
 	handler_name       *string
 	handler_args       *json.RawMessage
 	appendhandler_args json.RawMessage
+	task_type          *cronjob.TaskType
 	job_type           *cronjob.JobType
 	job_category       *cronjob.JobCategory
 	business_type      *cronjob.BusinessType
@@ -7448,6 +7449,42 @@ func (m *CronJobMutation) ResetHandlerArgs() {
 	m.handler_args = nil
 	m.appendhandler_args = nil
 	delete(m.clearedFields, cronjob.FieldHandlerArgs)
+}
+
+// SetTaskType sets the "task_type" field.
+func (m *CronJobMutation) SetTaskType(ct cronjob.TaskType) {
+	m.task_type = &ct
+}
+
+// TaskType returns the value of the "task_type" field in the mutation.
+func (m *CronJobMutation) TaskType() (r cronjob.TaskType, exists bool) {
+	v := m.task_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskType returns the old "task_type" field's value of the CronJob entity.
+// If the CronJob object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CronJobMutation) OldTaskType(ctx context.Context) (v cronjob.TaskType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskType: %w", err)
+	}
+	return oldValue.TaskType, nil
+}
+
+// ResetTaskType resets all changes to the "task_type" field.
+func (m *CronJobMutation) ResetTaskType() {
+	m.task_type = nil
 }
 
 // SetJobType sets the "job_type" field.
@@ -8078,7 +8115,7 @@ func (m *CronJobMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CronJobMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, cronjob.FieldCreatedAt)
 	}
@@ -8096,6 +8133,9 @@ func (m *CronJobMutation) Fields() []string {
 	}
 	if m.handler_args != nil {
 		fields = append(fields, cronjob.FieldHandlerArgs)
+	}
+	if m.task_type != nil {
+		fields = append(fields, cronjob.FieldTaskType)
 	}
 	if m.job_type != nil {
 		fields = append(fields, cronjob.FieldJobType)
@@ -8153,6 +8193,8 @@ func (m *CronJobMutation) Field(name string) (ent.Value, bool) {
 		return m.HandlerName()
 	case cronjob.FieldHandlerArgs:
 		return m.HandlerArgs()
+	case cronjob.FieldTaskType:
+		return m.TaskType()
 	case cronjob.FieldJobType:
 		return m.JobType()
 	case cronjob.FieldJobCategory:
@@ -8198,6 +8240,8 @@ func (m *CronJobMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldHandlerName(ctx)
 	case cronjob.FieldHandlerArgs:
 		return m.OldHandlerArgs(ctx)
+	case cronjob.FieldTaskType:
+		return m.OldTaskType(ctx)
 	case cronjob.FieldJobType:
 		return m.OldJobType(ctx)
 	case cronjob.FieldJobCategory:
@@ -8272,6 +8316,13 @@ func (m *CronJobMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetHandlerArgs(v)
+		return nil
+	case cronjob.FieldTaskType:
+		v, ok := value.(cronjob.TaskType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskType(v)
 		return nil
 	case cronjob.FieldJobType:
 		v, ok := value.(cronjob.JobType)
@@ -8519,6 +8570,9 @@ func (m *CronJobMutation) ResetField(name string) error {
 		return nil
 	case cronjob.FieldHandlerArgs:
 		m.ResetHandlerArgs()
+		return nil
+	case cronjob.FieldTaskType:
+		m.ResetTaskType()
 		return nil
 	case cronjob.FieldJobType:
 		m.ResetJobType()

@@ -161,19 +161,19 @@ func main() {
 	initialize.StartGoCron(ctx, global.GvaGocronSlog)
 
 	// 启动 CDN/DNS刷新任务
-	ipUpdateTask := tasks.NewIPUpdateTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-	if err := ipUpdateTask.StartCdnJob(ctx); err != nil {
-		slog.Error("启动 CDN/DNS刷新任务 失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
+	// ipUpdateTask := tasks.NewIPUpdateTask(
+	// 	global.GvaEntDb,
+	// 	global.GvaEntLogDb,
+	// 	global.GvaGoCron,
+	// 	global.GvaGocronSlog,
+	// 	global.GvaHttpLog,
+	// )
+	// if err := ipUpdateTask.StartCdnJob(ctx); err != nil {
+	// 	slog.Error("启动 CDN/DNS刷新任务 失败",
+	// 		slog.Any("err", err),
+	// 	)
+	// 	panic(err)
+	// }
 
 	// 启动 TUN 刷新任务
 	// tunUpdateTask := tasks.NewTUNUpdateTask(
@@ -304,6 +304,33 @@ func main() {
 	)
 	if err := clearDataTask.StartPeriodicTask(ctx); err != nil {
 		slog.Error("启动 清除数据任务失败",
+			slog.Any("err", err),
+		)
+		panic(err)
+	}
+
+	// 创建 定时任务 服务管理器
+	cronManager, err := manager.NewCronServerManager(
+		ctx,
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+	)
+	if err != nil {
+		slog.Error("创建 定时任务 服务管理器失败",
+			slog.Any("err", err),
+		)
+		panic(err)
+	}
+
+	// 注册任务处理器 (注入 CDN, DNS 等 Provider)
+	cronManager.InitHandlers(ctx)
+
+	// 从数据库加载并同步所有状态为 running 的任务到 gocron
+	if err := cronManager.LoadAllJobs(ctx); err != nil {
+		slog.Error("加载初始任务失败",
 			slog.Any("err", err),
 		)
 		panic(err)

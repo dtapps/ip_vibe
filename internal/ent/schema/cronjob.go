@@ -3,6 +3,7 @@ package schema
 import (
 	"encoding/json"
 	"vibe_ip/internal/ent/schema/schemadefault"
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -65,6 +66,12 @@ func (CronJob) Fields() []ent.Field {
 		field.JSON("handler_args", json.RawMessage{}).
 			Optional().
 			Comment("任务处理函数参数").
+			Annotations(entsql.WithComments(true)),
+
+		field.Enum("task_type").
+			Values(schematype.GetCronJobTaskTypes...).
+			Default(schematype.CronJobTaskTypeRecurring).
+			Comment("任务类型: one_off 一次性, recurring 周期性").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("job_type").
@@ -168,5 +175,12 @@ func (CronJob) Indexes() []ent.Index {
 		// 按任务分类+业务类型+业务序号排序
 		index.Fields("job_category", "business_type", "business_id").
 			Annotations(entsql.WithComments(true)),
+	}
+}
+
+// Hooks of the CronJob.
+func (CronJob) Hooks() []ent.Hook {
+	return []ent.Hook{
+		schemahook.CronJobLogHook(),
 	}
 }

@@ -239,6 +239,8 @@ func init() {
 	// cloudflarezonerecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	cloudflarezonerecord.IDValidator = cloudflarezonerecordDescID.Validators[0].(func(int64) error)
 	cronjobMixin := schema.CronJob{}.Mixin()
+	cronjobHooks := schema.CronJob{}.Hooks()
+	cronjob.Hooks[0] = cronjobHooks[0]
 	cronjobMixinFields0 := cronjobMixin[0].Fields()
 	_ = cronjobMixinFields0
 	cronjobFields := schema.CronJob{}.Fields()
@@ -266,15 +268,15 @@ func init() {
 	// cronjob.HandlerNameValidator is a validator for the "handler_name" field. It is called by the builders before save.
 	cronjob.HandlerNameValidator = cronjobDescHandlerName.Validators[0].(func(string) error)
 	// cronjobDescWithSeconds is the schema descriptor for with_seconds field.
-	cronjobDescWithSeconds := cronjobFields[10].Descriptor()
+	cronjobDescWithSeconds := cronjobFields[11].Descriptor()
 	// cronjob.DefaultWithSeconds holds the default value on creation for the with_seconds field.
 	cronjob.DefaultWithSeconds = cronjobDescWithSeconds.Default.(bool)
 	// cronjobDescMinInterval is the schema descriptor for min_interval field.
-	cronjobDescMinInterval := cronjobFields[12].Descriptor()
+	cronjobDescMinInterval := cronjobFields[13].Descriptor()
 	// cronjob.MinIntervalValidator is a validator for the "min_interval" field. It is called by the builders before save.
 	cronjob.MinIntervalValidator = cronjobDescMinInterval.Validators[0].(func(int) error)
 	// cronjobDescIsSingleton is the schema descriptor for is_singleton field.
-	cronjobDescIsSingleton := cronjobFields[16].Descriptor()
+	cronjobDescIsSingleton := cronjobFields[17].Descriptor()
 	// cronjob.DefaultIsSingleton holds the default value on creation for the is_singleton field.
 	cronjob.DefaultIsSingleton = cronjobDescIsSingleton.Default.(bool)
 	// cronjobDescID is the schema descriptor for id field.

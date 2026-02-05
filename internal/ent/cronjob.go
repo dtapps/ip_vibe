@@ -32,6 +32,8 @@ type CronJob struct {
 	HandlerName string `json:"handler_name,omitempty"`
 	// 任务处理函数参数
 	HandlerArgs json.RawMessage `json:"handler_args,omitempty"`
+	// 任务类型: one_off 一次性, recurring 周期性
+	TaskType cronjob.TaskType `json:"task_type,omitempty"`
 	// 任务类型: cron cron 表达式, duration 固定间隔, random 随机间隔
 	JobType cronjob.JobType `json:"job_type,omitempty"`
 	// 任务分类: system 系统内置, custom 用户自定义
@@ -70,7 +72,7 @@ func (*CronJob) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case cronjob.FieldID, cronjob.FieldBusinessID, cronjob.FieldIntervalValue, cronjob.FieldMinInterval, cronjob.FieldMaxInterval:
 			values[i] = new(sql.NullInt64)
-		case cronjob.FieldName, cronjob.FieldHandlerName, cronjob.FieldJobType, cronjob.FieldJobCategory, cronjob.FieldBusinessType, cronjob.FieldCronExpr, cronjob.FieldIntervalUnit, cronjob.FieldStatus:
+		case cronjob.FieldName, cronjob.FieldHandlerName, cronjob.FieldTaskType, cronjob.FieldJobType, cronjob.FieldJobCategory, cronjob.FieldBusinessType, cronjob.FieldCronExpr, cronjob.FieldIntervalUnit, cronjob.FieldStatus:
 			values[i] = new(sql.NullString)
 		case cronjob.FieldCreatedAt, cronjob.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -134,6 +136,12 @@ func (_m *CronJob) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &_m.HandlerArgs); err != nil {
 					return fmt.Errorf("unmarshal field handler_args: %w", err)
 				}
+			}
+		case cronjob.FieldTaskType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field task_type", values[i])
+			} else if value.Valid {
+				_m.TaskType = cronjob.TaskType(value.String)
 			}
 		case cronjob.FieldJobType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -260,6 +268,9 @@ func (_m *CronJob) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("handler_args=")
 	builder.WriteString(fmt.Sprintf("%v", _m.HandlerArgs))
+	builder.WriteString(", ")
+	builder.WriteString("task_type=")
+	builder.WriteString(fmt.Sprintf("%v", _m.TaskType))
 	builder.WriteString(", ")
 	builder.WriteString("job_type=")
 	builder.WriteString(fmt.Sprintf("%v", _m.JobType))

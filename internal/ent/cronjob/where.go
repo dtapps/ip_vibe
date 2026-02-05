@@ -375,6 +375,26 @@ func HandlerArgsNotNil() predicate.CronJob {
 	return predicate.CronJob(sql.FieldNotNull(FieldHandlerArgs))
 }
 
+// TaskTypeEQ applies the EQ predicate on the "task_type" field.
+func TaskTypeEQ(v TaskType) predicate.CronJob {
+	return predicate.CronJob(sql.FieldEQ(FieldTaskType, v))
+}
+
+// TaskTypeNEQ applies the NEQ predicate on the "task_type" field.
+func TaskTypeNEQ(v TaskType) predicate.CronJob {
+	return predicate.CronJob(sql.FieldNEQ(FieldTaskType, v))
+}
+
+// TaskTypeIn applies the In predicate on the "task_type" field.
+func TaskTypeIn(vs ...TaskType) predicate.CronJob {
+	return predicate.CronJob(sql.FieldIn(FieldTaskType, vs...))
+}
+
+// TaskTypeNotIn applies the NotIn predicate on the "task_type" field.
+func TaskTypeNotIn(vs ...TaskType) predicate.CronJob {
+	return predicate.CronJob(sql.FieldNotIn(FieldTaskType, vs...))
+}
+
 // JobTypeEQ applies the EQ predicate on the "job_type" field.
 func JobTypeEQ(v JobType) predicate.CronJob {
 	return predicate.CronJob(sql.FieldEQ(FieldJobType, v))
