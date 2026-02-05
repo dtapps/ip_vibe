@@ -240,7 +240,7 @@ async function onDeviceInfoPopup(id, name) {
     // 格式化
     const preList = deviceStatus.map(
       (d) =>
-        `${d.role} | ${d.version || "?"} | ${d.os}/${d.arch} | Go ${d.go_version || "?"} | built ${d.build_time ? fmtDate(d.build_time) : "?"} | start ${d.start_time ? fmtDate(d.start_time) : "?"} | get ${d.get_time ? fmtDate(d.get_time) : "?"}`,
+        `${d.role} | ${d.version || "?"} | ${d.os}/${d.arch} | Go ${d.go_version || "?"} | built ${d.build_time ? fmtDate(d.build_time) : "?"} | run ${d.run_time ? fmtDate(d.run_time) : "?"} | start ${d.start_time ? fmtDate(d.start_time) : "?"} | get ${d.get_time ? fmtDate(d.get_time) : "?"}`,
     );
 
     // 显示弹窗内容
