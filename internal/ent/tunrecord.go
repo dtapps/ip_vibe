@@ -28,13 +28,13 @@ type TUNRecord struct {
 	ConfigID int64 `json:"config_id,omitempty"`
 	// 平台侧记录ID
 	RecordID string `json:"record_id,omitempty"`
-	// 子域名（如 www, blog, api）
+	// 子域名（例如 @, www, blog, api）
 	SubDomain string `json:"sub_domain,omitempty"`
-	// 域名路径（如 /api/v1）
+	// 域名路径（例如 /api/v1）
 	DomainPath string `json:"domain_path,omitempty"`
 	// 服务类型
 	ServeType tunrecord.ServeType `json:"serve_type,omitempty"`
-	// 服务URI（如 127.0.0.1:8080）
+	// 服务URI（例如 127.0.0.1:8080）
 	ServeURI string `json:"serve_uri,omitempty"`
 	// TUN记录配置（JSON）
 	ConfigJSON json.RawMessage `json:"config_json,omitempty"`

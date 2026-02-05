@@ -30,11 +30,11 @@ type CDNRecord struct {
 	ConfigID int64 `json:"config_id,omitempty"`
 	// 平台侧记录ID
 	RecordID string `json:"record_id,omitempty"`
-	// 子域名（如 www, blog, api）
+	// 子域名（例如 @, www, blog, api）
 	SubDomain string `json:"sub_domain,omitempty"`
-	// 域名名称（如 example.com）
+	// 域名名称（例如 example.com）
 	DomainName string `json:"domain_name,omitempty"`
-	// 完整域名（如 www.example.com）
+	// 完整域名（例如 www.example.com）
 	FullDomain string `json:"full_domain,omitempty"`
 	// 记录类型（A、AAAA）
 	Type cdnrecord.Type `json:"type,omitempty"`

@@ -332,6 +332,21 @@ func (_c *CDNRecordCreate) check() error {
 	if _, ok := _c.mutation.SubDomain(); !ok {
 		return &ValidationError{Name: "sub_domain", err: errors.New(`ent: missing required field "CDNRecord.sub_domain"`)}
 	}
+	if v, ok := _c.mutation.SubDomain(); ok {
+		if err := cdnrecord.SubDomainValidator(v); err != nil {
+			return &ValidationError{Name: "sub_domain", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.sub_domain": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.DomainName(); ok {
+		if err := cdnrecord.DomainNameValidator(v); err != nil {
+			return &ValidationError{Name: "domain_name", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.domain_name": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.FullDomain(); ok {
+		if err := cdnrecord.FullDomainValidator(v); err != nil {
+			return &ValidationError{Name: "full_domain", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.full_domain": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "CDNRecord.type"`)}
 	}

@@ -367,6 +367,16 @@ func (_u *CDNRecordUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *CDNRecordUpdate) check() error {
+	if v, ok := _u.mutation.DomainName(); ok {
+		if err := cdnrecord.DomainNameValidator(v); err != nil {
+			return &ValidationError{Name: "domain_name", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.domain_name": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.FullDomain(); ok {
+		if err := cdnrecord.FullDomainValidator(v); err != nil {
+			return &ValidationError{Name: "full_domain", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.full_domain": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.GetType(); ok {
 		if err := cdnrecord.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.type": %w`, err)}
@@ -929,6 +939,16 @@ func (_u *CDNRecordUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *CDNRecordUpdateOne) check() error {
+	if v, ok := _u.mutation.DomainName(); ok {
+		if err := cdnrecord.DomainNameValidator(v); err != nil {
+			return &ValidationError{Name: "domain_name", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.domain_name": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.FullDomain(); ok {
+		if err := cdnrecord.FullDomainValidator(v); err != nil {
+			return &ValidationError{Name: "full_domain", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.full_domain": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.GetType(); ok {
 		if err := cdnrecord.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "CDNRecord.type": %w`, err)}

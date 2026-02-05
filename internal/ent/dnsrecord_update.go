@@ -342,6 +342,11 @@ func (_u *DNSRecordUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DNSRecordUpdate) check() error {
+	if v, ok := _u.mutation.FullDomain(); ok {
+		if err := dnsrecord.FullDomainValidator(v); err != nil {
+			return &ValidationError{Name: "full_domain", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.full_domain": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.GetType(); ok {
 		if err := dnsrecord.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.type": %w`, err)}
@@ -857,6 +862,11 @@ func (_u *DNSRecordUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *DNSRecordUpdateOne) check() error {
+	if v, ok := _u.mutation.FullDomain(); ok {
+		if err := dnsrecord.FullDomainValidator(v); err != nil {
+			return &ValidationError{Name: "full_domain", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.full_domain": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.GetType(); ok {
 		if err := dnsrecord.TypeValidator(v); err != nil {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.type": %w`, err)}

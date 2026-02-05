@@ -61,6 +61,18 @@ func init() {
 	cdnrecordDescConfigID := cdnrecordFields[1].Descriptor()
 	// cdnrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
 	cdnrecord.ConfigIDValidator = cdnrecordDescConfigID.Validators[0].(func(int64) error)
+	// cdnrecordDescSubDomain is the schema descriptor for sub_domain field.
+	cdnrecordDescSubDomain := cdnrecordFields[3].Descriptor()
+	// cdnrecord.SubDomainValidator is a validator for the "sub_domain" field. It is called by the builders before save.
+	cdnrecord.SubDomainValidator = cdnrecordDescSubDomain.Validators[0].(func(string) error)
+	// cdnrecordDescDomainName is the schema descriptor for domain_name field.
+	cdnrecordDescDomainName := cdnrecordFields[4].Descriptor()
+	// cdnrecord.DomainNameValidator is a validator for the "domain_name" field. It is called by the builders before save.
+	cdnrecord.DomainNameValidator = cdnrecordDescDomainName.Validators[0].(func(string) error)
+	// cdnrecordDescFullDomain is the schema descriptor for full_domain field.
+	cdnrecordDescFullDomain := cdnrecordFields[5].Descriptor()
+	// cdnrecord.FullDomainValidator is a validator for the "full_domain" field. It is called by the builders before save.
+	cdnrecord.FullDomainValidator = cdnrecordDescFullDomain.Validators[0].(func(string) error)
 	// cdnrecordDescIsActive is the schema descriptor for is_active field.
 	cdnrecordDescIsActive := cdnrecordFields[11].Descriptor()
 	// cdnrecord.DefaultIsActive holds the default value on creation for the is_active field.
@@ -198,6 +210,14 @@ func init() {
 	dnsrecordDescConfigID := dnsrecordFields[1].Descriptor()
 	// dnsrecord.ConfigIDValidator is a validator for the "config_id" field. It is called by the builders before save.
 	dnsrecord.ConfigIDValidator = dnsrecordDescConfigID.Validators[0].(func(int64) error)
+	// dnsrecordDescSubDomain is the schema descriptor for sub_domain field.
+	dnsrecordDescSubDomain := dnsrecordFields[3].Descriptor()
+	// dnsrecord.SubDomainValidator is a validator for the "sub_domain" field. It is called by the builders before save.
+	dnsrecord.SubDomainValidator = dnsrecordDescSubDomain.Validators[0].(func(string) error)
+	// dnsrecordDescFullDomain is the schema descriptor for full_domain field.
+	dnsrecordDescFullDomain := dnsrecordFields[5].Descriptor()
+	// dnsrecord.FullDomainValidator is a validator for the "full_domain" field. It is called by the builders before save.
+	dnsrecord.FullDomainValidator = dnsrecordDescFullDomain.Validators[0].(func(string) error)
 	// dnsrecordDescIsActive is the schema descriptor for is_active field.
 	dnsrecordDescIsActive := dnsrecordFields[11].Descriptor()
 	// dnsrecord.DefaultIsActive holds the default value on creation for the is_active field.

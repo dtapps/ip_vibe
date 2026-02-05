@@ -322,6 +322,16 @@ func (_c *DNSRecordCreate) check() error {
 	if _, ok := _c.mutation.SubDomain(); !ok {
 		return &ValidationError{Name: "sub_domain", err: errors.New(`ent: missing required field "DNSRecord.sub_domain"`)}
 	}
+	if v, ok := _c.mutation.SubDomain(); ok {
+		if err := dnsrecord.SubDomainValidator(v); err != nil {
+			return &ValidationError{Name: "sub_domain", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.sub_domain": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.FullDomain(); ok {
+		if err := dnsrecord.FullDomainValidator(v); err != nil {
+			return &ValidationError{Name: "full_domain", err: fmt.Errorf(`ent: validator failed for field "DNSRecord.full_domain": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "DNSRecord.type"`)}
 	}

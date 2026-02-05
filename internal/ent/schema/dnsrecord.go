@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
+	"vibe_ip/internal/ent/schema/schemavalidate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -57,6 +58,7 @@ func (DNSRecord) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("sub_domain").
+			Validate(schemavalidate.ValidateSubDomain).
 			Immutable().
 			Comment("子域名（例如 @, www, blog, api）").
 			Annotations(entsql.WithComments(true)),
@@ -69,6 +71,7 @@ func (DNSRecord) Fields() []ent.Field {
 
 		field.String("full_domain").
 			Optional().
+			Validate(schemavalidate.ValidateFullDomain).
 			// Immutable(). // 先兼容旧数据
 			Comment("完整域名（例如 www.example.com）").
 			Annotations(entsql.WithComments(true)),
