@@ -209,6 +209,19 @@ definitions:
     required:
     - ids
     type: object
+  vibe_ip_internal_types.BatchUpdateTaskStatusRequest:
+    properties:
+      ids:
+        description: 任务序号列表
+        items:
+          type: integer
+        type: array
+      status:
+        description: 任务状态
+        type: string
+    required:
+    - ids
+    type: object
   vibe_ip_internal_types.BatchUpdateTunRecordActiveRequest:
     properties:
       ids:
@@ -1393,32 +1406,6 @@ definitions:
     - cert_private_key
     - config_id
     type: object
-  vibe_ip_internal_types.JobData:
-    properties:
-      id:
-        description: 任务序号
-        type: string
-      last_run:
-        description: 上次运行时间
-        type: string
-      name:
-        description: 任务名称
-        type: string
-      next_run:
-        description: 下次运行时间
-        type: string
-      next_runs:
-        description: 下次运行时间列表
-        items:
-          type: string
-        type: array
-      schedule:
-        description: 任务调度表达式
-        type: string
-      schedule_detail:
-        description: 任务调度表达式详情
-        type: string
-    type: object
   vibe_ip_internal_types.SyncCloudflareTunnelsRequest:
     properties:
       config_id:
@@ -1831,6 +1818,53 @@ definitions:
       statistic_data_retain_time:
         description: 统计数据保留时间（天，默认 365 天）
         type: integer
+    type: object
+  vibe_ip_internal_types.UpdateTaskRequest:
+    properties:
+      cron_expr:
+        description: cron 表达式
+        type: string
+      id:
+        description: 任务序号
+        type: integer
+      interval_unit:
+        description: 间隔时间单位
+        type: string
+      interval_value:
+        description: 固定间隔值
+        type: integer
+      is_singleton:
+        description: 是否单例
+        type: boolean
+      job_type:
+        description: 任务类型
+        type: string
+      max_interval:
+        description: 随机最大值
+        type: integer
+      min_interval:
+        description: 随机最小值
+        type: integer
+      run_on_start:
+        description: 是否在启动时立即执行一次
+        type: boolean
+      with_seconds:
+        description: 是否包含秒
+        type: boolean
+    required:
+    - id
+    - job_type
+    type: object
+  vibe_ip_internal_types.UpdateTaskStatusRequest:
+    properties:
+      id:
+        description: 任务序号
+        type: integer
+      status:
+        description: 任务状态
+        type: string
+    required:
+    - id
     type: object
   vibe_ip_internal_types.UpdateTunRecordActiveRequest:
     properties:
@@ -3783,6 +3817,120 @@ paths:
       summary: 同步Esa站点
       tags:
       - ESASite
+  /gocrons/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除任务
+      parameters:
+      - description: 任务 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 删除任务
+      tags:
+      - 调度器
+    post:
+      consumes:
+      - application/json
+      description: 运行任务
+      parameters:
+      - description: 任务 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 运行任务
+      tags:
+      - 调度器
+  /gocrons/clean-all:
+    post:
+      consumes:
+      - application/json
+      description: 清理所有任务
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 清理所有任务
+      tags:
+      - 调度器
+  /gocrons/start-scheduler:
+    post:
+      consumes:
+      - application/json
+      description: 启动调度器
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 启动调度器
+      tags:
+      - 调度器
+  /gocrons/stop-scheduler:
+    post:
+      consumes:
+      - application/json
+      description: 停止调度器
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/internal_handlers.APIResponse'
+      summary: 停止调度器
+      tags:
+      - 任务
   /ip-groups:
     get:
       consumes:
@@ -5384,43 +5532,24 @@ paths:
       summary: 导入SSL记录
       tags:
       - SSL记录
-  /tasks:
-    get:
-      consumes:
-      - application/json
-      description: 获取全部任务
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功响应
-          schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/vibe_ip_internal_types.JobData'
-                  type: array
-              type: object
-        "404":
-          description: 错误响应
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 获取全部任务
-      tags:
-      - 任务
   /tasks/{id}:
-    delete:
+    patch:
       consumes:
       - application/json
-      description: 删除任务
+      description: 更新任务
       parameters:
-      - description: 任务 ID
+      - description: 任务序号
+        format: int64
         in: path
         name: id
         required: true
-        type: string
+        type: integer
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.UpdateTaskRequest'
       produces:
       - application/json
       responses:
@@ -5436,52 +5565,27 @@ paths:
           description: 错误响应
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 删除任务
+      summary: 更新任务
       tags:
       - 任务
-    get:
+  /tasks/{id}/active:
+    patch:
       consumes:
       - application/json
-      description: 获取任务详情
+      description: 更新任务状态
       parameters:
-      - description: 任务 ID
+      - description: 任务序号
+        format: int64
         in: path
         name: id
         required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功响应
-          schema:
-            allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/vibe_ip_internal_types.JobData'
-              type: object
-        "400":
-          description: 参数错误
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-        "404":
-          description: 错误响应
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 获取任务详情
-      tags:
-      - 任务
-    post:
-      consumes:
-      - application/json
-      description: 运行任务
-      parameters:
-      - description: 任务 ID
-        in: path
-        name: id
+        type: integer
+      - description: 请求参数
+        in: body
+        name: request
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.UpdateTaskStatusRequest'
       produces:
       - application/json
       responses:
@@ -5497,14 +5601,21 @@ paths:
           description: 错误响应
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 运行任务
+      summary: 更新任务状态
       tags:
       - 任务
-  /tasks/clean-all:
-    post:
+  /tasks/batch/active:
+    patch:
       consumes:
       - application/json
-      description: 清理所有任务
+      description: 批量更新任务状态
+      parameters:
+      - description: 请求参数
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/vibe_ip_internal_types.BatchUpdateTaskStatusRequest'
       produces:
       - application/json
       responses:
@@ -5512,49 +5623,15 @@ paths:
           description: 成功响应
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
-        "404":
-          description: 错误响应
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 清理所有任务
-      tags:
-      - 任务
-  /tasks/start-scheduler:
-    post:
-      consumes:
-      - application/json
-      description: 启动调度器
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功响应
+        "400":
+          description: 参数错误
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
         "404":
           description: 错误响应
           schema:
             $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 启动调度器
-      tags:
-      - 任务
-  /tasks/stop-scheduler:
-    post:
-      consumes:
-      - application/json
-      description: 停止调度器
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功响应
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-        "404":
-          description: 错误响应
-          schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
-      summary: 停止调度器
+      summary: 批量更新任务状态
       tags:
       - 任务
   /tun-records:

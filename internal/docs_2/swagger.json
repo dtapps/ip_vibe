@@ -2894,6 +2894,179 @@
                 }
             }
         },
+        "/gocrons/clean-all": {
+            "post": {
+                "description": "清理所有任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "调度器"
+                ],
+                "summary": "清理所有任务",
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/gocrons/start-scheduler": {
+            "post": {
+                "description": "启动调度器",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "调度器"
+                ],
+                "summary": "启动调度器",
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/gocrons/stop-scheduler": {
+            "post": {
+                "description": "停止调度器",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "任务"
+                ],
+                "summary": "停止调度器",
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/gocrons/{id}": {
+            "post": {
+                "description": "运行任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "调度器"
+                ],
+                "summary": "运行任务",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "任务 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "删除任务",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "调度器"
+                ],
+                "summary": "删除任务",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "任务 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/ip-groups": {
             "get": {
                 "description": "获取全部IP组",
@@ -5396,9 +5569,9 @@
                 }
             }
         },
-        "/tasks": {
-            "get": {
-                "description": "获取全部任务",
+        "/tasks/batch/active": {
+            "patch": {
+                "description": "批量更新任务状态",
                 "consumes": [
                     "application/json"
                 ],
@@ -5408,51 +5581,18 @@
                 "tags": [
                     "任务"
                 ],
-                "summary": "获取全部任务",
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
+                "summary": "批量更新任务状态",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/vibe_ip_internal_types.JobData"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.BatchUpdateTaskStatusRequest"
                         }
                     }
-                }
-            }
-        },
-        "/tasks/clean-all": {
-            "post": {
-                "description": "清理所有任务",
-                "consumes": [
-                    "application/json"
                 ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "任务"
-                ],
-                "summary": "清理所有任务",
                 "responses": {
                     "200": {
                         "description": "成功响应",
@@ -5460,60 +5600,8 @@
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
                     },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tasks/start-scheduler": {
-            "post": {
-                "description": "启动调度器",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "任务"
-                ],
-                "summary": "启动调度器",
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tasks/stop-scheduler": {
-            "post": {
-                "description": "停止调度器",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "任务"
-                ],
-                "summary": "停止调度器",
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
+                    "400": {
+                        "description": "参数错误",
                         "schema": {
                             "$ref": "#/definitions/internal_handlers.APIResponse"
                         }
@@ -5528,8 +5616,8 @@
             }
         },
         "/tasks/{id}": {
-            "get": {
-                "description": "获取任务详情",
+            "patch": {
+                "description": "更新任务",
                 "consumes": [
                     "application/json"
                 ],
@@ -5539,68 +5627,24 @@
                 "tags": [
                     "任务"
                 ],
-                "summary": "获取任务详情",
+                "summary": "更新任务",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "任务 ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "任务序号",
                         "name": "id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功响应",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/vibe_ip_internal_types.JobData"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
                     },
-                    "400": {
-                        "description": "参数错误",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "错误响应",
-                        "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "运行任务",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "任务"
-                ],
-                "summary": "运行任务",
-                "parameters": [
                     {
-                        "type": "string",
-                        "description": "任务 ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.UpdateTaskRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -5623,9 +5667,11 @@
                         }
                     }
                 }
-            },
-            "delete": {
-                "description": "删除任务",
+            }
+        },
+        "/tasks/{id}/active": {
+            "patch": {
+                "description": "更新任务状态",
                 "consumes": [
                     "application/json"
                 ],
@@ -5635,14 +5681,24 @@
                 "tags": [
                     "任务"
                 ],
-                "summary": "删除任务",
+                "summary": "更新任务状态",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "任务 ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "任务序号",
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.UpdateTaskStatusRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -7071,6 +7127,25 @@
                 "is_active": {
                     "description": "是否活跃",
                     "type": "boolean"
+                }
+            }
+        },
+        "vibe_ip_internal_types.BatchUpdateTaskStatusRequest": {
+            "type": "object",
+            "required": [
+                "ids"
+            ],
+            "properties": {
+                "ids": {
+                    "description": "任务序号列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "status": {
+                    "description": "任务状态",
+                    "type": "string"
                 }
             }
         },
@@ -8717,42 +8792,6 @@
                 }
             }
         },
-        "vibe_ip_internal_types.JobData": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "任务序号",
-                    "type": "string"
-                },
-                "last_run": {
-                    "description": "上次运行时间",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "任务名称",
-                    "type": "string"
-                },
-                "next_run": {
-                    "description": "下次运行时间",
-                    "type": "string"
-                },
-                "next_runs": {
-                    "description": "下次运行时间列表",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "schedule": {
-                    "description": "任务调度表达式",
-                    "type": "string"
-                },
-                "schedule_detail": {
-                    "description": "任务调度表达式详情",
-                    "type": "string"
-                }
-            }
-        },
         "vibe_ip_internal_types.SyncCloudflareTunnelsRequest": {
             "type": "object",
             "required": [
@@ -9326,6 +9365,71 @@
                 "statistic_data_retain_time": {
                     "description": "统计数据保留时间（天，默认 365 天）",
                     "type": "integer"
+                }
+            }
+        },
+        "vibe_ip_internal_types.UpdateTaskRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "job_type"
+            ],
+            "properties": {
+                "cron_expr": {
+                    "description": "cron 表达式",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "任务序号",
+                    "type": "integer"
+                },
+                "interval_unit": {
+                    "description": "间隔时间单位",
+                    "type": "string"
+                },
+                "interval_value": {
+                    "description": "固定间隔值",
+                    "type": "integer"
+                },
+                "is_singleton": {
+                    "description": "是否单例",
+                    "type": "boolean"
+                },
+                "job_type": {
+                    "description": "任务类型",
+                    "type": "string"
+                },
+                "max_interval": {
+                    "description": "随机最大值",
+                    "type": "integer"
+                },
+                "min_interval": {
+                    "description": "随机最小值",
+                    "type": "integer"
+                },
+                "run_on_start": {
+                    "description": "是否在启动时立即执行一次",
+                    "type": "boolean"
+                },
+                "with_seconds": {
+                    "description": "是否包含秒",
+                    "type": "boolean"
+                }
+            }
+        },
+        "vibe_ip_internal_types.UpdateTaskStatusRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "description": "任务序号",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "任务状态",
+                    "type": "string"
                 }
             }
         },
