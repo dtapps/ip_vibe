@@ -53,12 +53,13 @@ func Gocron(c *gin.Context) {
 	}
 
 	// 渲染模板
-	renderHTML(
+	renderHTMLWithMenu(
 		c,
 		filepath.Join("pages", "gocron.html"),
 		types.BasePageData[types.GocronResponse]{
 			Title: "任务记录",
 			Data:  pageData,
 		},
+		"task",
 	)
 }

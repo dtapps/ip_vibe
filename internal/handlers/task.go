@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 	"path/filepath"
-	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
@@ -23,23 +23,16 @@ func Task(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.TaskResponse{
-		CommonPageResponse: types.CommonPageResponse[types.GetTaskResponse, types.TaskRequest]{
+		CommonPageResponse: types.CommonPageResponse[ent.CronJob, types.TaskRequest]{
 			Filter: requestParams,
-			List:   []types.GetTaskResponse{},
+			List:   []ent.CronJob{},
 		},
 	}
-
-	// 创建服务
-	taskService := service.NewTaskService(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGinSlog,
-	)
 
 	// 查询全部SSL记录
 	allTask, err := global.GvaEntDb.CronJob.Query().
 		WhereIf(requestParams.ID > 0, cronjob.IDEQ(requestParams.ID)).
-		WhereIf(requestParams.EntryID != "", cronjob.EntryIDEQ(uuid.MustParse(requestParams.EntryID))).
+		WhereIf(requestParams.EntryID != uuid.Nil, cronjob.EntryIDEQ(requestParams.EntryID)).
 		WhereIf(requestParams.Name != "", cronjob.NameContains(requestParams.Name)).
 		WhereIf(requestParams.TaskType != "", cronjob.TaskTypeEQ(cronjob.TaskType(requestParams.TaskType))).
 		WhereIf(requestParams.JobType != "", cronjob.JobTypeEQ(cronjob.JobType(requestParams.JobType))).
@@ -51,12 +44,7 @@ func Task(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allTask.Items {
-			list, err := taskService.BuildResponse(c, item)
-			if err != nil {
-				errorResponse(c, http.StatusNotFound, err.Error())
-				return
-			}
-			pageData.List = append(pageData.List, *list)
+			pageData.List = append(pageData.List, *item)
 		}
 	}
 

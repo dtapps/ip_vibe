@@ -352,7 +352,7 @@ var (
 		{Name: "handler_name", Type: field.TypeString, Comment: "任务处理函数"},
 		{Name: "handler_args", Type: field.TypeJSON, Nullable: true, Comment: "任务处理函数参数"},
 		{Name: "task_type", Type: field.TypeEnum, Comment: "任务类型: one_off 一次性, recurring 周期性", Enums: []string{"one_off", "recurring"}, Default: "recurring"},
-		{Name: "job_type", Type: field.TypeEnum, Comment: "任务类型: cron cron 表达式, duration 固定间隔, random 随机间隔", Enums: []string{"cron", "duration", "random"}, Default: "cron"},
+		{Name: "job_type", Type: field.TypeEnum, Comment: "运行类型: cron cron 表达式, duration 固定间隔, random 随机间隔", Enums: []string{"cron", "duration", "random"}, Default: "cron"},
 		{Name: "job_category", Type: field.TypeEnum, Comment: "任务分类: system 系统内置, custom 用户自定义", Enums: []string{"system", "custom"}},
 		{Name: "business_type", Type: field.TypeEnum, Nullable: true, Comment: "业务类型: cdn, dns, ssl, system", Enums: []string{"cdn", "dns", "ssl", "system"}},
 		{Name: "business_id", Type: field.TypeInt64, Nullable: true, Comment: "业务序号"},
@@ -363,7 +363,8 @@ var (
 		{Name: "max_interval", Type: field.TypeInt, Nullable: true, Comment: "随机最大值 (配合 interval_unit 使用)"},
 		{Name: "interval_unit", Type: field.TypeEnum, Comment: "间隔时间单位 (用于 duration 和 random 模式)", Enums: []string{"seconds", "minutes", "hours", "days", "weeks"}, Default: "minutes"},
 		{Name: "status", Type: field.TypeEnum, Comment: "状态: running 运行中, stopped 已停止", Enums: []string{"running", "stopped"}, Default: "stopped"},
-		{Name: "is_singleton", Type: field.TypeBool, Comment: "是否单例", Default: true},
+		{Name: "is_singleton", Type: field.TypeBool, Comment: "是否单例: true 单例, false 非单例", Default: true},
+		{Name: "run_on_start", Type: field.TypeBool, Comment: "是否在启动时立即执行一次: true 立即执行, false 不立即执行", Default: false},
 	}
 	// CronJobTable holds the schema information for the "cron_job" table.
 	CronJobTable = &schema.Table{

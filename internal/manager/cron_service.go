@@ -248,12 +248,12 @@ func (m *CronServerManager) addJobToCron(j *ent.CronJob) error {
 	}
 
 	// 立即开始
-	// if j.IsStartImmediately {
-	// 	opts = append(
-	// 		opts,
-	// 		gocron.WithStartAt(gocron.WithStartImmediately()),
-	// 	)
-	// }
+	if j.RunOnStart {
+		opts = append(
+			opts,
+			gocron.WithStartAt(gocron.WithStartImmediately()),
+		)
+	}
 
 	// 任务编号
 	opts = append(

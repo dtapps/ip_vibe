@@ -1,7 +1,6 @@
 {{ define "content" }}
 
 {{/* 初始化局部变量 */}}
-{{ $status := .Data.Status }}
 {{ $list := .Data.List }}
 {{ $page := .Data.Page }}
 {{ $total := .Data.Total }}
@@ -16,80 +15,203 @@
 </h1>
 
 <div class="ui-panel">
+  <div class="tabs tabs-lifted px-6 pt-4">
+    <a class="tab tab-active font-bold">管理 (Task)</a>
+    <a href="/gocron" class="tab">实时 (Gocron)</a>
+  </div>
+
   <div class="ui-header">
     <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "i-lucide-list-todo") }} 任务管理（Task）
     </h2>
     <div class="flex gap-2">
-      {{if eq $status "running"}}
-      <button class="btn btn-warning btn-sm rounded-xl opacity-50 cursor-not-allowed" disabled>
-        {{ template "icons" (dict "Name" "i-lucide-play") }} 启动调度
-      </button>
-      <button class="btn btn-error btn-sm rounded-xl text-white shadow-md" onclick="stopTaskScheduler()">
-        {{ template "icons" (dict "Name" "i-lucide-square") }} 停止调度
-      </button>
-      <button class="btn btn-warning btn-sm rounded-xl opacity-50 cursor-not-allowed" disabled>
-        {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 清理任务
-      </button>
-      {{else}}
-      <button class="btn btn-warning btn-sm rounded-xl text-warning-content shadow-md" onclick="startTaskScheduler()">
-        {{ template "icons" (dict "Name" "i-lucide-play") }} 启动调度
-      </button>
-      <button class="btn btn-error btn-sm rounded-xl opacity-50 cursor-not-allowed" disabled>
-        {{ template "icons" (dict "Name" "i-lucide-square") }} 停止调度
-      </button>
-      <button class="btn btn-warning btn-sm rounded-xl text-warning-content shadow-md" onclick="cleanTask()">
-        {{ template "icons" (dict "Name" "i-lucide-trash-2") }} 清理任务
-      </button>
-      {{end}}
     </div>
   </div>
 
   <div class="ui-table-container">
-    <table class="ui-table">
+    <table class="ui-table table-fixed">
       <thead>
         <tr>
-          <th class="ui-th text-left">编号</th>
-          <th class="ui-th">任务名称</th>
-          <th class="ui-th">调度表达式 (Cron)</th>
-          <th class="ui-th">上次执行时间</th>
-          <th class="ui-th text-center">操作</th>
+          <th class="ui-th w-72 text-left">任务标识</th>
+          <th class="ui-th w-1/4 text-left">任务名称 & 执行逻辑</th>
+          <th class="ui-th text-center">业务与分类</th>
+          <th class="ui-th text-center w-60">调度策略</th>
+          <th class="ui-th text-center w-32">行为与状态</th>
+          <th class="ui-th text-center w-36">操作</th>
         </tr>
       </thead>
       <tbody id="table">
         {{ range $list }}
         {{ $apiUrlPath := printf "%s/%d" $baseApiUrlPath .ID }}
         {{ $webUrlPath := printf "%s/%d" $baseWebUrlPath .ID }}
-        <tr class="hover:bg-base-200/50 transition-colors">
-          <td class="ui-td text-left font-mono text-xs opacity-50">
-            {{.ID}}
+        <tr class="hover:bg-base-200/50 transition-all border-b border-base-200/50 group">
+
+          <td class="ui-td text-left">
+            <div class="flex flex-col gap-1.5">
+              <div class="flex items-center gap-2">
+                <span class="badge badge-neutral badge-xs font-mono font-bold">
+                  #{{.ID}}
+                </span>
+                <span class="text-[10px] font-black text-primary uppercase tracking-tighter">
+                  Entry-ID
+                </span>
+              </div>
+              <code
+                class="text-[11px] font-mono bg-base-300/40 px-2 py-1 rounded-md break-all leading-relaxed border border-base-300/50">
+              {{.EntryID}}
+            </code>
+            </div>
           </td>
 
-          <td class="ui-td font-bold text-base-content">
-            {{.Name}}
+          <td class="ui-td text-left">
+            <div class="flex flex-col gap-2">
+              <span
+                class="font-black text-base-content text-[15px] tracking-tight group-hover:text-primary transition-colors">
+                {{.Name}}
+              </span>
+              <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[9px] opacity-40 font-bold uppercase">
+                    Func:
+                  </span>
+                  <code class="text-[10px] text-primary/80 font-bold bg-primary/5 px-1 rounded">
+                    {{.HandlerName}}
+                  </code>
+                </div>
+                {{ if .HandlerArgs }}
+                <div class="flex items-start gap-1.5">
+                  <span class="text-[9px] opacity-40 font-bold uppercase mt-0.5">Args:</span>
+                  <code class="text-[10px] opacity-60 break-all bg-base-200/50 px-1 rounded font-mono">
+                    {{ marshalJSON .HandlerArgs}}
+                  </code>
+                </div>
+                {{ end }}
+              </div>
+            </div>
           </td>
 
-          <td class="ui-td font-mono text-sm">
-            <span class="badge badge-ghost font-mono text-primary">
-              {{.ScheduleDetail}}
-            </span>
+          <td class="ui-td text-center">
+            <div class="flex flex-col items-center gap-2">
+              <div class="flex gap-1">
+                <span
+                  class='badge {{ if eq .TaskType "one_off" }}badge-secondary{{ else }}badge-outline{{ end }} badge-xs font-black text-[9px] px-2 py-2'>
+                  {{fieldEnumLabel "cron_job_task_type" .TaskType}}
+                </span>
+                <span class="badge badge-ghost badge-xs font-black text-[9px] px-2 py-2 uppercase tracking-tighter">
+                  {{fieldEnumLabel "cron_job_job_category" .JobCategory}}
+                </span>
+              </div>
+              {{ if .BusinessType }}
+              <div class="bg-primary/5 border border-primary/10 rounded-full px-2 py-0.5 flex items-center gap-1">
+                <span class="text-[10px] font-black text-primary uppercase">
+                  {{fieldEnumLabel "cron_job_business_type" .BusinessType}}
+                </span>
+                <span class="text-[10px] opacity-30 font-mono italic">
+                  #{{.BusinessID}}
+                </span>
+              </div>
+              {{ end }}
+            </div>
           </td>
 
-          <td class="ui-td text-xs opacity-60">
-            {{.LastRun}}
+          <td class="ui-td text-center">
+            <div
+              class="bg-base-200/50 rounded-2xl p-3 border border-base-300/50 inline-flex flex-col items-center min-w-[170px]">
+              <span class="text-[9px] font-black uppercase opacity-30 tracking-[0.2em] mb-1">
+                {{fieldEnumLabel "cron_job_job_type" .JobType}}
+              </span>
+              {{ if eq .JobType "cron" }}
+              <span class="text-sm font-black text-primary font-mono tracking-tighter">
+                {{.CronExpr}}
+              </span>
+              {{ if .WithSeconds }}
+              <span class="text-[8px] text-error font-bold mt-1 tracking-widest opacity-80 uppercase italic">
+                启动秒级
+              </span>
+              {{ end }}
+              {{ else if eq .JobType "duration" }}
+              <div class="flex items-baseline gap-1">
+                <span class="text-sm font-black text-info">
+                  {{.IntervalValue}}
+                </span>
+                <span class="text-[10px] font-bold opacity-50 uppercase">
+                  {{fieldEnumLabel "cron_job_interval_unit" .IntervalUnit}}
+                </span>
+              </div>
+              {{ else if eq .JobType "random" }}
+              <div class="flex flex-col items-center">
+                <div class="text-sm font-black text-warning tracking-tighter">
+                  {{.MinInterval}}-{{.MaxInterval}}
+                </div>
+                <div class="text-[9px] font-bold opacity-50 uppercase italic">
+                  {{fieldEnumLabel "cron_job_interval_unit" .IntervalUnit}}
+                </div>
+              </div>
+              {{ end }}
+            </div>
           </td>
 
-          <td class="ui-td">
-            <div class="flex justify-center gap-2">
-              <button class="btn btn-sm btn-outline btn-info rounded-lg px-4"
-                onclick="onNextRunPopup('{{.ID}}','{{.Name}}')">
-                {{ template "icons" (dict "Name" "i-lucide-eye") }} 下次时间
+          <td class="ui-td text-center">
+            <div class="flex flex-col items-center gap-2">
+              {{ if eq .Status "running" }}
+              <div
+                class="badge badge-success badge-sm py-2.5 font-black text-[10px] tracking-widest shadow-lg shadow-success/10">
+                {{fieldEnumLabel "cron_job_status" .Status}}
+              </div>
+              {{ else }}
+              <div class="badge badge-ghost badge-sm py-2.5 font-black text-[10px] tracking-widest opacity-30">
+                {{fieldEnumLabel "cron_job_status" .Status}}
+              </div>
+              {{ end }}
+
+              <div class="flex flex-wrap justify-center gap-1.5 mt-1">
+                {{ if .IsSingleton }}
+                <div
+                  class="flex items-center gap-1 text-[9px] font-black text-info uppercase tracking-tighter bg-info/5 px-1.5 py-0.5 rounded border border-info/20">
+                  <span class="w-1.5 h-1.5 rounded-full bg-info animate-pulse"></span> 单例
+                </div>
+                {{ end }}
+
+                {{ if .RunOnStart }}
+                <div
+                  class="flex items-center gap-1 text-[9px] font-black text-warning uppercase tracking-tighter bg-warning/5 px-1.5 py-0.5 rounded border border-warning/20">
+                  <span class="w-1.5 h-1.5 rounded-full bg-warning"></span> 启动运行
+                </div>
+                {{ end }}
+              </div>
+            </div>
+          </td>
+
+          <td class="ui-td text-center">
+            {{ $statusApiUrlPath := join $apiUrlPath "/status" }}
+            <div class="flex justify-center gap-1.5">
+              <button
+                class="btn btn-square btn-xs btn-outline btn-info border-none bg-info/10 hover:bg-info transition-all tooltip"
+                data-tip="查看日志" onclick="onLogPopup('{{.ID}}')">
+                {{ template "icons" (dict "Name" "i-lucide-scroll-text" "Class" "w-3.5 h-3.5") }}
               </button>
-              <button class="btn btn-success btn-sm rounded-lg px-4 text-white" onclick="runTask('{{.ID}}')">
-                {{ template "icons" (dict "Name" "i-lucide-zap") }} 立即运行
+              <button
+                class='btn btn-square btn-xs btn-outline {{ if eq .Status "running" }}btn-warning bg-warning/10{{ else }}btn-success bg-success/10{{ end }} border-none'
+                data-url="{{$statusApiUrlPath}}" data-data-key="status"
+                data-data-value='{{ if eq .Status "running" }}stopped{{ else }}running{{ end }}'
+                onclick="handleStatusAction(this)">
+                {{ if eq .Status "running" }}
+                <span class="tooltip" data-tip="暂停任务">
+                  {{ template "icons" (dict "Name" "i-lucide-pause-circle" "Class" "w-3.5 h-3.5") }}
+                </span>
+                {{ else }}
+                <span class="tooltip" data-tip="启动任务">
+                  {{ template "icons" (dict "Name" "i-lucide-play-circle" "Class" "w-3.5 h-3.5") }}
+                </span>
+                {{ end }}
+              </button>
+              <button class="btn btn-square btn-xs btn-outline btn-ghost opacity-40 hover:opacity-100"
+                onclick="onEdit('{{.ID}}')">
+                {{ template "icons" (dict "Name" "i-lucide-settings" "Class" "w-3.5 h-3.5") }}
               </button>
             </div>
           </td>
+
         </tr>
         {{end}}
       </tbody>
@@ -101,9 +223,6 @@
     {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
   </div>
 </div>
-
-<!-- 弹窗 -->
-{{ template "popup" . }}
 
 <script src="/static/js/task.js"></script>
 {{ end }}

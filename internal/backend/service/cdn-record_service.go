@@ -482,7 +482,8 @@ func (s *CDNRecordServiceImpl) handleCdnTaskStatus(ctx context.Context, db *ent.
 			SetMaxInterval(30).
 			SetIntervalUnit(cronjob.IntervalUnitMinutes).
 			SetStatus(targetStatus).
-			SetIsSingleton(true).
+			SetIsSingleton(true). // 单例模式
+			SetRunOnStart(false). // 启动时不立即运行
 			Exec(ctx)
 		if err != nil {
 			return fmt.Errorf("创建任务失败: %w", err)

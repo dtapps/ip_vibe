@@ -7096,6 +7096,7 @@ type CronJobMutation struct {
 	interval_unit      *cronjob.IntervalUnit
 	status             *cronjob.Status
 	is_singleton       *bool
+	run_on_start       *bool
 	clearedFields      map[string]struct{}
 	done               bool
 	oldValue           func(context.Context) (*CronJob, error)
@@ -8081,6 +8082,42 @@ func (m *CronJobMutation) ResetIsSingleton() {
 	m.is_singleton = nil
 }
 
+// SetRunOnStart sets the "run_on_start" field.
+func (m *CronJobMutation) SetRunOnStart(b bool) {
+	m.run_on_start = &b
+}
+
+// RunOnStart returns the value of the "run_on_start" field in the mutation.
+func (m *CronJobMutation) RunOnStart() (r bool, exists bool) {
+	v := m.run_on_start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRunOnStart returns the old "run_on_start" field's value of the CronJob entity.
+// If the CronJob object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CronJobMutation) OldRunOnStart(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRunOnStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRunOnStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRunOnStart: %w", err)
+	}
+	return oldValue.RunOnStart, nil
+}
+
+// ResetRunOnStart resets all changes to the "run_on_start" field.
+func (m *CronJobMutation) ResetRunOnStart() {
+	m.run_on_start = nil
+}
+
 // Where appends a list predicates to the CronJobMutation builder.
 func (m *CronJobMutation) Where(ps ...predicate.CronJob) {
 	m.predicates = append(m.predicates, ps...)
@@ -8115,7 +8152,7 @@ func (m *CronJobMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CronJobMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, cronjob.FieldCreatedAt)
 	}
@@ -8173,6 +8210,9 @@ func (m *CronJobMutation) Fields() []string {
 	if m.is_singleton != nil {
 		fields = append(fields, cronjob.FieldIsSingleton)
 	}
+	if m.run_on_start != nil {
+		fields = append(fields, cronjob.FieldRunOnStart)
+	}
 	return fields
 }
 
@@ -8219,6 +8259,8 @@ func (m *CronJobMutation) Field(name string) (ent.Value, bool) {
 		return m.Status()
 	case cronjob.FieldIsSingleton:
 		return m.IsSingleton()
+	case cronjob.FieldRunOnStart:
+		return m.RunOnStart()
 	}
 	return nil, false
 }
@@ -8266,6 +8308,8 @@ func (m *CronJobMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldStatus(ctx)
 	case cronjob.FieldIsSingleton:
 		return m.OldIsSingleton(ctx)
+	case cronjob.FieldRunOnStart:
+		return m.OldRunOnStart(ctx)
 	}
 	return nil, fmt.Errorf("unknown CronJob field %s", name)
 }
@@ -8407,6 +8451,13 @@ func (m *CronJobMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsSingleton(v)
+		return nil
+	case cronjob.FieldRunOnStart:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRunOnStart(v)
 		return nil
 	}
 	return fmt.Errorf("unknown CronJob field %s", name)
@@ -8609,6 +8660,9 @@ func (m *CronJobMutation) ResetField(name string) error {
 		return nil
 	case cronjob.FieldIsSingleton:
 		m.ResetIsSingleton()
+		return nil
+	case cronjob.FieldRunOnStart:
+		m.ResetRunOnStart()
 		return nil
 	}
 	return fmt.Errorf("unknown CronJob field %s", name)

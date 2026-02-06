@@ -147,6 +147,7 @@ func (s *TaskServiceImpl) UpdateTask(ctx context.Context, request *types.UpdateT
 	updateTask.SetMaxInterval(request.MaxInterval)
 	updateTask.SetIntervalUnit(cronjob.IntervalUnit(request.IntervalUnit))
 	updateTask.SetIsSingleton(request.IsSingleton)
+	updateTask.SetRunOnStart(request.RunOnStart)
 	err = updateTask.Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("更新任务失败: %w", err)

@@ -274,6 +274,16 @@ func HandlerNameHasSuffix(v string) predicate.CronJobLog {
 	return predicate.CronJobLog(sql.FieldHasSuffix(FieldHandlerName, v))
 }
 
+// HandlerNameIsNil applies the IsNil predicate on the "handler_name" field.
+func HandlerNameIsNil() predicate.CronJobLog {
+	return predicate.CronJobLog(sql.FieldIsNull(FieldHandlerName))
+}
+
+// HandlerNameNotNil applies the NotNil predicate on the "handler_name" field.
+func HandlerNameNotNil() predicate.CronJobLog {
+	return predicate.CronJobLog(sql.FieldNotNull(FieldHandlerName))
+}
+
 // HandlerNameEqualFold applies the EqualFold predicate on the "handler_name" field.
 func HandlerNameEqualFold(v string) predicate.CronJobLog {
 	return predicate.CronJobLog(sql.FieldEqualFold(FieldHandlerName, v))

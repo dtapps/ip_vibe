@@ -62,6 +62,14 @@ func (_c *CronJobLogCreate) SetHandlerName(v string) *CronJobLogCreate {
 	return _c
 }
 
+// SetNillableHandlerName sets the "handler_name" field if the given value is not nil.
+func (_c *CronJobLogCreate) SetNillableHandlerName(v *string) *CronJobLogCreate {
+	if v != nil {
+		_c.SetHandlerName(*v)
+	}
+	return _c
+}
+
 // SetStartedAt sets the "started_at" field.
 func (_c *CronJobLogCreate) SetStartedAt(v time.Time) *CronJobLogCreate {
 	_c.mutation.SetStartedAt(v)
@@ -215,9 +223,6 @@ func (_c *CronJobLogCreate) check() error {
 	}
 	if _, ok := _c.mutation.CronJobID(); !ok {
 		return &ValidationError{Name: "cron_job_id", err: errors.New(`ent_log: missing required field "CronJobLog.cron_job_id"`)}
-	}
-	if _, ok := _c.mutation.HandlerName(); !ok {
-		return &ValidationError{Name: "handler_name", err: errors.New(`ent_log: missing required field "CronJobLog.handler_name"`)}
 	}
 	if _, ok := _c.mutation.StartedAt(); !ok {
 		return &ValidationError{Name: "started_at", err: errors.New(`ent_log: missing required field "CronJobLog.started_at"`)}
@@ -387,6 +392,12 @@ func (u *CronJobLogUpsert) SetHandlerName(v string) *CronJobLogUpsert {
 // UpdateHandlerName sets the "handler_name" field to the value that was provided on create.
 func (u *CronJobLogUpsert) UpdateHandlerName() *CronJobLogUpsert {
 	u.SetExcluded(cronjoblog.FieldHandlerName)
+	return u
+}
+
+// ClearHandlerName clears the value of the "handler_name" field.
+func (u *CronJobLogUpsert) ClearHandlerName() *CronJobLogUpsert {
+	u.SetNull(cronjoblog.FieldHandlerName)
 	return u
 }
 
@@ -578,6 +589,13 @@ func (u *CronJobLogUpsertOne) SetHandlerName(v string) *CronJobLogUpsertOne {
 func (u *CronJobLogUpsertOne) UpdateHandlerName() *CronJobLogUpsertOne {
 	return u.Update(func(s *CronJobLogUpsert) {
 		s.UpdateHandlerName()
+	})
+}
+
+// ClearHandlerName clears the value of the "handler_name" field.
+func (u *CronJobLogUpsertOne) ClearHandlerName() *CronJobLogUpsertOne {
+	return u.Update(func(s *CronJobLogUpsert) {
+		s.ClearHandlerName()
 	})
 }
 
@@ -952,6 +970,13 @@ func (u *CronJobLogUpsertBulk) SetHandlerName(v string) *CronJobLogUpsertBulk {
 func (u *CronJobLogUpsertBulk) UpdateHandlerName() *CronJobLogUpsertBulk {
 	return u.Update(func(s *CronJobLogUpsert) {
 		s.UpdateHandlerName()
+	})
+}
+
+// ClearHandlerName clears the value of the "handler_name" field.
+func (u *CronJobLogUpsertBulk) ClearHandlerName() *CronJobLogUpsertBulk {
+	return u.Update(func(s *CronJobLogUpsert) {
+		s.ClearHandlerName()
 	})
 }
 

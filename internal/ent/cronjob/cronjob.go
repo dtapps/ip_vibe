@@ -54,6 +54,8 @@ const (
 	FieldStatus = "status"
 	// FieldIsSingleton holds the string denoting the is_singleton field in the database.
 	FieldIsSingleton = "is_singleton"
+	// FieldRunOnStart holds the string denoting the run_on_start field in the database.
+	FieldRunOnStart = "run_on_start"
 	// Table holds the table name of the cronjob in the database.
 	Table = "cron_job"
 )
@@ -80,6 +82,7 @@ var Columns = []string{
 	FieldIntervalUnit,
 	FieldStatus,
 	FieldIsSingleton,
+	FieldRunOnStart,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -117,6 +120,8 @@ var (
 	MinIntervalValidator func(int) error
 	// DefaultIsSingleton holds the default value on creation for the "is_singleton" field.
 	DefaultIsSingleton bool
+	// DefaultRunOnStart holds the default value on creation for the "run_on_start" field.
+	DefaultRunOnStart bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )
@@ -373,4 +378,9 @@ func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByIsSingleton orders the results by the is_singleton field.
 func ByIsSingleton(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsSingleton, opts...).ToFunc()
+}
+
+// ByRunOnStart orders the results by the run_on_start field.
+func ByRunOnStart(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRunOnStart, opts...).ToFunc()
 }

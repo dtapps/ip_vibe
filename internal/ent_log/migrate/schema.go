@@ -15,7 +15,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Comment: "更新时间"},
 		{Name: "cron_job_id", Type: field.TypeInt64, Comment: "关联 定时任务 序号"},
-		{Name: "handler_name", Type: field.TypeString, Comment: "执行时的处理器名"},
+		{Name: "handler_name", Type: field.TypeString, Nullable: true, Comment: "执行时的处理器名"},
 		{Name: "started_at", Type: field.TypeTime, Comment: "开始时间"},
 		{Name: "finished_at", Type: field.TypeTime, Nullable: true, Comment: "完成时间"},
 		{Name: "duration", Type: field.TypeInt64, Nullable: true, Comment: "耗时(ms)"},

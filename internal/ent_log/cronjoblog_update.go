@@ -64,6 +64,12 @@ func (_u *CronJobLogUpdate) SetNillableHandlerName(v *string) *CronJobLogUpdate 
 	return _u
 }
 
+// ClearHandlerName clears the value of the "handler_name" field.
+func (_u *CronJobLogUpdate) ClearHandlerName() *CronJobLogUpdate {
+	_u.mutation.ClearHandlerName()
+	return _u
+}
+
 // SetStartedAt sets the "started_at" field.
 func (_u *CronJobLogUpdate) SetStartedAt(v time.Time) *CronJobLogUpdate {
 	_u.mutation.SetStartedAt(v)
@@ -260,6 +266,9 @@ func (_u *CronJobLogUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if value, ok := _u.mutation.HandlerName(); ok {
 		_spec.SetField(cronjoblog.FieldHandlerName, field.TypeString, value)
 	}
+	if _u.mutation.HandlerNameCleared() {
+		_spec.ClearField(cronjoblog.FieldHandlerName, field.TypeString)
+	}
 	if value, ok := _u.mutation.StartedAt(); ok {
 		_spec.SetField(cronjoblog.FieldStartedAt, field.TypeTime, value)
 	}
@@ -347,6 +356,12 @@ func (_u *CronJobLogUpdateOne) SetNillableHandlerName(v *string) *CronJobLogUpda
 	if v != nil {
 		_u.SetHandlerName(*v)
 	}
+	return _u
+}
+
+// ClearHandlerName clears the value of the "handler_name" field.
+func (_u *CronJobLogUpdateOne) ClearHandlerName() *CronJobLogUpdateOne {
+	_u.mutation.ClearHandlerName()
 	return _u
 }
 
@@ -575,6 +590,9 @@ func (_u *CronJobLogUpdateOne) sqlSave(ctx context.Context) (_node *CronJobLog, 
 	}
 	if value, ok := _u.mutation.HandlerName(); ok {
 		_spec.SetField(cronjoblog.FieldHandlerName, field.TypeString, value)
+	}
+	if _u.mutation.HandlerNameCleared() {
+		_spec.ClearField(cronjoblog.FieldHandlerName, field.TypeString)
 	}
 	if value, ok := _u.mutation.StartedAt(); ok {
 		_spec.SetField(cronjoblog.FieldStartedAt, field.TypeTime, value)

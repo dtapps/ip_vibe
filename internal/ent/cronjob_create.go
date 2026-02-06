@@ -258,6 +258,20 @@ func (_c *CronJobCreate) SetNillableIsSingleton(v *bool) *CronJobCreate {
 	return _c
 }
 
+// SetRunOnStart sets the "run_on_start" field.
+func (_c *CronJobCreate) SetRunOnStart(v bool) *CronJobCreate {
+	_c.mutation.SetRunOnStart(v)
+	return _c
+}
+
+// SetNillableRunOnStart sets the "run_on_start" field if the given value is not nil.
+func (_c *CronJobCreate) SetNillableRunOnStart(v *bool) *CronJobCreate {
+	if v != nil {
+		_c.SetRunOnStart(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *CronJobCreate) SetID(v int64) *CronJobCreate {
 	_c.mutation.SetID(v)
@@ -346,6 +360,10 @@ func (_c *CronJobCreate) defaults() error {
 		v := cronjob.DefaultIsSingleton
 		_c.mutation.SetIsSingleton(v)
 	}
+	if _, ok := _c.mutation.RunOnStart(); !ok {
+		v := cronjob.DefaultRunOnStart
+		_c.mutation.SetRunOnStart(v)
+	}
 	return nil
 }
 
@@ -431,6 +449,9 @@ func (_c *CronJobCreate) check() error {
 	}
 	if _, ok := _c.mutation.IsSingleton(); !ok {
 		return &ValidationError{Name: "is_singleton", err: errors.New(`ent: missing required field "CronJob.is_singleton"`)}
+	}
+	if _, ok := _c.mutation.RunOnStart(); !ok {
+		return &ValidationError{Name: "run_on_start", err: errors.New(`ent: missing required field "CronJob.run_on_start"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := cronjob.IDValidator(v); err != nil {
@@ -545,6 +566,10 @@ func (_c *CronJobCreate) createSpec() (*CronJob, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.IsSingleton(); ok {
 		_spec.SetField(cronjob.FieldIsSingleton, field.TypeBool, value)
 		_node.IsSingleton = value
+	}
+	if value, ok := _c.mutation.RunOnStart(); ok {
+		_spec.SetField(cronjob.FieldRunOnStart, field.TypeBool, value)
+		_node.RunOnStart = value
 	}
 	return _node, _spec
 }
@@ -853,6 +878,18 @@ func (u *CronJobUpsert) SetIsSingleton(v bool) *CronJobUpsert {
 // UpdateIsSingleton sets the "is_singleton" field to the value that was provided on create.
 func (u *CronJobUpsert) UpdateIsSingleton() *CronJobUpsert {
 	u.SetExcluded(cronjob.FieldIsSingleton)
+	return u
+}
+
+// SetRunOnStart sets the "run_on_start" field.
+func (u *CronJobUpsert) SetRunOnStart(v bool) *CronJobUpsert {
+	u.Set(cronjob.FieldRunOnStart, v)
+	return u
+}
+
+// UpdateRunOnStart sets the "run_on_start" field to the value that was provided on create.
+func (u *CronJobUpsert) UpdateRunOnStart() *CronJobUpsert {
+	u.SetExcluded(cronjob.FieldRunOnStart)
 	return u
 }
 
@@ -1211,6 +1248,20 @@ func (u *CronJobUpsertOne) SetIsSingleton(v bool) *CronJobUpsertOne {
 func (u *CronJobUpsertOne) UpdateIsSingleton() *CronJobUpsertOne {
 	return u.Update(func(s *CronJobUpsert) {
 		s.UpdateIsSingleton()
+	})
+}
+
+// SetRunOnStart sets the "run_on_start" field.
+func (u *CronJobUpsertOne) SetRunOnStart(v bool) *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetRunOnStart(v)
+	})
+}
+
+// UpdateRunOnStart sets the "run_on_start" field to the value that was provided on create.
+func (u *CronJobUpsertOne) UpdateRunOnStart() *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateRunOnStart()
 	})
 }
 
@@ -1735,6 +1786,20 @@ func (u *CronJobUpsertBulk) SetIsSingleton(v bool) *CronJobUpsertBulk {
 func (u *CronJobUpsertBulk) UpdateIsSingleton() *CronJobUpsertBulk {
 	return u.Update(func(s *CronJobUpsert) {
 		s.UpdateIsSingleton()
+	})
+}
+
+// SetRunOnStart sets the "run_on_start" field.
+func (u *CronJobUpsertBulk) SetRunOnStart(v bool) *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetRunOnStart(v)
+	})
+}
+
+// UpdateRunOnStart sets the "run_on_start" field to the value that was provided on create.
+func (u *CronJobUpsertBulk) UpdateRunOnStart() *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateRunOnStart()
 	})
 }
 

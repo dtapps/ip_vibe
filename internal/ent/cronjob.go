@@ -34,7 +34,7 @@ type CronJob struct {
 	HandlerArgs json.RawMessage `json:"handler_args,omitempty"`
 	// 任务类型: one_off 一次性, recurring 周期性
 	TaskType cronjob.TaskType `json:"task_type,omitempty"`
-	// 任务类型: cron cron 表达式, duration 固定间隔, random 随机间隔
+	// 运行类型: cron cron 表达式, duration 固定间隔, random 随机间隔
 	JobType cronjob.JobType `json:"job_type,omitempty"`
 	// 任务分类: system 系统内置, custom 用户自定义
 	JobCategory cronjob.JobCategory `json:"job_category,omitempty"`
@@ -56,8 +56,10 @@ type CronJob struct {
 	IntervalUnit cronjob.IntervalUnit `json:"interval_unit,omitempty"`
 	// 状态: running 运行中, stopped 已停止
 	Status cronjob.Status `json:"status,omitempty"`
-	// 是否单例
-	IsSingleton  bool `json:"is_singleton,omitempty"`
+	// 是否单例: true 单例, false 非单例
+	IsSingleton bool `json:"is_singleton,omitempty"`
+	// 是否在启动时立即执行一次: true 立即执行, false 不立即执行
+	RunOnStart   bool `json:"run_on_start,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -68,7 +70,7 @@ func (*CronJob) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case cronjob.FieldHandlerArgs:
 			values[i] = new([]byte)
-		case cronjob.FieldWithSeconds, cronjob.FieldIsSingleton:
+		case cronjob.FieldWithSeconds, cronjob.FieldIsSingleton, cronjob.FieldRunOnStart:
 			values[i] = new(sql.NullBool)
 		case cronjob.FieldID, cronjob.FieldBusinessID, cronjob.FieldIntervalValue, cronjob.FieldMinInterval, cronjob.FieldMaxInterval:
 			values[i] = new(sql.NullInt64)
@@ -215,6 +217,12 @@ func (_m *CronJob) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.IsSingleton = value.Bool
 			}
+		case cronjob.FieldRunOnStart:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field run_on_start", values[i])
+			} else if value.Valid {
+				_m.RunOnStart = value.Bool
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -307,6 +315,9 @@ func (_m *CronJob) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_singleton=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsSingleton))
+	builder.WriteString(", ")
+	builder.WriteString("run_on_start=")
+	builder.WriteString(fmt.Sprintf("%v", _m.RunOnStart))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -117,11 +117,10 @@ async function withErrorHandling(asyncFn, options = {}) {
  * @param {string} str - 要转换的字符串，只能是 "true" 或 "false"
  * @returns {boolean} - 转换后的布尔值
  */
-function stringToBoolean(str) {
+function stringToBooleanOrString(str) {
   if (str === "true") return true;
   if (str === "false") return false;
-  // 可选：处理其他情况，比如抛错或返回 undefined
-  throw new Error(`Invalid boolean string: ${str}`);
+  return str;
 }
 
 /**
@@ -259,7 +258,9 @@ async function handleStatusAction(el) {
     if (typeof API[methodFunc] !== "function") {
       throw new Error(`不支持的请求方式: ${method}`);
     }
-    await API[methodFunc](url, { [dataKey]: stringToBoolean(dataValue) });
+    await API[methodFunc](url, {
+      [dataKey]: stringToBooleanOrString(dataValue),
+    });
 
     // 刷新页面
     if (isReload) {

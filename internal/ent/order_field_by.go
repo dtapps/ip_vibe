@@ -2210,6 +2210,31 @@ func (q *CronJobQuery) OrderByIsSingletonAsc() *CronJobQuery {
 	return q.Order(Asc(cronjob.FieldIsSingleton))
 }
 
+// OrderByRunOnStartDesc 按字段 run_on_start 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *CronJobQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.CronJob.Query().
+//	    OrderByRunOnStartDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *CronJobQuery) OrderByRunOnStartDesc() *CronJobQuery {
+	return q.Order(Desc(cronjob.FieldRunOnStart))
+}
+
+// OrderByRunOnStartAsc 按字段 run_on_start 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *CronJobQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.CronJob.Query().
+//	    OrderByRunOnStartAsc().
+//	    All(ctx)
+func (q *CronJobQuery) OrderByRunOnStartAsc() *CronJobQuery {
+	return q.Order(Asc(cronjob.FieldRunOnStart))
+}
+
 // OrderByIDDesc 按主键 ID 降序排列查询结果。
 // 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
 // 返回值类型为 *DNSRecordQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。

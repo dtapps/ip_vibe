@@ -4,7 +4,6 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"net/http/httputil"
 	"os"
 	"runtime/debug"
 	"strings"
@@ -29,12 +28,12 @@ func RecoveryMiddleware(logger *slog.Logger, stack bool) gin.HandlerFunc {
 				}
 
 				// 获取请求详情
-				httpRequest, _ := httputil.DumpRequest(c.Request, false)
+				// httpRequest, _ := httputil.DumpRequest(c.Request, false)
 
 				if brokenPipe {
 					logger.ErrorContext(c, "[Recovery] Broken pipe",
 						slog.Any("err", err),
-						slog.String("request", string(httpRequest)),
+						// slog.String("request", string(httpRequest)),
 					)
 					c.Error(err.(error))
 					c.Abort()
@@ -44,7 +43,7 @@ func RecoveryMiddleware(logger *slog.Logger, stack bool) gin.HandlerFunc {
 				// 构建日志字段
 				fields := []slog.Attr{
 					slog.Any("err", err),
-					slog.String("request", string(httpRequest)),
+					// slog.String("request", string(httpRequest)),
 				}
 
 				// 如果开启堆栈打印

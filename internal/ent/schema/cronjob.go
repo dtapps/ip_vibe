@@ -77,7 +77,7 @@ func (CronJob) Fields() []ent.Field {
 		field.Enum("job_type").
 			Values(schematype.GetCronJobJobTypes...).
 			Default(schematype.CronJobJobTypeCron).
-			Comment("任务类型: cron cron 表达式, duration 固定间隔, random 随机间隔").
+			Comment("运行类型: cron cron 表达式, duration 固定间隔, random 随机间隔").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("job_category").
@@ -135,7 +135,12 @@ func (CronJob) Fields() []ent.Field {
 
 		field.Bool("is_singleton").
 			Default(true).
-			Comment("是否单例").
+			Comment("是否单例: true 单例, false 非单例").
+			Annotations(entsql.WithComments(true)),
+
+		field.Bool("run_on_start").
+			Default(false).
+			Comment("是否在启动时立即执行一次: true 立即执行, false 不立即执行").
 			Annotations(entsql.WithComments(true)),
 	}
 }

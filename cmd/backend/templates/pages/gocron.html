@@ -16,6 +16,11 @@
 </h1>
 
 <div class="ui-panel">
+  <div class="tabs tabs-lifted px-6 pt-4">
+    <a href="/task" class="tab">管理 (Task)</a>
+    <a class="tab tab-active font-bold">实时 (Gocron)</a>
+  </div>
+
   <div class="ui-header">
     <h2 class="text-xl font-bold flex items-center gap-2 text-base-content/80">
       {{ template "icons" (dict "Name" "i-lucide-list-todo") }} 实时任务（GoCron）

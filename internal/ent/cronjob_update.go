@@ -322,6 +322,20 @@ func (_u *CronJobUpdate) SetNillableIsSingleton(v *bool) *CronJobUpdate {
 	return _u
 }
 
+// SetRunOnStart sets the "run_on_start" field.
+func (_u *CronJobUpdate) SetRunOnStart(v bool) *CronJobUpdate {
+	_u.mutation.SetRunOnStart(v)
+	return _u
+}
+
+// SetNillableRunOnStart sets the "run_on_start" field if the given value is not nil.
+func (_u *CronJobUpdate) SetNillableRunOnStart(v *bool) *CronJobUpdate {
+	if v != nil {
+		_u.SetRunOnStart(*v)
+	}
+	return _u
+}
+
 // Mutation returns the CronJobMutation object of the builder.
 func (_u *CronJobUpdate) Mutation() *CronJobMutation {
 	return _u.mutation
@@ -525,6 +539,9 @@ func (_u *CronJobUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.IsSingleton(); ok {
 		_spec.SetField(cronjob.FieldIsSingleton, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.RunOnStart(); ok {
+		_spec.SetField(cronjob.FieldRunOnStart, field.TypeBool, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -840,6 +857,20 @@ func (_u *CronJobUpdateOne) SetNillableIsSingleton(v *bool) *CronJobUpdateOne {
 	return _u
 }
 
+// SetRunOnStart sets the "run_on_start" field.
+func (_u *CronJobUpdateOne) SetRunOnStart(v bool) *CronJobUpdateOne {
+	_u.mutation.SetRunOnStart(v)
+	return _u
+}
+
+// SetNillableRunOnStart sets the "run_on_start" field if the given value is not nil.
+func (_u *CronJobUpdateOne) SetNillableRunOnStart(v *bool) *CronJobUpdateOne {
+	if v != nil {
+		_u.SetRunOnStart(*v)
+	}
+	return _u
+}
+
 // Mutation returns the CronJobMutation object of the builder.
 func (_u *CronJobUpdateOne) Mutation() *CronJobMutation {
 	return _u.mutation
@@ -1073,6 +1104,9 @@ func (_u *CronJobUpdateOne) sqlSave(ctx context.Context) (_node *CronJob, err er
 	}
 	if value, ok := _u.mutation.IsSingleton(); ok {
 		_spec.SetField(cronjob.FieldIsSingleton, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.RunOnStart(); ok {
+		_spec.SetField(cronjob.FieldRunOnStart, field.TypeBool, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &CronJob{config: _u.config}

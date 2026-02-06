@@ -279,6 +279,10 @@ func init() {
 	cronjobDescIsSingleton := cronjobFields[17].Descriptor()
 	// cronjob.DefaultIsSingleton holds the default value on creation for the is_singleton field.
 	cronjob.DefaultIsSingleton = cronjobDescIsSingleton.Default.(bool)
+	// cronjobDescRunOnStart is the schema descriptor for run_on_start field.
+	cronjobDescRunOnStart := cronjobFields[18].Descriptor()
+	// cronjob.DefaultRunOnStart holds the default value on creation for the run_on_start field.
+	cronjob.DefaultRunOnStart = cronjobDescRunOnStart.Default.(bool)
 	// cronjobDescID is the schema descriptor for id field.
 	cronjobDescID := cronjobFields[0].Descriptor()
 	// cronjob.IDValidator is a validator for the "id" field. It is called by the builders before save.

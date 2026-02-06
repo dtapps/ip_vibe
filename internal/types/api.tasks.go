@@ -64,14 +64,15 @@ type GetTaskRequest struct {
 // 更新任务 请求结构
 type UpdateTaskRequest struct {
 	GetTaskRequest
-	JobType       string `json:"job_type" binding:"required" jsonschema:"任务类型"` // 任务类型
-	CronExpr      string `json:"cron_expr,omitempty" jsonschema:"cron 表达式"`     // cron 表达式
-	WithSeconds   bool   `json:"with_seconds,omitempty" jsonschema:"是否包含秒"`     // 是否包含秒
-	IntervalValue int    `json:"interval_value,omitempty" jsonschema:"固定间隔值"`   // 固定间隔值
-	MinInterval   int    `json:"min_interval,omitempty" jsonschema:"随机最小值"`     // 随机最小值
-	MaxInterval   int    `json:"max_interval,omitempty" jsonschema:"随机最大值"`     // 随机最大值
-	IntervalUnit  string `json:"interval_unit,omitempty" jsonschema:"间隔时间单位"`   // 间隔时间单位
-	IsSingleton   bool   `json:"is_singleton,omitempty" jsonschema:"是否单例"`      // 是否单例
+	JobType       string `json:"job_type" binding:"required" jsonschema:"任务类型"`    // 任务类型
+	CronExpr      string `json:"cron_expr,omitempty" jsonschema:"cron 表达式"`        // cron 表达式
+	WithSeconds   bool   `json:"with_seconds,omitempty" jsonschema:"是否包含秒"`        // 是否包含秒
+	IntervalValue int    `json:"interval_value,omitempty" jsonschema:"固定间隔值"`      // 固定间隔值
+	MinInterval   int    `json:"min_interval,omitempty" jsonschema:"随机最小值"`        // 随机最小值
+	MaxInterval   int    `json:"max_interval,omitempty" jsonschema:"随机最大值"`        // 随机最大值
+	IntervalUnit  string `json:"interval_unit,omitempty" jsonschema:"间隔时间单位"`      // 间隔时间单位
+	IsSingleton   bool   `json:"is_singleton,omitempty" jsonschema:"是否单例"`         // 是否单例
+	RunOnStart    bool   `json:"run_on_start,omitempty" jsonschema:"是否在启动时立即执行一次"` // 是否在启动时立即执行一次
 }
 
 // 更新任务状态 请求结构

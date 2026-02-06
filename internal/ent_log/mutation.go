@@ -333,9 +333,22 @@ func (m *CronJobLogMutation) OldHandlerName(ctx context.Context) (v string, err 
 	return oldValue.HandlerName, nil
 }
 
+// ClearHandlerName clears the value of the "handler_name" field.
+func (m *CronJobLogMutation) ClearHandlerName() {
+	m.handler_name = nil
+	m.clearedFields[cronjoblog.FieldHandlerName] = struct{}{}
+}
+
+// HandlerNameCleared returns if the "handler_name" field was cleared in this mutation.
+func (m *CronJobLogMutation) HandlerNameCleared() bool {
+	_, ok := m.clearedFields[cronjoblog.FieldHandlerName]
+	return ok
+}
+
 // ResetHandlerName resets all changes to the "handler_name" field.
 func (m *CronJobLogMutation) ResetHandlerName() {
 	m.handler_name = nil
+	delete(m.clearedFields, cronjoblog.FieldHandlerName)
 }
 
 // SetStartedAt sets the "started_at" field.
@@ -885,6 +898,9 @@ func (m *CronJobLogMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *CronJobLogMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(cronjoblog.FieldHandlerName) {
+		fields = append(fields, cronjoblog.FieldHandlerName)
+	}
 	if m.FieldCleared(cronjoblog.FieldFinishedAt) {
 		fields = append(fields, cronjoblog.FieldFinishedAt)
 	}
@@ -911,6 +927,9 @@ func (m *CronJobLogMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *CronJobLogMutation) ClearField(name string) error {
 	switch name {
+	case cronjoblog.FieldHandlerName:
+		m.ClearHandlerName()
+		return nil
 	case cronjoblog.FieldFinishedAt:
 		m.ClearFinishedAt()
 		return nil

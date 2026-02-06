@@ -113,7 +113,7 @@ async function showExecutionTimePopup(btn) {
     // 显示弹窗内容
     showPopupContent(
       "popup",
-      `实时 执行时间 - ${name}`,
+      `执行时间 - ${name}`,
       formattedRuns.join("\n"),
       formattedRuns.length,
     );

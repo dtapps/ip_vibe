@@ -250,6 +250,41 @@ var EnumRegistry = map[string]EnumDefinition{
 		Values:       schematype.GetEsaSiteRecordHostPolicys,
 		Descriptions: schematype.GetEsaSiteRecordHostPolicyDescriptions,
 	},
+	// 定时任务 任务类型
+	"cron_job_task_type": {
+		Values:       schematype.GetCronJobTaskTypes,
+		Descriptions: schematype.GetCronJobTaskTypeDescriptions,
+	},
+	// 定时任务 运行类型
+	"cron_job_job_type": {
+		Values:       schematype.GetCronJobJobTypes,
+		Descriptions: schematype.GetCronJobJobTypeDescriptions,
+	},
+	// 定时任务 任务分类
+	"cron_job_job_category": {
+		Values:       schematype.GetCronJobJobCategorys,
+		Descriptions: schematype.GetCronJobJobCategoryDescriptions,
+	},
+	// 定时任务 业务类型
+	"cron_job_business_type": {
+		Values:       schematype.GetCronJobBusinessTypes,
+		Descriptions: schematype.GetCronJobBusinessTypeDescriptions,
+	},
+	// 定时任务 间隔时间单位
+	"cron_job_interval_unit": {
+		Values:       schematype.GetCronJobIntervalUnits,
+		Descriptions: schematype.GetCronJobIntervalUnitDescriptions,
+	},
+	// 定时任务 状态
+	"cron_job_status": {
+		Values:       schematype.GetCronJobStatuss,
+		Descriptions: schematype.GetCronJobStatusDescriptions,
+	},
+	// 定时任务日志 状态
+	"cron_job_log_status": {
+		Values:       schematype.GetCronJobLogStatuss,
+		Descriptions: schematype.GetCronJobLogStatusDescriptions,
+	},
 }
 
 // 将原 main.go 的 funcMap 逻辑移入此处

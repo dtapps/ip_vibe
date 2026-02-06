@@ -115,6 +115,11 @@ func IsSingleton(v bool) predicate.CronJob {
 	return predicate.CronJob(sql.FieldEQ(FieldIsSingleton, v))
 }
 
+// RunOnStart applies equality check predicate on the "run_on_start" field. It's identical to RunOnStartEQ.
+func RunOnStart(v bool) predicate.CronJob {
+	return predicate.CronJob(sql.FieldEQ(FieldRunOnStart, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.CronJob {
 	return predicate.CronJob(sql.FieldEQ(FieldCreatedAt, v))
@@ -798,6 +803,16 @@ func IsSingletonEQ(v bool) predicate.CronJob {
 // IsSingletonNEQ applies the NEQ predicate on the "is_singleton" field.
 func IsSingletonNEQ(v bool) predicate.CronJob {
 	return predicate.CronJob(sql.FieldNEQ(FieldIsSingleton, v))
+}
+
+// RunOnStartEQ applies the EQ predicate on the "run_on_start" field.
+func RunOnStartEQ(v bool) predicate.CronJob {
+	return predicate.CronJob(sql.FieldEQ(FieldRunOnStart, v))
+}
+
+// RunOnStartNEQ applies the NEQ predicate on the "run_on_start" field.
+func RunOnStartNEQ(v bool) predicate.CronJob {
+	return predicate.CronJob(sql.FieldNEQ(FieldRunOnStart, v))
 }
 
 // And groups predicates with the AND operator between them.
