@@ -3,27 +3,18 @@ package types
 // 任务页面 请求结构
 type TaskRequest struct {
 	CommonPageRequest
+	ID           int64  `json:"id,omitempty" form:"id,omitempty"`                       // 任务序号
+	EntryID      string `json:"entry_id,omitempty" form:"entry_id,omitempty"`           // 任务编号
+	Name         string `json:"name,omitempty" form:"name,omitempty"`                   // 任务名称
+	TaskType     string `json:"task_type,omitempty" form:"task_type,omitempty"`         // 任务类型
+	JobType      string `json:"job_type,omitempty" form:"job_type,omitempty"`           // 任务类型
+	JobCategory  string `json:"job_category,omitempty" form:"job_category,omitempty"`   // 任务分类
+	BusinessType string `json:"business_type,omitempty" form:"business_type,omitempty"` // 业务类型
+	BusinessID   int64  `json:"business_id,omitempty" form:"business_id,omitempty"`     // 业务序号
+	Status       string `json:"status,omitempty" form:"status,omitempty"`               // 状态
 }
 
 // 任务页面 响应结构
 type TaskResponse struct {
-	CommonPageResponse[TaskJob, TaskRequest]        // 任务列表
-	Status                                   string `json:"status"` // 任务运行状态
-}
-
-type TaskJobInfo struct {
-	ID      string `json:"id"`       // 任务序号
-	Name    string `json:"name"`     // 任务名称
-	LastRun string `json:"last_run"` // 上次运行时间
-	NextRun string `json:"next_run"` // 下次运行时间
-}
-
-type TaskJob struct {
-	ID             string   `json:"id"`              // 任务序号
-	Name           string   `json:"name"`            // 任务名称
-	LastRun        string   `json:"last_run"`        // 上次运行时间
-	NextRun        string   `json:"next_run"`        // 下次运行时间
-	NextRuns       []string `json:"next_runs"`       // 下次运行时间列表
-	Schedule       string   `json:"schedule"`        // 任务调度表达式
-	ScheduleDetail string   `json:"schedule_detail"` // 任务调度表达式详情
+	CommonPageResponse[GetTaskResponse, TaskRequest] // 任务列表
 }
