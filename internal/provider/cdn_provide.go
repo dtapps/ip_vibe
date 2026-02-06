@@ -7,10 +7,11 @@ import (
 	"log/slog"
 	"strings"
 	"time"
-	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/webhooksubscription"
-	"vibe_ip/internal/utils"
+	"vibe_ip/internal/ent/cronjob"
+	"vibe_ip/internal/types"
+
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // ---------- CDN 模块 ----------
@@ -241,8 +242,8 @@ func (t *CDNTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, la
 }
 
 // Notify 执行 DNS 通知
-func (t *CDNTask) Notify(ctx context.Context, webhookService *webhookService.Send, id int64) (err error) {
-	if webhookService == nil || id == 0 {
+func (t *CDNTask) Notify(ctx context.Context, db *ent.Client, id int64) (err error) {
+	if db == nil || id == 0 {
 		return nil
 	}
 
@@ -251,7 +252,7 @@ func (t *CDNTask) Notify(ctx context.Context, webhookService *webhookService.Sen
 	}
 
 	// 通知模板数据
-	notifyData := utils.TemplateData{
+	notifyData := types.TemplateData{
 		EventTitle:     "CDN记录更新",
 		EventType:      "CDN_UPDATE",
 		EventTime:      time.Now().Format("2006-01-02 15:04:05"),
@@ -262,16 +263,24 @@ func (t *CDNTask) Notify(ctx context.Context, webhookService *webhookService.Sen
 		RecordNewValue: strings.Join(t.config.newOriginValues, ","),
 	}
 
-	// 发送通知
-	if err := webhookService.Send(
-		ctx,
-		webhooksubscription.ObjTypeCdnRecord,
-		id,
-		notifyData,
-	); err != nil {
-		t.logger.ErrorContext(ctx, "通知失败",
-			slog.Any("err", err),
-		)
+	// 创建任务
+	err = db.CronJob.Create().
+		SetName("CDN通知: " + fmt.Sprintf("%s.%s", t.config.subdomain, t.config.domain)).
+		SetHandlerName("webhook_send").
+		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(notifyData))).
+		SetTaskType(cronjob.TaskTypeOneOff).
+		SetJobType(cronjob.JobTypeDuration).
+		SetJobCategory(cronjob.JobCategorySystem).
+		SetBusinessType(cronjob.BusinessTypeCdn).
+		SetBusinessID(id).
+		SetIntervalValue(3).
+		SetIntervalUnit(cronjob.IntervalUnitSeconds).
+		SetStatus(cronjob.StatusRunning).
+		SetIsSingleton(true). // 单例模式
+		SetRunOnStart(true).  // 启动时立即运行
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("创建任务失败: %w", err)
 	}
 
 	return nil

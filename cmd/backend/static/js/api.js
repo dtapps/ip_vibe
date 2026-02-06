@@ -202,6 +202,10 @@ async function handleAction(el) {
 
     if (id && !confirm(customMsg || `确定对 ${id} 执行该操作吗？`)) {
       return;
+    } else {
+      if (customMsg && !confirm(customMsg)) {
+        return;
+      }
     }
 
     // 如果存在 id 就添加到 URL 中

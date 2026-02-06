@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/grpc_credential"
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/handlers"
+	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/retry"
@@ -128,7 +129,7 @@ func (m *GRPCGatewayClientManager) Conn(ctx context.Context) (err error) {
 			httpCode := runtime.HTTPStatusFromCode(st.Code())
 
 			// 构造响应
-			resp := handlers.APIResponse{
+			resp := types.APIResponse{
 				Code:    int(st.Code()),
 				Message: st.Message(),
 				Data:    st.Details(),
@@ -153,7 +154,7 @@ func (m *GRPCGatewayClientManager) Conn(ctx context.Context) (err error) {
 			if _, ok := resp.(*emptypb.Empty); ok || resp == nil {
 				data = nil
 			}
-			return handlers.APIResponse{
+			return types.APIResponse{
 				Code:    http.StatusOK,
 				Message: handlers.MessageSuccess,
 				Data:    data,

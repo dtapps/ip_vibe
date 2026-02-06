@@ -26,23 +26,25 @@ type DashboardResponse struct {
 
 	DeviceCode string `json:"device_code"`
 
+	SystemInfo       SystemInfo       `json:"system_info"`
 	SystemMemoryInfo ReturnMemoryInfo `json:"memory_info"`
 
 	Settings GetSettingResponse `json:"settings"`
 }
 
-// ReturnMemoryInfo 系统信息和系统状态
-type ReturnMemoryInfo struct {
-	Version   string `json:"version"`    // 系统版本
-	GitCommit string `json:"git_commit"` // 系统 Git 提交
-	BuildTime string `json:"build_time"` // 系统构建时间
-	GoVersion string `json:"go_version"` // 系统 Go 版本
-	OS        string `json:"os"`         // 系统 OS
-	Arch      string `json:"arch"`       // 系统架构
-
+type SystemInfo struct {
+	Version          string    `json:"version"`            // 系统版本
+	GitCommit        string    `json:"git_commit"`         // 系统 Git 提交
+	BuildTime        string    `json:"build_time"`         // 系统构建时间
+	GoVersion        string    `json:"go_version"`         // 系统 Go 版本
+	OS               string    `json:"os"`                 // 系统 OS
+	Arch             string    `json:"arch"`               // 系统架构
 	RuntimeStartTime time.Time `json:"runtime_start_time"` // 应用启动时间
-	NumGoroutine     int       `json:"num_goroutine"`      // Goroutine 数量
-	NumGC            uint32    `json:"num_gc"`             // GC 总次数
+}
+
+type ReturnMemoryInfo struct {
+	NumGoroutine int    `json:"num_goroutine"` // Goroutine 数量
+	NumGC        uint32 `json:"num_gc"`        // GC 总次数
 
 	CPUModel    string  `json:"cpu_model"`    // CPU 型号
 	UsedPercent float64 `json:"used_percent"` // 内存使用率

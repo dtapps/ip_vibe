@@ -18,20 +18,23 @@ import (
 	"go.dtapp.net/library/service/wechatqy"
 )
 
+// 打包时注入
+var (
+	Version   = "dev"     // 版本号
+	GitCommit = "unknown" // Git 提交 ID
+	BuildTime = "unknown" // 构建时间
+)
+
+var (
+	StartTime time.Time // 启动时间
+)
+
 var (
 	DefaultTimezone string = "Asia/Shanghai" // 默认时区
 )
 
 // GvaConfig 变量
 var (
-	GvaVersion   string    // 版本号
-	GvaGitCommit string    // Git 提交 ID
-	GvaBuildTime string    // 构建时间
-	GvaGoVersion string    // Go 版本
-	GvaOS        string    // 操作系统
-	GvaArch      string    // CPU 架构
-	GvaStartTime time.Time // 启动时间
-
 	GvaSlog       *slog.Logger // slog 日志
 	GvaEntSlog    *slog.Logger // ent 日志
 	GvaEntLogSlog *slog.Logger // ent log 日志
@@ -67,3 +70,7 @@ var (
 	GvaFt07       *ft07.Client     // Server酱
 	GvaPushDeer   *pushdeer.Client // PushDeer
 )
+
+func init() {
+	StartTime = time.Now().UTC()
+}

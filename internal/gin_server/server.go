@@ -9,8 +9,8 @@ import (
 
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/gin_middleware"
-	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/helper/gin_slog"
+	"vibe_ip/internal/types"
 
 	"github.com/corazawaf/coraza/v3"
 	"github.com/gin-gonic/gin"
@@ -113,7 +113,7 @@ func (m *GinServerManager) initServer() {
 
 	// 健康检查
 	m.engine.Any("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, handlers.APIResponse{
+		c.JSON(http.StatusOK, types.APIResponse{
 			Code:    http.StatusOK,
 			Message: "ok",
 		})

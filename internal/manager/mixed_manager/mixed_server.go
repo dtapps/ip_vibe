@@ -1,4 +1,4 @@
-package manager
+package mixed_manager
 
 import (
 	"context"
@@ -27,6 +27,7 @@ var (
 	onceMixedServer     sync.Once
 )
 
+// NewMixedServerManager 创建混合服务管理器实例
 func NewMixedServerManager(addr string, ginMgr *gin_server.GinServerManager, grpcMgr *grpc_server.GRPCServerManager, logger *slog.Logger) *MixedServerManager {
 	onceMixedServer.Do(func() {
 		if logger == nil {
@@ -39,6 +40,11 @@ func NewMixedServerManager(addr string, ginMgr *gin_server.GinServerManager, grp
 			logger:  logger,
 		}
 	})
+	return instanceMixedServer
+}
+
+// GetMixedServerInstance 获取混合服务管理器单例
+func GetMixedServerInstance() *MixedServerManager {
 	return instanceMixedServer
 }
 

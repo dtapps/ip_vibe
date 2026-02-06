@@ -11,9 +11,8 @@ import (
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/sys_env"
-	"vibe_ip/internal/utils"
+	"vibe_ip/internal/types"
 
 	"go.dtapp.net/library/service/bark"
 	"go.dtapp.net/library/service/dingtalk"
@@ -60,17 +59,17 @@ func NewSend(db *ent.Client, logDb *ent_log.Client) *Send {
 		client: client,
 		logger: slog.With("component", "webhook"),
 
-		wechatWorkClient: global.GvaWechatWork,
-		dingTalkClient:   global.GvaDingTalk,
-		feishuClient:     global.GvaFeishu,
-		barkClient:       global.GvaBark,
-		ft07Client:       global.GvaFt07,
-		pushDeerClient:   global.GvaPushDeer,
+		// wechatWorkClient: global.GvaWechatWork,
+		// dingTalkClient:   global.GvaDingTalk,
+		// feishuClient:     global.GvaFeishu,
+		// barkClient:       global.GvaBark,
+		// ft07Client:       global.GvaFt07,
+		// pushDeerClient:   global.GvaPushDeer,
 	}
 }
 
 // 发送通知
-func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, objID int64, payload utils.TemplateData) (err error) {
+func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, objID int64, payload types.TemplateData) (err error) {
 	allWebhook, err := s.db.WebhookSubscription.Query().
 		Where(
 			webhooksubscription.ObjTypeEQ(objType),
@@ -99,7 +98,7 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 
 			if item.Edges.Webhook != nil {
 
-				templateTitle, err := utils.RenderTemplate(item.Edges.Webhook.TemplateTitle, payload)
+				templateTitle, err := RenderTemplate(item.Edges.Webhook.TemplateTitle, payload)
 				if err != nil {
 					s.logger.ErrorContext(egCtx, "渲染标题模板失败",
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
@@ -109,7 +108,7 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 					return nil
 				}
 
-				templateContent, err := utils.RenderTemplate(item.Edges.Webhook.TemplateContent, payload)
+				templateContent, err := RenderTemplate(item.Edges.Webhook.TemplateContent, payload)
 				if err != nil {
 					s.logger.ErrorContext(egCtx, "渲染内容模板失败",
 						slog.Int64("webhook_id", item.Edges.Webhook.ID),
@@ -180,7 +179,7 @@ func (s *Send) Send(ctx context.Context, objType webhooksubscription.ObjType, ob
 }
 
 // 测试通知
-func (s *Send) Test(ctx context.Context, id int64, payload utils.TemplateData) (err error) {
+func (s *Send) Test(ctx context.Context, id int64, payload types.TemplateData) (err error) {
 	// 查询通知
 	firstWebhook, err := s.db.Webhook.Query().
 		Where(webhook.IDEQ(id)).
@@ -193,7 +192,7 @@ func (s *Send) Test(ctx context.Context, id int64, payload utils.TemplateData) (
 		return fmt.Errorf("查询通知失败: %w", err)
 	}
 
-	templateTitle, err := utils.RenderTemplate(firstWebhook.TemplateTitle, payload)
+	templateTitle, err := RenderTemplate(firstWebhook.TemplateTitle, payload)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "渲染标题模板失败",
 			slog.Int64("webhook_id", id),
@@ -202,7 +201,7 @@ func (s *Send) Test(ctx context.Context, id int64, payload utils.TemplateData) (
 		return fmt.Errorf("渲染标题模板失败: %w", err)
 	}
 
-	templateContent, err := utils.RenderTemplate(firstWebhook.TemplateContent, payload)
+	templateContent, err := RenderTemplate(firstWebhook.TemplateContent, payload)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "渲染内容模板失败",
 			slog.Int64("webhook_id", id),

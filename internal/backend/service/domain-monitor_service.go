@@ -159,7 +159,7 @@ func (s *DomainMonitorServiceImpl) CreateDomainMonitor(ctx context.Context, requ
 	}
 
 	// 创建通知订阅
-	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("创建通知订阅失败: %s\n", err.Error())
@@ -194,7 +194,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 	}
 
 	// 更新通知订阅
-	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDomainMonitor, saveDomainMonitor.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("更新通知订阅失败: %s\n", err.Error())
@@ -302,7 +302,7 @@ func (s *DomainMonitorServiceImpl) DeleteDomainMonitor(ctx context.Context, id i
 	}
 
 	// 删除通知订阅
-	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDomainMonitor, firstDomainMonitor.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).Delete(ctx, webhooksubscription.ObjTypeDomainMonitor, firstDomainMonitor.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
@@ -353,7 +353,7 @@ func (s *DomainMonitorServiceImpl) BatchDeleteDomainMonitor(ctx context.Context,
 
 	// 删除通知订阅
 	for _, domainMonitor := range allDomainMonitor {
-		err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeDomainMonitor, domainMonitor.ID)
+		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeDomainMonitor, domainMonitor.ID)
 		if err != nil {
 			tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)

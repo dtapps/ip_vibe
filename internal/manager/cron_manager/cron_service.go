@@ -1,4 +1,4 @@
-package manager
+package cron_manager
 
 import (
 	"context"
@@ -36,6 +36,7 @@ var (
 	onceCronServer     sync.Once
 )
 
+// NewCronServerManager 创建定时任务服务管理器实例
 func NewCronServerManager(ctx context.Context, db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) (*CronServerManager, error) {
 	taskRegistry, err := provider.NewTaskTask(ctx, logger)
 	if err != nil {
@@ -57,6 +58,11 @@ func NewCronServerManager(ctx context.Context, db *ent.Client, logDb *ent_log.Cl
 		}
 	})
 	return instanceCronServer, nil
+}
+
+// GetCronServerInstance 获取定时任务服务管理器单例
+func GetCronServerInstance() *CronServerManager {
+	return instanceCronServer
 }
 
 // InitHandlers 初始化并注册所有的任务处理器
@@ -105,17 +111,18 @@ func (m *CronServerManager) RunHandler(jobID int64, handlerName string, args jso
 
 	// 4. 回填日志
 	if logRecord != nil {
-		updater := m.logDb.CronJobLog.UpdateOne(logRecord).
-			SetFinishedAt(endTime).
-			SetDuration(duration).
-			SetOutput(result)
+		updaterLog := m.logDb.CronJobLog.UpdateOne(logRecord)
+		updaterLog.SetFinishedAt(endTime)
+		updaterLog.SetDuration(duration)
+		updaterLog.SetOutput(result)
 
 		if execErr != nil {
-			updater.SetStatus(cronjoblog.StatusFailed).SetErrorInfo(execErr.Error())
+			updaterLog.SetStatus(cronjoblog.StatusFailed)
+			updaterLog.SetErrorInfo(execErr.Error())
 		} else {
-			updater.SetStatus(cronjoblog.StatusSuccess)
+			updaterLog.SetStatus(cronjoblog.StatusSuccess)
 		}
-		_ = updater.Exec(ctx)
+		_ = updaterLog.Exec(ctx)
 	}
 
 	if execErr != nil {
@@ -167,7 +174,6 @@ func (m *CronServerManager) SyncAllJobs(ctx context.Context) error {
 		dbJobMap[j.ID] = j
 	}
 
-	// 2. 处理【删除】和【更新】
 	// 遍历内存中正在运行的任务
 	for id := range m.runningJobs {
 		dbJob, exists := dbJobMap[id]
@@ -190,7 +196,6 @@ func (m *CronServerManager) SyncAllJobs(ctx context.Context) error {
 		}
 	}
 
-	// 3. 处理【新增】
 	// 遍历数据库任务，如果内存里没有，则添加
 	for id, dbJob := range dbJobMap {
 		if _, running := m.runningJobs[id]; !running {
@@ -203,6 +208,46 @@ func (m *CronServerManager) SyncAllJobs(ctx context.Context) error {
 		}
 	}
 
+	return nil
+}
+
+// SyncJob 同步单个任务的状态（自动识别：新增/更新/删除）
+func (m *CronServerManager) SyncJob(ctx context.Context, jobID int64) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	// 尝试从数据库获取
+	j, err := m.db.CronJob.Get(ctx, jobID)
+
+	// 如果查不到 (NotFound)，视为删除动作
+	if err != nil {
+		if ent.IsNotFound(err) {
+			m.removeJobFromCron(jobID)
+			return nil
+		}
+		return err
+	}
+
+	// 如果状态不是运行中，同样执行移除
+	if j.Status != cronjob.StatusRunning {
+		m.removeJobFromCron(jobID)
+		return nil
+	}
+
+	// 指纹比对逻辑（避免无意义的重启）
+	newFingerprint := m.generateFingerprint(j)
+	if oldFingerprint, exists := m.jobConfigs[jobID]; exists {
+		if oldFingerprint == newFingerprint {
+			return nil // 配置未变，不操作
+		}
+		m.removeJobFromCron(jobID) // 配置变了，先删
+	}
+
+	// 加入调度
+	if err := m.addJobToCron(j); err != nil {
+		return err
+	}
+	m.jobConfigs[jobID] = newFingerprint
 	return nil
 }
 
@@ -340,7 +385,7 @@ func (m *CronServerManager) AfterPeriodicListener() gocron.EventListener {
 
 			// 更新数据库状态
 			_ = m.db.CronJob.UpdateOne(j).
-				SetStatus(cronjob.StatusStopped).
+				SetStatus(cronjob.StatusFinished).
 				Exec(ctx)
 
 			// 移除任务
@@ -359,6 +404,37 @@ func (m *CronServerManager) AfterPeriodicListener() gocron.EventListener {
 // PanicPeriodicListener 任务异常时的监听器
 func (m *CronServerManager) PanicPeriodicListener() gocron.EventListener {
 	return gocron.AfterJobRunsWithPanic(func(jobID uuid.UUID, jobName string, recoverData any) {
+		ctx := context.Background()
+
+		// 从数据库查询任务
+		j, err := m.db.CronJob.Query().
+			Where(cronjob.EntryIDEQ(jobID)).
+			First(ctx)
+		if err != nil {
+			m.logger.ErrorContext(ctx, "[PanicPeriodicListener] 查询任务失败",
+				slog.String("entry_id", jobID.String()),
+				slog.Any("err", err),
+			)
+			return
+		}
+
+		// 如果是一次性任务，执行完后修改状态并从内存移除
+		if j.TaskType == cronjob.TaskTypeOneOff {
+
+			// 更新数据库状态
+			_ = m.db.CronJob.UpdateOne(j).
+				SetStatus(cronjob.StatusFailed).
+				Exec(ctx)
+
+			// 移除任务
+			m.mu.Lock()
+			m.removeJobFromCron(j.ID)
+			m.mu.Unlock()
+
+			m.logger.InfoContext(ctx, "[PanicPeriodicListener] 一次性任务执行失败并已停止",
+				slog.String("entry_id", jobID.String()),
+			)
+		}
 
 	})
 }

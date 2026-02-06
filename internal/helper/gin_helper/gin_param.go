@@ -1,11 +1,9 @@
 package gin_helper
 
 import (
-	"log/slog"
 	"reflect"
 	"strconv"
 	"strings"
-	"vibe_ip/internal/global"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -77,80 +75,50 @@ func setDefaultsRecursive(v reflect.Value) {
 
 // 通用绑定器（推荐方式）
 func BindWithDefaults(c *gin.Context, obj any, b binding.Binding) (err error) {
-	// 日志
-	logger := global.GvaGinSlog
 
 	setDefaults(obj)             // ← 先设默认值
 	err = b.Bind(c.Request, obj) // ← 再绑定，覆盖传了的字段
 
-	var (
-		method        = c.Request.Method
-		path          = c.Request.URL.Path
-		contentLength = c.Request.ContentLength
-		contentType   = c.GetHeader("Content-Type")
-	)
+	// var (
+	// 	method        = c.Request.Method
+	// 	path          = c.Request.URL.Path
+	// 	contentLength = c.Request.ContentLength
+	// 	contentType   = c.GetHeader("Content-Type")
+	// )
 
-	logger.DebugContext(c, "BindWithDefaults",
-		slog.String("method", method),
-		slog.String("path", path),
-		slog.Int64("contentLength", contentLength),
-		slog.String("contentType", contentType),
-		slog.Any("obj", obj),
-		slog.Any("err", err),
-	)
 	return err
 }
 
 // 快捷方法
 func BindQueryWithDefaults(c *gin.Context, obj any) (err error) {
-	// 日志
-	logger := global.GvaGinSlog
 
 	// 先设默认值
 	setDefaults(obj)
 
-	var (
-		method        = c.Request.Method
-		path          = c.Request.URL.Path
-		contentLength = c.Request.ContentLength
-		contentType   = c.GetHeader("Content-Type")
-	)
+	// var (
+	// 	method        = c.Request.Method
+	// 	path          = c.Request.URL.Path
+	// 	contentLength = c.Request.ContentLength
+	// 	contentType   = c.GetHeader("Content-Type")
+	// )
 
 	// 再绑定，覆盖传了的字段
 	err = c.ShouldBindQuery(obj)
 	if err != nil {
-		logger.ErrorContext(c, "ShouldBindQuery",
-			slog.String("method", method),
-			slog.String("path", path),
-			slog.Int64("contentLength", contentLength),
-			slog.String("contentType", contentType),
-			slog.Any("obj", obj),
-			slog.Any("err", err),
-		)
 		return err
 	}
 
-	logger.DebugContext(c, "BindQueryWithDefaults",
-		slog.String("method", method),
-		slog.String("path", path),
-		slog.Int64("contentLength", contentLength),
-		slog.String("contentType", contentType),
-		slog.Any("obj", obj),
-		slog.Any("err", err),
-	)
 	return nil
 }
 
 func BindJSONWithDefaults(c *gin.Context, obj any) (err error) {
-	// 日志
-	logger := global.GvaGinSlog
 
 	// 先设默认值
 	setDefaults(obj)
 
 	var (
-		method        = c.Request.Method
-		path          = c.Request.URL.Path
+		// method        = c.Request.Method
+		// path          = c.Request.URL.Path
 		contentLength = c.Request.ContentLength
 		contentType   = c.GetHeader("Content-Type")
 	)
@@ -160,62 +128,28 @@ func BindJSONWithDefaults(c *gin.Context, obj any) (err error) {
 		// 再绑定，覆盖传了的字段
 		err = c.ShouldBindJSON(obj)
 		if err != nil {
-			logger.ErrorContext(c, "ShouldBindJSON",
-				slog.String("method", method),
-				slog.String("path", path),
-				slog.Int64("contentLength", contentLength),
-				slog.String("contentType", contentType),
-				slog.Any("obj", obj),
-				slog.Any("err", err),
-			)
 			return err
 		}
 	}
 
-	logger.DebugContext(c, "BindJSONWithDefaults",
-		slog.String("method", method),
-		slog.String("path", path),
-		slog.Int64("contentLength", contentLength),
-		slog.String("contentType", contentType),
-		slog.Any("obj", obj),
-		slog.Any("err", err),
-	)
 	return nil
 }
 
 func BindUriWithDefaults(c *gin.Context, obj any) (err error) {
-	// 日志
-	logger := global.GvaGinSlog
 
 	setDefaults(obj)           // ← 先设默认值
 	err = c.ShouldBindUri(obj) // ← 再绑定，覆盖传了的字段
 
-	var (
-		method        = c.Request.Method
-		path          = c.Request.URL.Path
-		contentLength = c.Request.ContentLength
-		contentType   = c.GetHeader("Content-Type")
-	)
+	// var (
+	// 	method        = c.Request.Method
+	// 	path          = c.Request.URL.Path
+	// 	contentLength = c.Request.ContentLength
+	// 	contentType   = c.GetHeader("Content-Type")
+	// )
 
 	if err != nil {
-		logger.ErrorContext(c, "BindUriWithDefaults",
-			slog.String("method", method),
-			slog.String("path", path),
-			slog.Int64("contentLength", contentLength),
-			slog.String("contentType", contentType),
-			slog.Any("obj", obj),
-			slog.Any("err", err),
-		)
 		return err
 	}
 
-	logger.DebugContext(c, "BindUriWithDefaults",
-		slog.String("method", method),
-		slog.String("path", path),
-		slog.Int64("contentLength", contentLength),
-		slog.String("contentType", contentType),
-		slog.Any("obj", obj),
-		slog.Any("err", err),
-	)
 	return nil
 }

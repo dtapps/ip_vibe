@@ -14,16 +14,9 @@ const (
 	MessageSuccess = "success"
 )
 
-// API响应结构
-type APIResponse struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
-}
-
 // API响应辅助函数
 func successResponse(c *gin.Context, data any) {
-	c.JSON(http.StatusOK, APIResponse{
+	c.JSON(http.StatusOK, types.APIResponse{
 		Code:    http.StatusOK,
 		Message: MessageSuccess,
 		Data:    data,
@@ -31,7 +24,7 @@ func successResponse(c *gin.Context, data any) {
 }
 
 func errorResponse(c *gin.Context, statusCode int, message string) {
-	c.JSON(statusCode, APIResponse{
+	c.JSON(statusCode, types.APIResponse{
 		Code:    statusCode,
 		Message: message,
 	})

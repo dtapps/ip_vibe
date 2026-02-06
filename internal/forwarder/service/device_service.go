@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"log/slog"
+	"runtime"
 	"time"
 	"vibe_ip/internal/core"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_generated"
 
 	"google.golang.org/grpc"
@@ -22,6 +22,8 @@ type DeviceService struct {
 
 	grpcClient   *grpc.ClientConn                   // gRPC 客户端
 	deviceClient grpc_generated.DeviceServiceClient // gRPC 业务服务
+
+	clientInfo *grpc_generated.ClientInfo // 客户端信息
 }
 
 // NewDeviceService 创建设备服务
@@ -42,7 +44,15 @@ func NewDeviceService(ctx context.Context, logger *slog.Logger, grpcClient *grpc
 
 		grpcClient:   grpcClient,
 		deviceClient: grpc_generated.NewDeviceServiceClient(grpcClient),
+
+		clientInfo: &grpc_generated.ClientInfo{},
 	}, nil
+}
+
+// SetClientInfo 设置客户端信息
+func (s *DeviceService) SetClientInfo(clientInfo *grpc_generated.ClientInfo) *DeviceService {
+	s.clientInfo = clientInfo
+	return s
 }
 
 // Run 开始运行服务
@@ -100,20 +110,15 @@ func (s *DeviceService) executeStream(ctx context.Context) error {
 	}
 
 	// 构建 ClientInfo
-	clientInfo := &grpc_generated.ClientInfo{
-		DeviceCode: s.deviceData.DeviceCode,
-		DeviceName: s.deviceData.DeviceName,
-		Role:       s.role,
-		Version:    global.GvaVersion,
-		GitCommit:  global.GvaGitCommit,
-		BuildTime:  global.GvaBuildTime,
-		GoVersion:  global.GvaGoVersion,
-		Os:         global.GvaOS,
-		Arch:       global.GvaArch,
-		RunTime:    timestamppb.New(global.GvaStartTime),
-		StartTime:  timestamppb.New(s.startTime),
-		GetTime:    timestamppb.Now(),
-	}
+	clientInfo := s.clientInfo
+	clientInfo.DeviceCode = s.deviceData.DeviceCode
+	clientInfo.DeviceName = s.deviceData.DeviceName
+	clientInfo.Role = s.role
+	clientInfo.GoVersion = runtime.Version()
+	clientInfo.Os = runtime.GOOS
+	clientInfo.Arch = runtime.GOARCH
+	clientInfo.StartTime = timestamppb.New(s.startTime)
+	clientInfo.GetTime = timestamppb.Now()
 
 	// 准备 ClientInfo 信息
 	infoMsg := &grpc_generated.ClientMessage{

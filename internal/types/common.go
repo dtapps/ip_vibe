@@ -2,12 +2,15 @@ package types
 
 import (
 	"encoding/json"
-	"log/slog"
 	"strconv"
-	"vibe_ip/internal/global"
-
-	"github.com/spf13/cast"
 )
+
+// API响应结构
+type APIResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    any    `json:"data,omitempty"`
+}
 
 // 公共 页面数据 结构
 type BasePageData[T any] struct {
@@ -70,7 +73,6 @@ type NullableBool struct {
 }
 
 func (nb *NullableBool) UnmarshalJSON(data []byte) (err error) {
-	nb.printParam("UnmarshalJSON", "data", string(data))
 
 	// 处理空输入
 	if len(data) == 0 {
@@ -97,12 +99,10 @@ func (nb *NullableBool) UnmarshalJSON(data []byte) (err error) {
 	nb.Set = true
 	nb.boolVal = &b
 
-	nb.printValue("UnmarshalJSON")
 	return nil
 }
 
 func (nb *NullableBool) UnmarshalText(text []byte) (err error) {
-	nb.printParam("UnmarshalText", "text", string(text))
 
 	// 空值、"null" 视为未设置
 	s := string(text)
@@ -121,12 +121,10 @@ func (nb *NullableBool) UnmarshalText(text []byte) (err error) {
 	nb.Set = true
 	nb.boolVal = &b
 
-	nb.printValue("UnmarshalText")
 	return nil
 }
 
 func (nb *NullableBool) UnmarshalParam(param string) (err error) {
-	nb.printParam("UnmarshalParam", "param", param)
 
 	// 空值、"null" 视为未设置
 	if param == "" || param == "null" {
@@ -144,31 +142,7 @@ func (nb *NullableBool) UnmarshalParam(param string) (err error) {
 	nb.Set = true
 	nb.boolVal = &b
 
-	nb.printValue("UnmarshalParam")
 	return nil
-}
-
-// 打印 NullableBool 的值
-func (nb NullableBool) printParam(name string, paramKey string, paramValue string) {
-	// 日志
-	logger := global.GvaGinSlog
-
-	// 打印参数
-	logger.Debug(name,
-		slog.String(paramKey, cast.ToString(paramValue)),
-	)
-}
-
-// 打印 NullableBool 的值
-func (nb NullableBool) printValue(name string) {
-	// 日志
-	logger := global.GvaGinSlog
-
-	// 打印结果
-	logger.Debug(name,
-		slog.Bool("set", nb.Set),
-		slog.Bool("boolVal", *nb.boolVal),
-	)
 }
 
 // IsEmpty 表示：字段未传，或传了 null / ""（即用户不想设置该字段）

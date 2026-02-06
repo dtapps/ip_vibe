@@ -25,7 +25,7 @@ func getLumberjack(prefix string, name string) *lumberjack.Logger {
 	completeName := strings.Join(elems, "_")
 	completeName += ".log"
 
-	if global.GvaVersion == "dev" {
+	if global.Version == "dev" {
 		return &lumberjack.Logger{
 			Filename:   filepath.Join("logs", completeName), // 日志文件的位置
 			MaxSize:    3,                                   // 每个日志文件最大尺寸（MB）

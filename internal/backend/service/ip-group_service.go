@@ -174,7 +174,7 @@ func (s *IPGroupServiceImpl) CreateIPGroup(ctx context.Context, request *types.C
 	}
 
 	// 创建通知订阅
-	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("创建通知订阅失败: %s\n", err.Error())
@@ -208,7 +208,7 @@ func (s *IPGroupServiceImpl) UpdateIPGroup(ctx context.Context, request *types.U
 	}
 
 	// 更新通知订阅
-	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeIPGroup, saveIpGroup.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("更新通知订阅失败: %s\n", err.Error())
@@ -271,7 +271,7 @@ func (s *IPGroupServiceImpl) DeleteIPGroup(ctx context.Context, id int64) error 
 	}
 
 	// 删除通知订阅
-	err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeIPGroup, firstIpGroup.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeIPGroup, firstIpGroup.ID)
 	if err != nil {
 		_ = tx.Rollback()
 		return fmt.Errorf("删除通知订阅失败: %w", err)
@@ -343,7 +343,7 @@ func (s *IPGroupServiceImpl) BatchDeleteIPGroup(ctx context.Context, ids []int64
 
 	// 删除通知订阅
 	for _, item := range allIpGroup {
-		err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeIPGroup, item.ID)
+		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeIPGroup, item.ID)
 		if err != nil {
 			tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)

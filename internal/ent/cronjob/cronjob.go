@@ -101,7 +101,7 @@ func ValidColumn(column string) bool {
 //
 //	import _ "vibe_ip/internal/ent/runtime"
 var (
-	Hooks [1]ent.Hook
+	Hooks [2]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -207,11 +207,14 @@ type BusinessType string
 
 // BusinessType values.
 const (
-	BusinessTypeCdn    BusinessType = "cdn"
-	BusinessTypeDNS    BusinessType = "dns"
-	BusinessTypeSsl    BusinessType = "ssl"
-	BusinessTypeDomain BusinessType = "domain"
-	BusinessTypeSystem BusinessType = "system"
+	BusinessTypeCdn     BusinessType = "cdn"
+	BusinessTypeDNS     BusinessType = "dns"
+	BusinessTypeSsl     BusinessType = "ssl"
+	BusinessTypeDomain  BusinessType = "domain"
+	BusinessTypeTun     BusinessType = "tun"
+	BusinessTypeWebhook BusinessType = "webhook"
+	BusinessTypeDevice  BusinessType = "device"
+	BusinessTypeSystem  BusinessType = "system"
 )
 
 func (bt BusinessType) String() string {
@@ -221,7 +224,7 @@ func (bt BusinessType) String() string {
 // BusinessTypeValidator is a validator for the "business_type" field enum values. It is called by the builders before save.
 func BusinessTypeValidator(bt BusinessType) error {
 	switch bt {
-	case BusinessTypeCdn, BusinessTypeDNS, BusinessTypeSsl, BusinessTypeDomain, BusinessTypeSystem:
+	case BusinessTypeCdn, BusinessTypeDNS, BusinessTypeSsl, BusinessTypeDomain, BusinessTypeTun, BusinessTypeWebhook, BusinessTypeDevice, BusinessTypeSystem:
 		return nil
 	default:
 		return fmt.Errorf("cronjob: invalid enum value for business_type field: %q", bt)
@@ -265,8 +268,10 @@ const DefaultStatus = StatusStopped
 
 // Status values.
 const (
-	StatusRunning Status = "running"
-	StatusStopped Status = "stopped"
+	StatusRunning  Status = "running"
+	StatusStopped  Status = "stopped"
+	StatusFinished Status = "finished"
+	StatusFailed   Status = "failed"
 )
 
 func (s Status) String() string {
@@ -276,7 +281,7 @@ func (s Status) String() string {
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
 func StatusValidator(s Status) error {
 	switch s {
-	case StatusRunning, StatusStopped:
+	case StatusRunning, StatusStopped, StatusFinished, StatusFailed:
 		return nil
 	default:
 		return fmt.Errorf("cronjob: invalid enum value for status field: %q", s)

@@ -218,7 +218,7 @@ func (s *SSLRecordServiceImpl) CreateSSLRecord(ctx context.Context, request *typ
 	}
 
 	// 创建通知订阅
-	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeSslRecord, saveSSLRecord.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeSslRecord, saveSSLRecord.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("创建通知订阅失败: %s\n", err.Error())
@@ -251,7 +251,7 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecord(ctx context.Context, request *typ
 	}
 
 	// 更新通知订阅
-	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeSslRecord, saveSSLRecord.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeSslRecord, saveSSLRecord.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("更新通知订阅失败: %s\n", err.Error())
@@ -399,7 +399,7 @@ func (s *SSLRecordServiceImpl) DeleteSSLRecord(ctx context.Context, id int64) er
 	}
 
 	// 删除通知订阅
-	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeSslRecord, firstSSLRecord.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).Delete(ctx, webhooksubscription.ObjTypeSslRecord, firstSSLRecord.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
@@ -450,7 +450,7 @@ func (s *SSLRecordServiceImpl) BatchDeleteSSLRecord(ctx context.Context, ids []i
 
 	// 删除通知订阅
 	for _, sslRecord := range allSSLRecord {
-		err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeSslRecord, sslRecord.ID)
+		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeSslRecord, sslRecord.ID)
 		if err != nil {
 			tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)

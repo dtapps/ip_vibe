@@ -5,7 +5,6 @@ import (
 	"net"
 	"regexp"
 	"strings"
-	"vibe_ip/internal/ent/schema/schematype"
 
 	"github.com/spf13/cast"
 	"golang.org/x/net/publicsuffix"
@@ -149,13 +148,13 @@ func ParseDomain(sD string, dn string) (fullDomain string, subDomain string, dom
 // ParseCdnDomainType 解析域名类型
 func ParseCdnDomainType(platform string, oV []string) (recordType string, originValues []string, err error) {
 	switch platform {
-	case schematype.ConfigPlatformTencentEO:
+	case "tencent_eo":
 		if len(oV) >= 2 {
 			recordType = "ORIGIN_GROUP"
 		} else {
 			recordType = "IP_DOMAIN"
 		}
-	case schematype.ConfigPlatformAliyunEsa:
+	case "aliyun_esa":
 		if len(oV) >= 2 {
 			recordType = "CNAME"
 		} else {

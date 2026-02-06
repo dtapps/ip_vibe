@@ -186,7 +186,7 @@ func (s *DeviceServiceImpl) CreateDevice(ctx context.Context, request *types.Cre
 	}
 
 	// 创建通知订阅 (保持原始逻辑)
-	err = webhook_sub_helper.Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).Create(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("创建通知订阅失败: %s\n", err.Error())
@@ -220,7 +220,7 @@ func (s *DeviceServiceImpl) UpdateDevice(ctx context.Context, request *types.Upd
 	}
 
 	// 更新通知订阅 (保持原始逻辑)
-	err = webhook_sub_helper.Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).Update(ctx, request.WebhookIDs, webhooksubscription.ObjTypeDevice, saveDevice.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("更新通知订阅失败: %s\n", err.Error())
@@ -250,7 +250,7 @@ func (s *DeviceServiceImpl) DeleteDevice(ctx context.Context, id int64) error {
 	}
 
 	// 删除通知订阅 (保持原始逻辑)
-	err = webhook_sub_helper.Delete(ctx, webhooksubscription.ObjTypeDevice, firstDevice.ID)
+	err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).Delete(ctx, webhooksubscription.ObjTypeDevice, firstDevice.ID)
 	if err != nil {
 		if s.debug {
 			fmt.Printf("删除通知订阅失败: %s\n", err.Error())
@@ -293,7 +293,7 @@ func (s *DeviceServiceImpl) BatchDeleteDevice(ctx context.Context, ids []int64) 
 
 	// 删除通知订阅
 	for _, item := range allDevice {
-		err = webhook_sub_helper.DeleteTx(ctx, tx, webhooksubscription.ObjTypeDevice, item.ID)
+		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeDevice, item.ID)
 		if err != nil {
 			tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)

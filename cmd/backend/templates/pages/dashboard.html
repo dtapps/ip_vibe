@@ -11,10 +11,10 @@
   </div>
   <div class="flex flex-col items-end">
     <span class="badge badge-primary py-4 px-6 rounded-2xl font-bold">
-      {{ $data.SystemMemoryInfo.OS }} / {{ $data.SystemMemoryInfo.Arch }}
+      {{ $data.SystemInfo.OS }} / {{ $data.SystemInfo.Arch }}
     </span>
     <span class="text-[10px] opacity-30 mt-2 font-mono">
-      Build: {{ $data.SystemMemoryInfo.GitCommit }}
+      Build: {{ $data.SystemInfo.GitCommit }}
     </span>
   </div>
 </div>
@@ -169,14 +169,14 @@
             <div class="flex justify-between items-center text-xs">
               <span class="opacity-50">Go 版本</span>
               <span class="font-mono text-[10px] opacity-80">
-                {{ $data.SystemMemoryInfo.GoVersion }}
+                {{ $data.SystemInfo.GoVersion }}
               </span>
             </div>
             <div class="flex justify-between items-center text-xs">
               <span class="opacity-50">已运行自</span>
               <span class="font-mono text-[10px] opacity-80 tooltip tooltip-left"
-                data-tip='{{ $data.SystemMemoryInfo.RuntimeStartTime.Format "01-02 15:04:05" }}'>
-                {{ diffForHumans $data.SystemMemoryInfo.RuntimeStartTime }}
+                data-tip='{{ $data.SystemInfo.RuntimeStartTime.Format "01-02 15:04:05" }}'>
+                {{ diffForHumans $data.SystemInfo.RuntimeStartTime }}
               </span>
             </div>
           </div>

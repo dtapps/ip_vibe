@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
-	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
@@ -22,21 +21,18 @@ import (
 
 // CDNTaskProvider 实现 provider.TaskProvider 接口
 type CDNTaskProvider struct {
-	db             *ent.Client                   // 数据库客户端
-	logDb          *ent_log.Client               // 日志数据库客户端
-	logger         *slog.Logger                  // 日志记录器
-	httpTransport  *http_log.LoggingRoundTripper // HTTP日志记录器
-	webhookService *webhookService.Send          // Webhook服务
+	db            *ent.Client                   // 数据库客户端
+	logDb         *ent_log.Client               // 日志数据库客户端
+	logger        *slog.Logger                  // 日志记录器
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 }
 
 func NewCDNTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CDNTaskProvider {
-	webhookService := webhookService.NewSend(db, logDb)
 	return &CDNTaskProvider{
-		db:             db,
-		logDb:          logDb,
-		logger:         logger.With(slog.String("handler", "cdn_sync")),
-		httpTransport:  httpTransport,
-		webhookService: webhookService,
+		db:            db,
+		logDb:         logDb,
+		logger:        logger.With(slog.String("handler", "cdn_sync")),
+		httpTransport: httpTransport,
 	}
 }
 
@@ -235,9 +231,7 @@ func (p *CDNTaskProvider) Process(ctx context.Context, args json.RawMessage) (st
 	_ = cdnTask.SaveRefresh(ctx, p.db, record.ID)
 
 	// 执行 DNS 通知
-	if p.webhookService != nil {
-		_ = cdnTask.Notify(ctx, p.webhookService, record.ID)
-	}
+	_ = cdnTask.Notify(ctx, p.db, record.ID)
 
 	return fmt.Sprintf("域名 %s 同步成功 (IP:%v)", record.SubDomain, originValues), nil
 }

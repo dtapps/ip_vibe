@@ -38,7 +38,7 @@ type CronJob struct {
 	JobType cronjob.JobType `json:"job_type,omitempty"`
 	// 任务分类: system 系统内置, custom 用户自定义
 	JobCategory cronjob.JobCategory `json:"job_category,omitempty"`
-	// 业务类型: cdn, dns, ssl, domain, system
+	// 业务类型: cdn, dns, ssl, domain, tun, webhook, device, system
 	BusinessType cronjob.BusinessType `json:"business_type,omitempty"`
 	// 业务序号
 	BusinessID int64 `json:"business_id,omitempty"`
@@ -54,7 +54,7 @@ type CronJob struct {
 	MaxInterval int `json:"max_interval,omitempty"`
 	// 间隔时间单位 (用于 duration 和 random 模式)
 	IntervalUnit cronjob.IntervalUnit `json:"interval_unit,omitempty"`
-	// 状态: running 运行中, stopped 已停止
+	// 状态: running 运行中, stopped 已停止, finished 已完成, failed 已失败
 	Status cronjob.Status `json:"status,omitempty"`
 	// 是否单例: true 单例, false 非单例
 	IsSingleton bool `json:"is_singleton,omitempty"`

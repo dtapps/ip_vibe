@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
-	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/schema/schemahook"
@@ -27,15 +26,14 @@ import (
 
 // TUN更新任务
 type TUNUpdateTask struct {
-	db             *ent.Client                   // 数据库客户端
-	logDb          *ent_log.Client               // 日志数据库客户端
-	cron           gocron.Scheduler              // 定时任务调度器
-	job            gocron.Job                    // TUN更新任务
-	jobHelper      *gocron_helper.JobHelper      // 任务助手
-	logger         *slog.Logger                  // 日志记录器
-	httpTransport  *http_log.LoggingRoundTripper // HTTP日志记录器
-	webhookService *webhookService.Send          // Webhook服务
-	debug          bool                          // 是否开启调试模式
+	db            *ent.Client                   // 数据库客户端
+	logDb         *ent_log.Client               // 日志数据库客户端
+	cron          gocron.Scheduler              // 定时任务调度器
+	job           gocron.Job                    // TUN更新任务
+	jobHelper     *gocron_helper.JobHelper      // 任务助手
+	logger        *slog.Logger                  // 日志记录器
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 是否开启调试模式
 }
 
 // 创建实例
@@ -44,16 +42,14 @@ func NewTUNUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Schedul
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
-	webhookService := webhookService.NewSend(db, logDb)
 	return &TUNUpdateTask{
-		db:             db,
-		logDb:          logDb,
-		cron:           cron,
-		jobHelper:      gocron_helper.NewJobHelper(cron, logger),
-		logger:         logger,
-		httpTransport:  httpTransport,
-		webhookService: webhookService,
-		debug:          debug,
+		db:            db,
+		logDb:         logDb,
+		cron:          cron,
+		jobHelper:     gocron_helper.NewJobHelper(cron, logger),
+		logger:        logger,
+		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 
@@ -281,7 +277,7 @@ func (s *TUNUpdateTask) TUNUpdate(ctx context.Context, logger *slog.Logger, para
 	_ = tunTask.SaveRefresh(ctx, s.db, params.record.ID)
 
 	// 执行 TUN 通知
-	if err := tunTask.Notify(ctx, s.webhookService, params.record.ID); err != nil {
+	if err := tunTask.Notify(ctx, s.db, params.record.ID); err != nil {
 		return err
 	}
 

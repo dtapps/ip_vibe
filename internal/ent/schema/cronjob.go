@@ -88,7 +88,7 @@ func (CronJob) Fields() []ent.Field {
 		field.Enum("business_type").
 			Values(schematype.GetCronJobBusinessTypes...).
 			Optional().
-			Comment("业务类型: cdn, dns, ssl, domain, system").
+			Comment("业务类型: cdn, dns, ssl, domain, tun, webhook, device, system").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("business_id").
@@ -130,7 +130,7 @@ func (CronJob) Fields() []ent.Field {
 		field.Enum("status").
 			Values(schematype.GetCronJobStatuss...).
 			Default(schematype.CronJobStatusStopped).
-			Comment("状态: running 运行中, stopped 已停止").
+			Comment("状态: running 运行中, stopped 已停止, finished 已完成, failed 已失败").
 			Annotations(entsql.WithComments(true)),
 
 		field.Bool("is_singleton").
@@ -187,5 +187,6 @@ func (CronJob) Indexes() []ent.Index {
 func (CronJob) Hooks() []ent.Hook {
 	return []ent.Hook{
 		schemahook.CronJobLogHook(),
+		schemahook.CronJobGocronHook(),
 	}
 }

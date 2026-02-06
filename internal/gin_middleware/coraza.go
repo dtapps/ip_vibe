@@ -8,11 +8,10 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-
-	"vibe_ip/internal/handlers"
+	"vibe_ip/internal/types"
 
 	"github.com/corazawaf/coraza/v3"
-	"github.com/corazawaf/coraza/v3/types"
+	corazaTypes "github.com/corazawaf/coraza/v3/types"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,7 +39,7 @@ func CorazaMiddleware(logger *slog.Logger, waf coraza.WAF) gin.HandlerFunc {
 			logger.ErrorContext(c, "[Coraza] WAF 事务填充失败",
 				slog.String("err", err.Error()),
 			)
-			c.AbortWithStatusJSON(http.StatusInternalServerError, handlers.APIResponse{
+			c.AbortWithStatusJSON(http.StatusInternalServerError, types.APIResponse{
 				Code:    http.StatusInternalServerError,
 				Message: "WAF 初始化失败",
 			})
@@ -61,7 +60,7 @@ func CorazaMiddleware(logger *slog.Logger, waf coraza.WAF) gin.HandlerFunc {
 				slog.String("action", i.Action),
 				slog.String("data", i.Data),
 			)
-			c.AbortWithStatusJSON(http.StatusForbidden, handlers.APIResponse{
+			c.AbortWithStatusJSON(http.StatusForbidden, types.APIResponse{
 				Code:    http.StatusForbidden,
 				Message: "请求被 WAF 阻塞",
 				Data: map[string]any{
@@ -81,7 +80,7 @@ func CorazaMiddleware(logger *slog.Logger, waf coraza.WAF) gin.HandlerFunc {
 				logger.ErrorContext(c, "[Coraza] 读取请求体失败",
 					slog.String("err", err.Error()),
 				)
-				c.AbortWithStatusJSON(http.StatusBadRequest, handlers.APIResponse{
+				c.AbortWithStatusJSON(http.StatusBadRequest, types.APIResponse{
 					Code:    http.StatusBadRequest,
 					Message: "无效请求体",
 				})
@@ -96,7 +95,7 @@ func CorazaMiddleware(logger *slog.Logger, waf coraza.WAF) gin.HandlerFunc {
 				logger.ErrorContext(c, "[Coraza] WAF 写入请求体失败",
 					slog.String("err", werr.Error()),
 				)
-				c.AbortWithStatusJSON(http.StatusInternalServerError, handlers.APIResponse{
+				c.AbortWithStatusJSON(http.StatusInternalServerError, types.APIResponse{
 					Code:    http.StatusInternalServerError,
 					Message: "WAF 体写入失败",
 				})
@@ -115,7 +114,7 @@ func CorazaMiddleware(logger *slog.Logger, waf coraza.WAF) gin.HandlerFunc {
 					slog.String("action", interruption.Action),
 					slog.String("data", interruption.Data),
 				)
-				c.AbortWithStatusJSON(http.StatusForbidden, handlers.APIResponse{
+				c.AbortWithStatusJSON(http.StatusForbidden, types.APIResponse{
 					Code:    http.StatusForbidden,
 					Message: "请求被 WAF 阻塞",
 					Data: map[string]any{
@@ -133,7 +132,7 @@ func CorazaMiddleware(logger *slog.Logger, waf coraza.WAF) gin.HandlerFunc {
 				logger.ErrorContext(c, "[Coraza] 请求体处理失败",
 					slog.String("err", perr.Error()),
 				)
-				c.AbortWithStatusJSON(http.StatusInternalServerError, handlers.APIResponse{
+				c.AbortWithStatusJSON(http.StatusInternalServerError, types.APIResponse{
 					Code:    http.StatusInternalServerError,
 					Message: "WAF 体处理失败",
 				})
@@ -152,7 +151,7 @@ func CorazaMiddleware(logger *slog.Logger, waf coraza.WAF) gin.HandlerFunc {
 					slog.String("action", bodyInterruption.Action),
 					slog.String("data", bodyInterruption.Data),
 				)
-				c.AbortWithStatusJSON(http.StatusForbidden, handlers.APIResponse{
+				c.AbortWithStatusJSON(http.StatusForbidden, types.APIResponse{
 					Code:    http.StatusForbidden,
 					Message: "请求被 WAF 阻塞",
 					Data: map[string]any{
@@ -199,7 +198,7 @@ func CorazaMiddleware(logger *slog.Logger, waf coraza.WAF) gin.HandlerFunc {
 }
 
 // populateTransaction 是辅助函数：用请求元数据填充事务（头、URI 等）
-func populateTransaction(tx types.Transaction, r *http.Request) error {
+func populateTransaction(tx corazaTypes.Transaction, r *http.Request) error {
 	// 解析客户端 IP 和端口
 	clientIP, clientPortStr, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {

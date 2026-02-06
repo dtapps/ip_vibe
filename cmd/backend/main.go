@@ -21,30 +21,13 @@ import (
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/initialize"
-	"vibe_ip/internal/manager"
+	"vibe_ip/internal/manager/cron_manager"
+	"vibe_ip/internal/manager/mixed_manager"
 	"vibe_ip/internal/mcp_server"
 )
 
 //go:embed templates static
 var embeddedFiles embed.FS
-
-var (
-	version = "dev" // 版本号
-	// version   = "v1.0.0"  // 版本号
-	commit    = "unknown" // Git 提交 ID
-	buildTime = "unknown" // 构建时间
-)
-
-// 初始化版本信息到全局变量
-func init() {
-	global.GvaVersion = version
-	global.GvaGitCommit = commit
-	global.GvaBuildTime = buildTime
-	global.GvaGoVersion = runtime.Version()
-	global.GvaOS = runtime.GOOS
-	global.GvaArch = runtime.GOARCH
-	global.GvaStartTime = time.Now().UTC()
-}
 
 // @title			IPVibe
 // @version		dev
@@ -106,10 +89,9 @@ func main() {
 	// 打印
 	slog.InfoContext(ctx, "服务启动",
 		slog.Bool("debug", sys_env.GvaEnv.DEBUG),
-		slog.String("version", global.GvaVersion),
-		slog.String("git_commit", global.GvaGitCommit),
-		slog.String("build_time", global.GvaBuildTime),
-		slog.String("go_version", global.GvaGoVersion),
+		slog.String("version", global.Version),
+		slog.String("git_commit", global.GitCommit),
+		slog.String("build_time", global.BuildTime),
 	)
 
 	// 创建 Gin 服务
@@ -117,14 +99,18 @@ func main() {
 		Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
 		Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
 		Debug:    sys_env.GvaEnv.DEBUG,
-		Version:  global.GvaVersion,
+		Version:  global.Version,
 	})
 
 	// 创建 gRPC 服务
-	grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{
-		Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
-		Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
-	})
+	grpcMgr := grpc_server.NewManager(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGrpcSlog,
+		grpc_server.Config{
+			Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
+			Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
+		})
 
 	// 初始化 Gin 资源、路由
 	router := ginMgr.GetServer()
@@ -144,12 +130,12 @@ func main() {
 	mcpMgr := mcp_server.NewManager(global.GvaMcpSlog, mcp_server.Config{
 		Name:    "IPVibe",
 		Title:   "IPVibe",
-		Version: global.GvaVersion,
+		Version: global.Version,
 	}, router)
 	go mcpMgr.Run(ctx)
 
 	// 启动 混合 服务
-	mixedMgr := manager.NewMixedServerManager(
+	mixedMgr := mixed_manager.NewMixedServerManager(
 		sys_env.GvaEnv.SERVER_ADDR,
 		ginMgr,
 		grpcMgr,
@@ -309,8 +295,8 @@ func main() {
 		panic(err)
 	}
 
-	// 创建 定时任务 服务管理器
-	cronManager, err := manager.NewCronServerManager(
+	// 创建 定时任务 管理器
+	cronManager, err := cron_manager.NewCronServerManager(
 		ctx,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
@@ -319,7 +305,7 @@ func main() {
 		global.GvaHttpLog,
 	)
 	if err != nil {
-		slog.Error("创建 定时任务 服务管理器失败",
+		slog.Error("创建 定时任务 管理器失败",
 			slog.Any("err", err),
 		)
 		panic(err)
@@ -335,6 +321,9 @@ func main() {
 		)
 		panic(err)
 	}
+
+	// 将 定时任务 管理器的 SyncJob 方法注入到 Hook 包中
+	schemahook.OnSyncJob = cronManager.SyncJob
 
 	// 等待中断信号进行优雅关闭
 	waitForShutdown()
@@ -368,7 +357,12 @@ func gracefulShutdown() {
 		ginMgr := gin_server.NewManager(global.GvaGinSlog, gin_server.Config{})
 
 		// 创建 gRPC 服务
-		grpcMgr := grpc_server.NewManager(global.GvaGrpcSlog, grpc_server.Config{})
+		grpcMgr := grpc_server.NewManager(
+			global.GvaEntDb,
+			global.GvaEntLogDb,
+			global.GvaGrpcSlog,
+			grpc_server.Config{},
+		)
 
 		// 关闭 gRPC 所有流
 		if deviceService := grpcMgr.GetDeviceService(); deviceService != nil {
@@ -376,7 +370,7 @@ func gracefulShutdown() {
 		}
 
 		// 关闭 混合 服务
-		mixedMgr := manager.NewMixedServerManager(
+		mixedMgr := mixed_manager.NewMixedServerManager(
 			sys_env.GvaEnv.SERVER_ADDR,
 			ginMgr,
 			grpcMgr,

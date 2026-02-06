@@ -5,9 +5,8 @@ import (
 	"time"
 	"vibe_ip/internal/docs_2"
 	"vibe_ip/internal/docs_3"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/handlers"
-	"vibe_ip/internal/helper/sys_env"
+	"vibe_ip/internal/types"
 
 	"github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
@@ -114,7 +113,7 @@ func (m *GinServerManager) setupWebRouter() {
 
 	// 未匹配到任何路由
 	r.NoRoute(func(c *gin.Context) {
-		c.JSON(http.StatusNotFound, handlers.APIResponse{
+		c.JSON(http.StatusNotFound, types.APIResponse{
 			Code:    http.StatusNotFound,
 			Message: "path not found",
 		})
@@ -122,7 +121,7 @@ func (m *GinServerManager) setupWebRouter() {
 
 	// 请求方法不被允许
 	r.NoMethod(func(c *gin.Context) {
-		c.JSON(http.StatusMethodNotAllowed, handlers.APIResponse{
+		c.JSON(http.StatusMethodNotAllowed, types.APIResponse{
 			Code:    http.StatusMethodNotAllowed,
 			Message: "method not allowed",
 		})
@@ -139,7 +138,7 @@ func (m *GinServerManager) setupApiRouter() {
 	api := m.engine.Group("/api")
 	{
 		api.Any("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, handlers.APIResponse{
+			c.JSON(http.StatusOK, types.APIResponse{
 				Code:    http.StatusOK,
 				Message: "api ok",
 			})
@@ -339,6 +338,7 @@ func (m *GinServerManager) setupApiRouter() {
 		// 任务相关API
 		tasks := api.Group("/tasks")
 		{
+			tasks.POST("/sync-scheduler", handlers.SyncTasksToScheduler) // 同步任务到调度器
 			tasks.PATCH("/:id", handlers.UpdateTask)                     // 更新任务
 			tasks.PATCH("/:id/status", handlers.UpdateTaskStatus)        // 更新任务状态
 			tasks.PATCH("/batch/status", handlers.BatchUpdateTaskStatus) // 批量更新任务状态
@@ -393,7 +393,7 @@ func (m *GinServerManager) setupApiRouter() {
 
 		// 分组内兜底：未匹配路径返回 JSON 404（不会与 /api/d 冲突）
 		api.Any("/:any", func(c *gin.Context) {
-			c.JSON(http.StatusNotFound, handlers.APIResponse{
+			c.JSON(http.StatusNotFound, types.APIResponse{
 				Code:    http.StatusNotFound,
 				Message: "api path not found",
 			})
@@ -410,10 +410,6 @@ func (m *GinServerManager) setupSwaggerRouter() {
 	swaggerGroup := m.engine.Group("/swagger")
 	{
 		// 配置 Swagger 信息
-		docs_2.SwaggerInfo.Version = global.GvaVersion
-		docs_2.SwaggerInfo.Host = ""
-		docs_3.SwaggerInfo.Version = global.GvaVersion
-		docs_3.SwaggerInfo.Host = ""
 		swaggerGroup.GET("/docs_2/doc.json", func(ctx *gin.Context) {
 			ctx.Header("Content-Type", "application/json")
 			ctx.String(200, docs_2.SwaggerInfo.ReadDoc())
@@ -439,7 +435,6 @@ func (m *GinServerManager) setupSwaggerRouter() {
 			Version:     docs_2.SwaggerInfo.Version,     // API 版本号
 			BasePath:    "/qingfeng",                    // 文档路由前缀
 			DocJSON:     docs_2.GetSwaggerBytes(),       // 直接传入 swagger JSON 内容
-			EnableDebug: sys_env.GvaEnv.DEBUG,           // 是否启用在线调试
 			Environments: []qingfeng.Environment{
 				{
 					Name:    "本地开发",

@@ -26,6 +26,11 @@
       {{ template "icons" (dict "Name" "i-lucide-list-todo") }} 任务管理（Task）
     </h2>
     <div class="flex gap-2">
+      {{ $syncApiUrlPath := join $baseApiUrlPath "/sync-scheduler" }}
+      <button class="btn btn-error btn-sm rounded-xl text-white shadow-md" data-url="{{$syncApiUrlPath}}"
+        data-method="POST" data-confirm="确定同步所有任务到调度器吗？" onclick="handleAction(this)">
+        {{ template "icons" (dict "Name" "i-lucide-refresh-ccw") }} 同步到调度器
+      </button>
     </div>
   </div>
 
@@ -49,8 +54,8 @@
       </thead>
       <tbody id="table">
         {{ range $list }}
-        {{ $apiUrlPath := printf "%s/%d" $baseApiUrlPath .ID }}
-        {{ $webUrlPath := printf "%s/%d" $baseWebUrlPath .ID }}
+        {{ $thisApiUrlPath := printf "%s/%d" $baseApiUrlPath .ID }}
+        {{ $thisWebUrlPath := printf "%s/%d" $baseWebUrlPath .ID }}
         <tr class="hover:bg-base-200/50 transition-all border-b border-base-200/50 group">
 
           <td class="ui-td text-left">
@@ -165,8 +170,18 @@
                 class="badge badge-success badge-sm py-2.5 font-black text-[10px] tracking-widest shadow-lg shadow-success/10">
                 {{fieldEnumLabel "cron_job_status" .Status}}
               </div>
+              {{ else if eq .Status "failed" }}
+              <div
+                class="badge badge-error badge-sm py-2.5 font-black text-[10px] tracking-widest shadow-lg shadow-error/10">
+                {{fieldEnumLabel "cron_job_status" .Status}}
+              </div>
+              {{ else if eq .Status "finished" }}
+              <div
+                class="badge badge-info badge-sm py-2.5 font-black text-[10px] tracking-widest shadow-lg shadow-info/10">
+                {{fieldEnumLabel "cron_job_status" .Status}}
+              </div>
               {{ else }}
-              <div class="badge badge-ghost badge-sm py-2.5 font-black text-[10px] tracking-widest opacity-30">
+              <div class="badge badge-ghost badge-sm py-2.5 font-black text-[10px] tracking-widest opacity-50">
                 {{fieldEnumLabel "cron_job_status" .Status}}
               </div>
               {{ end }}
@@ -188,26 +203,33 @@
               </div>
             </div>
           </td>
-
-          {{ $statusApiUrlPath := join $apiUrlPath "/status" }}
           <td class="ui-td text-center">
             <div class="flex justify-center gap-1.5">
+              {{ $logWebUrlPath := join $baseWebUrlPath "-log" }}
               <button
                 class="btn btn-square btn-xs btn-outline btn-info border-none bg-info/10 hover:bg-info transition-all tooltip"
-                data-tip="查看日志" onclick="onLogPopup('{{.ID}}')">
+                data-tip="查看日志" onclick="location.href='{{ $logWebUrlPath }}?cron_job_id={{.ID}}'">
                 {{ template "icons" (dict "Name" "i-lucide-scroll-text" "Class" "w-3.5 h-3.5") }}
               </button>
+              {{ $statusApiUrlPath := join $thisApiUrlPath "/status" }}
+              {{ $isFinalState := or (eq .Status "finished") (eq .Status "failed") }}
               <button
-                class='btn btn-square btn-xs btn-outline {{ if eq .Status "running" }}btn-warning bg-warning/10{{ else }}btn-success bg-success/10{{ end }} border-none'
-                data-url="{{$statusApiUrlPath}}" data-data-key="status"
+                class='btn btn-square btn-xs btn-outline {{ if eq .Status "running" }}btn-warning bg-warning/10{{ else if $isFinalState }}btn-disabled opacity-20{{ else }}btn-success bg-success/10{{ end }} border-none'
+                {{ if $isFinalState }} disabled {{ else }} data-url="{{$statusApiUrlPath}}" data-data-key="status"
                 data-data-value='{{ if eq .Status "running" }}stopped{{ else }}running{{ end }}'
-                onclick="handleStatusAction(this)">
+                onclick="handleStatusAction(this)" {{ end }}>
+                {{ if $isFinalState }}
                 {{ if eq .Status "running" }}
                 <span class="tooltip" data-tip="暂停任务">
                   {{ template "icons" (dict "Name" "i-lucide-pause-circle" "Class" "w-3.5 h-3.5") }}
                 </span>
                 {{ else }}
                 <span class="tooltip" data-tip="启动任务">
+                  {{ template "icons" (dict "Name" "i-lucide-play-circle" "Class" "w-3.5 h-3.5") }}
+                </span>
+                {{ end }}
+                {{ else }}
+                <span class="tooltip" data-tip='任务已结束'>
                   {{ template "icons" (dict "Name" "i-lucide-play-circle" "Class" "w-3.5 h-3.5") }}
                 </span>
                 {{ end }}

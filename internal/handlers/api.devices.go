@@ -374,7 +374,12 @@ func GetDeviceStatus(c *gin.Context) {
 	}
 
 	// 创建 gRPC 服务
-	grpcMgr := grpc_server.NewManager(nil, grpc_server.Config{})
+	grpcMgr := grpc_server.NewManager(
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGrpcSlog,
+		grpc_server.Config{},
+	)
 
 	// 获取 DeviceService 实例
 	deviceService := grpcMgr.GetDeviceService()

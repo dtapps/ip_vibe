@@ -1412,20 +1412,26 @@ var GetCronJobJobCategorys = []string{
 }
 
 const (
-	CronJobBusinessTypeCdn    string = "cdn"    // cdn
-	CronJobBusinessTypeDns    string = "dns"    // dns
-	CronJobBusinessTypeSsl    string = "ssl"    // ssl
-	CronJobBusinessTypeDomain string = "domain" // domain
-	CronJobBusinessTypeSystem string = "system" // system
+	CronJobBusinessTypeCdn     string = "cdn"     // cdn
+	CronJobBusinessTypeDns     string = "dns"     // dns
+	CronJobBusinessTypeSsl     string = "ssl"     // ssl
+	CronJobBusinessTypeDomain  string = "domain"  // domain
+	CronJobBusinessTypeTun     string = "tun"     // tun
+	CronJobBusinessTypeWebhook string = "webhook" // webhook
+	CronJobBusinessTypeDevice  string = "device"  // device
+	CronJobBusinessTypeSystem  string = "system"  // system
 )
 
 // GetCronJobBusinessTypeDescriptions 业务类型 说明映射
 var GetCronJobBusinessTypeDescriptions = map[string]string{
-	CronJobBusinessTypeCdn:    "CDN",
-	CronJobBusinessTypeDns:    "DNS",
-	CronJobBusinessTypeSsl:    "SSL",
-	CronJobBusinessTypeDomain: "域名",
-	CronJobBusinessTypeSystem: "系统",
+	CronJobBusinessTypeCdn:     "CDN",
+	CronJobBusinessTypeDns:     "DNS",
+	CronJobBusinessTypeSsl:     "SSL",
+	CronJobBusinessTypeDomain:  "域名",
+	CronJobBusinessTypeTun:     "TUN",
+	CronJobBusinessTypeWebhook: "通知",
+	CronJobBusinessTypeDevice:  "设备",
+	CronJobBusinessTypeSystem:  "系统",
 }
 
 // GetCronJobBusinessTypes 返回所有 业务类型
@@ -1434,6 +1440,9 @@ var GetCronJobBusinessTypes = []string{
 	CronJobBusinessTypeDns,
 	CronJobBusinessTypeSsl,
 	CronJobBusinessTypeDomain,
+	CronJobBusinessTypeTun,
+	CronJobBusinessTypeWebhook,
+	CronJobBusinessTypeDevice,
 	CronJobBusinessTypeSystem,
 }
 
@@ -1464,20 +1473,26 @@ var GetCronJobIntervalUnits = []string{
 }
 
 const (
-	CronJobStatusRunning string = "running" // 运行中
-	CronJobStatusStopped string = "stopped" // 已停止
+	CronJobStatusRunning  string = "running"  // 运行中
+	CronJobStatusStopped  string = "stopped"  // 已停止
+	CronJobStatusFinished string = "finished" // 已完成
+	CronJobStatusFailed   string = "failed"   // 已失败
 )
 
 // GetCronJobStatusDescriptions 状态 说明映射
 var GetCronJobStatusDescriptions = map[string]string{
-	CronJobStatusRunning: "运行中",
-	CronJobStatusStopped: "已停止",
+	CronJobStatusRunning:  "运行中",
+	CronJobStatusStopped:  "已停止",
+	CronJobStatusFinished: "已完成",
+	CronJobStatusFailed:   "已失败",
 }
 
 // GetCronJobStatuss 返回所有 状态
 var GetCronJobStatuss = []string{
 	CronJobStatusRunning,
 	CronJobStatusStopped,
+	CronJobStatusFinished,
+	CronJobStatusFailed,
 }
 
 // --------

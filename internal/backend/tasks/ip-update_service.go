@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
-	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/device"
@@ -32,16 +31,15 @@ import (
 
 // IP更新任务
 type IPUpdateTask struct {
-	db             *ent.Client                   // 数据库客户端
-	logDb          *ent_log.Client               // 日志数据库客户端
-	cron           gocron.Scheduler              // 定时任务调度器
-	dnsJob         gocron.Job                    // DNS刷新任务
-	cdnJob         gocron.Job                    // CDN刷新任务
-	jobHelper      *gocron_helper.JobHelper      // 任务助手
-	logger         *slog.Logger                  // 日志记录器
-	httpTransport  *http_log.LoggingRoundTripper // HTTP日志记录器
-	webhookService *webhookService.Send          // Webhook服务
-	debug          bool                          // 是否开启调试模式
+	db            *ent.Client                   // 数据库客户端
+	logDb         *ent_log.Client               // 日志数据库客户端
+	cron          gocron.Scheduler              // 定时任务调度器
+	dnsJob        gocron.Job                    // DNS刷新任务
+	cdnJob        gocron.Job                    // CDN刷新任务
+	jobHelper     *gocron_helper.JobHelper      // 任务助手
+	logger        *slog.Logger                  // 日志记录器
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	debug         bool                          // 是否开启调试模式
 }
 
 // 创建实例
@@ -50,16 +48,14 @@ func NewIPUpdateTask(db *ent.Client, logDb *ent_log.Client, cron gocron.Schedule
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
-	webhookService := webhookService.NewSend(db, logDb)
 	return &IPUpdateTask{
-		db:             db,
-		logDb:          logDb,
-		cron:           cron,
-		jobHelper:      gocron_helper.NewJobHelper(cron, logger),
-		logger:         logger,
-		httpTransport:  httpTransport,
-		webhookService: webhookService,
-		debug:          debug,
+		db:            db,
+		logDb:         logDb,
+		cron:          cron,
+		jobHelper:     gocron_helper.NewJobHelper(cron, logger),
+		logger:        logger,
+		httpTransport: httpTransport,
+		debug:         debug,
 	}
 }
 
@@ -612,7 +608,7 @@ func (s *IPUpdateTask) CdnUpdate(ctx context.Context, logger *slog.Logger, param
 	_ = cdnTask.SaveRefresh(ctx, s.db, params.record.ID)
 
 	// 执行 DNS 通知
-	if err := cdnTask.Notify(ctx, s.webhookService, params.record.ID); err != nil {
+	if err := cdnTask.Notify(ctx, s.db, params.record.ID); err != nil {
 		return err
 	}
 
@@ -739,7 +735,7 @@ func (s *IPUpdateTask) DnsUpdate(ctx context.Context, logger *slog.Logger, param
 	_ = dnsTask.SaveRefresh(ctx, s.db, params.record.ID)
 
 	// 执行 DNS 通知
-	if err := dnsTask.Notify(ctx, s.webhookService, params.record.ID); err != nil {
+	if err := dnsTask.Notify(ctx, s.db, params.record.ID); err != nil {
 		return err
 	}
 

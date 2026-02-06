@@ -241,6 +241,7 @@ func init() {
 	cronjobMixin := schema.CronJob{}.Mixin()
 	cronjobHooks := schema.CronJob{}.Hooks()
 	cronjob.Hooks[0] = cronjobHooks[0]
+	cronjob.Hooks[1] = cronjobHooks[1]
 	cronjobMixinFields0 := cronjobMixin[0].Fields()
 	_ = cronjobMixinFields0
 	cronjobFields := schema.CronJob{}.Fields()

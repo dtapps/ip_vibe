@@ -7,13 +7,49 @@ import (
 	"fmt"
 	"log/slog"
 	"runtime"
+	"sync"
 
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/hook"
+	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
 
 	"github.com/spf13/cast"
 )
+
+var (
+	auditDb     *ent.Client
+	auditDbSlog *slog.Logger
+	auditDbOnce sync.Once
+)
+
+// 注入审计钩子数据库客户端和日志记录器
+func InjectAuditHookDb(db *ent.Client, dbSlog *slog.Logger) {
+	if dbSlog == nil {
+		dbSlog = slog.Default()
+	}
+	auditDbOnce.Do(func() {
+		auditDb = db
+		auditDbSlog = dbSlog
+	})
+}
+
+var (
+	auditLogDb      *ent_log.Client
+	auditLogDbSlog  *slog.Logger
+	auditDbSlogOnce sync.Once
+)
+
+// 注入审计钩子数据库客户端和日志记录器
+func InjectAuditHookLogDb(logDb *ent_log.Client, logDbSlog *slog.Logger) {
+	if logDbSlog == nil {
+		logDbSlog = slog.Default()
+	}
+	auditDbSlogOnce.Do(func() {
+		auditLogDb = logDb
+		auditLogDbSlog = logDbSlog
+	})
+}
 
 // CDNRecordLogHook 为 CDNRecord 自动生成的审计日志钩子
 func CDNRecordLogHook() ent.Hook {
@@ -74,7 +110,7 @@ func CDNRecordLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -86,7 +122,7 @@ func CDNRecordLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -94,7 +130,7 @@ func CDNRecordLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -166,7 +202,7 @@ func CacheLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -178,7 +214,7 @@ func CacheLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -186,7 +222,7 @@ func CacheLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -258,7 +294,7 @@ func CloudflareTunnelLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -270,7 +306,7 @@ func CloudflareTunnelLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -278,7 +314,7 @@ func CloudflareTunnelLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -350,7 +386,7 @@ func CloudflareTunnelIngressLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -362,7 +398,7 @@ func CloudflareTunnelIngressLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -370,7 +406,7 @@ func CloudflareTunnelIngressLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -442,7 +478,7 @@ func CloudflareZoneLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -454,7 +490,7 @@ func CloudflareZoneLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -462,7 +498,7 @@ func CloudflareZoneLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -534,7 +570,7 @@ func CloudflareZoneRecordLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -546,7 +582,7 @@ func CloudflareZoneRecordLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -554,7 +590,7 @@ func CloudflareZoneRecordLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -626,7 +662,7 @@ func CronJobLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -638,7 +674,7 @@ func CronJobLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -646,7 +682,7 @@ func CronJobLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -718,7 +754,7 @@ func DNSRecordLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -730,7 +766,7 @@ func DNSRecordLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -738,7 +774,7 @@ func DNSRecordLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -810,7 +846,7 @@ func DeviceLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -822,7 +858,7 @@ func DeviceLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -830,7 +866,7 @@ func DeviceLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -902,7 +938,7 @@ func DeviceGroupLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -914,7 +950,7 @@ func DeviceGroupLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -922,7 +958,7 @@ func DeviceGroupLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -994,7 +1030,7 @@ func DevicePortForwardLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -1006,7 +1042,7 @@ func DevicePortForwardLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -1014,7 +1050,7 @@ func DevicePortForwardLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -1086,7 +1122,7 @@ func DomainMonitorLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -1098,7 +1134,7 @@ func DomainMonitorLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -1106,7 +1142,7 @@ func DomainMonitorLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -1178,7 +1214,7 @@ func EdgeOneZoneLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -1190,7 +1226,7 @@ func EdgeOneZoneLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -1198,7 +1234,7 @@ func EdgeOneZoneLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -1270,7 +1306,7 @@ func EdgeOneZoneAccelerationDomainLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -1282,7 +1318,7 @@ func EdgeOneZoneAccelerationDomainLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -1290,7 +1326,7 @@ func EdgeOneZoneAccelerationDomainLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -1362,7 +1398,7 @@ func EdgeOneZoneDNSRecordLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -1374,7 +1410,7 @@ func EdgeOneZoneDNSRecordLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -1382,7 +1418,7 @@ func EdgeOneZoneDNSRecordLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -1454,7 +1490,7 @@ func EdgeOneZoneOriginGroupLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -1466,7 +1502,7 @@ func EdgeOneZoneOriginGroupLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -1474,7 +1510,7 @@ func EdgeOneZoneOriginGroupLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -1546,7 +1582,7 @@ func EsaSiteLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -1558,7 +1594,7 @@ func EsaSiteLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -1566,7 +1602,7 @@ func EsaSiteLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -1638,7 +1674,7 @@ func EsaSiteEdgeContainerRecordLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -1650,7 +1686,7 @@ func EsaSiteEdgeContainerRecordLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -1658,7 +1694,7 @@ func EsaSiteEdgeContainerRecordLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -1730,7 +1766,7 @@ func EsaSiteEdgeRoutineRecordLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -1742,7 +1778,7 @@ func EsaSiteEdgeRoutineRecordLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -1750,7 +1786,7 @@ func EsaSiteEdgeRoutineRecordLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -1822,7 +1858,7 @@ func EsaSiteOriginPoolLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -1834,7 +1870,7 @@ func EsaSiteOriginPoolLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -1842,7 +1878,7 @@ func EsaSiteOriginPoolLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -1914,7 +1950,7 @@ func EsaSiteRecordLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -1926,7 +1962,7 @@ func EsaSiteRecordLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -1934,7 +1970,7 @@ func EsaSiteRecordLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -2006,7 +2042,7 @@ func IpGroupLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -2018,7 +2054,7 @@ func IpGroupLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -2026,7 +2062,7 @@ func IpGroupLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -2098,7 +2134,7 @@ func PlatformConfigLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -2110,7 +2146,7 @@ func PlatformConfigLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -2118,7 +2154,7 @@ func PlatformConfigLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -2190,7 +2226,7 @@ func SSLImportLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -2202,7 +2238,7 @@ func SSLImportLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -2210,7 +2246,7 @@ func SSLImportLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -2282,7 +2318,7 @@ func SSLRecordLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -2294,7 +2330,7 @@ func SSLRecordLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -2302,7 +2338,7 @@ func SSLRecordLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -2374,7 +2410,7 @@ func TUNRecordLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -2386,7 +2422,7 @@ func TUNRecordLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -2394,7 +2430,7 @@ func TUNRecordLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -2466,7 +2502,7 @@ func WebhookLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -2478,7 +2514,7 @@ func WebhookLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -2486,7 +2522,7 @@ func WebhookLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)
@@ -2558,7 +2594,7 @@ func WebhookSubscriptionLogHook() ent.Hook {
 					}
 
 					// 使用独立的 context 保证写入
-					logErr := getLogDb().OperationLog.Create().
+					logErr := auditLogDb.OperationLog.Create().
 						SetSource(operationlog.Source(asyncSource)).
 						SetOpType(operationlog.OpType(asyncOpType)).
 						SetObjType(operationlog.ObjType(asyncObjType)).
@@ -2570,7 +2606,7 @@ func WebhookSubscriptionLogHook() ent.Hook {
 						SetGoVersion(runtime.Version()).
 						Exec(asyncCtx)
 					if logErr != nil {
-						getEntLogSlog().ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
+						auditLogDbSlog.ErrorContext(asyncCtx, fmt.Sprintf("%s 记录操作日志失败", objType),
 							slog.Any("err", logErr),
 						)
 					}
@@ -2578,7 +2614,7 @@ func WebhookSubscriptionLogHook() ent.Hook {
 
 				// 8. 本地打印
 				if err != nil {
-					getEntSlog().ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
+					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
 						slog.Any("err", err),
 					)

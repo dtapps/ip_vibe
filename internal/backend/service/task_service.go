@@ -17,8 +17,8 @@ type TaskService interface {
 	GetTasks(ctx context.Context, request *types.GetTasksRequest) ([]*types.GetTaskResponse, error)
 	GetTask(ctx context.Context, id int64) (*types.GetTaskResponse, error)
 	UpdateTask(ctx context.Context, request *types.UpdateTaskRequest) error
-	UpdateTaskActive(ctx context.Context, id int64, status string) error
-	BatchUpdateTaskActive(ctx context.Context, ids []int64, status string) error
+	UpdateTaskStatus(ctx context.Context, id int64, status string) error
+	BatchUpdateTaskStatus(ctx context.Context, ids []int64, status string) error
 	DeleteTask(ctx context.Context, id int64) error
 	BatchDeleteTask(ctx context.Context, ids []int64) error
 }
@@ -156,8 +156,8 @@ func (s *TaskServiceImpl) UpdateTask(ctx context.Context, request *types.UpdateT
 	return nil
 }
 
-// UpdateTaskActive 更新 任务状态
-func (s *TaskServiceImpl) UpdateTaskActive(ctx context.Context, id int64, status string) error {
+// UpdateTaskStatus 更新 任务状态
+func (s *TaskServiceImpl) UpdateTaskStatus(ctx context.Context, id int64, status string) error {
 
 	// 查询任务
 	firstTask, err := s.db.CronJob.Query().
@@ -168,6 +168,14 @@ func (s *TaskServiceImpl) UpdateTaskActive(ctx context.Context, id int64, status
 			return fmt.Errorf("查询任务失败: 记录不存在或 %w", err)
 		}
 		return fmt.Errorf("查询任务失败: %w", err)
+	}
+
+	// 判断状态
+	switch firstTask.Status {
+	case cronjob.StatusFinished:
+		return fmt.Errorf("任务状态为已完成, 不能更新")
+	case cronjob.StatusFailed:
+		return fmt.Errorf("任务状态为失败, 不能更新")
 	}
 
 	// 更新任务状态
@@ -181,8 +189,8 @@ func (s *TaskServiceImpl) UpdateTaskActive(ctx context.Context, id int64, status
 	return nil
 }
 
-// BatchUpdateTaskActive 批量更新 任务状态
-func (s *TaskServiceImpl) BatchUpdateTaskActive(ctx context.Context, ids []int64, status string) error {
+// BatchUpdateTaskStatus 批量更新 任务状态
+func (s *TaskServiceImpl) BatchUpdateTaskStatus(ctx context.Context, ids []int64, status string) error {
 
 	// 创建事务
 	tx, err := s.db.Tx(ctx)
@@ -204,6 +212,18 @@ func (s *TaskServiceImpl) BatchUpdateTaskActive(ctx context.Context, ids []int64
 	if len(allTask) != len(ids) {
 		tx.Rollback()
 		return fmt.Errorf("查询任务失败: 数量 %d 与请求数量 %d 不匹配", len(allTask), len(ids))
+	}
+
+	// 检查是否存在已完成或失败的任务
+	for _, item := range allTask {
+		switch item.Status {
+		case cronjob.StatusFinished:
+			tx.Rollback()
+			return fmt.Errorf("任务状态为已完成, 不能更新")
+		case cronjob.StatusFailed:
+			tx.Rollback()
+			return fmt.Errorf("任务状态为失败, 不能更新")
+		}
 	}
 
 	// 更新任务状态

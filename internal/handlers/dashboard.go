@@ -3,6 +3,7 @@ package handlers
 import (
 	"log/slog"
 	"path/filepath"
+	"runtime"
 	"time"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent_log"
@@ -192,6 +193,14 @@ func Dashboard(c *gin.Context) {
 	// 获取系统信息和系统状态
 	systemHelper := system_helper.NewSystemHelper()
 	pageData.SystemMemoryInfo = systemHelper.GetMemoryInfo(c)
+
+	pageData.SystemInfo.Version = global.Version
+	pageData.SystemInfo.GitCommit = global.GitCommit
+	pageData.SystemInfo.BuildTime = global.BuildTime
+	pageData.SystemInfo.GoVersion = runtime.Version()
+	pageData.SystemInfo.OS = runtime.GOOS
+	pageData.SystemInfo.Arch = runtime.GOARCH
+	pageData.SystemInfo.RuntimeStartTime = global.StartTime
 
 	// 获取系统设置
 	// setting := db_cache.GetSetting(c, global.GvaEntDb)

@@ -9,12 +9,14 @@ import (
 	"time"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/grpc_client"
+	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/reporter/service"
 	"vibe_ip/internal/reporter/tasks"
 
 	"github.com/denisbrodbeck/machineid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -22,17 +24,6 @@ var (
 	commit    = "unknown" // Git 提交 ID
 	buildTime = "unknown" // 构建时间
 )
-
-// 初始化版本信息到全局变量
-func init() {
-	global.GvaVersion = version
-	global.GvaGitCommit = commit
-	global.GvaBuildTime = buildTime
-	global.GvaGoVersion = runtime.Version()
-	global.GvaOS = runtime.GOOS
-	global.GvaArch = runtime.GOARCH
-	global.GvaStartTime = time.Now().UTC()
-}
 
 func main() {
 
@@ -77,10 +68,9 @@ func main() {
 	// 打印
 	slog.Info("服务启动",
 		slog.Bool("debug", sys_env.GvaEnv.DEBUG),
-		slog.String("version", global.GvaVersion),
-		slog.String("git_commit", global.GvaGitCommit),
-		slog.String("build_time", global.GvaBuildTime),
-		slog.String("go_version", global.GvaGoVersion),
+		slog.String("version", global.Version),
+		slog.String("git_commit", global.GitCommit),
+		slog.String("build_time", global.BuildTime),
 	)
 
 	// 设备编码
@@ -140,6 +130,12 @@ func main() {
 			)
 			panic(err)
 		}
+		deviceService.SetClientInfo(&grpc_generated.ClientInfo{
+			Version:   global.Version,
+			GitCommit: global.GitCommit,
+			BuildTime: global.BuildTime,
+			RunTime:   timestamppb.New(global.StartTime),
+		})
 		go deviceService.Run(ctx)
 
 	} else {

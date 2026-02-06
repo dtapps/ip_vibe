@@ -5,11 +5,49 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/manager/cron_manager"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 )
+
+// 同步任务到调度器
+//
+//	@Description	同步任务到调度器
+//	@Summary		同步任务到调度器
+//	@Tags			Task
+//	@Accept			application/json
+//	@Produce		application/json
+//	@Success		200		{object}	APIResponse{}			"成功响应"
+//	@Failure		400		{object}	APIResponse{}			"参数错误"
+//	@Failure		404		{object}	APIResponse{}			"错误响应"
+//	@Router			/tasks/sync-scheduler [post]
+func SyncTasksToScheduler(c *gin.Context) {
+
+	// 创建 定时任务 服务管理器
+	cronManager, err := cron_manager.NewCronServerManager(
+		c,
+		global.GvaEntDb,
+		global.GvaEntLogDb,
+		global.GvaGoCron,
+		global.GvaGocronSlog,
+		global.GvaHttpLog,
+	)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+
+	// 从数据库全量同步任务状态到内存调度器
+	err = cronManager.SyncAllJobs(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+
+	successResponse(c, nil)
+}
 
 // 更新任务
 //
@@ -80,7 +118,7 @@ func UpdateTaskStatus(c *gin.Context) {
 	)
 
 	// 调用 更新 任务状态
-	err := taskService.UpdateTaskActive(c, requestParams.ID, requestParams.Status)
+	err := taskService.UpdateTaskStatus(c, requestParams.ID, requestParams.Status)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -117,7 +155,7 @@ func BatchUpdateTaskStatus(c *gin.Context) {
 	)
 
 	// 调用 批量更新 任务状态
-	err := taskService.BatchUpdateTaskActive(c, requestParams.IDS, requestParams.Status)
+	err := taskService.BatchUpdateTaskStatus(c, requestParams.IDS, requestParams.Status)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

@@ -7,6 +7,7 @@ import (
 	"sync"
 	"vibe_ip/internal/ent"
 	_ "vibe_ip/internal/ent/runtime"
+	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent_log"
 	_ "vibe_ip/internal/ent_log/runtime"
 	"vibe_ip/internal/global"
@@ -80,6 +81,9 @@ func InitEntDb(ctx context.Context, logger *slog.Logger) {
 
 		logger.InfoContext(ctx, "Ent 服务启动成功")
 
+		// 5. 注入审计钩子
+		schemahook.InjectAuditHookDb(global.GvaEntDb, logger)
+
 	})
 }
 
@@ -152,6 +156,9 @@ func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
 		}
 
 		logger.InfoContext(ctx, "Ent Log 服务启动成功")
+
+		// 5. 注入审计钩子
+		schemahook.InjectAuditHookLogDb(global.GvaEntLogDb, logger)
 
 	})
 }

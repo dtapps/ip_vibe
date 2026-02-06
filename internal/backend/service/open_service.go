@@ -2,21 +2,21 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
-	webhookService "vibe_ip/internal/backend/webhook"
 	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/deviceportforward"
-	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
-	"vibe_ip/internal/utils"
 
+	"go.dtapp.net/library/utils/gojson"
 	"go.dtapp.net/library/utils/gotime"
 )
 
@@ -34,11 +34,10 @@ type DeviceOpenService interface {
 
 // DeviceOpenServiceImpl 设备服务实现
 type DeviceOpenServiceImpl struct {
-	db             *ent.Client          // 数据库客户端
-	logDb          *ent_log.Client      // 日志数据库客户端
-	logger         *slog.Logger         // 日志记录器
-	webhookService *webhookService.Send // Webhook服务
-	debug          bool                 // 调试模式
+	db     *ent.Client     // 数据库客户端
+	logDb  *ent_log.Client // 日志数据库客户端
+	logger *slog.Logger    // 日志记录器
+	debug  bool            // 调试模式
 }
 
 // NewDeviceOpenService 创建设备服务实例
@@ -47,13 +46,11 @@ func NewDeviceOpenService(db *ent.Client, logDb *ent_log.Client, logger *slog.Lo
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
-	webhookService := webhookService.NewSend(db, logDb)
 	return &DeviceOpenServiceImpl{
-		db:             db,
-		logDb:          logDb,
-		logger:         logger,
-		webhookService: webhookService,
-		debug:          debug,
+		db:     db,
+		logDb:  logDb,
+		logger: logger,
+		debug:  debug,
 	}
 }
 
@@ -66,7 +63,6 @@ func (s *DeviceOpenServiceImpl) SetDebug(debug bool) {
 func (s *DeviceOpenServiceImpl) GetSetting(ctx context.Context) (*types.OpenGetSettingResponse, error) {
 
 	// 获取设置
-	// setting := db_cache.GetSetting(c, global.GvaEntDb)
 	setting := db_cache.GvaSetting
 
 	return &types.OpenGetSettingResponse{
@@ -88,7 +84,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 	var deviceID int64
 
 	// 通知模板数据
-	notifyData := utils.TemplateData{
+	notifyData := types.TemplateData{
 		EventTitle: "IP地址更新",
 		EventType:  "IP_UPDATE",
 		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
@@ -214,12 +210,32 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 				SetReportType(deviceipreport.ReportType(request.ReportType)).
 				Exec(asyncCtx)
 			if err != nil {
-				// 异步写入失败，仅打印日志
-				fmt.Printf("[异步写入失败] 创建设备IP报告: %s\n", err.Error())
+				s.logger.ErrorContext(asyncCtx, "创建设备IP报告失败",
+					slog.Any("err", err),
+				)
+			}
+			// 创建任务
+			err = s.db.CronJob.Create().
+				SetName("IP通知: " + fmt.Sprintf("%s - %s", request.IPV4Addr, request.IPV6Addr)).
+				SetHandlerName("webhook_send").
+				SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(notifyData))).
+				SetTaskType(cronjob.TaskTypeOneOff).
+				SetJobType(cronjob.JobTypeDuration).
+				SetJobCategory(cronjob.JobCategorySystem).
+				SetBusinessType(cronjob.BusinessTypeDevice).
+				SetBusinessID(deviceID).
+				SetIntervalValue(3).
+				SetIntervalUnit(cronjob.IntervalUnitSeconds).
+				SetStatus(cronjob.StatusRunning).
+				SetIsSingleton(true). // 单例模式
+				SetRunOnStart(true).  // 启动时立即运行
+				Exec(asyncCtx)
+			if err != nil {
+				s.logger.ErrorContext(asyncCtx, "创建任务失败",
+					slog.Any("err", err),
+				)
 			}
 
-			// 发送通知 (使用注入的 webhookService)
-			_ = s.webhookService.Send(asyncCtx, webhooksubscription.ObjTypeDevice, deviceID, notifyData)
 		}
 	}(context.WithoutCancel(ctx), s)
 

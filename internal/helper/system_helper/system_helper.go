@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"runtime"
-	"time"
-	"vibe_ip/internal/global"
 	"vibe_ip/internal/types"
 
 	"github.com/shirou/gopsutil/v3/cpu"
@@ -17,9 +15,6 @@ type SystemHelper struct{}
 func NewSystemHelper() *SystemHelper {
 	return &SystemHelper{}
 }
-
-// 记录应用启动时间
-var runtimeStartTime = time.Now()
 
 // GetMemoryInfo 获取系统信息和系统状态
 func (s *SystemHelper) GetMemoryInfo(ctx context.Context) types.ReturnMemoryInfo {
@@ -38,16 +33,8 @@ func (s *SystemHelper) GetMemoryInfo(ctx context.Context) types.ReturnMemoryInfo
 	}
 
 	return types.ReturnMemoryInfo{
-		Version:   global.GvaVersion,
-		GitCommit: global.GvaGitCommit,
-		BuildTime: global.GvaBuildTime,
-		GoVersion: global.GvaGoVersion,
-		OS:        global.GvaOS,
-		Arch:      global.GvaArch,
-
-		RuntimeStartTime: runtimeStartTime,
-		NumGoroutine:     runtime.NumGoroutine(),
-		NumGC:            m.NumGC,
+		NumGoroutine: runtime.NumGoroutine(),
+		NumGC:        m.NumGC,
 
 		CPUModel:    cpuModel,
 		UsedPercent: v.UsedPercent,
