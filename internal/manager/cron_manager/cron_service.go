@@ -126,7 +126,10 @@ func (m *CronServerManager) RunHandler(jobID int64, handlerName string, args jso
 	}
 
 	if execErr != nil {
-		m.logger.Error("任务执行失败", slog.Int64("job_id", jobID), slog.Any("err", execErr))
+		m.logger.Error("任务执行失败",
+			slog.Int64("job_id", jobID),
+			slog.Any("err", execErr),
+		)
 	}
 }
 
@@ -383,9 +386,17 @@ func (m *CronServerManager) AfterPeriodicListener() gocron.EventListener {
 		// 如果是一次性任务，执行完后修改状态并从内存移除
 		if j.TaskType == cronjob.TaskTypeOneOff {
 
+			// 默认状态是已完成
+			status := cronjob.StatusFinished
+
+			// 如果任务是失败状态，更新状态为失败
+			if j.Status == cronjob.StatusFailed {
+				status = cronjob.StatusFailed
+			}
+
 			// 更新数据库状态
 			_ = m.db.CronJob.UpdateOne(j).
-				SetStatus(cronjob.StatusFinished).
+				SetStatus(status).
 				Exec(ctx)
 
 			// 移除任务
