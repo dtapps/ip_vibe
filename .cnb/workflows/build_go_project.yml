@@ -41,8 +41,7 @@
             # 1. 下载 依赖
             echo "下载 依赖..."
             make pnpm_update
-            make mod_tidy
-            make mod_vendor
+            make mod
 
             # 2. 补丁：修复 vendor 中未使用的 swag 引用报错
             echo "🩹 正在修复 vendor 依赖错误..."

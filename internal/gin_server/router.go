@@ -83,6 +83,9 @@ func (m *GinServerManager) setupWebRouter() {
 	// 任务页面 - 提供HTML页面并渲染数据
 	r.GET("/task", handlers.Task)
 
+	// 任务页面 - 提供HTML页面并渲染数据
+	r.GET("/gocron", handlers.Gocron)
+
 	// 接口页面 - 提供HTML页面并渲染数据
 	r.GET("/interface", handlers.Interface)
 
@@ -336,13 +339,23 @@ func (m *GinServerManager) setupApiRouter() {
 		// 任务相关API
 		tasks := api.Group("/tasks")
 		{
-			tasks.GET("", handlers.GetTasks)                        // 获取全部任务
-			tasks.GET("/:id", handlers.GetTaskDetail)               // 获取任务详情
-			tasks.POST("/:id", handlers.RunTask)                    // 运行任务
-			tasks.DELETE("/:id", handlers.DeleteTask)               // 删除任务
-			tasks.POST("/clean-all", handlers.CleanAllTask)         // 清理所有任务
-			tasks.POST("/start-scheduler", handlers.StartScheduler) // 启动调度器
-			tasks.POST("/stop-scheduler", handlers.StopScheduler)   // 停止调度器
+			tasks.GET("", handlers.GetTasks)                // 获取全部任务
+			tasks.GET("/:id", handlers.GetTaskDetail)       // 获取任务详情
+			tasks.POST("/:id", handlers.RunTask)            // 运行任务
+			tasks.DELETE("/:id", handlers.DeleteTask)       // 删除任务
+			tasks.POST("/clean-all", handlers.CleanAllTask) // 清理所有任务
+		}
+
+		// 任务相关API
+		gocrons := api.Group("/gocrons")
+		{
+			gocrons.GET("", handlers.GetGocrons)                            // 获取全部任务
+			gocrons.GET("/:id", handlers.GetGocronDetail)                   // 获取任务详情
+			gocrons.POST("/:id", handlers.RunGocron)                        // 运行任务
+			gocrons.DELETE("/:id", handlers.DeleteGocron)                   // 删除任务
+			gocrons.POST("/clean-all", handlers.CleanAllGocron)             // 清理所有任务
+			gocrons.POST("/start-scheduler", handlers.StartGocronScheduler) // 启动调度器
+			gocrons.POST("/stop-scheduler", handlers.StopGocronScheduler)   // 停止调度器
 		}
 
 		// cloudflares 相关API

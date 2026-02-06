@@ -45,16 +45,19 @@ verify-tools:
 # 项目目录
 PROJECT_ROOT := $(CURDIR)
 
-mod: mod_update mod_tidy mod_vendor
+version:
+	go version
 
-mod_update:
-	go get -u -v ./...
+download:
+	go get -u ./...
 
-mod_tidy:
+tidy:
 	go mod tidy
 
-mod_vendor:
+vendor:
 	go mod vendor
+
+mod: version download tidy vendor
 
 # generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
 generate: swag_v1_all swag_v2_all grpc_generate_all
@@ -64,10 +67,10 @@ generate_ent:
 	ent generate --feature namedges,bidiedges,sql/modifier,sql/execquery,sql/upsert ./ent/schema
 
 ent_new:
-	ent new EsaSiteEdgeRoutineRecord EsaSiteEdgeContainerRecord --target ./internal/ent/schema
+	ent new CronJob --target ./internal/ent/schema
 
 ent_new_log:
-	ent new RestyLog --target ./internal/ent_log/schema
+	ent new CronJobLog --target ./internal/ent_log/schema
 
 swag_v1_all: swag_v1_version swag_v1_fmt swag_v1_init
 

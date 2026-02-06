@@ -27,7 +27,7 @@ func NewJobHelper(scheduler gocron.Scheduler, logger *slog.Logger) *JobHelper {
 }
 
 // 查询全部任务
-func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []*types.JobData) {
+func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []*types.GocronJob) {
 	if j.Scheduler == nil {
 		return jobs
 	}
@@ -41,7 +41,7 @@ func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []*types.JobData) {
 		// determine schedule info based on job name patterns or intervals
 		schedule, scheduleDetail := j.inferSchedule(job, nextRuns)
 
-		jobs = append(jobs, &types.JobData{
+		jobs = append(jobs, &types.GocronJob{
 			ID:             job.ID().String(),
 			Name:           job.Name(),
 			LastRun:        utils.FormatTime(lastRun),
@@ -72,7 +72,7 @@ func (j *JobHelper) IsJob(jobID string, jobName string) bool {
 }
 
 // 获取任务
-func (j *JobHelper) GetJob(jobID string) (job *types.JobInfo, err error) {
+func (j *JobHelper) GetJob(jobID string) (job *types.GocronJobInfo, err error) {
 	if j.Scheduler == nil {
 		return nil, fmt.Errorf("调度器未初始化")
 	}
@@ -82,7 +82,7 @@ func (j *JobHelper) GetJob(jobID string) (job *types.JobInfo, err error) {
 			nextRun, _ := job.NextRun()
 			lastRun, _ := job.LastRun()
 
-			return &types.JobInfo{
+			return &types.GocronJobInfo{
 				ID:      job.ID().String(),
 				Name:    job.Name(),
 				LastRun: utils.FormatTime(lastRun),

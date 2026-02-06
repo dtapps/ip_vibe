@@ -17,7 +17,7 @@ import (
 //	@Tags			任务
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200	{object}	APIResponse{data=[]types.JobData}	"成功响应"
+//	@Success		200	{object}	APIResponse{data=[]types.TaskJob}	"成功响应"
 //	@Failure		404	{object}	APIResponse{}						"错误响应"
 //	@Router			/tasks [get]
 func GetTasks(c *gin.Context) {
@@ -31,12 +31,13 @@ func GetTasks(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 调用
+	// 调用 获取全部任务
 	response, err := service.GetTasks(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
+
 	successResponse(c, response)
 }
 
@@ -48,7 +49,7 @@ func GetTasks(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		string							true	"任务 ID"
-//	@Success		200	{object}	APIResponse{data=types.JobData}	"成功响应"
+//	@Success		200	{object}	APIResponse{data=types.TaskJob}	"成功响应"
 //	@Failure		400	{object}	APIResponse{}					"参数错误"
 //	@Failure		404	{object}	APIResponse{}					"错误响应"
 //	@Router			/tasks/{id} [get]
@@ -70,12 +71,13 @@ func GetTaskDetail(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 调用
+	// 调用 获取任务详情
 	response, err := service.GetTask(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
+
 	successResponse(c, response)
 }
 
@@ -109,12 +111,13 @@ func RunTask(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 调用
+	// 调用 运行任务
 	err := service.RunTask(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
+
 	successResponse(c, nil)
 }
 
@@ -148,12 +151,13 @@ func DeleteTask(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 调用
+	// 调用 删除任务
 	err := service.DeleteTask(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
+
 	successResponse(c, nil)
 }
 
@@ -178,12 +182,13 @@ func CleanAllTask(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 调用
+	// 调用 清理全部任务
 	err := service.CleanAllTask(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
+
 	successResponse(c, nil)
 }
 
@@ -208,12 +213,13 @@ func StartScheduler(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 调用
+	// 调用 启动调度器
 	err := service.StartScheduler(c)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}
+
 	successResponse(c, nil)
 }
 
@@ -238,7 +244,8 @@ func StopScheduler(c *gin.Context) {
 		global.GvaHttpLog,
 	)
 
-	// 调用
+	// 调用 停止调度器
 	service.StopScheduler(c)
+
 	successResponse(c, nil)
 }
