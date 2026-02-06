@@ -92,7 +92,7 @@ func DeleteGocron(c *gin.Context) {
 //
 //	@Description	清理所有任务
 //	@Summary		清理所有任务
-//	@Tags			调度器
+//	@Tags			Gocron
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Success		200	{object}	APIResponse{}	"成功响应"

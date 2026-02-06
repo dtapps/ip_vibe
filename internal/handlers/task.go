@@ -21,6 +21,18 @@ func Task(c *gin.Context) {
 		return
 	}
 
+	// 提前处理 EntryID 不为空的情况
+	var entryID uuid.UUID
+	if requestParams.EntryID != "" {
+		// 解析 EntryID
+		parsedEntryID, err := uuid.Parse(requestParams.EntryID)
+		if err == nil {
+			entryID = parsedEntryID
+		} else {
+			entryID = uuid.Nil
+		}
+	}
+
 	// 准备页面数据
 	pageData := types.TaskResponse{
 		CommonPageResponse: types.CommonPageResponse[ent.CronJob, types.TaskRequest]{
@@ -32,7 +44,7 @@ func Task(c *gin.Context) {
 	// 查询全部SSL记录
 	allTask, err := global.GvaEntDb.CronJob.Query().
 		WhereIf(requestParams.ID > 0, cronjob.IDEQ(requestParams.ID)).
-		WhereIf(requestParams.EntryID != uuid.Nil, cronjob.EntryIDEQ(requestParams.EntryID)).
+		WhereIf(requestParams.EntryID != "", cronjob.EntryIDEQ(entryID)).
 		WhereIf(requestParams.Name != "", cronjob.NameContains(requestParams.Name)).
 		WhereIf(requestParams.TaskType != "", cronjob.TaskTypeEQ(cronjob.TaskType(requestParams.TaskType))).
 		WhereIf(requestParams.JobType != "", cronjob.JobTypeEQ(cronjob.JobType(requestParams.JobType))).

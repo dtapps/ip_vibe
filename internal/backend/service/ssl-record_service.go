@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
 	"vibe_ip/internal/backend/tasks"
 	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
@@ -14,10 +16,12 @@ import (
 	"vibe_ip/internal/helper/ssl_helper"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
+	"vibe_ip/internal/provider/task"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gojson"
 	"go.dtapp.net/library/utils/gostring"
 )
 
@@ -287,6 +291,7 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordAutoRenewal(ctx context.Context, r
 
 // UpdateSSLRecordActive 更新 SSL 记录启用状态
 func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, id int64, isActive bool) error {
+
 	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
 		Where(sslrecord.IDEQ(id)).
@@ -310,38 +315,65 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, id int
 		return fmt.Errorf("更新SSL记录状态失败: %w", err)
 	}
 
-	return nil
+	// 同步任务状态
+	return s.handleSslApplTaskStatus(ctx, s.db, firstSSLRecord, isActive)
 }
 
 // BatchUpdateSSLRecordActive 更新 SSL 记录启用状态
 func (s *SSLRecordServiceImpl) BatchUpdateSSLRecordActive(ctx context.Context, ids []int64, isActive bool) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
 	// 查询SSL记录
-	allSSLRecord, err := s.db.SSLRecord.Query().
+	allSSLRecord, err := tx.SSLRecord.Query().
 		Where(sslrecord.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
+		tx.Rollback()
 		if ent.IsNotFound(err) {
 			return fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
 		}
 		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 	if len(allSSLRecord) != len(ids) {
+		tx.Rollback()
 		return fmt.Errorf("查询SSL记录失败: 数量 %d 与请求数量 %d 不匹配", len(allSSLRecord), len(ids))
 	}
 
 	for _, item := range allSSLRecord {
 		if item.Provider == sslrecord.ProviderUnknown {
+			tx.Rollback()
 			return fmt.Errorf("未配置提供方, 无法更新启用状态")
 		}
 	}
 
 	// 更新SSL记录状态
-	err = s.db.SSLRecord.Update().
+	err = tx.SSLRecord.Update().
 		Where(sslrecord.IDIn(ids...)).
 		SetIsActive(isActive).
 		Exec(ctx)
 	if err != nil {
+		tx.Rollback()
 		return fmt.Errorf("更新SSL记录状态失败: %w", err)
+	}
+
+	// 同步任务状态
+	for _, record := range allSSLRecord {
+		err = s.handleSslApplTaskStatus(ctx, tx.Client(), record, isActive)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("同步SSL申请任务状态失败: %w", err)
+		}
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
 	}
 
 	return nil
@@ -518,4 +550,59 @@ func (s *SSLRecordServiceImpl) GetSSLRecordHistoryDetail(ctx context.Context, id
 		NotAfter:              firstSSLRecordHistory.NotAfter,
 		Provider:              firstSSLRecordHistory.Provider.String(),
 	}, nil
+}
+
+// handleSslApplTaskStatus 处理SSL申请任务的状态同步
+func (s *SSLRecordServiceImpl) handleSslApplTaskStatus(ctx context.Context, db *ent.Client, record *ent.SSLRecord, isActive bool) error {
+
+	// 状态
+	targetStatus := cronjob.StatusStopped
+	if isActive {
+		targetStatus = cronjob.StatusRunning
+	}
+
+	// 查找任务
+	job, err := db.CronJob.Query().
+		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeSsl)).
+		Where(cronjob.BusinessIDEQ(record.ID)).
+		First(ctx)
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return fmt.Errorf("查找任务失败: %w", err)
+		}
+
+		// 创建任务
+		err = db.CronJob.Create().
+			SetName("SSL申请: " + record.Domain).
+			SetHandlerName("ssl_apply").
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.SSLApplTaskArgs{
+				ID: record.ID,
+			}))).
+			SetTaskType(cronjob.TaskTypeRecurring).
+			SetJobType(cronjob.JobTypeRandom).
+			SetJobCategory(cronjob.JobCategorySystem).
+			SetBusinessType(cronjob.BusinessTypeSsl).
+			SetBusinessID(record.ID).
+			SetMinInterval(10).
+			SetMaxInterval(30).
+			SetIntervalUnit(cronjob.IntervalUnitMinutes).
+			SetStatus(targetStatus).
+			SetIsSingleton(true). // 单例模式
+			SetRunOnStart(false). // 启动时不立即运行
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("创建任务失败: %w", err)
+		}
+
+		return nil
+	}
+
+	err = db.CronJob.UpdateOne(job).
+		SetStatus(targetStatus).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新任务状态失败: %w", err)
+	}
+
+	return nil
 }

@@ -354,7 +354,7 @@ var (
 		{Name: "task_type", Type: field.TypeEnum, Comment: "任务类型: one_off 一次性, recurring 周期性", Enums: []string{"one_off", "recurring"}, Default: "recurring"},
 		{Name: "job_type", Type: field.TypeEnum, Comment: "运行类型: cron cron 表达式, duration 固定间隔, random 随机间隔", Enums: []string{"cron", "duration", "random"}, Default: "cron"},
 		{Name: "job_category", Type: field.TypeEnum, Comment: "任务分类: system 系统内置, custom 用户自定义", Enums: []string{"system", "custom"}},
-		{Name: "business_type", Type: field.TypeEnum, Nullable: true, Comment: "业务类型: cdn, dns, ssl, system", Enums: []string{"cdn", "dns", "ssl", "system"}},
+		{Name: "business_type", Type: field.TypeEnum, Nullable: true, Comment: "业务类型: cdn, dns, ssl, domain, system", Enums: []string{"cdn", "dns", "ssl", "domain", "system"}},
 		{Name: "business_id", Type: field.TypeInt64, Nullable: true, Comment: "业务序号"},
 		{Name: "cron_expr", Type: field.TypeString, Nullable: true, Comment: "cron 表达式"},
 		{Name: "with_seconds", Type: field.TypeBool, Comment: "是否包含秒", Default: false},

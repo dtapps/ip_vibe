@@ -1,6 +1,7 @@
 {{ define "content" }}
 
 {{/* 初始化局部变量 */}}
+{{ $filter := .Data.Filter }}
 {{ $list := .Data.List }}
 {{ $page := .Data.Page }}
 {{ $total := .Data.Total }}
@@ -27,6 +28,12 @@
     <div class="flex gap-2">
     </div>
   </div>
+
+  <!-- 表格搜索 -->
+  {{ template "pages/task_filter.html" (dict
+  "Action" $baseWebUrlPathWithQuery
+  "Filter" $filter
+  )}}
 
   <div class="ui-table-container">
     <table class="ui-table table-fixed">

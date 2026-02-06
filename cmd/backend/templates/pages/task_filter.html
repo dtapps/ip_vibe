@@ -1,0 +1,96 @@
+{{ define "pages/task_filter.html" }}
+
+{{/* 初始化局部变量 */}}
+{{ $action := .Action }}
+{{ $filter := .Filter }}
+
+<div class="ui-filter-container">
+    <form method="GET" action="{{ $action }}" class="flex items-center gap-6 flex-1">
+
+        <div class="flex items-center gap-3">
+            <span class="ui-filter-label">序号</span>
+            <input type="number" name="id" value="{{ if $filter.ID }}{{ $filter.ID }}{{ end }}" placeholder="任务序号"
+                class="ui-filter-input-compact w-20 font-mono text-center">
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="ui-filter-label">编号</span>
+            <input type="text" name="entry_id" value="{{ if $filter.EntryID }}{{ $filter.EntryID }}{{ end }}"
+                placeholder="任务编号" class="ui-filter-input-compact w-20 font-mono text-center">
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="ui-filter-label">名称</span>
+            <input type="text" name="entry_id" value="{{ if $filter.Name }}{{ $filter.Name }}{{ end }}"
+                placeholder="任务名称" class="ui-filter-input-compact w-20 font-mono text-center">
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="ui-filter-label">任务类型</span>
+            <select name="task_type" class="ui-filter-select w-30">
+                <option value="">所有类型</option>
+                {{ range $opt := (fieldEnumMap "cron_job_task_type") }}
+                {{ if eq $opt.Value $filter.TaskType }}
+                <option value="{{ $opt.Value }}" selected>{{ $opt.Label }}</option>
+                {{ else }}
+                <option value="{{ $opt.Value }}">{{ $opt.Label }}</option>
+                {{ end }}
+                {{ end }}
+            </select>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="ui-filter-label">运行类型</span>
+            <select name="job_type" class="ui-filter-select w-30">
+                <option value="">所有类型</option>
+                {{ range $opt := (fieldEnumMap "cron_job_job_type") }}
+                {{ if eq $opt.Value $filter.JobType }}
+                <option value="{{ $opt.Value }}" selected>{{ $opt.Label }}</option>
+                {{ else }}
+                <option value="{{ $opt.Value }}">{{ $opt.Label }}</option>
+                {{ end }}
+                {{ end }}
+            </select>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="ui-filter-label">任务分类</span>
+            <select name="job_category" class="ui-filter-select w-30">
+                <option value="">所有分类</option>
+                {{ range $opt := (fieldEnumMap "cron_job_job_category") }}
+                {{ if eq $opt.Value $filter.JobCategory }}
+                <option value="{{ $opt.Value }}" selected>{{ $opt.Label }}</option>
+                {{ else }}
+                <option value="{{ $opt.Value }}">{{ $opt.Label }}</option>
+                {{ end }}
+                {{ end }}
+            </select>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="ui-filter-label">状态</span>
+            <select name="status" class="ui-filter-select w-30">
+                <option value="">所有状态</option>
+                {{ range $opt := (fieldEnumMap "cron_job_status") }}
+                {{ if eq $opt.Value $filter.Status }}
+                <option value="{{ $opt.Value }}" selected>{{ $opt.Label }}</option>
+                {{ else }}
+                <option value="{{ $opt.Value }}">{{ $opt.Label }}</option>
+                {{ end }}
+                {{ end }}
+            </select>
+        </div>
+
+        <div class="flex items-center gap-2 ml-auto">
+            <button type="submit"
+                class="btn btn-sm bg-primary hover:bg-primary-focus text-primary-content border-none rounded-xl px-5 h-8 min-h-0 font-black text-[11px] tracking-widest uppercase">
+                筛选
+            </button>
+            <a href="{{ $action }}"
+                class="btn btn-sm btn-ghost h-8 w-8 min-h-0 p-0 rounded-xl opacity-40 hover:opacity-100 transition-all">
+                {{ template "icons" (dict "Name" "i-lucide-rotate-ccw" "Class" "w-4 h-4") }}
+            </a>
+        </div>
+    </form>
+</div>
+{{ end }}

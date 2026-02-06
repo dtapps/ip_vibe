@@ -88,7 +88,7 @@ func (CronJob) Fields() []ent.Field {
 		field.Enum("business_type").
 			Values(schematype.GetCronJobBusinessTypes...).
 			Optional().
-			Comment("业务类型: cdn, dns, ssl, system").
+			Comment("业务类型: cdn, dns, ssl, domain, system").
 			Annotations(entsql.WithComments(true)),
 
 		field.Int64("business_id").

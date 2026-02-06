@@ -4395,7 +4395,7 @@ paths:
           description: 错误响应
       summary: 清理所有任务
       tags:
-      - 调度器
+      - Gocron
   /gocrons/start-scheduler:
     post:
       description: 启动调度器

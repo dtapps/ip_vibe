@@ -210,6 +210,7 @@ const (
 	BusinessTypeCdn    BusinessType = "cdn"
 	BusinessTypeDNS    BusinessType = "dns"
 	BusinessTypeSsl    BusinessType = "ssl"
+	BusinessTypeDomain BusinessType = "domain"
 	BusinessTypeSystem BusinessType = "system"
 )
 
@@ -220,7 +221,7 @@ func (bt BusinessType) String() string {
 // BusinessTypeValidator is a validator for the "business_type" field enum values. It is called by the builders before save.
 func BusinessTypeValidator(bt BusinessType) error {
 	switch bt {
-	case BusinessTypeCdn, BusinessTypeDNS, BusinessTypeSsl, BusinessTypeSystem:
+	case BusinessTypeCdn, BusinessTypeDNS, BusinessTypeSsl, BusinessTypeDomain, BusinessTypeSystem:
 		return nil
 	default:
 		return fmt.Errorf("cronjob: invalid enum value for business_type field: %q", bt)

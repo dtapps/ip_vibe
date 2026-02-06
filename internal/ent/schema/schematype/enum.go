@@ -1415,15 +1415,17 @@ const (
 	CronJobBusinessTypeCdn    string = "cdn"    // cdn
 	CronJobBusinessTypeDns    string = "dns"    // dns
 	CronJobBusinessTypeSsl    string = "ssl"    // ssl
+	CronJobBusinessTypeDomain string = "domain" // domain
 	CronJobBusinessTypeSystem string = "system" // system
 )
 
 // GetCronJobBusinessTypeDescriptions 业务类型 说明映射
 var GetCronJobBusinessTypeDescriptions = map[string]string{
-	CronJobBusinessTypeCdn:    "cdn",
-	CronJobBusinessTypeDns:    "dns",
-	CronJobBusinessTypeSsl:    "ssl",
-	CronJobBusinessTypeSystem: "system",
+	CronJobBusinessTypeCdn:    "CDN",
+	CronJobBusinessTypeDns:    "DNS",
+	CronJobBusinessTypeSsl:    "SSL",
+	CronJobBusinessTypeDomain: "域名",
+	CronJobBusinessTypeSystem: "系统",
 }
 
 // GetCronJobBusinessTypes 返回所有 业务类型
@@ -1431,6 +1433,7 @@ var GetCronJobBusinessTypes = []string{
 	CronJobBusinessTypeCdn,
 	CronJobBusinessTypeDns,
 	CronJobBusinessTypeSsl,
+	CronJobBusinessTypeDomain,
 	CronJobBusinessTypeSystem,
 }
 

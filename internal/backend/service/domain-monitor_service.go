@@ -2,20 +2,24 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"vibe_ip/internal/backend/tasks"
 	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
+	"vibe_ip/internal/provider/task"
 	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/contrib/http_log"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // DomainMonitorService 域名监控服务接口
@@ -202,6 +206,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitor(ctx context.Context, requ
 
 // UpdateDomainMonitorActive 更新域名监控启用状态
 func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context, id int64, isActive bool) error {
+
 	// 查询域名监控
 	firstDomainMonitor, err := s.db.DomainMonitor.Query().
 		Where(domainmonitor.IDEQ(id)).
@@ -221,32 +226,58 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context
 		return fmt.Errorf("更新域名监控启用状态失败: %w", err)
 	}
 
-	return nil
+	// 同步任务状态
+	return s.handleDomainMonitorTaskStatus(ctx, s.db, firstDomainMonitor, isActive)
 }
 
 // BatchUpdateDomainMonitorActive 批量更新域名监控启用状态
 func (s *DomainMonitorServiceImpl) BatchUpdateDomainMonitorActive(ctx context.Context, ids []int64, isActive bool) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
 	// 查询域名监控
-	allDomainMonitor, err := s.db.DomainMonitor.Query().
+	allDomainMonitor, err := tx.DomainMonitor.Query().
 		Where(domainmonitor.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
+		tx.Rollback()
 		if ent.IsNotFound(err) {
 			return fmt.Errorf("查询域名监控失败: 记录不存在或 %w", err)
 		}
 		return fmt.Errorf("查询域名监控失败: %w", err)
 	}
 	if len(allDomainMonitor) != len(ids) {
+		tx.Rollback()
 		return fmt.Errorf("查询域名监控失败: 数量 %d 与请求数量 %d 不匹配", len(allDomainMonitor), len(ids))
 	}
 
 	// 更新域名监控状态
-	err = s.db.DomainMonitor.Update().
+	err = tx.DomainMonitor.Update().
 		Where(domainmonitor.IDIn(ids...)).
 		SetIsActive(isActive).
 		Exec(ctx)
 	if err != nil {
+		tx.Rollback()
 		return fmt.Errorf("更新域名监控启用状态失败: %w", err)
+	}
+
+	// 同步任务状态
+	for _, record := range allDomainMonitor {
+		err = s.handleDomainMonitorTaskStatus(ctx, tx.Client(), record, isActive)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("同步域名监控任务状态失败: %w", err)
+		}
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
 	}
 
 	return nil
@@ -364,6 +395,61 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 	err = domainMonitorTask.AddDisposableTask(ctx, firstDomainMonitor)
 	if err != nil {
 		return fmt.Errorf("添加域名监控一次性任务失败: %w", err)
+	}
+
+	return nil
+}
+
+// handleDomainMonitorTaskStatus 处理域名监控任务的状态同步
+func (s *DomainMonitorServiceImpl) handleDomainMonitorTaskStatus(ctx context.Context, db *ent.Client, record *ent.DomainMonitor, isActive bool) error {
+
+	// 状态
+	targetStatus := cronjob.StatusStopped
+	if isActive {
+		targetStatus = cronjob.StatusRunning
+	}
+
+	// 查找任务
+	job, err := db.CronJob.Query().
+		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeDomain)).
+		Where(cronjob.BusinessIDEQ(record.ID)).
+		First(ctx)
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return fmt.Errorf("查找任务失败: %w", err)
+		}
+
+		// 创建任务
+		err = db.CronJob.Create().
+			SetName("域名监控: " + record.Domain).
+			SetHandlerName("domain_monitor").
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.DomainMonitorTaskArgs{
+				ID: record.ID,
+			}))).
+			SetTaskType(cronjob.TaskTypeRecurring).
+			SetJobType(cronjob.JobTypeRandom).
+			SetJobCategory(cronjob.JobCategorySystem).
+			SetBusinessType(cronjob.BusinessTypeDomain).
+			SetBusinessID(record.ID).
+			SetMinInterval(10).
+			SetMaxInterval(30).
+			SetIntervalUnit(cronjob.IntervalUnitMinutes).
+			SetStatus(targetStatus).
+			SetIsSingleton(true). // 单例模式
+			SetRunOnStart(false). // 启动时不立即运行
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("创建任务失败: %w", err)
+		}
+
+		return nil
+	}
+
+	err = db.CronJob.UpdateOne(job).
+		SetStatus(targetStatus).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新任务状态失败: %w", err)
 	}
 
 	return nil

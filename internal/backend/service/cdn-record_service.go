@@ -228,6 +228,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecord(ctx context.Context, request *typ
 
 // UpdateCdnRecordActive 更新 CDN 记录启用状态
 func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, id int64, isActive bool) error {
+
 	// 查询CDN记录
 	firstCdnRecord, err := s.db.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(id)).
@@ -447,7 +448,7 @@ func (s *CDNRecordServiceImpl) HealthcheckCdnRecord(ctx context.Context, id int6
 	return results, nil
 }
 
-// handleCdnTaskStatus 处理 CDN 任务的状态同步
+// handleCdnTaskStatus 处理CDN任务的状态同步
 func (s *CDNRecordServiceImpl) handleCdnTaskStatus(ctx context.Context, db *ent.Client, record *ent.CDNRecord, isActive bool) error {
 
 	// 状态

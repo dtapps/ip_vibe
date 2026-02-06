@@ -2904,7 +2904,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "调度器"
+                    "Gocron"
                 ],
                 "summary": "清理所有任务",
                 "responses": {

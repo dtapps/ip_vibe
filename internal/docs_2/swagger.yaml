@@ -3892,7 +3892,7 @@ paths:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 清理所有任务
       tags:
-      - 调度器
+      - Gocron
   /gocrons/start-scheduler:
     post:
       consumes:

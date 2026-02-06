@@ -2,20 +2,24 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
+	"vibe_ip/internal/provider/task"
 	"vibe_ip/internal/types"
 	"vibe_ip/internal/utils"
 
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
+	"go.dtapp.net/library/utils/gojson"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -249,6 +253,7 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecord(ctx context.Context, request *typ
 
 // UpdateDnsRecordActive 更新DNS记录启用状态
 func (s *DNSRecordServiceImpl) UpdateDnsRecordActive(ctx context.Context, id int64, isActive bool) error {
+
 	// 查询DNS记录
 	firstDnsRecord, err := s.db.DNSRecord.Query().
 		Where(dnsrecord.IDEQ(id)).
@@ -268,32 +273,58 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecordActive(ctx context.Context, id int
 		return fmt.Errorf("更新DNS记录状态失败: %w", err)
 	}
 
-	return nil
+	// 同步任务状态
+	return s.handleDnsRecordTaskStatus(ctx, s.db, firstDnsRecord, isActive)
 }
 
 // BatchUpdateDnsRecordActive 批量更新DNS记录启用状态
 func (s *DNSRecordServiceImpl) BatchUpdateDnsRecordActive(ctx context.Context, ids []int64, isActive bool) error {
+
+	// 创建事务
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		return fmt.Errorf("创建事务失败: %w", err)
+	}
+
 	// 查询DNS记录
-	allDnsRecord, err := s.db.DNSRecord.Query().
+	allDnsRecord, err := tx.DNSRecord.Query().
 		Where(dnsrecord.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
+		tx.Rollback()
 		if ent.IsNotFound(err) {
 			return fmt.Errorf("查询DNS记录失败: 记录不存在或 %w", err)
 		}
 		return fmt.Errorf("查询DNS记录失败: %w", err)
 	}
 	if len(allDnsRecord) != len(ids) {
+		tx.Rollback()
 		return fmt.Errorf("查询DNS记录失败: 数量 %d 与请求数量 %d 不匹配", len(allDnsRecord), len(ids))
 	}
 
 	// 更新DNS记录状态
-	err = s.db.DNSRecord.Update().
+	err = tx.DNSRecord.Update().
 		Where(dnsrecord.IDIn(ids...)).
 		SetIsActive(isActive).
 		Exec(ctx)
 	if err != nil {
+		tx.Rollback()
 		return fmt.Errorf("更新DNS记录状态失败: %w", err)
+	}
+
+	// 同步任务状态
+	for _, record := range allDnsRecord {
+		err = s.handleDnsRecordTaskStatus(ctx, tx.Client(), record, isActive)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("同步DNS记录任务状态失败: %w", err)
+		}
+	}
+
+	// 提交事务
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("提交事务失败: %w", err)
 	}
 
 	return nil
@@ -426,4 +457,59 @@ func (s *DNSRecordServiceImpl) HealthcheckDnsRecord(ctx context.Context, id int6
 	}
 
 	return results, nil
+}
+
+// handleDnsRecordTaskStatus 处理DNS记录任务的状态同步
+func (s *DNSRecordServiceImpl) handleDnsRecordTaskStatus(ctx context.Context, db *ent.Client, record *ent.DNSRecord, isActive bool) error {
+
+	// 状态
+	targetStatus := cronjob.StatusStopped
+	if isActive {
+		targetStatus = cronjob.StatusRunning
+	}
+
+	// 查找任务
+	job, err := db.CronJob.Query().
+		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeDNS)).
+		Where(cronjob.BusinessIDEQ(record.ID)).
+		First(ctx)
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return fmt.Errorf("查找任务失败: %w", err)
+		}
+
+		// 创建任务
+		err = db.CronJob.Create().
+			SetName("DNS同步: " + record.FullDomain).
+			SetHandlerName("dns_sync").
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.DNSTaskArgs{
+				ID: record.ID,
+			}))).
+			SetTaskType(cronjob.TaskTypeRecurring).
+			SetJobType(cronjob.JobTypeRandom).
+			SetJobCategory(cronjob.JobCategorySystem).
+			SetBusinessType(cronjob.BusinessTypeDNS).
+			SetBusinessID(record.ID).
+			SetMinInterval(10).
+			SetMaxInterval(30).
+			SetIntervalUnit(cronjob.IntervalUnitMinutes).
+			SetStatus(targetStatus).
+			SetIsSingleton(true). // 单例模式
+			SetRunOnStart(false). // 启动时不立即运行
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("创建任务失败: %w", err)
+		}
+
+		return nil
+	}
+
+	err = db.CronJob.UpdateOne(job).
+		SetStatus(targetStatus).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新任务状态失败: %w", err)
+	}
+
+	return nil
 }
