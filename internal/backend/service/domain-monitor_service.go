@@ -427,13 +427,12 @@ func (s *DomainMonitorServiceImpl) handleDomainMonitorTaskStatus(ctx context.Con
 				ID: record.ID,
 			}))).
 			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeRandom).
+			SetJobType(cronjob.JobTypeDuration).
 			SetJobCategory(cronjob.JobCategorySystem).
 			SetBusinessType(cronjob.BusinessTypeDomain).
 			SetBusinessID(record.ID).
-			SetMinInterval(10).
-			SetMaxInterval(30).
-			SetIntervalUnit(cronjob.IntervalUnitMinutes).
+			SetIntervalValue(record.CheckInterval).
+			SetIntervalUnit(cronjob.IntervalUnitSeconds).
 			SetStatus(targetStatus).
 			SetIsSingleton(true). // 单例模式
 			SetRunOnStart(false). // 启动时不立即运行
@@ -445,11 +444,19 @@ func (s *DomainMonitorServiceImpl) handleDomainMonitorTaskStatus(ctx context.Con
 		return nil
 	}
 
+	// 更新任务
 	err = db.CronJob.UpdateOne(job).
+		SetTaskType(cronjob.TaskTypeRecurring).
+		SetJobType(cronjob.JobTypeDuration).
+		SetJobCategory(cronjob.JobCategorySystem).
+		SetIntervalValue(record.CheckInterval).
+		SetIntervalUnit(cronjob.IntervalUnitSeconds).
 		SetStatus(targetStatus).
+		SetIsSingleton(true). // 单例模式
+		SetRunOnStart(false). // 启动时不立即运行
 		Exec(ctx)
 	if err != nil {
-		return fmt.Errorf("更新任务状态失败: %w", err)
+		return fmt.Errorf("更新任务失败: %w", err)
 	}
 
 	return nil

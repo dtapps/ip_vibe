@@ -191,49 +191,49 @@ func main() {
 	// }
 
 	// 启动 SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-	if err := sslApplyTask.StartPeriodicTask(ctx); err != nil {
-		slog.Error("启动 SSL申请任务 失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
+	// sslApplyTask := tasks.NewSSLApplyTask(
+	// 	global.GvaEntDb,
+	// 	global.GvaEntLogDb,
+	// 	global.GvaGoCron,
+	// 	global.GvaGocronSlog,
+	// 	global.GvaHttpLog,
+	// )
+	// if err := sslApplyTask.StartPeriodicTask(ctx); err != nil {
+	// 	slog.Error("启动 SSL申请任务 失败",
+	// 		slog.Any("err", err),
+	// 	)
+	// 	panic(err)
+	// }
 
 	// 启动 SSL刷新任务
-	sslRefreshTask := tasks.NewSSLRefreshTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-	if err := sslRefreshTask.StartPeriodicTask(ctx); err != nil {
-		slog.Error("启动 SSL刷新任务 失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
+	// sslRefreshTask := tasks.NewSSLRefreshTask(
+	// 	global.GvaEntDb,
+	// 	global.GvaEntLogDb,
+	// 	global.GvaGoCron,
+	// 	global.GvaGocronSlog,
+	// 	global.GvaHttpLog,
+	// )
+	// if err := sslRefreshTask.StartPeriodicTask(ctx); err != nil {
+	// 	slog.Error("启动 SSL刷新任务 失败",
+	// 		slog.Any("err", err),
+	// 	)
+	// 	panic(err)
+	// }
 
 	// 启动 域名监控任务
-	domainMonitorTask := tasks.NewDomainMonitorTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-	if err := domainMonitorTask.StartPeriodicTask(ctx); err != nil {
-		slog.Error("启动 域名监控任务 失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
+	// domainMonitorTask := tasks.NewDomainMonitorTask(
+	// 	global.GvaEntDb,
+	// 	global.GvaEntLogDb,
+	// 	global.GvaGoCron,
+	// 	global.GvaGocronSlog,
+	// 	global.GvaHttpLog,
+	// )
+	// if err := domainMonitorTask.StartPeriodicTask(ctx); err != nil {
+	// 	slog.Error("启动 域名监控任务 失败",
+	// 		slog.Any("err", err),
+	// 	)
+	// 	panic(err)
+	// }
 
 	// 启动 Cloudflare隧道同步任务
 	cloudflareTunnelSyncTask := tasks.NewCloudflareTunnelSyncTask(
