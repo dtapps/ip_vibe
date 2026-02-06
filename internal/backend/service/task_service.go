@@ -156,7 +156,7 @@ func (s *TaskServiceImpl) UpdateTask(ctx context.Context, request *types.UpdateT
 	return nil
 }
 
-// UpdateTaskActive 更新 任务启用状态
+// UpdateTaskActive 更新 任务状态
 func (s *TaskServiceImpl) UpdateTaskActive(ctx context.Context, id int64, status string) error {
 
 	// 查询任务
@@ -181,7 +181,7 @@ func (s *TaskServiceImpl) UpdateTaskActive(ctx context.Context, id int64, status
 	return nil
 }
 
-// BatchUpdateTaskActive 批量更新 任务启用状态
+// BatchUpdateTaskActive 批量更新 任务状态
 func (s *TaskServiceImpl) BatchUpdateTaskActive(ctx context.Context, ids []int64, status string) error {
 
 	// 创建事务

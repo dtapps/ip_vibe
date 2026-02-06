@@ -339,18 +339,14 @@ func (m *GinServerManager) setupApiRouter() {
 		// 任务相关API
 		tasks := api.Group("/tasks")
 		{
-			tasks.GET("", handlers.GetTasks)                // 获取全部任务
-			tasks.GET("/:id", handlers.GetTaskDetail)       // 获取任务详情
-			tasks.POST("/:id", handlers.RunTask)            // 运行任务
-			tasks.DELETE("/:id", handlers.DeleteTask)       // 删除任务
-			tasks.POST("/clean-all", handlers.CleanAllTask) // 清理所有任务
+			tasks.PATCH("/:id", handlers.UpdateTask)                     // 更新任务
+			tasks.PATCH("/:id/status", handlers.UpdateTaskStatus)        // 更新任务状态
+			tasks.PATCH("/batch/status", handlers.BatchUpdateTaskStatus) // 批量更新任务状态
 		}
 
-		// 任务相关API
+		// 调度器相关API
 		gocrons := api.Group("/gocrons")
 		{
-			gocrons.GET("", handlers.GetGocrons)                            // 获取全部任务
-			gocrons.GET("/:id", handlers.GetGocronDetail)                   // 获取任务详情
 			gocrons.POST("/:id", handlers.RunGocron)                        // 运行任务
 			gocrons.DELETE("/:id", handlers.DeleteGocron)                   // 删除任务
 			gocrons.POST("/clean-all", handlers.CleanAllGocron)             // 清理所有任务

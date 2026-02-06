@@ -76,13 +76,13 @@ type UpdateTaskRequest struct {
 }
 
 // 更新任务状态 请求结构
-type UpdateTaskActiveRequest struct {
+type UpdateTaskStatusRequest struct {
 	GetTaskRequest
 	Status string `json:"status,omitempty" jsonschema:"任务状态"` // 任务状态
 }
 
 // 批量更新任务状态 请求结构
-type BatchUpdateTaskActiveRequest struct {
+type BatchUpdateTaskStatusRequest struct {
 	BatchDeleteTaskRequest
 	Status string `json:"status,omitempty" jsonschema:"任务状态"` // 任务状态
 }
