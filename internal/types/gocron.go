@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 // 任务页面 请求结构
 type GocronRequest struct {
 	CommonPageRequest
@@ -12,18 +14,18 @@ type GocronResponse struct {
 }
 
 type GocronJobInfo struct {
-	ID      string `json:"id"`       // 任务序号
-	Name    string `json:"name"`     // 任务名称
-	LastRun string `json:"last_run"` // 上次运行时间
-	NextRun string `json:"next_run"` // 下次运行时间
+	ID      string    `json:"id"`       // 任务序号
+	Name    string    `json:"name"`     // 任务名称
+	LastRun time.Time `json:"last_run"` // 上次运行时间
+	NextRun time.Time `json:"next_run"` // 下次运行时间
 }
 
 type GocronJob struct {
-	ID             string   `json:"id"`              // 任务序号
-	Name           string   `json:"name"`            // 任务名称
-	LastRun        string   `json:"last_run"`        // 上次运行时间
-	NextRun        string   `json:"next_run"`        // 下次运行时间
-	NextRuns       []string `json:"next_runs"`       // 下次运行时间列表
-	Schedule       string   `json:"schedule"`        // 任务调度表达式
-	ScheduleDetail string   `json:"schedule_detail"` // 任务调度表达式详情
+	ID             string      `json:"id"`              // 任务序号
+	Name           string      `json:"name"`            // 任务名称
+	LastRun        time.Time   `json:"last_run"`        // 上次运行时间
+	NextRun        time.Time   `json:"next_run"`        // 下次运行时间
+	ExecutionTime  []time.Time `json:"execution_time"`  // 执行时间列表
+	Schedule       string      `json:"schedule"`        // 任务调度表达式
+	ScheduleDetail string      `json:"schedule_detail"` // 任务调度表达式详情
 }

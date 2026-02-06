@@ -21,5 +21,11 @@ cp -r node_modules/select2-tailwindcss-v4-theme/dist/ ../backend/static/libs/sel
 echo "Step 7: Copying Echarts..."
 cp -r node_modules/echarts/dist/ ../backend/static/libs/echarts/
 
-echo "Step 8: Running TailwindCSS..."
+echo "Step 8: Copying Dayjs..."
+mkdir -p ../backend/static/libs/dayjs/ 
+cp node_modules/dayjs/dayjs.min.js ../backend/static/libs/dayjs/
+cp node_modules/dayjs/plugin/relativeTime.js ../backend/static/libs/dayjs/relativeTime.js
+cp node_modules/dayjs/locale/zh-cn.js ../backend/static/libs/dayjs/zh-cn.js
+
+echo "Step 9: Running TailwindCSS..."
 pnpm tailwindcss -i ./css/input.css -o ../backend/static/css/style.css --watch --poll --verbose

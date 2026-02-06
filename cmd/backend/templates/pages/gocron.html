@@ -50,9 +50,10 @@
       <thead>
         <tr>
           <th class="ui-th text-left">编号</th>
-          <th class="ui-th">任务名称</th>
-          <th class="ui-th">调度表达式 (Cron)</th>
-          <th class="ui-th">上次执行时间</th>
+          <th class="ui-th text-center">任务名称</th>
+          <th class="ui-th text-center">调度表达式 (Cron)</th>
+          <th class="ui-th text-center">上次执行时间</th>
+          <th class="ui-th text-center">下次执行时间</th>
           <th class="ui-th text-center">操作</th>
         </tr>
       </thead>
@@ -65,25 +66,33 @@
             {{.ID}}
           </td>
 
-          <td class="ui-td font-bold text-base-content">
+          <td class="ui-td text-center font-bold text-base-content">
             {{.Name}}
           </td>
 
-          <td class="ui-td font-mono text-sm">
+          <td class="ui-td text-center font-mono text-sm">
             <span class="badge badge-ghost font-mono text-primary">
               {{.ScheduleDetail}}
             </span>
           </td>
 
-          <td class="ui-td text-xs opacity-60">
-            {{.LastRun}}
+          <td class="ui-td text-center text-xs opacity-60">
+            <span class="tooltip" data-tip="{{ formatTimeOrNil .LastRun }}">
+              {{ diffForHumans .LastRun }}
+            </span>
           </td>
 
-          <td class="ui-td">
+          <td class="ui-td text-center text-xs opacity-60">
+            <span class="tooltip" data-tip="{{ formatTimeOrNil .NextRun }}">
+              {{ diffForHumans .NextRun }}
+            </span>
+          </td>
+
+          <td class="ui-td text-center">
             <div class="flex justify-center gap-2">
-              <button class="btn btn-sm btn-outline btn-info rounded-lg px-4"
-                onclick="onNextRunPopup('{{.ID}}','{{.Name}}')">
-                {{ template "icons" (dict "Name" "i-lucide-eye") }} 下次时间
+              <button class="btn btn-sm btn-outline btn-info rounded-lg px-4" data-detail="{{ marshalJSON . }}"
+                onclick="showExecutionTimePopup(this)">
+                {{ template "icons" (dict "Name" "i-lucide-eye") }} 执行时间
               </button>
               <button class="btn btn-success btn-sm rounded-lg px-4 text-white" onclick="runTask('{{.ID}}')">
                 {{ template "icons" (dict "Name" "i-lucide-zap") }} 立即运行

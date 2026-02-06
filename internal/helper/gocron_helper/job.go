@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 	"vibe_ip/internal/types"
-	"vibe_ip/pkg/utils"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
@@ -31,22 +30,37 @@ func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []*types.GocronJob) {
 	if j.Scheduler == nil {
 		return jobs
 	}
+
+	// 获取当前时间
+	now := time.Now()
+
 	for _, job := range j.Scheduler.Jobs() {
 		nextRun, _ := job.NextRun()
 		lastRun, _ := job.LastRun()
-
-		// get next 5 runs
 		nextRuns, _ := job.NextRuns(nextRunsLimit)
 
-		// determine schedule info based on job name patterns or intervals
+		// 确保 NextRun 是未来时间
+		// 条件1: nextRun 为零值（无下一次运行）
+		// 条件2: nextRun 已过期（小于当前时间）
+		if nextRun.IsZero() || nextRun.Before(now) {
+			// 从 nextRuns 中查找第一个 >= now 的时间
+			for _, nr := range nextRuns {
+				if nr.After(now) || nr.Equal(now) {
+					nextRun = nr
+					break
+				}
+			}
+		}
+
+		// 推断任务调度信息
 		schedule, scheduleDetail := j.inferSchedule(job, nextRuns)
 
 		jobs = append(jobs, &types.GocronJob{
 			ID:             job.ID().String(),
 			Name:           job.Name(),
-			LastRun:        utils.FormatTime(lastRun),
-			NextRun:        utils.FormatTime(nextRun),
-			NextRuns:       utils.FormatTimes(nextRuns),
+			LastRun:        lastRun,
+			NextRun:        nextRun,
+			ExecutionTime:  nextRuns,
 			Schedule:       schedule,
 			ScheduleDetail: scheduleDetail,
 		})
@@ -59,34 +73,33 @@ func (j *JobHelper) IsJob(jobID string, jobName string) bool {
 	if j.Scheduler == nil {
 		return false
 	}
-	jobs := j.Scheduler.Jobs()
+	// 查询全部任务
+	jobs := j.GetJobsData(5)
 	for _, job := range jobs {
-		if jobID != "" && job.ID().String() == jobID {
+		if jobID != "" && job.ID == jobID {
 			return true
 		}
-		if jobName != "" && job.Name() == jobName {
+		if jobName != "" && job.Name == jobName {
 			return true
 		}
 	}
 	return false
 }
 
-// 获取任务
+// 获取任务详情
 func (j *JobHelper) GetJob(jobID string) (job *types.GocronJobInfo, err error) {
 	if j.Scheduler == nil {
 		return nil, fmt.Errorf("调度器未初始化")
 	}
-	jobs := j.Scheduler.Jobs()
+	// 查询全部任务
+	jobs := j.GetJobsData(5)
 	for _, job := range jobs {
-		if job.ID().String() == jobID {
-			nextRun, _ := job.NextRun()
-			lastRun, _ := job.LastRun()
-
+		if job.ID == jobID {
 			return &types.GocronJobInfo{
-				ID:      job.ID().String(),
-				Name:    job.Name(),
-				LastRun: utils.FormatTime(lastRun),
-				NextRun: utils.FormatTime(nextRun),
+				ID:      job.ID,
+				Name:    job.Name,
+				LastRun: job.LastRun,
+				NextRun: job.NextRun,
 			}, nil
 		}
 	}
@@ -224,8 +237,8 @@ func (j *JobHelper) BeforePeriodicListener() gocron.EventListener {
 			logger.Info("[周期性] 开始执行")
 		} else {
 			logger.Info("[周期性] 开始执行",
-				slog.String("上次运行时间", jobInfo.LastRun),
-				slog.String("下次运行时间", jobInfo.NextRun),
+				slog.Time("上次运行时间", jobInfo.LastRun),
+				slog.Time("下次运行时间", jobInfo.NextRun),
 			)
 		}
 	})
@@ -242,8 +255,8 @@ func (j *JobHelper) AfterPeriodicListener() gocron.EventListener {
 			logger.Info("[周期性] 执行结束")
 		} else {
 			logger.Info("[周期性] 执行结束",
-				slog.String("上次运行时间", jobInfo.LastRun),
-				slog.String("下次运行时间", jobInfo.NextRun),
+				slog.Time("上次运行时间", jobInfo.LastRun),
+				slog.Time("下次运行时间", jobInfo.NextRun),
 			)
 		}
 	})
@@ -263,8 +276,8 @@ func (j *JobHelper) PanicPeriodicListener() gocron.EventListener {
 		}
 		if jobInfo != nil {
 			logger.Error("[周期性] 执行异常",
-				slog.String("上次运行时间", jobInfo.LastRun),
-				slog.String("下次运行时间", jobInfo.NextRun),
+				slog.Time("上次运行时间", jobInfo.LastRun),
+				slog.Time("下次运行时间", jobInfo.NextRun),
 				slog.Any("err", recoverData),
 			)
 		}

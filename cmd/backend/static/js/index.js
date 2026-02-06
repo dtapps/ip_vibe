@@ -333,3 +333,56 @@ function updateBatchBar() {
     }
   });
 }
+
+/**
+ * 自动兼容纳秒/毫秒/秒等多种时间格式
+ * @param {string} timeStr 任意 ISO 8601 或常见时间格式
+ * @returns {string} 如 "7分钟后"、"2分钟前"、"刚刚"
+ */
+function diffForHumans(timeStr) {
+  // 原生 Date 自动处理所有格式（纳秒/毫秒/秒/空格等）
+  const time = new Date(timeStr);
+
+  if (isNaN(time.getTime())) return "格式错误";
+
+  const now = new Date();
+  const diffSec = Math.round((time - now) / 1000);
+  const isFuture = diffSec > 0;
+  const absSec = Math.abs(diffSec);
+
+  // 刚刚（<10秒）
+  if (absSec < 10) return "刚刚";
+
+  // 秒级（10~59秒）
+  if (absSec < 60) {
+    return `${absSec} 秒${isFuture ? "后" : "前"}`;
+  }
+
+  // 分钟
+  const minutes = Math.floor(absSec / 60);
+  if (minutes < 60) {
+    return `${minutes} 分钟${isFuture ? "后" : "前"}`;
+  }
+
+  // 小时
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    return `${hours} 小时${isFuture ? "后" : "前"}`;
+  }
+
+  // 天
+  const days = Math.floor(hours / 24);
+  if (days < 30) {
+    return `${days} 天${isFuture ? "后" : "前"}`;
+  }
+
+  // 月（简化：30天=1月）
+  const months = Math.floor(days / 30);
+  if (months < 12) {
+    return `${months} 个月${isFuture ? "后" : "前"}`;
+  }
+
+  // 年
+  const years = Math.floor(months / 12);
+  return `${years} 年${isFuture ? "后" : "前"}`;
+}

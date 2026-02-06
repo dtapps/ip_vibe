@@ -10,82 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 获取全部任务
-//
-//	@Description	获取全部任务
-//	@Summary		获取全部任务
-//	@Tags			任务
-//	@Accept			application/json
-//	@Produce		application/json
-//	@Success		200	{object}	APIResponse{data=[]types.GocronJob}	"成功响应"
-//	@Failure		404	{object}	APIResponse{}						"错误响应"
-//	@Router			/gocrons [get]
-func GetGocrons(c *gin.Context) {
-
-	// 创建服务
-	gocronService := service.NewGocronService(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
-	// 调用 获取全部任务
-	response, err := gocronService.GetTasks(c)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, err.Error())
-		return
-	}
-
-	successResponse(c, response)
-}
-
-// 获取任务详情
-//
-//	@Description	获取任务详情
-//	@Summary		获取任务详情
-//	@Tags			任务
-//	@Accept			application/json
-//	@Produce		application/json
-//	@Param			id	path		string							true	"任务 ID"
-//	@Success		200	{object}	APIResponse{data=types.GocronJob}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}					"参数错误"
-//	@Failure		404	{object}	APIResponse{}					"错误响应"
-//	@Router			/gocrons/{id} [get]
-func GetGocronDetail(c *gin.Context) {
-	// 请求参数
-	var requestParams types.GetGocronRequest
-	requestParams.ID = c.Param("id")
-	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
-		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
-		return
-	}
-
-	// 创建服务
-	gocronService := service.NewGocronService(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
-	// 调用 获取任务详情
-	response, err := gocronService.GetTask(c, requestParams.ID)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, err.Error())
-		return
-	}
-
-	successResponse(c, response)
-}
-
 // 运行任务
 //
 //	@Description	运行任务
 //	@Summary		运行任务
-//	@Tags			任务
+//	@Tags			调度器
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		string			true	"任务 ID"
@@ -107,8 +36,7 @@ func RunGocron(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
+		global.GvaGinSlog,
 	)
 
 	// 调用 运行任务
@@ -125,7 +53,7 @@ func RunGocron(c *gin.Context) {
 //
 //	@Description	删除任务
 //	@Summary		删除任务
-//	@Tags			任务
+//	@Tags			调度器
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		string			true	"任务 ID"
@@ -147,8 +75,7 @@ func DeleteGocron(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
+		global.GvaGinSlog,
 	)
 
 	// 调用 删除任务
@@ -165,7 +92,7 @@ func DeleteGocron(c *gin.Context) {
 //
 //	@Description	清理所有任务
 //	@Summary		清理所有任务
-//	@Tags			任务
+//	@Tags			调度器
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Success		200	{object}	APIResponse{}	"成功响应"
@@ -178,8 +105,7 @@ func CleanAllGocron(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
+		global.GvaGinSlog,
 	)
 
 	// 调用 清理全部任务
@@ -196,7 +122,7 @@ func CleanAllGocron(c *gin.Context) {
 //
 //	@Description	启动调度器
 //	@Summary		启动调度器
-//	@Tags			任务
+//	@Tags			调度器
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Success		200	{object}	APIResponse{}	"成功响应"
@@ -209,8 +135,7 @@ func StartGocronScheduler(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
+		global.GvaGinSlog,
 	)
 
 	// 调用 启动调度器
@@ -240,8 +165,7 @@ func StopGocronScheduler(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
+		global.GvaGinSlog,
 	)
 
 	// 调用 停止调度器

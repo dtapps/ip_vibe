@@ -23,6 +23,9 @@ importers:
       daisyui:
         specifier: ^5.5.17
         version: 5.5.17
+      dayjs:
+        specifier: ^1.11.19
+        version: 1.11.19
       echarts:
         specifier: ^6.0.0
         version: 6.0.0
@@ -261,6 +264,9 @@ packages:
 
   daisyui@5.5.17:
     resolution: {integrity: sha512-Y8QWps/990Epp0Gn+7ReeALSXgwrd3W36waokJvHgqUdYx6t2sj0e1krW3+YqviBa57XTJqHJNTt8HMvcODL2Q==}
+
+  dayjs@1.11.19:
+    resolution: {integrity: sha512-t5EcLVS6QPBNqM2z8fakk/NKel+Xzshgt8FFKAn+qwlD1pzZWxh0nVCrvFK7ZDb6XucZeF9z8C7CBWTRIVApAw==}
 
   delegate@3.2.0:
     resolution: {integrity: sha512-IofjkYBZaZivn0V8nnsMJGBr4jVLxHDheKSW88PyxS5QC4Vo9ZbZVvhzlSxY87fVq3STR6r+4cGepyHkcWOQSw==}
@@ -620,6 +626,8 @@ snapshots:
   confbox@0.1.8: {}
 
   daisyui@5.5.17: {}
+
+  dayjs@1.11.19: {}
 
   delegate@3.2.0: {}
 

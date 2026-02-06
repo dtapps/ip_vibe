@@ -54,29 +54,56 @@ async function runTask(id) {
   }
 }
 
-// 打开 下次执行时间 弹窗
-async function onNextRunPopup(id, name) {
+/**
+ * 打开 执行时间 弹窗
+ * @param {HTMLButtonElement} btn 按钮元素
+ * @returns
+ */
+async function showExecutionTimePopup(btn) {
   try {
-    const { data: task } = await API.get(`/api/gocrons/${id}`);
-    console.log("task", task);
-    if (!task) {
-      alert("任务数据异常");
-      return;
-    }
-    if (task.length === 0) {
+    // 加载 Day.js 库
+    // await loadDayJS();
+
+    // 获取并解析数据
+    const detail = btn.dataset.detail;
+    const d = JSON.parse(detail);
+
+    // 解析数据
+    const { name, execution_time = [] } = d;
+
+    if (execution_time.length === 0) {
       alert("当前任务执行时间无数据");
       return;
     }
+
+    // 转换时间数组为带相对时间的格式
+    const formattedRuns = execution_time.map((timeStr) => {
+      try {
+        // 解析时间字符串
+        const time = new Date(timeStr);
+
+        // 检查是否解析成功
+        if (isNaN(time.getTime())) {
+          return `${timeStr} | 格式错误`;
+        }
+
+        // 拼接格式：原始时间 | 相对时间
+        return `${timeStr} | ${diffForHumans(timeStr)}`;
+      } catch (err) {
+        // 解析失败时显示原始时间
+        return `${timeStr} | 解析失败`;
+      }
+    });
 
     // 显示弹窗内容
     showPopupContent(
       "popup",
       `实时 执行时间 - ${name}`,
-      task.next_runs.join("\n"),
-      task.next_runs.length,
+      formattedRuns.join("\n"),
+      formattedRuns.length,
     );
-  } catch (error) {
-    alert(`加载任务执行时间失败: ${error.message}`);
-    console.error("查看任务执行时间失败", error);
+  } catch (err) {
+    alert(`打开 执行时间 弹窗失败: ${err.message}`);
+    console.error(err);
   }
 }

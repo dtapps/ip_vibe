@@ -1,4 +1,4 @@
-// CDN配置（同之前，保持不变）
+// 本地+CDN配置
 const CDN_CONFIG = {
   "clipboard-js": [
     "/static/libs/clipboard/clipboard.min.js",
@@ -49,6 +49,37 @@ const CDN_CONFIG = {
     "https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css",
     "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css",
     "https://unpkg.com/npm/select2@4.1.0-rc.0/dist/css/select2.min.css",
+  ],
+
+  "dayjs-core": [
+    "/static/libs/dayjs/dayjs.min.js",
+    "https://esa-cdnjs.dtapp.net/ajax/libs/dayjs/1.11.13/dayjs.min.js",
+    "https://esa-jsdelivr.dtapp.net/npm/dayjs@1.11.13/dayjs.min.js",
+    "https://eo-cdnjs.dtapp.net/ajax/libs/dayjs/1.11.13/dayjs.min.js",
+    "https://eo-jsdelivr.dtapp.net/npm/dayjs@1.11.13/dayjs.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/dayjs.min.js",
+    "https://cdn.jsdelivr.net/npm/dayjs@1.11.13/dayjs.min.js",
+    "https://unpkg.com/dayjs@1.11.13/dayjs.min.js",
+  ],
+  "dayjs-relativeTime": [
+    "/static/libs/dayjs/relativeTime.js",
+    "https://esa-cdnjs.dtapp.net/ajax/libs/dayjs/1.11.13/plugin/relativeTime.min.js",
+    "https://esa-jsdelivr.dtapp.net/npm/dayjs@1.11.13/plugin/relativeTime.min.js",
+    "https://eo-cdnjs.dtapp.net/ajax/libs/dayjs/1.11.13/plugin/relativeTime.min.js",
+    "https://eo-jsdelivr.dtapp.net/npm/dayjs@1.11.13/plugin/relativeTime.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/plugin/relativeTime.min.js",
+    "https://cdn.jsdelivr.net/npm/dayjs@1.11.13/plugin/relativeTime.min.js",
+    "https://unpkg.com/dayjs@1.11.13/plugin/relativeTime.min.js",
+  ],
+  "dayjs-zh-cn": [
+    "/static/libs/dayjs/zh-cn.js",
+    "https://esa-cdnjs.dtapp.net/ajax/libs/dayjs/1.11.13/locale/zh-cn.min.js",
+    "https://esa-jsdelivr.dtapp.net/npm/dayjs@1.11.13/locale/zh-cn.min.js",
+    "https://eo-cdnjs.dtapp.net/ajax/libs/dayjs/1.11.13/locale/zh-cn.min.js",
+    "https://eo-jsdelivr.dtapp.net/npm/dayjs@1.11.13/locale/zh-cn.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.13/locale/zh-cn.min.js",
+    "https://cdn.jsdelivr.net/npm/dayjs@1.11.13/locale/zh-cn.min.js",
+    "https://unpkg.com/dayjs@1.11.13/locale/zh-cn.min.js",
   ],
 };
 
@@ -184,6 +215,38 @@ async function loadSelect2() {
       loadLibrary(`${libName}-js`, CDN_CONFIG[`${libName}-js`]),
       loadLibrary(`${libName}-css`, CDN_CONFIG[`${libName}-css`]),
     ]);
+    console.log(`${libName} 加载成功`);
+  } catch (error) {
+    console.error(`${libName} 加载失败:`, error);
+    throw error;
+  }
+}
+// 专用加载 Day.js（核心 + 插件 + 语言包）
+async function loadDayJS() {
+  const libName = "dayjs";
+
+  console.log(`${libName} 尝试加载`, typeof dayjs !== "undefined");
+  try {
+    // 检查是否已加载
+    if (typeof dayjs !== "undefined") {
+      console.log(`${libName} 加载已完成`);
+      return Promise.resolve();
+    }
+
+    // 按顺序加载：核心 → 插件 → 语言包
+    await loadLibrary(`${libName}-core`, CDN_CONFIG[`${libName}-core`]);
+    await loadLibrary(
+      `${libName}-relativeTime`,
+      CDN_CONFIG[`${libName}-relativeTime`],
+    );
+    await loadLibrary(`${libName}-zh-cn`, CDN_CONFIG[`${libName}-zh-cn`]);
+
+    // 启用插件和语言包
+    if (typeof dayjs !== "undefined") {
+      dayjs.extend(window.dayjs_plugin_relativeTime);
+      dayjs.locale("zh-cn");
+    }
+
     console.log(`${libName} 加载成功`);
   } catch (error) {
     console.error(`${libName} 加载失败:`, error);
