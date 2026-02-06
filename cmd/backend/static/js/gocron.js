@@ -87,8 +87,23 @@ async function showExecutionTimePopup(btn) {
           return `${timeStr} | 格式错误`;
         }
 
+        // 格式化为 YYYY-MM-DD HH:mm:ss
+        const formattedTime = time
+          .toLocaleString("zh-CN", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: false,
+          })
+          .replace(/\//g, "-")
+          .replace(",", "");
+
         // 拼接格式：原始时间 | 相对时间
-        return `${timeStr} | ${diffForHumans(timeStr)}`;
+        // return `${timeStr} | ${diffForHumans(timeStr)}`;
+        return `${formattedTime} | ${diffForHumans(timeStr)}`;
       } catch (err) {
         // 解析失败时显示原始时间
         return `${timeStr} | 解析失败`;
