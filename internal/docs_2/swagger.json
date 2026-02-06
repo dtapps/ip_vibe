@@ -2933,7 +2933,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "调度器"
+                    "Gocron"
                 ],
                 "summary": "启动调度器",
                 "responses": {
@@ -2962,7 +2962,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "任务"
+                    "Gocron"
                 ],
                 "summary": "停止调度器",
                 "responses": {
@@ -2991,7 +2991,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "调度器"
+                    "Gocron"
                 ],
                 "summary": "运行任务",
                 "parameters": [
@@ -3033,7 +3033,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "调度器"
+                    "Gocron"
                 ],
                 "summary": "删除任务",
                 "parameters": [
@@ -4683,7 +4683,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "设置"
+                    "Setting"
                 ],
                 "summary": "获取设置",
                 "responses": {
@@ -4728,7 +4728,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "设置"
+                    "Setting"
                 ],
                 "summary": "更新设置",
                 "parameters": [
@@ -5579,7 +5579,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "任务"
+                    "Task"
                 ],
                 "summary": "批量更新任务状态",
                 "parameters": [
@@ -5625,7 +5625,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "任务"
+                    "Task"
                 ],
                 "summary": "更新任务",
                 "parameters": [
@@ -5679,7 +5679,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "任务"
+                    "Task"
                 ],
                 "summary": "更新任务状态",
                 "parameters": [

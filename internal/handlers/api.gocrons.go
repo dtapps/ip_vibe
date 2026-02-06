@@ -14,7 +14,7 @@ import (
 //
 //	@Description	运行任务
 //	@Summary		运行任务
-//	@Tags			调度器
+//	@Tags			Gocron
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		string			true	"任务 ID"
@@ -53,7 +53,7 @@ func RunGocron(c *gin.Context) {
 //
 //	@Description	删除任务
 //	@Summary		删除任务
-//	@Tags			调度器
+//	@Tags			Gocron
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id	path		string			true	"任务 ID"
@@ -122,7 +122,7 @@ func CleanAllGocron(c *gin.Context) {
 //
 //	@Description	启动调度器
 //	@Summary		启动调度器
-//	@Tags			调度器
+//	@Tags			Gocron
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Success		200	{object}	APIResponse{}	"成功响应"
@@ -152,7 +152,7 @@ func StartGocronScheduler(c *gin.Context) {
 //
 //	@Description	停止调度器
 //	@Summary		停止调度器
-//	@Tags			任务
+//	@Tags			Gocron
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Success		200	{object}	APIResponse{}	"成功响应"

@@ -16,7 +16,7 @@ import (
 //
 //	@Description	获取设置
 //	@Summary		获取设置
-//	@Tags			设置
+//	@Tags			Setting
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Success		200	{object}	APIResponse{data=types.GetSettingResponse}	"成功响应"
@@ -51,7 +51,7 @@ func GetSetting(c *gin.Context) {
 //
 //	@Description	更新设置
 //	@Summary		更新设置
-//	@Tags			设置
+//	@Tags			Setting
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.UpdateSettingRequest	true	"请求参数"

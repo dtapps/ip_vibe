@@ -3845,7 +3845,7 @@ paths:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 删除任务
       tags:
-      - 调度器
+      - Gocron
     post:
       consumes:
       - application/json
@@ -3873,7 +3873,7 @@ paths:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 运行任务
       tags:
-      - 调度器
+      - Gocron
   /gocrons/clean-all:
     post:
       consumes:
@@ -3911,7 +3911,7 @@ paths:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 启动调度器
       tags:
-      - 调度器
+      - Gocron
   /gocrons/stop-scheduler:
     post:
       consumes:
@@ -3930,7 +3930,7 @@ paths:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 停止调度器
       tags:
-      - 任务
+      - Gocron
   /ip-groups:
     get:
       consumes:
@@ -4981,7 +4981,7 @@ paths:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 获取设置
       tags:
-      - 设置
+      - Setting
     patch:
       consumes:
       - application/json
@@ -5010,7 +5010,7 @@ paths:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 更新设置
       tags:
-      - 设置
+      - Setting
   /ssl-imports:
     post:
       consumes:
@@ -5567,7 +5567,7 @@ paths:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 更新任务
       tags:
-      - 任务
+      - Task
   /tasks/{id}/active:
     patch:
       consumes:
@@ -5603,7 +5603,7 @@ paths:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 更新任务状态
       tags:
-      - 任务
+      - Task
   /tasks/batch/active:
     patch:
       consumes:
@@ -5633,7 +5633,7 @@ paths:
             $ref: '#/definitions/internal_handlers.APIResponse'
       summary: 批量更新任务状态
       tags:
-      - 任务
+      - Task
   /tun-records:
     get:
       consumes:

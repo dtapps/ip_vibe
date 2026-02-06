@@ -15,7 +15,7 @@ import (
 //
 //	@Description	更新任务
 //	@Summary		更新任务
-//	@Tags			任务
+//	@Tags			Task
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64					true	"任务序号"
@@ -54,7 +54,7 @@ func UpdateTask(c *gin.Context) {
 //
 //	@Description	更新任务状态
 //	@Summary		更新任务状态
-//	@Tags			任务
+//	@Tags			Task
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64							true	"任务序号"
@@ -93,7 +93,7 @@ func UpdateTaskStatus(c *gin.Context) {
 //
 //	@Description	批量更新任务状态
 //	@Summary		批量更新任务状态
-//	@Tags			任务
+//	@Tags			Task
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.BatchUpdateTaskStatusRequest	true	"请求参数"
