@@ -189,6 +189,7 @@
             </div>
           </td>
 
+          {{ $statusApiUrlPath := join $apiUrlPath "/status" }}
           <td class="ui-td text-center">
             <div class="flex justify-center gap-1.5">
               <button
@@ -198,7 +199,7 @@
               </button>
               <button
                 class='btn btn-square btn-xs btn-outline {{ if eq .Status "running" }}btn-warning bg-warning/10{{ else }}btn-success bg-success/10{{ end }} border-none'
-                data-url="{{$apiUrlPath}}" data-data-key="status"
+                data-url="{{$statusApiUrlPath}}" data-data-key="status"
                 data-data-value='{{ if eq .Status "running" }}stopped{{ else }}running{{ end }}'
                 onclick="handleStatusAction(this)">
                 {{ if eq .Status "running" }}
