@@ -390,7 +390,7 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 		}))).
 		SetTaskType(cronjob.TaskTypeOneOff).
 		SetJobType(cronjob.JobTypeDuration).
-		SetJobCategory(cronjob.JobCategorySystem).
+		SetJobCategory(cronjob.JobCategoryCustom).
 		SetBusinessType(cronjob.BusinessTypeDomain).
 		SetBusinessID(firstDomainMonitor.ID).
 		SetIntervalValue(firstDomainMonitor.CheckInterval).

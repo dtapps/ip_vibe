@@ -8,19 +8,19 @@
     <form method="GET" action="{{ $action }}" class="flex items-center gap-6 flex-1">
 
         <div class="flex items-center gap-3">
-            <span class="ui-filter-label">序号</span>
+            <span class="ui-filter-label">任务序号</span>
             <input type="number" name="id" value="{{ if $filter.ID }}{{ $filter.ID }}{{ end }}" placeholder="任务序号"
                 class="ui-filter-input-compact w-20 font-mono text-center">
         </div>
 
         <div class="flex items-center gap-3">
-            <span class="ui-filter-label">编号</span>
+            <span class="ui-filter-label">任务编号</span>
             <input type="text" name="entry_id" value="{{ if $filter.EntryID }}{{ $filter.EntryID }}{{ end }}"
                 placeholder="任务编号" class="ui-filter-input-compact w-20 font-mono text-center">
         </div>
 
         <div class="flex items-center gap-3">
-            <span class="ui-filter-label">名称</span>
+            <span class="ui-filter-label">任务名称</span>
             <input type="text" name="entry_id" value="{{ if $filter.Name }}{{ $filter.Name }}{{ end }}"
                 placeholder="任务名称" class="ui-filter-input-compact w-20 font-mono text-center">
         </div>
@@ -68,7 +68,27 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <span class="ui-filter-label">状态</span>
+            <span class="ui-filter-label">业务类型</span>
+            <select name="business_type" class="ui-filter-select w-30">
+                <option value="">所有类型</option>
+                {{ range $opt := (fieldEnumMap "cron_job_business_type") }}
+                {{ if eq $opt.Value $filter.BusinessType }}
+                <option value="{{ $opt.Value }}" selected>{{ $opt.Label }}</option>
+                {{ else }}
+                <option value="{{ $opt.Value }}">{{ $opt.Label }}</option>
+                {{ end }}
+                {{ end }}
+            </select>
+        </div>
+
+        <!-- <div class="flex items-center gap-3">
+            <span class="ui-filter-label">业务序号</span>
+            <input type="number" name="business_id" value="{{ if $filter.BusinessID }}{{ $filter.BusinessID }}{{ end }}"
+                placeholder="业务序号" class="ui-filter-input-compact w-20 font-mono text-center">
+        </div> -->
+
+        <div class="flex items-center gap-3">
+            <span class="ui-filter-label">任务状态</span>
             <select name="status" class="ui-filter-select w-30">
                 <option value="">所有状态</option>
                 {{ range $opt := (fieldEnumMap "cron_job_status") }}
