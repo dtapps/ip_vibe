@@ -482,8 +482,8 @@ func (s *DNSRecordServiceImpl) handleDnsRecordTaskStatus(ctx context.Context, db
 		// 创建任务
 		err = db.CronJob.Create().
 			SetName("DNS同步: " + record.FullDomain).
-			SetHandlerName("dns_sync").
-			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.DNSTaskArgs{
+			SetHandlerName(task.DNSSyncTaskName).
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.DNSSyncTaskArgs{
 				ID: record.ID,
 			}))).
 			SetTaskType(cronjob.TaskTypeRecurring).

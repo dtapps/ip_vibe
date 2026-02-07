@@ -146,21 +146,6 @@ func main() {
 	// 启动 GoCron 调度器
 	initialize.StartGoCron(ctx, global.GvaGocronSlog)
 
-	// 启动 CDN/DNS刷新任务
-	// ipUpdateTask := tasks.NewIPUpdateTask(
-	// 	global.GvaEntDb,
-	// 	global.GvaEntLogDb,
-	// 	global.GvaGoCron,
-	// 	global.GvaGocronSlog,
-	// 	global.GvaHttpLog,
-	// )
-	// if err := ipUpdateTask.StartCdnJob(ctx); err != nil {
-	// 	slog.Error("启动 CDN/DNS刷新任务 失败",
-	// 		slog.Any("err", err),
-	// 	)
-	// 	panic(err)
-	// }
-
 	// 启动 TUN 刷新任务
 	// tunUpdateTask := tasks.NewTUNUpdateTask(
 	// 	global.GvaEntDb,

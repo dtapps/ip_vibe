@@ -72,9 +72,9 @@ func (m *CronServerManager) InitHandlers(ctx context.Context) {
 	cdnSyncHandler := task.NewCDNSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
 	m.taskRegistry.RegisterTask(ctx, task.CDNSyncTaskName, cdnSyncHandler)
 
-	// 注册 DNS 处理器
-	// dnsHandler := dns.NewDNSTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
-	// m.taskRegistry.RegisterTask(ctx, "dns_sync", dnsHandler)
+	// 注册 DNS同步 处理器
+	dnsSynHandler := task.NewDNSSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	m.taskRegistry.RegisterTask(ctx, task.DNSSyncTaskName, dnsSynHandler)
 
 	// 注册 域名监控 处理器
 	domainMonitorHandler := task.NewDomainMonitorTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
@@ -88,7 +88,7 @@ func (m *CronServerManager) RunHandler(jobID int64, handlerName string, args jso
 	ctx := context.Background()
 	startTime := time.Now()
 
-	// 1. 创建初始日志 (Running 状态)
+	// 创建初始日志 (Running 状态)
 	logRecord, err := m.logDb.CronJobLog.Create().
 		SetCronJobID(jobID).
 		SetHandlerName(handlerName).
@@ -99,7 +99,7 @@ func (m *CronServerManager) RunHandler(jobID int64, handlerName string, args jso
 		m.logger.Error("创建运行日志失败", slog.Int64("job_id", jobID), slog.Any("err", err))
 	}
 
-	// 2. 获取处理器并执行
+	// 获取处理器并执行
 	var result string
 	var execErr error
 	handler, ok := m.taskRegistry.GetTask(handlerName)
@@ -109,11 +109,11 @@ func (m *CronServerManager) RunHandler(jobID int64, handlerName string, args jso
 		result, execErr = handler.Process(ctx, args, meta)
 	}
 
-	// 3. 计算结果
+	// 计算结果
 	endTime := time.Now()
 	duration := endTime.Sub(startTime).Milliseconds()
 
-	// 4. 回填日志
+	// 回填日志
 	if logRecord != nil {
 		updaterLog := m.logDb.CronJobLog.UpdateOne(logRecord)
 		updaterLog.SetFinishedAt(endTime)

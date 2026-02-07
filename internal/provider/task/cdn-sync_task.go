@@ -66,13 +66,20 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 	// 查询单条记录及其关联信息
 	record, err := p.db.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(params.ID)).
+		// 预加载 配置
 		WithConfig().
-		WithIPGroup(func(q *ent.IpGroupQuery) {
-			q.WithDevices(func(dq *ent.DeviceQuery) {
+		// 预加载 IP组
+		WithIPGroup(func(withIPGroup *ent.IpGroupQuery) {
+			// 在 IP组 里查询设备
+			withIPGroup.WithDevices(func(withDevices *ent.DeviceQuery) {
+				// 单位：分钟
 				invalidTime := db_cache.GvaSetting.DeviceOfflineInvalidTime
-				if invalidTime > 0 {
-					dq.Where(device.LastHeartbeatAtGTE(time.Now().Add(-time.Duration(invalidTime) * time.Minute)))
+				if invalidTime <= 0 {
+					return
 				}
+				// 设备心跳时间在范围内
+				withDevices.Where(device.LastHeartbeatAtGTE(time.Now().Add(-time.Duration(invalidTime) * time.Minute)))
+				withDevices.OrderByIDAsc()
 			})
 		}).
 		First(ctx)
@@ -85,25 +92,40 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 		return "跳过: 记录已禁用", nil
 	}
 
-	// 提取源站 IP
+	// 存放源站
 	var originValues []string
-	if record.Edges.IPGroup != nil {
-		for _, dev := range record.Edges.IPGroup.Edges.Devices {
-			if dev.IPV4 != "" && record.Type == cdnrecord.TypeA {
-				originValues = append(originValues, dev.IPV4)
-			}
-			if dev.IPV6 != "" && record.Type == cdnrecord.TypeAAAA {
-				originValues = append(originValues, dev.IPV6)
-			}
+
+	// 获取关联的IP组
+	ipGroup, err := record.Edges.IPGroupOrErr()
+	if err != nil {
+		return "", fmt.Errorf("获取关联的IP组失败: %w", err)
+	}
+
+	// 获取关联的IP组中的设备
+	devices, err := ipGroup.Edges.DevicesOrErr()
+	if err != nil {
+		return "", fmt.Errorf("获取关联的IP组中的设备失败: %w", err)
+	}
+
+	// 遍历设备，根据记录类型筛选 IP
+	for _, device := range devices {
+		if device.IPV4 != "" && record.Type == cdnrecord.TypeA {
+			originValues = append(originValues, device.IPV4)
+		}
+		if device.IPV6 != "" && record.Type == cdnrecord.TypeAAAA {
+			originValues = append(originValues, device.IPV6)
 		}
 	}
 
 	if len(originValues) == 0 {
-		return "跳过: 无可用源站IP", nil
+		return "跳过: 无可用源站", nil
 	}
 
-	// 平台配置
-	platform := record.Edges.Config
+	// 获取关联的平台配置
+	platform, err := record.Edges.ConfigOrErr()
+	if err != nil {
+		return "", fmt.Errorf("获取关联的平台配置失败: %w", err)
+	}
 
 	var cdnProvider provider.CDNProvider
 	var cdnProviderOpts = make([]cdn.Option, 0, len(schematype.GetConfigPlatforms))
@@ -221,7 +243,7 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 		return "", fmt.Errorf("暂不支持该平台: %s", platform.String())
 	}
 
-	// 创建 CDN 更新任务
+	// 创建CDN更新任务
 	cdnTask, err := provider.NewCDNTask(
 		p.logger,
 		cdnProvider,
@@ -229,28 +251,28 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 		record.ConfigJSON,
 	)
 	if err != nil {
-		return "", fmt.Errorf("创建CDN任务失败: %w", err)
+		return "", fmt.Errorf("创建CDN更新任务失败: %w", err)
 	}
 
-	// 配置 CDN 参数
+	// 配CDN参数
 	cdnTask.Config(record.SubDomain, record.Type.String(), originValues)
 
-	// 执行 DNS 更新
+	// 执行CDN更新
 	if err = cdnTask.Execute(ctx); err != nil {
-		// 保存 DNS 记录响应
+		// 保存CDN记录响应
 		_ = cdnTask.SaveResponse(ctx, p.db, record.ID, err.Error())
 		return "", err
 	}
 	defer func() {
-		// 保存 DNS 记录响应
+		// 保存CDN记录响应
 		_ = cdnTask.SaveResponse(ctx, p.db, record.ID, "ok")
 	}()
 
-	// 保存 DNS 记录刷新
+	// 保存CDN记录刷新
 	_ = cdnTask.SaveRefresh(ctx, p.db, record.ID)
 
-	// 执行 DNS 通知
+	// 执行CDN通知
 	_ = cdnTask.Notify(ctx, p.db, record.ID)
 
-	return fmt.Sprintf("域名 %s 同步成功 (IP:%v)", record.SubDomain, originValues), nil
+	return fmt.Sprintf("域名 %s 同步成功 (源站:%v)", record.SubDomain, originValues), nil
 }
