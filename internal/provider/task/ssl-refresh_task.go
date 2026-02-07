@@ -1,0 +1,183 @@
+package task
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log/slog"
+	"time"
+	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/sslimport"
+	"vibe_ip/internal/ent/sslrecord"
+	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/provider"
+	"vibe_ip/internal/utils"
+
+	"go.dtapp.net/library/contrib/http_log"
+	"golang.org/x/sync/errgroup"
+)
+
+// SSLRefreshTaskProvider 实现 provider.TaskProvider 接口
+type SSLRefreshTaskProvider struct {
+	provider.UnimplementedTaskProvider // 嵌入未实现的
+
+	db            *ent.Client                   // 数据库客户端
+	logDb         *ent_log.Client               // 日志数据库客户端
+	logger        *slog.Logger                  // 日志记录器
+	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+}
+
+// NewSSLRefreshTaskProvider 创建一个新的 CDN 任务提供者
+func NewSSLRefreshTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
+	return NewSSLRefreshTaskProviderRaw(db, logDb, logger, httpTransport)
+}
+
+// NewSSLRefreshTaskProvider 创建一个新的 CDN 任务提供者
+func NewSSLRefreshTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *SSLRefreshTaskProvider {
+	return &SSLRefreshTaskProvider{
+		db:            db,
+		logDb:         logDb,
+		logger:        logger.With(slog.String("handler", "ssl-refresh")),
+		httpTransport: httpTransport,
+	}
+}
+
+// SSLRefreshTaskName 定义了存放在 CronJob.handler_name 中的任务名称
+const (
+	SSLRefreshTaskName = "ssl_refresh"
+)
+
+// SSLRefreshTaskArgs 定义了存放在 CronJob.handler_args 中的数据结构
+type SSLRefreshTaskArgs struct {
+	Table string `json:"table"` // 表名
+}
+
+// Process 执行 SSL 的刷新逻辑
+func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
+
+	// 解析参数
+	var params SSLRefreshTaskArgs
+	if err := json.Unmarshal(args, &params); err != nil {
+		return "", fmt.Errorf("解析参数失败: %w", err)
+	}
+
+	if params.Table == ent.TypeSSLRecord {
+
+		// 查询所有未处理的SSL记录
+		allRecord, err := p.db.SSLRecord.Query().
+			Where(sslrecord.ProviderEQ(sslrecord.ProviderUnknown)).
+			// 排序
+			OrderByCreatedAtAsc().
+			All(ctx)
+		if err != nil {
+			return "", fmt.Errorf("获取未处理的SSL记录失败: %w", err)
+		}
+
+		eg, egCtx := errgroup.WithContext(ctx)
+		eg.SetLimit(10) // 最多 10 个并发
+
+		for _, record := range allRecord {
+			// 创建副本以避免闭包问题
+			record := record
+			eg.Go(func() error {
+
+				// 解析证书
+				parsedCert, err := utils.ParseCertificate([]byte(record.CertCertificate))
+				if err != nil {
+					return fmt.Errorf("解析证书失败: %w", err)
+				}
+
+				// 证书状态
+				status := sslrecord.StatusUnknown
+				if parsedCert.NotAfter.After(time.Now()) {
+					status = sslrecord.StatusValid
+				} else {
+					status = sslrecord.StatusExpired
+				}
+
+				// 准备保存
+				updateOne := p.db.SSLRecord.UpdateOneID(record.ID)
+
+				updateOne.SetNotBefore(parsedCert.NotBefore)
+				updateOne.SetNotAfter(parsedCert.NotAfter)
+				updateOne.SetStatus(status)
+
+				err = updateOne.Exec(egCtx)
+				if err != nil {
+					return fmt.Errorf("更新记录失败: %w", err)
+				}
+
+				return nil
+			})
+		}
+
+		err = eg.Wait()
+		if err != nil {
+			return "", fmt.Errorf("并发处理错误: %w", err)
+		}
+
+		return fmt.Sprintf("表名 %s 处理成功 %d 条记录", params.Table, len(allRecord)), nil
+
+	} else if params.Table == ent.TypeSSLImport {
+
+		// 查询所有未处理的SSL导入记录
+		allRecord, err := p.db.SSLImport.Query().
+			// 排序
+			OrderByCreatedAtAsc().
+			All(ctx)
+		if err != nil {
+			return "", fmt.Errorf("获取未处理的SSL导入记录失败: %w", err)
+		}
+
+		eg, egCtx := errgroup.WithContext(ctx)
+		eg.SetLimit(10) // 最多 10 个并发
+
+		for _, record := range allRecord {
+			// 创建副本以避免闭包问题
+			record := record
+			eg.Go(func() error {
+
+				// 解析证书
+				parsedCert, err := utils.ParseCertificate([]byte(record.Certificate))
+				if err != nil {
+					return fmt.Errorf("解析证书失败: %w", err)
+				}
+
+				// 证书状态
+				status := sslimport.StatusUnknown
+				if parsedCert.NotAfter.After(time.Now()) {
+					status = sslimport.StatusValid
+				} else {
+					status = sslimport.StatusExpired
+				}
+
+				// 准备保存
+				updateOne := p.db.SSLImport.UpdateOneID(record.ID)
+
+				updateOne.SetNotBefore(parsedCert.NotBefore)
+				updateOne.SetNotAfter(parsedCert.NotAfter)
+				updateOne.SetStatus(status)
+
+				err = updateOne.Exec(egCtx)
+				if err != nil {
+					return fmt.Errorf("更新记录失败: %w", err)
+				}
+
+				return nil
+			})
+		}
+
+		err = eg.Wait()
+		if err != nil {
+			return "", fmt.Errorf("并发处理错误: %w", err)
+		}
+
+		return fmt.Sprintf("表名 %s 处理成功 %d 条记录", params.Table, len(allRecord)), nil
+
+	} else {
+
+		return "", fmt.Errorf("不支持的表名: %s", params.Table)
+
+	}
+
+}

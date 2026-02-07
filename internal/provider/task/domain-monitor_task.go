@@ -52,7 +52,7 @@ type DomainMonitorTaskArgs struct {
 	ID int64 `json:"id"` // DomainMonitor 的数据库 ID
 }
 
-// Process 执行单条 DomainMonitor 记录的域名监控逻辑
+// Process 执行 DomainMonitor 记录的域名监控逻辑
 func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
 
 	// 解析参数

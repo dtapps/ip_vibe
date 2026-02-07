@@ -54,7 +54,7 @@ type CDNSyncTaskArgs struct {
 	ID int64 `json:"id"` // CDNRecord 的数据库 ID
 }
 
-// Process 执行单条 CDN 记录的更新逻辑
+// Process 执行 CDN 记录的更新逻辑
 func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
 
 	// 解析参数
