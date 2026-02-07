@@ -206,21 +206,6 @@ func main() {
 	// 	panic(err)
 	// }
 
-	// 启动 域名监控任务
-	// domainMonitorTask := tasks.NewDomainMonitorTask(
-	// 	global.GvaEntDb,
-	// 	global.GvaEntLogDb,
-	// 	global.GvaGoCron,
-	// 	global.GvaGocronSlog,
-	// 	global.GvaHttpLog,
-	// )
-	// if err := domainMonitorTask.StartPeriodicTask(ctx); err != nil {
-	// 	slog.Error("启动 域名监控任务 失败",
-	// 		slog.Any("err", err),
-	// 	)
-	// 	panic(err)
-	// }
-
 	// 启动 Cloudflare隧道同步任务
 	cloudflareTunnelSyncTask := tasks.NewCloudflareTunnelSyncTask(
 		global.GvaEntDb,

@@ -21,6 +21,8 @@ import (
 
 // CDNTaskProvider 实现 provider.TaskProvider 接口
 type CDNTaskProvider struct {
+	provider.UnimplementedTaskProvider // 嵌入未实现的
+
 	db            *ent.Client                   // 数据库客户端
 	logDb         *ent_log.Client               // 日志数据库客户端
 	logger        *slog.Logger                  // 日志记录器
@@ -28,7 +30,12 @@ type CDNTaskProvider struct {
 }
 
 // NewCDNTaskProvider 创建一个新的 CDN 任务提供者
-func NewCDNTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CDNTaskProvider {
+func NewCDNTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
+	return NewCDNTaskProviderRaw(db, logDb, logger, httpTransport)
+}
+
+// NewCDNTaskProvider 创建一个新的 CDN 任务提供者
+func NewCDNTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CDNTaskProvider {
 	return &CDNTaskProvider{
 		db:            db,
 		logDb:         logDb,
@@ -48,7 +55,7 @@ type CDNTaskArgs struct {
 }
 
 // Process 执行单条 CDN 记录的更新逻辑
-func (p *CDNTaskProvider) Process(ctx context.Context, args json.RawMessage) (string, error) {
+func (p *CDNTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
 	// 解析参数
 	var params CDNTaskArgs
 	if err := json.Unmarshal(args, &params); err != nil {
@@ -58,7 +65,6 @@ func (p *CDNTaskProvider) Process(ctx context.Context, args json.RawMessage) (st
 	// 查询单条记录及其关联信息
 	record, err := p.db.CDNRecord.Query().
 		Where(cdnrecord.IDEQ(params.ID)).
-		Where(cdnrecord.IsActiveEQ(true)).
 		WithConfig().
 		WithIPGroup(func(q *ent.IpGroupQuery) {
 			q.WithDevices(func(dq *ent.DeviceQuery) {
@@ -70,7 +76,12 @@ func (p *CDNTaskProvider) Process(ctx context.Context, args json.RawMessage) (st
 		}).
 		First(ctx)
 	if err != nil {
-		return "", fmt.Errorf("获取记录失败或记录已禁用: %w", err)
+		return "", fmt.Errorf("获取记录失败: %w", err)
+	}
+
+	// 判断是否已禁用
+	if !record.IsActive {
+		return "跳过: 记录已禁用", nil
 	}
 
 	// 提取源站 IP

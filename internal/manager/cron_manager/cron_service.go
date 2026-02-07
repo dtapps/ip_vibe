@@ -84,7 +84,7 @@ func (m *CronServerManager) InitHandlers(ctx context.Context) {
 }
 
 // RunHandler 这是一个通用的执行入口，供 gocron 调用
-func (m *CronServerManager) RunHandler(jobID int64, handlerName string, args json.RawMessage) {
+func (m *CronServerManager) RunHandler(jobID int64, handlerName string, args json.RawMessage, meta provider.TaskMetadata) {
 	ctx := context.Background()
 	startTime := time.Now()
 
@@ -106,7 +106,7 @@ func (m *CronServerManager) RunHandler(jobID int64, handlerName string, args jso
 	if !ok {
 		execErr = fmt.Errorf("未找到处理器: %s", handlerName)
 	} else {
-		result, execErr = handler.Process(ctx, args)
+		result, execErr = handler.Process(ctx, args, meta)
 	}
 
 	// 3. 计算结果
@@ -294,7 +294,17 @@ func (m *CronServerManager) addJobToCron(j *ent.CronJob) error {
 
 	// 定义执行逻辑
 	task := gocron.NewTask(func() {
-		m.RunHandler(j.ID, j.HandlerName, j.HandlerArgs)
+		m.RunHandler(
+			j.ID,
+			j.HandlerName,
+			j.HandlerArgs,
+			provider.TaskMetadata{
+				JobID:        j.ID,
+				JobName:      j.Name,
+				TaskType:     j.TaskType,
+				TaskCategory: j.JobCategory,
+			},
+		)
 	})
 
 	// 任务选项

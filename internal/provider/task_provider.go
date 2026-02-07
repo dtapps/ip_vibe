@@ -5,15 +5,24 @@ import (
 	"encoding/json"
 	"log/slog"
 	"sync"
+	"vibe_ip/internal/ent/cronjob"
 )
 
 // ---------- TASK 模块 ----------
+
+// TaskMetadata 任务元数据：描述执行时的背景信息
+type TaskMetadata struct {
+	JobID        int64               // 任务序号
+	JobName      string              // 任务名称
+	TaskType     cronjob.TaskType    // 任务类型: one_off 一次性, recurring 周期性
+	TaskCategory cronjob.JobCategory // 任务分类: system 系统内置, custom 用户自定义
+}
 
 // TaskProvider 定义了 定时任务 操作的接口
 type TaskProvider interface {
 	// Process 执行具体的任务逻辑
 	// args: 对应数据库 cron_job 表中的 handler_args 通常是 JSON 字符串
-	Process(ctx context.Context, args json.RawMessage) (string, error)
+	Process(ctx context.Context, args json.RawMessage, meta TaskMetadata) (string, error)
 }
 
 // TaskTask 定义了 定时任务

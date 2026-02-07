@@ -91,3 +91,15 @@ func (UnimplementedTUNProvider) Update(ctx context.Context, sub_domain string, d
 func (UnimplementedTUNProvider) ParseCustomConfig(configJSON json.RawMessage) (err error) {
 	return ErrUnimplemented("TUNProvider", "ParseCustomConfig")
 }
+
+// ---------- TASK 模块 ----------
+
+// UnimplementedTaskProvider 是一个“安全默认实现”，
+// 所有方法都返回 Unimplemented 错误。
+// 建议所有 TaskProvider 实现都嵌入它。
+type UnimplementedTaskProvider struct{}
+
+// Process 执行具体的任务逻辑
+func (UnimplementedTaskProvider) Process(ctx context.Context, args json.RawMessage, meta TaskMetadata) (string, error) {
+	return "", ErrUnimplemented("TaskProvider", "Process")
+}
