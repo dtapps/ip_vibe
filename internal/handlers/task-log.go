@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"path/filepath"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/cronjoblog"
 	"vibe_ip/internal/global"
@@ -10,6 +11,7 @@ import (
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func TaskLog(c *gin.Context) {
@@ -26,6 +28,30 @@ func TaskLog(c *gin.Context) {
 			Filter: requestParams,
 			List:   []ent_log.CronJobLog{},
 		},
+	}
+
+	// 提前处理 EntryID 不为空的情况
+	var entryID uuid.UUID
+	if requestParams.EntryID != "" {
+		// 解析 EntryID
+		parsedEntryID, err := uuid.Parse(requestParams.EntryID)
+		if err == nil {
+			entryID = parsedEntryID
+		} else {
+			entryID = uuid.Nil
+		}
+	}
+
+	if entryID != uuid.Nil && requestParams.CronJobID == 0 {
+		cronJob, err := global.GvaEntDb.CronJob.Query().
+			Where(cronjob.EntryIDEQ(entryID)).
+			Select(
+				cronjob.FieldID,
+			).
+			First(c)
+		if err == nil {
+			requestParams.CronJobID = cronJob.ID
+		}
 	}
 
 	// 查询全部SSL记录

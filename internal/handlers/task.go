@@ -21,6 +21,14 @@ func Task(c *gin.Context) {
 		return
 	}
 
+	// 准备页面数据
+	pageData := types.TaskResponse{
+		CommonPageResponse: types.CommonPageResponse[ent.CronJob, types.TaskRequest]{
+			Filter: requestParams,
+			List:   []ent.CronJob{},
+		},
+	}
+
 	// 提前处理 EntryID 不为空的情况
 	var entryID uuid.UUID
 	if requestParams.EntryID != "" {
@@ -31,14 +39,6 @@ func Task(c *gin.Context) {
 		} else {
 			entryID = uuid.Nil
 		}
-	}
-
-	// 准备页面数据
-	pageData := types.TaskResponse{
-		CommonPageResponse: types.CommonPageResponse[ent.CronJob, types.TaskRequest]{
-			Filter: requestParams,
-			List:   []ent.CronJob{},
-		},
 	}
 
 	// 查询全部SSL记录
