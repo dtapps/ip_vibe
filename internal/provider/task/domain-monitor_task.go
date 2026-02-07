@@ -56,13 +56,13 @@ type DomainMonitorTaskArgs struct {
 func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
 
 	// 解析参数
-	var params CDNTaskArgs
+	var params DomainMonitorTaskArgs
 	if err := json.Unmarshal(args, &params); err != nil {
 		return "", fmt.Errorf("解析参数失败: %w", err)
 	}
 
 	// 查询单条记录及其关联信息
-	domainMonitor, err := p.db.DomainMonitor.Query().
+	domain, err := p.db.DomainMonitor.Query().
 		Where(domainmonitor.IDEQ(params.ID)).
 		First(ctx)
 	if err != nil {
@@ -70,7 +70,7 @@ func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMe
 	}
 
 	// 判断是否已禁用
-	if !domainMonitor.IsActive && meta.TaskType == cronjob.TaskTypeRecurring {
+	if !domain.IsActive && meta.TaskType == cronjob.TaskTypeRecurring {
 		return "跳过: 记录已禁用", nil
 	}
 
@@ -78,14 +78,14 @@ func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMe
 	domainCheck := domain_helper.NewDomainCheck(p.logger, p.httpTransport)
 	result := domainCheck.Check(
 		ctx,
-		domainMonitor.CheckProtocol.String(),
-		domainMonitor.Domain,
-		domainMonitor.RequestHeaders,
+		domain.CheckProtocol.String(),
+		domain.Domain,
+		domain.RequestHeaders,
 	)
 
 	// 历史记录创建
 	historyCreator := p.logDb.DomainMonitorHistory.Create()
-	historyCreator.SetMonitorID(domainMonitor.ID)
+	historyCreator.SetMonitorID(domain.ID)
 	historyCreator.SetCheckTime(time.Now())
 	historyCreator.SetIsSuccess(result.IsSuccess)
 	historyCreator.SetCheckDuration(int(result.Duration.Milliseconds()))
@@ -96,7 +96,7 @@ func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMe
 	historyCreator.SetErrorLog(result.ErrorLog)
 
 	// 填充 SSL 字段
-	if domainMonitor.CheckProtocol == domainmonitor.CheckProtocolHTTPS {
+	if domain.CheckProtocol == domainmonitor.CheckProtocolHTTPS {
 		historyCreator.SetSslNotDate(result.SSLNotDate)
 		historyCreator.SetSslExpiryDate(result.SSLExpiryDate)
 		historyCreator.SetSslCommonName(result.SSLCommonName)
@@ -109,7 +109,7 @@ func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMe
 	}
 
 	// 更新域名监控状态
-	updaterOne := p.db.DomainMonitor.UpdateOne(domainMonitor)
+	updaterOne := p.db.DomainMonitor.UpdateOne(domain)
 	if result.IsSuccess {
 		updaterOne.SetLastSuccessAt(time.Now())
 		updaterOne.SetCurrentStatus(domainmonitor.CurrentStatusSuccess)
@@ -122,5 +122,5 @@ func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMe
 		return "", fmt.Errorf("更新域名监控状态失败: %w", err)
 	}
 
-	return fmt.Sprintf("域名监控 %s 成功", domainMonitor.Domain), nil
+	return fmt.Sprintf("域名监控 %s 成功", domain.Domain), nil
 }

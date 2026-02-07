@@ -68,9 +68,9 @@ func GetCronServerInstance() *CronServerManager {
 // InitHandlers 初始化并注册所有的任务处理器
 func (m *CronServerManager) InitHandlers(ctx context.Context) {
 
-	// 注册 CDN 处理器
-	cdnHandler := task.NewCDNTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
-	m.taskRegistry.RegisterTask(ctx, task.CDNTaskName, cdnHandler)
+	// 注册 CDN同步 处理器
+	cdnSyncHandler := task.NewCDNSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	m.taskRegistry.RegisterTask(ctx, task.CDNSyncTaskName, cdnSyncHandler)
 
 	// 注册 DNS 处理器
 	// dnsHandler := dns.NewDNSTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)

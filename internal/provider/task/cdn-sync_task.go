@@ -19,8 +19,8 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 )
 
-// CDNTaskProvider 实现 provider.TaskProvider 接口
-type CDNTaskProvider struct {
+// CDNSyncTaskProvider 实现 provider.TaskProvider 接口
+type CDNSyncTaskProvider struct {
 	provider.UnimplementedTaskProvider // 嵌入未实现的
 
 	db            *ent.Client                   // 数据库客户端
@@ -29,14 +29,14 @@ type CDNTaskProvider struct {
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 }
 
-// NewCDNTaskProvider 创建一个新的 CDN 任务提供者
-func NewCDNTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewCDNTaskProviderRaw(db, logDb, logger, httpTransport)
+// NewCDNSyncTaskProvider 创建一个新的 CDN 任务提供者
+func NewCDNSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
+	return NewCDNSyncTaskProviderRaw(db, logDb, logger, httpTransport)
 }
 
-// NewCDNTaskProvider 创建一个新的 CDN 任务提供者
-func NewCDNTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CDNTaskProvider {
-	return &CDNTaskProvider{
+// NewCDNSyncTaskProvider 创建一个新的 CDN 任务提供者
+func NewCDNSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CDNSyncTaskProvider {
+	return &CDNSyncTaskProvider{
 		db:            db,
 		logDb:         logDb,
 		logger:        logger.With(slog.String("handler", "cdn-sync")),
@@ -44,20 +44,21 @@ func NewCDNTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.L
 	}
 }
 
-// CDNTaskName 定义了存放在 CronJob.handler_name 中的任务名称
+// CDNSyncTaskName 定义了存放在 CronJob.handler_name 中的任务名称
 const (
-	CDNTaskName = "cdn_sync"
+	CDNSyncTaskName = "cdn_sync"
 )
 
-// CDNTaskArgs 定义了存放在 CronJob.handler_args 中的数据结构
-type CDNTaskArgs struct {
+// CDNSyncTaskArgs 定义了存放在 CronJob.handler_args 中的数据结构
+type CDNSyncTaskArgs struct {
 	ID int64 `json:"id"` // CDNRecord 的数据库 ID
 }
 
 // Process 执行单条 CDN 记录的更新逻辑
-func (p *CDNTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
+func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
+
 	// 解析参数
-	var params CDNTaskArgs
+	var params CDNSyncTaskArgs
 	if err := json.Unmarshal(args, &params); err != nil {
 		return "", fmt.Errorf("解析参数失败: %w", err)
 	}

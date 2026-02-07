@@ -471,8 +471,8 @@ func (s *CDNRecordServiceImpl) handleCdnTaskStatus(ctx context.Context, db *ent.
 		// 创建任务
 		err = db.CronJob.Create().
 			SetName("CDN同步: " + record.FullDomain).
-			SetHandlerName(task.CDNTaskName).
-			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.CDNTaskArgs{
+			SetHandlerName(task.CDNSyncTaskName).
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.CDNSyncTaskArgs{
 				ID: record.ID,
 			}))).
 			SetTaskType(cronjob.TaskTypeRecurring).
