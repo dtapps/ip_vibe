@@ -124,6 +124,7 @@ func (CronJob) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("interval_unit").
+			Optional().
 			Values(schematype.GetCronJobIntervalUnits...).
 			Comment("间隔时间单位 (用于 duration 和 random 模式)").
 			Annotations(entsql.WithComments(true)),

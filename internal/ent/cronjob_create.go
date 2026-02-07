@@ -220,6 +220,14 @@ func (_c *CronJobCreate) SetIntervalUnit(v cronjob.IntervalUnit) *CronJobCreate 
 	return _c
 }
 
+// SetNillableIntervalUnit sets the "interval_unit" field if the given value is not nil.
+func (_c *CronJobCreate) SetNillableIntervalUnit(v *cronjob.IntervalUnit) *CronJobCreate {
+	if v != nil {
+		_c.SetIntervalUnit(*v)
+	}
+	return _c
+}
+
 // SetStatus sets the "status" field.
 func (_c *CronJobCreate) SetStatus(v cronjob.Status) *CronJobCreate {
 	_c.mutation.SetStatus(v)
@@ -396,9 +404,6 @@ func (_c *CronJobCreate) check() error {
 		if err := cronjob.MinIntervalValidator(v); err != nil {
 			return &ValidationError{Name: "min_interval", err: fmt.Errorf(`ent: validator failed for field "CronJob.min_interval": %w`, err)}
 		}
-	}
-	if _, ok := _c.mutation.IntervalUnit(); !ok {
-		return &ValidationError{Name: "interval_unit", err: errors.New(`ent: missing required field "CronJob.interval_unit"`)}
 	}
 	if v, ok := _c.mutation.IntervalUnit(); ok {
 		if err := cronjob.IntervalUnitValidator(v); err != nil {
@@ -845,6 +850,12 @@ func (u *CronJobUpsert) UpdateIntervalUnit() *CronJobUpsert {
 	return u
 }
 
+// ClearIntervalUnit clears the value of the "interval_unit" field.
+func (u *CronJobUpsert) ClearIntervalUnit() *CronJobUpsert {
+	u.SetNull(cronjob.FieldIntervalUnit)
+	return u
+}
+
 // SetStatus sets the "status" field.
 func (u *CronJobUpsert) SetStatus(v cronjob.Status) *CronJobUpsert {
 	u.Set(cronjob.FieldStatus, v)
@@ -1229,6 +1240,13 @@ func (u *CronJobUpsertOne) SetIntervalUnit(v cronjob.IntervalUnit) *CronJobUpser
 func (u *CronJobUpsertOne) UpdateIntervalUnit() *CronJobUpsertOne {
 	return u.Update(func(s *CronJobUpsert) {
 		s.UpdateIntervalUnit()
+	})
+}
+
+// ClearIntervalUnit clears the value of the "interval_unit" field.
+func (u *CronJobUpsertOne) ClearIntervalUnit() *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.ClearIntervalUnit()
 	})
 }
 
@@ -1788,6 +1806,13 @@ func (u *CronJobUpsertBulk) SetIntervalUnit(v cronjob.IntervalUnit) *CronJobUpse
 func (u *CronJobUpsertBulk) UpdateIntervalUnit() *CronJobUpsertBulk {
 	return u.Update(func(s *CronJobUpsert) {
 		s.UpdateIntervalUnit()
+	})
+}
+
+// ClearIntervalUnit clears the value of the "interval_unit" field.
+func (u *CronJobUpsertBulk) ClearIntervalUnit() *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.ClearIntervalUnit()
 	})
 }
 

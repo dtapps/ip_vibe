@@ -855,6 +855,16 @@ func IntervalUnitNotIn(vs ...IntervalUnit) predicate.CronJob {
 	return predicate.CronJob(sql.FieldNotIn(FieldIntervalUnit, vs...))
 }
 
+// IntervalUnitIsNil applies the IsNil predicate on the "interval_unit" field.
+func IntervalUnitIsNil() predicate.CronJob {
+	return predicate.CronJob(sql.FieldIsNull(FieldIntervalUnit))
+}
+
+// IntervalUnitNotNil applies the NotNil predicate on the "interval_unit" field.
+func IntervalUnitNotNil() predicate.CronJob {
+	return predicate.CronJob(sql.FieldNotNull(FieldIntervalUnit))
+}
+
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v Status) predicate.CronJob {
 	return predicate.CronJob(sql.FieldEQ(FieldStatus, v))

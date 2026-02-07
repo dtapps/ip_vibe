@@ -314,6 +314,12 @@ func (_u *CronJobUpdate) SetNillableIntervalUnit(v *cronjob.IntervalUnit) *CronJ
 	return _u
 }
 
+// ClearIntervalUnit clears the value of the "interval_unit" field.
+func (_u *CronJobUpdate) ClearIntervalUnit() *CronJobUpdate {
+	_u.mutation.ClearIntervalUnit()
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *CronJobUpdate) SetStatus(v cronjob.Status) *CronJobUpdate {
 	_u.mutation.SetStatus(v)
@@ -559,6 +565,9 @@ func (_u *CronJobUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.IntervalUnit(); ok {
 		_spec.SetField(cronjob.FieldIntervalUnit, field.TypeEnum, value)
+	}
+	if _u.mutation.IntervalUnitCleared() {
+		_spec.ClearField(cronjob.FieldIntervalUnit, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(cronjob.FieldStatus, field.TypeEnum, value)
@@ -875,6 +884,12 @@ func (_u *CronJobUpdateOne) SetNillableIntervalUnit(v *cronjob.IntervalUnit) *Cr
 	return _u
 }
 
+// ClearIntervalUnit clears the value of the "interval_unit" field.
+func (_u *CronJobUpdateOne) ClearIntervalUnit() *CronJobUpdateOne {
+	_u.mutation.ClearIntervalUnit()
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *CronJobUpdateOne) SetStatus(v cronjob.Status) *CronJobUpdateOne {
 	_u.mutation.SetStatus(v)
@@ -1150,6 +1165,9 @@ func (_u *CronJobUpdateOne) sqlSave(ctx context.Context) (_node *CronJob, err er
 	}
 	if value, ok := _u.mutation.IntervalUnit(); ok {
 		_spec.SetField(cronjob.FieldIntervalUnit, field.TypeEnum, value)
+	}
+	if _u.mutation.IntervalUnitCleared() {
+		_spec.ClearField(cronjob.FieldIntervalUnit, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(cronjob.FieldStatus, field.TypeEnum, value)

@@ -8055,9 +8055,22 @@ func (m *CronJobMutation) OldIntervalUnit(ctx context.Context) (v cronjob.Interv
 	return oldValue.IntervalUnit, nil
 }
 
+// ClearIntervalUnit clears the value of the "interval_unit" field.
+func (m *CronJobMutation) ClearIntervalUnit() {
+	m.interval_unit = nil
+	m.clearedFields[cronjob.FieldIntervalUnit] = struct{}{}
+}
+
+// IntervalUnitCleared returns if the "interval_unit" field was cleared in this mutation.
+func (m *CronJobMutation) IntervalUnitCleared() bool {
+	_, ok := m.clearedFields[cronjob.FieldIntervalUnit]
+	return ok
+}
+
 // ResetIntervalUnit resets all changes to the "interval_unit" field.
 func (m *CronJobMutation) ResetIntervalUnit() {
 	m.interval_unit = nil
+	delete(m.clearedFields, cronjob.FieldIntervalUnit)
 }
 
 // SetStatus sets the "status" field.
@@ -8628,6 +8641,9 @@ func (m *CronJobMutation) ClearedFields() []string {
 	if m.FieldCleared(cronjob.FieldMaxInterval) {
 		fields = append(fields, cronjob.FieldMaxInterval)
 	}
+	if m.FieldCleared(cronjob.FieldIntervalUnit) {
+		fields = append(fields, cronjob.FieldIntervalUnit)
+	}
 	return fields
 }
 
@@ -8665,6 +8681,9 @@ func (m *CronJobMutation) ClearField(name string) error {
 		return nil
 	case cronjob.FieldMaxInterval:
 		m.ClearMaxInterval()
+		return nil
+	case cronjob.FieldIntervalUnit:
+		m.ClearIntervalUnit()
 		return nil
 	}
 	return fmt.Errorf("unknown CronJob nullable field %s", name)

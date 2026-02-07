@@ -92,8 +92,20 @@ func (m *CronServerManager) LoadTasks(ctx context.Context) {
 
 	// 加载 SSL刷新 任务
 	sslRefreshHandler := task.NewSSLRefreshTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
-	sslRefreshHandler.LoadTask(ctx, ent.TypeSSLRecord)
-	sslRefreshHandler.LoadTask(ctx, ent.TypeSSLImport)
+	err := sslRefreshHandler.LoadTask(ctx, ent.TypeSSLRecord)
+	if err != nil {
+		m.logger.ErrorContext(ctx, "加载 SSL刷新 任务失败",
+			slog.String("type", ent.TypeSSLRecord),
+			slog.Any("err", err),
+		)
+	}
+	err = sslRefreshHandler.LoadTask(ctx, ent.TypeSSLImport)
+	if err != nil {
+		m.logger.ErrorContext(ctx, "加载 SSL导入 任务失败",
+			slog.String("type", ent.TypeSSLImport),
+			slog.Any("err", err),
+		)
+	}
 
 	m.logger.InfoContext(ctx, "所有任务加载完成")
 }
