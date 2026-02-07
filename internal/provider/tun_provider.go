@@ -241,7 +241,7 @@ func (t *TUNTask) Notify(ctx context.Context, db *ent.Client, id int64) (err err
 		SetJobCategory(cronjob.JobCategorySystem).
 		SetBusinessType(cronjob.BusinessTypeTun).
 		SetBusinessID(id).
-		SetIntervalValue(3).
+		SetIntervalValue(1).
 		SetIntervalUnit(cronjob.IntervalUnitSeconds).
 		SetStatus(cronjob.StatusRunning).
 		SetIsSingleton(true). // 单例模式

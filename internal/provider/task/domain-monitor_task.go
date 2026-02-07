@@ -70,8 +70,10 @@ func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMe
 	}
 
 	// 判断是否已禁用
-	if !domain.IsActive && meta.TaskType == cronjob.TaskTypeRecurring {
-		return "跳过: 记录已禁用", nil
+	if meta.TaskType == cronjob.TaskTypeRecurring {
+		if !domain.IsActive {
+			return "跳过: 记录已禁用", nil
+		}
 	}
 
 	// 执行检查

@@ -35,11 +35,10 @@ func Ssl(c *gin.Context) {
 	}
 
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		nil,
 	)
 
 	// 查询全部SSL记录
@@ -55,7 +54,7 @@ func Ssl(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allSSLRecord.Items {
-			list, err := service.BuildResponse(c, item)
+			list, err := sslService.BuildResponse(c, item)
 			if err != nil {
 				errorResponse(c, http.StatusNotFound, err.Error())
 				return
@@ -89,11 +88,10 @@ func SslDetail(c *gin.Context) {
 	}
 
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		nil,
 	)
 
 	// 准备页面数据
@@ -109,7 +107,7 @@ func SslDetail(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询 SSL 记录失败: "+err.Error())
 		return
 	}
-	item, err := service.BuildResponse(c, firstSSLRecord)
+	item, err := sslService.BuildResponse(c, firstSSLRecord)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -184,11 +182,10 @@ func SslHistory(c *gin.Context) {
 	}
 
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		nil,
 	)
 
 	// 准备页面数据
@@ -207,7 +204,7 @@ func SslHistory(c *gin.Context) {
 		errorResponse(c, http.StatusNotFound, "查询 SSL 记录失败: "+err.Error())
 		return
 	}
-	item, err := service.BuildResponse(c, firstSSLRecord)
+	item, err := sslService.BuildResponse(c, firstSSLRecord)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

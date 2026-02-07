@@ -224,7 +224,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 				SetJobCategory(cronjob.JobCategorySystem).
 				SetBusinessType(cronjob.BusinessTypeDevice).
 				SetBusinessID(deviceID).
-				SetIntervalValue(3).
+				SetIntervalValue(1).
 				SetIntervalUnit(cronjob.IntervalUnitSeconds).
 				SetStatus(cronjob.StatusRunning).
 				SetIsSingleton(true). // 单例模式

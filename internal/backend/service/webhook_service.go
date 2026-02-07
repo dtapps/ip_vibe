@@ -316,7 +316,7 @@ func (s *WebhookServiceImpl) TestWebhook(ctx context.Context, id int64) error {
 		SetJobCategory(cronjob.JobCategorySystem).
 		SetBusinessType(cronjob.BusinessTypeWebhook).
 		SetBusinessID(0).
-		SetIntervalValue(3).
+		SetIntervalValue(1).
 		SetIntervalUnit(cronjob.IntervalUnitSeconds).
 		SetStatus(cronjob.StatusRunning).
 		SetIsSingleton(true). // 单例模式

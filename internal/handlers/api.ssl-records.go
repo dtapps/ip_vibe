@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/backend/tasks"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
@@ -32,25 +31,15 @@ func GetSSLRecords(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	response, err := service.GetSSLRecords(c, &requestParams)
+	response, err := sslService.GetSSLRecords(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -79,25 +68,15 @@ func GetSSLRecordDetail(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	response, err := service.GetSSLRecord(c, requestParams.ID)
+	response, err := sslService.GetSSLRecord(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -125,25 +104,15 @@ func ImportSSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	err := service.ImportSSLRecord(c, &requestParams)
+	err := sslService.ImportSSLRecord(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -171,25 +140,15 @@ func CreateSSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	err := service.CreateSSLRecord(c, &requestParams)
+	err := sslService.CreateSSLRecord(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -219,25 +178,15 @@ func UpdateSSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	err := service.UpdateSSLRecord(c, &requestParams)
+	err := sslService.UpdateSSLRecord(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -267,25 +216,15 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	err := service.UpdateSSLRecordAutoRenewal(c, &requestParams)
+	err := sslService.UpdateSSLRecordAutoRenewal(c, &requestParams)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -315,25 +254,15 @@ func UpdateSSLRecordActive(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	err := service.UpdateSSLRecordActive(c, requestParams.ID, requestParams.IsActive)
+	err := sslService.UpdateSSLRecordActive(c, requestParams.ID, requestParams.IsActive)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -361,25 +290,15 @@ func BatchUpdateSSLRecordActive(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	err := service.BatchUpdateSSLRecordActive(c, requestParams.IDS, requestParams.IsActive)
+	err := sslService.BatchUpdateSSLRecordActive(c, requestParams.IDS, requestParams.IsActive)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -408,25 +327,15 @@ func DeleteSSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	err := service.DeleteSSLRecord(c, requestParams.ID)
+	err := sslService.DeleteSSLRecord(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -454,25 +363,15 @@ func BatchDeleteSSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	err := service.BatchDeleteSSLRecord(c, requestParams.IDS)
+	err := sslService.BatchDeleteSSLRecord(c, requestParams.IDS)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -501,25 +400,15 @@ func ApplySSLRecord(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	err := service.ApplySSLRecord(c, requestParams.ID)
+	err := sslService.ApplySSLRecord(c, requestParams.ID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return
@@ -550,25 +439,15 @@ func GetSSLRecordHistoryDetail(c *gin.Context) {
 		return
 	}
 
-	// 创建SSL申请任务
-	sslApplyTask := tasks.NewSSLApplyTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-
 	// 创建服务
-	service := service.NewSSLRecordService(
+	sslService := service.NewSSLRecordService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		sslApplyTask,
 	)
 
 	// 调用
-	response, err := service.GetSSLRecordHistoryDetail(c, requestParams.ID, requestParams.HistoryID)
+	response, err := sslService.GetSSLRecordHistoryDetail(c, requestParams.ID, requestParams.HistoryID)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
 		return

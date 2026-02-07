@@ -80,6 +80,10 @@ func (m *CronServerManager) InitHandlers(ctx context.Context) {
 	domainMonitorHandler := task.NewDomainMonitorTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
 	m.taskRegistry.RegisterTask(ctx, task.DomainMonitorTaskName, domainMonitorHandler)
 
+	// 注册 SSL申请 处理器
+	sslApplyHandler := task.NewSSLApplyTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	m.taskRegistry.RegisterTask(ctx, task.SSLApplyTaskName, sslApplyHandler)
+
 	// 注册 SSL刷新 处理器
 	sslRefreshHandler := task.NewSSLRefreshTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
 	m.taskRegistry.RegisterTask(ctx, task.SSLRefreshTaskName, sslRefreshHandler)

@@ -6,14 +6,12 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
-	"vibe_ip/internal/backend/tasks"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/sslcertificatehistory"
-	"vibe_ip/internal/helper/ssl_helper"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/helper/webhook_sub_helper"
 	"vibe_ip/internal/provider/task"
@@ -22,7 +20,6 @@ import (
 
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/utils/gojson"
-	"go.dtapp.net/library/utils/gostring"
 )
 
 // SSLRecordService SSL 记录服务接口
@@ -44,25 +41,23 @@ type SSLRecordService interface {
 
 // SSLRecordServiceImpl SSL 记录服务实现
 type SSLRecordServiceImpl struct {
-	db           *ent.Client         // 数据库客户端
-	logDb        *ent_log.Client     // 日志数据库客户端
-	logger       *slog.Logger        // 日志记录器
-	sslApplyTask *tasks.SSLApplyTask // SSL申请任务
-	debug        bool                // 调试模式
+	db     *ent.Client     // 数据库客户端
+	logDb  *ent_log.Client // 日志数据库客户端
+	logger *slog.Logger    // 日志记录器
+	debug  bool            // 调试模式
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例
-func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, sslApplyTask *tasks.SSLApplyTask) SSLRecordService {
+func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) SSLRecordService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
 	return &SSLRecordServiceImpl{
-		db:           db,
-		logDb:        logDb,
-		logger:       logger,
-		sslApplyTask: sslApplyTask,
-		debug:        debug,
+		db:     db,
+		logDb:  logDb,
+		logger: logger,
+		debug:  debug,
 	}
 }
 
@@ -469,9 +464,6 @@ func (s *SSLRecordServiceImpl) BatchDeleteSSLRecord(ctx context.Context, ids []i
 // ApplySSLRecord 申请新的SSL证书
 // sslApplyTask 不能为nil
 func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) error {
-	if s.sslApplyTask == nil {
-		return fmt.Errorf("sslApplyTask 不能为nil")
-	}
 
 	// 查询SSL记录
 	firstSSLRecord, err := s.db.SSLRecord.Query().
@@ -485,25 +477,26 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) err
 		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
-	// 平台配置
-	config, err := firstSSLRecord.Edges.ConfigOrErr()
+	// 创建任务
+	err = s.db.CronJob.Create().
+		SetName("SSL申请: " + firstSSLRecord.Domain).
+		SetHandlerName(task.SSLApplyTaskName).
+		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.SSLApplyTaskArgs{
+			ID: firstSSLRecord.ID,
+		}))).
+		SetTaskType(cronjob.TaskTypeOneOff).
+		SetJobType(cronjob.JobTypeDuration).
+		SetJobCategory(cronjob.JobCategoryCustom).
+		SetBusinessType(cronjob.BusinessTypeSsl).
+		SetBusinessID(firstSSLRecord.ID).
+		SetIntervalValue(1).
+		SetIntervalUnit(cronjob.IntervalUnitSeconds).
+		SetStatus(cronjob.StatusRunning).
+		SetIsSingleton(true). // 单例模式
+		SetRunOnStart(true).  // 启动时立即运行
+		Exec(ctx)
 	if err != nil {
-		return fmt.Errorf("平台配置失败: %w", err)
-	}
-
-	// 添加SSL申请一次性任务
-	err = s.sslApplyTask.AddDisposableTask(ctx, &tasks.ExecuteSSLApplyParams{
-		Item:     firstSSLRecord,
-		Platform: config.Platform,
-		Params: &ssl_helper.SSLProcessParams{
-			SSLRecordID: cast.ToString(firstSSLRecord.ID),
-
-			ConfigJSON: config.ConfigJSON,
-			Domains:    gostring.Split(firstSSLRecord.Domain, ","),
-		},
-	})
-	if err != nil {
-		return fmt.Errorf("添加SSL一次性任务失败: %w", err)
+		return fmt.Errorf("创建任务失败: %w", err)
 	}
 
 	return nil
@@ -575,8 +568,8 @@ func (s *SSLRecordServiceImpl) handleSslApplTaskStatus(ctx context.Context, db *
 		// 创建任务
 		err = db.CronJob.Create().
 			SetName("SSL申请: " + record.Domain).
-			SetHandlerName("ssl_apply").
-			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.SSLApplTaskArgs{
+			SetHandlerName(task.SSLApplyTaskName).
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.SSLApplyTaskArgs{
 				ID: record.ID,
 			}))).
 			SetTaskType(cronjob.TaskTypeRecurring).
