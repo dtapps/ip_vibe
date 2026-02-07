@@ -63,7 +63,10 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 		return "", fmt.Errorf("解析参数失败: %w", err)
 	}
 
-	if params.Table == ent.TypeSSLRecord {
+	allRecordCount := 0
+
+	switch params.Table {
+	case ent.TypeSSLRecord:
 
 		// 查询所有未处理的SSL记录
 		allRecord, err := p.db.SSLRecord.Query().
@@ -74,6 +77,8 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 		if err != nil {
 			return "", fmt.Errorf("获取未处理的SSL记录失败: %w", err)
 		}
+
+		allRecordCount = len(allRecord)
 
 		eg, egCtx := errgroup.WithContext(ctx)
 		eg.SetLimit(10) // 最多 10 个并发
@@ -118,9 +123,7 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 			return "", fmt.Errorf("并发处理错误: %w", err)
 		}
 
-		return fmt.Sprintf("表名 %s 处理成功 %d 条记录", params.Table, len(allRecord)), nil
-
-	} else if params.Table == ent.TypeSSLImport {
+	case ent.TypeSSLImport:
 
 		// 查询所有未处理的SSL导入记录
 		allRecord, err := p.db.SSLImport.Query().
@@ -130,6 +133,8 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 		if err != nil {
 			return "", fmt.Errorf("获取未处理的SSL导入记录失败: %w", err)
 		}
+
+		allRecordCount = len(allRecord)
 
 		eg, egCtx := errgroup.WithContext(ctx)
 		eg.SetLimit(10) // 最多 10 个并发
@@ -173,19 +178,22 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 		if err != nil {
 			return "", fmt.Errorf("并发处理错误: %w", err)
 		}
-
-		return fmt.Sprintf("表名 %s 处理成功 %d 条记录", params.Table, len(allRecord)), nil
-
-	} else {
-
-		return "", fmt.Errorf("不支持的表名: %s", params.Table)
-
+	default:
+		return "", fmt.Errorf("不支持的表名 %s", params.Table)
 	}
 
+	return fmt.Sprintf("表名 %s 处理成功 %d 条记录", params.Table, allRecordCount), nil
 }
 
 // LoadTask 加载任务
 func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, table string) error {
+
+	switch table {
+	case ent.TypeSSLRecord:
+	case ent.TypeSSLImport:
+	default:
+		return fmt.Errorf("不支持的表名 %s", table)
+	}
 
 	// 查找任务
 	_, err := p.db.CronJob.Query().

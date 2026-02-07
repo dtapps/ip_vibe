@@ -236,20 +236,6 @@ func main() {
 		panic(err)
 	}
 
-	// 启动 清除数据任务
-	clearDataTask := tasks.NewClearDataTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-	)
-	if err := clearDataTask.StartPeriodicTask(ctx); err != nil {
-		slog.Error("启动 清除数据任务失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
-
 	// 创建 定时任务 管理器
 	cronManager, err := cron_manager.NewCronServerManager(
 		ctx,

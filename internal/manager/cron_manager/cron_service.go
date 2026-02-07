@@ -84,6 +84,10 @@ func (m *CronServerManager) InitHandlers(ctx context.Context) {
 	sslRefreshHandler := task.NewSSLRefreshTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
 	m.taskRegistry.RegisterTask(ctx, task.SSLRefreshTaskName, sslRefreshHandler)
 
+	// 注册 数据清除 处理器
+	clearDataHandler := task.NewClearDataTaskProviderRaw(m.db, m.logDb, m.logger)
+	m.taskRegistry.RegisterTask(ctx, task.ClearDataTaskName, clearDataHandler)
+
 	m.logger.InfoContext(ctx, "所有任务处理器注册完成")
 }
 
@@ -92,19 +96,40 @@ func (m *CronServerManager) LoadTasks(ctx context.Context) {
 
 	// 加载 SSL刷新 任务
 	sslRefreshHandler := task.NewSSLRefreshTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
-	err := sslRefreshHandler.LoadTask(ctx, ent.TypeSSLRecord)
-	if err != nil {
-		m.logger.ErrorContext(ctx, "加载 SSL刷新 任务失败",
-			slog.String("type", ent.TypeSSLRecord),
-			slog.Any("err", err),
-		)
+	sslRefreshHandlerTable := map[string]bool{
+		ent.TypeSSLRecord: true,
+		ent.TypeSSLImport: true,
 	}
-	err = sslRefreshHandler.LoadTask(ctx, ent.TypeSSLImport)
-	if err != nil {
-		m.logger.ErrorContext(ctx, "加载 SSL导入 任务失败",
-			slog.String("type", ent.TypeSSLImport),
-			slog.Any("err", err),
-		)
+	for table := range sslRefreshHandlerTable {
+		err := sslRefreshHandler.LoadTask(ctx, table)
+		if err != nil {
+			m.logger.ErrorContext(ctx, "加载 SSL刷新 任务失败",
+				slog.String("type", table),
+				slog.Any("err", err),
+			)
+		}
+	}
+
+	// 加载 数据清除 任务
+	clearDataHandler := task.NewClearDataTaskProviderRaw(m.db, m.logDb, m.logger)
+	clearDataHandlerTable := map[string]bool{
+		ent_log.TypeHttpLog:              true,
+		ent_log.TypeRestyLog:             true,
+		ent_log.TypeReqLog:               true,
+		ent_log.TypeDomainMonitorHistory: true,
+		ent_log.TypeOperationLog:         true,
+		ent_log.TypeWebhookHistory:       true,
+		ent_log.TypeDeviceIpReport:       true,
+		ent_log.TypePortForwardStats:     true,
+	}
+	for table := range clearDataHandlerTable {
+		err := clearDataHandler.LoadTask(ctx, table)
+		if err != nil {
+			m.logger.ErrorContext(ctx, "加载 数据清除 任务失败",
+				slog.String("type", table),
+				slog.Any("err", err),
+			)
+		}
 	}
 
 	m.logger.InfoContext(ctx, "所有任务加载完成")
