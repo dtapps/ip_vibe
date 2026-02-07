@@ -85,6 +85,11 @@ func BusinessID(v int64) predicate.CronJob {
 	return predicate.CronJob(sql.FieldEQ(FieldBusinessID, v))
 }
 
+// BusinessKey applies equality check predicate on the "business_key" field. It's identical to BusinessKeyEQ.
+func BusinessKey(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldEQ(FieldBusinessKey, v))
+}
+
 // CronExpr applies equality check predicate on the "cron_expr" field. It's identical to CronExprEQ.
 func CronExpr(v string) predicate.CronJob {
 	return predicate.CronJob(sql.FieldEQ(FieldCronExpr, v))
@@ -518,6 +523,81 @@ func BusinessIDIsNil() predicate.CronJob {
 // BusinessIDNotNil applies the NotNil predicate on the "business_id" field.
 func BusinessIDNotNil() predicate.CronJob {
 	return predicate.CronJob(sql.FieldNotNull(FieldBusinessID))
+}
+
+// BusinessKeyEQ applies the EQ predicate on the "business_key" field.
+func BusinessKeyEQ(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldEQ(FieldBusinessKey, v))
+}
+
+// BusinessKeyNEQ applies the NEQ predicate on the "business_key" field.
+func BusinessKeyNEQ(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldNEQ(FieldBusinessKey, v))
+}
+
+// BusinessKeyIn applies the In predicate on the "business_key" field.
+func BusinessKeyIn(vs ...string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldIn(FieldBusinessKey, vs...))
+}
+
+// BusinessKeyNotIn applies the NotIn predicate on the "business_key" field.
+func BusinessKeyNotIn(vs ...string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldNotIn(FieldBusinessKey, vs...))
+}
+
+// BusinessKeyGT applies the GT predicate on the "business_key" field.
+func BusinessKeyGT(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldGT(FieldBusinessKey, v))
+}
+
+// BusinessKeyGTE applies the GTE predicate on the "business_key" field.
+func BusinessKeyGTE(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldGTE(FieldBusinessKey, v))
+}
+
+// BusinessKeyLT applies the LT predicate on the "business_key" field.
+func BusinessKeyLT(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldLT(FieldBusinessKey, v))
+}
+
+// BusinessKeyLTE applies the LTE predicate on the "business_key" field.
+func BusinessKeyLTE(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldLTE(FieldBusinessKey, v))
+}
+
+// BusinessKeyContains applies the Contains predicate on the "business_key" field.
+func BusinessKeyContains(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldContains(FieldBusinessKey, v))
+}
+
+// BusinessKeyHasPrefix applies the HasPrefix predicate on the "business_key" field.
+func BusinessKeyHasPrefix(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldHasPrefix(FieldBusinessKey, v))
+}
+
+// BusinessKeyHasSuffix applies the HasSuffix predicate on the "business_key" field.
+func BusinessKeyHasSuffix(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldHasSuffix(FieldBusinessKey, v))
+}
+
+// BusinessKeyIsNil applies the IsNil predicate on the "business_key" field.
+func BusinessKeyIsNil() predicate.CronJob {
+	return predicate.CronJob(sql.FieldIsNull(FieldBusinessKey))
+}
+
+// BusinessKeyNotNil applies the NotNil predicate on the "business_key" field.
+func BusinessKeyNotNil() predicate.CronJob {
+	return predicate.CronJob(sql.FieldNotNull(FieldBusinessKey))
+}
+
+// BusinessKeyEqualFold applies the EqualFold predicate on the "business_key" field.
+func BusinessKeyEqualFold(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldEqualFold(FieldBusinessKey, v))
+}
+
+// BusinessKeyContainsFold applies the ContainsFold predicate on the "business_key" field.
+func BusinessKeyContainsFold(v string) predicate.CronJob {
+	return predicate.CronJob(sql.FieldContainsFold(FieldBusinessKey, v))
 }
 
 // CronExprEQ applies the EQ predicate on the "cron_expr" field.

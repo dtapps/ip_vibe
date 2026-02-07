@@ -165,6 +165,26 @@ func (_u *CronJobUpdate) ClearBusinessID() *CronJobUpdate {
 	return _u
 }
 
+// SetBusinessKey sets the "business_key" field.
+func (_u *CronJobUpdate) SetBusinessKey(v string) *CronJobUpdate {
+	_u.mutation.SetBusinessKey(v)
+	return _u
+}
+
+// SetNillableBusinessKey sets the "business_key" field if the given value is not nil.
+func (_u *CronJobUpdate) SetNillableBusinessKey(v *string) *CronJobUpdate {
+	if v != nil {
+		_u.SetBusinessKey(*v)
+	}
+	return _u
+}
+
+// ClearBusinessKey clears the value of the "business_key" field.
+func (_u *CronJobUpdate) ClearBusinessKey() *CronJobUpdate {
+	_u.mutation.ClearBusinessKey()
+	return _u
+}
+
 // SetCronExpr sets the "cron_expr" field.
 func (_u *CronJobUpdate) SetCronExpr(v string) *CronJobUpdate {
 	_u.mutation.SetCronExpr(v)
@@ -495,6 +515,12 @@ func (_u *CronJobUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.BusinessIDCleared() {
 		_spec.ClearField(cronjob.FieldBusinessID, field.TypeInt64)
 	}
+	if value, ok := _u.mutation.BusinessKey(); ok {
+		_spec.SetField(cronjob.FieldBusinessKey, field.TypeString, value)
+	}
+	if _u.mutation.BusinessKeyCleared() {
+		_spec.ClearField(cronjob.FieldBusinessKey, field.TypeString)
+	}
 	if value, ok := _u.mutation.CronExpr(); ok {
 		_spec.SetField(cronjob.FieldCronExpr, field.TypeString, value)
 	}
@@ -697,6 +723,26 @@ func (_u *CronJobUpdateOne) AddBusinessID(v int64) *CronJobUpdateOne {
 // ClearBusinessID clears the value of the "business_id" field.
 func (_u *CronJobUpdateOne) ClearBusinessID() *CronJobUpdateOne {
 	_u.mutation.ClearBusinessID()
+	return _u
+}
+
+// SetBusinessKey sets the "business_key" field.
+func (_u *CronJobUpdateOne) SetBusinessKey(v string) *CronJobUpdateOne {
+	_u.mutation.SetBusinessKey(v)
+	return _u
+}
+
+// SetNillableBusinessKey sets the "business_key" field if the given value is not nil.
+func (_u *CronJobUpdateOne) SetNillableBusinessKey(v *string) *CronJobUpdateOne {
+	if v != nil {
+		_u.SetBusinessKey(*v)
+	}
+	return _u
+}
+
+// ClearBusinessKey clears the value of the "business_key" field.
+func (_u *CronJobUpdateOne) ClearBusinessKey() *CronJobUpdateOne {
+	_u.mutation.ClearBusinessKey()
 	return _u
 }
 
@@ -1059,6 +1105,12 @@ func (_u *CronJobUpdateOne) sqlSave(ctx context.Context) (_node *CronJob, err er
 	}
 	if _u.mutation.BusinessIDCleared() {
 		_spec.ClearField(cronjob.FieldBusinessID, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.BusinessKey(); ok {
+		_spec.SetField(cronjob.FieldBusinessKey, field.TypeString, value)
+	}
+	if _u.mutation.BusinessKeyCleared() {
+		_spec.ClearField(cronjob.FieldBusinessKey, field.TypeString)
 	}
 	if value, ok := _u.mutation.CronExpr(); ok {
 		_spec.SetField(cronjob.FieldCronExpr, field.TypeString, value)

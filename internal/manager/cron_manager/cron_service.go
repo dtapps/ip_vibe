@@ -80,7 +80,22 @@ func (m *CronServerManager) InitHandlers(ctx context.Context) {
 	domainMonitorHandler := task.NewDomainMonitorTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
 	m.taskRegistry.RegisterTask(ctx, task.DomainMonitorTaskName, domainMonitorHandler)
 
+	// 注册 SSL刷新 处理器
+	sslRefreshHandler := task.NewSSLRefreshTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	m.taskRegistry.RegisterTask(ctx, task.SSLRefreshTaskName, sslRefreshHandler)
+
 	m.logger.InfoContext(ctx, "所有任务处理器注册完成")
+}
+
+// LoadTasks 从数据库加载并同步所有状态为 running 的任务到 gocron
+func (m *CronServerManager) LoadTasks(ctx context.Context) {
+
+	// 加载 SSL刷新 任务
+	sslRefreshHandler := task.NewSSLRefreshTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
+	sslRefreshHandler.LoadTask(ctx, ent.TypeSSLRecord)
+	sslRefreshHandler.LoadTask(ctx, ent.TypeSSLImport)
+
+	m.logger.InfoContext(ctx, "所有任务加载完成")
 }
 
 // RunHandler 这是一个通用的执行入口，供 gocron 调用

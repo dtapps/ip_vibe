@@ -42,6 +42,8 @@ type CronJob struct {
 	BusinessType cronjob.BusinessType `json:"business_type,omitempty"`
 	// 业务序号
 	BusinessID int64 `json:"business_id,omitempty"`
+	// 业务键
+	BusinessKey string `json:"business_key,omitempty"`
 	// cron 表达式
 	CronExpr string `json:"cron_expr,omitempty"`
 	// 是否包含秒
@@ -74,7 +76,7 @@ func (*CronJob) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case cronjob.FieldID, cronjob.FieldBusinessID, cronjob.FieldIntervalValue, cronjob.FieldMinInterval, cronjob.FieldMaxInterval:
 			values[i] = new(sql.NullInt64)
-		case cronjob.FieldName, cronjob.FieldHandlerName, cronjob.FieldTaskType, cronjob.FieldJobType, cronjob.FieldJobCategory, cronjob.FieldBusinessType, cronjob.FieldCronExpr, cronjob.FieldIntervalUnit, cronjob.FieldStatus:
+		case cronjob.FieldName, cronjob.FieldHandlerName, cronjob.FieldTaskType, cronjob.FieldJobType, cronjob.FieldJobCategory, cronjob.FieldBusinessType, cronjob.FieldBusinessKey, cronjob.FieldCronExpr, cronjob.FieldIntervalUnit, cronjob.FieldStatus:
 			values[i] = new(sql.NullString)
 		case cronjob.FieldCreatedAt, cronjob.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -168,6 +170,12 @@ func (_m *CronJob) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field business_id", values[i])
 			} else if value.Valid {
 				_m.BusinessID = value.Int64
+			}
+		case cronjob.FieldBusinessKey:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field business_key", values[i])
+			} else if value.Valid {
+				_m.BusinessKey = value.String
 			}
 		case cronjob.FieldCronExpr:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -291,6 +299,9 @@ func (_m *CronJob) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("business_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.BusinessID))
+	builder.WriteString(", ")
+	builder.WriteString("business_key=")
+	builder.WriteString(_m.BusinessKey)
 	builder.WriteString(", ")
 	builder.WriteString("cron_expr=")
 	builder.WriteString(_m.CronExpr)

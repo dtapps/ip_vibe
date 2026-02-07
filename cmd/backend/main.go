@@ -176,21 +176,6 @@ func main() {
 	// 	panic(err)
 	// }
 
-	// 启动 SSL刷新任务
-	// sslRefreshTask := tasks.NewSSLRefreshTask(
-	// 	global.GvaEntDb,
-	// 	global.GvaEntLogDb,
-	// 	global.GvaGoCron,
-	// 	global.GvaGocronSlog,
-	// 	global.GvaHttpLog,
-	// )
-	// if err := sslRefreshTask.StartPeriodicTask(ctx); err != nil {
-	// 	slog.Error("启动 SSL刷新任务 失败",
-	// 		slog.Any("err", err),
-	// 	)
-	// 	panic(err)
-	// }
-
 	// 启动 Cloudflare隧道同步任务
 	cloudflareTunnelSyncTask := tasks.NewCloudflareTunnelSyncTask(
 		global.GvaEntDb,
@@ -281,8 +266,11 @@ func main() {
 		panic(err)
 	}
 
-	// 注册任务处理器 (注入 CDN, DNS 等 Provider)
+	// 注册任务处理器
 	cronManager.InitHandlers(ctx)
+
+	// 加载所有任务
+	cronManager.LoadTasks(ctx)
 
 	// 从数据库加载并同步所有状态为 running 的任务到 gocron
 	if err := cronManager.LoadAllJobs(ctx); err != nil {

@@ -356,6 +356,7 @@ var (
 		{Name: "job_category", Type: field.TypeEnum, Comment: "任务分类: system 系统内置, custom 用户自定义", Enums: []string{"system", "custom"}},
 		{Name: "business_type", Type: field.TypeEnum, Nullable: true, Comment: "业务类型: cdn, dns, ssl, domain, tun, webhook, device, system", Enums: []string{"cdn", "dns", "ssl", "domain", "tun", "webhook", "device", "system"}},
 		{Name: "business_id", Type: field.TypeInt64, Nullable: true, Comment: "业务序号"},
+		{Name: "business_key", Type: field.TypeString, Nullable: true, Comment: "业务键"},
 		{Name: "cron_expr", Type: field.TypeString, Nullable: true, Comment: "cron 表达式"},
 		{Name: "with_seconds", Type: field.TypeBool, Comment: "是否包含秒", Default: false},
 		{Name: "interval_value", Type: field.TypeInt, Nullable: true, Comment: "固定间隔值 (配合 interval_unit 使用)"},
@@ -399,7 +400,7 @@ var (
 			{
 				Name:    "cronjob_status",
 				Unique:  false,
-				Columns: []*schema.Column{CronJobColumns[18]},
+				Columns: []*schema.Column{CronJobColumns[19]},
 			},
 			{
 				Name:    "cronjob_business_type_business_id",
@@ -407,14 +408,29 @@ var (
 				Columns: []*schema.Column{CronJobColumns[10], CronJobColumns[11]},
 			},
 			{
+				Name:    "cronjob_business_type_business_key",
+				Unique:  false,
+				Columns: []*schema.Column{CronJobColumns[10], CronJobColumns[12]},
+			},
+			{
 				Name:    "cronjob_task_type_business_type_business_id",
 				Unique:  false,
 				Columns: []*schema.Column{CronJobColumns[7], CronJobColumns[10], CronJobColumns[11]},
 			},
 			{
+				Name:    "cronjob_task_type_business_type_business_key",
+				Unique:  false,
+				Columns: []*schema.Column{CronJobColumns[7], CronJobColumns[10], CronJobColumns[12]},
+			},
+			{
 				Name:    "cronjob_job_category_business_type_business_id",
 				Unique:  false,
 				Columns: []*schema.Column{CronJobColumns[9], CronJobColumns[10], CronJobColumns[11]},
+			},
+			{
+				Name:    "cronjob_job_category_business_type_business_key",
+				Unique:  false,
+				Columns: []*schema.Column{CronJobColumns[9], CronJobColumns[10], CronJobColumns[12]},
 			},
 		},
 	}

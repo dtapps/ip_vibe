@@ -38,6 +38,8 @@ const (
 	FieldBusinessType = "business_type"
 	// FieldBusinessID holds the string denoting the business_id field in the database.
 	FieldBusinessID = "business_id"
+	// FieldBusinessKey holds the string denoting the business_key field in the database.
+	FieldBusinessKey = "business_key"
 	// FieldCronExpr holds the string denoting the cron_expr field in the database.
 	FieldCronExpr = "cron_expr"
 	// FieldWithSeconds holds the string denoting the with_seconds field in the database.
@@ -74,6 +76,7 @@ var Columns = []string{
 	FieldJobCategory,
 	FieldBusinessType,
 	FieldBusinessID,
+	FieldBusinessKey,
 	FieldCronExpr,
 	FieldWithSeconds,
 	FieldIntervalValue,
@@ -344,6 +347,11 @@ func ByBusinessType(opts ...sql.OrderTermOption) OrderOption {
 // ByBusinessID orders the results by the business_id field.
 func ByBusinessID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBusinessID, opts...).ToFunc()
+}
+
+// ByBusinessKey orders the results by the business_key field.
+func ByBusinessKey(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBusinessKey, opts...).ToFunc()
 }
 
 // ByCronExpr orders the results by the cron_expr field.

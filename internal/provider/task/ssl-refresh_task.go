@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"time"
 	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/sslimport"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent_log"
@@ -14,6 +15,7 @@ import (
 	"vibe_ip/internal/utils"
 
 	"go.dtapp.net/library/contrib/http_log"
+	"go.dtapp.net/library/utils/gojson"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -180,4 +182,45 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 
 	}
 
+}
+
+// LoadTask 加载任务
+func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, table string) error {
+
+	// 查找任务
+	_, err := p.db.CronJob.Query().
+		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
+		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeSsl)).
+		Where(cronjob.BusinessKeyEQ(table)).
+		First(ctx)
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return fmt.Errorf("查找任务失败: %w", err)
+		}
+
+		// 创建任务
+		err = p.db.CronJob.Create().
+			SetName("SSL刷新 " + table).
+			SetHandlerName(SSLRefreshTaskName).
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(SSLRefreshTaskArgs{
+				Table: table,
+			}))).
+			SetTaskType(cronjob.TaskTypeRecurring).
+			SetJobType(cronjob.JobTypeCron).
+			SetJobCategory(cronjob.JobCategorySystem).
+			SetBusinessType(cronjob.BusinessTypeSsl).
+			SetBusinessKey(table).
+			SetCronExpr("0 0 * * *").
+			SetStatus(cronjob.StatusStopped).
+			SetIsSingleton(true). // 单例模式
+			SetRunOnStart(false). // 启动时不立即运行
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("创建任务失败: %w", err)
+		}
+
+		return nil
+	}
+
+	return nil
 }

@@ -146,6 +146,20 @@ func (_c *CronJobCreate) SetNillableBusinessID(v *int64) *CronJobCreate {
 	return _c
 }
 
+// SetBusinessKey sets the "business_key" field.
+func (_c *CronJobCreate) SetBusinessKey(v string) *CronJobCreate {
+	_c.mutation.SetBusinessKey(v)
+	return _c
+}
+
+// SetNillableBusinessKey sets the "business_key" field if the given value is not nil.
+func (_c *CronJobCreate) SetNillableBusinessKey(v *string) *CronJobCreate {
+	if v != nil {
+		_c.SetBusinessKey(*v)
+	}
+	return _c
+}
+
 // SetCronExpr sets the "cron_expr" field.
 func (_c *CronJobCreate) SetCronExpr(v string) *CronJobCreate {
 	_c.mutation.SetCronExpr(v)
@@ -535,6 +549,10 @@ func (_c *CronJobCreate) createSpec() (*CronJob, *sqlgraph.CreateSpec) {
 		_spec.SetField(cronjob.FieldBusinessID, field.TypeInt64, value)
 		_node.BusinessID = value
 	}
+	if value, ok := _c.mutation.BusinessKey(); ok {
+		_spec.SetField(cronjob.FieldBusinessKey, field.TypeString, value)
+		_node.BusinessKey = value
+	}
 	if value, ok := _c.mutation.CronExpr(); ok {
 		_spec.SetField(cronjob.FieldCronExpr, field.TypeString, value)
 		_node.CronExpr = value
@@ -740,6 +758,24 @@ func (u *CronJobUpsert) AddBusinessID(v int64) *CronJobUpsert {
 // ClearBusinessID clears the value of the "business_id" field.
 func (u *CronJobUpsert) ClearBusinessID() *CronJobUpsert {
 	u.SetNull(cronjob.FieldBusinessID)
+	return u
+}
+
+// SetBusinessKey sets the "business_key" field.
+func (u *CronJobUpsert) SetBusinessKey(v string) *CronJobUpsert {
+	u.Set(cronjob.FieldBusinessKey, v)
+	return u
+}
+
+// UpdateBusinessKey sets the "business_key" field to the value that was provided on create.
+func (u *CronJobUpsert) UpdateBusinessKey() *CronJobUpsert {
+	u.SetExcluded(cronjob.FieldBusinessKey)
+	return u
+}
+
+// ClearBusinessKey clears the value of the "business_key" field.
+func (u *CronJobUpsert) ClearBusinessKey() *CronJobUpsert {
+	u.SetNull(cronjob.FieldBusinessKey)
 	return u
 }
 
@@ -1087,6 +1123,27 @@ func (u *CronJobUpsertOne) UpdateBusinessID() *CronJobUpsertOne {
 func (u *CronJobUpsertOne) ClearBusinessID() *CronJobUpsertOne {
 	return u.Update(func(s *CronJobUpsert) {
 		s.ClearBusinessID()
+	})
+}
+
+// SetBusinessKey sets the "business_key" field.
+func (u *CronJobUpsertOne) SetBusinessKey(v string) *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetBusinessKey(v)
+	})
+}
+
+// UpdateBusinessKey sets the "business_key" field to the value that was provided on create.
+func (u *CronJobUpsertOne) UpdateBusinessKey() *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateBusinessKey()
+	})
+}
+
+// ClearBusinessKey clears the value of the "business_key" field.
+func (u *CronJobUpsertOne) ClearBusinessKey() *CronJobUpsertOne {
+	return u.Update(func(s *CronJobUpsert) {
+		s.ClearBusinessKey()
 	})
 }
 
@@ -1625,6 +1682,27 @@ func (u *CronJobUpsertBulk) UpdateBusinessID() *CronJobUpsertBulk {
 func (u *CronJobUpsertBulk) ClearBusinessID() *CronJobUpsertBulk {
 	return u.Update(func(s *CronJobUpsert) {
 		s.ClearBusinessID()
+	})
+}
+
+// SetBusinessKey sets the "business_key" field.
+func (u *CronJobUpsertBulk) SetBusinessKey(v string) *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.SetBusinessKey(v)
+	})
+}
+
+// UpdateBusinessKey sets the "business_key" field to the value that was provided on create.
+func (u *CronJobUpsertBulk) UpdateBusinessKey() *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.UpdateBusinessKey()
+	})
+}
+
+// ClearBusinessKey clears the value of the "business_key" field.
+func (u *CronJobUpsertBulk) ClearBusinessKey() *CronJobUpsertBulk {
+	return u.Update(func(s *CronJobUpsert) {
+		s.ClearBusinessKey()
 	})
 }
 

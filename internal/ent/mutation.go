@@ -7085,6 +7085,7 @@ type CronJobMutation struct {
 	business_type      *cronjob.BusinessType
 	business_id        *int64
 	addbusiness_id     *int64
+	business_key       *string
 	cron_expr          *string
 	with_seconds       *bool
 	interval_value     *int
@@ -7679,6 +7680,55 @@ func (m *CronJobMutation) ResetBusinessID() {
 	delete(m.clearedFields, cronjob.FieldBusinessID)
 }
 
+// SetBusinessKey sets the "business_key" field.
+func (m *CronJobMutation) SetBusinessKey(s string) {
+	m.business_key = &s
+}
+
+// BusinessKey returns the value of the "business_key" field in the mutation.
+func (m *CronJobMutation) BusinessKey() (r string, exists bool) {
+	v := m.business_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBusinessKey returns the old "business_key" field's value of the CronJob entity.
+// If the CronJob object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CronJobMutation) OldBusinessKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBusinessKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBusinessKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBusinessKey: %w", err)
+	}
+	return oldValue.BusinessKey, nil
+}
+
+// ClearBusinessKey clears the value of the "business_key" field.
+func (m *CronJobMutation) ClearBusinessKey() {
+	m.business_key = nil
+	m.clearedFields[cronjob.FieldBusinessKey] = struct{}{}
+}
+
+// BusinessKeyCleared returns if the "business_key" field was cleared in this mutation.
+func (m *CronJobMutation) BusinessKeyCleared() bool {
+	_, ok := m.clearedFields[cronjob.FieldBusinessKey]
+	return ok
+}
+
+// ResetBusinessKey resets all changes to the "business_key" field.
+func (m *CronJobMutation) ResetBusinessKey() {
+	m.business_key = nil
+	delete(m.clearedFields, cronjob.FieldBusinessKey)
+}
+
 // SetCronExpr sets the "cron_expr" field.
 func (m *CronJobMutation) SetCronExpr(s string) {
 	m.cron_expr = &s
@@ -8152,7 +8202,7 @@ func (m *CronJobMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CronJobMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, cronjob.FieldCreatedAt)
 	}
@@ -8185,6 +8235,9 @@ func (m *CronJobMutation) Fields() []string {
 	}
 	if m.business_id != nil {
 		fields = append(fields, cronjob.FieldBusinessID)
+	}
+	if m.business_key != nil {
+		fields = append(fields, cronjob.FieldBusinessKey)
 	}
 	if m.cron_expr != nil {
 		fields = append(fields, cronjob.FieldCronExpr)
@@ -8243,6 +8296,8 @@ func (m *CronJobMutation) Field(name string) (ent.Value, bool) {
 		return m.BusinessType()
 	case cronjob.FieldBusinessID:
 		return m.BusinessID()
+	case cronjob.FieldBusinessKey:
+		return m.BusinessKey()
 	case cronjob.FieldCronExpr:
 		return m.CronExpr()
 	case cronjob.FieldWithSeconds:
@@ -8292,6 +8347,8 @@ func (m *CronJobMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldBusinessType(ctx)
 	case cronjob.FieldBusinessID:
 		return m.OldBusinessID(ctx)
+	case cronjob.FieldBusinessKey:
+		return m.OldBusinessKey(ctx)
 	case cronjob.FieldCronExpr:
 		return m.OldCronExpr(ctx)
 	case cronjob.FieldWithSeconds:
@@ -8395,6 +8452,13 @@ func (m *CronJobMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBusinessID(v)
+		return nil
+	case cronjob.FieldBusinessKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBusinessKey(v)
 		return nil
 	case cronjob.FieldCronExpr:
 		v, ok := value.(string)
@@ -8549,6 +8613,9 @@ func (m *CronJobMutation) ClearedFields() []string {
 	if m.FieldCleared(cronjob.FieldBusinessID) {
 		fields = append(fields, cronjob.FieldBusinessID)
 	}
+	if m.FieldCleared(cronjob.FieldBusinessKey) {
+		fields = append(fields, cronjob.FieldBusinessKey)
+	}
 	if m.FieldCleared(cronjob.FieldCronExpr) {
 		fields = append(fields, cronjob.FieldCronExpr)
 	}
@@ -8583,6 +8650,9 @@ func (m *CronJobMutation) ClearField(name string) error {
 		return nil
 	case cronjob.FieldBusinessID:
 		m.ClearBusinessID()
+		return nil
+	case cronjob.FieldBusinessKey:
+		m.ClearBusinessKey()
 		return nil
 	case cronjob.FieldCronExpr:
 		m.ClearCronExpr()
@@ -8636,6 +8706,9 @@ func (m *CronJobMutation) ResetField(name string) error {
 		return nil
 	case cronjob.FieldBusinessID:
 		m.ResetBusinessID()
+		return nil
+	case cronjob.FieldBusinessKey:
+		m.ResetBusinessKey()
 		return nil
 	case cronjob.FieldCronExpr:
 		m.ResetCronExpr()

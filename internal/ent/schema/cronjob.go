@@ -95,6 +95,10 @@ func (CronJob) Fields() []ent.Field {
 			Optional().
 			Comment("业务序号"),
 
+		field.String("business_key").
+			Optional().
+			Comment("业务键"),
+
 		field.String("cron_expr").
 			Optional().
 			Comment("cron 表达式").
@@ -177,12 +181,24 @@ func (CronJob) Indexes() []ent.Index {
 		index.Fields("business_type", "business_id").
 			Annotations(entsql.WithComments(true)),
 
+		// 按业务类型+业务键排序
+		index.Fields("business_type", "business_key").
+			Annotations(entsql.WithComments(true)),
+
 		// 按任务类型+业务类型+业务序号排序
 		index.Fields("task_type", "business_type", "business_id").
 			Annotations(entsql.WithComments(true)),
 
+		// 按任务类型+业务类型+业务键排序
+		index.Fields("task_type", "business_type", "business_key").
+			Annotations(entsql.WithComments(true)),
+
 		// 按任务分类+业务类型+业务序号排序
 		index.Fields("job_category", "business_type", "business_id").
+			Annotations(entsql.WithComments(true)),
+
+		// 按任务分类+业务类型+业务键排序
+		index.Fields("job_category", "business_type", "business_key").
 			Annotations(entsql.WithComments(true)),
 	}
 }
