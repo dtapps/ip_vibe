@@ -70,7 +70,6 @@ func (CronJobLog) Fields() []ent.Field {
 
 		field.Enum("status").
 			Values(schematype.GetCronJobLogStatuss...).
-			Default(schematype.CronJobLogStatusRunning).
 			Comment("状态: running 运行中, success 成功, failed 失败").
 			Annotations(entsql.WithComments(true)),
 

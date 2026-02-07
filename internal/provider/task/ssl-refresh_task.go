@@ -211,7 +211,7 @@ func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, table string) err
 			SetBusinessType(cronjob.BusinessTypeSsl).
 			SetBusinessKey(table).
 			SetCronExpr("0 0 * * *").
-			SetStatus(cronjob.StatusStopped).
+			SetStatus(cronjob.StatusRunning).
 			SetIsSingleton(true). // 单例模式
 			SetRunOnStart(false). // 启动时不立即运行
 			Exec(ctx)

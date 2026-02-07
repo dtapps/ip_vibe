@@ -132,9 +132,6 @@ var (
 // TaskType defines the type for the "task_type" enum field.
 type TaskType string
 
-// TaskTypeRecurring is the default value of the TaskType enum.
-const DefaultTaskType = TaskTypeRecurring
-
 // TaskType values.
 const (
 	TaskTypeOneOff    TaskType = "one_off"
@@ -157,9 +154,6 @@ func TaskTypeValidator(tt TaskType) error {
 
 // JobType defines the type for the "job_type" enum field.
 type JobType string
-
-// JobTypeCron is the default value of the JobType enum.
-const DefaultJobType = JobTypeCron
 
 // JobType values.
 const (
@@ -237,9 +231,6 @@ func BusinessTypeValidator(bt BusinessType) error {
 // IntervalUnit defines the type for the "interval_unit" enum field.
 type IntervalUnit string
 
-// IntervalUnitMinutes is the default value of the IntervalUnit enum.
-const DefaultIntervalUnit = IntervalUnitMinutes
-
 // IntervalUnit values.
 const (
 	IntervalUnitSeconds IntervalUnit = "seconds"
@@ -265,9 +256,6 @@ func IntervalUnitValidator(iu IntervalUnit) error {
 
 // Status defines the type for the "status" enum field.
 type Status string
-
-// StatusStopped is the default value of the Status enum.
-const DefaultStatus = StatusStopped
 
 // Status values.
 const (

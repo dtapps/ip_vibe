@@ -118,14 +118,6 @@ func (_c *CronJobLogCreate) SetStatus(v cronjoblog.Status) *CronJobLogCreate {
 	return _c
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_c *CronJobLogCreate) SetNillableStatus(v *cronjoblog.Status) *CronJobLogCreate {
-	if v != nil {
-		_c.SetStatus(*v)
-	}
-	return _c
-}
-
 // SetErrorInfo sets the "error_info" field.
 func (_c *CronJobLogCreate) SetErrorInfo(v string) *CronJobLogCreate {
 	_c.mutation.SetErrorInfo(v)
@@ -206,10 +198,6 @@ func (_c *CronJobLogCreate) defaults() {
 	if _, ok := _c.mutation.StartedAt(); !ok {
 		v := cronjoblog.DefaultStartedAt()
 		_c.mutation.SetStartedAt(v)
-	}
-	if _, ok := _c.mutation.Status(); !ok {
-		v := cronjoblog.DefaultStatus
-		_c.mutation.SetStatus(v)
 	}
 }
 

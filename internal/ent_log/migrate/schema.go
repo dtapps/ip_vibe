@@ -19,7 +19,7 @@ var (
 		{Name: "started_at", Type: field.TypeTime, Comment: "开始时间"},
 		{Name: "finished_at", Type: field.TypeTime, Nullable: true, Comment: "完成时间"},
 		{Name: "duration", Type: field.TypeInt64, Nullable: true, Comment: "耗时(ms)"},
-		{Name: "status", Type: field.TypeEnum, Comment: "状态: running 运行中, success 成功, failed 失败", Enums: []string{"success", "failed", "running"}, Default: "running"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态: running 运行中, success 成功, failed 失败", Enums: []string{"success", "failed", "running"}},
 		{Name: "error_info", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "错误信息"},
 		{Name: "output", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "执行输出结果"},
 	}

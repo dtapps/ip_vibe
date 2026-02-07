@@ -120,7 +120,12 @@
                   {{fieldEnumLabel "cron_job_business_type" .BusinessType}}
                 </span>
                 <span class="text-[10px] opacity-30 font-mono italic">
-                  #{{.BusinessID}}
+                  {{ if .BusinessID }}
+                  #{{ .BusinessID }}
+                  {{ end }}
+                  {{ if .BusinessKey }}
+                  :{{ .BusinessKey }}
+                  {{ end }}
                 </span>
               </div>
               {{ end }}

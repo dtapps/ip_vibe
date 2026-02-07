@@ -90,25 +90,9 @@ func (_c *CronJobCreate) SetTaskType(v cronjob.TaskType) *CronJobCreate {
 	return _c
 }
 
-// SetNillableTaskType sets the "task_type" field if the given value is not nil.
-func (_c *CronJobCreate) SetNillableTaskType(v *cronjob.TaskType) *CronJobCreate {
-	if v != nil {
-		_c.SetTaskType(*v)
-	}
-	return _c
-}
-
 // SetJobType sets the "job_type" field.
 func (_c *CronJobCreate) SetJobType(v cronjob.JobType) *CronJobCreate {
 	_c.mutation.SetJobType(v)
-	return _c
-}
-
-// SetNillableJobType sets the "job_type" field if the given value is not nil.
-func (_c *CronJobCreate) SetNillableJobType(v *cronjob.JobType) *CronJobCreate {
-	if v != nil {
-		_c.SetJobType(*v)
-	}
 	return _c
 }
 
@@ -236,25 +220,9 @@ func (_c *CronJobCreate) SetIntervalUnit(v cronjob.IntervalUnit) *CronJobCreate 
 	return _c
 }
 
-// SetNillableIntervalUnit sets the "interval_unit" field if the given value is not nil.
-func (_c *CronJobCreate) SetNillableIntervalUnit(v *cronjob.IntervalUnit) *CronJobCreate {
-	if v != nil {
-		_c.SetIntervalUnit(*v)
-	}
-	return _c
-}
-
 // SetStatus sets the "status" field.
 func (_c *CronJobCreate) SetStatus(v cronjob.Status) *CronJobCreate {
 	_c.mutation.SetStatus(v)
-	return _c
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_c *CronJobCreate) SetNillableStatus(v *cronjob.Status) *CronJobCreate {
-	if v != nil {
-		_c.SetStatus(*v)
-	}
 	return _c
 }
 
@@ -350,25 +318,9 @@ func (_c *CronJobCreate) defaults() error {
 		v := cronjob.DefaultEntryID()
 		_c.mutation.SetEntryID(v)
 	}
-	if _, ok := _c.mutation.TaskType(); !ok {
-		v := cronjob.DefaultTaskType
-		_c.mutation.SetTaskType(v)
-	}
-	if _, ok := _c.mutation.JobType(); !ok {
-		v := cronjob.DefaultJobType
-		_c.mutation.SetJobType(v)
-	}
 	if _, ok := _c.mutation.WithSeconds(); !ok {
 		v := cronjob.DefaultWithSeconds
 		_c.mutation.SetWithSeconds(v)
-	}
-	if _, ok := _c.mutation.IntervalUnit(); !ok {
-		v := cronjob.DefaultIntervalUnit
-		_c.mutation.SetIntervalUnit(v)
-	}
-	if _, ok := _c.mutation.Status(); !ok {
-		v := cronjob.DefaultStatus
-		_c.mutation.SetStatus(v)
 	}
 	if _, ok := _c.mutation.IsSingleton(); !ok {
 		v := cronjob.DefaultIsSingleton

@@ -79,9 +79,6 @@ var (
 // Status defines the type for the "status" enum field.
 type Status string
 
-// StatusRunning is the default value of the Status enum.
-const DefaultStatus = StatusRunning
-
 // Status values.
 const (
 	StatusSuccess Status = "success"

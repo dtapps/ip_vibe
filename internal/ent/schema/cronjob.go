@@ -70,13 +70,11 @@ func (CronJob) Fields() []ent.Field {
 
 		field.Enum("task_type").
 			Values(schematype.GetCronJobTaskTypes...).
-			Default(schematype.CronJobTaskTypeRecurring).
 			Comment("任务类型: one_off 一次性, recurring 周期性").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("job_type").
 			Values(schematype.GetCronJobJobTypes...).
-			Default(schematype.CronJobJobTypeCron).
 			Comment("运行类型: cron cron 表达式, duration 固定间隔, random 随机间隔").
 			Annotations(entsql.WithComments(true)),
 
@@ -127,13 +125,11 @@ func (CronJob) Fields() []ent.Field {
 
 		field.Enum("interval_unit").
 			Values(schematype.GetCronJobIntervalUnits...).
-			Default(schematype.CronJobIntervalUnitMinutes).
 			Comment("间隔时间单位 (用于 duration 和 random 模式)").
 			Annotations(entsql.WithComments(true)),
 
 		field.Enum("status").
 			Values(schematype.GetCronJobStatuss...).
-			Default(schematype.CronJobStatusStopped).
 			Comment("状态: running 运行中, stopped 已停止, finished 已完成, failed 已失败").
 			Annotations(entsql.WithComments(true)),
 
