@@ -998,9 +998,6 @@ go.dtapp.net/library/service/qiniu
 # go.dtapp.net/library/service/wechatqy v1.0.41
 ## explicit; go 1.25.1
 go.dtapp.net/library/service/wechatqy
-# go.dtapp.net/library/utils/goarray v1.0.4
-## explicit; go 1.22.5
-go.dtapp.net/library/utils/goarray
 # go.dtapp.net/library/utils/gojson v1.0.13
 ## explicit; go 1.24.1
 go.dtapp.net/library/utils/gojson

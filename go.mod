@@ -73,7 +73,6 @@ require (
 	go.dtapp.net/library/service/pushdeer v1.0.11
 	go.dtapp.net/library/service/qiniu v1.0.0
 	go.dtapp.net/library/service/wechatqy v1.0.41
-	go.dtapp.net/library/utils/goarray v1.0.4
 	go.dtapp.net/library/utils/gojson v1.0.13
 	go.dtapp.net/library/utils/golog v1.0.180
 	go.dtapp.net/library/utils/gomd5 v1.0.3

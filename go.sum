@@ -842,8 +842,6 @@ go.dtapp.net/library/service/qiniu v1.0.0 h1:c78UZ1IPNhikZ4+WgyrkOChzMwezF4SjzoY
 go.dtapp.net/library/service/qiniu v1.0.0/go.mod h1:E9unDw/BzUVrflRIvbwkI7LlsegGwUeROB9B1ZloMXM=
 go.dtapp.net/library/service/wechatqy v1.0.41 h1:IujaEwBvpE7s3B32U4kpmN1PAma74RWS9wWV834Wyy8=
 go.dtapp.net/library/service/wechatqy v1.0.41/go.mod h1:v3vGut1QFgdLVCJKcqsfCsuz+tuytgakkV0K9q8uPCQ=
-go.dtapp.net/library/utils/goarray v1.0.4 h1:2Zuk5cn/3/ZHmVRG542sOZToRmAyEhHTXGdqV5YegOo=
-go.dtapp.net/library/utils/goarray v1.0.4/go.mod h1:q5Xxi36LzMRF/noaMmCUCALf6pQQpaQMPRTzry2trCk=
 go.dtapp.net/library/utils/gojson v1.0.13 h1:XU3uO+Z/aRUSz+fGCEK1lpuEOfNz8RKxbQiSlA92xlM=
 go.dtapp.net/library/utils/gojson v1.0.13/go.mod h1:Cob0wtnXWWj6JH3O8CJeh64pIQn5ggfncR8tPPTk2+U=
 go.dtapp.net/library/utils/golog v1.0.180 h1:9jeS/cA4/eYrbVUzO7lQsbe9kybqgxnq1jPWD+YrrE4=

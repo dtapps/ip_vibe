@@ -138,17 +138,17 @@
                         {{ if eq .Status "success" }}
                         <div
                             class="badge badge-success badge-sm py-2.5 font-black text-[9px] tracking-widest shadow-lg shadow-success/10 uppercase">
-                            Success
+                            {{fieldEnumLabel "cron_job_log_status" .Status}}
                         </div>
                         {{ else if eq .Status "failed" }}
                         <div
                             class="badge badge-error badge-sm py-2.5 font-black text-[9px] tracking-widest shadow-lg shadow-error/10 uppercase">
-                            Failed
+                            {{fieldEnumLabel "cron_job_log_status" .Status}}
                         </div>
                         {{ else }}
                         <div
                             class="badge badge-warning badge-sm py-2.5 font-black text-[9px] tracking-widest animate-pulse uppercase">
-                            Running
+                            {{fieldEnumLabel "cron_job_log_status" .Status}}
                         </div>
                         {{ end }}
                     </td>
