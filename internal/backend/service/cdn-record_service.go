@@ -470,7 +470,7 @@ func (s *CDNRecordServiceImpl) handleCdnTaskStatus(ctx context.Context, db *ent.
 		// 创建任务
 		err = db.CronJob.Create().
 			SetName("CDN同步: " + record.FullDomain).
-			SetHandlerName("cdn_sync").
+			SetHandlerName(task.CDNTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.CDNTaskArgs{
 				ID: record.ID,
 			}))).

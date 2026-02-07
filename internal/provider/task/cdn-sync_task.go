@@ -27,14 +27,20 @@ type CDNTaskProvider struct {
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 }
 
+// NewCDNTaskProvider 创建一个新的 CDN 任务提供者
 func NewCDNTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CDNTaskProvider {
 	return &CDNTaskProvider{
 		db:            db,
 		logDb:         logDb,
-		logger:        logger.With(slog.String("handler", "cdn_sync")),
+		logger:        logger.With(slog.String("handler", "cdn-sync")),
 		httpTransport: httpTransport,
 	}
 }
+
+// CDNTaskName 定义了存放在 CronJob.handler_name 中的任务名称
+const (
+	CDNTaskName = "cdn_sync"
+)
 
 // CDNTaskArgs 定义了存放在 CronJob.handler_args 中的数据结构
 type CDNTaskArgs struct {
@@ -51,7 +57,8 @@ func (p *CDNTaskProvider) Process(ctx context.Context, args json.RawMessage) (st
 
 	// 查询单条记录及其关联信息
 	record, err := p.db.CDNRecord.Query().
-		Where(cdnrecord.IDEQ(params.ID), cdnrecord.IsActiveEQ(true)).
+		Where(cdnrecord.IDEQ(params.ID)).
+		Where(cdnrecord.IsActiveEQ(true)).
 		WithConfig().
 		WithIPGroup(func(q *ent.IpGroupQuery) {
 			q.WithDevices(func(dq *ent.DeviceQuery) {

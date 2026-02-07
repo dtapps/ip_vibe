@@ -422,7 +422,7 @@ func (s *DomainMonitorServiceImpl) handleDomainMonitorTaskStatus(ctx context.Con
 		// 创建任务
 		err = db.CronJob.Create().
 			SetName("域名监控: " + record.Domain).
-			SetHandlerName("domain_monitor").
+			SetHandlerName(task.DomainMonitorTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.DomainMonitorTaskArgs{
 				ID: record.ID,
 			}))).

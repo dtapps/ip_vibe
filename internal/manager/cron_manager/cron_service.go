@@ -70,11 +70,15 @@ func (m *CronServerManager) InitHandlers(ctx context.Context) {
 
 	// 注册 CDN 处理器
 	cdnHandler := task.NewCDNTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
-	m.taskRegistry.RegisterTask(ctx, "cdn_sync", cdnHandler)
+	m.taskRegistry.RegisterTask(ctx, task.CDNTaskName, cdnHandler)
 
 	// 注册 DNS 处理器
 	// dnsHandler := dns.NewDNSTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
 	// m.taskRegistry.RegisterTask(ctx, "dns_sync", dnsHandler)
+
+	// 注册 域名监控 处理器
+	domainMonitorHandler := task.NewDomainMonitorTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	m.taskRegistry.RegisterTask(ctx, task.DomainMonitorTaskName, domainMonitorHandler)
 
 	m.logger.InfoContext(ctx, "所有任务处理器注册完成")
 }
@@ -256,9 +260,18 @@ func (m *CronServerManager) SyncJob(ctx context.Context, jobID int64) error {
 
 // 辅助方法：生成配置指纹
 func (m *CronServerManager) generateFingerprint(j *ent.CronJob) string {
-	return fmt.Sprintf("%v-%v-%v-%v-%v-%v-%v-%s",
-		j.JobType, j.TaskType, j.IntervalValue, j.IntervalUnit,
-		j.MinInterval, j.MaxInterval, j.CronExpr, string(j.HandlerArgs))
+	return fmt.Sprintf("%v-%v-%d-%v-%d-%d-%s-%s-%t-%t",
+		j.JobType,
+		j.TaskType,
+		j.IntervalValue,
+		j.IntervalUnit,
+		j.MinInterval,
+		j.MaxInterval,
+		j.CronExpr,
+		string(j.HandlerArgs),
+		j.RunOnStart,
+		j.IsSingleton,
+	)
 }
 
 // 内部方法：真正把任务塞进 gocron

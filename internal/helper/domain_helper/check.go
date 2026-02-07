@@ -14,6 +14,7 @@ import (
 	"time"
 	"vibe_ip/internal/core"
 	"vibe_ip/internal/ent/schema/schematype"
+	"vibe_ip/internal/helper/sys_env"
 
 	"github.com/imroc/req/v3"
 	"go.dtapp.net/library/contrib/http_log"
@@ -31,7 +32,8 @@ type DomainCheck struct {
 }
 
 // NewDomainCheck 创建一个新的 DomainCheck 实例
-func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, debug bool) *DomainCheck {
+func NewDomainCheck(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *DomainCheck {
+	debug := sys_env.GvaEnv.DEBUG
 	s := &DomainCheck{
 		logger:        logger,
 		httpTransport: httpTransport,
