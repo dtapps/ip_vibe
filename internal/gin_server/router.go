@@ -79,10 +79,13 @@ func (m *GinServerManager) setupWebRouter() {
 	// 通知订阅页面 - 提供HTML页面并渲染数据
 	r.GET("/webhook-sub", handlers.WebhookSub)
 
-	// 任务页面 - 提供HTML页面并渲染数据
+	// 任务管理页面 - 提供HTML页面并渲染数据
 	r.GET("/task", handlers.Task)
 
-	// 任务页面 - 提供HTML页面并渲染数据
+	// 任务日志页面 - 提供HTML页面并渲染数据
+	r.GET("/task-log", handlers.TaskLog)
+
+	// 实时任务页面 - 提供HTML页面并渲染数据
 	r.GET("/gocron", handlers.Gocron)
 
 	// 接口页面 - 提供HTML页面并渲染数据

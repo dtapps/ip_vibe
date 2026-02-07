@@ -18,6 +18,7 @@
 <div class="ui-panel">
   <div class="tabs tabs-lifted px-6 pt-4">
     <a class="tab tab-active font-bold">管理 (Task)</a>
+    <a href="/task-log" class="tab">日志 (TaskLog)</a>
     <a href="/gocron" class="tab">实时 (Gocron)</a>
   </div>
 
@@ -203,6 +204,7 @@
               </div>
             </div>
           </td>
+
           <td class="ui-td text-center">
             <div class="flex justify-center gap-1.5">
               {{ $logWebUrlPath := join $baseWebUrlPath "-log" }}
@@ -213,31 +215,39 @@
               </button>
               {{ $statusApiUrlPath := join $thisApiUrlPath "/status" }}
               {{ $isFinalState := or (eq .Status "finished") (eq .Status "failed") }}
-              <button
-                class='btn btn-square btn-xs btn-outline {{ if eq .Status "running" }}btn-warning bg-warning/10{{ else if $isFinalState }}btn-disabled opacity-20{{ else }}btn-success bg-success/10{{ end }} border-none'
-                {{ if $isFinalState }} disabled {{ else }} data-url="{{$statusApiUrlPath}}" data-data-key="status"
-                data-data-value='{{ if eq .Status "running" }}stopped{{ else }}running{{ end }}'
-                onclick="handleStatusAction(this)" {{ end }}>
-                {{ if $isFinalState }}
-                {{ if eq .Status "running" }}
-                <span class="tooltip" data-tip="暂停任务">
+
+              {{ if $isFinalState }}
+              <!-- 完成或失败状态 -->
+              <button class='btn btn-square btn-xs btn-outline border-none opacity-20 tooltip' data-tip='任务已结束'>
+                {{ template "icons" (dict "Name" "i-lucide-play-circle" "Class" "w-3.5 h-3.5") }}
+              </button>
+              <button class="btn btn-square btn-xs btn-outline btn-ghost opacity-20 tooltip" data-tip='任务已结束'>
+                {{ template "icons" (dict "Name" "i-lucide-settings" "Class" "w-3.5 h-3.5") }}
+              </button>
+              {{ else }}
+              <!-- 运行或者暂停状态 -->
+              {{ if eq .Status "running" }}
+              <button class='btn btn-square btn-xs btn-outline btn-warning bg-warning/10 border-none'>
+                <span class="tooltip" data-tip="暂停任务" data-url="{{$statusApiUrlPath}}" data-data-key="status"
+                  data-data-value='stopped' onclick="handleStatusAction(this)">
                   {{ template "icons" (dict "Name" "i-lucide-pause-circle" "Class" "w-3.5 h-3.5") }}
                 </span>
-                {{ else }}
-                <span class="tooltip" data-tip="启动任务">
-                  {{ template "icons" (dict "Name" "i-lucide-play-circle" "Class" "w-3.5 h-3.5") }}
-                </span>
-                {{ end }}
-                {{ else }}
-                <span class="tooltip" data-tip='任务已结束'>
-                  {{ template "icons" (dict "Name" "i-lucide-play-circle" "Class" "w-3.5 h-3.5") }}
-                </span>
-                {{ end }}
               </button>
+              {{ else if eq .Status "stopped" }}
+              <button class='btn btn-square btn-xs btn-outline btn-success bg-success/10 border-none'>
+                <span class="tooltip" data-tip="启动任务" data-url="{{$statusApiUrlPath}}" data-data-key="status"
+                  data-data-value='running' onclick="handleStatusAction(this)">
+                  {{ template "icons" (dict "Name" "i-lucide-play-circle" "Class" "w-3.5 h-3.5") }}
+                </span>
+              </button>
+              {{ else }}
+              {{ end }}
               <button class="btn btn-square btn-xs btn-outline btn-ghost opacity-40 hover:opacity-100"
                 onclick="onEdit('{{.ID}}')">
                 {{ template "icons" (dict "Name" "i-lucide-settings" "Class" "w-3.5 h-3.5") }}
               </button>
+              {{ end }}
+
             </div>
           </td>
 
@@ -247,8 +257,8 @@
     </table>
   </div>
 
+  <!-- 分页 -->
   <div class="p-8 border-t border-base-200 bg-base-100/30">
-    <!-- 分页 -->
     {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
   </div>
 </div>

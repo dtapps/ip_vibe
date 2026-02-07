@@ -60,9 +60,9 @@ func Task(c *gin.Context) {
 		}
 	}
 
-	pageData.Page = requestParams.Page
-	pageData.PageSize = requestParams.PageSize
-	pageData.Total = int64(len(pageData.List))
+	pageData.Page = allTask.Page
+	pageData.PageSize = allTask.Size
+	pageData.Total = allTask.Total
 
 	// 渲染模板
 	renderHTML(

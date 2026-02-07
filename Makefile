@@ -57,7 +57,11 @@ tidy:
 vendor:
 	go mod vendor
 
-mod: version download tidy vendor
+mod: 
+	go version
+	go get -u ./...
+	go mod tidy
+	go mod vendor
 
 # generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
 generate: swag_v1_all swag_v2_all grpc_generate_all
@@ -102,9 +106,13 @@ swag2op_version:
 swag2op_init:
 	swag2op init -g cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_2_to_3
 
+pnpm_outdated:
+	cd cmd/$(BINARY_NAME_FRONTEND) && \
+	pnpm outdated
+
 pnpm_update:
 	cd cmd/$(BINARY_NAME_FRONTEND) && \
-	pnpm update
+	pnpm update --latest
 
 # 	make grpc_generate_connect
 # 	make grpc_generate_openapi
@@ -276,11 +284,14 @@ VERSION ?= dev
 COMMIT  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILDTIME ?= $(shell date -u '+%Y-%m-%d %H:%M:%S UTC')
 
+# 路径
+PKG_PATH = vibe_ip/internal/global
+
 # ldflags 模板（注意：单引号在 Make 中需转义或使用双引号包裹）
 LDFLAGS = -s -w \
-	-X 'main.version=$(VERSION)' \
-	-X 'main.commit=$(COMMIT)' \
-	-X 'main.buildTime=$(BUILDTIME)'
+	-X '$(PKG_PATH).Version=$(VERSION)' \
+	-X '$(PKG_PATH).GitCommit=$(COMMIT)' \
+	-X '$(PKG_PATH).BuildTime=$(BUILDTIME)'
 
 # 构建所有平台
 build-all: clean build-linux-amd64 build-linux-arm64 build-windows-amd64 build-windows-arm64 build-darwin-amd64 build-darwin-arm64

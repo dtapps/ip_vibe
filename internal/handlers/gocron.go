@@ -43,8 +43,9 @@ func Gocron(c *gin.Context) {
 		}
 	}
 
-	pageData.Page = requestParams.Page
-	pageData.PageSize = requestParams.PageSize
+	// 实时任务模式下，不需要分页数据
+	pageData.Page = 0
+	pageData.PageSize = 0
 	pageData.Total = int64(len(jobs))
 
 	// 查询任务状态

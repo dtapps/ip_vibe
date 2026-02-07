@@ -352,11 +352,29 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 			}
 			return code
 		},
-		// pagination 组件
-		"add":   func(a, b int) int { return a + b },
-		"sub":   func(a, b int) int { return a - b },
-		"div":   func(a, b int) int { return a / b },
-		"toInt": func(i int64) int { return int(i) },
+		// 分页组件
+		"add": func(a, b int) int {
+			return a + b
+		},
+		"sub": func(a, b int) int {
+			return a - b
+		},
+		"div": func(a, b int) int {
+			return a / b
+		},
+		// 转换类型
+		"toInt": func(i any) int {
+			return cast.ToInt(i)
+		},
+		"toInt64": func(i any) int64 {
+			return cast.ToInt64(i)
+		},
+		"toUint": func(i any) uint {
+			return cast.ToUint(i)
+		},
+		"toUint64": func(i any) uint64 {
+			return cast.ToUint64(i)
+		},
 		// switch / icons / button 组件
 		"dict": func(values ...any) (map[string]any, error) {
 			if len(values)%2 != 0 {
