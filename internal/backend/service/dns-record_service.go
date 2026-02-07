@@ -470,6 +470,7 @@ func (s *DNSRecordServiceImpl) handleDnsRecordTaskStatus(ctx context.Context, db
 
 	// 查找任务
 	job, err := db.CronJob.Query().
+		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
 		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeDNS)).
 		Where(cronjob.BusinessIDEQ(record.ID)).
 		First(ctx)

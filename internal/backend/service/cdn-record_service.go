@@ -459,6 +459,7 @@ func (s *CDNRecordServiceImpl) handleCdnTaskStatus(ctx context.Context, db *ent.
 
 	// 查找任务
 	job, err := db.CronJob.Query().
+		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
 		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeCdn)).
 		Where(cronjob.BusinessIDEQ(record.ID)).
 		First(ctx)

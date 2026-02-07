@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"vibe_ip/internal/backend/tasks"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/domainmonitor"
@@ -382,26 +381,33 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 		return fmt.Errorf("查询域名监控失败: %w", err)
 	}
 
-	// 域名监控任务 (保持 Handler 中创建依赖的原始逻辑，但使用 Service 内部的注入依赖)
-	domainMonitorTask := tasks.NewDomainMonitorTask(
-		s.db,
-		s.logDb,
-		s.cron,
-		s.logger,
-		s.httpTransport,
-	)
-
-	// 添加域名监控一次性任务
-	err = domainMonitorTask.AddDisposableTask(ctx, firstDomainMonitor)
+	// 创建任务
+	err = s.db.CronJob.Create().
+		SetName("域名监控: " + firstDomainMonitor.Domain).
+		SetHandlerName(task.DomainMonitorTaskName).
+		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.DomainMonitorTaskArgs{
+			ID: firstDomainMonitor.ID,
+		}))).
+		SetTaskType(cronjob.TaskTypeOneOff).
+		SetJobType(cronjob.JobTypeDuration).
+		SetJobCategory(cronjob.JobCategorySystem).
+		SetBusinessType(cronjob.BusinessTypeDomain).
+		SetBusinessID(firstDomainMonitor.ID).
+		SetIntervalValue(firstDomainMonitor.CheckInterval).
+		SetIntervalUnit(cronjob.IntervalUnitSeconds).
+		SetStatus(cronjob.StatusRunning).
+		SetIsSingleton(true). // 单例模式
+		SetRunOnStart(true).  // 启动时立即运行
+		Exec(ctx)
 	if err != nil {
-		return fmt.Errorf("添加域名监控一次性任务失败: %w", err)
+		return fmt.Errorf("创建任务失败: %w", err)
 	}
 
 	return nil
 }
 
 // handleDomainMonitorTaskStatus 处理域名监控任务的状态同步
-func (s *DomainMonitorServiceImpl) handleDomainMonitorTaskStatus(ctx context.Context, db *ent.Client, record *ent.DomainMonitor, isActive bool) error {
+func (s *DomainMonitorServiceImpl) handleDomainMonitorTaskStatus(ctx context.Context, db *ent.Client, domainMonitor *ent.DomainMonitor, isActive bool) error {
 
 	// 状态
 	targetStatus := cronjob.StatusStopped
@@ -411,8 +417,9 @@ func (s *DomainMonitorServiceImpl) handleDomainMonitorTaskStatus(ctx context.Con
 
 	// 查找任务
 	job, err := db.CronJob.Query().
+		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
 		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeDomain)).
-		Where(cronjob.BusinessIDEQ(record.ID)).
+		Where(cronjob.BusinessIDEQ(domainMonitor.ID)).
 		First(ctx)
 	if err != nil {
 		if !ent.IsNotFound(err) {
@@ -421,17 +428,17 @@ func (s *DomainMonitorServiceImpl) handleDomainMonitorTaskStatus(ctx context.Con
 
 		// 创建任务
 		err = db.CronJob.Create().
-			SetName("域名监控: " + record.Domain).
+			SetName("域名监控: " + domainMonitor.Domain).
 			SetHandlerName(task.DomainMonitorTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.DomainMonitorTaskArgs{
-				ID: record.ID,
+				ID: domainMonitor.ID,
 			}))).
 			SetTaskType(cronjob.TaskTypeRecurring).
 			SetJobType(cronjob.JobTypeDuration).
 			SetJobCategory(cronjob.JobCategorySystem).
 			SetBusinessType(cronjob.BusinessTypeDomain).
-			SetBusinessID(record.ID).
-			SetIntervalValue(record.CheckInterval).
+			SetBusinessID(domainMonitor.ID).
+			SetIntervalValue(domainMonitor.CheckInterval).
 			SetIntervalUnit(cronjob.IntervalUnitSeconds).
 			SetStatus(targetStatus).
 			SetIsSingleton(true). // 单例模式
@@ -449,7 +456,7 @@ func (s *DomainMonitorServiceImpl) handleDomainMonitorTaskStatus(ctx context.Con
 		SetTaskType(cronjob.TaskTypeRecurring).
 		SetJobType(cronjob.JobTypeDuration).
 		SetJobCategory(cronjob.JobCategorySystem).
-		SetIntervalValue(record.CheckInterval).
+		SetIntervalValue(domainMonitor.CheckInterval).
 		SetIntervalUnit(cronjob.IntervalUnitSeconds).
 		SetStatus(targetStatus).
 		SetIsSingleton(true). // 单例模式

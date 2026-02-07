@@ -563,6 +563,7 @@ func (s *SSLRecordServiceImpl) handleSslApplTaskStatus(ctx context.Context, db *
 
 	// 查找任务
 	job, err := db.CronJob.Query().
+		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
 		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeSsl)).
 		Where(cronjob.BusinessIDEQ(record.ID)).
 		First(ctx)

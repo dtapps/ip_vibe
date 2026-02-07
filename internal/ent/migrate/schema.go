@@ -407,6 +407,11 @@ var (
 				Columns: []*schema.Column{CronJobColumns[10], CronJobColumns[11]},
 			},
 			{
+				Name:    "cronjob_task_type_business_type_business_id",
+				Unique:  false,
+				Columns: []*schema.Column{CronJobColumns[7], CronJobColumns[10], CronJobColumns[11]},
+			},
+			{
 				Name:    "cronjob_job_category_business_type_business_id",
 				Unique:  false,
 				Columns: []*schema.Column{CronJobColumns[9], CronJobColumns[10], CronJobColumns[11]},
