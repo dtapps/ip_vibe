@@ -17,36 +17,49 @@ func CronJobGocronHook() ent.Hook {
 	return hook.On(
 		func(next ent.Mutator) ent.Mutator {
 			return hook.CronJobFunc(func(ctx context.Context, m *ent.CronJobMutation) (ent.Value, error) {
-				// 先执行数据库变更（获取执行结果）
-				value, err := next.Mutate(ctx, m)
+				op := m.Op()
+
+				// 获取 ID (变更前抓取)
+				var objIDS []int64
+				if OnSyncJob != nil {
+					if op.Is(ent.OpUpdate | ent.OpDelete) {
+						if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
+							objIDS = ids
+						}
+					} else if id, exists := m.ID(); exists {
+						objIDS = []int64{id}
+					}
+				}
+
+				// 执行业务变更
+				result, err := next.Mutate(ctx, m)
 				if err != nil {
-					return value, err
+					return result, err
 				}
 
 				// 判断 OnSyncJob 是否已注入
 				if OnSyncJob == nil {
-					return value, nil
+					return result, nil
 				}
 
-				// 提取任务 ID
-				id, exists := m.ID()
-				if !exists {
-					// 如果是 OpCreate，ID 存放在返回的实体中
-					if node, ok := value.(*ent.CronJob); ok {
-						id = node.ID
-						exists = true
+				// 补偿获取 Create 后的 ID
+				if op.Is(ent.OpCreate) && err == nil && result != nil {
+					if id, ok := m.ID(); ok {
+						objIDS = []int64{id}
 					}
 				}
 
-				// 4. 异步同步任务状态
-				if exists {
-					go func(asyncCtx context.Context, asyncID int64) {
-						// SyncJob 内部已处理：查不到 ID = 移除，状态不符 = 移除，配置变动 = 重启
-						_ = OnSyncJob(asyncCtx, asyncID)
-					}(context.WithoutCancel(ctx), id)
+				// 异步同步任务状态
+				if len(objIDS) > 0 {
+					go func(asyncCtx context.Context, asyncIDs []int64) {
+						for _, asyncID := range asyncIDs {
+							// 使用独立的 context 保证执行
+							_ = OnSyncJob(asyncCtx, asyncID)
+						}
+					}(context.WithoutCancel(ctx), objIDS)
 				}
 
-				return value, nil
+				return result, nil
 			})
 		},
 		ent.OpCreate,

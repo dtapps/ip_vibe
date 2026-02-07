@@ -14,8 +14,6 @@ import (
 	"{{ $.Config.Package }}/hook"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
-
-	"github.com/spf13/cast"
 )
 
 var (
@@ -67,20 +65,20 @@ func {{ $n.Name }}LogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -88,7 +86,7 @@ func {{ $n.Name }}LogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -96,17 +94,17 @@ func {{ $n.Name }}LogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -135,7 +133,7 @@ func {{ $n.Name }}LogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),

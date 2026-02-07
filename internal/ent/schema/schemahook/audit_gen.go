@@ -13,8 +13,6 @@ import (
 	"vibe_ip/internal/ent/hook"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/operationlog"
-
-	"github.com/spf13/cast"
 )
 
 var (
@@ -60,20 +58,20 @@ func CDNRecordLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -81,7 +79,7 @@ func CDNRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -89,17 +87,17 @@ func CDNRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -128,7 +126,7 @@ func CDNRecordLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -152,20 +150,20 @@ func CacheLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -173,7 +171,7 @@ func CacheLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -181,17 +179,17 @@ func CacheLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -220,7 +218,7 @@ func CacheLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -244,20 +242,20 @@ func CloudflareTunnelLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -265,7 +263,7 @@ func CloudflareTunnelLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -273,17 +271,17 @@ func CloudflareTunnelLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -312,7 +310,7 @@ func CloudflareTunnelLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -336,20 +334,20 @@ func CloudflareTunnelIngressLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -357,7 +355,7 @@ func CloudflareTunnelIngressLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -365,17 +363,17 @@ func CloudflareTunnelIngressLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -404,7 +402,7 @@ func CloudflareTunnelIngressLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -428,20 +426,20 @@ func CloudflareZoneLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -449,7 +447,7 @@ func CloudflareZoneLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -457,17 +455,17 @@ func CloudflareZoneLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -496,7 +494,7 @@ func CloudflareZoneLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -520,20 +518,20 @@ func CloudflareZoneRecordLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -541,7 +539,7 @@ func CloudflareZoneRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -549,17 +547,17 @@ func CloudflareZoneRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -588,7 +586,7 @@ func CloudflareZoneRecordLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -612,20 +610,20 @@ func CronJobLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -633,7 +631,7 @@ func CronJobLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -641,17 +639,17 @@ func CronJobLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -680,7 +678,7 @@ func CronJobLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -704,20 +702,20 @@ func DNSRecordLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -725,7 +723,7 @@ func DNSRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -733,17 +731,17 @@ func DNSRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -772,7 +770,7 @@ func DNSRecordLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -796,20 +794,20 @@ func DeviceLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -817,7 +815,7 @@ func DeviceLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -825,17 +823,17 @@ func DeviceLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -864,7 +862,7 @@ func DeviceLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -888,20 +886,20 @@ func DeviceGroupLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -909,7 +907,7 @@ func DeviceGroupLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -917,17 +915,17 @@ func DeviceGroupLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -956,7 +954,7 @@ func DeviceGroupLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -980,20 +978,20 @@ func DevicePortForwardLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -1001,7 +999,7 @@ func DevicePortForwardLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -1009,17 +1007,17 @@ func DevicePortForwardLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -1048,7 +1046,7 @@ func DevicePortForwardLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -1072,20 +1070,20 @@ func DomainMonitorLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -1093,7 +1091,7 @@ func DomainMonitorLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -1101,17 +1099,17 @@ func DomainMonitorLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -1140,7 +1138,7 @@ func DomainMonitorLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -1164,20 +1162,20 @@ func EdgeOneZoneLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -1185,7 +1183,7 @@ func EdgeOneZoneLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -1193,17 +1191,17 @@ func EdgeOneZoneLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -1232,7 +1230,7 @@ func EdgeOneZoneLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -1256,20 +1254,20 @@ func EdgeOneZoneAccelerationDomainLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -1277,7 +1275,7 @@ func EdgeOneZoneAccelerationDomainLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -1285,17 +1283,17 @@ func EdgeOneZoneAccelerationDomainLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -1324,7 +1322,7 @@ func EdgeOneZoneAccelerationDomainLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -1348,20 +1346,20 @@ func EdgeOneZoneDNSRecordLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -1369,7 +1367,7 @@ func EdgeOneZoneDNSRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -1377,17 +1375,17 @@ func EdgeOneZoneDNSRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -1416,7 +1414,7 @@ func EdgeOneZoneDNSRecordLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -1440,20 +1438,20 @@ func EdgeOneZoneOriginGroupLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -1461,7 +1459,7 @@ func EdgeOneZoneOriginGroupLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -1469,17 +1467,17 @@ func EdgeOneZoneOriginGroupLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -1508,7 +1506,7 @@ func EdgeOneZoneOriginGroupLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -1532,20 +1530,20 @@ func EsaSiteLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -1553,7 +1551,7 @@ func EsaSiteLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -1561,17 +1559,17 @@ func EsaSiteLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -1600,7 +1598,7 @@ func EsaSiteLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -1624,20 +1622,20 @@ func EsaSiteEdgeContainerRecordLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -1645,7 +1643,7 @@ func EsaSiteEdgeContainerRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -1653,17 +1651,17 @@ func EsaSiteEdgeContainerRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -1692,7 +1690,7 @@ func EsaSiteEdgeContainerRecordLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -1716,20 +1714,20 @@ func EsaSiteEdgeRoutineRecordLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -1737,7 +1735,7 @@ func EsaSiteEdgeRoutineRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -1745,17 +1743,17 @@ func EsaSiteEdgeRoutineRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -1784,7 +1782,7 @@ func EsaSiteEdgeRoutineRecordLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -1808,20 +1806,20 @@ func EsaSiteOriginPoolLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -1829,7 +1827,7 @@ func EsaSiteOriginPoolLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -1837,17 +1835,17 @@ func EsaSiteOriginPoolLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -1876,7 +1874,7 @@ func EsaSiteOriginPoolLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -1900,20 +1898,20 @@ func EsaSiteRecordLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -1921,7 +1919,7 @@ func EsaSiteRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -1929,17 +1927,17 @@ func EsaSiteRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -1968,7 +1966,7 @@ func EsaSiteRecordLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -1992,20 +1990,20 @@ func IpGroupLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -2013,7 +2011,7 @@ func IpGroupLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -2021,17 +2019,17 @@ func IpGroupLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -2060,7 +2058,7 @@ func IpGroupLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -2084,20 +2082,20 @@ func PlatformConfigLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -2105,7 +2103,7 @@ func PlatformConfigLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -2113,17 +2111,17 @@ func PlatformConfigLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -2152,7 +2150,7 @@ func PlatformConfigLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -2176,20 +2174,20 @@ func SSLImportLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -2197,7 +2195,7 @@ func SSLImportLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -2205,17 +2203,17 @@ func SSLImportLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -2244,7 +2242,7 @@ func SSLImportLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -2268,20 +2266,20 @@ func SSLRecordLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -2289,7 +2287,7 @@ func SSLRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -2297,17 +2295,17 @@ func SSLRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -2336,7 +2334,7 @@ func SSLRecordLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -2360,20 +2358,20 @@ func TUNRecordLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -2381,7 +2379,7 @@ func TUNRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -2389,17 +2387,17 @@ func TUNRecordLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -2428,7 +2426,7 @@ func TUNRecordLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -2452,20 +2450,20 @@ func WebhookLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -2473,7 +2471,7 @@ func WebhookLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -2481,17 +2479,17 @@ func WebhookLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -2520,7 +2518,7 @@ func WebhookLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
@@ -2544,20 +2542,20 @@ func WebhookSubscriptionLogHook() ent.Hook {
 				opType := op.String()
 				objType := m.Type()
 
-				// 1. 从 Context 获取来源标识
+				// 从 Context 获取来源标识
 				source := GetSource(ctx)
 
-				// 2. 获取 ID (变更前抓取)
+				// 获取 ID (变更前抓取)
 				var objIDS []int64
 				if op.Is(ent.OpUpdate | ent.OpDelete) {
 					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-						objIDS = cast.ToInt64Slice(ids)
+						objIDS = ids
 					}
 				} else if id, exists := m.ID(); exists {
 					objIDS = []int64{id}
 				}
 
-				// 3. 捕获变更字段 (New Value)
+				// 捕获变更字段 (New Value)
 				newV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, exists := m.Field(f); exists {
@@ -2565,7 +2563,7 @@ func WebhookSubscriptionLogHook() ent.Hook {
 					}
 				}
 
-				// 4. 捕获旧值 (Old Value)
+				// 捕获旧值 (Old Value)
 				oldV := make(map[string]any)
 				for _, f := range m.Fields() {
 					if v, err := m.OldField(ctx, f); err == nil {
@@ -2573,17 +2571,17 @@ func WebhookSubscriptionLogHook() ent.Hook {
 					}
 				}
 
-				// 5. 执行业务变更
+				// 执行业务变更
 				result, err := next.Mutate(ctx, m)
 
-				// 6. 补偿获取 Create 后的 ID
+				// 补偿获取 Create 后的 ID
 				if op.Is(ent.OpCreate) && err == nil && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
 				}
 
-				// 7. 异步入库记录日志
+				// 异步入库记录日志
 				go func(asyncCtx context.Context, asyncSource string, asyncOpType string, asyncObjType string, asyncIDS []int64, asyncOv map[string]any, asyncNv map[string]any, opErr error) {
 					// 状态判断
 					status := operationlog.StatusSuccess
@@ -2612,7 +2610,7 @@ func WebhookSubscriptionLogHook() ent.Hook {
 					}
 				}(context.WithoutCancel(ctx), source, opType, objType, objIDS, oldV, newV, err)
 
-				// 8. 本地打印
+				// 本地打印
 				if err != nil {
 					auditDbSlog.ErrorContext(ctx, fmt.Sprintf("%s 变更失败", objType),
 						slog.Any("ids", objIDS),
