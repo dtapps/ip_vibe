@@ -577,9 +577,9 @@ func (s *SSLRecordServiceImpl) handleSslApplTaskStatus(ctx context.Context, db *
 			SetJobCategory(cronjob.JobCategorySystem).
 			SetBusinessType(cronjob.BusinessTypeSsl).
 			SetBusinessID(record.ID).
-			SetMinInterval(10).
-			SetMaxInterval(30).
-			SetIntervalUnit(cronjob.IntervalUnitMinutes).
+			SetMinInterval(8).
+			SetMaxInterval(10).
+			SetIntervalUnit(cronjob.IntervalUnitHours).
 			SetStatus(targetStatus).
 			SetIsSingleton(true). // 单例模式
 			SetRunOnStart(false). // 启动时不立即运行
