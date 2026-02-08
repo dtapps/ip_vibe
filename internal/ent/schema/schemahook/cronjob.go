@@ -17,18 +17,20 @@ func CronJobGocronHook() ent.Hook {
 	return hook.On(
 		func(next ent.Mutator) ent.Mutator {
 			return hook.CronJobFunc(func(ctx context.Context, m *ent.CronJobMutation) (ent.Value, error) {
-				op := m.Op()
+
+				// 如果 OnSyncJob 为空，直接返回
+				if OnSyncJob == nil {
+					return next.Mutate(ctx, m)
+				}
 
 				// 获取 ID (变更前抓取)
 				var objIDS []int64
-				if OnSyncJob != nil {
-					if op.Is(ent.OpUpdate | ent.OpDelete) {
-						if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
-							objIDS = ids
-						}
-					} else if id, exists := m.ID(); exists {
-						objIDS = []int64{id}
+				if m.Op().Is(ent.OpUpdate | ent.OpDelete) {
+					if ids, err := m.IDs(ctx); err == nil && len(ids) > 0 {
+						objIDS = ids
 					}
+				} else if id, exists := m.ID(); exists {
+					objIDS = []int64{id}
 				}
 
 				// 执行业务变更
@@ -37,13 +39,8 @@ func CronJobGocronHook() ent.Hook {
 					return result, err
 				}
 
-				// 判断 OnSyncJob 是否已注入
-				if OnSyncJob == nil {
-					return result, nil
-				}
-
 				// 补偿获取 Create 后的 ID
-				if op.Is(ent.OpCreate) && err == nil && result != nil {
+				if m.Op().Is(ent.OpCreate) && result != nil {
 					if id, ok := m.ID(); ok {
 						objIDS = []int64{id}
 					}
@@ -62,6 +59,7 @@ func CronJobGocronHook() ent.Hook {
 				return result, nil
 			})
 		},
-		ent.OpCreate,
+		// ent.OpCreate,
+		ent.OpCreate|ent.OpDelete|ent.OpDeleteOne,
 	)
 }
