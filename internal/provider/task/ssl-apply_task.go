@@ -81,8 +81,15 @@ func (p *SSLApplyTaskProvider) Process(ctx context.Context, args json.RawMessage
 		if !record.IsActive {
 			return "跳过: 记录已禁用", nil
 		}
-		if !record.IsAutoRenewal {
-			return "跳过: 记录未开启自动续期", nil
+	}
+
+	// 如果存在过期时间和开启自动续期，判断是否需要续期
+	if !record.NotAfter.IsZero() && record.IsAutoRenewal {
+		// 计算距离过期时间还有多少天
+		daysUntilExpire := record.NotAfter.Sub(time.Now()).Hours() / 24
+		// 如果大于过期时间就跳过
+		if daysUntilExpire > float64(record.RenewalDays) {
+			return fmt.Sprintf("距离过期时间还有%.0f天，不需要续期", daysUntilExpire), nil
 		}
 	}
 
