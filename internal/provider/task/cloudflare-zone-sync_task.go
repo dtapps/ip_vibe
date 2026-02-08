@@ -55,8 +55,8 @@ const (
 
 // CloudflareZoneSyncTaskArgs 定义了存放在 CronJob.handler_args 中的数据结构
 type CloudflareZoneSyncTaskArgs struct {
-	ConfigID string `json:"config_id,omitempty"` // 平台配置序号
-	ZoneID   string `json:"zone_id,omitempty"`   // 站点序号
+	ConfigID int64 `json:"config_id,omitempty"` // 平台配置序号
+	ZoneID   int64 `json:"zone_id,omitempty"`   // 站点序号
 }
 
 // Process 执行 Cloudflare站点同步 逻辑
@@ -68,7 +68,7 @@ func (p *CloudflareZoneSyncTaskProvider) Process(ctx context.Context, args json.
 		return "", fmt.Errorf("解析参数失败: %w", err)
 	}
 
-	if params.ConfigID == "" && params.ZoneID == "" {
+	if params.ConfigID == 0 && params.ZoneID == 0 {
 
 		// 调用 同步 全部账号 所有站点
 		err := p.cloudflareZoneSync.SyncAllZones(ctx)
@@ -122,6 +122,51 @@ func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, businessK
 		}
 
 		return nil
+	}
+
+	return nil
+}
+
+// AddTask 添加 Cloudflare站点同步 任务
+func (p *CloudflareZoneSyncTaskProvider) AddTask(ctx context.Context, configID int64, zoneID int64) error {
+
+	// 任务名称
+	var name string
+
+	// 业务键
+	var businessID int64
+
+	if configID != 0 && zoneID == 0 {
+		name = fmt.Sprintf("CloudFlare站点同步: %d", configID)
+		businessID = configID
+	} else if configID != 0 && zoneID != 0 {
+		name = fmt.Sprintf("CloudFlare站点同步: %d-%d", configID, zoneID)
+		businessID = zoneID
+	} else {
+		return fmt.Errorf("参数错误")
+	}
+
+	// 创建任务
+	err := p.db.CronJob.Create().
+		SetName(name).
+		SetHandlerName(CloudflareZoneSyncTaskName).
+		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareZoneSyncTaskArgs{
+			ConfigID: configID,
+			ZoneID:   zoneID,
+		}))).
+		SetTaskType(cronjob.TaskTypeOneOff).
+		SetJobType(cronjob.JobTypeDuration).
+		SetJobCategory(cronjob.JobCategoryCustom).
+		SetBusinessType(cronjob.BusinessTypeCloudflareZone).
+		SetBusinessID(businessID).
+		SetIntervalValue(1).
+		SetIntervalUnit(cronjob.IntervalUnitSeconds).
+		SetStatus(cronjob.StatusRunning).
+		SetIsSingleton(true). // 单例模式
+		SetRunOnStart(true).  // 启动时立即运行
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("创建任务失败: %w", err)
 	}
 
 	return nil

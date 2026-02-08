@@ -155,10 +155,13 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, busines
 
 // AddTask 添加 Cloudflare隧道同步 任务
 func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, configID int64, tunnelID int64) error {
+
 	// 任务名称
 	var name string
+
 	// 业务键
 	var businessID int64
+
 	if configID != 0 && tunnelID == 0 {
 		name = fmt.Sprintf("CloudFlare隧道同步: %d", configID)
 		businessID = configID
@@ -168,6 +171,7 @@ func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, configID
 	} else {
 		return fmt.Errorf("参数错误")
 	}
+
 	// 创建任务
 	err := p.db.CronJob.Create().
 		SetName(name).
@@ -190,5 +194,6 @@ func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, configID
 	if err != nil {
 		return fmt.Errorf("创建任务失败: %w", err)
 	}
+
 	return nil
 }

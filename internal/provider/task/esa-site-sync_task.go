@@ -55,9 +55,9 @@ const (
 
 // ESASiteSyncTaskArgs 定义了存放在 CronJob.handler_args 中的数据结构
 type ESASiteSyncTaskArgs struct {
-	ConfigID string `json:"config_id,omitempty"` // 平台配置序号
-	SiteID   string `json:"site_id,omitempty"`   // 站点序号
-	PoolID   string `json:"pool_id,omitempty"`   // 源地址池序号
+	ConfigID int64 `json:"config_id,omitempty"` // 平台配置序号
+	SiteID   int64 `json:"site_id,omitempty"`   // 站点序号
+	PoolID   int64 `json:"pool_id,omitempty"`   // 源地址池序号
 }
 
 // Process 执行 ESA站点同步 逻辑
@@ -69,7 +69,7 @@ func (p *ESASiteSyncTaskProvider) Process(ctx context.Context, args json.RawMess
 		return "", fmt.Errorf("解析参数失败: %w", err)
 	}
 
-	if params.ConfigID == "" && params.SiteID == "" && params.PoolID == "" {
+	if params.ConfigID == 0 && params.SiteID == 0 && params.PoolID == 0 {
 
 		// 调用 同步 全部账号 所有站点
 		err := p.esaSiteSync.SyncAllSites(ctx)
@@ -130,6 +130,55 @@ func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, businessKey stri
 		}
 
 		return nil
+	}
+
+	return nil
+}
+
+// AddTask 添加 ESA站点同步 任务
+func (p *ESASiteSyncTaskProvider) AddTask(ctx context.Context, configID int64, siteID int64, poolID int64) error {
+
+	// 任务名称
+	var name string
+
+	// 业务键
+	var businessID int64
+
+	if configID != 0 && siteID == 0 && poolID == 0 {
+		name = fmt.Sprintf("ESA站点同步: %d", configID)
+		businessID = configID
+	} else if configID != 0 && siteID != 0 && poolID == 0 {
+		name = fmt.Sprintf("ESA站点同步: %d-%d", configID, siteID)
+		businessID = siteID
+	} else if configID != 0 && siteID != 0 && poolID != 0 {
+		name = fmt.Sprintf("ESA站点同步: %d-%d-%d", configID, siteID, poolID)
+		businessID = poolID
+	} else {
+		return fmt.Errorf("参数错误")
+	}
+
+	// 创建任务
+	err := p.db.CronJob.Create().
+		SetName(name).
+		SetHandlerName(ESASiteSyncTaskName).
+		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(ESASiteSyncTaskArgs{
+			ConfigID: configID,
+			SiteID:   siteID,
+			PoolID:   poolID,
+		}))).
+		SetTaskType(cronjob.TaskTypeRecurring).
+		SetJobType(cronjob.JobTypeRandom).
+		SetJobCategory(cronjob.JobCategorySystem).
+		SetBusinessType(cronjob.BusinessTypeEsaSite).
+		SetBusinessID(businessID).
+		SetIntervalValue(1).
+		SetIntervalUnit(cronjob.IntervalUnitSeconds).
+		SetStatus(cronjob.StatusRunning).
+		SetIsSingleton(true). // 单例模式
+		SetRunOnStart(true).  // 启动时立即运行
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("创建任务失败: %w", err)
 	}
 
 	return nil
