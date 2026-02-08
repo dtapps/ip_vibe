@@ -208,7 +208,7 @@ func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, table string) err
 
 		// 创建任务
 		err = p.db.CronJob.Create().
-			SetName("SSL刷新 " + table).
+			SetName("SSL刷新: " + table).
 			SetHandlerName(SSLRefreshTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(SSLRefreshTaskArgs{
 				Table: table,

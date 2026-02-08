@@ -167,7 +167,7 @@ func (p *ClearDataTaskProvider) LoadTask(ctx context.Context, table string) erro
 
 		// 创建任务
 		err = p.db.CronJob.Create().
-			SetName("数据清理 " + table).
+			SetName("数据清理: " + table).
 			SetHandlerName(ClearDataTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(ClearDataTaskArgs{
 				Table: table,
