@@ -106,7 +106,7 @@ func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, businessK
 			SetHandlerName(CloudflareZoneSyncTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareZoneSyncTaskArgs{}))).
 			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeDuration).
+			SetJobType(cronjob.JobTypeRandom).
 			SetJobCategory(cronjob.JobCategorySystem).
 			SetBusinessType(cronjob.BusinessTypeSystem).
 			SetBusinessKey(businessKey).

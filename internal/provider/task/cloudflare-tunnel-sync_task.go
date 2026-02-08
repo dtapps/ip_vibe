@@ -55,8 +55,8 @@ const (
 
 // CloudflareTunnelSyncTaskArgs 定义了存放在 CronJob.handler_args 中的数据结构
 type CloudflareTunnelSyncTaskArgs struct {
-	ConfigID string `json:"config_id,omitempty"` // 平台配置序号
-	TunnelID string `json:"tunnel_id,omitempty"` // 隧道序号
+	ConfigID int64 `json:"config_id,omitempty"` // 平台配置序号
+	TunnelID int64 `json:"tunnel_id,omitempty"` // 隧道序号
 }
 
 // Process 执行 Cloudflare隧道同步 逻辑
@@ -68,7 +68,8 @@ func (p *CloudflareTunnelSyncTaskProvider) Process(ctx context.Context, args jso
 		return "", fmt.Errorf("解析参数失败: %w", err)
 	}
 
-	if params.ConfigID == "" && params.TunnelID == "" {
+	if params.ConfigID == 0 && params.TunnelID == 0 {
+		// 同步全部账号
 
 		// 调用 同步全部账号Cloudflare隧道
 		err := p.cloudflareTunnelSync.SyncAllCloudflareTunnels(ctx)
@@ -81,6 +82,31 @@ func (p *CloudflareTunnelSyncTaskProvider) Process(ctx context.Context, args jso
 		if err != nil {
 			return "", err
 		}
+
+	} else if params.ConfigID != 0 && params.TunnelID == 0 {
+		// 同步某个账号
+
+		// 调用 同步某个账号Cloudflare隧道
+		err := p.cloudflareTunnelSync.SyncThisCloudflareTunnels(ctx, params.ConfigID)
+		if err != nil {
+			return "", err
+		}
+
+		// 调用 同步某个账号Cloudflare隧道入站规则
+		err = p.cloudflareTunnelSync.SyncThisCloudflareTunnelIngresses(ctx, params.ConfigID)
+		if err != nil {
+			return "", err
+		}
+
+	} else if params.ConfigID != 0 && params.TunnelID != 0 {
+		// 同步某个账号的某个隧道
+
+		// 调用 同步某个账号Cloudflare某个隧道的入站规则
+		err := p.cloudflareTunnelSync.SyncThisCloudflareThisTunnelIngresses(ctx, params.ConfigID, params.TunnelID)
+		if err != nil {
+			return "", err
+		}
+
 	}
 
 	return fmt.Sprintf("同步成功"), nil
@@ -106,7 +132,7 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, busines
 			SetHandlerName(CloudflareTunnelSyncTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareTunnelSyncTaskArgs{}))).
 			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeDuration).
+			SetJobType(cronjob.JobTypeRandom).
 			SetJobCategory(cronjob.JobCategorySystem).
 			SetBusinessType(cronjob.BusinessTypeSystem).
 			SetBusinessKey(businessKey).
@@ -124,5 +150,45 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, busines
 		return nil
 	}
 
+	return nil
+}
+
+// AddTask 添加 Cloudflare隧道同步 任务
+func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, configID int64, tunnelID int64) error {
+	// 任务名称
+	var name = ""
+	// 业务键
+	var businessKey = ""
+	if configID != 0 && tunnelID == 0 {
+		name = fmt.Sprintf("CloudFlare隧道同步: %d", configID)
+		businessKey = fmt.Sprintf("%d", configID)
+	} else if configID != 0 && tunnelID != 0 {
+		name = fmt.Sprintf("CloudFlare隧道同步: %d-%d", configID, tunnelID)
+		businessKey = fmt.Sprintf("%d-%d", configID, tunnelID)
+	} else {
+		return fmt.Errorf("参数错误")
+	}
+	// 创建任务
+	err := p.db.CronJob.Create().
+		SetName(name).
+		SetHandlerName(CloudflareTunnelSyncTaskName).
+		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareTunnelSyncTaskArgs{
+			ConfigID: configID,
+			TunnelID: tunnelID,
+		}))).
+		SetTaskType(cronjob.TaskTypeOneOff).
+		SetJobType(cronjob.JobTypeDuration).
+		SetJobCategory(cronjob.JobCategoryCustom).
+		SetBusinessType(cronjob.BusinessTypeSystem).
+		SetBusinessKey(businessKey).
+		SetIntervalValue(1).
+		SetIntervalUnit(cronjob.IntervalUnitSeconds).
+		SetStatus(cronjob.StatusRunning).
+		SetIsSingleton(true). // 单例模式
+		SetRunOnStart(true).  // 启动时立即运行
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("创建任务失败: %w", err)
+	}
 	return nil
 }

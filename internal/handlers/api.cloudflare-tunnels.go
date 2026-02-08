@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strings"
 	"vibe_ip/internal/backend/service"
-	"vibe_ip/internal/backend/syncs"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/provider/task"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -33,8 +33,8 @@ func SyncCloudflareTunnels(c *gin.Context) {
 		return
 	}
 
-	// 创建Cloudflare Tunnel同步
-	cloudflareTunnelSync := syncs.NewCloudflareTunnelSync(
+	// 创建 Cloudflare隧道同步 任务
+	cloudflareTunnelSyncTask := task.NewCloudflareTunnelSyncTaskProviderRaw(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
@@ -43,15 +43,8 @@ func SyncCloudflareTunnels(c *gin.Context) {
 
 	if strings.EqualFold(requestParams.Type, "all") {
 
-		// 调用 同步全部账号Cloudflare隧道
-		err := cloudflareTunnelSync.SyncAllCloudflareTunnels(c)
-		if err != nil {
-			errorResponse(c, http.StatusNotFound, err.Error())
-			return
-		}
-
-		// 调用 同步全部账号Cloudflare隧道入站规则
-		err = cloudflareTunnelSync.SyncAllCloudflareTunnelIngresses(c)
+		// 添加 Cloudflare隧道同步 任务
+		err := cloudflareTunnelSyncTask.AddTask(c, 0, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -61,15 +54,8 @@ func SyncCloudflareTunnels(c *gin.Context) {
 
 	if strings.EqualFold(requestParams.Type, "this-config") && requestParams.ConfigID > 0 {
 
-		// 调用 同步某个账号Cloudflare隧道
-		err := cloudflareTunnelSync.SyncThisCloudflareTunnels(c, requestParams.ConfigID)
-		if err != nil {
-			errorResponse(c, http.StatusNotFound, err.Error())
-			return
-		}
-
-		// 调用 同步某个账号Cloudflare隧道入站规则
-		err = cloudflareTunnelSync.SyncThisCloudflareTunnelIngresses(c, requestParams.ConfigID)
+		// 添加 Cloudflare隧道同步 任务
+		err := cloudflareTunnelSyncTask.AddTask(c, requestParams.ConfigID, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -79,8 +65,8 @@ func SyncCloudflareTunnels(c *gin.Context) {
 
 	if strings.EqualFold(requestParams.Type, "this-tunnel") && requestParams.ConfigID > 0 && requestParams.TunnelID > 0 {
 
-		// 调用 同步某个账号Cloudflare某个隧道的入站规则
-		err := cloudflareTunnelSync.SyncThisCloudflareThisTunnelIngresses(c, requestParams.ConfigID, requestParams.TunnelID)
+		// 添加 Cloudflare隧道同步 任务
+		err := cloudflareTunnelSyncTask.AddTask(c, requestParams.ConfigID, requestParams.TunnelID)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return

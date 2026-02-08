@@ -114,7 +114,7 @@ func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, businessKey stri
 			SetHandlerName(ESASiteSyncTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(ESASiteSyncTaskArgs{}))).
 			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeDuration).
+			SetJobType(cronjob.JobTypeRandom).
 			SetJobCategory(cronjob.JobCategorySystem).
 			SetBusinessType(cronjob.BusinessTypeSystem).
 			SetBusinessKey(businessKey).

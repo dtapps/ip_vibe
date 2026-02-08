@@ -114,7 +114,7 @@ func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, businessKey 
 			SetHandlerName(EdgeOneZoneSyncTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(EdgeOneZoneSyncTaskArgs{}))).
 			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeDuration).
+			SetJobType(cronjob.JobTypeRandom).
 			SetJobCategory(cronjob.JobCategorySystem).
 			SetBusinessType(cronjob.BusinessTypeSystem).
 			SetBusinessKey(businessKey).
