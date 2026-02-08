@@ -69,44 +69,43 @@ func (p *CloudflareTunnelSyncTaskProvider) Process(ctx context.Context, args jso
 	}
 
 	if params.ConfigID == 0 && params.TunnelID == 0 {
-		// 同步全部账号
 
-		// 调用 同步全部账号Cloudflare隧道
+		// 同步 全部账号 全部隧道
 		err := p.cloudflareTunnelSync.SyncAllCloudflareTunnels(ctx)
 		if err != nil {
 			return "", err
 		}
 
-		// 调用 同步全部账号Cloudflare隧道入站规则
+		// 同步 全部账号 全部隧道入站规则
 		err = p.cloudflareTunnelSync.SyncAllCloudflareTunnelIngresses(ctx)
 		if err != nil {
 			return "", err
 		}
 
 	} else if params.ConfigID != 0 && params.TunnelID == 0 {
-		// 同步某个账号
 
-		// 调用 同步某个账号Cloudflare隧道
+		// 同步 某个账号 全部隧道
 		err := p.cloudflareTunnelSync.SyncThisCloudflareTunnels(ctx, params.ConfigID)
 		if err != nil {
 			return "", err
 		}
 
-		// 调用 同步某个账号Cloudflare隧道入站规则
+		// 同步 某个账号 全部隧道入站规则
 		err = p.cloudflareTunnelSync.SyncThisCloudflareTunnelIngresses(ctx, params.ConfigID)
 		if err != nil {
 			return "", err
 		}
 
 	} else if params.ConfigID != 0 && params.TunnelID != 0 {
-		// 同步某个账号的某个隧道
 
-		// 调用 同步某个账号Cloudflare某个隧道的入站规则
+		// 同步 某个账号 某个隧道入站规则
 		err := p.cloudflareTunnelSync.SyncThisCloudflareThisTunnelIngresses(ctx, params.ConfigID, params.TunnelID)
 		if err != nil {
 			return "", err
 		}
 
+	} else {
+		return "", fmt.Errorf("参数错误")
 	}
 
 	return fmt.Sprintf("同步成功"), nil

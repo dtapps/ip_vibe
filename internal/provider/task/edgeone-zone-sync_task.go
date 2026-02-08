@@ -89,6 +89,50 @@ func (p *EdgeOneZoneSyncTaskProvider) Process(ctx context.Context, args json.Raw
 			return "", err
 		}
 
+	} else if params.ConfigID != 0 && params.ZoneID == 0 && params.GroupID == 0 {
+
+		// 同步 某个账号 所有站点
+		err := p.edgeOneZoneSync.SyncThisZones(ctx, params.ConfigID)
+		if err != nil {
+			return "", err
+		}
+
+		// 同步 某个账号 所有站点 所有源站组
+		err = p.edgeOneZoneSync.SyncThisZoneOriginGroups(ctx, params.ConfigID)
+		if err != nil {
+			return "", err
+		}
+
+		// 同步 某个账号 所有站点 所有记录
+		err = p.edgeOneZoneSync.SyncThisZoneRecords(ctx, params.ConfigID)
+		if err != nil {
+			return "", err
+		}
+
+	} else if params.ConfigID != 0 && params.ZoneID != 0 && params.GroupID == 0 {
+
+		// 同步 某个账号 某个站点
+		err := p.edgeOneZoneSync.SyncThisZone(ctx, params.ConfigID, params.ZoneID)
+		if err != nil {
+			return "", err
+		}
+
+		// 同步 某个账号 某个站点 所有源站组
+		err = p.edgeOneZoneSync.SyncThisZoneOriginGroup(ctx, params.ConfigID, params.ZoneID)
+		if err != nil {
+			return "", err
+		}
+
+		// 同步 某个账号 某个站点 所有记录
+		err = p.edgeOneZoneSync.SyncThisZoneRecord(ctx, params.ConfigID, params.ZoneID)
+		if err != nil {
+			return "", err
+		}
+
+	} else if params.ConfigID != 0 && params.ZoneID != 0 && params.GroupID != 0 {
+
+	} else {
+		return "", fmt.Errorf("参数错误")
 	}
 
 	return fmt.Sprintf("同步成功"), nil

@@ -70,17 +70,48 @@ func (p *CloudflareZoneSyncTaskProvider) Process(ctx context.Context, args json.
 
 	if params.ConfigID == 0 && params.ZoneID == 0 {
 
-		// 调用 同步 全部账号 所有站点
+		// 同步 全部账号 所有站点
 		err := p.cloudflareZoneSync.SyncAllZones(ctx)
 		if err != nil {
 			return "", err
 		}
 
-		// 调用 同步 全部账号 所有站点 所有记录
+		// 同步 全部账号 所有站点 所有记录
 		err = p.cloudflareZoneSync.SyncAllZoneRecords(ctx)
 		if err != nil {
 			return "", err
 		}
+
+	} else if params.ConfigID != 0 && params.ZoneID == 0 {
+
+		// 同步 某个账号 所有站点
+		err := p.cloudflareZoneSync.SyncThisZones(ctx, params.ConfigID)
+		if err != nil {
+			return "", err
+		}
+
+		// 同步 某个账号 所有站点 所有记录
+		err = p.cloudflareZoneSync.SyncThisZoneRecords(ctx, params.ConfigID)
+		if err != nil {
+			return "", err
+		}
+
+	} else if params.ConfigID != 0 && params.ZoneID != 0 {
+
+		// 同步 某个账号 某个站点
+		err := p.cloudflareZoneSync.SyncThisSite(ctx, params.ConfigID, params.ZoneID)
+		if err != nil {
+			return "", err
+		}
+
+		// 同步 某个账号 某个站点 所有记录
+		err = p.cloudflareZoneSync.SyncThisZoneRecord(ctx, params.ConfigID, params.ZoneID)
+		if err != nil {
+			return "", err
+		}
+
+	} else {
+		return "", fmt.Errorf("参数错误")
 	}
 
 	return fmt.Sprintf("同步成功"), nil

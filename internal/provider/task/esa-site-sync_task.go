@@ -89,6 +89,50 @@ func (p *ESASiteSyncTaskProvider) Process(ctx context.Context, args json.RawMess
 			return "", err
 		}
 
+	} else if params.ConfigID != 0 && params.SiteID == 0 && params.PoolID == 0 {
+
+		// 同步 某个账号 所有站点
+		err := p.esaSiteSync.SyncThisSites(ctx, params.ConfigID)
+		if err != nil {
+			return "", err
+		}
+
+		// 同步 某个账号 所有站点 所有源地址池
+		err = p.esaSiteSync.SyncThisSiteOriginPools(ctx, params.ConfigID)
+		if err != nil {
+			return "", err
+		}
+
+		// 同步 某个账号 所有站点 所有记录
+		err = p.esaSiteSync.SyncThisSiteRecords(ctx, params.ConfigID)
+		if err != nil {
+			return "", err
+		}
+
+	} else if params.ConfigID != 0 && params.SiteID != 0 && params.PoolID == 0 {
+
+		// 同步 某个账号 某个站点
+		err := p.esaSiteSync.SyncThisSite(ctx, params.ConfigID, params.SiteID)
+		if err != nil {
+			return "", err
+		}
+
+		// 同步 某个账号 某个站点 所有源地址池
+		err = p.esaSiteSync.SyncThisSiteOriginPool(ctx, params.ConfigID, params.SiteID)
+		if err != nil {
+			return "", err
+		}
+
+		// 同步 某个账号 某个站点 所有记录
+		err = p.esaSiteSync.SyncThisSiteRecord(ctx, params.ConfigID, params.SiteID)
+		if err != nil {
+			return "", err
+		}
+
+	} else if params.ConfigID != 0 && params.SiteID != 0 && params.PoolID != 0 {
+
+	} else {
+		return "", fmt.Errorf("参数错误")
 	}
 
 	return fmt.Sprintf("同步成功"), nil

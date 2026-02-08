@@ -74,7 +74,7 @@ func (s *CloudflareTunnelSync) GetApiClient(ctx context.Context, platformConfigJ
 	return tunProvider, nil
 }
 
-// 同步全部账号Cloudflare隧道
+// 同步 全部账号 全部隧道
 func (s *CloudflareTunnelSync) SyncAllCloudflareTunnels(ctx context.Context) error {
 
 	// 查询平台配置
@@ -103,7 +103,7 @@ func (s *CloudflareTunnelSync) SyncAllCloudflareTunnels(ctx context.Context) err
 	return nil
 }
 
-// 同步某个账号Cloudflare隧道
+// 同步 某个账号 全部隧道
 func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, config_id int64) error {
 
 	// 查询Cloudflare平台配置
@@ -189,7 +189,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnels(ctx context.Context, co
 	return nil
 }
 
-// 同步全部账号Cloudflare隧道入站规则
+// 同步 全部账号 全部隧道入站规则
 func (s *CloudflareTunnelSync) SyncAllCloudflareTunnelIngresses(ctx context.Context) error {
 
 	// 查询平台配置
@@ -218,7 +218,7 @@ func (s *CloudflareTunnelSync) SyncAllCloudflareTunnelIngresses(ctx context.Cont
 	return nil
 }
 
-// 同步某个账号Cloudflare隧道入站规则
+// 同步 某个账号 全部隧道入站规则
 func (s *CloudflareTunnelSync) SyncThisCloudflareTunnelIngresses(ctx context.Context, config_id int64) error {
 	// 查询Cloudflare隧道
 	allCloudflareTunnel, err := s.db.CloudflareTunnel.Query().
@@ -305,7 +305,7 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnelIngresses(ctx context.Con
 	return nil
 }
 
-// 同步某个账号Cloudflare某个隧道的入站规则
+// 同步 某个账号 某个隧道入站规则
 func (s *CloudflareTunnelSync) SyncThisCloudflareThisTunnelIngresses(ctx context.Context, config_id int64, tunnel_id int64) error {
 	// 查询Cloudflare隧道
 	firstCloudflareTunnel, err := s.db.CloudflareTunnel.Query().

@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 	"strings"
-	"vibe_ip/internal/backend/syncs"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/provider/task"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -31,8 +31,8 @@ func SyncESASites(c *gin.Context) {
 		return
 	}
 
-	// 创建Esa站点同步
-	esaSiteSync := syncs.NewESASiteSync(
+	// 创建 ESA站点同步 任务
+	esaSiteSyncTask := task.NewESASiteSyncTaskProviderRaw(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
@@ -41,22 +41,8 @@ func SyncESASites(c *gin.Context) {
 
 	if strings.EqualFold(requestParams.Type, "all") {
 
-		// 调用 同步 全部账号 所有站点
-		err := esaSiteSync.SyncAllSites(c)
-		if err != nil {
-			errorResponse(c, http.StatusNotFound, err.Error())
-			return
-		}
-
-		// 调用 同步 全部账号 所有站点 所有源地址池
-		err = esaSiteSync.SyncAllSiteOriginPools(c)
-		if err != nil {
-			errorResponse(c, http.StatusNotFound, err.Error())
-			return
-		}
-
-		// 调用 同步 全部账号 所有站点 所有记录
-		err = esaSiteSync.SyncAllSiteRecords(c)
+		// 添加 ESA站点同步 任务
+		err := esaSiteSyncTask.AddTask(c, 0, 0, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -66,22 +52,8 @@ func SyncESASites(c *gin.Context) {
 
 	if strings.EqualFold(requestParams.Type, "this-config") && requestParams.ConfigID > 0 {
 
-		// 调用 同步 某个账号 所有站点
-		err := esaSiteSync.SyncThisSites(c, requestParams.ConfigID)
-		if err != nil {
-			errorResponse(c, http.StatusNotFound, err.Error())
-			return
-		}
-
-		// 调用 同步 某个账号 所有站点 所有源地址池
-		err = esaSiteSync.SyncThisSiteOriginPools(c, requestParams.ConfigID)
-		if err != nil {
-			errorResponse(c, http.StatusNotFound, err.Error())
-			return
-		}
-
-		// 调用 同步 某个账号 所有站点 所有记录
-		err = esaSiteSync.SyncThisSiteRecords(c, requestParams.ConfigID)
+		// 添加 ESA站点同步 任务
+		err := esaSiteSyncTask.AddTask(c, requestParams.ConfigID, 0, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -91,22 +63,19 @@ func SyncESASites(c *gin.Context) {
 
 	if strings.EqualFold(requestParams.Type, "this-site") && requestParams.ConfigID > 0 && requestParams.SiteID > 0 {
 
-		// 调用 同步 某个账号 某个站点
-		err := esaSiteSync.SyncThisSite(c, requestParams.ConfigID, requestParams.SiteID)
+		// 添加 ESA站点同步 任务
+		err := esaSiteSyncTask.AddTask(c, requestParams.ConfigID, requestParams.SiteID, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
 		}
 
-		// 调用 同步 某个账号 某个站点 所有源地址池
-		err = esaSiteSync.SyncThisSiteOriginPool(c, requestParams.ConfigID, requestParams.SiteID)
-		if err != nil {
-			errorResponse(c, http.StatusNotFound, err.Error())
-			return
-		}
+	}
 
-		// 调用 同步 某个账号 某个站点 所有记录
-		err = esaSiteSync.SyncThisSiteRecord(c, requestParams.ConfigID, requestParams.SiteID)
+	if strings.EqualFold(requestParams.Type, "this-pool") && requestParams.PoolID > 0 && requestParams.ConfigID > 0 && requestParams.SiteID > 0 {
+
+		// 添加 ESA站点同步 任务
+		err := esaSiteSyncTask.AddTask(c, requestParams.ConfigID, requestParams.SiteID, requestParams.PoolID)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
