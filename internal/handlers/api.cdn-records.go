@@ -15,13 +15,13 @@ import (
 //
 //	@Description	获取全部CDN记录
 //	@Summary		获取全部CDN记录
-//	@Tags			CDN记录
+//	@Tags			CDNRecord
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	query		types.GetCdnRecordsRequest						false	"请求参数"
-//	@Success		200		{object}	APIResponse{data=[]types.GetCdnRecordResponse}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									"参数错误"
-//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Param			request	query		types.GetCdnRecordsRequest								false	"请求参数"
+//	@Success		200		{object}	types.APIResponse{data=[]types.GetCdnRecordResponse}	"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}										"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}										"错误响应"
 //	@Router			/cdn-records [get]
 func GetCdnRecords(c *gin.Context) {
 	// 请求参数
@@ -51,13 +51,13 @@ func GetCdnRecords(c *gin.Context) {
 //
 //	@Description	获取CDN记录详情
 //	@Summary		获取CDN记录详情
-//	@Tags			CDN记录
+//	@Tags			CDNRecord
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64											true	"CDN记录序号"
-//	@Success		200	{object}	APIResponse{data=types.GetCdnRecordResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									"参数错误"
-//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Param			id	path		int64												true	"CDN记录序号"
+//	@Success		200	{object}	types.APIResponse{data=types.GetCdnRecordResponse}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}									"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}									"错误响应"
 //	@Router			/cdn-records/{id} [get]
 func GetCdnRecordDetail(c *gin.Context) {
 	// 请求参数
@@ -88,13 +88,13 @@ func GetCdnRecordDetail(c *gin.Context) {
 //
 //	@Description	创建CDN记录
 //	@Summary		创建CDN记录
-//	@Tags			CDN记录
+//	@Tags			CDNRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.CreateCdnRecordRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}					"成功响应"
-//	@Failure		400		{object}	APIResponse{}					"参数错误"
-//	@Failure		404		{object}	APIResponse{}					"错误响应"
+//	@Success		200		{object}	types.APIResponse{}				"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}				"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}				"错误响应"
 //	@Router			/cdn-records [post]
 func CreateCdnRecord(c *gin.Context) {
 	// 请求参数
@@ -124,14 +124,14 @@ func CreateCdnRecord(c *gin.Context) {
 //
 //	@Description	更新CDN记录
 //	@Summary		更新CDN记录
-//	@Tags			CDN记录
+//	@Tags			CDNRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64							true	"CDN记录序号"
 //	@Param			request	body		types.UpdateCdnRecordRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}					"成功响应"
-//	@Failure		400		{object}	APIResponse{}					"参数错误"
-//	@Failure		404		{object}	APIResponse{}					"错误响应"
+//	@Success		200		{object}	types.APIResponse{}				"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}				"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}				"错误响应"
 //	@Router			/cdn-records/{id} [patch]
 func UpdateCdnRecord(c *gin.Context) {
 	// 请求参数
@@ -162,14 +162,14 @@ func UpdateCdnRecord(c *gin.Context) {
 //
 //	@Description	更新CDN记录启用状态
 //	@Summary		更新CDN记录启用状态
-//	@Tags			CDN记录
+//	@Tags			CDNRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64								true	"CDN记录序号"
 //	@Param			request	body		types.UpdateCdnRecordActiveRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}						"成功响应"
-//	@Failure		400		{object}	APIResponse{}						"参数错误"
-//	@Failure		404		{object}	APIResponse{}						"错误响应"
+//	@Success		200		{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}					"错误响应"
 //	@Router			/cdn-records/{id}/active [patch]
 func UpdateCdnRecordActive(c *gin.Context) {
 	// 请求参数
@@ -200,13 +200,13 @@ func UpdateCdnRecordActive(c *gin.Context) {
 //
 //	@Description	批量更新CDN记录启用状态
 //	@Summary		批量更新CDN记录启用状态
-//	@Tags			CDN记录
+//	@Tags			CDNRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.BatchUpdateCdnRecordActiveRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}							"成功响应"
-//	@Failure		400		{object}	APIResponse{}							"参数错误"
-//	@Failure		404		{object}	APIResponse{}							"错误响应"
+//	@Success		200		{object}	types.APIResponse{}						"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}						"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}						"错误响应"
 //	@Router			/cdn-records/batch/active [patch]
 func BatchUpdateCdnRecordActive(c *gin.Context) {
 	// 请求参数
@@ -236,13 +236,13 @@ func BatchUpdateCdnRecordActive(c *gin.Context) {
 //
 //	@Description	删除CDN记录
 //	@Summary		删除CDN记录
-//	@Tags			CDN记录
+//	@Tags			CDNRecord
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64			true	"CDN记录序号"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}	"参数错误"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Param			id	path		int64				true	"CDN记录序号"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/cdn-records/{id} [delete]
 func DeleteCdnRecord(c *gin.Context) {
 	// 请求参数
@@ -273,13 +273,13 @@ func DeleteCdnRecord(c *gin.Context) {
 //
 //	@Description	批量删除CDN记录
 //	@Summary		批量删除CDN记录
-//	@Tags			CDN记录
+//	@Tags			CDNRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.BatchDeleteCdnRecordRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}						"成功响应"
-//	@Failure		400		{object}	APIResponse{}						"参数错误"
-//	@Failure		404		{object}	APIResponse{}						"错误响应"
+//	@Success		200		{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}					"错误响应"
 //	@Router			/cdn-records/batch [delete]
 func BatchDeleteCdnRecord(c *gin.Context) {
 	// 请求参数
@@ -309,13 +309,13 @@ func BatchDeleteCdnRecord(c *gin.Context) {
 //
 //	@Description	检查CDN记录健康状态
 //	@Summary		检查CDN记录健康状态
-//	@Tags			CDN记录
+//	@Tags			CDNRecord
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"CDN记录序号"
-//	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			id	path		int64												true	"CDN记录序号"
+//	@Success		200	{object}	types.APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}									"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}									"错误响应"
 //	@Router			/cdn-records/{id}/health-check [get]
 func HealthCheckCdnRecord(c *gin.Context) {
 	// 请求参数

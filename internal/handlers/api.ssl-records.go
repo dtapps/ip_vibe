@@ -15,13 +15,13 @@ import (
 //
 //	@Description	获取全部SSL记录
 //	@Summary		获取全部SSL记录
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	query		types.GetSSLRecordsRequest						false	"请求参数"
-//	@Success		200		{object}	APIResponse{data=[]types.GetSSLRecordResponse}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									"参数错误"
-//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Param			request	query		types.GetSSLRecordsRequest								false	"请求参数"
+//	@Success		200		{object}	types.APIResponse{data=[]types.GetSSLRecordResponse}	"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}										"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}										"错误响应"
 //	@Router			/ssl-records [get]
 func GetSSLRecords(c *gin.Context) {
 	// 请求参数
@@ -51,13 +51,13 @@ func GetSSLRecords(c *gin.Context) {
 //
 //	@Description	获取SSL记录详情
 //	@Summary		获取SSL记录详情
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64											true	"SSL记录序号"
-//	@Success		200	{object}	APIResponse{data=types.GetSSLRecordResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									"参数错误"
-//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Param			id	path		int64												true	"SSL记录序号"
+//	@Success		200	{object}	types.APIResponse{data=types.GetSSLRecordResponse}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}									"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}									"错误响应"
 //	@Router			/ssl-records/{id} [get]
 func GetSSLRecordDetail(c *gin.Context) {
 	// 请求参数
@@ -88,13 +88,13 @@ func GetSSLRecordDetail(c *gin.Context) {
 //
 //	@Description	导入SSL记录
 //	@Summary		导入SSL记录
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.ImportSSLRecordRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}					"成功响应"
-//	@Failure		400		{object}	APIResponse{}					"参数错误"
-//	@Failure		404		{object}	APIResponse{}					"错误响应"
+//	@Success		200		{object}	types.APIResponse{}				"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}				"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}				"错误响应"
 //	@Router			/ssl-records/import [post]
 func ImportSSLRecord(c *gin.Context) {
 	// 请求参数
@@ -124,13 +124,13 @@ func ImportSSLRecord(c *gin.Context) {
 //
 //	@Description	创建SSL记录
 //	@Summary		创建SSL记录
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.CreateSSLRecordRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}					"成功响应"
-//	@Failure		400		{object}	APIResponse{}					"参数错误"
-//	@Failure		404		{object}	APIResponse{}					"错误响应"
+//	@Success		200		{object}	types.APIResponse{}				"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}				"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}				"错误响应"
 //	@Router			/ssl-records [post]
 func CreateSSLRecord(c *gin.Context) {
 	// 请求参数
@@ -160,14 +160,14 @@ func CreateSSLRecord(c *gin.Context) {
 //
 //	@Description	更新SSL记录
 //	@Summary		更新SSL记录
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64							true	"SSL记录序号"
 //	@Param			request	body		types.UpdateSSLRecordRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}					"成功响应"
-//	@Failure		400		{object}	APIResponse{}					"参数错误"
-//	@Failure		404		{object}	APIResponse{}					"错误响应"
+//	@Success		200		{object}	types.APIResponse{}				"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}				"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}				"错误响应"
 //	@Router			/ssl-records/{id} [patch]
 func UpdateSSLRecord(c *gin.Context) {
 	// 请求参数
@@ -198,14 +198,14 @@ func UpdateSSLRecord(c *gin.Context) {
 //
 //	@Description	更新SSL记录自动续费状态
 //	@Summary		更新SSL记录自动续费状态
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64									true	"SSL记录序号"
 //	@Param			request	body		types.UpdateSSLRecordAutoRenewalRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}							"成功响应"
-//	@Failure		400		{object}	APIResponse{}							"参数错误"
-//	@Failure		404		{object}	APIResponse{}							"错误响应"
+//	@Success		200		{object}	types.APIResponse{}						"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}						"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}						"错误响应"
 //	@Router			/ssl-records/{id}/auto-renewal [patch]
 func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 	// 请求参数
@@ -236,14 +236,14 @@ func UpdateSSLRecordAutoRenewal(c *gin.Context) {
 //
 //	@Description	更新SSL记录启用状态
 //	@Summary		更新SSL记录启用状态
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			id		path		int64								true	"SSL记录序号"
 //	@Param			request	body		types.UpdateSSLRecordActiveRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}						"成功响应"
-//	@Failure		400		{object}	APIResponse{}						"参数错误"
-//	@Failure		404		{object}	APIResponse{}						"错误响应"
+//	@Success		200		{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}					"错误响应"
 //	@Router			/ssl-records/{id}/active [patch]
 func UpdateSSLRecordActive(c *gin.Context) {
 	// 请求参数
@@ -274,13 +274,13 @@ func UpdateSSLRecordActive(c *gin.Context) {
 //
 //	@Description	批量更新SSL记录启用状态
 //	@Summary		批量更新SSL记录启用状态
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.BatchUpdateSSLRecordActiveRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}							"成功响应"
-//	@Failure		400		{object}	APIResponse{}							"参数错误"
-//	@Failure		404		{object}	APIResponse{}							"错误响应"
+//	@Success		200		{object}	types.APIResponse{}						"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}						"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}						"错误响应"
 //	@Router			/ssl-records/batch/active [patch]
 func BatchUpdateSSLRecordActive(c *gin.Context) {
 	// 请求参数
@@ -310,13 +310,13 @@ func BatchUpdateSSLRecordActive(c *gin.Context) {
 //
 //	@Description	删除SSL记录
 //	@Summary		删除SSL记录
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64			true	"SSL记录序号"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}	"参数错误"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Param			id	path		int64				true	"SSL记录序号"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/ssl-records/{id} [delete]
 func DeleteSSLRecord(c *gin.Context) {
 	// 请求参数
@@ -347,13 +347,13 @@ func DeleteSSLRecord(c *gin.Context) {
 //
 //	@Description	批量删除SSL记录
 //	@Summary		批量删除SSL记录
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			ids	body		types.BatchDeleteSSLRecordRequest	true	"SSL记录序号列表"
-//	@Success		200	{object}	APIResponse{}						"成功响应"
-//	@Failure		400	{object}	APIResponse{}						"参数错误"
-//	@Failure		404	{object}	APIResponse{}						"错误响应"
+//	@Success		200	{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}					"错误响应"
 //	@Router			/ssl-records/batch [delete]
 func BatchDeleteSSLRecord(c *gin.Context) {
 	// 请求参数
@@ -383,13 +383,13 @@ func BatchDeleteSSLRecord(c *gin.Context) {
 //
 //	@Description	申请新的SSL证书
 //	@Summary		申请新的SSL证书
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"SSL记录序号"
-//	@Success		200	{object}	APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			id	path		int64												true	"SSL记录序号"
+//	@Success		200	{object}	types.APIResponse{data=types.GetSSLRecordRequest}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}									"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}									"错误响应"
 //	@Router			/ssl-records/{id}/apply [post]
 func ApplySSLRecord(c *gin.Context) {
 	// 请求参数
@@ -420,14 +420,14 @@ func ApplySSLRecord(c *gin.Context) {
 //
 //	@Description	获取SSL记录历史详情
 //	@Summary		获取SSL记录历史详情
-//	@Tags			SSL记录
+//	@Tags			SSLRecord
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id			path		int64														true	"SSL记录序号"
-//	@Param			history_id	path		int64														true	"SSL记录历史序号"
-//	@Success		200			{object}	APIResponse{data=types.GetSSLRecordHistoryDetailResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}												"参数错误"
-//	@Failure		404			{object}	APIResponse{}												"错误响应"
+//	@Param			id			path		int64															true	"SSL记录序号"
+//	@Param			history_id	path		int64															true	"SSL记录历史序号"
+//	@Success		200			{object}	types.APIResponse{data=types.GetSSLRecordHistoryDetailResponse}	"成功响应"
+//	@Failure		400			{object}	types.APIResponse{}												"参数错误"
+//	@Failure		404			{object}	types.APIResponse{}												"错误响应"
 //	@Router			/ssl-records/{id}/history/{history_id} [get]
 func GetSSLRecordHistoryDetail(c *gin.Context) {
 	// 请求参数

@@ -18,8 +18,8 @@ import (
 //	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200	{object}	APIResponse{data=[]types.GetPlatformConfigResponse}	"成功响应"
-//	@Failure		404	{object}	APIResponse{}										"错误响应"
+//	@Success		200	{object}	types.APIResponse{data=[]types.GetPlatformConfigResponse}	"成功响应"
+//	@Failure		404	{object}	types.APIResponse{}											"错误响应"
 //	@Router			/platform-configs [get]
 func GetPlatformConfigs(c *gin.Context) {
 
@@ -46,10 +46,10 @@ func GetPlatformConfigs(c *gin.Context) {
 //	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64												true	"配置序号"
-//	@Success		200	{object}	APIResponse{data=types.GetPlatformConfigResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}										"参数错误"
-//	@Failure		404	{object}	APIResponse{}										"错误响应"
+//	@Param			id	path		int64													true	"配置序号"
+//	@Success		200	{object}	types.APIResponse{data=types.GetPlatformConfigResponse}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}										"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}										"错误响应"
 //	@Router			/platform-configs/{id} [get]
 func GetPlatformConfigDetail(c *gin.Context) {
 	// 请求参数
@@ -84,9 +84,9 @@ func GetPlatformConfigDetail(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.CreatePlatformConfigRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}						"成功响应"
-//	@Failure		400		{object}	APIResponse{}						"参数错误"
-//	@Failure		404		{object}	APIResponse{}						"错误响应"
+//	@Success		200		{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}					"错误响应"
 //	@Router			/platform-configs [post]
 func CreatePlatformConfig(c *gin.Context) {
 	// 请求参数
@@ -121,9 +121,9 @@ func CreatePlatformConfig(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id		path		int64								true	"配置序号"
 //	@Param			request	body		types.UpdatePlatformConfigRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}						"成功响应"
-//	@Failure		400		{object}	APIResponse{}						"参数错误"
-//	@Failure		404		{object}	APIResponse{}						"错误响应"
+//	@Success		200		{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}					"错误响应"
 //	@Router			/platform-configs/{id} [patch]
 func UpdatePlatformConfig(c *gin.Context) {
 	// 请求参数
@@ -157,10 +157,10 @@ func UpdatePlatformConfig(c *gin.Context) {
 //	@Tags			平台配置
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64			true	"配置序号"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}	"参数错误"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Param			id	path		int64				true	"配置序号"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/platform-configs/{id} [delete]
 func DeletePlatformConfig(c *gin.Context) {
 	// 请求参数
@@ -195,9 +195,9 @@ func DeletePlatformConfig(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.BatchDeletePlatformConfigRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}							"成功响应"
-//	@Failure		400		{object}	APIResponse{}							"参数错误"
-//	@Failure		404		{object}	APIResponse{}							"错误响应"
+//	@Success		200		{object}	types.APIResponse{}						"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}						"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}						"错误响应"
 //	@Router			/platform-configs/batch [delete]
 func BatchDeletePlatformConfig(c *gin.Context) {
 	// 请求参数

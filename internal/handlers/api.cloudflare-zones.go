@@ -19,9 +19,9 @@ import (
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.SyncCloudflareZonesRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}						"成功响应"
-//	@Failure		400		{object}	APIResponse{}						"参数错误"
-//	@Failure		404		{object}	APIResponse{}						"错误响应"
+//	@Success		200		{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}					"错误响应"
 //	@Router			/cloudflare-zones/sync [post]
 func SyncCloudflareZones(c *gin.Context) {
 	// 请求参数

@@ -1,18 +1,18 @@
 basePath: /api/
 definitions:
-  internal_handlers.APIResponse:
+  vibe_ip_internal_backend_service.ToPairsStruct:
+    properties:
+      key:
+        type: string
+      value: {}
+    type: object
+  vibe_ip_internal_types.APIResponse:
     properties:
       code:
         type: integer
       data: {}
       message:
         type: string
-    type: object
-  vibe_ip_internal_backend_service.ToPairsStruct:
-    properties:
-      key:
-        type: string
-      value: {}
     type: object
   vibe_ip_internal_types.BatchDeleteCdnRecordRequest:
     properties:
@@ -1983,7 +1983,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -1993,14 +1993,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部CDN记录
       tags:
-      - CDN记录
+      - CDNRecord
     post:
       consumes:
       - application/json
@@ -2018,18 +2018,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建CDN记录
       tags:
-      - CDN记录
+      - CDNRecord
   /cdn-records/{id}:
     delete:
       consumes:
@@ -2048,18 +2048,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除CDN记录
       tags:
-      - CDN记录
+      - CDNRecord
     get:
       consumes:
       - application/json
@@ -2078,7 +2078,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetCdnRecordResponse'
@@ -2086,14 +2086,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取CDN记录详情
       tags:
-      - CDN记录
+      - CDNRecord
     patch:
       consumes:
       - application/json
@@ -2117,18 +2117,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新CDN记录
       tags:
-      - CDN记录
+      - CDNRecord
   /cdn-records/{id}/active:
     patch:
       consumes:
@@ -2153,18 +2153,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新CDN记录启用状态
       tags:
-      - CDN记录
+      - CDNRecord
   /cdn-records/{id}/health-check:
     get:
       consumes:
@@ -2184,7 +2184,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -2196,14 +2196,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 检查CDN记录健康状态
       tags:
-      - CDN记录
+      - CDNRecord
   /cdn-records/batch:
     delete:
       consumes:
@@ -2222,18 +2222,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除CDN记录
       tags:
-      - CDN记录
+      - CDNRecord
   /cdn-records/batch/active:
     patch:
       consumes:
@@ -2252,18 +2252,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量更新CDN记录启用状态
       tags:
-      - CDN记录
+      - CDNRecord
   /cloudflare-tunnels/{tunnel_id}/ingresses:
     get:
       consumes:
@@ -2283,7 +2283,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -2293,11 +2293,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取Cloudflare隧道入站配置
       tags:
       - CloudflareTunnel
@@ -2318,15 +2318,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建Cloudflare隧道入站配置
       tags:
       - CloudflareTunnel
@@ -2354,15 +2354,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除Cloudflare隧道入站配置
       tags:
       - CloudflareTunnel
@@ -2390,7 +2390,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetCloudflareTunnelIngressDetailResponse'
@@ -2398,11 +2398,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取Cloudflare隧道入站配置详情
       tags:
       - CloudflareTunnel
@@ -2429,15 +2429,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新Cloudflare隧道入站配置
       tags:
       - CloudflareTunnel
@@ -2459,15 +2459,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 同步Cloudflare隧道
       tags:
       - CloudflareTunnel
@@ -2489,15 +2489,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 同步Cloudflare站点
       tags:
       - CloudflareZone
@@ -2520,7 +2520,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -2530,11 +2530,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取Cloudflare域名
       tags:
       - Cloudflare
@@ -2550,7 +2550,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -2560,7 +2560,7 @@ paths:
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部设备组
       tags:
       - 设备组
@@ -2581,15 +2581,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建设备组
       tags:
       - 设备组
@@ -2611,15 +2611,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除设备组
       tags:
       - 设备组
@@ -2641,7 +2641,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDeviceGroupResponse'
@@ -2649,11 +2649,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取设备组详情
       tags:
       - 设备组
@@ -2681,15 +2681,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新设备组
       tags:
       - 设备组
@@ -2712,7 +2712,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -2722,11 +2722,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取设备组设备
       tags:
       - 设备组
@@ -2749,7 +2749,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -2761,11 +2761,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 检查设备组健康状态
       tags:
       - 设备组
@@ -2788,7 +2788,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDeviceGroupDevicePortForwardStatsResponse'
@@ -2796,11 +2796,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取设备组设备端口转发统计数据
       tags:
       - 设备组
@@ -2822,15 +2822,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除设备组
       tags:
       - 设备组
@@ -2846,7 +2846,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -2856,7 +2856,7 @@ paths:
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部设备
       tags:
       - 设备
@@ -2877,15 +2877,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建设备
       tags:
       - 设备
@@ -2907,15 +2907,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除设备
       tags:
       - 设备
@@ -2937,7 +2937,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDeviceResponse'
@@ -2945,11 +2945,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取设备详情
       tags:
       - 设备
@@ -2976,15 +2976,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新设备
       tags:
       - 设备
@@ -3007,7 +3007,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -3019,11 +3019,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 检查设备健康状态
       tags:
       - 设备
@@ -3046,7 +3046,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -3056,11 +3056,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取设备IP历史记录
       tags:
       - 设备
@@ -3083,7 +3083,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -3095,11 +3095,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取设备端口转发统计数据
       tags:
       - 设备
@@ -3122,7 +3122,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -3132,11 +3132,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取设备状态
       tags:
       - 设备
@@ -3158,15 +3158,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除设备
       tags:
       - 设备
@@ -3187,7 +3187,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -3197,14 +3197,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部DNS记录
       tags:
-      - DNS记录
+      - DNSRecord
     post:
       consumes:
       - application/json
@@ -3222,18 +3222,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建DNS记录
       tags:
-      - DNS记录
+      - DNSRecord
   /dns-records/{id}:
     delete:
       consumes:
@@ -3252,18 +3252,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除DNS记录
       tags:
-      - DNS记录
+      - DNSRecord
     get:
       consumes:
       - application/json
@@ -3282,7 +3282,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDnsRecordResponse'
@@ -3290,14 +3290,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取DNS记录详情
       tags:
-      - DNS记录
+      - DNSRecord
     patch:
       consumes:
       - application/json
@@ -3321,18 +3321,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新DNS记录
       tags:
-      - DNS记录
+      - DNSRecord
   /dns-records/{id}/active:
     patch:
       consumes:
@@ -3357,18 +3357,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新DNS记录启用状态
       tags:
-      - DNS记录
+      - DNSRecord
   /dns-records/{id}/health-check:
     get:
       consumes:
@@ -3388,7 +3388,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -3400,14 +3400,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 检查DNS记录健康状态
       tags:
-      - DNS记录
+      - DNSRecord
   /dns-records/batch:
     delete:
       consumes:
@@ -3426,18 +3426,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除DNS记录
       tags:
-      - DNS记录
+      - DNSRecord
   /dns-records/batch/active:
     patch:
       consumes:
@@ -3456,18 +3456,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量更新DNS记录启用状态
       tags:
-      - DNS记录
+      - DNSRecord
   /domain-monitors:
     get:
       consumes:
@@ -3485,7 +3485,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -3495,11 +3495,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部域名监控
       tags:
       - 域名监控
@@ -3520,15 +3520,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建域名监控
       tags:
       - 域名监控
@@ -3550,15 +3550,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除域名监控
       tags:
       - 域名监控
@@ -3580,7 +3580,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetDomainMonitorResponse'
@@ -3588,11 +3588,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取域名监控详情
       tags:
       - 域名监控
@@ -3619,15 +3619,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新域名监控
       tags:
       - 域名监控
@@ -3655,15 +3655,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新域名监控启用状态
       tags:
       - 域名监控
@@ -3685,15 +3685,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 检查域名监控健康状态
       tags:
       - 域名监控
@@ -3715,15 +3715,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除域名监控
       tags:
       - 域名监控
@@ -3745,15 +3745,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量更新域名监控启用状态
       tags:
       - 域名监控
@@ -3775,15 +3775,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 同步EdgeOne站点
       tags:
       - EdgeOneZone
@@ -3805,15 +3805,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 同步Esa站点
       tags:
       - ESASite
@@ -3834,15 +3834,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除任务
       tags:
       - Gocron
@@ -3862,15 +3862,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 运行任务
       tags:
       - Gocron
@@ -3885,11 +3885,11 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 清理所有任务
       tags:
       - Gocron
@@ -3904,11 +3904,11 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 启动调度器
       tags:
       - Gocron
@@ -3923,11 +3923,11 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 停止调度器
       tags:
       - Gocron
@@ -3943,7 +3943,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -3953,7 +3953,7 @@ paths:
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部IP组
       tags:
       - IP组
@@ -3974,15 +3974,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建IP组
       tags:
       - IP组
@@ -4004,15 +4004,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除IP组
       tags:
       - IP组
@@ -4034,7 +4034,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupResponse'
@@ -4042,11 +4042,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取IP组详情
       tags:
       - IP组
@@ -4074,15 +4074,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新IP组
       tags:
       - IP组
@@ -4105,7 +4105,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -4115,11 +4115,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取IP组设备
       tags:
       - IP组
@@ -4142,7 +4142,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -4154,11 +4154,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 检查IP组健康状态
       tags:
       - IP组
@@ -4181,7 +4181,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetIPGroupDevicePortForwardStatsResponse'
@@ -4189,11 +4189,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取IP组设备端口转发统计数据
       tags:
       - IP组
@@ -4215,15 +4215,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除IP组
       tags:
       - IP组
@@ -4239,7 +4239,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -4249,7 +4249,7 @@ paths:
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部平台配置
       tags:
       - 平台配置
@@ -4270,15 +4270,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建平台配置
       tags:
       - 平台配置
@@ -4300,15 +4300,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除平台配置
       tags:
       - 平台配置
@@ -4330,7 +4330,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetPlatformConfigResponse'
@@ -4338,11 +4338,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取平台配置详情
       tags:
       - 平台配置
@@ -4369,15 +4369,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新平台配置
       tags:
       - 平台配置
@@ -4399,15 +4399,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除平台配置
       tags:
       - 平台配置
@@ -4428,7 +4428,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -4438,11 +4438,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部端口转发
       tags:
       - 端口转发
@@ -4463,15 +4463,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建端口转发
       tags:
       - 端口转发
@@ -4493,15 +4493,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除端口转发
       tags:
       - 端口转发
@@ -4523,7 +4523,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetPortForwardResponse'
@@ -4531,11 +4531,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取端口转发详情
       tags:
       - 端口转发
@@ -4562,15 +4562,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新端口转发
       tags:
       - 端口转发
@@ -4598,15 +4598,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新端口转发启用状态
       tags:
       - 端口转发
@@ -4634,15 +4634,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新端口转发防火墙状态
       tags:
       - 端口转发
@@ -4665,7 +4665,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -4677,11 +4677,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 检查端口转发健康状态
       tags:
       - 端口转发
@@ -4704,7 +4704,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -4716,11 +4716,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取端口转发统计数据
       tags:
       - 端口转发
@@ -4742,15 +4742,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除端口转发
       tags:
       - 端口转发
@@ -4772,15 +4772,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量更新端口转发启用状态
       tags:
       - 端口转发
@@ -4808,7 +4808,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -4820,11 +4820,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取CDN记录Schema
       tags:
       - Schema
@@ -4852,7 +4852,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -4864,11 +4864,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取DNS记录Schema
       tags:
       - Schema
@@ -4890,7 +4890,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -4902,11 +4902,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取平台配置Schema
       tags:
       - Schema
@@ -4934,7 +4934,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -4946,11 +4946,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取TUN记录Schema
       tags:
       - Schema
@@ -4966,7 +4966,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetSettingResponse'
@@ -4974,11 +4974,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取设置
       tags:
       - Setting
@@ -4999,15 +4999,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新设置
       tags:
       - Setting
@@ -5029,18 +5029,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建SSL导入记录
       tags:
-      - SSL导入
+      - SSLImport
   /ssl-imports/{id}:
     delete:
       consumes:
@@ -5059,18 +5059,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除SSL导入记录
       tags:
-      - SSL导入
+      - SSLImport
   /ssl-imports/batch:
     delete:
       consumes:
@@ -5089,18 +5089,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除SSL导入记录
       tags:
-      - SSL导入
+      - SSLImport
   /ssl-imports/import:
     post:
       consumes:
@@ -5119,18 +5119,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建SSL导入记录
       tags:
-      - SSL导入
+      - SSLImport
   /ssl-records:
     get:
       consumes:
@@ -5148,7 +5148,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -5158,14 +5158,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部SSL记录
       tags:
-      - SSL记录
+      - SSLRecord
     post:
       consumes:
       - application/json
@@ -5183,18 +5183,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建SSL记录
       tags:
-      - SSL记录
+      - SSLRecord
   /ssl-records/{id}:
     delete:
       consumes:
@@ -5213,18 +5213,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除SSL记录
       tags:
-      - SSL记录
+      - SSLRecord
     get:
       consumes:
       - application/json
@@ -5243,7 +5243,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordResponse'
@@ -5251,14 +5251,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取SSL记录详情
       tags:
-      - SSL记录
+      - SSLRecord
     patch:
       consumes:
       - application/json
@@ -5282,18 +5282,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新SSL记录
       tags:
-      - SSL记录
+      - SSLRecord
   /ssl-records/{id}/active:
     patch:
       consumes:
@@ -5318,18 +5318,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新SSL记录启用状态
       tags:
-      - SSL记录
+      - SSLRecord
   /ssl-records/{id}/apply:
     post:
       consumes:
@@ -5349,7 +5349,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordRequest'
@@ -5357,14 +5357,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 申请新的SSL证书
       tags:
-      - SSL记录
+      - SSLRecord
   /ssl-records/{id}/auto-renewal:
     patch:
       consumes:
@@ -5389,18 +5389,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新SSL记录自动续费状态
       tags:
-      - SSL记录
+      - SSLRecord
   /ssl-records/{id}/history/{history_id}:
     get:
       consumes:
@@ -5426,7 +5426,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetSSLRecordHistoryDetailResponse'
@@ -5434,14 +5434,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取SSL记录历史详情
       tags:
-      - SSL记录
+      - SSLRecord
   /ssl-records/batch:
     delete:
       consumes:
@@ -5460,18 +5460,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除SSL记录
       tags:
-      - SSL记录
+      - SSLRecord
   /ssl-records/batch/active:
     patch:
       consumes:
@@ -5490,18 +5490,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量更新SSL记录启用状态
       tags:
-      - SSL记录
+      - SSLRecord
   /ssl-records/import:
     post:
       consumes:
@@ -5520,18 +5520,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 导入SSL记录
       tags:
-      - SSL记录
+      - SSLRecord
   /tasks/{id}:
     patch:
       consumes:
@@ -5556,15 +5556,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新任务
       tags:
       - Task
@@ -5592,15 +5592,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新任务状态
       tags:
       - Task
@@ -5622,16 +5622,39 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量更新任务状态
+      tags:
+      - Task
+  /tasks/sync-scheduler:
+    post:
+      consumes:
+      - application/json
+      description: 同步任务到调度器
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
+        "400":
+          description: 参数错误
+          schema:
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
+        "404":
+          description: 错误响应
+          schema:
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
+      summary: 同步任务到调度器
       tags:
       - Task
   /tun-records:
@@ -5651,7 +5674,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -5661,14 +5684,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部TUN记录
       tags:
-      - TUN记录
+      - TUNRecord
     post:
       consumes:
       - application/json
@@ -5686,18 +5709,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建TUN记录
       tags:
-      - TUN记录
+      - TUNRecord
   /tun-records/{id}:
     delete:
       consumes:
@@ -5716,18 +5739,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除TUN记录
       tags:
-      - TUN记录
+      - TUNRecord
     get:
       consumes:
       - application/json
@@ -5746,7 +5769,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetTunRecordResponse'
@@ -5754,14 +5777,14 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取TUN记录详情
       tags:
-      - TUN记录
+      - TUNRecord
     patch:
       consumes:
       - application/json
@@ -5785,18 +5808,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新TUN记录
       tags:
-      - TUN记录
+      - TUNRecord
   /tun-records/{id}/active:
     patch:
       consumes:
@@ -5821,18 +5844,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新TUN记录启用状态
       tags:
-      - TUN记录
+      - TUNRecord
   /tun-records/batch:
     delete:
       consumes:
@@ -5851,18 +5874,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除TUN记录
       tags:
-      - TUN记录
+      - TUNRecord
   /tun-records/batch/active:
     patch:
       consumes:
@@ -5881,18 +5904,18 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量更新TUN记录启用状态
       tags:
-      - TUN记录
+      - TUNRecord
   /webhook-subs:
     get:
       consumes:
@@ -5910,7 +5933,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -5920,11 +5943,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部通知订阅
       tags:
       - 通知订阅
@@ -5946,15 +5969,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除通知订阅
       tags:
       - 通知订阅
@@ -5982,15 +6005,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新通知订阅启用状态
       tags:
       - 通知订阅
@@ -6012,15 +6035,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除通知订阅
       tags:
       - 通知订阅
@@ -6042,15 +6065,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量更新通知订阅启用状态
       tags:
       - 通知订阅
@@ -6071,7 +6094,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   items:
@@ -6081,11 +6104,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取全部通知
       tags:
       - 通知
@@ -6106,15 +6129,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 创建通知
       tags:
       - 通知
@@ -6136,15 +6159,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 删除通知
       tags:
       - 通知
@@ -6166,7 +6189,7 @@ paths:
           description: 成功响应
           schema:
             allOf:
-            - $ref: '#/definitions/internal_handlers.APIResponse'
+            - $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
             - properties:
                 data:
                   $ref: '#/definitions/vibe_ip_internal_types.GetWebhookResponse'
@@ -6174,11 +6197,11 @@ paths:
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 获取通知详情
       tags:
       - 通知
@@ -6205,15 +6228,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新通知
       tags:
       - 通知
@@ -6241,15 +6264,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 更新通知启用状态
       tags:
       - 通知
@@ -6271,15 +6294,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 测试通知
       tags:
       - 通知
@@ -6301,15 +6324,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量删除通知
       tags:
       - 通知
@@ -6331,15 +6354,15 @@ paths:
         "200":
           description: 成功响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "400":
           description: 参数错误
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
         "404":
           description: 错误响应
           schema:
-            $ref: '#/definitions/internal_handlers.APIResponse'
+            $ref: '#/definitions/vibe_ip_internal_types.APIResponse'
       summary: 批量更新通知启用状态
       tags:
       - 通知

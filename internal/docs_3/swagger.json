@@ -9,7 +9,16 @@
                 },
                 "type": "object"
             },
-            "internal_handlers.APIResponse": {
+            "vibe_ip_internal_backend_service.ToPairsStruct": {
+                "properties": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "value": {}
+                },
+                "type": "object"
+            },
+            "vibe_ip_internal_types.APIResponse": {
                 "allOf": [
                     {
                         "$ref": "#/components/schemas/data"
@@ -23,15 +32,6 @@
                     "message": {
                         "type": "string"
                     }
-                },
-                "type": "object"
-            },
-            "vibe_ip_internal_backend_service.ToPairsStruct": {
-                "properties": {
-                    "key": {
-                        "type": "string"
-                    },
-                    "value": {}
                 },
                 "type": "object"
             },
@@ -2877,7 +2877,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -2887,7 +2887,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -2896,7 +2896,7 @@
                 },
                 "summary": "获取全部CDN记录",
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ]
             },
             "post": {
@@ -2926,7 +2926,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -2936,7 +2936,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -2946,7 +2946,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -2955,7 +2955,7 @@
                 },
                 "summary": "创建CDN记录",
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ]
             }
         },
@@ -2987,7 +2987,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -2997,7 +2997,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3007,7 +3007,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3016,7 +3016,7 @@
                 },
                 "summary": "批量删除CDN记录",
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ]
             }
         },
@@ -3048,7 +3048,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3058,7 +3058,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3068,7 +3068,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3077,7 +3077,7 @@
                 },
                 "summary": "批量更新CDN记录启用状态",
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ]
             }
         },
@@ -3109,7 +3109,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3119,7 +3119,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3129,7 +3129,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3138,7 +3138,7 @@
                 },
                 "summary": "删除CDN记录",
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ]
             },
             "get": {
@@ -3192,7 +3192,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3202,7 +3202,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3211,7 +3211,7 @@
                 },
                 "summary": "获取CDN记录详情",
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ]
             },
             "patch": {
@@ -3252,7 +3252,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3262,7 +3262,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3272,7 +3272,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3281,7 +3281,7 @@
                 },
                 "summary": "更新CDN记录",
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ]
             }
         },
@@ -3324,7 +3324,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3334,7 +3334,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3344,7 +3344,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3353,7 +3353,7 @@
                 },
                 "summary": "更新CDN记录启用状态",
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ]
             }
         },
@@ -3409,7 +3409,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3419,7 +3419,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3428,7 +3428,7 @@
                 },
                 "summary": "检查CDN记录健康状态",
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ]
             }
         },
@@ -3460,7 +3460,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3470,7 +3470,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3480,7 +3480,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3545,7 +3545,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3555,7 +3555,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3594,7 +3594,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3604,7 +3604,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3614,7 +3614,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3664,7 +3664,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3674,7 +3674,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3684,7 +3684,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3756,7 +3756,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3766,7 +3766,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3814,7 +3814,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3824,7 +3824,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3834,7 +3834,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3875,7 +3875,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3885,7 +3885,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3895,7 +3895,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3960,7 +3960,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -3970,7 +3970,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4024,7 +4024,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4063,7 +4063,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4073,7 +4073,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4083,7 +4083,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4124,7 +4124,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4134,7 +4134,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4144,7 +4144,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4185,7 +4185,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4195,7 +4195,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4205,7 +4205,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4268,7 +4268,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4278,7 +4278,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4330,7 +4330,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4340,7 +4340,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4350,7 +4350,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4415,7 +4415,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4425,7 +4425,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4490,7 +4490,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4500,7 +4500,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4565,7 +4565,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4575,7 +4575,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4629,7 +4629,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4668,7 +4668,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4678,7 +4678,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4688,7 +4688,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4729,7 +4729,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4739,7 +4739,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4749,7 +4749,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4790,7 +4790,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4800,7 +4800,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4810,7 +4810,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4873,7 +4873,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4883,7 +4883,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4933,7 +4933,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4943,7 +4943,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -4953,7 +4953,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5018,7 +5018,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5028,7 +5028,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5093,7 +5093,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5103,7 +5103,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5168,7 +5168,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5178,7 +5178,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5243,7 +5243,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5253,7 +5253,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5319,7 +5319,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5329,7 +5329,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5338,7 +5338,7 @@
                 },
                 "summary": "获取全部DNS记录",
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ]
             },
             "post": {
@@ -5368,7 +5368,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5378,7 +5378,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5388,7 +5388,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5397,7 +5397,7 @@
                 },
                 "summary": "创建DNS记录",
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ]
             }
         },
@@ -5429,7 +5429,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5439,7 +5439,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5449,7 +5449,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5458,7 +5458,7 @@
                 },
                 "summary": "批量删除DNS记录",
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ]
             }
         },
@@ -5490,7 +5490,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5500,7 +5500,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5510,7 +5510,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5519,7 +5519,7 @@
                 },
                 "summary": "批量更新DNS记录启用状态",
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ]
             }
         },
@@ -5551,7 +5551,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5561,7 +5561,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5571,7 +5571,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5580,7 +5580,7 @@
                 },
                 "summary": "删除DNS记录",
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ]
             },
             "get": {
@@ -5634,7 +5634,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5644,7 +5644,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5653,7 +5653,7 @@
                 },
                 "summary": "获取DNS记录详情",
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ]
             },
             "patch": {
@@ -5694,7 +5694,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5704,7 +5704,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5714,7 +5714,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5723,7 +5723,7 @@
                 },
                 "summary": "更新DNS记录",
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ]
             }
         },
@@ -5766,7 +5766,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5776,7 +5776,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5786,7 +5786,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5795,7 +5795,7 @@
                 },
                 "summary": "更新DNS记录启用状态",
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ]
             }
         },
@@ -5851,7 +5851,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5861,7 +5861,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5870,7 +5870,7 @@
                 },
                 "summary": "检查DNS记录健康状态",
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ]
             }
         },
@@ -5927,7 +5927,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5937,7 +5937,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5976,7 +5976,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5986,7 +5986,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -5996,7 +5996,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6037,7 +6037,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6047,7 +6047,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6057,7 +6057,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6098,7 +6098,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6108,7 +6108,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6118,7 +6118,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6159,7 +6159,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6169,7 +6169,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6179,7 +6179,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6242,7 +6242,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6252,7 +6252,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6302,7 +6302,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6312,7 +6312,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6322,7 +6322,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6374,7 +6374,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6384,7 +6384,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6394,7 +6394,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6435,7 +6435,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6445,7 +6445,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6455,7 +6455,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6496,7 +6496,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6506,7 +6506,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6516,7 +6516,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6557,7 +6557,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6567,7 +6567,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6577,7 +6577,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6607,7 +6607,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6617,7 +6617,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6647,7 +6647,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6657,7 +6657,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6687,7 +6687,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6697,7 +6697,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6738,7 +6738,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6748,7 +6748,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6758,7 +6758,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6797,7 +6797,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6807,7 +6807,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6817,7 +6817,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6871,7 +6871,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6910,7 +6910,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6920,7 +6920,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6930,7 +6930,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6971,7 +6971,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6981,7 +6981,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -6991,7 +6991,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7032,7 +7032,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7042,7 +7042,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7052,7 +7052,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7115,7 +7115,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7125,7 +7125,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7177,7 +7177,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7187,7 +7187,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7197,7 +7197,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7262,7 +7262,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7272,7 +7272,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7337,7 +7337,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7347,7 +7347,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7412,7 +7412,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7422,7 +7422,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7476,7 +7476,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7515,7 +7515,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7525,7 +7525,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7535,7 +7535,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7576,7 +7576,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7586,7 +7586,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7596,7 +7596,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7637,7 +7637,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7647,7 +7647,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7657,7 +7657,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7720,7 +7720,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7730,7 +7730,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7780,7 +7780,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7790,7 +7790,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7800,7 +7800,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7866,7 +7866,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7876,7 +7876,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7915,7 +7915,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7925,7 +7925,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7935,7 +7935,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7976,7 +7976,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7986,7 +7986,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -7996,7 +7996,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8037,7 +8037,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8047,7 +8047,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8057,7 +8057,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8098,7 +8098,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8108,7 +8108,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8118,7 +8118,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8181,7 +8181,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8191,7 +8191,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8241,7 +8241,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8251,7 +8251,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8261,7 +8261,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8313,7 +8313,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8323,7 +8323,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8333,7 +8333,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8385,7 +8385,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8395,7 +8395,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8405,7 +8405,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8470,7 +8470,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8480,7 +8480,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8545,7 +8545,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8555,7 +8555,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8629,7 +8629,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8639,7 +8639,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8713,7 +8713,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8723,7 +8723,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8788,7 +8788,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8798,7 +8798,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8872,7 +8872,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8882,7 +8882,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8936,7 +8936,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8946,7 +8946,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8985,7 +8985,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -8995,7 +8995,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9005,7 +9005,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9046,7 +9046,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9056,7 +9056,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9066,7 +9066,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9075,7 +9075,7 @@
                 },
                 "summary": "创建SSL导入记录",
                 "tags": [
-                    "SSL导入"
+                    "SSLImport"
                 ]
             }
         },
@@ -9107,7 +9107,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9117,7 +9117,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9127,7 +9127,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9136,7 +9136,7 @@
                 },
                 "summary": "批量删除SSL导入记录",
                 "tags": [
-                    "SSL导入"
+                    "SSLImport"
                 ]
             }
         },
@@ -9168,7 +9168,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9178,7 +9178,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9188,7 +9188,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9197,7 +9197,7 @@
                 },
                 "summary": "创建SSL导入记录",
                 "tags": [
-                    "SSL导入"
+                    "SSLImport"
                 ]
             }
         },
@@ -9229,7 +9229,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9239,7 +9239,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9249,7 +9249,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9258,7 +9258,7 @@
                 },
                 "summary": "删除SSL导入记录",
                 "tags": [
-                    "SSL导入"
+                    "SSLImport"
                 ]
             }
         },
@@ -9315,7 +9315,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9325,7 +9325,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9334,7 +9334,7 @@
                 },
                 "summary": "获取全部SSL记录",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             },
             "post": {
@@ -9364,7 +9364,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9374,7 +9374,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9384,7 +9384,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9393,7 +9393,7 @@
                 },
                 "summary": "创建SSL记录",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             }
         },
@@ -9425,7 +9425,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9435,7 +9435,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9445,7 +9445,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9454,7 +9454,7 @@
                 },
                 "summary": "批量删除SSL记录",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             }
         },
@@ -9486,7 +9486,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9496,7 +9496,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9506,7 +9506,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9515,7 +9515,7 @@
                 },
                 "summary": "批量更新SSL记录启用状态",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             }
         },
@@ -9547,7 +9547,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9557,7 +9557,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9567,7 +9567,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9576,7 +9576,7 @@
                 },
                 "summary": "导入SSL记录",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             }
         },
@@ -9608,7 +9608,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9618,7 +9618,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9628,7 +9628,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9637,7 +9637,7 @@
                 },
                 "summary": "删除SSL记录",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             },
             "get": {
@@ -9691,7 +9691,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9701,7 +9701,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9710,7 +9710,7 @@
                 },
                 "summary": "获取SSL记录详情",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             },
             "patch": {
@@ -9751,7 +9751,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9761,7 +9761,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9771,7 +9771,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9780,7 +9780,7 @@
                 },
                 "summary": "更新SSL记录",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             }
         },
@@ -9823,7 +9823,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9833,7 +9833,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9843,7 +9843,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9852,7 +9852,7 @@
                 },
                 "summary": "更新SSL记录启用状态",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             }
         },
@@ -9908,7 +9908,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9918,7 +9918,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9927,7 +9927,7 @@
                 },
                 "summary": "申请新的SSL证书",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             }
         },
@@ -9970,7 +9970,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9980,7 +9980,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9990,7 +9990,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -9999,7 +9999,7 @@
                 },
                 "summary": "更新SSL记录自动续费状态",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             }
         },
@@ -10064,7 +10064,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10074,7 +10074,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10083,7 +10083,7 @@
                 },
                 "summary": "获取SSL记录历史详情",
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ]
             }
         },
@@ -10115,7 +10115,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10125,7 +10125,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10135,7 +10135,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10143,6 +10143,56 @@
                     }
                 },
                 "summary": "批量更新任务状态",
+                "tags": [
+                    "Task"
+                ]
+            }
+        },
+        "/tasks/sync-scheduler": {
+            "post": {
+                "description": "同步任务到调度器",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "成功响应"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "参数错误"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
+                                }
+                            }
+                        },
+                        "description": "错误响应"
+                    }
+                },
+                "summary": "同步任务到调度器",
                 "tags": [
                     "Task"
                 ]
@@ -10187,7 +10237,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10197,7 +10247,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10207,7 +10257,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10259,7 +10309,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10269,7 +10319,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10279,7 +10329,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10345,7 +10395,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10355,7 +10405,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10364,7 +10414,7 @@
                 },
                 "summary": "获取全部TUN记录",
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ]
             },
             "post": {
@@ -10394,7 +10444,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10404,7 +10454,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10414,7 +10464,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10423,7 +10473,7 @@
                 },
                 "summary": "创建TUN记录",
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ]
             }
         },
@@ -10455,7 +10505,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10465,7 +10515,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10475,7 +10525,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10484,7 +10534,7 @@
                 },
                 "summary": "批量删除TUN记录",
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ]
             }
         },
@@ -10516,7 +10566,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10526,7 +10576,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10536,7 +10586,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10545,7 +10595,7 @@
                 },
                 "summary": "批量更新TUN记录启用状态",
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ]
             }
         },
@@ -10577,7 +10627,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10587,7 +10637,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10597,7 +10647,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10606,7 +10656,7 @@
                 },
                 "summary": "删除TUN记录",
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ]
             },
             "get": {
@@ -10660,7 +10710,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10670,7 +10720,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10679,7 +10729,7 @@
                 },
                 "summary": "获取TUN记录详情",
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ]
             },
             "patch": {
@@ -10720,7 +10770,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10730,7 +10780,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10740,7 +10790,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10749,7 +10799,7 @@
                 },
                 "summary": "更新TUN记录",
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ]
             }
         },
@@ -10792,7 +10842,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10802,7 +10852,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10812,7 +10862,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10821,7 +10871,7 @@
                 },
                 "summary": "更新TUN记录启用状态",
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ]
             }
         },
@@ -10878,7 +10928,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10888,7 +10938,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10929,7 +10979,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10939,7 +10989,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10949,7 +10999,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -10990,7 +11040,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11000,7 +11050,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11010,7 +11060,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11051,7 +11101,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11061,7 +11111,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11071,7 +11121,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11123,7 +11173,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11133,7 +11183,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11143,7 +11193,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11209,7 +11259,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11219,7 +11269,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11258,7 +11308,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11268,7 +11318,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11278,7 +11328,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11319,7 +11369,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11329,7 +11379,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11339,7 +11389,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11380,7 +11430,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11390,7 +11440,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11400,7 +11450,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11441,7 +11491,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11451,7 +11501,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11461,7 +11511,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11524,7 +11574,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11534,7 +11584,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11584,7 +11634,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11594,7 +11644,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11604,7 +11654,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11656,7 +11706,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11666,7 +11716,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11676,7 +11726,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11717,7 +11767,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11727,7 +11777,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },
@@ -11737,7 +11787,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/internal_handlers.APIResponse"
+                                    "$ref": "#/components/schemas/vibe_ip_internal_types.APIResponse"
                                 }
                             }
                         },

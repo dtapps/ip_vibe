@@ -25,10 +25,10 @@ import (
 //	@Tags			Schema
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			config_type	path		string																		true	"平台类型"
-//	@Success		200			{object}	APIResponse{data=[]json.RawMessage{types.GetPlatformConfigSchemaResponse}}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}																"参数错误"
-//	@Failure		404			{object}	APIResponse{}																"错误响应"
+//	@Param			config_type	path		string																				true	"平台类型"
+//	@Success		200			{object}	types.APIResponse{data=[]json.RawMessage{types.GetPlatformConfigSchemaResponse}}	"成功响应"
+//	@Failure		400			{object}	types.APIResponse{}																	"参数错误"
+//	@Failure		404			{object}	types.APIResponse{}																	"错误响应"
 //	@Router			/schemas/{config_type}/platform-config [get]
 func GetPlatformConfigSchema(c *gin.Context) {
 	// 请求参数
@@ -52,11 +52,11 @@ func GetPlatformConfigSchema(c *gin.Context) {
 //	@Tags			Schema
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			config_type	path		string																	true	"平台类型"
-//	@Param			config_id	path		int64																	true	"平台配置ID"
-//	@Success		200			{object}	APIResponse{data=[]json.RawMessage{types.GetCdnRecordSchemaResponse}}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}															"参数错误"
-//	@Failure		404			{object}	APIResponse{}															"错误响应"
+//	@Param			config_type	path		string																		true	"平台类型"
+//	@Param			config_id	path		int64																		true	"平台配置ID"
+//	@Success		200			{object}	types.APIResponse{data=[]json.RawMessage{types.GetCdnRecordSchemaResponse}}	"成功响应"
+//	@Failure		400			{object}	types.APIResponse{}															"参数错误"
+//	@Failure		404			{object}	types.APIResponse{}															"错误响应"
 //	@Router			/schemas/{config_type}/cdn-record/{config_id} [get]
 func GetCdnRecordSchema(c *gin.Context) {
 	// 请求参数
@@ -348,11 +348,11 @@ func GetCdnRecordSchema(c *gin.Context) {
 //	@Tags			Schema
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			config_type	path		string																	true	"平台类型"
-//	@Param			config_id	path		int64																	true	"平台配置ID"
-//	@Success		200			{object}	APIResponse{data=[]json.RawMessage{types.GetDnsRecordSchemaResponse}}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}															"参数错误"
-//	@Failure		404			{object}	APIResponse{}															"错误响应"
+//	@Param			config_type	path		string																		true	"平台类型"
+//	@Param			config_id	path		int64																		true	"平台配置ID"
+//	@Success		200			{object}	types.APIResponse{data=[]json.RawMessage{types.GetDnsRecordSchemaResponse}}	"成功响应"
+//	@Failure		400			{object}	types.APIResponse{}															"参数错误"
+//	@Failure		404			{object}	types.APIResponse{}															"错误响应"
 //	@Router			/schemas/{config_type}/dns-record/{config_id} [get]
 func GetDnsRecordSchema(c *gin.Context) {
 	// 请求参数
@@ -870,11 +870,11 @@ func GetDnsRecordSchema(c *gin.Context) {
 //	@Tags			Schema
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			config_type	path		string																	true	"平台类型"
-//	@Param			config_id	path		int64																	true	"平台配置ID"
-//	@Success		200			{object}	APIResponse{data=[]json.RawMessage{types.GetTunRecordSchemaResponse}}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}															"参数错误"
-//	@Failure		404			{object}	APIResponse{}															"错误响应"
+//	@Param			config_type	path		string																		true	"平台类型"
+//	@Param			config_id	path		int64																		true	"平台配置ID"
+//	@Success		200			{object}	types.APIResponse{data=[]json.RawMessage{types.GetTunRecordSchemaResponse}}	"成功响应"
+//	@Failure		400			{object}	types.APIResponse{}															"参数错误"
+//	@Failure		404			{object}	types.APIResponse{}															"错误响应"
 //	@Router			/schemas/{config_type}/tun-record/{config_id} [get]
 func GetTunRecordSchema(c *gin.Context) {
 	// 请求参数

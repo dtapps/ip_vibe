@@ -22,8 +22,8 @@ import (
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200	{object}	APIResponse{data=[]types.GetDeviceResponse}	"成功响应"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Success		200	{object}	types.APIResponse{data=[]types.GetDeviceResponse}	"成功响应"
+//	@Failure		404	{object}	types.APIResponse{}									"错误响应"
 //	@Router			/devices [get]
 func GetDevices(c *gin.Context) {
 
@@ -50,10 +50,10 @@ func GetDevices(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"设备序号"
-//	@Success		200	{object}	APIResponse{data=types.GetDeviceResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			id	path		int64											true	"设备序号"
+//	@Success		200	{object}	types.APIResponse{data=types.GetDeviceResponse}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}								"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}								"错误响应"
 //	@Router			/devices/{id} [get]
 func GetDeviceDetail(c *gin.Context) {
 	// 请求参数
@@ -88,9 +88,9 @@ func GetDeviceDetail(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.CreateDeviceRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}				"成功响应"
-//	@Failure		400		{object}	APIResponse{}				"参数错误"
-//	@Failure		404		{object}	APIResponse{}				"错误响应"
+//	@Success		200		{object}	types.APIResponse{}			"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}			"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}			"错误响应"
 //	@Router			/devices [post]
 func CreateDevice(c *gin.Context) {
 	// 请求参数
@@ -125,9 +125,9 @@ func CreateDevice(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id		path		int64						true	"设备序号"
 //	@Param			request	body		types.UpdateDeviceRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}				"成功响应"
-//	@Failure		400		{object}	APIResponse{}				"参数错误"
-//	@Failure		404		{object}	APIResponse{}				"错误响应"
+//	@Success		200		{object}	types.APIResponse{}			"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}			"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}			"错误响应"
 //	@Router			/devices/{id} [patch]
 func UpdateDevice(c *gin.Context) {
 	// 请求参数
@@ -161,10 +161,10 @@ func UpdateDevice(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64			true	"设备序号"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}	"参数错误"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Param			id	path		int64				true	"设备序号"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/devices/{id} [delete]
 func DeleteDevice(c *gin.Context) {
 	// 请求参数
@@ -199,9 +199,9 @@ func DeleteDevice(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.BatchDeleteDeviceRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}					"成功响应"
-//	@Failure		400		{object}	APIResponse{}					"参数错误"
-//	@Failure		404		{object}	APIResponse{}					"错误响应"
+//	@Success		200		{object}	types.APIResponse{}				"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}				"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}				"错误响应"
 //	@Router			/devices/batch [delete]
 func BatchDeleteDevice(c *gin.Context) {
 	// 请求参数
@@ -234,10 +234,10 @@ func BatchDeleteDevice(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64													true	"设备序号"
-//	@Success		200	{object}	APIResponse{data=[]types.GetDeviceIpHistoryResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}											"参数错误"
-//	@Failure		404	{object}	APIResponse{}											"错误响应"
+//	@Param			id	path		int64														true	"设备序号"
+//	@Success		200	{object}	types.APIResponse{data=[]types.GetDeviceIpHistoryResponse}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}											"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}											"错误响应"
 //	@Router			/devices/{id}/ip-history [get]
 func GetDeviceIpHistory(c *gin.Context) {
 	// 请求参数
@@ -271,10 +271,10 @@ func GetDeviceIpHistory(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"设备序号"
-//	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			id	path		int64												true	"设备序号"
+//	@Success		200	{object}	types.APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}									"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}									"错误响应"
 //	@Router			/devices/{id}/health-check [get]
 func HealthCheckDevice(c *gin.Context) {
 	// 请求参数
@@ -308,10 +308,10 @@ func HealthCheckDevice(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"设备序号"
-//	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			id	path		int64												true	"设备序号"
+//	@Success		200	{object}	types.APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}									"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}									"错误响应"
 //	@Router			/devices/{id}/port-forward-stats [get]
 func GetDevicePortForwardStats(c *gin.Context) {
 	// 请求参数
@@ -345,10 +345,10 @@ func GetDevicePortForwardStats(c *gin.Context) {
 //	@Tags			设备
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64												true	"设备序号"
-//	@Success		200	{object}	APIResponse{data=[]types.GetDeviceStatusResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}										"参数错误"
-//	@Failure		404	{object}	APIResponse{}										"错误响应"
+//	@Param			id	path		int64													true	"设备序号"
+//	@Success		200	{object}	types.APIResponse{data=[]types.GetDeviceStatusResponse}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}										"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}										"错误响应"
 //	@Router			/devices/{id}/status [get]
 func GetDeviceStatus(c *gin.Context) {
 	// 请求参数

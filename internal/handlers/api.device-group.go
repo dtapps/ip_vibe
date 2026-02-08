@@ -18,8 +18,8 @@ import (
 //	@Tags			设备组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200	{object}	APIResponse{data=[]types.GetDeviceGroupResponse}	"成功响应"
-//	@Failure		404	{object}	APIResponse{}										"错误响应"
+//	@Success		200	{object}	types.APIResponse{data=[]types.GetDeviceGroupResponse}	"成功响应"
+//	@Failure		404	{object}	types.APIResponse{}										"错误响应"
 //	@Router			/device-groups [get]
 func GetDeviceGroups(c *gin.Context) {
 
@@ -46,10 +46,10 @@ func GetDeviceGroups(c *gin.Context) {
 //	@Tags			设备组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64											true	"设备组序号"
-//	@Success		200	{object}	APIResponse{data=types.GetDeviceGroupResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}									"参数错误"
-//	@Failure		404	{object}	APIResponse{}									"错误响应"
+//	@Param			id	path		int64													true	"设备组序号"
+//	@Success		200	{object}	types.APIResponse{data=types.GetDeviceGroupResponse}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}										"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}										"错误响应"
 //	@Router			/device-groups/{id} [get]
 func GetDeviceGroupDetail(c *gin.Context) {
 	// 请求参数
@@ -84,9 +84,9 @@ func GetDeviceGroupDetail(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.CreateDeviceGroupRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}					"成功响应"
-//	@Failure		400		{object}	APIResponse{}					"参数错误"
-//	@Failure		404		{object}	APIResponse{}					"错误响应"
+//	@Success		200		{object}	types.APIResponse{}				"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}				"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}				"错误响应"
 //	@Router			/device-groups [post]
 func CreateDeviceGroup(c *gin.Context) {
 	// 请求参数
@@ -121,9 +121,9 @@ func CreateDeviceGroup(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id		path		int64							true	"设备组序号"
 //	@Param			request	body		types.UpdateDeviceGroupRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}					"成功响应"
-//	@Failure		400		{object}	APIResponse{}					"参数错误"
-//	@Failure		404		{object}	APIResponse{}					"错误响应"
+//	@Success		200		{object}	types.APIResponse{}				"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}				"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}				"错误响应"
 //	@Router			/device-groups/{id}/active [patch]
 func UpdateDeviceGroup(c *gin.Context) {
 	// 请求参数
@@ -157,10 +157,10 @@ func UpdateDeviceGroup(c *gin.Context) {
 //	@Tags			设备组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64			true	"设备组序号"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}	"参数错误"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Param			id	path		int64				true	"设备组序号"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/device-groups/{id} [delete]
 func DeleteDeviceGroup(c *gin.Context) {
 	// 请求参数
@@ -195,9 +195,9 @@ func DeleteDeviceGroup(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.BatchDeleteDeviceGroupRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}						"成功响应"
-//	@Failure		400		{object}	APIResponse{}						"参数错误"
-//	@Failure		404		{object}	APIResponse{}						"错误响应"
+//	@Success		200		{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}					"错误响应"
 //	@Router			/device-groups/batch [delete]
 func BatchDeleteDeviceGroup(c *gin.Context) {
 	// 请求参数
@@ -230,10 +230,10 @@ func BatchDeleteDeviceGroup(c *gin.Context) {
 //	@Tags			设备组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"设备组序号"
-//	@Success		200	{object}	APIResponse{data=[]types.GetDeviceResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			id	path		int64												true	"设备组序号"
+//	@Success		200	{object}	types.APIResponse{data=[]types.GetDeviceResponse}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}									"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}									"错误响应"
 //	@Router			/device-groups/{id}/devices [get]
 func GetDeviceGroupDevices(c *gin.Context) {
 	// 请求参数
@@ -267,10 +267,10 @@ func GetDeviceGroupDevices(c *gin.Context) {
 //	@Tags			设备组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64										true	"设备组序号"
-//	@Success		200	{object}	APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}								"参数错误"
-//	@Failure		404	{object}	APIResponse{}								"错误响应"
+//	@Param			id	path		int64												true	"设备组序号"
+//	@Success		200	{object}	types.APIResponse{data=[][]service.ToPairsStruct}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}									"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}									"错误响应"
 //	@Router			/device-groups/{id}/health-check [get]
 func HealthCheckDeviceGroup(c *gin.Context) {
 	// 请求参数
@@ -304,10 +304,10 @@ func HealthCheckDeviceGroup(c *gin.Context) {
 //	@Tags			设备组
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64																	true	"设备组序号"
-//	@Success		200	{object}	APIResponse{data=types.GetDeviceGroupDevicePortForwardStatsResponse}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}															"参数错误"
-//	@Failure		404	{object}	APIResponse{}															"错误响应"
+//	@Param			id	path		int64																		true	"设备组序号"
+//	@Success		200	{object}	types.APIResponse{data=types.GetDeviceGroupDevicePortForwardStatsResponse}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}															"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}															"错误响应"
 //	@Router			/device-groups/{id}/port-forward/stats [get]
 func GetDeviceGroupDevicePortForwardStats(c *gin.Context) {
 	// 请求参数

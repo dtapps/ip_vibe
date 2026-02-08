@@ -18,10 +18,10 @@ import (
 //	@Tags			通知订阅
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			request	query		types.GetWebhookSubsRequest						false	"请求参数"
-//	@Success		200		{object}	APIResponse{data=[]types.GetWebhookSubResponse}	"成功响应"
-//	@Failure		400		{object}	APIResponse{}									"参数错误"
-//	@Failure		404		{object}	APIResponse{}									"错误响应"
+//	@Param			request	query		types.GetWebhookSubsRequest								false	"请求参数"
+//	@Success		200		{object}	types.APIResponse{data=[]types.GetWebhookSubResponse}	"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}										"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}										"错误响应"
 //	@Router			/webhook-subs [get]
 func GetWebhookSubs(c *gin.Context) {
 	// 请求参数
@@ -56,9 +56,9 @@ func GetWebhookSubs(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id		path		int64								true	"通知订阅序号"
 //	@Param			request	body		types.UpdateWebhookSubActiveRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}						"成功响应"
-//	@Failure		400		{object}	APIResponse{}						"参数错误"
-//	@Failure		404		{object}	APIResponse{}						"错误响应"
+//	@Success		200		{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}					"错误响应"
 //	@Router			/webhook-subs/{id}/active [patch]
 func UpdateWebhookSubActive(c *gin.Context) {
 	// 请求参数
@@ -93,9 +93,9 @@ func UpdateWebhookSubActive(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.BatchUpdateWebhookSubActiveRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}								"成功响应"
-//	@Failure		400		{object}	APIResponse{}								"参数错误"
-//	@Failure		404		{object}	APIResponse{}								"错误响应"
+//	@Success		200		{object}	types.APIResponse{}							"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}							"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}							"错误响应"
 //	@Router			/webhook-subs/batch/active [patch]
 func BatchUpdateWebhookSubActive(c *gin.Context) {
 	// 请求参数
@@ -128,10 +128,10 @@ func BatchUpdateWebhookSubActive(c *gin.Context) {
 //	@Tags			通知订阅
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		int64			true	"通知订阅序号"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}	"参数错误"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Param			id	path		int64				true	"通知订阅序号"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/webhook-subs/{id} [delete]
 func DeleteWebhookSub(c *gin.Context) {
 	// 请求参数
@@ -166,9 +166,9 @@ func DeleteWebhookSub(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.BatchDeleteWebhookSubRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}						"成功响应"
-//	@Failure		400		{object}	APIResponse{}						"参数错误"
-//	@Failure		404		{object}	APIResponse{}						"错误响应"
+//	@Success		200		{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}					"错误响应"
 //	@Router			/webhook-subs/batch [delete]
 func BatchDeleteWebhookSub(c *gin.Context) {
 	// 请求参数

@@ -83,13 +83,17 @@ func (p *SSLApplyTaskProvider) Process(ctx context.Context, args json.RawMessage
 		}
 	}
 
-	// 如果存在过期时间和开启自动续期，判断是否需要续期
-	if !record.NotAfter.IsZero() && record.IsAutoRenewal {
+	// 如果存在过期时间，判断是否需要续期
+	if !record.NotAfter.IsZero() {
 		// 计算距离过期时间还有多少天
 		daysUntilExpire := record.NotAfter.Sub(time.Now()).Hours() / 24
 		// 如果大于过期时间就跳过
 		if daysUntilExpire > float64(record.RenewalDays) {
 			return fmt.Sprintf("距离过期时间还有%.0f天，不需要续期", daysUntilExpire), nil
+		}
+		// 关闭了自动续期，也跳过
+		if !record.IsAutoRenewal {
+			return fmt.Sprintf("距离过期时间还有%.0f天，但是关闭了自动续期，跳过", daysUntilExpire), nil
 		}
 	}
 

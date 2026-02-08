@@ -21,9 +21,9 @@ import (
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.SyncCloudflareTunnelsRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}						"成功响应"
-//	@Failure		400		{object}	APIResponse{}						"参数错误"
-//	@Failure		404		{object}	APIResponse{}						"错误响应"
+//	@Success		200		{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}					"错误响应"
 //	@Router			/cloudflare-tunnels/sync [post]
 func SyncCloudflareTunnels(c *gin.Context) {
 	// 请求参数
@@ -98,10 +98,10 @@ func SyncCloudflareTunnels(c *gin.Context) {
 //	@Tags			CloudflareTunnel
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			tunnel_id	path		int64																true	"隧道序号"
-//	@Success		200			{object}	APIResponse{data=[]types.GetCloudflareTunnelIngressDetailResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}														"参数错误"
-//	@Failure		404			{object}	APIResponse{}														"错误响应"
+//	@Param			tunnel_id	path		int64																		true	"隧道序号"
+//	@Success		200			{object}	types.APIResponse{data=[]types.GetCloudflareTunnelIngressDetailResponse}	"成功响应"
+//	@Failure		400			{object}	types.APIResponse{}															"参数错误"
+//	@Failure		404			{object}	types.APIResponse{}															"错误响应"
 //	@Router			/cloudflare-tunnels/{tunnel_id}/ingresses [get]
 func GetCloudflareTunnelIngress(c *gin.Context) {
 	// 请求参数
@@ -137,11 +137,11 @@ func GetCloudflareTunnelIngress(c *gin.Context) {
 //	@Tags			CloudflareTunnel
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			tunnel_id	path		int64																true	"隧道序号"
-//	@Param			ingress_id	path		int64																true	"入站规则序号"
-//	@Success		200			{object}	APIResponse{data=types.GetCloudflareTunnelIngressDetailResponse}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}														"参数错误"
-//	@Failure		404			{object}	APIResponse{}														"错误响应"
+//	@Param			tunnel_id	path		int64																	true	"隧道序号"
+//	@Param			ingress_id	path		int64																	true	"入站规则序号"
+//	@Success		200			{object}	types.APIResponse{data=types.GetCloudflareTunnelIngressDetailResponse}	"成功响应"
+//	@Failure		400			{object}	types.APIResponse{}														"参数错误"
+//	@Failure		404			{object}	types.APIResponse{}														"错误响应"
 //	@Router			/cloudflare-tunnels/{tunnel_id}/ingresses/{ingress_id} [get]
 func GetCloudflareTunnelIngressDetail(c *gin.Context) {
 	// 请求参数
@@ -178,10 +178,10 @@ func GetCloudflareTunnelIngressDetail(c *gin.Context) {
 //	@Tags			CloudflareTunnel
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			tunnel_id	path		int64			true	"隧道序号"
-//	@Success		200			{object}	APIResponse{}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}	"参数错误"
-//	@Failure		404			{object}	APIResponse{}	"错误响应"
+//	@Param			tunnel_id	path		int64				true	"隧道序号"
+//	@Success		200			{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400			{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404			{object}	types.APIResponse{}	"错误响应"
 //	@Router			/cloudflare-tunnels/{tunnel_id}/ingresses [post]
 func CreateCloudflareTunnelIngress(c *gin.Context) {
 	// 请求参数
@@ -217,11 +217,11 @@ func CreateCloudflareTunnelIngress(c *gin.Context) {
 //	@Tags			CloudflareTunnel
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			tunnel_id	path		int64			true	"隧道序号"
-//	@Param			ingress_id	path		int64			true	"入站规则序号"
-//	@Success		200			{object}	APIResponse{}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}	"参数错误"
-//	@Failure		404			{object}	APIResponse{}	"错误响应"
+//	@Param			tunnel_id	path		int64				true	"隧道序号"
+//	@Param			ingress_id	path		int64				true	"入站规则序号"
+//	@Success		200			{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400			{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404			{object}	types.APIResponse{}	"错误响应"
 //	@Router			/cloudflare-tunnels/{tunnel_id}/ingresses/{ingress_id} [patch]
 func UpdateCloudflareTunnelIngress(c *gin.Context) {
 	// 请求参数
@@ -258,11 +258,11 @@ func UpdateCloudflareTunnelIngress(c *gin.Context) {
 //	@Tags			CloudflareTunnel
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			tunnel_id	path		int64			true	"隧道序号"
-//	@Param			ingress_id	path		int64			true	"入站规则序号"
-//	@Success		200			{object}	APIResponse{}	"成功响应"
-//	@Failure		400			{object}	APIResponse{}	"参数错误"
-//	@Failure		404			{object}	APIResponse{}	"错误响应"
+//	@Param			tunnel_id	path		int64				true	"隧道序号"
+//	@Param			ingress_id	path		int64				true	"入站规则序号"
+//	@Success		200			{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400			{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404			{object}	types.APIResponse{}	"错误响应"
 //	@Router			/cloudflare-tunnels/{tunnel_id}/ingresses/{ingress_id} [delete]
 func DeleteCloudflareTunnelIngress(c *gin.Context) {
 	// 请求参数

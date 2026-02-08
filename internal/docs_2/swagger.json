@@ -19,7 +19,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ],
                 "summary": "获取全部CDN记录",
                 "parameters": [
@@ -36,7 +36,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -55,13 +55,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -75,7 +75,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ],
                 "summary": "创建CDN记录",
                 "parameters": [
@@ -93,19 +93,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -121,7 +121,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ],
                 "summary": "批量删除CDN记录",
                 "parameters": [
@@ -139,19 +139,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -167,7 +167,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ],
                 "summary": "批量更新CDN记录启用状态",
                 "parameters": [
@@ -185,19 +185,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -213,7 +213,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ],
                 "summary": "获取CDN记录详情",
                 "parameters": [
@@ -232,7 +232,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -248,13 +248,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -268,7 +268,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ],
                 "summary": "删除CDN记录",
                 "parameters": [
@@ -285,19 +285,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -311,7 +311,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ],
                 "summary": "更新CDN记录",
                 "parameters": [
@@ -337,19 +337,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -365,7 +365,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ],
                 "summary": "更新CDN记录启用状态",
                 "parameters": [
@@ -391,19 +391,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -419,7 +419,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "CDN记录"
+                    "CDNRecord"
                 ],
                 "summary": "检查CDN记录健康状态",
                 "parameters": [
@@ -438,7 +438,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -460,13 +460,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -500,19 +500,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -547,7 +547,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -566,13 +566,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -603,19 +603,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -658,7 +658,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -674,13 +674,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -719,19 +719,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -770,19 +770,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -816,19 +816,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -863,7 +863,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -882,13 +882,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -913,7 +913,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -932,7 +932,7 @@
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -964,19 +964,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1010,19 +1010,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1057,7 +1057,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1073,13 +1073,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1110,19 +1110,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1164,19 +1164,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1211,7 +1211,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1230,13 +1230,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1271,7 +1271,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1293,13 +1293,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1334,7 +1334,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1350,13 +1350,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1381,7 +1381,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1400,7 +1400,7 @@
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1432,19 +1432,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1478,19 +1478,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1525,7 +1525,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1541,13 +1541,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1578,19 +1578,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1630,19 +1630,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1677,7 +1677,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1699,13 +1699,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1740,7 +1740,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1759,13 +1759,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1800,7 +1800,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1822,13 +1822,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1863,7 +1863,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1882,13 +1882,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1904,7 +1904,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ],
                 "summary": "获取全部DNS记录",
                 "parameters": [
@@ -1921,7 +1921,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -1940,13 +1940,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -1960,7 +1960,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ],
                 "summary": "创建DNS记录",
                 "parameters": [
@@ -1978,19 +1978,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2006,7 +2006,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ],
                 "summary": "批量删除DNS记录",
                 "parameters": [
@@ -2024,19 +2024,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2052,7 +2052,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ],
                 "summary": "批量更新DNS记录启用状态",
                 "parameters": [
@@ -2070,19 +2070,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2098,7 +2098,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ],
                 "summary": "获取DNS记录详情",
                 "parameters": [
@@ -2117,7 +2117,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2133,13 +2133,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2153,7 +2153,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ],
                 "summary": "删除DNS记录",
                 "parameters": [
@@ -2170,19 +2170,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2196,7 +2196,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ],
                 "summary": "更新DNS记录",
                 "parameters": [
@@ -2222,19 +2222,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2250,7 +2250,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ],
                 "summary": "更新DNS记录启用状态",
                 "parameters": [
@@ -2276,19 +2276,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2304,7 +2304,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "DNS记录"
+                    "DNSRecord"
                 ],
                 "summary": "检查DNS记录健康状态",
                 "parameters": [
@@ -2323,7 +2323,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2345,13 +2345,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2384,7 +2384,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2403,13 +2403,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2441,19 +2441,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2487,19 +2487,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2533,19 +2533,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2580,7 +2580,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -2596,13 +2596,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2633,19 +2633,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2685,19 +2685,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2739,19 +2739,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2784,19 +2784,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2830,19 +2830,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2876,19 +2876,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2911,13 +2911,13 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2940,13 +2940,13 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -2969,13 +2969,13 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3007,19 +3007,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3049,19 +3049,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3086,7 +3086,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3105,7 +3105,7 @@
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3137,19 +3137,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3183,19 +3183,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3230,7 +3230,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3246,13 +3246,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3283,19 +3283,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3337,19 +3337,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3384,7 +3384,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3403,13 +3403,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3444,7 +3444,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3466,13 +3466,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3507,7 +3507,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3523,13 +3523,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3554,7 +3554,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3573,7 +3573,7 @@
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3605,19 +3605,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3651,19 +3651,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3698,7 +3698,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3714,13 +3714,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3751,19 +3751,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3803,19 +3803,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3848,7 +3848,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -3867,13 +3867,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3905,19 +3905,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3951,19 +3951,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -3997,19 +3997,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4044,7 +4044,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4060,13 +4060,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4097,19 +4097,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4149,19 +4149,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4203,19 +4203,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4257,19 +4257,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4304,7 +4304,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4326,13 +4326,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4367,7 +4367,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4389,13 +4389,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4437,7 +4437,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4459,13 +4459,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4507,7 +4507,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4529,13 +4529,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4569,7 +4569,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4591,13 +4591,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4639,7 +4639,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4661,13 +4661,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4692,7 +4692,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4708,13 +4708,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4746,19 +4746,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4774,7 +4774,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL导入"
+                    "SSLImport"
                 ],
                 "summary": "创建SSL导入记录",
                 "parameters": [
@@ -4792,19 +4792,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4820,7 +4820,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL导入"
+                    "SSLImport"
                 ],
                 "summary": "批量删除SSL导入记录",
                 "parameters": [
@@ -4838,19 +4838,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4866,7 +4866,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL导入"
+                    "SSLImport"
                 ],
                 "summary": "创建SSL导入记录",
                 "parameters": [
@@ -4884,19 +4884,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4912,7 +4912,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL导入"
+                    "SSLImport"
                 ],
                 "summary": "删除SSL导入记录",
                 "parameters": [
@@ -4929,19 +4929,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -4957,7 +4957,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "获取全部SSL记录",
                 "parameters": [
@@ -4974,7 +4974,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -4993,13 +4993,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5013,7 +5013,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "创建SSL记录",
                 "parameters": [
@@ -5031,19 +5031,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5059,7 +5059,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "批量删除SSL记录",
                 "parameters": [
@@ -5077,19 +5077,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5105,7 +5105,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "批量更新SSL记录启用状态",
                 "parameters": [
@@ -5123,19 +5123,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5151,7 +5151,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "导入SSL记录",
                 "parameters": [
@@ -5169,19 +5169,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5197,7 +5197,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "获取SSL记录详情",
                 "parameters": [
@@ -5216,7 +5216,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -5232,13 +5232,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5252,7 +5252,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "删除SSL记录",
                 "parameters": [
@@ -5269,19 +5269,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5295,7 +5295,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "更新SSL记录",
                 "parameters": [
@@ -5321,19 +5321,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5349,7 +5349,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "更新SSL记录启用状态",
                 "parameters": [
@@ -5375,19 +5375,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5403,7 +5403,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "申请新的SSL证书",
                 "parameters": [
@@ -5422,7 +5422,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -5438,13 +5438,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5460,7 +5460,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "更新SSL记录自动续费状态",
                 "parameters": [
@@ -5486,19 +5486,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5514,7 +5514,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "SSL记录"
+                    "SSLRecord"
                 ],
                 "summary": "获取SSL记录历史详情",
                 "parameters": [
@@ -5541,7 +5541,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -5557,13 +5557,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5597,19 +5597,54 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tasks/sync-scheduler": {
+            "post": {
+                "description": "同步任务到调度器",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "同步任务到调度器",
+                "responses": {
+                    "200": {
+                        "description": "成功响应",
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "错误响应",
+                        "schema": {
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5651,19 +5686,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5705,19 +5740,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5733,7 +5768,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ],
                 "summary": "获取全部TUN记录",
                 "parameters": [
@@ -5750,7 +5785,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -5769,13 +5804,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5789,7 +5824,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ],
                 "summary": "创建TUN记录",
                 "parameters": [
@@ -5807,19 +5842,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5835,7 +5870,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ],
                 "summary": "批量删除TUN记录",
                 "parameters": [
@@ -5853,19 +5888,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5881,7 +5916,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ],
                 "summary": "批量更新TUN记录启用状态",
                 "parameters": [
@@ -5899,19 +5934,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5927,7 +5962,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ],
                 "summary": "获取TUN记录详情",
                 "parameters": [
@@ -5946,7 +5981,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -5962,13 +5997,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -5982,7 +6017,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ],
                 "summary": "删除TUN记录",
                 "parameters": [
@@ -5999,19 +6034,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6025,7 +6060,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ],
                 "summary": "更新TUN记录",
                 "parameters": [
@@ -6051,19 +6086,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6079,7 +6114,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "TUN记录"
+                    "TUNRecord"
                 ],
                 "summary": "更新TUN记录启用状态",
                 "parameters": [
@@ -6105,19 +6140,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6150,7 +6185,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -6169,13 +6204,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6209,19 +6244,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6255,19 +6290,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6300,19 +6335,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6354,19 +6389,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6399,7 +6434,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -6418,13 +6453,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6456,19 +6491,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6502,19 +6537,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6548,19 +6583,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6595,7 +6630,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/internal_handlers.APIResponse"
+                                    "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                                 },
                                 {
                                     "type": "object",
@@ -6611,13 +6646,13 @@
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6648,19 +6683,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6700,19 +6735,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6754,19 +6789,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6799,19 +6834,19 @@
                     "200": {
                         "description": "成功响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "400": {
                         "description": "参数错误",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     },
                     "404": {
                         "description": "错误响应",
                         "schema": {
-                            "$ref": "#/definitions/internal_handlers.APIResponse"
+                            "$ref": "#/definitions/vibe_ip_internal_types.APIResponse"
                         }
                     }
                 }
@@ -6819,7 +6854,16 @@
         }
     },
     "definitions": {
-        "internal_handlers.APIResponse": {
+        "vibe_ip_internal_backend_service.ToPairsStruct": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {}
+            }
+        },
+        "vibe_ip_internal_types.APIResponse": {
             "type": "object",
             "properties": {
                 "code": {
@@ -6829,15 +6873,6 @@
                 "message": {
                     "type": "string"
                 }
-            }
-        },
-        "vibe_ip_internal_backend_service.ToPairsStruct": {
-            "type": "object",
-            "properties": {
-                "key": {
-                    "type": "string"
-                },
-                "value": {}
             }
         },
         "vibe_ip_internal_types.BatchDeleteCdnRecordRequest": {

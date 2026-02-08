@@ -19,9 +19,9 @@ import (
 //	@Tags			Task
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200		{object}	APIResponse{}			"成功响应"
-//	@Failure		400		{object}	APIResponse{}			"参数错误"
-//	@Failure		404		{object}	APIResponse{}			"错误响应"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/tasks/sync-scheduler [post]
 func SyncTasksToScheduler(c *gin.Context) {
 
@@ -58,9 +58,9 @@ func SyncTasksToScheduler(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id		path		int64					true	"任务序号"
 //	@Param			request	body		types.UpdateTaskRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}			"成功响应"
-//	@Failure		400		{object}	APIResponse{}			"参数错误"
-//	@Failure		404		{object}	APIResponse{}			"错误响应"
+//	@Success		200		{object}	types.APIResponse{}		"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}		"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}		"错误响应"
 //	@Router			/tasks/{id} [patch]
 func UpdateTask(c *gin.Context) {
 	// 请求参数
@@ -97,9 +97,9 @@ func UpdateTask(c *gin.Context) {
 //	@Produce		application/json
 //	@Param			id		path		int64							true	"任务序号"
 //	@Param			request	body		types.UpdateTaskStatusRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}					"成功响应"
-//	@Failure		400		{object}	APIResponse{}					"参数错误"
-//	@Failure		404		{object}	APIResponse{}					"错误响应"
+//	@Success		200		{object}	types.APIResponse{}				"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}				"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}				"错误响应"
 //	@Router			/tasks/{id}/active [patch]
 func UpdateTaskStatus(c *gin.Context) {
 	// 请求参数
@@ -135,9 +135,9 @@ func UpdateTaskStatus(c *gin.Context) {
 //	@Accept			application/json
 //	@Produce		application/json
 //	@Param			request	body		types.BatchUpdateTaskStatusRequest	true	"请求参数"
-//	@Success		200		{object}	APIResponse{}						"成功响应"
-//	@Failure		400		{object}	APIResponse{}						"参数错误"
-//	@Failure		404		{object}	APIResponse{}						"错误响应"
+//	@Success		200		{object}	types.APIResponse{}					"成功响应"
+//	@Failure		400		{object}	types.APIResponse{}					"参数错误"
+//	@Failure		404		{object}	types.APIResponse{}					"错误响应"
 //	@Router			/tasks/batch/active [patch]
 func BatchUpdateTaskStatus(c *gin.Context) {
 	// 请求参数

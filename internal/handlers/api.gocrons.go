@@ -17,10 +17,10 @@ import (
 //	@Tags			Gocron
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		string			true	"任务 ID"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}	"参数错误"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Param			id	path		string				true	"任务 ID"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/gocrons/{id} [post]
 func RunGocron(c *gin.Context) {
 	// 请求参数
@@ -56,10 +56,10 @@ func RunGocron(c *gin.Context) {
 //	@Tags			Gocron
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Param			id	path		string			true	"任务 ID"
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		400	{object}	APIResponse{}	"参数错误"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Param			id	path		string				true	"任务 ID"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		400	{object}	types.APIResponse{}	"参数错误"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/gocrons/{id} [delete]
 func DeleteGocron(c *gin.Context) {
 	// 请求参数
@@ -95,8 +95,8 @@ func DeleteGocron(c *gin.Context) {
 //	@Tags			Gocron
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/gocrons/clean-all [post]
 func CleanAllGocron(c *gin.Context) {
 
@@ -125,8 +125,8 @@ func CleanAllGocron(c *gin.Context) {
 //	@Tags			Gocron
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/gocrons/start-scheduler [post]
 func StartGocronScheduler(c *gin.Context) {
 
@@ -155,8 +155,8 @@ func StartGocronScheduler(c *gin.Context) {
 //	@Tags			Gocron
 //	@Accept			application/json
 //	@Produce		application/json
-//	@Success		200	{object}	APIResponse{}	"成功响应"
-//	@Failure		404	{object}	APIResponse{}	"错误响应"
+//	@Success		200	{object}	types.APIResponse{}	"成功响应"
+//	@Failure		404	{object}	types.APIResponse{}	"错误响应"
 //	@Router			/gocrons/stop-scheduler [post]
 func StopGocronScheduler(c *gin.Context) {
 
