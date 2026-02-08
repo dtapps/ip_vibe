@@ -100,7 +100,7 @@ func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, businessKey stri
 	// 查找任务
 	_, err := p.db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeSystem)).
+		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeEsaSite)).
 		Where(cronjob.BusinessKeyEQ(businessKey)).
 		First(ctx)
 	if err != nil {
@@ -116,7 +116,7 @@ func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, businessKey stri
 			SetTaskType(cronjob.TaskTypeRecurring).
 			SetJobType(cronjob.JobTypeRandom).
 			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeSystem).
+			SetBusinessType(cronjob.BusinessTypeEsaSite).
 			SetBusinessKey(businessKey).
 			SetMinInterval(6).
 			SetMaxInterval(8).

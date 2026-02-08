@@ -118,7 +118,7 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, busines
 	// 查找任务
 	_, err := p.db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeSystem)).
+		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeCloudflareTunnel)).
 		Where(cronjob.BusinessKeyEQ(businessKey)).
 		First(ctx)
 	if err != nil {
@@ -134,7 +134,7 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, busines
 			SetTaskType(cronjob.TaskTypeRecurring).
 			SetJobType(cronjob.JobTypeRandom).
 			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeSystem).
+			SetBusinessType(cronjob.BusinessTypeCloudflareTunnel).
 			SetBusinessKey(businessKey).
 			SetMinInterval(6).
 			SetMaxInterval(8).
@@ -156,15 +156,15 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, busines
 // AddTask 添加 Cloudflare隧道同步 任务
 func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, configID int64, tunnelID int64) error {
 	// 任务名称
-	var name = ""
+	var name string
 	// 业务键
-	var businessKey = ""
+	var businessID int64
 	if configID != 0 && tunnelID == 0 {
 		name = fmt.Sprintf("CloudFlare隧道同步: %d", configID)
-		businessKey = fmt.Sprintf("%d", configID)
+		businessID = configID
 	} else if configID != 0 && tunnelID != 0 {
 		name = fmt.Sprintf("CloudFlare隧道同步: %d-%d", configID, tunnelID)
-		businessKey = fmt.Sprintf("%d-%d", configID, tunnelID)
+		businessID = tunnelID
 	} else {
 		return fmt.Errorf("参数错误")
 	}
@@ -179,8 +179,8 @@ func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, configID
 		SetTaskType(cronjob.TaskTypeOneOff).
 		SetJobType(cronjob.JobTypeDuration).
 		SetJobCategory(cronjob.JobCategoryCustom).
-		SetBusinessType(cronjob.BusinessTypeSystem).
-		SetBusinessKey(businessKey).
+		SetBusinessType(cronjob.BusinessTypeCloudflareTunnel).
+		SetBusinessID(businessID).
 		SetIntervalValue(1).
 		SetIntervalUnit(cronjob.IntervalUnitSeconds).
 		SetStatus(cronjob.StatusRunning).

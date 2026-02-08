@@ -92,7 +92,7 @@ func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, businessK
 	// 查找任务
 	_, err := p.db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeSystem)).
+		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeCloudflareZone)).
 		Where(cronjob.BusinessKeyEQ(businessKey)).
 		First(ctx)
 	if err != nil {
@@ -108,7 +108,7 @@ func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, businessK
 			SetTaskType(cronjob.TaskTypeRecurring).
 			SetJobType(cronjob.JobTypeRandom).
 			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeSystem).
+			SetBusinessType(cronjob.BusinessTypeCloudflareZone).
 			SetBusinessKey(businessKey).
 			SetMinInterval(6).
 			SetMaxInterval(8).
