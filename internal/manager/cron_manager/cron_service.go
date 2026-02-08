@@ -88,6 +88,22 @@ func (m *CronServerManager) InitHandlers(ctx context.Context) {
 	sslRefreshHandler := task.NewSSLRefreshTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
 	m.taskRegistry.RegisterTask(ctx, task.SSLRefreshTaskName, sslRefreshHandler)
 
+	// 注册 Cloudflare隧道同步 处理器
+	cloudflareTunnelSyncHandler := task.NewCloudflareTunnelSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	m.taskRegistry.RegisterTask(ctx, task.CloudflareTunnelSyncTaskName, cloudflareTunnelSyncHandler)
+
+	// 注册 Cloudflare站点同步 处理器
+	cloudflareZoneSyncHandler := task.NewCloudflareZoneSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	m.taskRegistry.RegisterTask(ctx, task.CloudflareZoneSyncTaskName, cloudflareZoneSyncHandler)
+
+	// 注册 EdgeOne站点同步 处理器
+	edgeOneZoneSyncHandler := task.NewEdgeOneZoneSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	m.taskRegistry.RegisterTask(ctx, task.EdgeOneZoneSyncTaskName, edgeOneZoneSyncHandler)
+
+	// 注册 ESA站点 处理器
+	esaSiteSyncHandler := task.NewESASiteSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	m.taskRegistry.RegisterTask(ctx, task.ESASiteSyncTaskName, esaSiteSyncHandler)
+
 	// 注册 数据清除 处理器
 	clearDataHandler := task.NewClearDataTaskProviderRaw(m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.ClearDataTaskName, clearDataHandler)

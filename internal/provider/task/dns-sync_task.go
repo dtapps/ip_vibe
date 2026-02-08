@@ -29,12 +29,12 @@ type DNSSyncTaskProvider struct {
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 }
 
-// NewDNSSyncTaskProvider 创建一个新的 CDN 任务提供者
+// NewDNSSyncTaskProvider 创建一个新的 DNS同步 提供者
 func NewDNSSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
 	return NewDNSSyncTaskProviderRaw(db, logDb, logger, httpTransport)
 }
 
-// NewDNSSyncTaskProvider 创建一个新的 CDN 任务提供者
+// NewDNSSyncTaskProvider 创建一个新的 DNS同步 提供者
 func NewDNSSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *DNSSyncTaskProvider {
 	return &DNSSyncTaskProvider{
 		db:            db,
@@ -54,7 +54,7 @@ type DNSSyncTaskArgs struct {
 	ID int64 `json:"id"` // DNSRecord 的数据库 ID
 }
 
-// Process 执行 CDN 记录的更新逻辑
+// Process 执行 DNS同步 逻辑
 func (p *DNSSyncTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
 
 	// 解析参数

@@ -31,12 +31,12 @@ type SSLApplyTaskProvider struct {
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 }
 
-// NewSSLApplyTaskProvider 创建一个新的 CDN 任务提供者
+// NewSSLApplyTaskProvider 创建一个新的 SSL申请 提供者
 func NewSSLApplyTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
 	return NewSSLApplyTaskProviderRaw(db, logDb, logger, httpTransport)
 }
 
-// NewSSLApplyTaskProvider 创建一个新的 CDN 任务提供者
+// NewSSLApplyTaskProvider 创建一个新的 SSL申请 提供者
 func NewSSLApplyTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *SSLApplyTaskProvider {
 	return &SSLApplyTaskProvider{
 		db:            db,
@@ -56,7 +56,7 @@ type SSLApplyTaskArgs struct {
 	ID int64 `json:"id"` // SSLRecord 的数据库 ID
 }
 
-// Process 执行 CDN 记录的更新逻辑
+// Process 执行 SSL申请 逻辑
 func (p *SSLApplyTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
 
 	// 解析参数

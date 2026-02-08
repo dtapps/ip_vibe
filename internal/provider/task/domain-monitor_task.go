@@ -27,12 +27,12 @@ type DomainMonitorTaskProvider struct {
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 }
 
-// NewDomainMonitorTaskProvider 创建一个新的域名监控任务提供者
+// NewDomainMonitorTaskProvider 创建一个新的 域名监控 提供者
 func NewDomainMonitorTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
 	return NewDomainMonitorTaskProviderRaw(db, logDb, logger, httpTransport)
 }
 
-// NewDomainMonitorTaskProvider 创建一个新的域名监控任务提供者
+// NewDomainMonitorTaskProvider 创建一个新的 域名监控 提供者
 func NewDomainMonitorTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *DomainMonitorTaskProvider {
 	return &DomainMonitorTaskProvider{
 		db:            db,
@@ -52,7 +52,7 @@ type DomainMonitorTaskArgs struct {
 	ID int64 `json:"id"` // DomainMonitor 的数据库 ID
 }
 
-// Process 执行 DomainMonitor 记录的域名监控逻辑
+// Process 执行 域名监控 逻辑
 func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
 
 	// 解析参数

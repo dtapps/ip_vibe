@@ -31,12 +31,12 @@ type ClearDataTaskProvider struct {
 	logger *slog.Logger    // 日志记录器
 }
 
-// NewClearDataTaskProvider 创建一个新的 CDN 任务提供者
+// NewClearDataTaskProvider 创建一个新的 数据清理 提供者
 func NewClearDataTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
 	return NewClearDataTaskProviderRaw(db, logDb, logger)
 }
 
-// NewClearDataTaskProvider 创建一个新的 CDN 任务提供者
+// NewClearDataTaskProvider 创建一个新的 数据清理 提供者
 func NewClearDataTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *ClearDataTaskProvider {
 	return &ClearDataTaskProvider{
 		db:     db,
@@ -56,7 +56,7 @@ type ClearDataTaskArgs struct {
 	Day   int    `json:"day"`   // 保留天数
 }
 
-// Process 执行 SSL 的刷新逻辑
+// Process 执行 数据清理 新逻辑
 func (p *ClearDataTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
 
 	// 解析参数
@@ -129,7 +129,7 @@ func (p *ClearDataTaskProvider) Process(ctx context.Context, args json.RawMessag
 	return fmt.Sprintf("表名 %s 清理成功", params.Table), nil
 }
 
-// LoadTask 加载任务
+// LoadTask 加载 数据清理 任务
 func (p *ClearDataTaskProvider) LoadTask(ctx context.Context, table string) error {
 
 	var day = 7

@@ -11,7 +11,6 @@ import (
 	"sync"
 	"syscall"
 	"time"
-	"vibe_ip/internal/backend/tasks"
 	"vibe_ip/internal/ent/schema/schemahook"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/gin_middleware"
@@ -160,81 +159,6 @@ func main() {
 	// 	)
 	// 	panic(err)
 	// }
-
-	// 启动 SSL申请任务
-	// sslApplyTask := tasks.NewSSLApplyTask(
-	// 	global.GvaEntDb,
-	// 	global.GvaEntLogDb,
-	// 	global.GvaGoCron,
-	// 	global.GvaGocronSlog,
-	// 	global.GvaHttpLog,
-	// )
-	// if err := sslApplyTask.StartPeriodicTask(ctx); err != nil {
-	// 	slog.Error("启动 SSL申请任务 失败",
-	// 		slog.Any("err", err),
-	// 	)
-	// 	panic(err)
-	// }
-
-	// 启动 Cloudflare隧道同步任务
-	cloudflareTunnelSyncTask := tasks.NewCloudflareTunnelSyncTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-	if err := cloudflareTunnelSyncTask.StartJob(ctx); err != nil {
-		slog.Error("启动 Cloudflare隧道同步任务 失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
-
-	// 启动 Cloudflare站点同步任务
-	cloudflareZoneSyncTask := tasks.NewCloudflareZoneSyncTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-	if err := cloudflareZoneSyncTask.StartJob(ctx); err != nil {
-		slog.Error("启动 Cloudflare站点同步任务 失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
-
-	// 启动 EdgeOne站点同步任务
-	edgeOneZoneSyncTask := tasks.NewEdgeOneZoneSyncTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-	if err := edgeOneZoneSyncTask.StartJob(ctx); err != nil {
-		slog.Error("启动 EdgeOne站点同步任务失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
-
-	// 启动 ESA站点同步任务
-	esaSiteSyncTask := tasks.NewESASiteSyncTask(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGocronSlog,
-		global.GvaHttpLog,
-	)
-	if err := esaSiteSyncTask.StartJob(ctx); err != nil {
-		slog.Error("启动 ESA站点同步任务失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
 
 	// 创建 定时任务 管理器
 	cronManager, err := cron_manager.NewCronServerManager(

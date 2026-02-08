@@ -29,12 +29,12 @@ type CDNSyncTaskProvider struct {
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 }
 
-// NewCDNSyncTaskProvider 创建一个新的 CDN 任务提供者
+// NewCDNSyncTaskProvider 创建一个新的 CDN同步 提供者
 func NewCDNSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
 	return NewCDNSyncTaskProviderRaw(db, logDb, logger, httpTransport)
 }
 
-// NewCDNSyncTaskProvider 创建一个新的 CDN 任务提供者
+// NewCDNSyncTaskProvider 创建一个新的 CDN同步 提供者
 func NewCDNSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CDNSyncTaskProvider {
 	return &CDNSyncTaskProvider{
 		db:            db,
@@ -54,7 +54,7 @@ type CDNSyncTaskArgs struct {
 	ID int64 `json:"id"` // CDNRecord 的数据库 ID
 }
 
-// Process 执行 CDN 记录的更新逻辑
+// Process 执行 CDN同步 逻辑
 func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
 
 	// 解析参数

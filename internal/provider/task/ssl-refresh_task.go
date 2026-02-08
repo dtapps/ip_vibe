@@ -29,12 +29,12 @@ type SSLRefreshTaskProvider struct {
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 }
 
-// NewSSLRefreshTaskProvider 创建一个新的 CDN 任务提供者
+// NewSSLRefreshTaskProvider 创建一个新的 SSL刷新 提供者
 func NewSSLRefreshTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
 	return NewSSLRefreshTaskProviderRaw(db, logDb, logger, httpTransport)
 }
 
-// NewSSLRefreshTaskProvider 创建一个新的 CDN 任务提供者
+// NewSSLRefreshTaskProvider 创建一个新的 SSL刷新 提供者
 func NewSSLRefreshTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *SSLRefreshTaskProvider {
 	return &SSLRefreshTaskProvider{
 		db:            db,
@@ -54,7 +54,7 @@ type SSLRefreshTaskArgs struct {
 	Table string `json:"table"` // 表名
 }
 
-// Process 执行 SSL 的刷新逻辑
+// Process 执行 SSL刷新 逻辑
 func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessage, meta provider.TaskMetadata) (string, error) {
 
 	// 解析参数
@@ -185,7 +185,7 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 	return fmt.Sprintf("表名 %s 处理成功 %d 条记录", params.Table, allRecordCount), nil
 }
 
-// LoadTask 加载任务
+// LoadTask 加载 SSL刷新 任务
 func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, table string) error {
 
 	switch table {
