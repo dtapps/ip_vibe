@@ -21,11 +21,12 @@ type GocronJobInfo struct {
 }
 
 type GocronJob struct {
-	ID             string      `json:"id"`              // 任务序号
-	Name           string      `json:"name"`            // 任务名称
-	LastRun        time.Time   `json:"last_run"`        // 上次运行时间
-	NextRun        time.Time   `json:"next_run"`        // 下次运行时间
-	ExecutionTime  []time.Time `json:"execution_time"`  // 执行时间列表
-	Schedule       string      `json:"schedule"`        // 任务调度表达式
-	ScheduleDetail string      `json:"schedule_detail"` // 任务调度表达式详情
+	ID                     string      `json:"id"`                       // 任务序号
+	Name                   string      `json:"name"`                     // 任务名称
+	LastRun                time.Time   `json:"last_run"`                 // 上次运行时间
+	NextRun                time.Time   `json:"next_run"`                 // 下次运行时间
+	ExecutionTime          []time.Time `json:"execution_time"`           // 执行时间列表
+	HumanizedExecutionTime []string    `json:"humanized_execution_time"` // 执行时间列表（人类可读）
+	Schedule               string      `json:"schedule"`                 // 任务调度表达式
+	ScheduleDetail         string      `json:"schedule_detail"`          // 任务调度表达式详情
 }

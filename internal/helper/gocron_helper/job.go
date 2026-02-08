@@ -7,6 +7,7 @@ import (
 	"time"
 	"vibe_ip/internal/types"
 
+	"github.com/dromara/carbon/v2"
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
 )
@@ -56,13 +57,14 @@ func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []*types.GocronJob) {
 		schedule, scheduleDetail := j.inferSchedule(job, nextRuns)
 
 		jobs = append(jobs, &types.GocronJob{
-			ID:             job.ID().String(),
-			Name:           job.Name(),
-			LastRun:        lastRun,
-			NextRun:        nextRun,
-			ExecutionTime:  nextRuns,
-			Schedule:       schedule,
-			ScheduleDetail: scheduleDetail,
+			ID:                     job.ID().String(),
+			Name:                   job.Name(),
+			LastRun:                lastRun,
+			NextRun:                nextRun,
+			ExecutionTime:          nextRuns,
+			HumanizedExecutionTime: j.humanizeTimeList(nextRuns),
+			Schedule:               schedule,
+			ScheduleDetail:         scheduleDetail,
 		})
 	}
 	return jobs
@@ -325,4 +327,12 @@ func (j *JobHelper) PanicDisposableListener() gocron.EventListener {
 			)
 		}
 	})
+}
+
+func (j *JobHelper) humanizeTimeList(times []time.Time) []string {
+	var humanizedTimes []string
+	for _, t := range times {
+		humanizedTimes = append(humanizedTimes, carbon.NewCarbon(t).DiffForHumans())
+	}
+	return humanizedTimes
 }

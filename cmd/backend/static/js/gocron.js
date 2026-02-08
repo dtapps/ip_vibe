@@ -69,7 +69,7 @@ async function showExecutionTimePopup(btn) {
     const d = JSON.parse(detail);
 
     // 解析数据
-    const { name, execution_time = [] } = d;
+    const { name, execution_time = [], humanized_execution_time = [] } = d;
 
     if (execution_time.length === 0) {
       alert("当前任务执行时间无数据");
@@ -102,8 +102,7 @@ async function showExecutionTimePopup(btn) {
           .replace(",", "");
 
         // 拼接格式：原始时间 | 相对时间
-        // return `${timeStr} | ${diffForHumans(timeStr)}`;
-        return `${formattedTime} | ${diffForHumans(timeStr)}`;
+        return `${formattedTime} | ${humanized_execution_time[execution_time.indexOf(timeStr)]}`;
       } catch (err) {
         // 解析失败时显示原始时间
         return `${timeStr} | 解析失败`;
