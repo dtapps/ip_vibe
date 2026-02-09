@@ -190,7 +190,7 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 }
 
 // LoadTask 加载 SSL刷新 任务
-func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, table string) error {
+func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, db *ent.Client, table string) error {
 
 	switch table {
 	case ent.TypeSSLRecord:
@@ -200,7 +200,7 @@ func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, table string) err
 	}
 
 	// 查找任务
-	_, err := p.db.CronJob.Query().
+	_, err := db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
 		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(table)).
@@ -211,7 +211,7 @@ func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, table string) err
 		}
 
 		// 创建任务
-		err = p.db.CronJob.Create().
+		err = db.CronJob.Create().
 			SetName("SSL刷新: " + table).
 			SetHandlerName(SSLRefreshTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(SSLRefreshTaskArgs{

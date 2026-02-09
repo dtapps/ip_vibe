@@ -33,6 +33,7 @@ func getCdnRecordList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.R
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -60,6 +61,7 @@ func getCdnRecordDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用

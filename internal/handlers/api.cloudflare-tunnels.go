@@ -44,7 +44,7 @@ func SyncCloudflareTunnels(c *gin.Context) {
 	if strings.EqualFold(requestParams.Type, "all") {
 
 		// 添加 Cloudflare隧道同步 任务
-		err := cloudflareTunnelSyncTask.AddTask(c, 0, 0)
+		err := cloudflareTunnelSyncTask.AddTask(c, global.GvaEntDb, 0, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -55,7 +55,7 @@ func SyncCloudflareTunnels(c *gin.Context) {
 	if strings.EqualFold(requestParams.Type, "this-config") && requestParams.ConfigID > 0 {
 
 		// 添加 Cloudflare隧道同步 任务
-		err := cloudflareTunnelSyncTask.AddTask(c, requestParams.ConfigID, 0)
+		err := cloudflareTunnelSyncTask.AddTask(c, global.GvaEntDb, requestParams.ConfigID, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -66,7 +66,7 @@ func SyncCloudflareTunnels(c *gin.Context) {
 	if strings.EqualFold(requestParams.Type, "this-tunnel") && requestParams.ConfigID > 0 && requestParams.TunnelID > 0 {
 
 		// 添加 Cloudflare隧道同步 任务
-		err := cloudflareTunnelSyncTask.AddTask(c, requestParams.ConfigID, requestParams.TunnelID)
+		err := cloudflareTunnelSyncTask.AddTask(c, global.GvaEntDb, requestParams.ConfigID, requestParams.TunnelID)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return

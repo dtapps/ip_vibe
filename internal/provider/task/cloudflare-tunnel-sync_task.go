@@ -116,10 +116,10 @@ func (p *CloudflareTunnelSyncTaskProvider) Process(ctx context.Context, args jso
 }
 
 // LoadTask 加载 Cloudflare隧道同步 任务
-func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, businessKey string) error {
+func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, businessKey string) error {
 
 	// 查找任务
-	_, err := p.db.CronJob.Query().
+	_, err := db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
 		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(businessKey)).
@@ -130,7 +130,7 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, busines
 		}
 
 		// 创建任务
-		err = p.db.CronJob.Create().
+		err = db.CronJob.Create().
 			SetName("CloudFlare隧道同步: " + businessKey).
 			SetHandlerName(CloudflareTunnelSyncTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareTunnelSyncTaskArgs{}))).
@@ -157,7 +157,7 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, busines
 }
 
 // AddTask 添加 Cloudflare隧道同步 任务
-func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, configID int64, tunnelID int64) error {
+func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, configID int64, tunnelID int64) error {
 
 	// 任务名称
 	var name string
@@ -176,7 +176,7 @@ func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, configID
 	}
 
 	// 创建任务
-	err := p.db.CronJob.Create().
+	err := db.CronJob.Create().
 		SetName(name).
 		SetHandlerName(CloudflareTunnelSyncTaskName).
 		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareTunnelSyncTaskArgs{

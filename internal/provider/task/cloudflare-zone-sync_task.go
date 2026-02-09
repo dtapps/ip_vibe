@@ -122,10 +122,10 @@ func (p *CloudflareZoneSyncTaskProvider) Process(ctx context.Context, args json.
 }
 
 // LoadTask 加载 Cloudflare站点同步 任务
-func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, businessKey string) error {
+func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, businessKey string) error {
 
 	// 查找任务
-	_, err := p.db.CronJob.Query().
+	_, err := db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
 		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(businessKey)).
@@ -136,7 +136,7 @@ func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, businessK
 		}
 
 		// 创建任务
-		err = p.db.CronJob.Create().
+		err = db.CronJob.Create().
 			SetName("CloudFlare站点同步: " + businessKey).
 			SetHandlerName(CloudflareZoneSyncTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareZoneSyncTaskArgs{}))).
@@ -163,7 +163,7 @@ func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, businessK
 }
 
 // AddTask 添加 Cloudflare站点同步 任务
-func (p *CloudflareZoneSyncTaskProvider) AddTask(ctx context.Context, configID int64, zoneID int64) error {
+func (p *CloudflareZoneSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, configID int64, zoneID int64) error {
 
 	// 任务名称
 	var name string
@@ -182,7 +182,7 @@ func (p *CloudflareZoneSyncTaskProvider) AddTask(ctx context.Context, configID i
 	}
 
 	// 创建任务
-	err := p.db.CronJob.Create().
+	err := db.CronJob.Create().
 		SetName(name).
 		SetHandlerName(CloudflareZoneSyncTaskName).
 		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareZoneSyncTaskArgs{

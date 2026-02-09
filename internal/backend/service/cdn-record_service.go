@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
-	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
@@ -19,7 +18,7 @@ import (
 
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
-	"go.dtapp.net/library/utils/gojson"
+	"go.dtapp.net/library/contrib/http_log"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -39,23 +38,34 @@ type CDNRecordService interface {
 
 // CDNRecordServiceImpl CDN 记录服务实现
 type CDNRecordServiceImpl struct {
-	db     *ent.Client     // 数据库客户端
-	logDb  *ent_log.Client // 日志数据库客户端
-	logger *slog.Logger    // 日志记录器
-	debug  bool            // 调试模式
+	db             *ent.Client                   // 数据库客户端
+	logDb          *ent_log.Client               // 日志数据库客户端
+	logger         *slog.Logger                  // 日志记录器
+	httpTransport  *http_log.LoggingRoundTripper // HTTP日志记录器
+	cdnSyncHandler *task.CDNSyncTaskProvider     // CDN同步 处理器
+	debug          bool                          // 调试模式
 }
 
 // NewCDNRecordService 创建 CDN 记录服务实例
-func NewCDNRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) CDNRecordService {
+func NewCDNRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) CDNRecordService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
+	// 创建 CDN同步 处理器
+	cdnSyncHandler := task.NewCDNSyncTaskProviderRaw(
+		db,
+		logDb,
+		logger,
+		httpTransport,
+	)
 	return &CDNRecordServiceImpl{
-		db:     db,
-		logDb:  logDb,
-		logger: logger,
-		debug:  debug,
+		db:             db,
+		logDb:          logDb,
+		logger:         logger,
+		debug:          debug,
+		httpTransport:  httpTransport,
+		cdnSyncHandler: cdnSyncHandler,
 	}
 }
 
@@ -249,7 +259,7 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, id int
 	}
 
 	// 同步任务状态
-	return s.handleCdnTaskStatus(ctx, s.db, firstCdnRecord, isActive)
+	return s.cdnSyncHandler.AddTask(ctx, s.db, firstCdnRecord, isActive)
 }
 
 // BatchUpdateCdnRecordActive 批量更新 CDN 记录启用状态
@@ -289,7 +299,7 @@ func (s *CDNRecordServiceImpl) BatchUpdateCdnRecordActive(ctx context.Context, i
 
 	// 同步任务状态
 	for _, record := range allCdnRecord {
-		err = s.handleCdnTaskStatus(ctx, tx.Client(), record, isActive)
+		err = s.cdnSyncHandler.AddTask(ctx, tx.Client(), record, isActive)
 		if err != nil {
 			tx.Rollback()
 			return fmt.Errorf("同步CDN任务状态失败: %w", err)
@@ -446,60 +456,4 @@ func (s *CDNRecordServiceImpl) HealthcheckCdnRecord(ctx context.Context, id int6
 	}
 
 	return results, nil
-}
-
-// handleCdnTaskStatus 处理CDN任务的状态同步
-func (s *CDNRecordServiceImpl) handleCdnTaskStatus(ctx context.Context, db *ent.Client, record *ent.CDNRecord, isActive bool) error {
-
-	// 状态
-	targetStatus := cronjob.StatusStopped
-	if isActive {
-		targetStatus = cronjob.StatusRunning
-	}
-
-	// 查找任务
-	job, err := db.CronJob.Query().
-		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeCdn)).
-		Where(cronjob.BusinessIDEQ(record.ID)).
-		First(ctx)
-	if err != nil {
-		if !ent.IsNotFound(err) {
-			return fmt.Errorf("查找任务失败: %w", err)
-		}
-
-		// 创建任务
-		err = db.CronJob.Create().
-			SetName("CDN同步: " + record.FullDomain).
-			SetHandlerName(task.CDNSyncTaskName).
-			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.CDNSyncTaskArgs{
-				ID: record.ID,
-			}))).
-			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeRandom).
-			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeCdn).
-			SetBusinessID(record.ID).
-			SetMinInterval(10).
-			SetMaxInterval(30).
-			SetIntervalUnit(cronjob.IntervalUnitMinutes).
-			SetStatus(targetStatus).
-			SetIsSingleton(true). // 单例模式
-			SetRunOnStart(false). // 启动时不立即运行
-			Exec(ctx)
-		if err != nil {
-			return fmt.Errorf("创建任务失败: %w", err)
-		}
-
-		return nil
-	}
-
-	err = db.CronJob.UpdateOne(job).
-		SetStatus(targetStatus).
-		Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("更新任务状态失败: %w", err)
-	}
-
-	return nil
 }

@@ -134,7 +134,7 @@ func (p *ClearDataTaskProvider) Process(ctx context.Context, args json.RawMessag
 }
 
 // LoadTask 加载 数据清理 任务
-func (p *ClearDataTaskProvider) LoadTask(ctx context.Context, table string) error {
+func (p *ClearDataTaskProvider) LoadTask(ctx context.Context, db *ent.Client, table string) error {
 
 	var day = 7
 	switch table {
@@ -159,7 +159,7 @@ func (p *ClearDataTaskProvider) LoadTask(ctx context.Context, table string) erro
 	}
 
 	// 查找任务
-	_, err := p.db.CronJob.Query().
+	_, err := db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
 		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(table)).
@@ -170,7 +170,7 @@ func (p *ClearDataTaskProvider) LoadTask(ctx context.Context, table string) erro
 		}
 
 		// 创建任务
-		err = p.db.CronJob.Create().
+		err = db.CronJob.Create().
 			SetName("数据清理: " + table).
 			SetHandlerName(ClearDataTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(ClearDataTaskArgs{

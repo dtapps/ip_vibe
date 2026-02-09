@@ -121,7 +121,7 @@ func (m *CronServerManager) LoadTasks(ctx context.Context) {
 		ent.TypeSSLImport: true,
 	}
 	for table := range sslRefreshHandlerTable {
-		err := sslRefreshHandler.LoadTask(ctx, table)
+		err := sslRefreshHandler.LoadTask(ctx, m.db, table)
 		if err != nil {
 			m.logger.ErrorContext(ctx, "加载 SSL刷新 任务失败",
 				slog.String("type", table),
@@ -143,7 +143,7 @@ func (m *CronServerManager) LoadTasks(ctx context.Context) {
 		ent_log.TypePortForwardStats:     true,
 	}
 	for table := range clearDataHandlerTable {
-		err := clearDataHandler.LoadTask(ctx, table)
+		err := clearDataHandler.LoadTask(ctx, m.db, table)
 		if err != nil {
 			m.logger.ErrorContext(ctx, "加载 数据清除 任务失败",
 				slog.String("type", table),

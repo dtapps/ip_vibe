@@ -143,10 +143,10 @@ func (p *ESASiteSyncTaskProvider) Process(ctx context.Context, args json.RawMess
 }
 
 // LoadTask 加载 ESA站点同步 任务
-func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, businessKey string) error {
+func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, businessKey string) error {
 
 	// 查找任务
-	_, err := p.db.CronJob.Query().
+	_, err := db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
 		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(businessKey)).
@@ -157,7 +157,7 @@ func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, businessKey stri
 		}
 
 		// 创建任务
-		err = p.db.CronJob.Create().
+		err = db.CronJob.Create().
 			SetName("ESA站点同步: " + businessKey).
 			SetHandlerName(ESASiteSyncTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(ESASiteSyncTaskArgs{}))).
@@ -184,7 +184,7 @@ func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, businessKey stri
 }
 
 // AddTask 添加 ESA站点同步 任务
-func (p *ESASiteSyncTaskProvider) AddTask(ctx context.Context, configID int64, siteID int64, poolID int64) error {
+func (p *ESASiteSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, configID int64, siteID int64, poolID int64) error {
 
 	// 任务名称
 	var name string
@@ -206,7 +206,7 @@ func (p *ESASiteSyncTaskProvider) AddTask(ctx context.Context, configID int64, s
 	}
 
 	// 创建任务
-	err := p.db.CronJob.Create().
+	err := db.CronJob.Create().
 		SetName(name).
 		SetHandlerName(ESASiteSyncTaskName).
 		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(ESASiteSyncTaskArgs{

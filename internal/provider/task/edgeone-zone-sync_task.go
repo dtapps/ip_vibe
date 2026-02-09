@@ -143,10 +143,10 @@ func (p *EdgeOneZoneSyncTaskProvider) Process(ctx context.Context, args json.Raw
 }
 
 // LoadTask 加载 EdgeOne站点同步 任务
-func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, businessKey string) error {
+func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, businessKey string) error {
 
 	// 查找任务
-	_, err := p.db.CronJob.Query().
+	_, err := db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
 		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(businessKey)).
@@ -157,7 +157,7 @@ func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, businessKey 
 		}
 
 		// 创建任务
-		err = p.db.CronJob.Create().
+		err = db.CronJob.Create().
 			SetName("EdgeOne站点同步: " + businessKey).
 			SetHandlerName(EdgeOneZoneSyncTaskName).
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(EdgeOneZoneSyncTaskArgs{}))).
@@ -184,7 +184,7 @@ func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, businessKey 
 }
 
 // AddTask 添加 EdgeOne站点同步 任务
-func (p *EdgeOneZoneSyncTaskProvider) AddTask(ctx context.Context, configID int64, zoneID int64, groupID int64) error {
+func (p *EdgeOneZoneSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, configID int64, zoneID int64, groupID int64) error {
 
 	// 任务名称
 	var name string
@@ -206,7 +206,7 @@ func (p *EdgeOneZoneSyncTaskProvider) AddTask(ctx context.Context, configID int6
 	}
 
 	// 创建任务
-	err := p.db.CronJob.Create().
+	err := db.CronJob.Create().
 		SetName(name).
 		SetHandlerName(EdgeOneZoneSyncTaskName).
 		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(EdgeOneZoneSyncTaskArgs{
