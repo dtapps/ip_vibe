@@ -7,8 +7,11 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/types"
+
+	"github.com/go-co-op/gocron/v2"
 )
 
 // TaskService 任务服务接口
@@ -25,29 +28,51 @@ type TaskService interface {
 
 // TaskServiceImpl 任务服务实现
 type TaskServiceImpl struct {
-	db     *ent.Client     // 数据库客户端
-	logDb  *ent_log.Client // 日志数据库客户端
-	logger *slog.Logger    // 日志记录器
-	debug  bool            // 调试模式
+	db        *ent.Client              // 数据库客户端
+	logDb     *ent_log.Client          // 日志数据库客户端
+	cron      gocron.Scheduler         // 定时任务调度器
+	jobHelper *gocron_helper.JobHelper // 任务助手
+	logger    *slog.Logger             // 日志记录器
+	debug     bool                     // 调试模式
+
+	scheduledJobsMap    map[string]struct{}
+	scheduledJobsLoaded bool
 }
 
 // NewTaskService 创建任务服务实例
-func NewTaskService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) TaskService {
+func NewTaskService(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger) TaskService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
+	jobHelper := gocron_helper.NewJobHelper(cron, logger)
 	return &TaskServiceImpl{
-		db:     db,
-		logDb:  logDb,
-		logger: logger,
-		debug:  debug,
+		db:        db,
+		logDb:     logDb,
+		cron:      cron,
+		jobHelper: jobHelper,
+		logger:    logger,
+		debug:     debug,
+
+		scheduledJobsMap:    make(map[string]struct{}),
+		scheduledJobsLoaded: false,
 	}
 }
 
 // SetDebug 设置调试模式
 func (s *TaskServiceImpl) SetDebug(debug bool) {
 	s.debug = debug
+}
+
+// PreloadScheduledJobs 显式预加载当前调度中的任务 ID 集合
+func (s *TaskServiceImpl) PreloadScheduledJobs() {
+	jobs := s.jobHelper.GetJobsData(0)
+	jobMap := make(map[string]struct{}, len(jobs))
+	for _, job := range jobs {
+		jobMap[job.ID] = struct{}{}
+	}
+	s.scheduledJobsMap = jobMap
+	s.scheduledJobsLoaded = true
 }
 
 // BuildResponse 将实体转换为响应
@@ -71,10 +96,29 @@ func (s *TaskServiceImpl) BuildResponse(ctx context.Context, item *ent.CronJob) 
 		IntervalUnit:  item.IntervalUnit.String(),
 		Status:        item.Status.String(),
 		IsSingleton:   item.IsSingleton,
+		RunOnStart:    item.RunOnStart,
 
 		CreatedAt: item.CreatedAt,
 		UpdatedAt: item.UpdatedAt,
 	}
+
+	// 如果已预加载，则使用缓存；否则实时查询
+	var isScheduled bool
+	if s.scheduledJobsLoaded {
+		if _, exists := s.scheduledJobsMap[item.EntryID.String()]; exists {
+			isScheduled = true
+		}
+	} else {
+		// 没有预加载，实时查询
+		jobs := s.jobHelper.GetJobsData(0)
+		for _, job := range jobs {
+			if job.ID == item.EntryID.String() {
+				isScheduled = true
+				break
+			}
+		}
+	}
+	resp.IsScheduled = isScheduled
 
 	return resp, nil
 }
@@ -89,6 +133,9 @@ func (s *TaskServiceImpl) GetTasks(ctx context.Context, request *types.GetTasksR
 	if err != nil {
 		return nil, fmt.Errorf("查询记录失败: %w", err)
 	}
+
+	// 提前加载一次调度任务
+	s.PreloadScheduledJobs()
 
 	lists := make([]*types.GetTaskResponse, 0, len(allTask))
 	for _, item := range allTask {

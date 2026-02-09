@@ -51,6 +51,10 @@ type GetTaskResponse struct {
 	Status string `json:"status"`
 	// 是否单例
 	IsSingleton bool `json:"is_singleton"`
+	// 是否在启动时立即执行一次
+	RunOnStart bool `json:"run_on_start"`
+	// 是否已计划执行
+	IsScheduled bool `json:"is_scheduled"`
 
 	CreatedAt time.Time `json:"-"` // 创建时间
 	UpdatedAt time.Time `json:"-"` // 更新时间

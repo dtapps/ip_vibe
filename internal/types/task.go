@@ -18,7 +18,13 @@ type TaskRequest struct {
 	Status       string `json:"status,omitempty" form:"status,omitempty"`               // 状态
 }
 
+// 任务页面 数据
+type TaskResponseData struct {
+	ent.CronJob
+	IsScheduled bool `json:"is_scheduled"` // 是否已计划执行
+}
+
 // 任务页面 响应结构
 type TaskResponse struct {
-	CommonPageResponse[ent.CronJob, TaskRequest] // 任务列表
+	CommonPageResponse[TaskResponseData, TaskRequest] // 任务列表
 }

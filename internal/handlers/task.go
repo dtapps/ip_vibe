@@ -3,10 +3,10 @@ package handlers
 import (
 	"net/http"
 	"path/filepath"
-	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -23,9 +23,9 @@ func Task(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.TaskResponse{
-		CommonPageResponse: types.CommonPageResponse[ent.CronJob, types.TaskRequest]{
+		CommonPageResponse: types.CommonPageResponse[types.TaskResponseData, types.TaskRequest]{
 			Filter: requestParams,
-			List:   []ent.CronJob{},
+			List:   []types.TaskResponseData{},
 		},
 	}
 
@@ -40,6 +40,9 @@ func Task(c *gin.Context) {
 			entryID = uuid.Nil
 		}
 	}
+
+	// 获取所有任务
+	jobs := gocron_helper.NewJobHelper(global.GvaGoCron, global.GvaGocronSlog).GetJobsData(0)
 
 	// 查询全部SSL记录
 	allTask, err := global.GvaEntDb.CronJob.Query().
@@ -56,7 +59,18 @@ func Task(c *gin.Context) {
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
 		for _, item := range allTask.Items {
-			pageData.List = append(pageData.List, *item)
+			// 检查任务是否已计划执行
+			isScheduled := false
+			for _, job := range jobs {
+				if job.ID == item.EntryID.String() {
+					isScheduled = true
+					break
+				}
+			}
+			pageData.List = append(pageData.List, types.TaskResponseData{
+				CronJob:     *item,
+				IsScheduled: isScheduled,
+			})
 		}
 	}
 

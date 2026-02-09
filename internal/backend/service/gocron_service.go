@@ -27,14 +27,14 @@ type GocronService interface {
 
 // GocronServiceImpl 任务调度服务实现
 type GocronServiceImpl struct {
-	db        *ent.Client              // 数据库客户端
-	logDb     *ent_log.Client          // 日志数据库客户端
-	cron      gocron.Scheduler         // 定时任务调度器
-	jobHelper *gocron_helper.JobHelper // 任务助手
-	logger    *slog.Logger             // 日志记录器
-	debug     bool                     // 调试模式
+	db            *ent.Client              // 数据库客户端
+	logDb         *ent_log.Client          // 日志数据库客户端
+	cron          gocron.Scheduler         // 定时任务调度器
+	jobHelper     *gocron_helper.JobHelper // 任务助手
+	nextRunsLimit int                      // 下次执行时间限制
+	logger        *slog.Logger             // 日志记录器
+	debug         bool                     // 调试模式
 
-	nextRunsLimit int // 下次执行时间限制
 }
 
 // NewGocronService 创建任务调度服务实例
@@ -45,14 +45,13 @@ func NewGocronService(db *ent.Client, logDb *ent_log.Client, cron gocron.Schedul
 	}
 	jobHelper := gocron_helper.NewJobHelper(cron, logger)
 	return &GocronServiceImpl{
-		db:        db,
-		logDb:     logDb,
-		cron:      cron,
-		jobHelper: jobHelper,
-		logger:    logger,
-		debug:     debug,
-
+		db:            db,
+		logDb:         logDb,
+		cron:          cron,
+		jobHelper:     jobHelper,
 		nextRunsLimit: 15,
+		logger:        logger,
+		debug:         debug,
 	}
 }
 

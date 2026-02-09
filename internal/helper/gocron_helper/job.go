@@ -31,6 +31,9 @@ func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []*types.GocronJob) {
 	if j.Scheduler == nil {
 		return jobs
 	}
+	if nextRunsLimit <= 0 {
+		nextRunsLimit = 1
+	}
 
 	// 获取当前时间
 	now := time.Now()

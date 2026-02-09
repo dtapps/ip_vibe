@@ -75,6 +75,7 @@ func UpdateTask(c *gin.Context) {
 	taskService := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGoCron,
 		global.GvaGinSlog,
 	)
 
@@ -114,6 +115,7 @@ func UpdateTaskStatus(c *gin.Context) {
 	taskService := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGoCron,
 		global.GvaGinSlog,
 	)
 
@@ -151,6 +153,7 @@ func BatchUpdateTaskStatus(c *gin.Context) {
 	taskService := service.NewTaskService(
 		global.GvaEntDb,
 		global.GvaEntLogDb,
+		global.GvaGoCron,
 		global.GvaGinSlog,
 	)
 
