@@ -10,12 +10,6 @@ import (
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/contrib/req_log"
 	"go.dtapp.net/library/contrib/resty_log"
-	"go.dtapp.net/library/service/bark"
-	"go.dtapp.net/library/service/dingtalk"
-	"go.dtapp.net/library/service/feishu"
-	"go.dtapp.net/library/service/ft07"
-	"go.dtapp.net/library/service/pushdeer"
-	"go.dtapp.net/library/service/wechatqy"
 )
 
 // 打包时注入
@@ -62,13 +56,6 @@ var (
 	GvaHttpLog  *http_log.LoggingRoundTripper // HTTP框架日志
 	GvaRestyLog *resty_log.LoggerMiddleware   // Resty框架日志
 	GvaReqLog   *req_log.LoggerMiddleware     // Req框架日志
-
-	GvaWechatWork *wechatqy.Client // 企业微信
-	GvaDingTalk   *dingtalk.Client // 钉钉
-	GvaFeishu     *feishu.Client   // 飞书
-	GvaBark       *bark.Client     // Bark
-	GvaFt07       *ft07.Client     // Server酱
-	GvaPushDeer   *pushdeer.Client // PushDeer
 )
 
 func init() {

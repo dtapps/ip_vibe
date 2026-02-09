@@ -81,8 +81,6 @@ func main() {
 	initialize.InitEntRestyLog(global.GvaRestySlog) // 初始化 Resty 日志
 	initialize.InitEntReqLog(global.GvaReqSlog)     // 初始化 Req 日志
 
-	initialize.InitThirdParty(ctx, global.GvaSlog, global.GvaHttpLog) // 初始化 第三方
-
 	// initialize.MigrateOldData(ctx, global.GvaEntSlog, global.GvaEntDb) // 迁移旧数据
 
 	// 打印
