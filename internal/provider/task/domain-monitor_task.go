@@ -15,6 +15,7 @@ import (
 	"vibe_ip/internal/provider"
 
 	"go.dtapp.net/library/contrib/http_log"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // DomainMonitorTaskProvider 实现 provider.TaskProvider 接口
@@ -129,4 +130,62 @@ func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMe
 	}
 
 	return fmt.Sprintf("域名监控 %s 成功", domain.Domain), nil
+}
+
+// AddTask 添加 域名监控 任务
+func (p *DomainMonitorTaskProvider) AddTask(ctx context.Context, db *ent.Client, record *ent.DomainMonitor, isActive bool) error {
+
+	// 状态
+	targetStatus := cronjob.StatusStopped
+	if isActive {
+		targetStatus = cronjob.StatusRunning
+	}
+
+	// 查找任务
+	job, err := db.CronJob.Query().
+		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
+		Where(cronjob.BusinessTypeEQ(p.businessType)).
+		Where(cronjob.BusinessIDEQ(record.ID)).
+		First(ctx)
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return fmt.Errorf("查找任务失败: %w", err)
+		}
+
+		// 创建任务
+		err = db.CronJob.Create().
+			SetName("域名监控: " + record.Domain).
+			SetHandlerName(DomainMonitorTaskName).
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(DomainMonitorTaskArgs{
+				ID: record.ID,
+			}))).
+			SetTaskType(cronjob.TaskTypeRecurring).
+			SetJobType(cronjob.JobTypeDuration).
+			SetJobCategory(cronjob.JobCategorySystem).
+			SetBusinessType(p.businessType).
+			SetBusinessID(record.ID).
+			SetIntervalValue(record.CheckInterval).
+			SetIntervalUnit(cronjob.IntervalUnitSeconds).
+			SetStatus(targetStatus).
+			SetIsSingleton(true). // 单例模式
+			SetRunOnStart(false). // 启动时不立即运行
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("创建任务失败: %w", err)
+		}
+
+		return nil
+	}
+
+	// 更新任务
+	err = db.CronJob.UpdateOne(job).
+		SetIntervalValue(record.CheckInterval).
+		SetIntervalUnit(cronjob.IntervalUnitSeconds).
+		SetStatus(targetStatus).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新任务失败: %w", err)
+	}
+
+	return nil
 }

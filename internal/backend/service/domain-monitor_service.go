@@ -37,12 +37,13 @@ type DomainMonitorService interface {
 
 // DomainMonitorServiceImpl 域名监控服务实现
 type DomainMonitorServiceImpl struct {
-	db            *ent.Client                   // 数据库客户端
-	logDb         *ent_log.Client               // 日志数据库客户端
-	cron          gocron.Scheduler              // 定时任务调度器
-	logger        *slog.Logger                  // 日志记录器
-	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
-	debug         bool                          // 调试模式
+	db                   *ent.Client                     // 数据库客户端
+	logDb                *ent_log.Client                 // 日志数据库客户端
+	cron                 gocron.Scheduler                // 定时任务调度器
+	logger               *slog.Logger                    // 日志记录器
+	httpTransport        *http_log.LoggingRoundTripper   // HTTP日志记录器
+	domainMonitorHandler *task.DomainMonitorTaskProvider // CDN同步 处理器
+	debug                bool                            // 调试模式
 }
 
 // NewDomainMonitorService 创建域名监控服务实例
@@ -51,13 +52,21 @@ func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, cron gocron.
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
+	// 创建 域名监控 处理器
+	domainMonitorHandler := task.NewDomainMonitorTaskProviderRaw(
+		db,
+		logDb,
+		logger,
+		httpTransport,
+	)
 	return &DomainMonitorServiceImpl{
-		db:            db,
-		logDb:         logDb,
-		cron:          cron,
-		logger:        logger,
-		httpTransport: httpTransport,
-		debug:         debug,
+		db:                   db,
+		logDb:                logDb,
+		cron:                 cron,
+		logger:               logger,
+		httpTransport:        httpTransport,
+		domainMonitorHandler: domainMonitorHandler,
+		debug:                debug,
 	}
 }
 
@@ -226,7 +235,7 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context
 	}
 
 	// 同步任务状态
-	return s.handleDomainMonitorTaskStatus(ctx, s.db, firstDomainMonitor, isActive)
+	return s.domainMonitorHandler.AddTask(ctx, s.db, firstDomainMonitor, isActive)
 }
 
 // BatchUpdateDomainMonitorActive 批量更新域名监控启用状态
@@ -266,7 +275,7 @@ func (s *DomainMonitorServiceImpl) BatchUpdateDomainMonitorActive(ctx context.Co
 
 	// 同步任务状态
 	for _, record := range allDomainMonitor {
-		err = s.handleDomainMonitorTaskStatus(ctx, tx.Client(), record, isActive)
+		err = s.domainMonitorHandler.AddTask(ctx, tx.Client(), record, isActive)
 		if err != nil {
 			tx.Rollback()
 			return fmt.Errorf("同步域名监控任务状态失败: %w", err)
@@ -401,69 +410,6 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("创建任务失败: %w", err)
-	}
-
-	return nil
-}
-
-// handleDomainMonitorTaskStatus 处理域名监控任务的状态同步
-func (s *DomainMonitorServiceImpl) handleDomainMonitorTaskStatus(ctx context.Context, db *ent.Client, domainMonitor *ent.DomainMonitor, isActive bool) error {
-
-	// 状态
-	targetStatus := cronjob.StatusStopped
-	if isActive {
-		targetStatus = cronjob.StatusRunning
-	}
-
-	// 查找任务
-	job, err := db.CronJob.Query().
-		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeDomain)).
-		Where(cronjob.BusinessIDEQ(domainMonitor.ID)).
-		First(ctx)
-	if err != nil {
-		if !ent.IsNotFound(err) {
-			return fmt.Errorf("查找任务失败: %w", err)
-		}
-
-		// 创建任务
-		err = db.CronJob.Create().
-			SetName("域名监控: " + domainMonitor.Domain).
-			SetHandlerName(task.DomainMonitorTaskName).
-			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.DomainMonitorTaskArgs{
-				ID: domainMonitor.ID,
-			}))).
-			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeDuration).
-			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeDomain).
-			SetBusinessID(domainMonitor.ID).
-			SetIntervalValue(domainMonitor.CheckInterval).
-			SetIntervalUnit(cronjob.IntervalUnitSeconds).
-			SetStatus(targetStatus).
-			SetIsSingleton(true). // 单例模式
-			SetRunOnStart(false). // 启动时不立即运行
-			Exec(ctx)
-		if err != nil {
-			return fmt.Errorf("创建任务失败: %w", err)
-		}
-
-		return nil
-	}
-
-	// 更新任务
-	err = db.CronJob.UpdateOne(job).
-		SetTaskType(cronjob.TaskTypeRecurring).
-		SetJobType(cronjob.JobTypeDuration).
-		SetJobCategory(cronjob.JobCategorySystem).
-		SetIntervalValue(domainMonitor.CheckInterval).
-		SetIntervalUnit(cronjob.IntervalUnitSeconds).
-		SetStatus(targetStatus).
-		SetIsSingleton(true). // 单例模式
-		SetRunOnStart(false). // 启动时不立即运行
-		Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("更新任务失败: %w", err)
 	}
 
 	return nil
