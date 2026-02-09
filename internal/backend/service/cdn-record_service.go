@@ -47,13 +47,14 @@ type CDNRecordServiceImpl struct {
 }
 
 // NewCDNRecordService 创建 CDN 记录服务实例
-func NewCDNRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) CDNRecordService {
+func NewCDNRecordService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) CDNRecordService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
 	// 创建 CDN同步 处理器
 	cdnSyncHandler := task.NewCDNSyncTaskProviderRaw(
+		ctx,
 		db,
 		logDb,
 		logger,

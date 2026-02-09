@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/platformconfig"
@@ -22,26 +23,36 @@ import (
 type TUNSyncTaskProvider struct {
 	provider.UnimplementedTaskProvider // 嵌入未实现的
 
-	db            *ent.Client                   // 数据库客户端
-	logDb         *ent_log.Client               // 日志数据库客户端
-	logger        *slog.Logger                  // 日志记录器
-	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	db                     *ent.Client                   // 数据库客户端
+	logDb                  *ent_log.Client               // 日志数据库客户端
+	logger                 *slog.Logger                  // 日志记录器
+	httpTransport          *http_log.LoggingRoundTripper // HTTP日志记录器
+	webhookSendSyncHandler *WebhookSendTaskProvider      // Webhook发送 处理器
 
 	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewTUNSyncTaskProvider 创建一个新的 TUN同步 提供者
-func NewTUNSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewTUNSyncTaskProviderRaw(db, logDb, logger, httpTransport)
+func NewTUNSyncTaskProvider(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
+	return NewTUNSyncTaskProviderRaw(ctx, db, logDb, logger, httpTransport)
 }
 
 // NewTUNSyncTaskProvider 创建一个新的 TUN同步 提供者
-func NewTUNSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *TUNSyncTaskProvider {
+func NewTUNSyncTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *TUNSyncTaskProvider {
+	// 创建 Webhook发送 处理器
+	webhookSendSyncHandler := NewWebhookSendTaskProviderRaw(
+		ctx,
+		db,
+		logDb,
+		logger,
+		httpTransport,
+	)
 	return &TUNSyncTaskProvider{
-		db:            db,
-		logDb:         logDb,
-		logger:        logger.With(slog.String("handler", "tun-sync")),
-		httpTransport: httpTransport,
+		db:                     db,
+		logDb:                  logDb,
+		logger:                 logger.With(slog.String("handler", "tun-sync")),
+		httpTransport:          httpTransport,
+		webhookSendSyncHandler: webhookSendSyncHandler,
 
 		businessType: cronjob.BusinessTypeTun,
 	}
@@ -133,20 +144,24 @@ func (p *TUNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 
 	// 执行TUN更新
 	if err = tunTask.Execute(ctx); err != nil {
-		// 保存TUN记录响应
-		_ = tunTask.SaveResponse(ctx, p.db, record.ID, err.Error())
 		return "", err
 	}
-	defer func() {
-		// 保存TUN记录响应
-		_ = tunTask.SaveResponse(ctx, p.db, record.ID, "ok")
-	}()
-
-	// 保存TUN记录刷新
-	_ = tunTask.SaveRefresh(ctx, p.db, record.ID)
 
 	// 执行TUN通知
-	_ = tunTask.Notify(ctx, p.db, record.ID)
+	_ = p.webhookSendSyncHandler.AddTask(
+		ctx,
+		p.db,
+		p.businessType,
+		record.ID,
+		WebhookSendTaskArgs{
+			EventTitle:     "TUN记录更新",
+			EventType:      "TUN_UPDATE",
+			EventTime:      time.Now().Format("2006-01-02 15:04:05"),
+			EventBody:      "TUN记录更新事件",
+			RecordType:     record.ServeType.String(),
+			RecordOldValue: record.ServeURI,
+		},
+	)
 
 	return fmt.Sprintf("域名 %s 同步成功 (地址:%v)", record.SubDomain, record.ServeURI), nil
 }

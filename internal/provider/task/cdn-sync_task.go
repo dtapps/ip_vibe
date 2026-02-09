@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
@@ -25,26 +26,36 @@ import (
 type CDNSyncTaskProvider struct {
 	provider.UnimplementedTaskProvider // 嵌入未实现的
 
-	db            *ent.Client                   // 数据库客户端
-	logDb         *ent_log.Client               // 日志数据库客户端
-	logger        *slog.Logger                  // 日志记录器
-	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	db                     *ent.Client                   // 数据库客户端
+	logDb                  *ent_log.Client               // 日志数据库客户端
+	logger                 *slog.Logger                  // 日志记录器
+	httpTransport          *http_log.LoggingRoundTripper // HTTP日志记录器
+	webhookSendSyncHandler *WebhookSendTaskProvider      // Webhook发送 处理器
 
 	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewCDNSyncTaskProvider 创建一个新的 CDN同步 提供者
-func NewCDNSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewCDNSyncTaskProviderRaw(db, logDb, logger, httpTransport)
+func NewCDNSyncTaskProvider(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
+	return NewCDNSyncTaskProviderRaw(ctx, db, logDb, logger, httpTransport)
 }
 
 // NewCDNSyncTaskProvider 创建一个新的 CDN同步 提供者
-func NewCDNSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CDNSyncTaskProvider {
+func NewCDNSyncTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CDNSyncTaskProvider {
+	// 创建 Webhook发送 处理器
+	webhookSendSyncHandler := NewWebhookSendTaskProviderRaw(
+		ctx,
+		db,
+		logDb,
+		logger,
+		httpTransport,
+	)
 	return &CDNSyncTaskProvider{
-		db:            db,
-		logDb:         logDb,
-		logger:        logger.With(slog.String("handler", "cdn-sync")),
-		httpTransport: httpTransport,
+		db:                     db,
+		logDb:                  logDb,
+		logger:                 logger.With(slog.String("handler", "cdn-sync")),
+		httpTransport:          httpTransport,
+		webhookSendSyncHandler: webhookSendSyncHandler,
 
 		businessType: cronjob.BusinessTypeCdn,
 	}
@@ -261,24 +272,34 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 	}
 
 	// 配置CDN参数
-	cdnTask.Config(record.SubDomain, record.Type.String(), originValues)
+	cdnTask.Config(
+		record.SubDomain,
+		record.Type.String(),
+		originValues,
+	)
 
 	// 执行CDN更新
 	if err = cdnTask.Execute(ctx); err != nil {
-		// 保存CDN记录响应
-		_ = cdnTask.SaveResponse(ctx, p.db, record.ID, err.Error())
 		return "", err
 	}
-	defer func() {
-		// 保存CDN记录响应
-		_ = cdnTask.SaveResponse(ctx, p.db, record.ID, "ok")
-	}()
-
-	// 保存CDN记录刷新
-	_ = cdnTask.SaveRefresh(ctx, p.db, record.ID)
 
 	// 执行CDN通知
-	_ = cdnTask.Notify(ctx, p.db, record.ID)
+	_ = p.webhookSendSyncHandler.AddTask(
+		ctx,
+		p.db,
+		p.businessType,
+		record.ID,
+		WebhookSendTaskArgs{
+			EventTitle:   "CDN记录更新",
+			EventType:    "CDN_UPDATE",
+			EventTime:    time.Now().Format("2006-01-02 15:04:05"),
+			EventBody:    "CDN记录更新事件",
+			RecordDomain: record.FullDomain,
+			RecordType:   record.Type.String(),
+			// RecordOldValue: strings.Join(t.config.oldOriginValues, ","),
+			RecordNewValue: strings.Join(originValues, ","),
+		},
+	)
 
 	return fmt.Sprintf("域名 %s 同步成功 (源站:%v)", record.SubDomain, originValues), nil
 }

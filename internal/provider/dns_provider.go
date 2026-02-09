@@ -5,12 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"time"
-	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/cronjob"
-	"vibe_ip/internal/types"
-
-	"go.dtapp.net/library/utils/gojson"
 )
 
 // ---------- DNS 模块 ----------
@@ -184,96 +178,6 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 
 	// 可以下发通知
 	t.isNotification = true
-
-	return nil
-}
-
-// SaveRefresh 保存 DNS 记录刷新
-func (t *DNSTask) SaveRefresh(ctx context.Context, db *ent.Client, id int64) (err error) {
-	if db == nil || id == 0 {
-		return nil
-	}
-
-	if !t.isNotification {
-		return nil
-	}
-
-	updateOne := db.DNSRecord.UpdateOneID(id)
-	updateOne.SetRecordID(t.config.recordID)
-	updateOne.SetLastRefreshAt(time.Now())
-	err = updateOne.Exec(ctx)
-	if err != nil {
-		t.logger.ErrorContext(ctx, "保存刷新失败",
-			slog.Any("err", err),
-		)
-		return err
-	}
-	return nil
-}
-
-// SaveResponse 保存 DNS 记录响应
-func (t *DNSTask) SaveResponse(ctx context.Context, db *ent.Client, id int64, last_api_response string) (err error) {
-	if db == nil || id == 0 {
-		return nil
-	}
-
-	updateOne := db.DNSRecord.UpdateOneID(id)
-	updateOne.SetLastAPIResponse(last_api_response)
-	updateOne.SetLastAPIResponseAt(time.Now())
-	if t.config.recordID != "" {
-		updateOne.SetRecordID(t.config.recordID)
-	}
-	err = updateOne.Exec(ctx)
-	if err != nil {
-		t.logger.ErrorContext(ctx, "保存响应失败",
-			slog.Any("err", err),
-		)
-		return err
-	}
-	return nil
-}
-
-// Notify 执行 DNS 通知
-func (t *DNSTask) Notify(ctx context.Context, db *ent.Client, id int64) (err error) {
-	if db == nil || id == 0 {
-		return nil
-	}
-
-	if !t.isNotification {
-		return nil
-	}
-
-	// 通知模板数据
-	notifyData := types.TemplateData{
-		EventTitle:     "DNS记录更新",
-		EventType:      "DNS_UPDATE",
-		EventTime:      time.Now().Format("2006-01-02 15:04:05"),
-		EventBody:      "DNS记录更新事件",
-		RecordDomain:   fmt.Sprintf("%s.%s", t.config.subdomain, t.config.domain),
-		RecordType:     t.config.recordType,
-		RecordOldValue: t.config.oldOriginValue,
-		RecordNewValue: t.config.newOriginValue,
-	}
-
-	// 创建任务
-	err = db.CronJob.Create().
-		SetName("DNS通知: " + fmt.Sprintf("%s.%s", t.config.subdomain, t.config.domain)).
-		SetHandlerName("webhook_send").
-		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(notifyData))).
-		SetTaskType(cronjob.TaskTypeOneOff).
-		SetJobType(cronjob.JobTypeDuration).
-		SetJobCategory(cronjob.JobCategorySystem).
-		SetBusinessType(cronjob.BusinessTypeDNS).
-		SetBusinessID(id).
-		SetIntervalValue(1).
-		SetIntervalUnit(cronjob.IntervalUnitSeconds).
-		SetStatus(cronjob.StatusRunning).
-		SetIsSingleton(true). // 单例模式
-		SetRunOnStart(true).  // 启动时立即运行
-		Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("创建任务失败: %w", err)
-	}
 
 	return nil
 }

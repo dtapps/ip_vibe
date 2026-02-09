@@ -30,6 +30,7 @@ func Dns(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewDNSRecordService(
+		c,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,

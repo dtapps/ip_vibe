@@ -53,6 +53,7 @@ func getDnsRecordList(ctx context.Context, req *mcp.CallToolRequest, params *typ
 
 	// 创建服务
 	service := service.NewDNSRecordService(
+		ctx,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
@@ -73,6 +74,7 @@ func getDnsRecordDetail(ctx context.Context, req *mcp.CallToolRequest, params *t
 
 	// 创建服务
 	service := service.NewDNSRecordService(
+		ctx,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
@@ -93,6 +95,7 @@ func createDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 
 	// 创建服务
 	service := service.NewDNSRecordService(
+		ctx,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
@@ -113,6 +116,7 @@ func updateDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 
 	// 创建服务
 	service := service.NewDNSRecordService(
+		ctx,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
@@ -133,6 +137,7 @@ func updateDnsRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 
 	// 创建服务
 	service := service.NewDNSRecordService(
+		ctx,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
@@ -153,6 +158,7 @@ func deleteDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 
 	// 创建服务
 	service := service.NewDNSRecordService(
+		ctx,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
@@ -173,6 +179,7 @@ func healthCheckDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params 
 
 	// 创建服务
 	service := service.NewDNSRecordService(
+		ctx,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,

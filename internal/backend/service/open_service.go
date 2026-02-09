@@ -96,7 +96,7 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 	var deviceID int64
 
 	// 通知模板数据
-	notifyData := types.TemplateData{
+	notifyData := task.WebhookSendTaskArgs{
 		EventTitle: "IP地址更新",
 		EventType:  "IP_UPDATE",
 		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
@@ -230,11 +230,9 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 			err = s.webhookSendSyncHandler.AddTask(
 				asyncCtx,
 				s.db,
-				task.WebhookSendTaskArgs{
-					BusinessType: cronjob.BusinessTypeDevice,
-					BusinessID:   deviceID,
-					Payload:      notifyData,
-				},
+				cronjob.BusinessTypeDevice,
+				deviceID,
+				notifyData,
 			)
 			if err != nil {
 				s.logger.ErrorContext(asyncCtx, "创建任务失败",

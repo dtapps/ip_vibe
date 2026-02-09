@@ -30,6 +30,7 @@ func Cdn(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewCDNRecordService(
+		c,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,

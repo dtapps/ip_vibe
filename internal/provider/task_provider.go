@@ -12,10 +12,13 @@ import (
 
 // TaskMetadata 任务元数据：描述执行时的背景信息
 type TaskMetadata struct {
-	JobID        int64               // 任务序号
-	JobName      string              // 任务名称
-	TaskType     cronjob.TaskType    // 任务类型: one_off 一次性, recurring 周期性
-	TaskCategory cronjob.JobCategory // 任务分类: system 系统内置, custom 用户自定义
+	JobID        int64                // 任务序号
+	JobName      string               // 任务名称
+	TaskType     cronjob.TaskType     // 任务类型: one_off 一次性, recurring 周期性
+	TaskCategory cronjob.JobCategory  // 任务分类: system 系统内置, custom 用户自定义
+	BusinessType cronjob.BusinessType // 业务类型: cloudflare 云flare, ip_vibe ip_vibe
+	BusinessID   int64                // 业务序号: 对应业务表的主键
+	BusinessKey  string               // 业务键: 业务唯一标识
 }
 
 // TaskProvider 定义了 定时任务 操作的接口

@@ -70,11 +70,11 @@ func GetCronServerInstance() *CronServerManager {
 func (m *CronServerManager) InitHandlers(ctx context.Context) {
 
 	// 注册 CDN同步 处理器
-	cdnSyncHandler := task.NewCDNSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	cdnSyncHandler := task.NewCDNSyncTaskProvider(ctx, m.db, m.logDb, m.logger, m.httpTransport)
 	m.taskRegistry.RegisterTask(ctx, task.CDNSyncTaskName, cdnSyncHandler)
 
 	// 注册 DNS同步 处理器
-	dnsSynHandler := task.NewDNSSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	dnsSynHandler := task.NewDNSSyncTaskProvider(ctx, m.db, m.logDb, m.logger, m.httpTransport)
 	m.taskRegistry.RegisterTask(ctx, task.DNSSyncTaskName, dnsSynHandler)
 
 	// 注册 域名监控 处理器
@@ -384,6 +384,9 @@ func (m *CronServerManager) addJobToCron(j *ent.CronJob) error {
 				JobName:      j.Name,
 				TaskType:     j.TaskType,
 				TaskCategory: j.JobCategory,
+				BusinessType: j.BusinessType,
+				BusinessID:   j.BusinessID,
+				BusinessKey:  j.BusinessKey,
 			},
 		)
 	})

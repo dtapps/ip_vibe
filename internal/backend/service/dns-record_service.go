@@ -46,13 +46,14 @@ type DNSRecordServiceImpl struct {
 }
 
 // NewDNSRecordService 创建 DNS 记录服务实例
-func NewDNSRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) DNSRecordService {
+func NewDNSRecordService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) DNSRecordService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
 	// 创建 DNS同步 处理器
 	dnsSyncHandler := task.NewDNSSyncTaskProviderRaw(
+		ctx,
 		db,
 		logDb,
 		logger,

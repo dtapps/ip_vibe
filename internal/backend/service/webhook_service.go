@@ -307,7 +307,7 @@ func (s *WebhookServiceImpl) BatchDeleteWebhook(ctx context.Context, ids []int64
 func (s *WebhookServiceImpl) TestWebhook(ctx context.Context, id int64) error {
 
 	// 通知模板数据
-	notifyData := types.TemplateData{
+	notifyData := task.WebhookSendTaskArgs{
 		EventTitle: "测试事件标题",
 		EventType:  "TEST",
 		EventTime:  time.Now().Format("2006-01-02 15:04:05"),
@@ -322,11 +322,9 @@ func (s *WebhookServiceImpl) TestWebhook(ctx context.Context, id int64) error {
 	err := s.webhookSendSyncHandler.AddTask(
 		ctx,
 		s.db,
-		task.WebhookSendTaskArgs{
-			BusinessType: cronjob.BusinessTypeWebhook,
-			BusinessID:   id,
-			Payload:      notifyData,
-		},
+		cronjob.BusinessTypeWebhook,
+		id,
+		notifyData,
 	)
 	if err != nil {
 		return fmt.Errorf("创建任务失败: %w", err)

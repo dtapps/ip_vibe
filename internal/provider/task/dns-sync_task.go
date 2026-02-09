@@ -25,26 +25,36 @@ import (
 type DNSSyncTaskProvider struct {
 	provider.UnimplementedTaskProvider // 嵌入未实现的
 
-	db            *ent.Client                   // 数据库客户端
-	logDb         *ent_log.Client               // 日志数据库客户端
-	logger        *slog.Logger                  // 日志记录器
-	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+	db                     *ent.Client                   // 数据库客户端
+	logDb                  *ent_log.Client               // 日志数据库客户端
+	logger                 *slog.Logger                  // 日志记录器
+	httpTransport          *http_log.LoggingRoundTripper // HTTP日志记录器
+	webhookSendSyncHandler *WebhookSendTaskProvider      // Webhook发送 处理器
 
 	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewDNSSyncTaskProvider 创建一个新的 DNS同步 提供者
-func NewDNSSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewDNSSyncTaskProviderRaw(db, logDb, logger, httpTransport)
+func NewDNSSyncTaskProvider(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
+	return NewDNSSyncTaskProviderRaw(ctx, db, logDb, logger, httpTransport)
 }
 
 // NewDNSSyncTaskProvider 创建一个新的 DNS同步 提供者
-func NewDNSSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *DNSSyncTaskProvider {
+func NewDNSSyncTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *DNSSyncTaskProvider {
+	// 创建 Webhook发送 处理器
+	webhookSendSyncHandler := NewWebhookSendTaskProviderRaw(
+		ctx,
+		db,
+		logDb,
+		logger,
+		httpTransport,
+	)
 	return &DNSSyncTaskProvider{
-		db:            db,
-		logDb:         logDb,
-		logger:        logger.With(slog.String("handler", "cdn-sync")),
-		httpTransport: httpTransport,
+		db:                     db,
+		logDb:                  logDb,
+		logger:                 logger.With(slog.String("handler", "cdn-sync")),
+		httpTransport:          httpTransport,
+		webhookSendSyncHandler: webhookSendSyncHandler,
 
 		businessType: cronjob.BusinessTypeDNS,
 	}
@@ -258,24 +268,34 @@ func (p *DNSSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 	}
 
 	// 配置DNS参数
-	dnsTask.Config(record.SubDomain, record.Type.String(), originValue)
+	dnsTask.Config(
+		record.SubDomain,
+		record.Type.String(),
+		originValue,
+	)
 
 	// 执行DNS更新
 	if err = dnsTask.Execute(ctx); err != nil {
-		// 保存DNS记录响应
-		_ = dnsTask.SaveResponse(ctx, p.db, record.ID, err.Error())
 		return "", err
 	}
-	defer func() {
-		// 保存DNS记录响应
-		_ = dnsTask.SaveResponse(ctx, p.db, record.ID, "ok")
-	}()
-
-	// 保存DNS记录刷新
-	_ = dnsTask.SaveRefresh(ctx, p.db, record.ID)
 
 	// 执行DNS通知
-	_ = dnsTask.Notify(ctx, p.db, record.ID)
+	_ = p.webhookSendSyncHandler.AddTask(
+		ctx,
+		p.db,
+		p.businessType,
+		record.ID,
+		WebhookSendTaskArgs{
+			EventTitle:   "DNS记录更新",
+			EventType:    "DNS_UPDATE",
+			EventTime:    time.Now().Format("2006-01-02 15:04:05"),
+			EventBody:    "DNS记录更新事件",
+			RecordDomain: record.FullDomain,
+			RecordType:   record.Type.String(),
+			// RecordOldValue: t.config.oldOriginValue,
+			RecordNewValue: originValue,
+		},
+	)
 
 	return fmt.Sprintf("域名 %s 同步成功 (源站:%v)", record.SubDomain, originValue), nil
 }

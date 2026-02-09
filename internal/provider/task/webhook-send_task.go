@@ -14,7 +14,6 @@ import (
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/provider"
-	"vibe_ip/internal/types"
 
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/service/bark"
@@ -121,9 +120,20 @@ const (
 
 // WebhookSendTaskArgs 定义了存放在 CronJob.handler_args 中的数据结构
 type WebhookSendTaskArgs struct {
-	BusinessType cronjob.BusinessType `json:"business_type"` // 业务类型
-	BusinessID   int64                `json:"business_id"`   // 业务序号
-	Payload      types.TemplateData   `json:"payload"`       // 模板数据
+	EventTitle     string `json:"event_title,omitempty"`      // 事件标题
+	EventType      string `json:"event_type,omitempty"`       // 事件类型
+	EventTime      string `json:"event_time,omitempty"`       // 事件时间
+	EventBody      string `json:"event_body,omitempty"`       // 事件内容
+	DeviceCode     string `json:"device_code,omitempty"`      // 设备编码 Device->Code
+	DeviceName     string `json:"device_name,omitempty"`      // 设备名称 Device->Name
+	IPv4Addr       string `json:"ipv4_addr,omitempty"`        // IP地址V4 Device->IPv4
+	IPv6Addr       string `json:"ipv6_addr,omitempty"`        // IP地址V6 Device->IPv6
+	RecordDomain   string `json:"record_domain,omitempty"`    // 记录域名 CDNRecord/DNSRecord->Domain
+	RecordType     string `json:"record_type,omitempty"`      // 记录类型 CDNRecord/DNSRecord->Type
+	RecordOldValue string `json:"record_old_value,omitempty"` // 旧记录值 CDNRecord/DNSRecord->Record
+	RecordNewValue string `json:"record_new_value,omitempty"` // 新记录值 CDNRecord/DNSRecord->Record
+	PlatformName   string `json:"platform_name,omitempty"`    // 平台名称 PlatformConfig->Name
+	PlatformType   string `json:"platform_type,omitempty"`    // 平台类型 PlatformConfig->Platform
 }
 
 // Process 执行 Webhook发送 逻辑
@@ -136,17 +146,17 @@ func (p *WebhookSendTaskProvider) Process(ctx context.Context, args json.RawMess
 	}
 
 	var objType webhooksubscription.ObjType
-	if params.BusinessType == cronjob.BusinessTypeCdn {
+	if meta.BusinessType == cronjob.BusinessTypeCdn {
 		objType = webhooksubscription.ObjTypeCdnRecord
-	} else if params.BusinessType == cronjob.BusinessTypeDNS {
+	} else if meta.BusinessType == cronjob.BusinessTypeDNS {
 		objType = webhooksubscription.ObjTypeDNSRecord
-	} else if params.BusinessType == cronjob.BusinessTypeDevice {
+	} else if meta.BusinessType == cronjob.BusinessTypeDevice {
 		objType = webhooksubscription.ObjTypeDevice
-	} else if params.BusinessType == cronjob.BusinessTypeDomain {
+	} else if meta.BusinessType == cronjob.BusinessTypeDomain {
 		objType = webhooksubscription.ObjTypeDomainMonitor
-	} else if params.BusinessType == cronjob.BusinessTypeSsl {
+	} else if meta.BusinessType == cronjob.BusinessTypeSsl {
 		objType = webhooksubscription.ObjTypeDomainMonitor
-	} else if params.BusinessType == cronjob.BusinessTypeTun {
+	} else if meta.BusinessType == cronjob.BusinessTypeTun {
 		objType = webhooksubscription.ObjTypeTunRecord
 	}
 
@@ -154,18 +164,18 @@ func (p *WebhookSendTaskProvider) Process(ctx context.Context, args json.RawMess
 
 		// 查询记录
 		firstWebhook, err := p.db.Webhook.Query().
-			Where(webhook.IDEQ(params.BusinessID)).
+			Where(webhook.IDEQ(meta.BusinessID)).
 			First(ctx)
 		if err != nil {
 			return "", fmt.Errorf("获取记录失败: %w", err)
 		}
 
-		templateTitle, err := p.RenderTemplate(firstWebhook.TemplateTitle, params.Payload)
+		templateTitle, err := p.RenderTemplate(firstWebhook.TemplateTitle, params)
 		if err != nil {
 			return "", fmt.Errorf("渲染标题模板失败: %w", err)
 		}
 
-		templateContent, err := p.RenderTemplate(firstWebhook.TemplateContent, params.Payload)
+		templateContent, err := p.RenderTemplate(firstWebhook.TemplateContent, params)
 		if err != nil {
 			return "", fmt.Errorf("渲染内容模板失败: %w", err)
 		}
@@ -191,7 +201,7 @@ func (p *WebhookSendTaskProvider) Process(ctx context.Context, args json.RawMess
 
 		// 记录到域名监控历史
 		_ = p.logDb.WebhookHistory.Create().
-			SetWebhookID(params.BusinessID).
+			SetWebhookID(meta.BusinessID).
 			SetURL(firstWebhook.URL).
 			SetTitle(templateTitle).
 			SetContent(templateContent).
@@ -208,7 +218,7 @@ func (p *WebhookSendTaskProvider) Process(ctx context.Context, args json.RawMess
 		// 查询记录及其关联信息
 		records, err := p.db.WebhookSubscription.Query().
 			Where(webhooksubscription.ObjTypeEQ(objType)).
-			Where(webhooksubscription.ObjIDEQ(params.BusinessID)).
+			Where(webhooksubscription.ObjIDEQ(meta.BusinessID)).
 			Where(webhooksubscription.IsActiveEQ(true)).
 			WithWebhook(func(withWebhook *ent.WebhookQuery) {
 				withWebhook.Where(webhook.IsActiveEQ(true))
@@ -231,7 +241,7 @@ func (p *WebhookSendTaskProvider) Process(ctx context.Context, args json.RawMess
 					return nil
 				}
 
-				templateTitle, err := p.RenderTemplate(record.Edges.Webhook.TemplateTitle, params.Payload)
+				templateTitle, err := p.RenderTemplate(record.Edges.Webhook.TemplateTitle, params)
 				if err != nil {
 					p.logger.ErrorContext(egCtx, "渲染标题模板失败",
 						slog.Int64("webhook_id", recordWebhook.ID),
@@ -241,7 +251,7 @@ func (p *WebhookSendTaskProvider) Process(ctx context.Context, args json.RawMess
 					return nil
 				}
 
-				templateContent, err := p.RenderTemplate(record.Edges.Webhook.TemplateContent, params.Payload)
+				templateContent, err := p.RenderTemplate(record.Edges.Webhook.TemplateContent, params)
 				if err != nil {
 					p.logger.ErrorContext(egCtx, "渲染内容模板失败",
 						slog.Int64("webhook_id", recordWebhook.ID),
@@ -301,7 +311,7 @@ func (p *WebhookSendTaskProvider) Process(ctx context.Context, args json.RawMess
 }
 
 // RenderTemplate 使用 Go Template 渲染标题和内容
-func (p *WebhookSendTaskProvider) RenderTemplate(tmplString string, data types.TemplateData) (string, error) {
+func (p *WebhookSendTaskProvider) RenderTemplate(tmplString string, data WebhookSendTaskArgs) (string, error) {
 	// 创建一个新的模板实例
 	tmpl := template.New("webhook_template")
 
@@ -519,42 +529,6 @@ func (p *WebhookSendTaskProvider) Http(ctx context.Context, url string, title st
 	return resp.Bytes(), nil
 }
 
-// AddTask 添加 Webhook发送 一次性任务
-func (p *WebhookSendTaskProvider) AddTask(ctx context.Context, db *ent.Client, args WebhookSendTaskArgs) error {
-
-	var (
-		taskType    = cronjob.TaskTypeOneOff
-		jobType     = cronjob.JobTypeDuration
-		jobCategory = cronjob.JobCategorySystem
-	)
-
-	if args.BusinessType == cronjob.BusinessTypeWebhook {
-		jobCategory = cronjob.JobCategoryCustom
-	}
-
-	// 创建任务
-	err := db.CronJob.Create().
-		SetName("通知: " + args.Payload.EventTitle).
-		SetHandlerName(WebhookSendTaskName).
-		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(args.Payload))).
-		SetTaskType(taskType).
-		SetJobType(jobType).
-		SetJobCategory(jobCategory).
-		SetBusinessType(args.BusinessType).
-		SetBusinessID(args.BusinessID).
-		SetMinInterval(1).
-		SetIntervalUnit(cronjob.IntervalUnitSeconds).
-		SetStatus(cronjob.StatusRunning).
-		SetIsSingleton(true). // 单例模式
-		SetRunOnStart(true).  // 启动时立即运行
-		Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("创建任务失败: %w", err)
-	}
-
-	return nil
-}
-
 type TextItem struct {
 	Tag  string `json:"tag"`
 	Text string `json:"text"`
@@ -579,4 +553,40 @@ func (p *WebhookSendTaskProvider) StringToTextArray(str string) [][]TextItem {
 	}
 
 	return [][]TextItem{result}
+}
+
+// AddTask 添加 Webhook发送 一次性任务
+func (p *WebhookSendTaskProvider) AddTask(ctx context.Context, db *ent.Client, businessType cronjob.BusinessType, businessID int64, args WebhookSendTaskArgs) error {
+
+	var (
+		taskType    = cronjob.TaskTypeOneOff
+		jobType     = cronjob.JobTypeDuration
+		jobCategory = cronjob.JobCategorySystem
+	)
+
+	if businessType == cronjob.BusinessTypeWebhook {
+		jobCategory = cronjob.JobCategoryCustom
+	}
+
+	// 创建任务
+	err := db.CronJob.Create().
+		SetName("通知: " + args.EventTitle).
+		SetHandlerName(WebhookSendTaskName).
+		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(args))).
+		SetTaskType(taskType).
+		SetJobType(jobType).
+		SetJobCategory(jobCategory).
+		SetBusinessType(businessType).
+		SetBusinessID(businessID).
+		SetIntervalValue(1).
+		SetIntervalUnit(cronjob.IntervalUnitSeconds).
+		SetStatus(cronjob.StatusRunning).
+		SetIsSingleton(true). // 单例模式
+		SetRunOnStart(true).  // 启动时立即运行
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("创建任务失败: %w", err)
+	}
+
+	return nil
 }
