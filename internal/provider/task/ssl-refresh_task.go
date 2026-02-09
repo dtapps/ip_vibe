@@ -189,8 +189,8 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 	return fmt.Sprintf("表名 %s 处理成功 %d 条记录", params.Table, allRecordCount), nil
 }
 
-// LoadTask 加载 SSL刷新 任务
-func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, db *ent.Client, table string) error {
+// LoadRecurringTask 加载 SSL刷新 周期任务
+func (p *SSLRefreshTaskProvider) LoadRecurringTask(ctx context.Context, db *ent.Client, table string) error {
 
 	switch table {
 	case ent.TypeSSLRecord:

@@ -283,8 +283,8 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 	return fmt.Sprintf("域名 %s 同步成功 (源站:%v)", record.SubDomain, originValues), nil
 }
 
-// AddTask 添加 CDN同步 任务
-func (p *CDNSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, record *ent.CDNRecord, isActive bool) error {
+// AddRecurringTask 添加 CDN同步 周期任务
+func (p *CDNSyncTaskProvider) AddRecurringTask(ctx context.Context, db *ent.Client, record *ent.CDNRecord, isActive bool) error {
 
 	// 状态
 	targetStatus := cronjob.StatusStopped

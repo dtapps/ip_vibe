@@ -41,8 +41,8 @@ func SyncEdgeOneZones(c *gin.Context) {
 
 	if strings.EqualFold(requestParams.Type, "all") {
 
-		// 添加 EdgeOne站点同步 任务
-		err := edgeOneZoneSyncTask.AddTask(c, global.GvaEntDb, 0, 0, 0)
+		// 添加 EdgeOne站点同步 一次性任务
+		err := edgeOneZoneSyncTask.AddOneOffTask(c, global.GvaEntDb, 0, 0, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -52,8 +52,8 @@ func SyncEdgeOneZones(c *gin.Context) {
 
 	if strings.EqualFold(requestParams.Type, "this-config") && requestParams.ConfigID > 0 {
 
-		// 添加 EdgeOne站点同步 任务
-		err := edgeOneZoneSyncTask.AddTask(c, global.GvaEntDb, requestParams.ConfigID, 0, 0)
+		// 添加 EdgeOne站点同步 一次性任务
+		err := edgeOneZoneSyncTask.AddOneOffTask(c, global.GvaEntDb, requestParams.ConfigID, 0, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -63,8 +63,8 @@ func SyncEdgeOneZones(c *gin.Context) {
 
 	if strings.EqualFold(requestParams.Type, "this-zone") && requestParams.ZoneID > 0 && requestParams.ConfigID > 0 {
 
-		// 添加 EdgeOne站点同步 任务
-		err := edgeOneZoneSyncTask.AddTask(c, global.GvaEntDb, requestParams.ConfigID, requestParams.ZoneID, 0)
+		// 添加 EdgeOne站点同步 一次性任务
+		err := edgeOneZoneSyncTask.AddOneOffTask(c, global.GvaEntDb, requestParams.ConfigID, requestParams.ZoneID, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -74,8 +74,8 @@ func SyncEdgeOneZones(c *gin.Context) {
 
 	if strings.EqualFold(requestParams.Type, "this-group") && requestParams.GroupID > 0 && requestParams.ZoneID > 0 && requestParams.ConfigID > 0 {
 
-		// 添加 EdgeOne站点同步 任务
-		err := edgeOneZoneSyncTask.AddTask(c, global.GvaEntDb, requestParams.ConfigID, requestParams.ZoneID, requestParams.GroupID)
+		// 添加 EdgeOne站点同步 一次性任务
+		err := edgeOneZoneSyncTask.AddOneOffTask(c, global.GvaEntDb, requestParams.ConfigID, requestParams.ZoneID, requestParams.GroupID)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return

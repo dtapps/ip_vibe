@@ -142,8 +142,8 @@ func (p *EdgeOneZoneSyncTaskProvider) Process(ctx context.Context, args json.Raw
 	return fmt.Sprintf("同步成功"), nil
 }
 
-// LoadTask 加载 EdgeOne站点同步 任务
-func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, businessKey string) error {
+// LoadRecurringTask 加载 EdgeOne站点同步 周期任务
+func (p *EdgeOneZoneSyncTaskProvider) LoadRecurringTask(ctx context.Context, db *ent.Client, businessKey string) error {
 
 	// 查找任务
 	_, err := db.CronJob.Query().
@@ -183,8 +183,8 @@ func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Clie
 	return nil
 }
 
-// AddTask 添加 EdgeOne站点同步 任务
-func (p *EdgeOneZoneSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, configID int64, zoneID int64, groupID int64) error {
+// AddOneOffTask 添加 EdgeOne站点同步 一次性任务
+func (p *EdgeOneZoneSyncTaskProvider) AddOneOffTask(ctx context.Context, db *ent.Client, configID int64, zoneID int64, groupID int64) error {
 
 	// 任务名称
 	var name string

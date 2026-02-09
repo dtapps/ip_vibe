@@ -142,8 +142,8 @@ func (p *ESASiteSyncTaskProvider) Process(ctx context.Context, args json.RawMess
 	return fmt.Sprintf("同步成功"), nil
 }
 
-// LoadTask 加载 ESA站点同步 任务
-func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, businessKey string) error {
+// LoadRecurringTask 加载 ESA站点同步 周期任务
+func (p *ESASiteSyncTaskProvider) LoadRecurringTask(ctx context.Context, db *ent.Client, businessKey string) error {
 
 	// 查找任务
 	_, err := db.CronJob.Query().
@@ -183,8 +183,8 @@ func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, 
 	return nil
 }
 
-// AddTask 添加 ESA站点同步 任务
-func (p *ESASiteSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, configID int64, siteID int64, poolID int64) error {
+// AddOneOffTask 添加 ESA站点同步 一次性任务
+func (p *ESASiteSyncTaskProvider) AddOneOffTask(ctx context.Context, db *ent.Client, configID int64, siteID int64, poolID int64) error {
 
 	// 任务名称
 	var name string
@@ -214,7 +214,7 @@ func (p *ESASiteSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, c
 			SiteID:   siteID,
 			PoolID:   poolID,
 		}))).
-		SetTaskType(cronjob.TaskTypeRecurring).
+		SetTaskType(cronjob.TaskTypeOneOff).
 		SetJobType(cronjob.JobTypeRandom).
 		SetJobCategory(cronjob.JobCategorySystem).
 		SetBusinessType(p.businessType).

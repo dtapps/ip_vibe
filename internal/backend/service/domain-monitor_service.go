@@ -234,8 +234,8 @@ func (s *DomainMonitorServiceImpl) UpdateDomainMonitorActive(ctx context.Context
 		return fmt.Errorf("更新域名监控启用状态失败: %w", err)
 	}
 
-	// 同步任务状态
-	return s.domainMonitorHandler.AddTask(ctx, s.db, firstDomainMonitor, isActive)
+	// 添加 域名监控 周期任务
+	return s.domainMonitorHandler.AddRecurringTask(ctx, s.db, firstDomainMonitor, isActive)
 }
 
 // BatchUpdateDomainMonitorActive 批量更新域名监控启用状态
@@ -275,10 +275,10 @@ func (s *DomainMonitorServiceImpl) BatchUpdateDomainMonitorActive(ctx context.Co
 
 	// 同步任务状态
 	for _, record := range allDomainMonitor {
-		err = s.domainMonitorHandler.AddTask(ctx, tx.Client(), record, isActive)
+		err = s.domainMonitorHandler.AddRecurringTask(ctx, tx.Client(), record, isActive)
 		if err != nil {
 			tx.Rollback()
-			return fmt.Errorf("同步域名监控任务状态失败: %w", err)
+			return fmt.Errorf("添加域名监控同步周期任务失败: %w", err)
 		}
 	}
 

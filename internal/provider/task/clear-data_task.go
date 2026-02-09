@@ -133,8 +133,8 @@ func (p *ClearDataTaskProvider) Process(ctx context.Context, args json.RawMessag
 	return fmt.Sprintf("表名 %s 清理成功", params.Table), nil
 }
 
-// LoadTask 加载 数据清理 任务
-func (p *ClearDataTaskProvider) LoadTask(ctx context.Context, db *ent.Client, table string) error {
+// LoadRecurringTask 加载 数据清理 周期任务
+func (p *ClearDataTaskProvider) LoadRecurringTask(ctx context.Context, db *ent.Client, table string) error {
 
 	var day = 7
 	switch table {

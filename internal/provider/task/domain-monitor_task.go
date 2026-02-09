@@ -132,8 +132,8 @@ func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMe
 	return fmt.Sprintf("域名监控 %s 成功", domain.Domain), nil
 }
 
-// AddTask 添加 域名监控 任务
-func (p *DomainMonitorTaskProvider) AddTask(ctx context.Context, db *ent.Client, record *ent.DomainMonitor, isActive bool) error {
+// AddRecurringTask 添加 域名监控 周期任务
+func (p *DomainMonitorTaskProvider) AddRecurringTask(ctx context.Context, db *ent.Client, record *ent.DomainMonitor, isActive bool) error {
 
 	// 状态
 	targetStatus := cronjob.StatusStopped
