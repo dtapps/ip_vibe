@@ -2,11 +2,9 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/ent/webhooksubscription"
@@ -19,7 +17,7 @@ import (
 
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
-	"go.dtapp.net/library/utils/gojson"
+	"go.dtapp.net/library/contrib/http_log"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -39,23 +37,34 @@ type DNSRecordService interface {
 
 // DNSRecordServiceImpl DNS 记录服务实现
 type DNSRecordServiceImpl struct {
-	db     *ent.Client     // 数据库客户端
-	logDb  *ent_log.Client // 日志数据库客户端
-	logger *slog.Logger    // 日志记录器
-	debug  bool            // 调试模式
+	db             *ent.Client                   // 数据库客户端
+	logDb          *ent_log.Client               // 日志数据库客户端
+	logger         *slog.Logger                  // 日志记录器
+	httpTransport  *http_log.LoggingRoundTripper // HTTP日志记录器
+	dnsSyncHandler *task.DNSSyncTaskProvider     // DNS同步 处理器
+	debug          bool                          // 调试模式
 }
 
 // NewDNSRecordService 创建 DNS 记录服务实例
-func NewDNSRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) DNSRecordService {
+func NewDNSRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) DNSRecordService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
+	// 创建 DNS同步 处理器
+	dnsSyncHandler := task.NewDNSSyncTaskProviderRaw(
+		db,
+		logDb,
+		logger,
+		httpTransport,
+	)
 	return &DNSRecordServiceImpl{
-		db:     db,
-		logDb:  logDb,
-		logger: logger,
-		debug:  debug,
+		db:             db,
+		logDb:          logDb,
+		logger:         logger,
+		httpTransport:  httpTransport,
+		dnsSyncHandler: dnsSyncHandler,
+		debug:          debug,
 	}
 }
 
@@ -274,7 +283,7 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecordActive(ctx context.Context, id int
 	}
 
 	// 同步任务状态
-	return s.handleDnsRecordTaskStatus(ctx, s.db, firstDnsRecord, isActive)
+	return s.dnsSyncHandler.AddTask(ctx, s.db, firstDnsRecord, isActive)
 }
 
 // BatchUpdateDnsRecordActive 批量更新DNS记录启用状态
@@ -314,7 +323,7 @@ func (s *DNSRecordServiceImpl) BatchUpdateDnsRecordActive(ctx context.Context, i
 
 	// 同步任务状态
 	for _, record := range allDnsRecord {
-		err = s.handleDnsRecordTaskStatus(ctx, tx.Client(), record, isActive)
+		err = s.dnsSyncHandler.AddTask(ctx, tx.Client(), record, isActive)
 		if err != nil {
 			tx.Rollback()
 			return fmt.Errorf("同步DNS记录任务状态失败: %w", err)
@@ -457,60 +466,4 @@ func (s *DNSRecordServiceImpl) HealthcheckDnsRecord(ctx context.Context, id int6
 	}
 
 	return results, nil
-}
-
-// handleDnsRecordTaskStatus 处理DNS记录任务的状态同步
-func (s *DNSRecordServiceImpl) handleDnsRecordTaskStatus(ctx context.Context, db *ent.Client, record *ent.DNSRecord, isActive bool) error {
-
-	// 状态
-	targetStatus := cronjob.StatusStopped
-	if isActive {
-		targetStatus = cronjob.StatusRunning
-	}
-
-	// 查找任务
-	job, err := db.CronJob.Query().
-		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeDNS)).
-		Where(cronjob.BusinessIDEQ(record.ID)).
-		First(ctx)
-	if err != nil {
-		if !ent.IsNotFound(err) {
-			return fmt.Errorf("查找任务失败: %w", err)
-		}
-
-		// 创建任务
-		err = db.CronJob.Create().
-			SetName("DNS同步: " + record.FullDomain).
-			SetHandlerName(task.DNSSyncTaskName).
-			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.DNSSyncTaskArgs{
-				ID: record.ID,
-			}))).
-			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeRandom).
-			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeDNS).
-			SetBusinessID(record.ID).
-			SetMinInterval(10).
-			SetMaxInterval(30).
-			SetIntervalUnit(cronjob.IntervalUnitMinutes).
-			SetStatus(targetStatus).
-			SetIsSingleton(true). // 单例模式
-			SetRunOnStart(false). // 启动时不立即运行
-			Exec(ctx)
-		if err != nil {
-			return fmt.Errorf("创建任务失败: %w", err)
-		}
-
-		return nil
-	}
-
-	err = db.CronJob.UpdateOne(job).
-		SetStatus(targetStatus).
-		Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("更新任务状态失败: %w", err)
-	}
-
-	return nil
 }

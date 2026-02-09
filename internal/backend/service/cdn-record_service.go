@@ -63,9 +63,9 @@ func NewCDNRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Log
 		db:             db,
 		logDb:          logDb,
 		logger:         logger,
-		debug:          debug,
 		httpTransport:  httpTransport,
 		cdnSyncHandler: cdnSyncHandler,
+		debug:          debug,
 	}
 }
 

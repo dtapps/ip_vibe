@@ -18,6 +18,7 @@ import (
 	"vibe_ip/internal/provider/dns"
 
 	"go.dtapp.net/library/contrib/http_log"
+	"go.dtapp.net/library/utils/gojson"
 )
 
 // DNSSyncTaskProvider 实现 provider.TaskProvider 接口
@@ -277,4 +278,60 @@ func (p *DNSSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 	_ = dnsTask.Notify(ctx, p.db, record.ID)
 
 	return fmt.Sprintf("域名 %s 同步成功 (源站:%v)", record.SubDomain, originValue), nil
+}
+
+// AddTask 添加 DNS同步 任务
+func (p *DNSSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, record *ent.DNSRecord, isActive bool) error {
+
+	// 状态
+	targetStatus := cronjob.StatusStopped
+	if isActive {
+		targetStatus = cronjob.StatusRunning
+	}
+
+	// 查找任务
+	job, err := db.CronJob.Query().
+		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
+		Where(cronjob.BusinessTypeEQ(p.businessType)).
+		Where(cronjob.BusinessIDEQ(record.ID)).
+		First(ctx)
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return fmt.Errorf("查找任务失败: %w", err)
+		}
+
+		// 创建任务
+		err = db.CronJob.Create().
+			SetName("DNS同步: " + record.FullDomain).
+			SetHandlerName(DNSSyncTaskName).
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(DNSSyncTaskArgs{
+				ID: record.ID,
+			}))).
+			SetTaskType(cronjob.TaskTypeRecurring).
+			SetJobType(cronjob.JobTypeRandom).
+			SetJobCategory(cronjob.JobCategorySystem).
+			SetBusinessType(p.businessType).
+			SetBusinessID(record.ID).
+			SetMinInterval(10).
+			SetMaxInterval(30).
+			SetIntervalUnit(cronjob.IntervalUnitMinutes).
+			SetStatus(targetStatus).
+			SetIsSingleton(true). // 单例模式
+			SetRunOnStart(false). // 启动时不立即运行
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("创建任务失败: %w", err)
+		}
+
+		return nil
+	}
+
+	err = db.CronJob.UpdateOne(job).
+		SetStatus(targetStatus).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新任务状态失败: %w", err)
+	}
+
+	return nil
 }

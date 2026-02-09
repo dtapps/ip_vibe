@@ -56,6 +56,7 @@ func getDnsRecordList(ctx context.Context, req *mcp.CallToolRequest, params *typ
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -75,6 +76,7 @@ func getDnsRecordDetail(ctx context.Context, req *mcp.CallToolRequest, params *t
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -94,6 +96,7 @@ func createDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -113,6 +116,7 @@ func updateDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -132,6 +136,7 @@ func updateDnsRecordActive(ctx context.Context, req *mcp.CallToolRequest, params
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -151,6 +156,7 @@ func deleteDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params *type
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -170,6 +176,7 @@ func healthCheckDnsRecord(ctx context.Context, req *mcp.CallToolRequest, params 
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
