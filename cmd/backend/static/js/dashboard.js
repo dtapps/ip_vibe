@@ -19,20 +19,6 @@ async function openSettingFormModal() {
       setting.port_forward_reload_time;
     document.getElementById("port_forward_report_time").value =
       setting.port_forward_report_time;
-    document.getElementById("cdn_refresh_task_time").value =
-      setting.cdn_refresh_task_time;
-    document.getElementById("dns_refresh_task_time").value =
-      setting.dns_refresh_task_time;
-    document.getElementById("ssl_apply_task_time").value =
-      setting.ssl_apply_task_time;
-    document.getElementById("ssl_refresh_task_time").value =
-      setting.ssl_refresh_task_time;
-    document.getElementById("http_request_log_record_time").value =
-      setting.http_request_log_record_time;
-    document.getElementById("history_data_retain_time").value =
-      setting.history_data_retain_time;
-    document.getElementById("statistic_data_retain_time").value =
-      setting.statistic_data_retain_time;
 
     showModal("settingFormModal", "modalTitle", "编辑 设置");
   } catch (error) {
@@ -61,45 +47,12 @@ if (form) {
       port_forward_report_time: document
         .getElementById("port_forward_report_time")
         .value.trim(),
-      cdn_refresh_task_time: document
-        .getElementById("cdn_refresh_task_time")
-        .value.trim(),
-      dns_refresh_task_time: document
-        .getElementById("dns_refresh_task_time")
-        .value.trim(),
-      ssl_apply_task_time: document
-        .getElementById("ssl_apply_task_time")
-        .value.trim(),
-      ssl_refresh_task_time: document
-        .getElementById("ssl_refresh_task_time")
-        .value.trim(),
-      http_request_log_record_time: Number(
-        document.getElementById("http_request_log_record_time").value.trim(),
-      ),
-      history_data_retain_time: Number(
-        document.getElementById("history_data_retain_time").value.trim(),
-      ),
-      statistic_data_retain_time: Number(
-        document.getElementById("statistic_data_retain_time").value.trim(),
-      ),
     };
     console.log(" form_data", form_data);
 
     // 校验
     if (!form_data.ip_report_interval_time) {
       return alert("请输入IP上报间隔时间");
-    }
-    if (!form_data.cdn_refresh_task_time) {
-      return alert("请输入CDN刷新任务时间");
-    }
-    if (!form_data.dns_refresh_task_time) {
-      return alert("请输入DNS刷新任务时间");
-    }
-    if (!form_data.ssl_apply_task_time) {
-      return alert("请输入SSL申请任务时间");
-    }
-    if (!form_data.ssl_refresh_task_time) {
-      return alert("请输入SSL刷新任务时间");
     }
 
     try {
