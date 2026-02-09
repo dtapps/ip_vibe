@@ -282,8 +282,8 @@ func (s *DNSRecordServiceImpl) UpdateDnsRecordActive(ctx context.Context, id int
 		return fmt.Errorf("更新DNS记录状态失败: %w", err)
 	}
 
-	// 添加 DNS同步 周期任务
-	return s.dnsSyncHandler.AddRecurringTask(ctx, s.db, firstDnsRecord, isActive)
+	// 加载 DNS同步 周期任务
+	return s.dnsSyncHandler.LoadTask(ctx, s.db, firstDnsRecord, isActive)
 }
 
 // BatchUpdateDnsRecordActive 批量更新DNS记录启用状态
@@ -321,12 +321,12 @@ func (s *DNSRecordServiceImpl) BatchUpdateDnsRecordActive(ctx context.Context, i
 		return fmt.Errorf("更新DNS记录状态失败: %w", err)
 	}
 
-	// 同步任务状态
+	// 加载 DNS同步 周期任务
 	for _, record := range allDnsRecord {
-		err = s.dnsSyncHandler.AddRecurringTask(ctx, tx.Client(), record, isActive)
+		err = s.dnsSyncHandler.LoadTask(ctx, tx.Client(), record, isActive)
 		if err != nil {
 			tx.Rollback()
-			return fmt.Errorf("添加DNS同步周期任务失败: %w", err)
+			return fmt.Errorf("加载DNS同步周期任务失败: %w", err)
 		}
 	}
 

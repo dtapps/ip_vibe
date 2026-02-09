@@ -42,7 +42,7 @@ func SyncESASites(c *gin.Context) {
 	if strings.EqualFold(requestParams.Type, "all") {
 
 		// 添加 ESA站点同步 一次性任务
-		err := esaSiteSyncTask.AddOneOffTask(c, global.GvaEntDb, 0, 0, 0)
+		err := esaSiteSyncTask.AddTask(c, global.GvaEntDb, 0, 0, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -53,7 +53,7 @@ func SyncESASites(c *gin.Context) {
 	if strings.EqualFold(requestParams.Type, "this-config") && requestParams.ConfigID > 0 {
 
 		// 添加 ESA站点同步 一次性任务
-		err := esaSiteSyncTask.AddOneOffTask(c, global.GvaEntDb, requestParams.ConfigID, 0, 0)
+		err := esaSiteSyncTask.AddTask(c, global.GvaEntDb, requestParams.ConfigID, 0, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -64,7 +64,7 @@ func SyncESASites(c *gin.Context) {
 	if strings.EqualFold(requestParams.Type, "this-site") && requestParams.ConfigID > 0 && requestParams.SiteID > 0 {
 
 		// 添加 ESA站点同步 一次性任务
-		err := esaSiteSyncTask.AddOneOffTask(c, global.GvaEntDb, requestParams.ConfigID, requestParams.SiteID, 0)
+		err := esaSiteSyncTask.AddTask(c, global.GvaEntDb, requestParams.ConfigID, requestParams.SiteID, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -75,7 +75,7 @@ func SyncESASites(c *gin.Context) {
 	if strings.EqualFold(requestParams.Type, "this-pool") && requestParams.PoolID > 0 && requestParams.ConfigID > 0 && requestParams.SiteID > 0 {
 
 		// 添加 ESA站点同步 一次性任务
-		err := esaSiteSyncTask.AddOneOffTask(c, global.GvaEntDb, requestParams.ConfigID, requestParams.SiteID, requestParams.PoolID)
+		err := esaSiteSyncTask.AddTask(c, global.GvaEntDb, requestParams.ConfigID, requestParams.SiteID, requestParams.PoolID)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return

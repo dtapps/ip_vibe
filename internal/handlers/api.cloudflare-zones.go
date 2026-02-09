@@ -42,7 +42,7 @@ func SyncCloudflareZones(c *gin.Context) {
 	if strings.EqualFold(requestParams.Type, "all") {
 
 		// 添加 Cloudflare站点同步 一次性任务
-		err := cloudflareZoneSyncTask.AddOneOffTask(c, global.GvaEntDb, 0, 0)
+		err := cloudflareZoneSyncTask.AddTask(c, global.GvaEntDb, 0, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -53,7 +53,7 @@ func SyncCloudflareZones(c *gin.Context) {
 	if strings.EqualFold(requestParams.Type, "this-config") && requestParams.ConfigID > 0 {
 
 		// 添加 Cloudflare站点同步 一次性任务
-		err := cloudflareZoneSyncTask.AddOneOffTask(c, global.GvaEntDb, requestParams.ConfigID, 0)
+		err := cloudflareZoneSyncTask.AddTask(c, global.GvaEntDb, requestParams.ConfigID, 0)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return
@@ -64,7 +64,7 @@ func SyncCloudflareZones(c *gin.Context) {
 	if strings.EqualFold(requestParams.Type, "this-zone") && requestParams.ConfigID > 0 && requestParams.ZoneID > 0 {
 
 		// 添加 Cloudflare站点同步 一次性任务
-		err := cloudflareZoneSyncTask.AddOneOffTask(c, global.GvaEntDb, requestParams.ConfigID, requestParams.ZoneID)
+		err := cloudflareZoneSyncTask.AddTask(c, global.GvaEntDb, requestParams.ConfigID, requestParams.ZoneID)
 		if err != nil {
 			errorResponse(c, http.StatusNotFound, err.Error())
 			return

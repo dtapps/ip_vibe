@@ -258,8 +258,8 @@ func (s *CDNRecordServiceImpl) UpdateCdnRecordActive(ctx context.Context, id int
 		return fmt.Errorf("更新CDN记录状态失败: %w", err)
 	}
 
-	// 添加 CDN同步 周期任务
-	return s.cdnSyncHandler.AddRecurringTask(ctx, s.db, firstCdnRecord, isActive)
+	// 加载 CDN同步 周期任务
+	return s.cdnSyncHandler.LoadTask(ctx, s.db, firstCdnRecord, isActive)
 }
 
 // BatchUpdateCdnRecordActive 批量更新 CDN 记录启用状态
@@ -297,12 +297,12 @@ func (s *CDNRecordServiceImpl) BatchUpdateCdnRecordActive(ctx context.Context, i
 		return fmt.Errorf("更新CDN记录状态失败: %w", err)
 	}
 
-	// 同步任务状态
+	// 加载 CDN同步 周期任务
 	for _, record := range allCdnRecord {
-		err = s.cdnSyncHandler.AddRecurringTask(ctx, tx.Client(), record, isActive)
+		err = s.cdnSyncHandler.LoadTask(ctx, tx.Client(), record, isActive)
 		if err != nil {
 			tx.Rollback()
-			return fmt.Errorf("添加CDN同步周期任务失败: %w", err)
+			return fmt.Errorf("加载CDN同步周期任务失败: %w", err)
 		}
 	}
 

@@ -115,8 +115,8 @@ func (p *CloudflareTunnelSyncTaskProvider) Process(ctx context.Context, args jso
 	return fmt.Sprintf("同步成功"), nil
 }
 
-// LoadRecurringTask 加载 Cloudflare隧道同步 周期任务
-func (p *CloudflareTunnelSyncTaskProvider) LoadRecurringTask(ctx context.Context, db *ent.Client, businessKey string) error {
+// LoadTask 加载 Cloudflare隧道同步 周期任务
+func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, businessKey string) error {
 
 	// 查找任务
 	_, err := db.CronJob.Query().
@@ -156,8 +156,8 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadRecurringTask(ctx context.Context
 	return nil
 }
 
-// AddOneOffTask 添加 Cloudflare隧道同步 一次性任务
-func (p *CloudflareTunnelSyncTaskProvider) AddOneOffTask(ctx context.Context, db *ent.Client, configID int64, tunnelID int64) error {
+// AddTask 添加 Cloudflare隧道同步 一次性任务
+func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, configID int64, tunnelID int64) error {
 
 	// 任务名称
 	var name string

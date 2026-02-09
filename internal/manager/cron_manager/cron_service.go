@@ -143,7 +143,7 @@ func (m *CronServerManager) LoadTasks(ctx context.Context) {
 		ent_log.TypePortForwardStats:     true,
 	}
 	for table := range clearDataHandlerTable {
-		err := clearDataHandler.LoadRecurringTask(ctx, m.db, table)
+		err := clearDataHandler.LoadTask(ctx, m.db, table)
 		if err != nil {
 			m.logger.ErrorContext(ctx, "加载 数据清除 周期任务失败",
 				slog.String("type", table),

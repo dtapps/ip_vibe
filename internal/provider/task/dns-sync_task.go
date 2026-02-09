@@ -280,8 +280,8 @@ func (p *DNSSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 	return fmt.Sprintf("域名 %s 同步成功 (源站:%v)", record.SubDomain, originValue), nil
 }
 
-// AddRecurringTask 添加 DNS同步 周期任务
-func (p *DNSSyncTaskProvider) AddRecurringTask(ctx context.Context, db *ent.Client, record *ent.DNSRecord, isActive bool) error {
+// LoadTask 加载 DNS同步 周期任务
+func (p *DNSSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, record *ent.DNSRecord, isActive bool) error {
 
 	// 状态
 	targetStatus := cronjob.StatusStopped
