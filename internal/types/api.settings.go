@@ -6,13 +6,6 @@ type GetSettingResponse struct {
 	IPReportIntervalTime     string `json:"ip_report_interval_time" jsonschema:"description=IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）"`    // IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）
 	PortForwardReloadTime    string `json:"port_forward_reload_time" jsonschema:"description=端口转发重载时间（分，默认 30 分钟，多个时用-分隔）"`     // 端口转发重载时间（分，默认 30 分钟，多个时用-分隔）
 	PortForwardReportTime    string `json:"port_forward_report_time" jsonschema:"description=端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）"` // 端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）
-	CDNRefreshTaskTime       string `json:"cdn_refresh_task_time" jsonschema:"description=CDN刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）"`    // CDN刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
-	DNSRefreshTaskTime       string `json:"dns_refresh_task_time" jsonschema:"description=DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）"`    // DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
-	SSLApplyTaskTime         string `json:"ssl_apply_task_time" jsonschema:"description=SSL申请任务时间（时，默认 8-10 小时，多个时用-分隔）"`       // SSL申请任务时间（时，默认 8-10 小时，多个时用-分隔）
-	SSLRefreshTaskTime       string `json:"ssl_refresh_task_time" jsonschema:"description=SSL刷新任务时间（时，默认 12-24 小时，多个时用-分隔）"`    // SSL刷新任务时间（时，默认 12-24 小时，多个时用-分隔）
-	HTTPRequestLogRecordTime int64  `json:"http_request_log_record_time" jsonschema:"description=HTTP请求日志记录时间（天，默认 90 天）"`      // HTTP请求日志记录时间（天，默认 90 天）
-	HistoryDataRetainTime    int64  `json:"history_data_retain_time" jsonschema:"description=历史数据保留时间（天，默认 365 天）"`             // 历史数据保留时间（天，默认 365 天）
-	StatisticDataRetainTime  int64  `json:"statistic_data_retain_time" jsonschema:"description=统计数据保留时间（天，默认 365 天）"`           // 统计数据保留时间（天，默认 365 天）
 }
 
 // 更新设置 请求结构

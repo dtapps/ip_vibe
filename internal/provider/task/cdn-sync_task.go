@@ -260,7 +260,7 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 		return "", fmt.Errorf("创建CDN更新任务失败: %w", err)
 	}
 
-	// 配CDN参数
+	// 配置CDN参数
 	cdnTask.Config(record.SubDomain, record.Type.String(), originValues)
 
 	// 执行CDN更新

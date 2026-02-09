@@ -19,31 +19,6 @@ type Setting struct {
 	PortForwardReloadTime string `json:"port_forward_reload_time"`
 	// 端口转发统计上报时间（分，默认 8-12 分钟，范围时用-分隔）
 	PortForwardReportTime string `json:"port_forward_report_time"`
-	// CDN刷新任务时间（分，默认 10-12 分钟，范围时用-分隔）
-	CDNRefreshTaskTime string `json:"cdn_refresh_task_time"`
-	// DNS刷新任务时间（分，默认 10-12 分钟，范围时用-分隔）
-	DNSRefreshTaskTime string `json:"dns_refresh_task_time"`
-	// TUN刷新任务时间（分，默认 10-12 分钟，范围时用-分隔）
-	TUNRefreshTaskTime string `json:"tun_refresh_task_time"`
-	// SSL申请任务时间（时，默认 8-10 小时，范围时用-分隔）
-	SSLApplyTaskTime string `json:"ssl_apply_task_time"`
-	// SSL刷新任务时间（时，默认 12-24 小时，范围时用-分隔）
-	SSLRefreshTaskTime string `json:"ssl_refresh_task_time"`
-	// CloudFlare隧道同步任务时间（时，默认 6-8 小时，范围时用-分隔）
-	CloudflareTunnelSyncTaskTime string `json:"cloudflare_tunnel_sync_task_time"`
-	// Cloudflare站点同步任务时间（时，默认 6-8 小时，范围时用-分隔）
-	CloudflareZoneSyncTaskTime string `json:"cloudflare_zone_sync_task_time"`
-	// EdgeOne站点同步任务时间（时，默认 6-8 小时，范围时用-分隔）
-	EdgeOneZoneSyncTaskTime string `json:"edgeone_zone_sync_task_time"`
-	// ESA站点同步任务时间（时，默认 6-8 小时，范围时用-分隔）
-	ESASiteSyncTaskTime string `json:"esa_site_sync_task_time"`
-
-	// HTTP请求日志记录时间（天，默认 90 天）
-	HTTPRequestLogRecordTime int64 `json:"http_request_log_record_time"`
-	// 历史数据保留时间（天，默认 365 天）
-	HistoryDataRetainTime int64 `json:"history_data_retain_time"`
-	// 统计数据保留时间（天，默认 365 天）
-	StatisticDataRetainTime int64 `json:"statistic_data_retain_time"`
 }
 
 // GvaSetting 全局设置
@@ -51,23 +26,10 @@ var GvaSetting *Setting
 
 // 统一管理所有 Cache Key
 const (
-	KeyDeviceOfflineTime        = "conf:device_offline_invalid_time"
-	KeyIPReportInterval         = "conf:ip_report_interval_time"
-	KeyPortForwardReload        = "conf:port_forward_reload_time"
-	KeyPortForwardReport        = "conf:port_forward_report_time"
-	KeyCDNRefreshTime           = "conf:cdn_refresh_task_time"
-	KeyDNSRefreshTime           = "conf:dns_refresh_task_time"
-	KeyTUNRefreshTime           = "conf:tun_refresh_task_time"
-	KeySSLApplyTime             = "conf:ssl_apply_task_time"
-	KeySSLRefreshTime           = "conf:ssl_refresh_task_time"
-	KeyCloudflareTunnelSyncTime = "conf:cloudflare_tunnel_sync_task_time"
-	KeyCloudflareZoneSyncTime   = "conf:cloudflare_zone_sync_task_time"
-	KeyEdgeOneZoneSyncTime      = "conf:edgeone_zone_sync_task_time"
-	KeyESASiteSyncTime          = "conf:esa_site_sync_task_time"
-
-	KeyHTTPRequestLogRecordTime = "conf:http_request_log_record_time"
-	KeyHistoryDataRetainTime    = "conf:history_data_retain_time"
-	KeyStatisticDataRetainTime  = "conf:statistic_data_retain_time"
+	KeyDeviceOfflineTime = "conf:device_offline_invalid_time"
+	KeyIPReportInterval  = "conf:ip_report_interval_time"
+	KeyPortForwardReload = "conf:port_forward_reload_time"
+	KeyPortForwardReport = "conf:port_forward_report_time"
 )
 
 // 初始化设置
@@ -94,19 +56,6 @@ func InitSetting(ctx context.Context, db *ent.Client) {
 	GvaSetting.IPReportIntervalTime = getVal(KeyIPReportInterval, "8-12")
 	GvaSetting.PortForwardReloadTime = getVal(KeyPortForwardReload, "30")
 	GvaSetting.PortForwardReportTime = getVal(KeyPortForwardReport, "8-12")
-	GvaSetting.CDNRefreshTaskTime = getVal(KeyCDNRefreshTime, "10-12")
-	GvaSetting.DNSRefreshTaskTime = getVal(KeyDNSRefreshTime, "10-12")
-	GvaSetting.TUNRefreshTaskTime = getVal(KeyTUNRefreshTime, "10-12")
-	GvaSetting.SSLApplyTaskTime = getVal(KeySSLApplyTime, "8-10")
-	GvaSetting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "12-24")
-	GvaSetting.CloudflareTunnelSyncTaskTime = getVal(KeyCloudflareTunnelSyncTime, "6-8")
-	GvaSetting.CloudflareZoneSyncTaskTime = getVal(KeyCloudflareZoneSyncTime, "6-8")
-	GvaSetting.EdgeOneZoneSyncTaskTime = getVal(KeyEdgeOneZoneSyncTime, "6-8")
-	GvaSetting.ESASiteSyncTaskTime = getVal(KeyESASiteSyncTime, "6-8")
-
-	GvaSetting.HTTPRequestLogRecordTime = cast.ToInt64(getVal(KeyHTTPRequestLogRecordTime, "90"))
-	GvaSetting.HistoryDataRetainTime = cast.ToInt64(getVal(KeyHistoryDataRetainTime, "365"))
-	GvaSetting.StatisticDataRetainTime = cast.ToInt64(getVal(KeyStatisticDataRetainTime, "365"))
 
 }
 
@@ -134,19 +83,6 @@ func GetSetting(ctx context.Context, db *ent.Client) *Setting {
 	setting.IPReportIntervalTime = getVal(KeyIPReportInterval, "8-12")
 	setting.PortForwardReloadTime = getVal(KeyPortForwardReload, "30")
 	setting.PortForwardReportTime = getVal(KeyPortForwardReport, "8-12")
-	setting.CDNRefreshTaskTime = getVal(KeyCDNRefreshTime, "10-12")
-	setting.DNSRefreshTaskTime = getVal(KeyDNSRefreshTime, "10-12")
-	setting.TUNRefreshTaskTime = getVal(KeyTUNRefreshTime, "10-12")
-	setting.SSLApplyTaskTime = getVal(KeySSLApplyTime, "8-10")
-	setting.SSLRefreshTaskTime = getVal(KeySSLRefreshTime, "12-24")
-	setting.CloudflareTunnelSyncTaskTime = getVal(KeyCloudflareTunnelSyncTime, "6-8")
-	setting.CloudflareZoneSyncTaskTime = getVal(KeyCloudflareZoneSyncTime, "6-8")
-	setting.EdgeOneZoneSyncTaskTime = getVal(KeyEdgeOneZoneSyncTime, "6-8")
-	setting.ESASiteSyncTaskTime = getVal(KeyESASiteSyncTime, "6-8")
-
-	setting.HTTPRequestLogRecordTime = cast.ToInt64(getVal(KeyHTTPRequestLogRecordTime, "90"))
-	setting.HistoryDataRetainTime = cast.ToInt64(getVal(KeyHistoryDataRetainTime, "365"))
-	setting.StatisticDataRetainTime = cast.ToInt64(getVal(KeyStatisticDataRetainTime, "365"))
 
 	return setting
 }
@@ -155,23 +91,10 @@ func GetSetting(ctx context.Context, db *ent.Client) *Setting {
 func UpdateSetting(ctx context.Context, db *ent.Client, newSetting *Setting) error {
 	// 定义 字段 -> Key 的映射关系，循环处理
 	updates := map[string]any{
-		KeyDeviceOfflineTime:        newSetting.DeviceOfflineInvalidTime,
-		KeyIPReportInterval:         newSetting.IPReportIntervalTime,
-		KeyPortForwardReload:        newSetting.PortForwardReloadTime,
-		KeyPortForwardReport:        newSetting.PortForwardReportTime,
-		KeyCDNRefreshTime:           newSetting.CDNRefreshTaskTime,
-		KeyDNSRefreshTime:           newSetting.DNSRefreshTaskTime,
-		KeyTUNRefreshTime:           newSetting.TUNRefreshTaskTime,
-		KeySSLApplyTime:             newSetting.SSLApplyTaskTime,
-		KeySSLRefreshTime:           newSetting.SSLRefreshTaskTime,
-		KeyCloudflareTunnelSyncTime: newSetting.CloudflareTunnelSyncTaskTime,
-		KeyCloudflareZoneSyncTime:   newSetting.CloudflareZoneSyncTaskTime,
-		KeyEdgeOneZoneSyncTime:      newSetting.EdgeOneZoneSyncTaskTime,
-		KeyESASiteSyncTime:          newSetting.ESASiteSyncTaskTime,
-
-		KeyHTTPRequestLogRecordTime: newSetting.HTTPRequestLogRecordTime,
-		KeyHistoryDataRetainTime:    newSetting.HistoryDataRetainTime,
-		KeyStatisticDataRetainTime:  newSetting.StatisticDataRetainTime,
+		KeyDeviceOfflineTime: newSetting.DeviceOfflineInvalidTime,
+		KeyIPReportInterval:  newSetting.IPReportIntervalTime,
+		KeyPortForwardReload: newSetting.PortForwardReloadTime,
+		KeyPortForwardReport: newSetting.PortForwardReportTime,
 	}
 
 	// 开启 Upsert 模式批量写入 Cache 表

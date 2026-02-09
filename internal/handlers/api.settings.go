@@ -35,13 +35,6 @@ func GetSetting(c *gin.Context) {
 		IPReportIntervalTime:     setting.IPReportIntervalTime,
 		PortForwardReloadTime:    setting.PortForwardReloadTime,
 		PortForwardReportTime:    setting.PortForwardReportTime,
-		CDNRefreshTaskTime:       setting.CDNRefreshTaskTime,
-		DNSRefreshTaskTime:       setting.DNSRefreshTaskTime,
-		SSLApplyTaskTime:         setting.SSLApplyTaskTime,
-		SSLRefreshTaskTime:       setting.SSLRefreshTaskTime,
-		HTTPRequestLogRecordTime: setting.HTTPRequestLogRecordTime,
-		HistoryDataRetainTime:    setting.HistoryDataRetainTime,
-		StatisticDataRetainTime:  setting.StatisticDataRetainTime,
 	}
 
 	successResponse(c, response)
@@ -94,13 +87,6 @@ func UpdateSetting(c *gin.Context) {
 		IPReportIntervalTime:     requestParams.IPReportIntervalTime,
 		PortForwardReloadTime:    requestParams.PortForwardReloadTime,
 		PortForwardReportTime:    requestParams.PortForwardReportTime,
-		CDNRefreshTaskTime:       requestParams.CDNRefreshTaskTime,
-		DNSRefreshTaskTime:       requestParams.DNSRefreshTaskTime,
-		SSLApplyTaskTime:         requestParams.SSLApplyTaskTime,
-		SSLRefreshTaskTime:       requestParams.SSLRefreshTaskTime,
-		HTTPRequestLogRecordTime: requestParams.HTTPRequestLogRecordTime,
-		HistoryDataRetainTime:    requestParams.HistoryDataRetainTime,
-		StatisticDataRetainTime:  requestParams.StatisticDataRetainTime,
 	})
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())
