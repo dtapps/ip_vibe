@@ -33,9 +33,11 @@ func GetWebhooks(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewWebhookService(
+		c,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -70,9 +72,11 @@ func GetWebhookDetail(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewWebhookService(
+		c,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -106,9 +110,11 @@ func CreateWebhook(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewWebhookService(
+		c,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -144,9 +150,11 @@ func UpdateWebhook(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewWebhookService(
+		c,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -182,9 +190,11 @@ func UpdateWebhookActive(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewWebhookService(
+		c,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -218,9 +228,11 @@ func BatchUpdateWebhookActive(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewWebhookService(
+		c,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -255,9 +267,11 @@ func DeleteWebhook(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewWebhookService(
+		c,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -291,9 +305,11 @@ func BatchDeleteWebhook(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewWebhookService(
+		c,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -328,9 +344,11 @@ func TestWebhook(c *gin.Context) {
 
 	// 创建服务
 	service := service.NewWebhookService(
+		c,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用

@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
@@ -11,10 +10,11 @@ import (
 	"vibe_ip/internal/ent/webhook"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/sys_env"
+	"vibe_ip/internal/provider/task"
 	"vibe_ip/internal/types"
 
 	"github.com/spf13/cast"
-	"go.dtapp.net/library/utils/gojson"
+	"go.dtapp.net/library/contrib/http_log"
 )
 
 // WebhookService 通知服务接口
@@ -33,23 +33,35 @@ type WebhookService interface {
 
 // WebhookServiceImpl 通知服务实现
 type WebhookServiceImpl struct {
-	db     *ent.Client     // 数据库客户端
-	logDb  *ent_log.Client // 日志数据库客户端
-	logger *slog.Logger    // 日志记录器
-	debug  bool            // 调试模式
+	db                     *ent.Client                   // 数据库客户端
+	logDb                  *ent_log.Client               // 日志数据库客户端
+	logger                 *slog.Logger                  // 日志记录器
+	httpTransport          *http_log.LoggingRoundTripper // HTTP日志记录器
+	webhookSendSyncHandler *task.WebhookSendTaskProvider // Webhook发送 处理器
+	debug                  bool                          // 调试模式
 }
 
 // NewWebhookService 创建通知服务实例
-func NewWebhookService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) WebhookService {
+func NewWebhookService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) WebhookService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
+	// 创建 Webhook发送 处理器
+	webhookSendSyncHandler := task.NewWebhookSendTaskProviderRaw(
+		ctx,
+		db,
+		logDb,
+		logger,
+		httpTransport,
+	)
 	return &WebhookServiceImpl{
-		db:     db,
-		logDb:  logDb,
-		logger: logger,
-		debug:  debug,
+		db:                     db,
+		logDb:                  logDb,
+		logger:                 logger,
+		httpTransport:          httpTransport,
+		webhookSendSyncHandler: webhookSendSyncHandler,
+		debug:                  debug,
 	}
 }
 
@@ -307,21 +319,15 @@ func (s *WebhookServiceImpl) TestWebhook(ctx context.Context, id int64) error {
 	}
 
 	// 创建任务
-	err := s.db.CronJob.Create().
-		SetName("测试通知").
-		SetHandlerName("webhook_send").
-		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(notifyData))).
-		SetTaskType(cronjob.TaskTypeOneOff).
-		SetJobType(cronjob.JobTypeDuration).
-		SetJobCategory(cronjob.JobCategorySystem).
-		SetBusinessType(cronjob.BusinessTypeWebhook).
-		SetBusinessID(0).
-		SetIntervalValue(1).
-		SetIntervalUnit(cronjob.IntervalUnitSeconds).
-		SetStatus(cronjob.StatusRunning).
-		SetIsSingleton(true). // 单例模式
-		SetRunOnStart(true).  // 启动时立即运行
-		Exec(ctx)
+	err := s.webhookSendSyncHandler.AddTask(
+		ctx,
+		s.db,
+		task.WebhookSendTaskArgs{
+			BusinessType: cronjob.BusinessTypeWebhook,
+			BusinessID:   id,
+			Payload:      notifyData,
+		},
+	)
 	if err != nil {
 		return fmt.Errorf("创建任务失败: %w", err)
 	}

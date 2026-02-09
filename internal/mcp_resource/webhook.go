@@ -30,9 +30,11 @@ func getWebhookList(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.Rea
 
 	// 创建服务
 	service := service.NewWebhookService(
+		ctx,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -57,9 +59,11 @@ func getWebhookDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req *mcp.R
 
 	// 创建服务
 	service := service.NewWebhookService(
+		ctx,
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
+		global.GvaHttpLog,
 	)
 
 	// 调用

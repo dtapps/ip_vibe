@@ -10,6 +10,7 @@ import (
 	"vibe_ip/internal/grpc_generated"
 	"vibe_ip/internal/types"
 
+	"go.dtapp.net/library/contrib/http_log"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -24,12 +25,14 @@ type OpenService struct {
 }
 
 // NewOpenService 创建 gRPC 服务实例
-func NewOpenService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *OpenService {
+func NewOpenService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *OpenService {
 	// 使用与你的 HTTP 处理器相同的服务实例
 	deviceService := service.NewDeviceOpenService(
+		ctx,
 		db,
 		logDb,
 		logger,
+		httpTransport,
 	)
 
 	return &OpenService{

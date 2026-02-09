@@ -106,6 +106,7 @@ func main() {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGrpcSlog,
+		global.GvaHttpLog,
 		grpc_server.Config{
 			Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
 			Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
@@ -144,21 +145,6 @@ func main() {
 
 	// 启动 GoCron 调度器
 	initialize.StartGoCron(ctx, global.GvaGocronSlog)
-
-	// 启动 TUN 刷新任务
-	// tunUpdateTask := tasks.NewTUNUpdateTask(
-	// 	global.GvaEntDb,
-	// 	global.GvaEntLogDb,
-	// 	global.GvaGoCron,
-	// 	global.GvaGocronSlog,
-	// 	global.GvaHttpLog,
-	// )
-	// if err := tunUpdateTask.StartJob(ctx); err != nil {
-	// 	slog.Error("启动TUN刷新任务失败",
-	// 		slog.Any("err", err),
-	// 	)
-	// 	panic(err)
-	// }
 
 	// 创建 定时任务 管理器
 	cronManager, err := cron_manager.NewCronServerManager(
@@ -232,6 +218,7 @@ func gracefulShutdown() {
 			global.GvaEntDb,
 			global.GvaEntLogDb,
 			global.GvaGrpcSlog,
+			global.GvaHttpLog,
 			grpc_server.Config{},
 		)
 

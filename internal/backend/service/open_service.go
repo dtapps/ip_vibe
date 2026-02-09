@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
@@ -14,9 +13,10 @@ import (
 	"vibe_ip/internal/ent_log/deviceipreport"
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/sys_env"
+	"vibe_ip/internal/provider/task"
 	"vibe_ip/internal/types"
 
-	"go.dtapp.net/library/utils/gojson"
+	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/gotime"
 )
 
@@ -34,23 +34,35 @@ type DeviceOpenService interface {
 
 // DeviceOpenServiceImpl 设备服务实现
 type DeviceOpenServiceImpl struct {
-	db     *ent.Client     // 数据库客户端
-	logDb  *ent_log.Client // 日志数据库客户端
-	logger *slog.Logger    // 日志记录器
-	debug  bool            // 调试模式
+	db                     *ent.Client                   // 数据库客户端
+	logDb                  *ent_log.Client               // 日志数据库客户端
+	logger                 *slog.Logger                  // 日志记录器
+	httpTransport          *http_log.LoggingRoundTripper // HTTP日志记录器
+	webhookSendSyncHandler *task.WebhookSendTaskProvider // Webhook发送 处理器
+	debug                  bool                          // 调试模式
 }
 
 // NewDeviceOpenService 创建设备服务实例
-func NewDeviceOpenService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) DeviceOpenService {
+func NewDeviceOpenService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) DeviceOpenService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
+	// 创建 Webhook发送 处理器
+	webhookSendSyncHandler := task.NewWebhookSendTaskProviderRaw(
+		ctx,
+		db,
+		logDb,
+		logger,
+		httpTransport,
+	)
 	return &DeviceOpenServiceImpl{
-		db:     db,
-		logDb:  logDb,
-		logger: logger,
-		debug:  debug,
+		db:                     db,
+		logDb:                  logDb,
+		logger:                 logger,
+		httpTransport:          httpTransport,
+		webhookSendSyncHandler: webhookSendSyncHandler,
+		debug:                  debug,
 	}
 }
 
@@ -215,21 +227,15 @@ func (s *DeviceOpenServiceImpl) DeviceReportDeviceIp(ctx context.Context, reques
 				)
 			}
 			// 创建任务
-			err = s.db.CronJob.Create().
-				SetName("IP通知: " + fmt.Sprintf("%s - %s", request.IPV4Addr, request.IPV6Addr)).
-				SetHandlerName("webhook_send").
-				SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(notifyData))).
-				SetTaskType(cronjob.TaskTypeOneOff).
-				SetJobType(cronjob.JobTypeDuration).
-				SetJobCategory(cronjob.JobCategorySystem).
-				SetBusinessType(cronjob.BusinessTypeDevice).
-				SetBusinessID(deviceID).
-				SetIntervalValue(1).
-				SetIntervalUnit(cronjob.IntervalUnitSeconds).
-				SetStatus(cronjob.StatusRunning).
-				SetIsSingleton(true). // 单例模式
-				SetRunOnStart(true).  // 启动时立即运行
-				Exec(asyncCtx)
+			err = s.webhookSendSyncHandler.AddTask(
+				asyncCtx,
+				s.db,
+				task.WebhookSendTaskArgs{
+					BusinessType: cronjob.BusinessTypeDevice,
+					BusinessID:   deviceID,
+					Payload:      notifyData,
+				},
+			)
 			if err != nil {
 				s.logger.ErrorContext(asyncCtx, "创建任务失败",
 					slog.Any("err", err),

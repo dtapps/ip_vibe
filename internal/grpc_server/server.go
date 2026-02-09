@@ -11,6 +11,7 @@ import (
 	"vibe_ip/internal/grpc_interceptor"
 	"vibe_ip/internal/grpc_service"
 
+	"go.dtapp.net/library/contrib/http_log"
 	"google.golang.org/grpc"
 )
 
@@ -23,12 +24,13 @@ type Config struct {
 
 // GRPCServerManager gRPC 服务管理器
 type GRPCServerManager struct {
-	server   *grpc.Server    // gRPC 服务实例
-	listener net.Listener    // 监听套接字
-	db       *ent.Client     // 数据库客户端
-	logDb    *ent_log.Client // 日志数据库客户端
-	logger   *slog.Logger    // 日志记录器
-	config   Config          // gRPC 服务配置参数
+	server        *grpc.Server                  // gRPC 服务实例
+	listener      net.Listener                  // 监听套接字
+	db            *ent.Client                   // 数据库客户端
+	logDb         *ent_log.Client               // 日志数据库客户端
+	logger        *slog.Logger                  // 日志记录器
+	httpTransport *http_log.LoggingRoundTripper // HTTP 日志记录器
+	config        Config                        // gRPC 服务配置参数
 
 	deviceService    *grpc_service.DeviceService
 	openService      *grpc_service.OpenService
@@ -41,14 +43,15 @@ var (
 )
 
 // GetManager 获取单例（方便优雅关闭时调用）
-func NewManager(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, cfg Config) *GRPCServerManager {
+func NewManager(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper, cfg Config) *GRPCServerManager {
 	once.Do(func() {
 		if logger == nil {
 			logger = slog.Default()
 		}
 		instance = &GRPCServerManager{
-			logger: logger,
-			config: cfg,
+			logger:        logger,
+			httpTransport: httpTransport,
+			config:        cfg,
 		}
 	})
 	return instance
@@ -112,7 +115,7 @@ func (m *GRPCServerManager) initServer() {
 
 	// 注册服务
 	m.deviceService = grpc_service.NewDeviceService(m.logger)
-	m.openService = grpc_service.NewOpenService(m.db, m.logDb, m.logger)
+	m.openService = grpc_service.NewOpenService(context.Background(), m.db, m.logDb, m.logger, m.httpTransport)
 	m.remoteLogService = grpc_service.NewRemoteLogService(m.logger)
 	m.deviceService.RegisterService(m.server)
 	m.openService.RegisterService(m.server)
