@@ -29,6 +29,8 @@ type SSLApplyTaskProvider struct {
 	logDb         *ent_log.Client               // 日志数据库客户端
 	logger        *slog.Logger                  // 日志记录器
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+
+	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewSSLApplyTaskProvider 创建一个新的 SSL申请 提供者
@@ -43,6 +45,8 @@ func NewSSLApplyTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *s
 		logDb:         logDb,
 		logger:        logger.With(slog.String("handler", "ssl-apply")),
 		httpTransport: httpTransport,
+
+		businessType: cronjob.BusinessTypeSsl,
 	}
 }
 

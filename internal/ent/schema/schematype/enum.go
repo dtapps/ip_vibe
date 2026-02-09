@@ -1412,34 +1412,32 @@ var GetCronJobJobCategorys = []string{
 }
 
 const (
-	CronJobBusinessTypeCdn              string = "cdn"               // cdn
-	CronJobBusinessTypeDns              string = "dns"               // dns
-	CronJobBusinessTypeSsl              string = "ssl"               // ssl
-	CronJobBusinessTypeDomain           string = "domain"            // domain
-	CronJobBusinessTypeTun              string = "tun"               // tun
-	CronJobBusinessTypeWebhook          string = "webhook"           // webhook
-	CronJobBusinessTypeDevice           string = "device"            // device
-	CronJobBusinessTypeCloudflareTunnel string = "cloudflare_tunnel" // cloudflare_tunnel
-	CronJobBusinessTypeCloudflareZone   string = "cloudflare_zone"   // cloudflare_zone
-	CronJobBusinessTypeEdgeOneZone      string = "edgeone_zone"      // edgeone_zone
-	CronJobBusinessTypeESASite          string = "esa_site"          // esa_site
-	CronJobBusinessTypeSystem           string = "system"            // system
+	CronJobBusinessTypeCdn        string = "cdn"        // cdn
+	CronJobBusinessTypeDns        string = "dns"        // dns
+	CronJobBusinessTypeSsl        string = "ssl"        // ssl
+	CronJobBusinessTypeDomain     string = "domain"     // domain
+	CronJobBusinessTypeTun        string = "tun"        // tun
+	CronJobBusinessTypeWebhook    string = "webhook"    // webhook
+	CronJobBusinessTypeDevice     string = "device"     // device
+	CronJobBusinessTypeCloudflare string = "cloudflare" // cloudflare
+	CronJobBusinessTypeEdgeOne    string = "edgeone"    // edgeone
+	CronJobBusinessTypeESA        string = "esa"        // esa
+	CronJobBusinessTypeSystem     string = "system"     // system
 )
 
 // GetCronJobBusinessTypeDescriptions 业务类型 说明映射
 var GetCronJobBusinessTypeDescriptions = map[string]string{
-	CronJobBusinessTypeCdn:              "CDN",
-	CronJobBusinessTypeDns:              "DNS",
-	CronJobBusinessTypeSsl:              "SSL",
-	CronJobBusinessTypeDomain:           "域名",
-	CronJobBusinessTypeTun:              "TUN",
-	CronJobBusinessTypeWebhook:          "通知",
-	CronJobBusinessTypeDevice:           "设备",
-	CronJobBusinessTypeCloudflareTunnel: "Cloudflare隧道",
-	CronJobBusinessTypeCloudflareZone:   "Cloudflare站点",
-	CronJobBusinessTypeEdgeOneZone:      "EdgeOne站点",
-	CronJobBusinessTypeESASite:          "ESA站点",
-	CronJobBusinessTypeSystem:           "系统",
+	CronJobBusinessTypeCdn:        "CDN",
+	CronJobBusinessTypeDns:        "DNS",
+	CronJobBusinessTypeSsl:        "SSL",
+	CronJobBusinessTypeDomain:     "域名",
+	CronJobBusinessTypeTun:        "TUN",
+	CronJobBusinessTypeWebhook:    "通知",
+	CronJobBusinessTypeDevice:     "设备",
+	CronJobBusinessTypeCloudflare: "Cloudflare",
+	CronJobBusinessTypeEdgeOne:    "EdgeOne",
+	CronJobBusinessTypeESA:        "ESA",
+	CronJobBusinessTypeSystem:     "系统",
 }
 
 // GetCronJobBusinessTypes 返回所有 业务类型
@@ -1451,10 +1449,9 @@ var GetCronJobBusinessTypes = []string{
 	CronJobBusinessTypeTun,
 	CronJobBusinessTypeWebhook,
 	CronJobBusinessTypeDevice,
-	CronJobBusinessTypeCloudflareTunnel,
-	CronJobBusinessTypeCloudflareZone,
-	CronJobBusinessTypeEdgeOneZone,
-	CronJobBusinessTypeESASite,
+	CronJobBusinessTypeCloudflare,
+	CronJobBusinessTypeEdgeOne,
+	CronJobBusinessTypeESA,
 	CronJobBusinessTypeSystem,
 }
 

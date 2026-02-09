@@ -29,6 +29,8 @@ type ClearDataTaskProvider struct {
 	db     *ent.Client     // 数据库客户端
 	logDb  *ent_log.Client // 日志数据库客户端
 	logger *slog.Logger    // 日志记录器
+
+	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewClearDataTaskProvider 创建一个新的 数据清理 提供者
@@ -42,6 +44,8 @@ func NewClearDataTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *
 		db:     db,
 		logDb:  logDb,
 		logger: logger.With(slog.String("handler", "clear-data")),
+
+		businessType: cronjob.BusinessTypeSystem,
 	}
 }
 
@@ -157,7 +161,7 @@ func (p *ClearDataTaskProvider) LoadTask(ctx context.Context, table string) erro
 	// 查找任务
 	_, err := p.db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeSystem)).
+		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(table)).
 		First(ctx)
 	if err != nil {
@@ -176,7 +180,7 @@ func (p *ClearDataTaskProvider) LoadTask(ctx context.Context, table string) erro
 			SetTaskType(cronjob.TaskTypeRecurring).
 			SetJobType(cronjob.JobTypeCron).
 			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeSystem).
+			SetBusinessType(p.businessType).
 			SetBusinessKey(table).
 			SetCronExpr("5 0 * * *").
 			SetStatus(cronjob.StatusRunning).

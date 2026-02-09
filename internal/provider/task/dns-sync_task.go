@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"time"
 	"vibe_ip/internal/ent"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/dnsrecord"
 	"vibe_ip/internal/ent/platformconfig"
@@ -27,6 +28,8 @@ type DNSSyncTaskProvider struct {
 	logDb         *ent_log.Client               // 日志数据库客户端
 	logger        *slog.Logger                  // 日志记录器
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+
+	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewDNSSyncTaskProvider 创建一个新的 DNS同步 提供者
@@ -41,6 +44,8 @@ func NewDNSSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *sl
 		logDb:         logDb,
 		logger:        logger.With(slog.String("handler", "cdn-sync")),
 		httpTransport: httpTransport,
+
+		businessType: cronjob.BusinessTypeDNS,
 	}
 }
 

@@ -24,6 +24,8 @@ type CloudflareZoneSyncTaskProvider struct {
 	logger             *slog.Logger                  // 日志记录器
 	httpTransport      *http_log.LoggingRoundTripper // HTTP日志记录器
 	cloudflareZoneSync *syncs.CloudflareZoneSync     // Cloudflare站点同步
+
+	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewCloudflareZoneSyncTaskProvider 创建一个新的 Cloudflare站点同步 提供者
@@ -45,6 +47,8 @@ func NewCloudflareZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client,
 		logger:             logger.With(slog.String("handler", "cloudflare-zone-sync")),
 		httpTransport:      httpTransport,
 		cloudflareZoneSync: cloudflareZoneSync,
+
+		businessType: cronjob.BusinessTypeCloudflare,
 	}
 }
 
@@ -123,7 +127,7 @@ func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, businessK
 	// 查找任务
 	_, err := p.db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeCloudflareZone)).
+		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(businessKey)).
 		First(ctx)
 	if err != nil {
@@ -139,7 +143,7 @@ func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, businessK
 			SetTaskType(cronjob.TaskTypeRecurring).
 			SetJobType(cronjob.JobTypeRandom).
 			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeCloudflareZone).
+			SetBusinessType(p.businessType).
 			SetBusinessKey(businessKey).
 			SetMinInterval(6).
 			SetMaxInterval(8).
@@ -188,7 +192,7 @@ func (p *CloudflareZoneSyncTaskProvider) AddTask(ctx context.Context, configID i
 		SetTaskType(cronjob.TaskTypeOneOff).
 		SetJobType(cronjob.JobTypeDuration).
 		SetJobCategory(cronjob.JobCategoryCustom).
-		SetBusinessType(cronjob.BusinessTypeCloudflareZone).
+		SetBusinessType(p.businessType).
 		SetBusinessID(businessID).
 		SetIntervalValue(1).
 		SetIntervalUnit(cronjob.IntervalUnitSeconds).

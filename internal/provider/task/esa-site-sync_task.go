@@ -24,6 +24,8 @@ type ESASiteSyncTaskProvider struct {
 	logger        *slog.Logger                  // 日志记录器
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 	esaSiteSync   *syncs.ESASiteSync            // ESA站点同步
+
+	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewESASiteSyncTaskProvider 创建一个新的 ESA站点同步 提供者
@@ -45,6 +47,8 @@ func NewESASiteSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger
 		logger:        logger.With(slog.String("handler", "esa-site-sync")),
 		httpTransport: httpTransport,
 		esaSiteSync:   esaSiteSync,
+
+		businessType: cronjob.BusinessTypeEsa,
 	}
 }
 
@@ -144,7 +148,7 @@ func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, businessKey stri
 	// 查找任务
 	_, err := p.db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeEsaSite)).
+		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(businessKey)).
 		First(ctx)
 	if err != nil {
@@ -160,7 +164,7 @@ func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, businessKey stri
 			SetTaskType(cronjob.TaskTypeRecurring).
 			SetJobType(cronjob.JobTypeRandom).
 			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeEsaSite).
+			SetBusinessType(p.businessType).
 			SetBusinessKey(businessKey).
 			SetMinInterval(6).
 			SetMaxInterval(8).
@@ -213,7 +217,7 @@ func (p *ESASiteSyncTaskProvider) AddTask(ctx context.Context, configID int64, s
 		SetTaskType(cronjob.TaskTypeRecurring).
 		SetJobType(cronjob.JobTypeRandom).
 		SetJobCategory(cronjob.JobCategorySystem).
-		SetBusinessType(cronjob.BusinessTypeEsaSite).
+		SetBusinessType(p.businessType).
 		SetBusinessID(businessID).
 		SetIntervalValue(1).
 		SetIntervalUnit(cronjob.IntervalUnitSeconds).

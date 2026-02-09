@@ -8,6 +8,7 @@ import (
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cdnrecord"
+	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/device"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent/schema/schematype"
@@ -27,6 +28,8 @@ type CDNSyncTaskProvider struct {
 	logDb         *ent_log.Client               // 日志数据库客户端
 	logger        *slog.Logger                  // 日志记录器
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+
+	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewCDNSyncTaskProvider 创建一个新的 CDN同步 提供者
@@ -41,6 +44,8 @@ func NewCDNSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *sl
 		logDb:         logDb,
 		logger:        logger.With(slog.String("handler", "cdn-sync")),
 		httpTransport: httpTransport,
+
+		businessType: cronjob.BusinessTypeCdn,
 	}
 }
 

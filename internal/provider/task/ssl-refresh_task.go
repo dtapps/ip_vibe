@@ -27,6 +27,8 @@ type SSLRefreshTaskProvider struct {
 	logDb         *ent_log.Client               // 日志数据库客户端
 	logger        *slog.Logger                  // 日志记录器
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+
+	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewSSLRefreshTaskProvider 创建一个新的 SSL刷新 提供者
@@ -41,6 +43,8 @@ func NewSSLRefreshTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger 
 		logDb:         logDb,
 		logger:        logger.With(slog.String("handler", "ssl-refresh")),
 		httpTransport: httpTransport,
+
+		businessType: cronjob.BusinessTypeSsl,
 	}
 }
 
@@ -198,7 +202,7 @@ func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, table string) err
 	// 查找任务
 	_, err := p.db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeSsl)).
+		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(table)).
 		First(ctx)
 	if err != nil {
@@ -216,7 +220,7 @@ func (p *SSLRefreshTaskProvider) LoadTask(ctx context.Context, table string) err
 			SetTaskType(cronjob.TaskTypeRecurring).
 			SetJobType(cronjob.JobTypeCron).
 			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeSsl).
+			SetBusinessType(p.businessType).
 			SetBusinessKey(table).
 			SetCronExpr("0 0 * * *").
 			SetStatus(cronjob.StatusRunning).

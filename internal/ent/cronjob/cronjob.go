@@ -204,18 +204,17 @@ type BusinessType string
 
 // BusinessType values.
 const (
-	BusinessTypeCdn              BusinessType = "cdn"
-	BusinessTypeDNS              BusinessType = "dns"
-	BusinessTypeSsl              BusinessType = "ssl"
-	BusinessTypeDomain           BusinessType = "domain"
-	BusinessTypeTun              BusinessType = "tun"
-	BusinessTypeWebhook          BusinessType = "webhook"
-	BusinessTypeDevice           BusinessType = "device"
-	BusinessTypeCloudflareTunnel BusinessType = "cloudflare_tunnel"
-	BusinessTypeCloudflareZone   BusinessType = "cloudflare_zone"
-	BusinessTypeEdgeoneZone      BusinessType = "edgeone_zone"
-	BusinessTypeEsaSite          BusinessType = "esa_site"
-	BusinessTypeSystem           BusinessType = "system"
+	BusinessTypeCdn        BusinessType = "cdn"
+	BusinessTypeDNS        BusinessType = "dns"
+	BusinessTypeSsl        BusinessType = "ssl"
+	BusinessTypeDomain     BusinessType = "domain"
+	BusinessTypeTun        BusinessType = "tun"
+	BusinessTypeWebhook    BusinessType = "webhook"
+	BusinessTypeDevice     BusinessType = "device"
+	BusinessTypeCloudflare BusinessType = "cloudflare"
+	BusinessTypeEdgeone    BusinessType = "edgeone"
+	BusinessTypeEsa        BusinessType = "esa"
+	BusinessTypeSystem     BusinessType = "system"
 )
 
 func (bt BusinessType) String() string {
@@ -225,7 +224,7 @@ func (bt BusinessType) String() string {
 // BusinessTypeValidator is a validator for the "business_type" field enum values. It is called by the builders before save.
 func BusinessTypeValidator(bt BusinessType) error {
 	switch bt {
-	case BusinessTypeCdn, BusinessTypeDNS, BusinessTypeSsl, BusinessTypeDomain, BusinessTypeTun, BusinessTypeWebhook, BusinessTypeDevice, BusinessTypeCloudflareTunnel, BusinessTypeCloudflareZone, BusinessTypeEdgeoneZone, BusinessTypeEsaSite, BusinessTypeSystem:
+	case BusinessTypeCdn, BusinessTypeDNS, BusinessTypeSsl, BusinessTypeDomain, BusinessTypeTun, BusinessTypeWebhook, BusinessTypeDevice, BusinessTypeCloudflare, BusinessTypeEdgeone, BusinessTypeEsa, BusinessTypeSystem:
 		return nil
 	default:
 		return fmt.Errorf("cronjob: invalid enum value for business_type field: %q", bt)

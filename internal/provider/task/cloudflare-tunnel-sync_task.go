@@ -24,6 +24,8 @@ type CloudflareTunnelSyncTaskProvider struct {
 	logger               *slog.Logger                  // 日志记录器
 	httpTransport        *http_log.LoggingRoundTripper // HTTP日志记录器
 	cloudflareTunnelSync *syncs.CloudflareTunnelSync   // Cloudflare隧道同步
+
+	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewCloudflareTunnelSyncTaskProvider 创建一个新的 Cloudflare隧道同步 提供者
@@ -45,6 +47,8 @@ func NewCloudflareTunnelSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Clien
 		logger:               logger.With(slog.String("handler", "cloudflare-tunnel-sync")),
 		httpTransport:        httpTransport,
 		cloudflareTunnelSync: cloudflareTunnelSync,
+
+		businessType: cronjob.BusinessTypeCloudflare,
 	}
 }
 
@@ -117,7 +121,7 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, busines
 	// 查找任务
 	_, err := p.db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeCloudflareTunnel)).
+		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(businessKey)).
 		First(ctx)
 	if err != nil {
@@ -133,7 +137,7 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, busines
 			SetTaskType(cronjob.TaskTypeRecurring).
 			SetJobType(cronjob.JobTypeRandom).
 			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeCloudflareTunnel).
+			SetBusinessType(p.businessType).
 			SetBusinessKey(businessKey).
 			SetMinInterval(6).
 			SetMaxInterval(8).
@@ -182,7 +186,7 @@ func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, configID
 		SetTaskType(cronjob.TaskTypeOneOff).
 		SetJobType(cronjob.JobTypeDuration).
 		SetJobCategory(cronjob.JobCategoryCustom).
-		SetBusinessType(cronjob.BusinessTypeCloudflareTunnel).
+		SetBusinessType(p.businessType).
 		SetBusinessID(businessID).
 		SetIntervalValue(1).
 		SetIntervalUnit(cronjob.IntervalUnitSeconds).

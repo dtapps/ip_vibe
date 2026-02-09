@@ -24,6 +24,8 @@ type EdgeOneZoneSyncTaskProvider struct {
 	logger          *slog.Logger                  // 日志记录器
 	httpTransport   *http_log.LoggingRoundTripper // HTTP日志记录器
 	edgeOneZoneSync *syncs.EdgeOneZoneSync        // EdgeOne站点同步
+
+	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewEdgeOneZoneSyncTaskProvider 创建一个新的 EdgeOne站点同步 提供者
@@ -45,6 +47,8 @@ func NewEdgeOneZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, lo
 		logger:          logger.With(slog.String("handler", "edgeone-zone-sync")),
 		httpTransport:   httpTransport,
 		edgeOneZoneSync: edgeOneZoneSync,
+
+		businessType: cronjob.BusinessTypeEdgeone,
 	}
 }
 
@@ -144,7 +148,7 @@ func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, businessKey 
 	// 查找任务
 	_, err := p.db.CronJob.Query().
 		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeEdgeoneZone)).
+		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessKeyEQ(businessKey)).
 		First(ctx)
 	if err != nil {
@@ -160,7 +164,7 @@ func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, businessKey 
 			SetTaskType(cronjob.TaskTypeRecurring).
 			SetJobType(cronjob.JobTypeRandom).
 			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeEdgeoneZone).
+			SetBusinessType(p.businessType).
 			SetBusinessKey(businessKey).
 			SetMinInterval(6).
 			SetMaxInterval(8).
@@ -213,7 +217,7 @@ func (p *EdgeOneZoneSyncTaskProvider) AddTask(ctx context.Context, configID int6
 		SetTaskType(cronjob.TaskTypeOneOff).
 		SetJobType(cronjob.JobTypeDuration).
 		SetJobCategory(cronjob.JobCategorySystem).
-		SetBusinessType(cronjob.BusinessTypeEdgeoneZone).
+		SetBusinessType(p.businessType).
 		SetBusinessID(businessID).
 		SetIntervalValue(1).
 		SetIntervalUnit(cronjob.IntervalUnitSeconds).

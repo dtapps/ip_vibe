@@ -25,6 +25,8 @@ type DomainMonitorTaskProvider struct {
 	logDb         *ent_log.Client               // 日志数据库客户端
 	logger        *slog.Logger                  // 日志记录器
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
+
+	businessType cronjob.BusinessType // 业务类型
 }
 
 // NewDomainMonitorTaskProvider 创建一个新的 域名监控 提供者
@@ -39,6 +41,8 @@ func NewDomainMonitorTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logg
 		logDb:         logDb,
 		logger:        logger.With(slog.String("handler", "domain-monitor")),
 		httpTransport: httpTransport,
+
+		businessType: cronjob.BusinessTypeDomain,
 	}
 }
 

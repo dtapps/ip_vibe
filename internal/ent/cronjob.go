@@ -38,7 +38,7 @@ type CronJob struct {
 	JobType cronjob.JobType `json:"job_type,omitempty"`
 	// 任务分类: system 系统内置, custom 用户自定义
 	JobCategory cronjob.JobCategory `json:"job_category,omitempty"`
-	// 业务类型: cdn, dns, ssl, domain, tun, webhook, device, system
+	// 业务类型: cdn, dns, ssl, domain, tun, webhook, device, cloudflare, edgeone, esa, system
 	BusinessType cronjob.BusinessType `json:"business_type,omitempty"`
 	// 业务序号
 	BusinessID int64 `json:"business_id,omitempty"`
