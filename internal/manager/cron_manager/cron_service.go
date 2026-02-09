@@ -218,6 +218,8 @@ func (m *CronServerManager) LoadAllJobs(ctx context.Context) error {
 	// 从数据库查询所有开启的任务
 	jobs, err := m.db.CronJob.Query().
 		Where(cronjob.StatusEQ(cronjob.StatusRunning)).
+		// OrderByCreatedAtAsc().
+		OrderByEntryIDAsc().
 		All(ctx)
 	if err != nil {
 		return err
@@ -243,6 +245,8 @@ func (m *CronServerManager) SyncAllJobs(ctx context.Context) error {
 	// 从数据库获取所有当前应该运行的任务
 	dbJobs, err := m.db.CronJob.Query().
 		Where(cronjob.StatusEQ(cronjob.StatusRunning)).
+		// OrderByCreatedAtAsc().
+		OrderByEntryIDAsc().
 		All(ctx)
 	if err != nil {
 		return fmt.Errorf("query running jobs failed: %w", err)

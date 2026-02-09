@@ -73,7 +73,7 @@
         {{ $webUrlPath := printf "%s/%d" $baseWebUrlPath .ID }}
         <tr class="hover:bg-base-200/50 transition-colors">
           <td class="ui-td">
-            <span class="tooltip" data-tip="{{ .ID }}">
+            <span class="tooltip" data-tip="#{{ .ID }}">
               <input type="checkbox" class="checkbox checkbox-sm row-checkbox" value="{{.ID}}"
                 onclick="updateBatchBar()">
               </input>
