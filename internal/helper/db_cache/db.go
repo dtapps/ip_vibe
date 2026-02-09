@@ -196,3 +196,14 @@ func SaveSingleSetting(ctx context.Context, db *ent.Client, key string, value an
 		UpdateValue().
 		Exec(ctx)
 }
+
+// 获取缓存键值
+func GetCacheKey(ctx context.Context, db *ent.Client, key string, defaultValue string) string {
+	c, err := db.Cache.Query().
+		Where(cache.KeyEQ(key)).
+		Only(ctx)
+	if err != nil {
+		return defaultValue
+	}
+	return string(c.Value)
+}

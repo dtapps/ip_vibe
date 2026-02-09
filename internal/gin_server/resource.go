@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 	"vibe_ip/internal/ent/schema/schematype"
+	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/helper/sys_env"
 
@@ -538,6 +539,10 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 				}
 			}
 			return fmt.Sprintf("%v", ttlValue)
+		},
+		// 获取缓存键值
+		"getCacheKey": func(key string, defaultValue string) string {
+			return db_cache.GetCacheKey(context.Background(), global.GvaEntDb, key, defaultValue)
 		},
 	}
 }
