@@ -54,29 +54,166 @@ async function runTask(id) {
   }
 }
 
-// 打开 下次执行时间 弹窗
-async function onNextRunPopup(id, name) {
+function onJobTypeSelect(el) {
+  console.log("onJobTypeSelect", el);
+
+  const job_type = el.value.trim();
+
+  switch (job_type) {
+    case "cron":
+      $("#cron_div").show();
+      $("#duration_div").hide();
+      $("#random_div").hide();
+      break;
+    case "duration":
+      $("#cron_div").hide();
+      $("#duration_div").show();
+      $("#random_div").hide();
+      break;
+    case "random":
+      $("#cron_div").hide();
+      $("#duration_div").hide();
+      $("#random_div").show();
+      break;
+    default:
+      $("#cron_div").hide();
+      $("#duration_div").hide();
+      $("#random_div").hide();
+      break;
+  }
+}
+
+/**
+ * 打开 表单 弹窗
+ * @param {HTMLButtonElement} btn 调用者，按钮元素
+ * @returns
+ */
+async function openFormModal(btn) {
+  const form = document.getElementById("form");
+  if (!form) {
+    throw new Error("未找到表单");
+  }
+
+  // 重置表单
+  form.reset();
+
   try {
-    const { data: task } = await API.get(`/api/tasks/${id}`);
-    console.log("task", task);
-    if (!task) {
-      alert("任务数据异常");
-      return;
-    }
-    if (task.length === 0) {
-      alert("当前任务执行时间无数据");
-      return;
+    // 加载 jQuery 库
+    await loadJQuery();
+    // 表单elements集合
+    const els = form.elements;
+
+    // 获取并解析数据
+    const detail = btn.dataset.detail;
+    const d = JSON.parse(detail) || {};
+    console.log("d", d);
+
+    // 编辑
+
+    els.id.value = d.id;
+    els.id.disabled = true;
+    els.job_type.value = d.job_type;
+    els.cron_expr.value = d.cron_expr || "";
+    els.interval_value.value = d.interval_value;
+    els.interval_unit.value = d.interval_unit;
+    els.min_interval.value = d.min_interval;
+    els.max_interval.value = d.max_interval;
+    els.interval_unit.value = d.interval_unit;
+
+    switch (d.job_type) {
+      case "cron":
+        $("#cron_div").show();
+        $("#duration_div").hide();
+        $("#random_div").hide();
+        break;
+      case "duration":
+        $("#cron_div").hide();
+        $("#duration_div").show();
+        $("#random_div").hide();
+        break;
+      case "random":
+        $("#cron_div").hide();
+        $("#duration_div").hide();
+        $("#random_div").show();
+        break;
+      default:
+        $("#cron_div").hide();
+        $("#duration_div").hide();
+        $("#random_div").hide();
+        break;
     }
 
-    // 显示弹窗内容
-    showPopupContent(
-      "popup",
-      `实时 执行时间 - ${name}`,
-      task.next_runs.join("\n"),
-      task.next_runs.length
-    );
-  } catch (error) {
-    alert(`加载任务执行时间失败: ${error.message}`);
-    console.error("查看任务执行时间失败", error);
+    showModal("formModal", "modalTitle", `编辑任务: ${d.name}`);
+  } catch (err) {
+    alert(`打开 表单 失败: ${err.message}`);
+    console.error(err);
+    return;
   }
+}
+
+// 表单提交
+const form = document.getElementById("form");
+if (form) {
+  form.onsubmit = async (e) => {
+    try {
+      // 阻止事件默认行为
+      e.preventDefault();
+
+      // 表单elements集合
+      const els = form.elements;
+
+      // 表单数据
+      const form_id = Number(els.id.value.trim());
+      const form_data = {
+        job_type: els.job_type.value.trim(),
+        cron_expr: els.cron_expr.value.trim(),
+        interval_value: Number(els.interval_value.value.trim()),
+        interval_unit: els.interval_unit.value.trim(),
+        min_interval: Number(els.min_interval.value.trim()),
+        max_interval: Number(els.max_interval.value.trim()),
+        interval_unit: els.interval_unit.value.trim(),
+      };
+      console.log("form_id, form_data", form_id, form_data);
+
+      // 校验
+      if (form_data.job_type === "cron") {
+        if (form_data.cron_expr === "") {
+          return alert("请输入cron表达式");
+        }
+      }
+      if (form_data.job_type === "duration") {
+        if (
+          isNaN(form_data.interval_value) ||
+          form_data.interval_value <= 0 ||
+          form_data.interval_unit === ""
+        ) {
+          return alert("请输入间隔值");
+        }
+      }
+      if (form_data.job_type === "random") {
+        if (
+          isNaN(form_data.min_interval) ||
+          form_data.min_interval <= 0 ||
+          isNaN(form_data.max_interval) ||
+          form_data.max_interval <= 0 ||
+          form_data.interval_unit === ""
+        ) {
+          return alert("请输入随机间隔值");
+        }
+      }
+
+      // 提交
+      if (isNaN(form_id) || form_id <= 0) {
+        await API.post("/api/tasks", form_data);
+      } else {
+        await API.patch(`/api/tasks/${form_id}`, form_data);
+      }
+
+      // 刷新页面
+      location.reload();
+    } catch (err) {
+      alert(`操作失败: ${err.message}`);
+      console.error(err);
+    }
+  };
 }

@@ -267,7 +267,7 @@
               {{ else }}
               {{ end }}
               <button class="btn btn-square btn-xs btn-outline btn-ghost opacity-40 hover:opacity-100"
-                onclick="onEdit('{{.ID}}')">
+                data-detail="{{ marshalJSON . }}" onclick="openFormModal(this)">
                 {{ template "icons" (dict "Name" "i-lucide-settings" "Class" "w-3.5 h-3.5") }}
               </button>
               {{ end }}
@@ -286,6 +286,9 @@
     {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
   </div>
 </div>
+
+<!-- 表单 -->
+{{ template "pages/task_form.html" . }}
 
 <script src="/static/js/task.js"></script>
 {{ end }}

@@ -1,0 +1,98 @@
+{{ define "pages/task_form.html" }}
+<div id="formModal" class="modal">
+    <div class="ui-modal-box">
+        <div class="ui-header">
+            <h3 class="text-xl font-bold">
+                {{ template "icons" (dict "Name" "i-lucide-database-zap") }} <span id="modalTitle">添加 / 编辑 TUN 记录</span>
+            </h3>
+            <button class="btn btn-sm btn-circle btn-ghost" onclick="closeModal('formModal')">
+                {{ template "icons" (dict "Name" "i-lucide-x") }}
+            </button>
+        </div>
+
+        <form id="form" class="ui-form-container">
+
+            <div class="ui-form-control">
+                <label class="ui-label-text">任务类型 <span class="text-error">*</span></label>
+                <select name="job_type" id="job_type" class="ui-select" required onchange="onJobTypeSelect(this)">
+                    <option value="" disabled selected>请选择任务类型</option>
+                    <option value="cron">cron 表达式</option>
+                    <option value="duration">固定间隔</option>
+                    <option value="random">随机间隔</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4" id="cron_div" style="display: none;">
+                <div class="ui-form-control">
+                    <label class="ui-label-text">cron 表达式 <span class="text-error">*</span></label>
+                    <div class="flex items-center gap-2">
+                        <input type="text" name="cron_expr" id="cron_expr" class="ui-input" required
+                            placeholder="例如 * * * * *" />
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4" id="duration_div" style="display: none;">
+                <div class="ui-form-control">
+                    <label class="ui-label-text">固定间隔值 <span class="text-error">*</span></label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" name="interval_value" id="interval_value" class="ui-input" required
+                            placeholder="例如 10, 20, 30" />
+                    </div>
+                </div>
+
+                <div class="ui-form-control">
+                    <label class="ui-label-text">间隔时间单位 <span class="text-error">*</span></label>
+                    <select name="interval_unit" id="interval_unit" class="ui-select" required>
+                        <option value="seconds">秒</option>
+                        <option value="minutes">分</option>
+                        <option value="hours">时</option>
+                        <option value="days">天</option>
+                        <option value="weeks">周</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-4" id="random_div" style="display: none;">
+                <div class="ui-form-control">
+                    <label class="ui-label-text">随机最小值 <span class="text-error">*</span></label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" name="min_interval" id="min_interval" class="ui-input" required
+                            placeholder="例如 10, 20, 30" />
+                    </div>
+                </div>
+
+                <div class="ui-form-control">
+                    <label class="ui-label-text">随机最大值 <span class="text-error">*</span></label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" name="max_interval" id="max_interval" class="ui-input" required
+                            placeholder="例如 100, 200, 300" />
+                    </div>
+                </div>
+
+                <div class="ui-form-control">
+                    <label class="ui-label-text">间隔时间单位 <span class="text-error">*</span></label>
+                    <select name="interval_unit" id="interval_unit" class="ui-select" required
+                        onchange="onIntervalUnitSelect(this)">
+                        <option value="seconds">秒</option>
+                        <option value="minutes">分</option>
+                        <option value="hours">时</option>
+                        <option value="days">天</option>
+                        <option value="weeks">周</option>
+                    </select>
+                </div>
+            </div>
+
+            <input type="hidden" name="id" id="id" />
+
+            <div class="modal-action gap-3">
+                <button type="button" class="btn btn-sm btn-ghost" onclick="closeModal('formModal')">
+                    {{ template "icons" (dict "Name" "i-lucide-x") }} 取消
+                </button>
+                <button type="submit" class="btn-ui-primary">
+                    {{ template "icons" (dict "Name" "i-lucide-save") }} 保存
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+{{ end }}
