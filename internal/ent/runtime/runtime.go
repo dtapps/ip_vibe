@@ -819,6 +819,7 @@ func init() {
 	platformconfigMixin := schema.PlatformConfig{}.Mixin()
 	platformconfigHooks := schema.PlatformConfig{}.Hooks()
 	platformconfig.Hooks[0] = platformconfigHooks[0]
+	platformconfig.Hooks[1] = platformconfigHooks[1]
 	platformconfigMixinFields0 := platformconfigMixin[0].Fields()
 	_ = platformconfigMixinFields0
 	platformconfigFields := schema.PlatformConfig{}.Fields()
