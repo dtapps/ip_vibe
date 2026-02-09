@@ -122,13 +122,19 @@ func (p *CloudflareZoneSyncTaskProvider) Process(ctx context.Context, args json.
 }
 
 // LoadTask 加载 Cloudflare站点同步 周期任务
-func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, businessKey string) error {
+func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, record *ent.PlatformConfig) error {
+
+	var (
+		taskType    = cronjob.TaskTypeRecurring
+		jobType     = cronjob.JobTypeRandom
+		jobCategory = cronjob.JobCategorySystem
+	)
 
 	// 查找任务
 	_, err := db.CronJob.Query().
-		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
+		Where(cronjob.TaskTypeEQ(taskType)).
 		Where(cronjob.BusinessTypeEQ(p.businessType)).
-		Where(cronjob.BusinessKeyEQ(businessKey)).
+		Where(cronjob.BusinessIDEQ(record.ID)).
 		First(ctx)
 	if err != nil {
 		if !ent.IsNotFound(err) {
@@ -137,14 +143,16 @@ func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.C
 
 		// 创建任务
 		err = db.CronJob.Create().
-			SetName("CloudFlare站点同步: " + businessKey).
+			SetName("CloudFlare站点同步: " + record.Name).
 			SetHandlerName(CloudflareZoneSyncTaskName).
-			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareZoneSyncTaskArgs{}))).
-			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeRandom).
-			SetJobCategory(cronjob.JobCategorySystem).
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareZoneSyncTaskArgs{
+				ConfigID: record.ID,
+			}))).
+			SetTaskType(taskType).
+			SetJobType(jobType).
+			SetJobCategory(jobCategory).
 			SetBusinessType(p.businessType).
-			SetBusinessKey(businessKey).
+			SetBusinessID(record.ID).
 			SetMinInterval(6).
 			SetMaxInterval(8).
 			SetIntervalUnit(cronjob.IntervalUnitHours).
@@ -164,6 +172,12 @@ func (p *CloudflareZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.C
 
 // AddTask 添加 Cloudflare站点同步 一次性任务
 func (p *CloudflareZoneSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, configID int64, zoneID int64) error {
+
+	var (
+		taskType    = cronjob.TaskTypeOneOff
+		jobType     = cronjob.JobTypeDuration
+		jobCategory = cronjob.JobCategoryCustom
+	)
 
 	// 任务名称
 	var name string
@@ -189,9 +203,9 @@ func (p *CloudflareZoneSyncTaskProvider) AddTask(ctx context.Context, db *ent.Cl
 			ConfigID: configID,
 			ZoneID:   zoneID,
 		}))).
-		SetTaskType(cronjob.TaskTypeOneOff).
-		SetJobType(cronjob.JobTypeDuration).
-		SetJobCategory(cronjob.JobCategoryCustom).
+		SetTaskType(taskType).
+		SetJobType(jobType).
+		SetJobCategory(jobCategory).
 		SetBusinessType(p.businessType).
 		SetBusinessID(businessID).
 		SetIntervalValue(1).

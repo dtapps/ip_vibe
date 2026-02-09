@@ -9,6 +9,7 @@ import (
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cronjob"
+	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_log/cronjoblog"
 	"vibe_ip/internal/provider"
@@ -543,4 +544,30 @@ func (m *CronServerManager) PanicPeriodicListener() gocron.EventListener {
 		}
 
 	})
+}
+
+// SyncPlatformConfigJob 同步平台配置任务（自动识别：新增/更新/删除）
+func (m *CronServerManager) SyncPlatformConfigJob(ctx context.Context, record *ent.PlatformConfig) error {
+	switch record.Platform {
+	case platformconfig.PlatformCloudflare:
+		if record.Capability == platformconfig.CapabilityTun || record.Capability == platformconfig.CapabilityAll {
+			// 加载 Cloudflare隧道同步 任务
+			cloudflareTunnelSyncHandler := task.NewCloudflareTunnelSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
+			cloudflareTunnelSyncHandler.LoadTask(ctx, m.db, record)
+		}
+		if record.Capability == platformconfig.CapabilityDNS || record.Capability == platformconfig.CapabilityCdn || record.Capability == platformconfig.CapabilityAll {
+			// 加载 Cloudflare站点同步 任务
+			cloudflareZoneSyncHandler := task.NewCloudflareZoneSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
+			cloudflareZoneSyncHandler.LoadTask(ctx, m.db, record)
+		}
+	case platformconfig.PlatformTencentEo:
+		// 加载 EdgeOne站点同步 任务
+		edgeOneZoneSyncHandler := task.NewEdgeOneZoneSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
+		edgeOneZoneSyncHandler.LoadTask(ctx, m.db, record)
+	case platformconfig.PlatformAliyunEsa:
+		// 加载 ESA站点同步 任务
+		esaSiteSyncHandler := task.NewESASiteSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
+		esaSiteSyncHandler.LoadTask(ctx, m.db, record)
+	}
+	return nil
 }

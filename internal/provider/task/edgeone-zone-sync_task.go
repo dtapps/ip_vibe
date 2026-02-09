@@ -143,13 +143,19 @@ func (p *EdgeOneZoneSyncTaskProvider) Process(ctx context.Context, args json.Raw
 }
 
 // LoadTask 加载 EdgeOne站点同步 周期任务
-func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, businessKey string) error {
+func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, record *ent.PlatformConfig) error {
+
+	var (
+		taskType    = cronjob.TaskTypeRecurring
+		jobType     = cronjob.JobTypeRandom
+		jobCategory = cronjob.JobCategorySystem
+	)
 
 	// 查找任务
 	_, err := db.CronJob.Query().
-		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
+		Where(cronjob.TaskTypeEQ(taskType)).
 		Where(cronjob.BusinessTypeEQ(p.businessType)).
-		Where(cronjob.BusinessKeyEQ(businessKey)).
+		Where(cronjob.BusinessIDEQ(record.ID)).
 		First(ctx)
 	if err != nil {
 		if !ent.IsNotFound(err) {
@@ -158,14 +164,16 @@ func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Clie
 
 		// 创建任务
 		err = db.CronJob.Create().
-			SetName("EdgeOne站点同步: " + businessKey).
+			SetName("EdgeOne站点同步: " + record.Name).
 			SetHandlerName(EdgeOneZoneSyncTaskName).
-			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(EdgeOneZoneSyncTaskArgs{}))).
-			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeRandom).
-			SetJobCategory(cronjob.JobCategorySystem).
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(EdgeOneZoneSyncTaskArgs{
+				ConfigID: record.ID,
+			}))).
+			SetTaskType(taskType).
+			SetJobType(jobType).
+			SetJobCategory(jobCategory).
 			SetBusinessType(p.businessType).
-			SetBusinessKey(businessKey).
+			SetBusinessID(record.ID).
 			SetMinInterval(6).
 			SetMaxInterval(8).
 			SetIntervalUnit(cronjob.IntervalUnitHours).
@@ -185,6 +193,12 @@ func (p *EdgeOneZoneSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Clie
 
 // AddTask 添加 EdgeOne站点同步 一次性任务
 func (p *EdgeOneZoneSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, configID int64, zoneID int64, groupID int64) error {
+
+	var (
+		taskType    = cronjob.TaskTypeOneOff
+		jobType     = cronjob.JobTypeDuration
+		jobCategory = cronjob.JobCategoryCustom
+	)
 
 	// 任务名称
 	var name string
@@ -214,9 +228,9 @@ func (p *EdgeOneZoneSyncTaskProvider) AddTask(ctx context.Context, db *ent.Clien
 			ZoneID:   zoneID,
 			GroupID:  groupID,
 		}))).
-		SetTaskType(cronjob.TaskTypeOneOff).
-		SetJobType(cronjob.JobTypeDuration).
-		SetJobCategory(cronjob.JobCategorySystem).
+		SetTaskType(taskType).
+		SetJobType(jobType).
+		SetJobCategory(jobCategory).
 		SetBusinessType(p.businessType).
 		SetBusinessID(businessID).
 		SetIntervalValue(1).

@@ -191,7 +191,10 @@ func main() {
 	}
 
 	// 将 定时任务 管理器的 SyncJob 方法注入到 Hook 包中
-	schemahook.OnSyncJob = cronManager.SyncJob
+	schemahook.OnCronJobGocronHook = cronManager.SyncJob
+
+	// 将 定时任务 管理器的 SyncPlatformConfigJob 方法注入到 Hook 包中
+	schemahook.OnPlatformConfigGocronHook = cronManager.SyncPlatformConfigJob
 
 	// 等待中断信号进行优雅关闭
 	waitForShutdown()

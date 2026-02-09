@@ -6,11 +6,11 @@ import (
 	"vibe_ip/internal/ent/hook"
 )
 
-// 定义一个同步函数的类型，避免引用 cron_manager
-type SyncJobFunc func(ctx context.Context, id int64) error
+// 定义实际实现类型，避免引用 cron_manager
+type CronJobGocronHookFunc func(ctx context.Context, id int64) error
 
-// 全局变量，用于存储实际的同步逻辑
-var OnSyncJob SyncJobFunc
+// 全局变量，用于存储实际逻辑
+var OnCronJobGocronHook CronJobGocronHookFunc
 
 // CronJobLogHook 为 CronJob 实现创建时就添加到定时任务调度器
 func CronJobGocronHook() ent.Hook {
@@ -18,8 +18,8 @@ func CronJobGocronHook() ent.Hook {
 		func(next ent.Mutator) ent.Mutator {
 			return hook.CronJobFunc(func(ctx context.Context, m *ent.CronJobMutation) (ent.Value, error) {
 
-				// 如果 OnSyncJob 为空，直接返回
-				if OnSyncJob == nil {
+				// 如果 实现 为空，直接返回
+				if OnCronJobGocronHook == nil {
 					return next.Mutate(ctx, m)
 				}
 
@@ -51,7 +51,7 @@ func CronJobGocronHook() ent.Hook {
 					go func(asyncCtx context.Context, asyncIDs []int64) {
 						for _, asyncID := range asyncIDs {
 							// 使用独立的 context 保证执行
-							_ = OnSyncJob(asyncCtx, asyncID)
+							_ = OnCronJobGocronHook(asyncCtx, asyncID)
 						}
 					}(context.WithoutCancel(ctx), objIDS)
 				}

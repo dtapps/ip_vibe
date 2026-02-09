@@ -165,5 +165,6 @@ func (PlatformConfig) Indexes() []ent.Index {
 func (PlatformConfig) Hooks() []ent.Hook {
 	return []ent.Hook{
 		schemahook.PlatformConfigLogHook(),
+		schemahook.PlatformConfigGocronHook(),
 	}
 }

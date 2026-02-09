@@ -116,13 +116,19 @@ func (p *CloudflareTunnelSyncTaskProvider) Process(ctx context.Context, args jso
 }
 
 // LoadTask 加载 Cloudflare隧道同步 周期任务
-func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, businessKey string) error {
+func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, record *ent.PlatformConfig) error {
+
+	var (
+		taskType    = cronjob.TaskTypeRecurring
+		jobType     = cronjob.JobTypeRandom
+		jobCategory = cronjob.JobCategorySystem
+	)
 
 	// 查找任务
 	_, err := db.CronJob.Query().
-		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
+		Where(cronjob.TaskTypeEQ(taskType)).
 		Where(cronjob.BusinessTypeEQ(p.businessType)).
-		Where(cronjob.BusinessKeyEQ(businessKey)).
+		Where(cronjob.BusinessIDEQ(record.ID)).
 		First(ctx)
 	if err != nil {
 		if !ent.IsNotFound(err) {
@@ -131,14 +137,16 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, db *ent
 
 		// 创建任务
 		err = db.CronJob.Create().
-			SetName("CloudFlare隧道同步: " + businessKey).
+			SetName("CloudFlare隧道同步: " + record.Name).
 			SetHandlerName(CloudflareTunnelSyncTaskName).
-			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareTunnelSyncTaskArgs{}))).
-			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeRandom).
-			SetJobCategory(cronjob.JobCategorySystem).
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(CloudflareTunnelSyncTaskArgs{
+				ConfigID: record.ID,
+			}))).
+			SetTaskType(taskType).
+			SetJobType(jobType).
+			SetJobCategory(jobCategory).
 			SetBusinessType(p.businessType).
-			SetBusinessKey(businessKey).
+			SetBusinessID(record.ID).
 			SetMinInterval(6).
 			SetMaxInterval(8).
 			SetIntervalUnit(cronjob.IntervalUnitHours).
@@ -158,6 +166,12 @@ func (p *CloudflareTunnelSyncTaskProvider) LoadTask(ctx context.Context, db *ent
 
 // AddTask 添加 Cloudflare隧道同步 一次性任务
 func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, configID int64, tunnelID int64) error {
+
+	var (
+		taskType    = cronjob.TaskTypeOneOff
+		jobType     = cronjob.JobTypeDuration
+		jobCategory = cronjob.JobCategoryCustom
+	)
 
 	// 任务名称
 	var name string
@@ -183,9 +197,9 @@ func (p *CloudflareTunnelSyncTaskProvider) AddTask(ctx context.Context, db *ent.
 			ConfigID: configID,
 			TunnelID: tunnelID,
 		}))).
-		SetTaskType(cronjob.TaskTypeOneOff).
-		SetJobType(cronjob.JobTypeDuration).
-		SetJobCategory(cronjob.JobCategoryCustom).
+		SetTaskType(taskType).
+		SetJobType(jobType).
+		SetJobCategory(jobCategory).
 		SetBusinessType(p.businessType).
 		SetBusinessID(businessID).
 		SetIntervalValue(1).
