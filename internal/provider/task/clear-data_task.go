@@ -69,68 +69,122 @@ func (p *ClearDataTaskProvider) Process(ctx context.Context, args json.RawMessag
 		return "", fmt.Errorf("解析参数失败: %w", err)
 	}
 
+	var (
+		beforeCount  int
+		cleanedCount int
+		afterCount   int
+	)
+
 	switch params.Table {
 	case ent_log.TypeHttpLog:
-		_, err := p.logDb.HttpLog.Delete().
+		// 查询删除前的记录数
+		beforeCount, _ = p.logDb.HttpLog.Query().
+			Where(httplog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
+		// 执行删除操作
+		cleanedCount, _ = p.logDb.HttpLog.Delete().
 			Where(httplog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
 			Exec(ctx)
-		if err != nil {
-			return "", fmt.Errorf("删除失败: %w", err)
-		}
+		// 查询删除后的记录数
+		afterCount, _ = p.logDb.HttpLog.Query().
+			Where(httplog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
 	case ent_log.TypeRestyLog:
-		_, err := p.logDb.RestyLog.Delete().
+		// 查询删除前的记录数
+		beforeCount, _ = p.logDb.RestyLog.Query().
+			Where(restylog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
+		// 执行删除操作
+		cleanedCount, _ = p.logDb.RestyLog.Delete().
 			Where(restylog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
 			Exec(ctx)
-		if err != nil {
-			return "", fmt.Errorf("删除失败: %w", err)
-		}
+		// 查询删除后的记录数
+		afterCount, _ = p.logDb.RestyLog.Query().
+			Where(restylog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
 	case ent_log.TypeReqLog:
-		_, err := p.logDb.ReqLog.Delete().
+		// 查询删除前的记录数
+		beforeCount, _ = p.logDb.ReqLog.Query().
+			Where(reqlog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
+		// 执行删除操作
+		cleanedCount, _ = p.logDb.ReqLog.Delete().
 			Where(reqlog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
 			Exec(ctx)
-		if err != nil {
-			return "", fmt.Errorf("删除失败: %w", err)
-		}
+		// 查询删除后的记录数
+		afterCount, _ = p.logDb.ReqLog.Query().
+			Where(reqlog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
 	case ent_log.TypeDomainMonitorHistory:
-		_, err := p.logDb.DomainMonitorHistory.Delete().
+		// 查询删除前的记录数
+		beforeCount, _ = p.logDb.DomainMonitorHistory.Query().
+			Where(domainmonitorhistory.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
+		// 执行删除操作
+		cleanedCount, _ = p.logDb.DomainMonitorHistory.Delete().
 			Where(domainmonitorhistory.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
 			Exec(ctx)
-		if err != nil {
-			return "", fmt.Errorf("删除失败: %w", err)
-		}
+		// 查询删除后的记录数
+		afterCount, _ = p.logDb.DomainMonitorHistory.Query().
+			Where(domainmonitorhistory.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
 	case ent_log.TypeOperationLog:
-		_, err := p.logDb.OperationLog.Delete().
+		// 查询删除前的记录数
+		beforeCount, _ = p.logDb.OperationLog.Query().
+			Where(operationlog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
+		// 执行删除操作
+		cleanedCount, _ = p.logDb.OperationLog.Delete().
 			Where(operationlog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
 			Exec(ctx)
-		if err != nil {
-			return "", fmt.Errorf("删除失败: %w", err)
-		}
+		// 查询删除后的记录数
+		afterCount, _ = p.logDb.OperationLog.Query().
+			Where(operationlog.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
 	case ent_log.TypeWebhookHistory:
-		_, err := p.logDb.WebhookHistory.Delete().
+		// 查询删除前的记录数
+		beforeCount, _ = p.logDb.WebhookHistory.Query().
+			Where(webhookhistory.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
+		// 执行删除操作
+		cleanedCount, _ = p.logDb.WebhookHistory.Delete().
 			Where(webhookhistory.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
 			Exec(ctx)
-		if err != nil {
-			return "", fmt.Errorf("删除失败: %w", err)
-		}
+		// 查询删除后的记录数
+		afterCount, _ = p.logDb.WebhookHistory.Query().
+			Where(webhookhistory.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
 	case ent_log.TypeDeviceIpReport:
-		_, err := p.logDb.DeviceIpReport.Delete().
+		// 查询删除前的记录数
+		beforeCount, _ = p.logDb.DeviceIpReport.Query().
+			Where(deviceipreport.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
+		// 执行删除操作
+		cleanedCount, _ = p.logDb.DeviceIpReport.Delete().
 			Where(deviceipreport.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
 			Exec(ctx)
-		if err != nil {
-			return "", fmt.Errorf("删除失败: %w", err)
-		}
+		// 查询删除后的记录数
+		afterCount, _ = p.logDb.DeviceIpReport.Query().
+			Where(deviceipreport.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
 	case ent_log.TypePortForwardStats:
-		_, err := p.logDb.PortForwardStats.Delete().
+		// 查询删除前的记录数
+		beforeCount, _ = p.logDb.PortForwardStats.Query().
+			Where(portforwardstats.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
+		// 执行删除操作
+		cleanedCount, _ = p.logDb.PortForwardStats.Delete().
 			Where(portforwardstats.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
 			Exec(ctx)
-		if err != nil {
-			return "", fmt.Errorf("删除失败: %w", err)
-		}
+		// 查询删除后的记录数
+		afterCount, _ = p.logDb.PortForwardStats.Query().
+			Where(portforwardstats.CreatedAtLT(gotime.Current().BeforeDay(params.Day).Time)).
+			Count(ctx)
 	default:
 		return "", fmt.Errorf("不支持的表名 %s", params.Table)
 	}
 
-	return fmt.Sprintf("表名 %s 清理成功", params.Table), nil
+	return fmt.Sprintf("表名 %s 清理成功，保留 %d 天，清理前 %d 条数据，清理后 %d 条数据，清理 %d 条数据", params.Table, params.Day, beforeCount, afterCount, cleanedCount), nil
 }
 
 // LoadTask 加载 数据清理 周期任务
