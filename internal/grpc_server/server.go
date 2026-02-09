@@ -49,6 +49,8 @@ func NewManager(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, http
 			logger = slog.Default()
 		}
 		instance = &GRPCServerManager{
+			db:            db,
+			logDb:         logDb,
 			logger:        logger,
 			httpTransport: httpTransport,
 			config:        cfg,

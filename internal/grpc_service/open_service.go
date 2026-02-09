@@ -36,6 +36,8 @@ func NewOpenService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, 
 	)
 
 	return &OpenService{
+		db:            db,
+		logDb:         logDb,
 		logger:        logger,
 		deviceService: deviceService,
 	}
