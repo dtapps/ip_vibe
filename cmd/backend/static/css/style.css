@@ -4669,6 +4669,13 @@
       }
     }
   }
+  .toggle-warning {
+    @layer daisyui.l1.l2 {
+      &:checked, &[aria-checked="true"] {
+        --input-color: var(--color-warning);
+      }
+    }
+  }
   .\*\:\[grid-area\:1\/1\] {
     :is(& > *) {
       grid-area: 1/1;

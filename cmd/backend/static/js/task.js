@@ -54,6 +54,7 @@ async function runTask(id) {
   }
 }
 
+// 选择 任务类型 job_type
 function onJobTypeSelect(el) {
   console.log("onJobTypeSelect", el);
 
@@ -119,6 +120,8 @@ async function openFormModal(btn) {
     els.min_interval.value = d.min_interval;
     els.max_interval.value = d.max_interval;
     els.interval_unit.value = d.interval_unit;
+    els.is_singleton.checked = d.is_singleton;
+    els.run_on_start.checked = d.run_on_start;
 
     switch (d.job_type) {
       case "cron":
@@ -172,6 +175,8 @@ if (form) {
         min_interval: Number(els.min_interval.value.trim()),
         max_interval: Number(els.max_interval.value.trim()),
         interval_unit: els.interval_unit.value.trim(),
+        is_singleton: els.is_singleton.checked.trim(),
+        run_on_start: els.run_on_start.checked.trim(),
       };
       console.log("form_id, form_data", form_id, form_data);
 

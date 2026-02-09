@@ -81,6 +81,36 @@
                 </div>
             </div>
 
+            <div class="grid grid-cols-2 gap-4">
+                <div class="ui-form-control p-4 bg-base-200/30 rounded-2xl border border-base-300/50">
+                    <label class="label cursor-pointer flex justify-between items-center p-0">
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-sm font-black uppercase tracking-tight">单例运行</span>
+                            <span class="text-[10px] opacity-40 font-bold uppercase">Is Singleton</span>
+                        </div>
+                        <input type="checkbox" name="is_singleton" id="is_singleton"
+                            class="toggle toggle-primary toggle-sm" />
+                    </label>
+                    <p class="text-[10px] mt-2 opacity-40 leading-relaxed italic">
+                        开启后，若上一次任务未执行完，将跳过本次执行，防止并发冲突。
+                    </p>
+                </div>
+
+                <div class="ui-form-control p-4 bg-base-200/30 rounded-2xl border border-base-300/50">
+                    <label class="label cursor-pointer flex justify-between items-center p-0">
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-sm font-black uppercase tracking-tight">启动运行</span>
+                            <span class="text-[10px] opacity-40 font-bold uppercase">Run On Start</span>
+                        </div>
+                        <input type="checkbox" name="run_on_start" id="run_on_start"
+                            class="toggle toggle-warning toggle-sm" />
+                    </label>
+                    <p class="text-[10px] mt-2 opacity-40 leading-relaxed italic">
+                        开启后，在调度器同步或程序启动时，会立即触发一次任务执行。
+                    </p>
+                </div>
+            </div>
+
             <input type="hidden" name="id" id="id" />
 
             <div class="modal-action gap-3">
