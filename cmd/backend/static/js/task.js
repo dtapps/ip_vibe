@@ -54,34 +54,73 @@ async function runTask(id) {
   }
 }
 
-// 选择 任务类型 job_type
-function onJobTypeSelect(el) {
-  console.log("onJobTypeSelect", el);
-
-  const job_type = el.value.trim();
-
+function isFormJobType(job_type) {
   switch (job_type) {
     case "cron":
       $("#cron_div").show();
       $("#duration_div").hide();
       $("#random_div").hide();
+
+      $("#cron_expr").required = true;
+
+      $("#interval_value").required = false;
+      $("#interval_unit_1").required = false;
+
+      $("#min_interval").required = false;
+      $("#max_interval").required = false;
+      $("#interval_unit_2").required = false;
       break;
     case "duration":
       $("#cron_div").hide();
       $("#duration_div").show();
       $("#random_div").hide();
+
+      $("#cron_expr").required = false;
+
+      $("#interval_value").required = true;
+      $("#interval_unit_1").required = true;
+
+      $("#min_interval").required = false;
+      $("#max_interval").required = false;
+      $("#interval_unit_2").required = false;
       break;
     case "random":
       $("#cron_div").hide();
       $("#duration_div").hide();
       $("#random_div").show();
+
+      $("#cron_expr").required = false;
+
+      $("#interval_value").required = false;
+      $("#interval_unit_1").required = false;
+
+      $("#min_interval").required = true;
+      $("#max_interval").required = true;
+      $("#interval_unit_2").required = true;
       break;
     default:
       $("#cron_div").hide();
       $("#duration_div").hide();
       $("#random_div").hide();
+
+      $("#cron_expr").required = false;
+
+      $("#interval_value").required = false;
+      $("#interval_unit_1").required = false;
+
+      $("#min_interval").required = false;
+      $("#max_interval").required = false;
+      $("#interval_unit_2").required = false;
       break;
   }
+}
+
+// 选择 任务类型 job_type
+function onJobTypeSelect(el) {
+  console.log("onJobTypeSelect", el);
+
+  const job_type = el.value.trim();
+  isFormJobType(job_type);
 }
 
 /**
@@ -101,6 +140,7 @@ async function openFormModal(btn) {
   try {
     // 加载 jQuery 库
     await loadJQuery();
+
     // 表单elements集合
     const els = form.elements;
 
@@ -116,34 +156,17 @@ async function openFormModal(btn) {
     els.job_type.value = d.job_type;
     els.cron_expr.value = d.cron_expr || "";
     els.interval_value.value = d.interval_value;
-    els.interval_unit.value = d.interval_unit;
     els.min_interval.value = d.min_interval;
     els.max_interval.value = d.max_interval;
-    els.interval_unit.value = d.interval_unit;
     els.is_singleton.checked = d.is_singleton;
     els.run_on_start.checked = d.run_on_start;
 
-    switch (d.job_type) {
-      case "cron":
-        $("#cron_div").show();
-        $("#duration_div").hide();
-        $("#random_div").hide();
-        break;
-      case "duration":
-        $("#cron_div").hide();
-        $("#duration_div").show();
-        $("#random_div").hide();
-        break;
-      case "random":
-        $("#cron_div").hide();
-        $("#duration_div").hide();
-        $("#random_div").show();
-        break;
-      default:
-        $("#cron_div").hide();
-        $("#duration_div").hide();
-        $("#random_div").hide();
-        break;
+    isFormJobType(d.job_type);
+    if (d.job_type === "duration") {
+      els.interval_unit_1.value = d.interval_unit;
+    }
+    if (d.job_type === "random") {
+      els.interval_unit_2.value = d.interval_unit;
     }
 
     showModal("formModal", "modalTitle", `编辑任务: ${d.name}`);
@@ -171,14 +194,19 @@ if (form) {
         job_type: els.job_type.value.trim(),
         cron_expr: els.cron_expr.value.trim(),
         interval_value: Number(els.interval_value.value.trim()),
-        interval_unit: els.interval_unit.value.trim(),
         min_interval: Number(els.min_interval.value.trim()),
         max_interval: Number(els.max_interval.value.trim()),
-        interval_unit: els.interval_unit.value.trim(),
-        is_singleton: els.is_singleton.checked.trim(),
-        run_on_start: els.run_on_start.checked.trim(),
+        is_singleton: Boolean(els.is_singleton.checked),
+        run_on_start: Boolean(els.run_on_start.checked),
       };
       console.log("form_id, form_data", form_id, form_data);
+
+      if (form_data.job_type === "duration") {
+        form_data.interval_unit = els.interval_unit_1.value.trim();
+      }
+      if (form_data.job_type === "random") {
+        form_data.interval_unit = els.interval_unit_2.value.trim();
+      }
 
       // 校验
       if (form_data.job_type === "cron") {

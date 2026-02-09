@@ -24,25 +24,25 @@
 
             <div class="grid grid-cols-1 gap-4" id="cron_div" style="display: none;">
                 <div class="ui-form-control">
-                    <label class="ui-label-text">cron 表达式 <span class="text-error">*</span></label>
+                    <label class="ui-label-text">cron 表达式</label>
                     <div class="flex items-center gap-2">
-                        <input type="text" name="cron_expr" id="cron_expr" class="ui-input" required
+                        <input type="text" name="cron_expr" id="cron_expr" class="ui-input"
                             placeholder="例如 * * * * *" />
                     </div>
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4" id="duration_div" style="display: none;">
                 <div class="ui-form-control">
-                    <label class="ui-label-text">固定间隔值 <span class="text-error">*</span></label>
+                    <label class="ui-label-text">固定间隔值</label>
                     <div class="flex items-center gap-2">
-                        <input type="number" name="interval_value" id="interval_value" class="ui-input" required
+                        <input type="number" name="interval_value" id="interval_value" class="ui-input"
                             placeholder="例如 10, 20, 30" />
                     </div>
                 </div>
 
                 <div class="ui-form-control">
-                    <label class="ui-label-text">间隔时间单位 <span class="text-error">*</span></label>
-                    <select name="interval_unit" id="interval_unit" class="ui-select" required>
+                    <label class="ui-label-text">间隔时间单位</label>
+                    <select name="interval_unit_1" id="interval_unit_1" class="ui-select">
                         <option value="seconds">秒</option>
                         <option value="minutes">分</option>
                         <option value="hours">时</option>
@@ -53,24 +53,24 @@
             </div>
             <div class="grid grid-cols-3 gap-4" id="random_div" style="display: none;">
                 <div class="ui-form-control">
-                    <label class="ui-label-text">随机最小值 <span class="text-error">*</span></label>
+                    <label class="ui-label-text">随机最小值</label>
                     <div class="flex items-center gap-2">
-                        <input type="number" name="min_interval" id="min_interval" class="ui-input" required
+                        <input type="number" name="min_interval" id="min_interval" class="ui-input"
                             placeholder="例如 10, 20, 30" />
                     </div>
                 </div>
 
                 <div class="ui-form-control">
-                    <label class="ui-label-text">随机最大值 <span class="text-error">*</span></label>
+                    <label class="ui-label-text">随机最大值</label>
                     <div class="flex items-center gap-2">
-                        <input type="number" name="max_interval" id="max_interval" class="ui-input" required
+                        <input type="number" name="max_interval" id="max_interval" class="ui-input"
                             placeholder="例如 100, 200, 300" />
                     </div>
                 </div>
 
                 <div class="ui-form-control">
-                    <label class="ui-label-text">间隔时间单位 <span class="text-error">*</span></label>
-                    <select name="interval_unit" id="interval_unit" class="ui-select" required
+                    <label class="ui-label-text">间隔时间单位</label>
+                    <select name="interval_unit_2" id="interval_unit_2" class="ui-select"
                         onchange="onIntervalUnitSelect(this)">
                         <option value="seconds">秒</option>
                         <option value="minutes">分</option>
