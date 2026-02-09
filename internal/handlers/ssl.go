@@ -39,6 +39,7 @@ func Ssl(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 查询全部SSL记录
@@ -92,6 +93,7 @@ func SslDetail(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 准备页面数据
@@ -186,6 +188,7 @@ func SslHistory(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
+		global.GvaHttpLog,
 	)
 
 	// 准备页面数据

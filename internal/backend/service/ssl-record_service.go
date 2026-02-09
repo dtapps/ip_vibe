@@ -2,12 +2,10 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"time"
 	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/sslrecord"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
@@ -19,7 +17,7 @@ import (
 	"vibe_ip/internal/utils"
 
 	"github.com/spf13/cast"
-	"go.dtapp.net/library/utils/gojson"
+	"go.dtapp.net/library/contrib/http_log"
 )
 
 // SSLRecordService SSL 记录服务接口
@@ -41,23 +39,34 @@ type SSLRecordService interface {
 
 // SSLRecordServiceImpl SSL 记录服务实现
 type SSLRecordServiceImpl struct {
-	db     *ent.Client     // 数据库客户端
-	logDb  *ent_log.Client // 日志数据库客户端
-	logger *slog.Logger    // 日志记录器
-	debug  bool            // 调试模式
+	db              *ent.Client                   // 数据库客户端
+	logDb           *ent_log.Client               // 日志数据库客户端
+	logger          *slog.Logger                  // 日志记录器
+	httpTransport   *http_log.LoggingRoundTripper // HTTP日志记录器
+	sslApplyHandler *task.SSLApplyTaskProvider    // SSL申请 处理器
+	debug           bool                          // 调试模式
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例
-func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) SSLRecordService {
+func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) SSLRecordService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
+	// 创建 SSL申请 处理器
+	sslApplyHandler := task.NewSSLApplyTaskProviderRaw(
+		db,
+		logDb,
+		logger,
+		httpTransport,
+	)
 	return &SSLRecordServiceImpl{
-		db:     db,
-		logDb:  logDb,
-		logger: logger,
-		debug:  debug,
+		db:              db,
+		logDb:           logDb,
+		logger:          logger,
+		httpTransport:   httpTransport,
+		sslApplyHandler: sslApplyHandler,
+		debug:           debug,
 	}
 }
 
@@ -310,8 +319,8 @@ func (s *SSLRecordServiceImpl) UpdateSSLRecordActive(ctx context.Context, id int
 		return fmt.Errorf("更新SSL记录状态失败: %w", err)
 	}
 
-	// 同步任务状态
-	return s.handleSslApplTaskStatus(ctx, s.db, firstSSLRecord, isActive)
+	// 加载 SSL申请 周期任务
+	return s.sslApplyHandler.LoadTask(ctx, s.db, firstSSLRecord, isActive)
 }
 
 // BatchUpdateSSLRecordActive 更新 SSL 记录启用状态
@@ -356,12 +365,12 @@ func (s *SSLRecordServiceImpl) BatchUpdateSSLRecordActive(ctx context.Context, i
 		return fmt.Errorf("更新SSL记录状态失败: %w", err)
 	}
 
-	// 同步任务状态
+	// 加载 SSL申请 周期任务
 	for _, record := range allSSLRecord {
-		err = s.handleSslApplTaskStatus(ctx, tx.Client(), record, isActive)
+		err = s.sslApplyHandler.LoadTask(ctx, tx.Client(), record, isActive)
 		if err != nil {
 			tx.Rollback()
-			return fmt.Errorf("同步SSL申请任务状态失败: %w", err)
+			return fmt.Errorf("加载SSL申请周期任务状态失败: %w", err)
 		}
 	}
 
@@ -476,26 +485,10 @@ func (s *SSLRecordServiceImpl) ApplySSLRecord(ctx context.Context, id int64) err
 		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 
-	// 创建任务
-	err = s.db.CronJob.Create().
-		SetName("SSL申请: " + firstSSLRecord.Domain).
-		SetHandlerName(task.SSLApplyTaskName).
-		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.SSLApplyTaskArgs{
-			ID: firstSSLRecord.ID,
-		}))).
-		SetTaskType(cronjob.TaskTypeOneOff).
-		SetJobType(cronjob.JobTypeDuration).
-		SetJobCategory(cronjob.JobCategoryCustom).
-		SetBusinessType(cronjob.BusinessTypeSsl).
-		SetBusinessID(firstSSLRecord.ID).
-		SetIntervalValue(1).
-		SetIntervalUnit(cronjob.IntervalUnitSeconds).
-		SetStatus(cronjob.StatusRunning).
-		SetIsSingleton(true). // 单例模式
-		SetRunOnStart(true).  // 启动时立即运行
-		Exec(ctx)
+	// 添加 SSL申请 一次性任务
+	err = s.sslApplyHandler.AddTask(ctx, s.db, firstSSLRecord)
 	if err != nil {
-		return fmt.Errorf("创建任务失败: %w", err)
+		return fmt.Errorf("添加SSL申请一次性任务失败: %w", err)
 	}
 
 	return nil
@@ -542,60 +535,4 @@ func (s *SSLRecordServiceImpl) GetSSLRecordHistoryDetail(ctx context.Context, id
 		NotAfter:              firstSSLRecordHistory.NotAfter,
 		Provider:              firstSSLRecordHistory.Provider.String(),
 	}, nil
-}
-
-// handleSslApplTaskStatus 处理SSL申请任务的状态同步
-func (s *SSLRecordServiceImpl) handleSslApplTaskStatus(ctx context.Context, db *ent.Client, record *ent.SSLRecord, isActive bool) error {
-
-	// 状态
-	targetStatus := cronjob.StatusStopped
-	if isActive {
-		targetStatus = cronjob.StatusRunning
-	}
-
-	// 查找任务
-	job, err := db.CronJob.Query().
-		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
-		Where(cronjob.BusinessTypeEQ(cronjob.BusinessTypeSsl)).
-		Where(cronjob.BusinessIDEQ(record.ID)).
-		First(ctx)
-	if err != nil {
-		if !ent.IsNotFound(err) {
-			return fmt.Errorf("查找任务失败: %w", err)
-		}
-
-		// 创建任务
-		err = db.CronJob.Create().
-			SetName("SSL申请: " + record.Domain).
-			SetHandlerName(task.SSLApplyTaskName).
-			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.SSLApplyTaskArgs{
-				ID: record.ID,
-			}))).
-			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeRandom).
-			SetJobCategory(cronjob.JobCategorySystem).
-			SetBusinessType(cronjob.BusinessTypeSsl).
-			SetBusinessID(record.ID).
-			SetMinInterval(8).
-			SetMaxInterval(10).
-			SetIntervalUnit(cronjob.IntervalUnitHours).
-			SetStatus(targetStatus).
-			SetIsSingleton(true). // 单例模式
-			SetRunOnStart(false). // 启动时不立即运行
-			Exec(ctx)
-		if err != nil {
-			return fmt.Errorf("创建任务失败: %w", err)
-		}
-
-		return nil
-	}
-
-	err = db.CronJob.UpdateOne(job).
-		SetStatus(targetStatus).
-		Exec(ctx)
-	if err != nil {
-		return fmt.Errorf("更新任务状态失败: %w", err)
-	}
-
-	return nil
 }

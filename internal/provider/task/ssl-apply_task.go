@@ -18,6 +18,7 @@ import (
 
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/contrib/http_log"
+	"go.dtapp.net/library/utils/gojson"
 	"go.dtapp.net/library/utils/gostring"
 )
 
@@ -220,4 +221,101 @@ func (p *SSLApplyTaskProvider) Process(ctx context.Context, args json.RawMessage
 	}
 
 	return fmt.Sprintf("域名 %s 申请成功", record.Domain), nil
+}
+
+// LoadTask 加载 SSL申请 周期任务
+func (p *SSLApplyTaskProvider) LoadTask(ctx context.Context, db *ent.Client, record *ent.SSLRecord, isActive bool) error {
+
+	var (
+		taskType    = cronjob.TaskTypeRecurring
+		jobType     = cronjob.JobTypeRandom
+		jobCategory = cronjob.JobCategorySystem
+	)
+
+	// 状态
+	targetStatus := cronjob.StatusStopped
+	if isActive {
+		targetStatus = cronjob.StatusRunning
+	}
+
+	// 查找任务
+	job, err := db.CronJob.Query().
+		Where(cronjob.TaskTypeEQ(taskType)).
+		Where(cronjob.BusinessTypeEQ(p.businessType)).
+		Where(cronjob.BusinessIDEQ(record.ID)).
+		First(ctx)
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return fmt.Errorf("查找任务失败: %w", err)
+		}
+
+		// 创建任务
+		err = db.CronJob.Create().
+			SetName("SSL申请: " + record.Domain).
+			SetHandlerName(SSLApplyTaskName).
+			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(SSLApplyTaskArgs{
+				ID: record.ID,
+			}))).
+			SetTaskType(taskType).
+			SetJobType(jobType).
+			SetJobCategory(jobCategory).
+			SetBusinessType(p.businessType).
+			SetBusinessID(record.ID).
+			SetMinInterval(8).
+			SetMaxInterval(10).
+			SetIntervalUnit(cronjob.IntervalUnitHours).
+			SetStatus(targetStatus).
+			SetIsSingleton(true). // 单例模式
+			SetRunOnStart(false). // 启动时不立即运行
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("创建任务失败: %w", err)
+		}
+
+		return nil
+	}
+
+	// 更新任务
+	err = db.CronJob.UpdateOne(job).
+		SetStatus(targetStatus).
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("更新任务失败: %w", err)
+	}
+
+	return nil
+}
+
+// AddTask 添加 SSL申请 一次性任务
+func (p *SSLApplyTaskProvider) AddTask(ctx context.Context, db *ent.Client, record *ent.SSLRecord) error {
+
+	var (
+		taskType    = cronjob.TaskTypeOneOff
+		jobType     = cronjob.JobTypeDuration
+		jobCategory = cronjob.JobCategoryCustom
+	)
+
+	// 创建任务
+	err := db.CronJob.Create().
+		SetName("SSL申请: " + record.Domain).
+		SetHandlerName(SSLApplyTaskName).
+		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(SSLApplyTaskArgs{
+			ID: record.ID,
+		}))).
+		SetTaskType(taskType).
+		SetJobType(jobType).
+		SetJobCategory(jobCategory).
+		SetBusinessType(p.businessType).
+		SetBusinessID(record.ID).
+		SetIntervalValue(1).
+		SetIntervalUnit(cronjob.IntervalUnitSeconds).
+		SetStatus(cronjob.StatusRunning).
+		SetIsSingleton(true). // 单例模式
+		SetRunOnStart(true).  // 启动时立即运行
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("创建任务失败: %w", err)
+	}
+
+	return nil
 }
