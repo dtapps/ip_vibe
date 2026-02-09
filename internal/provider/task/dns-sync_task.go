@@ -283,6 +283,12 @@ func (p *DNSSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 // LoadTask 加载 DNS同步 周期任务
 func (p *DNSSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, record *ent.DNSRecord, isActive bool) error {
 
+	var (
+		taskType    = cronjob.TaskTypeRecurring
+		jobType     = cronjob.JobTypeRandom
+		jobCategory = cronjob.JobCategorySystem
+	)
+
 	// 状态
 	targetStatus := cronjob.StatusStopped
 	if isActive {
@@ -291,7 +297,7 @@ func (p *DNSSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, reco
 
 	// 查找任务
 	job, err := db.CronJob.Query().
-		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
+		Where(cronjob.TaskTypeEQ(taskType)).
 		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessIDEQ(record.ID)).
 		First(ctx)
@@ -307,9 +313,9 @@ func (p *DNSSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, reco
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(DNSSyncTaskArgs{
 				ID: record.ID,
 			}))).
-			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeRandom).
-			SetJobCategory(cronjob.JobCategorySystem).
+			SetTaskType(taskType).
+			SetJobType(jobType).
+			SetJobCategory(jobCategory).
 			SetBusinessType(p.businessType).
 			SetBusinessID(record.ID).
 			SetMinInterval(10).

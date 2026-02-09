@@ -135,6 +135,12 @@ func (p *DomainMonitorTaskProvider) Process(ctx context.Context, args json.RawMe
 // LoadTask 加载 域名监控 周期任务
 func (p *DomainMonitorTaskProvider) LoadTask(ctx context.Context, db *ent.Client, record *ent.DomainMonitor, isActive bool) error {
 
+	var (
+		taskType    = cronjob.TaskTypeRecurring
+		jobType     = cronjob.JobTypeDuration
+		jobCategory = cronjob.JobCategorySystem
+	)
+
 	// 状态
 	targetStatus := cronjob.StatusStopped
 	if isActive {
@@ -143,7 +149,7 @@ func (p *DomainMonitorTaskProvider) LoadTask(ctx context.Context, db *ent.Client
 
 	// 查找任务
 	job, err := db.CronJob.Query().
-		Where(cronjob.TaskTypeEQ(cronjob.TaskTypeRecurring)).
+		Where(cronjob.TaskTypeEQ(taskType)).
 		Where(cronjob.BusinessTypeEQ(p.businessType)).
 		Where(cronjob.BusinessIDEQ(record.ID)).
 		First(ctx)
@@ -159,9 +165,9 @@ func (p *DomainMonitorTaskProvider) LoadTask(ctx context.Context, db *ent.Client
 			SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(DomainMonitorTaskArgs{
 				ID: record.ID,
 			}))).
-			SetTaskType(cronjob.TaskTypeRecurring).
-			SetJobType(cronjob.JobTypeDuration).
-			SetJobCategory(cronjob.JobCategorySystem).
+			SetTaskType(taskType).
+			SetJobType(jobType).
+			SetJobCategory(jobCategory).
 			SetBusinessType(p.businessType).
 			SetBusinessID(record.ID).
 			SetIntervalValue(record.CheckInterval).
@@ -193,6 +199,12 @@ func (p *DomainMonitorTaskProvider) LoadTask(ctx context.Context, db *ent.Client
 // AddTask 添加 域名监控 一次性任务
 func (p *DomainMonitorTaskProvider) AddTask(ctx context.Context, db *ent.Client, record *ent.DomainMonitor) error {
 
+	var (
+		taskType    = cronjob.TaskTypeOneOff
+		jobType     = cronjob.JobTypeDuration
+		jobCategory = cronjob.JobCategoryCustom
+	)
+
 	// 创建任务
 	err := db.CronJob.Create().
 		SetName("域名监控: " + record.Domain).
@@ -200,9 +212,9 @@ func (p *DomainMonitorTaskProvider) AddTask(ctx context.Context, db *ent.Client,
 		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(DomainMonitorTaskArgs{
 			ID: record.ID,
 		}))).
-		SetTaskType(cronjob.TaskTypeOneOff).
-		SetJobType(cronjob.JobTypeDuration).
-		SetJobCategory(cronjob.JobCategoryCustom).
+		SetTaskType(taskType).
+		SetJobType(jobType).
+		SetJobCategory(jobCategory).
 		SetBusinessType(p.businessType).
 		SetBusinessID(record.ID).
 		SetIntervalValue(1).
