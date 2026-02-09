@@ -338,3 +338,8 @@ func (p *CDNSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, reco
 
 	return nil
 }
+
+// AddTask 添加 CDN同步 一次性任务
+func (p *CDNSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, record *ent.CDNRecord) error {
+	return nil
+}

@@ -2,11 +2,9 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"vibe_ip/internal/ent"
-	"vibe_ip/internal/ent/cronjob"
 	"vibe_ip/internal/ent/domainmonitor"
 	"vibe_ip/internal/ent/webhooksubscription"
 	"vibe_ip/internal/ent_log"
@@ -18,7 +16,6 @@ import (
 	"github.com/go-co-op/gocron/v2"
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/contrib/http_log"
-	"go.dtapp.net/library/utils/gojson"
 )
 
 // DomainMonitorService 域名监控服务接口
@@ -390,26 +387,10 @@ func (s *DomainMonitorServiceImpl) CheckDomainMonitor(ctx context.Context, id in
 		return fmt.Errorf("查询域名监控失败: %w", err)
 	}
 
-	// 创建任务
-	err = s.db.CronJob.Create().
-		SetName("域名监控: " + firstDomainMonitor.Domain).
-		SetHandlerName(task.DomainMonitorTaskName).
-		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(task.DomainMonitorTaskArgs{
-			ID: firstDomainMonitor.ID,
-		}))).
-		SetTaskType(cronjob.TaskTypeOneOff).
-		SetJobType(cronjob.JobTypeDuration).
-		SetJobCategory(cronjob.JobCategoryCustom).
-		SetBusinessType(cronjob.BusinessTypeDomain).
-		SetBusinessID(firstDomainMonitor.ID).
-		SetIntervalValue(1).
-		SetIntervalUnit(cronjob.IntervalUnitSeconds).
-		SetStatus(cronjob.StatusRunning).
-		SetIsSingleton(true). // 单例模式
-		SetRunOnStart(true).  // 启动时立即运行
-		Exec(ctx)
+	// 添加 域名监控 一次性任务
+	err = s.domainMonitorHandler.AddTask(ctx, s.db, firstDomainMonitor)
 	if err != nil {
-		return fmt.Errorf("创建任务失败: %w", err)
+		return fmt.Errorf("添加域名监控一次性任务失败: %w", err)
 	}
 
 	return nil

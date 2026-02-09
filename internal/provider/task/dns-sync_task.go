@@ -335,3 +335,8 @@ func (p *DNSSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, reco
 
 	return nil
 }
+
+// AddTask 添加 DNS同步 一次性任务
+func (p *DNSSyncTaskProvider) AddTask(ctx context.Context, db *ent.Client, record *ent.DNSRecord) error {
+	return nil
+}

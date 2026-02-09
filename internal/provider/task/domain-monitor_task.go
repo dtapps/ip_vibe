@@ -189,3 +189,31 @@ func (p *DomainMonitorTaskProvider) LoadTask(ctx context.Context, db *ent.Client
 
 	return nil
 }
+
+// AddTask 添加 域名监控 一次性任务
+func (p *DomainMonitorTaskProvider) AddTask(ctx context.Context, db *ent.Client, record *ent.DomainMonitor) error {
+
+	// 创建任务
+	err := db.CronJob.Create().
+		SetName("域名监控: " + record.Domain).
+		SetHandlerName(DomainMonitorTaskName).
+		SetHandlerArgs(json.RawMessage(gojson.JsonEncodeNoError(DomainMonitorTaskArgs{
+			ID: record.ID,
+		}))).
+		SetTaskType(cronjob.TaskTypeOneOff).
+		SetJobType(cronjob.JobTypeDuration).
+		SetJobCategory(cronjob.JobCategoryCustom).
+		SetBusinessType(p.businessType).
+		SetBusinessID(record.ID).
+		SetIntervalValue(1).
+		SetIntervalUnit(cronjob.IntervalUnitSeconds).
+		SetStatus(cronjob.StatusRunning).
+		SetIsSingleton(true). // 单例模式
+		SetRunOnStart(true).  // 启动时立即运行
+		Exec(ctx)
+	if err != nil {
+		return fmt.Errorf("创建任务失败: %w", err)
+	}
+
+	return nil
+}
