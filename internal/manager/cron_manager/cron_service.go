@@ -106,8 +106,12 @@ func (m *CronServerManager) InitHandlers(ctx context.Context) {
 	m.taskRegistry.RegisterTask(ctx, task.ESASiteSyncTaskName, esaSiteSyncHandler)
 
 	// 注册 数据清除 处理器
-	clearDataHandler := task.NewClearDataTaskProviderRaw(m.db, m.logDb, m.logger)
+	clearDataHandler := task.NewClearDataTaskProvider(m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.ClearDataTaskName, clearDataHandler)
+
+	// 注册 Webhook发送 处理器
+	webhookSendHandler := task.NewWebhookSendTaskProvider(ctx, m.db, m.logDb, m.logger, m.httpTransport)
+	m.taskRegistry.RegisterTask(ctx, task.WebhookSendTaskName, webhookSendHandler)
 
 	m.logger.InfoContext(ctx, "所有任务处理器注册完成")
 }
