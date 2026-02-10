@@ -18,11 +18,9 @@ import (
 
 // VolcengineDNSConfig 火山引擎 DNS 配置
 type VolcengineDNSConfig struct {
-	Region     string `json:"region,omitempty"` // 区域
-	AccessKey  string `json:"access_key"`       // 密钥ID
-	SecretKey  string `json:"secret_key"`       // 密钥密钥
-	ZoneID     int64  `json:"zone_id"`          // 域名ID
-	DomainName string `json:"domain_name"`      // 主域名
+	Region    string `json:"region,omitempty"` // 区域
+	AccessKey string `json:"access_key"`       // 密钥ID
+	SecretKey string `json:"secret_key"`       // 密钥密钥
 }
 
 // DefaultValidate 验证配置
@@ -35,17 +33,6 @@ func (cfg *VolcengineDNSConfig) DefaultValidate() error {
 	}
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
-	}
-	return nil
-}
-
-// DnsValidate 验证配置
-func (cfg *VolcengineDNSConfig) DnsValidate() error {
-	if cfg.ZoneID == 0 {
-		return fmt.Errorf("ZoneID 不能为空")
-	}
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -162,26 +149,18 @@ func (p *VolcengineDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://api.volcengine.com/api-explorer?action=ListRecords
-func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *VolcengineDNSProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 查询域名记录
 	requestDnsQuery := &dns.ListRecordsInput{}
-	requestDnsQuery.Host = volcengine.String(fullDomain)    // 主机记录
+	requestDnsQuery.Host = volcengine.String(full_domain)   // 主机记录
 	requestDnsQuery.PageNumber = volcengine.Int32(1)        // 页码
 	requestDnsQuery.PageSize = volcengine.Int32(500)        // 每页包含的解析记录的数量
 	requestDnsQuery.SearchMode = volcengine.String("exact") // Host 匹配模式
-	if recordType != "" {
-		requestDnsQuery.Type = volcengine.String(recordType) // 记录类型
+	if record_type != "" {
+		requestDnsQuery.Type = volcengine.String(record_type) // 记录类型
 	}
-	requestDnsQuery.ZID = volcengine.Int64(p.cfg.ZoneID) // 域名ID
+	requestDnsQuery.ZID = volcengine.Int64(p.CustomConfig.ZoneValue) // 域名ID
 	responseDnsQuery, err := p.Provider.Client.ListRecordsWithContext(ctx, requestDnsQuery)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ListRecordsWithContext 失败 %w", err)
@@ -197,7 +176,7 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 		itemFullDomain := volcengine.StringValue(item.Host)
 		// 查找记录类型
 
-		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+		if utils.EqualDomainIgnoreCase(itemFullDomain, full_domain) {
 
 			// 记录数据
 			p.ItemData = *item
@@ -211,7 +190,7 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 			itemRemark := utils.PtrToString(item.Remark)
 
 			// 检查记录类型
-			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
+			if record_type != "" && !utils.EqualDomainIgnoreCase(itemRecordType, record_type) {
 				continue
 			}
 
@@ -219,16 +198,16 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 			p.InternalData.RecordID = volcengine.StringValue(item.RecordID)
 
 			// 判断记录值
-			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, origin_value) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", newOriginValue, itemOriginValue)
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", origin_value, itemOriginValue)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
-			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
+			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.LineValue) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %v，实际 %v", p.CustomConfig.Line, itemLine)
+				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %v，实际 %v", p.CustomConfig.LineValue, itemLine)
 				return p.InternalData, nil
 			}
 
@@ -252,26 +231,18 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain string, subdom
 // Update 更新 DNS 记录
 // https://api.volcengine.com/api-explorer?action=CreateRecord
 // https://api.volcengine.com/api-explorer?action=UpdateRecord
-func (p *VolcengineDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return fmt.Errorf("配置无效: %w", err)
-	}
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *VolcengineDNSProvider) Update(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (err error) {
 
 	if p.InternalData.RecordID == "" {
 
 		// 创建域名记录
 		requestDnsCreate := &dns.CreateRecordInput{}
-		requestDnsCreate.Host = volcengine.String(fullDomain)              // 主机记录
-		requestDnsCreate.Type = volcengine.String(recordType)              // 记录类型
-		requestDnsCreate.Value = volcengine.String(originValue)            // 解析记录的记录值
-		requestDnsCreate.ZID = volcengine.Int64(p.cfg.ZoneID)              // 域名ID
-		requestDnsCreate.Line = volcengine.String(p.CustomConfig.Line)     // 解析记录对应的线路
-		requestDnsCreate.Remark = volcengine.String(p.CustomConfig.Remark) // 解析记录的备注
+		requestDnsCreate.Host = volcengine.String(full_domain)              // 主机记录
+		requestDnsCreate.Type = volcengine.String(record_type)              // 记录类型
+		requestDnsCreate.Value = volcengine.String(origin_value)            // 解析记录的记录值
+		requestDnsCreate.ZID = volcengine.Int64(p.CustomConfig.ZoneValue)   // 域名ID
+		requestDnsCreate.Line = volcengine.String(p.CustomConfig.LineValue) // 解析记录对应的线路
+		requestDnsCreate.Remark = volcengine.String(p.CustomConfig.Remark)  // 解析记录的备注
 		responseDnsCreate, err := p.Provider.Client.CreateRecordWithContext(ctx, requestDnsCreate)
 		if err != nil {
 			return fmt.Errorf("接口 CreateRecordWithContext 失败 %w", err)
@@ -284,11 +255,11 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, domain string, subdo
 
 		// 更新域名记录
 		requestDnsUpdate := &dns.UpdateRecordInput{}
-		requestDnsUpdate.Host = volcengine.String(fullDomain)                  // 主机记录
+		requestDnsUpdate.Host = volcengine.String(full_domain)                 // 主机记录
 		requestDnsUpdate.RecordID = volcengine.String(p.InternalData.RecordID) // 需要更新的解析记录的 ID
-		requestDnsUpdate.Type = volcengine.String(recordType)                  // 记录类型
-		requestDnsUpdate.Value = volcengine.String(originValue)                // 解析记录的记录值
-		requestDnsUpdate.Line = volcengine.String(p.CustomConfig.Line)         // 解析记录对应的线路
+		requestDnsUpdate.Type = volcengine.String(record_type)                 // 记录类型
+		requestDnsUpdate.Value = volcengine.String(origin_value)               // 解析记录的记录值
+		requestDnsUpdate.Line = volcengine.String(p.CustomConfig.LineValue)    // 解析记录对应的线路
 		requestDnsUpdate.Remark = volcengine.String(p.CustomConfig.Remark)     // 解析记录的备注
 		responseDnsUpdate, err := p.Provider.Client.UpdateRecordWithContext(ctx, requestDnsUpdate)
 		if err != nil {
@@ -305,9 +276,10 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, domain string, subdo
 
 // 火山引擎 DNS 自定义配置
 type VolcengineDNSCustomConfig struct {
-	Line          string `json:"line"`                       // 解析记录对应的线路
+	ZoneValue     int64  `json:"zone_value"`                 // 域名编号
+	LineValue     string `json:"line_value"`                 // 线路
+	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // 设备IP组代码
 	Remark        string `json:"remark,omitempty"`           // 备注
-	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置
@@ -332,7 +304,7 @@ type VolcengineDNSProviderLine struct {
 func (p *VolcengineDNSProvider) ListLines(ctx context.Context) (lines []*VolcengineDNSProviderLine, err error) {
 	// 查询线路列表
 	requestQueryLine := &dns.ListLinesInput{}
-	requestQueryLine.ZID = volcengine.Int64(p.cfg.ZoneID) // 域名ID
+	requestQueryLine.ZID = volcengine.Int64(p.CustomConfig.ZoneValue) // 域名ID
 	responseQueryLine, err := p.Provider.Client.ListLinesWithContext(ctx, requestQueryLine)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ListLinesWithContext 失败 %w", err)

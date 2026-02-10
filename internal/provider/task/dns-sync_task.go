@@ -267,21 +267,21 @@ func (p *DNSSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 		return "", fmt.Errorf("创建DNS更新任务失败: %w", err)
 	}
 
-	// 配置DNS参数
-	dnsTask.Config(
-		record.SubDomain,
-		record.Type.String(),
-		originValue,
-	)
-
 	// 执行DNS更新
-	if err = dnsTask.Execute(ctx); err != nil {
+	err = dnsTask.Execute(ctx, &provider.DNSConfigParams{
+		DomainName:  record.DomainName,
+		SubDomain:   record.SubDomain,
+		FullDomain:  record.FullDomain,
+		RecordType:  record.Type.String(),
+		OriginValue: originValue,
+	})
+	if err != nil {
 		return "", err
 	}
 
 	// 执行DNS通知
 	if dnsTask.IsNotification() {
-		_ = p.webhookSendSyncHandler.AddTask(
+		err = p.webhookSendSyncHandler.AddTask(
 			ctx,
 			p.db,
 			p.businessType,
@@ -297,6 +297,9 @@ func (p *DNSSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 				RecordNewValue: originValue,
 			},
 		)
+		if err != nil {
+			return "", fmt.Errorf("添加DNS通知任务失败: %w", err)
+		}
 	}
 
 	return fmt.Sprintf("域名 %s 同步成功 (源站:%v)", record.SubDomain, originValue), nil

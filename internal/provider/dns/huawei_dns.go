@@ -25,8 +25,6 @@ type HuaweiDNSConfig struct {
 	Region          string `json:"region,omitempty"`  // 区域
 	AccessKeyID     string `json:"access_key_id"`     // 密钥ID
 	SecretAccessKey string `json:"secret_access_key"` // 密钥密钥
-	ZoneID          string `json:"zone_id"`           // 域名ID
-	DomainName      string `json:"domain_name"`       // 主域名
 }
 
 // DefaultValidate 验证配置
@@ -39,17 +37,6 @@ func (cfg *HuaweiDNSConfig) DefaultValidate() error {
 	}
 	if cfg.SecretAccessKey == "" {
 		return fmt.Errorf("SecretAccessKey 不能为空")
-	}
-	return nil
-}
-
-// DnsValidate 验证配置
-func (cfg *HuaweiDNSConfig) DnsValidate() error {
-	if cfg.ZoneID == "" {
-		return fmt.Errorf("ZoneID 不能为空")
-	}
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -170,26 +157,18 @@ func (p *HuaweiDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=ShowRecordSetByZone
-func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *HuaweiDNSProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 查询域名记录
 	requestDnsQuery := &model.ShowRecordSetByZoneRequest{}
 	requestDnsQuery.Limit = utils.Int32ToPtr(500) // 分页查询时配置每页返回的资源个数
 	requestDnsQuery.Offset = utils.Int32ToPtr(0)  // 分页查询起始偏移量,表示从偏移量的下一个资源开始查询
-	if recordType != "" {
-		requestDnsQuery.Type = utils.StringToPtr(recordType) // 记录集的类型
+	if record_type != "" {
+		requestDnsQuery.Type = utils.StringToPtr(record_type) // 记录集的类型
 	}
-	requestDnsQuery.Name = utils.StringToPtr(fullDomain)    // 待查询的记录集的域名中包含此name
+	requestDnsQuery.Name = utils.StringToPtr(full_domain)   // 待查询的记录集的域名中包含此name
 	requestDnsQuery.SearchMode = utils.StringToPtr("equal") // 查询条件搜索模式
-	requestDnsQuery.ZoneId = p.cfg.ZoneID                   // 域名ID
+	requestDnsQuery.ZoneId = p.CustomConfig.ZoneValue       // 域名ID
 	responseDnsQuery, err := p.Provider.Client.ShowRecordSetByZone(requestDnsQuery)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ShowRecordSetByZone 失败 %w", err)
@@ -204,7 +183,7 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 		// 查找域名
 		itemFullDomain := utils.PtrToString(item.Name)
 
-		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+		if utils.EqualDomainIgnoreCase(itemFullDomain, full_domain) {
 
 			// 记录数据
 			p.ItemData = item
@@ -217,7 +196,7 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			itemDescription := utils.PtrToString(item.Description)
 
 			// 检查记录类型
-			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
+			if record_type != "" && !utils.EqualDomainIgnoreCase(itemRecordType, record_type) {
 				continue
 			}
 
@@ -225,9 +204,9 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			p.InternalData.RecordID = utils.PtrToString(item.Id)
 
 			// 判断记录值
-			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, origin_value) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", newOriginValue, itemOriginValue)
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", origin_value, itemOriginValue)
 				return p.InternalData, nil
 			}
 
@@ -251,25 +230,17 @@ func (p *HuaweiDNSProvider) Check(ctx context.Context, domain string, subdomain 
 // Update 更新 DNS 记录
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/debug?api=CreateRecordSetWithLine
 // https://console.huaweicloud.com/apiexplorer/#/openapi/DNS/sdk?api=UpdateRecordSets
-func (p *HuaweiDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return fmt.Errorf("配置无效: %w", err)
-	}
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *HuaweiDNSProvider) Update(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (err error) {
 
 	if p.InternalData.RecordID == "" {
 
 		// 创建域名记录
 		requestDnsCreate := &model.CreateRecordSetWithLineRequest{}
-		requestDnsCreate.ZoneId = p.cfg.ZoneID // 域名ID
+		requestDnsCreate.ZoneId = p.CustomConfig.ZoneValue // 域名ID
 		requestDnsCreate.Body = &model.CreateRecordSetWithLineRequestBody{
-			Records:     utils.StringsToPtr([]string{originValue}),     // 解析记录的值
-			Type:        recordType,                                    // 记录集的类型
-			Name:        fullDomain,                                    // 域名
+			Records:     utils.StringsToPtr([]string{origin_value}),    // 解析记录的值
+			Type:        record_type,                                   // 记录集的类型
+			Name:        full_domain,                                   // 域名
 			Description: utils.StringToPtr(p.CustomConfig.Description), // 记录集的描述信息
 		}
 		responseDnsCreate, err := p.Provider.Client.CreateRecordSetWithLine(requestDnsCreate)
@@ -284,12 +255,12 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, domain string, subdomain
 
 		// 更新域名记录
 		requestDnsUpdate := &model.UpdateRecordSetsRequest{}
-		requestDnsUpdate.ZoneId = p.cfg.ZoneID                 // 域名ID
+		requestDnsUpdate.ZoneId = p.CustomConfig.ZoneValue     // 域名ID
 		requestDnsUpdate.RecordsetId = p.InternalData.RecordID // 记录集ID
 		requestDnsUpdate.Body = &model.UpdateRecordSetsReq{
-			Records:     utils.StringsToPtr([]string{originValue}),     // 解析记录的值
-			Type:        recordType,                                    // 记录集的类型
-			Name:        fullDomain,                                    // 域名
+			Records:     utils.StringsToPtr([]string{origin_value}),    // 解析记录的值
+			Type:        record_type,                                   // 记录集的类型
+			Name:        full_domain,                                   // 域名
 			Description: utils.StringToPtr(p.CustomConfig.Description), // 记录集的描述信息
 		}
 		responseDnsUpdate, err := p.Provider.Client.UpdateRecordSets(requestDnsUpdate)
@@ -307,8 +278,9 @@ func (p *HuaweiDNSProvider) Update(ctx context.Context, domain string, subdomain
 
 // 华为云 DNS 自定义配置
 type HuaweiDNSCustomConfig struct {
-	Description   string `json:"description"`                // 记录集的描述信息
-	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
+	ZoneValue     string `json:"zone_value"`                 // 域名编号
+	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // 设备IP组代码
+	Description   string `json:"description"`                // 备注
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

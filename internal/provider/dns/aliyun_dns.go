@@ -22,7 +22,6 @@ type AliyunDNSConfig struct {
 	Endpoint        string `json:"endpoint,omitempty"` // 接口地址
 	AccessKeyID     string `json:"access_key_id"`      // 密钥ID
 	AccessKeySecret string `json:"access_key_secret"`  // 密钥Key
-	DomainName      string `json:"domain_name"`        // 主域名
 }
 
 // DefaultValidate 验证配置
@@ -35,14 +34,6 @@ func (cfg *AliyunDNSConfig) DefaultValidate() error {
 	}
 	if cfg.AccessKeySecret == "" {
 		return fmt.Errorf("AccessKeySecret 不能为空")
-	}
-	return nil
-}
-
-// DnsValidate 验证配置
-func (cfg *AliyunDNSConfig) DnsValidate() error {
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -163,20 +154,15 @@ func (p *AliyunDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/DescribeDomainRecords
-func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
+func (p *AliyunDNSProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 查询域名记录
 	requestDnsQuery := &alidns20150109.DescribeDomainRecordsRequest{}
 	requestDnsQuery.SearchMode = tea.String("COMBINATION") // 搜索模式
-	requestDnsQuery.DomainName = tea.String(domain)        // 域名名称
-	requestDnsQuery.RRKeyWord = tea.String(subdomain)      // 主机记录的关键字
-	if recordType != "" {
-		requestDnsQuery.TypeKeyWord = tea.String(recordType) // 解析类型的关键字
+	requestDnsQuery.DomainName = tea.String(domain_name)   // 域名名称
+	requestDnsQuery.RRKeyWord = tea.String(sub_domain)     // 主机记录的关键字
+	if record_type != "" {
+		requestDnsQuery.TypeKeyWord = tea.String(record_type) // 解析类型的关键字
 	}
 	responseDnsQuery, err := p.Provider.Client.DescribeDomainRecordsWithContext(ctx, requestDnsQuery, p.Provider.Runtime)
 	if err != nil {
@@ -189,7 +175,7 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 	}
 	for _, item := range responseDnsQuery.GetBody().GetDomainRecords().GetRecord() {
 
-		if utils.EqualDomainIgnoreCase(tea.StringValue(item.GetRR()), subdomain) && utils.EqualDomainIgnoreCase(tea.StringValue(item.GetDomainName()), domain) {
+		if utils.EqualDomainIgnoreCase(tea.StringValue(item.GetRR()), sub_domain) && utils.EqualDomainIgnoreCase(tea.StringValue(item.GetDomainName()), domain_name) {
 
 			// 记录数据
 			p.ItemData = *item
@@ -202,7 +188,7 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			itemLine := tea.StringValue(item.GetLine())
 
 			// 检查记录类型
-			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
+			if record_type != "" && !utils.EqualDomainIgnoreCase(itemRecordType, record_type) {
 				continue
 			}
 
@@ -210,16 +196,16 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 			p.InternalData.RecordID = tea.StringValue(item.GetRecordId())
 
 			// 判断记录值
-			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, origin_value) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", newOriginValue, itemOriginValue)
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", origin_value, itemOriginValue)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
-			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
+			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.LineValue) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %v，实际 %v", p.CustomConfig.Line, itemLine)
+				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %v，实际 %v", p.CustomConfig.LineValue, itemLine)
 				return p.InternalData, nil
 			}
 
@@ -236,22 +222,17 @@ func (p *AliyunDNSProvider) Check(ctx context.Context, domain string, subdomain 
 // Update 更新 DNS 记录
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/AddDomainRecord
 // https://next.api.aliyun.com/api/Alidns/2015-01-09/UpdateDomainRecord
-func (p *AliyunDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return fmt.Errorf("配置无效: %w", err)
-	}
+func (p *AliyunDNSProvider) Update(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (err error) {
 
 	if p.InternalData.RecordID == "" {
 
 		// 创建域名记录
 		requestDnsCreate := &alidns20150109.AddDomainRecordRequest{}
-		requestDnsCreate.DomainName = tea.String(domain)        // 域名名称
-		requestDnsCreate.RR = tea.String(subdomain)             // 主机记录
-		requestDnsCreate.Type = tea.String(recordType)          // 解析记录类型
-		requestDnsCreate.Value = tea.String(originValue)        // 记录值
-		requestDnsCreate.Line = tea.String(p.CustomConfig.Line) // 解析线路
+		requestDnsCreate.DomainName = tea.String(domain_name)        // 域名名称
+		requestDnsCreate.RR = tea.String(sub_domain)                 // 主机记录
+		requestDnsCreate.Type = tea.String(record_type)              // 解析记录类型
+		requestDnsCreate.Value = tea.String(origin_value)            // 记录值
+		requestDnsCreate.Line = tea.String(p.CustomConfig.LineValue) // 解析线路
 		responseDnsCreate, err := p.Provider.Client.AddDomainRecordWithContext(ctx, requestDnsCreate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 AddDomainRecordWithContext 失败 %w", err)
@@ -265,10 +246,10 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, domain string, subdomain
 		// 更新域名记录
 		requestDnsUpdate := &alidns20150109.UpdateDomainRecordRequest{}
 		requestDnsUpdate.RecordId = tea.String(p.InternalData.RecordID) // 解析记录的ID
-		requestDnsUpdate.RR = tea.String(subdomain)                     // 主机记录
-		requestDnsUpdate.Type = tea.String(recordType)                  // 解析记录类型
-		requestDnsUpdate.Value = tea.String(originValue)                // 记录值
-		requestDnsUpdate.Line = tea.String(p.CustomConfig.Line)         // 解析线路
+		requestDnsUpdate.RR = tea.String(sub_domain)                    // 主机记录
+		requestDnsUpdate.Type = tea.String(record_type)                 // 解析记录类型
+		requestDnsUpdate.Value = tea.String(origin_value)               // 记录值
+		requestDnsUpdate.Line = tea.String(p.CustomConfig.LineValue)    // 解析线路
 		responseDnsUpdate, err := p.Provider.Client.UpdateDomainRecordWithContext(ctx, requestDnsUpdate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 UpdateDomainRecordWithContext 失败 %w", err)
@@ -284,8 +265,10 @@ func (p *AliyunDNSProvider) Update(ctx context.Context, domain string, subdomain
 
 // 阿里云 DNS 自定义配置
 type AliyunDNSCustomConfig struct {
-	Line          string `json:"line"`                       // 解析记录的线路类型
-	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
+	DomainText    string `json:"domain_text"`                // 域名名称
+	DomainValue   string `json:"domain_value"`               // 域名编号
+	LineValue     string `json:"line_value"`                 // 线路
+	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // 设备IP组代码代码
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置
@@ -310,7 +293,7 @@ type AliyunDNSProviderLine struct {
 func (p *AliyunDNSProvider) ListLines(ctx context.Context) (lines []*AliyunDNSProviderLine, err error) {
 	// 查询线路列表
 	requestQueryLine := &alidns20150109.DescribeSupportLinesRequest{}
-	requestQueryLine.DomainName = tea.String(p.cfg.DomainName) // 域名名称
+	requestQueryLine.DomainName = tea.String(p.CustomConfig.DomainText) // 域名名称
 	responseQueryLine, err := p.Provider.Client.DescribeSupportLinesWithContext(ctx, requestQueryLine, p.Provider.Runtime)
 	if err != nil {
 		return nil, fmt.Errorf("接口 DescribeSupportLinesWithContext 失败 %w", err)

@@ -19,7 +19,6 @@ type BaiduDNSConfig struct {
 	Endpoint        string `json:"endpoint,omitempty"` // 接口地址
 	AccessKeyID     string `json:"access_key_id"`      // 密钥ID
 	SecretAccessKey string `json:"secret_access_key"`  // 密钥Key
-	DomainName      string `json:"domain_name"`        // 主域名
 }
 
 // DefaultValidate 验证配置
@@ -32,14 +31,6 @@ func (cfg *BaiduDNSConfig) DefaultValidate() error {
 	}
 	if cfg.SecretAccessKey == "" {
 		return fmt.Errorf("SecretAccessKey 不能为空")
-	}
-	return nil
-}
-
-// DnsValidate 验证配置
-func (cfg *BaiduDNSConfig) DnsValidate() error {
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -143,18 +134,13 @@ func (p *BaiduDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#查询解析记录列表
-func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
+func (p *BaiduDNSProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 查询域名记录
 	requestDnsQuery := &dns.ListRecordRequest{}
-	requestDnsQuery.Rr = subdomain // 主机记录
-	requestDnsQuery.MaxKeys = 1000 // 每页包含的最大数量，最大数量通常不超过1000，缺省值为1000
-	responseDnsQuery, err := p.Provider.Client.ListRecord(domain, requestDnsQuery)
+	requestDnsQuery.Rr = sub_domain // 主机记录
+	requestDnsQuery.MaxKeys = 1000  // 每页包含的最大数量，最大数量通常不超过1000，缺省值为1000
+	responseDnsQuery, err := p.Provider.Client.ListRecord(domain_name, requestDnsQuery)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ListRecord 失败 %w", err)
 	}
@@ -165,7 +151,7 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 	}
 	for _, item := range responseDnsQuery.Records {
 
-		if utils.EqualDomainIgnoreCase(item.Rr, subdomain) {
+		if utils.EqualDomainIgnoreCase(item.Rr, sub_domain) {
 
 			// 记录数据
 			p.ItemData = item
@@ -180,7 +166,7 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 			itemDescription := item.Description
 
 			// 检查记录类型
-			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
+			if record_type != "" && !utils.EqualDomainIgnoreCase(itemRecordType, record_type) {
 				continue
 			}
 
@@ -188,16 +174,16 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 			p.InternalData.RecordID = item.Id
 
 			// 判断记录值
-			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, origin_value) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", newOriginValue, itemOriginValue)
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", origin_value, itemOriginValue)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
-			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.Line) {
+			if !utils.EqualDomainIgnoreCase(itemLine, p.CustomConfig.LineValue) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %v，实际 %v", p.CustomConfig.Line, itemLine)
+				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %v，实际 %v", p.CustomConfig.LineValue, itemLine)
 				return p.InternalData, nil
 			}
 
@@ -221,23 +207,18 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain string, subdomain s
 // Update 更新 DNS 记录
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#添加解析记录
 // https://cloud.baidu.com/doc/DNS/s/El4s7lssr#修改解析记录
-func (p *BaiduDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return fmt.Errorf("配置无效: %w", err)
-	}
+func (p *BaiduDNSProvider) Update(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (err error) {
 
 	if p.InternalData.RecordID == "" {
 
 		// 创建域名记录
 		requestDnsCreate := &dns.CreateRecordRequest{}
-		requestDnsCreate.Rr = subdomain                                              // 主机记录
-		requestDnsCreate.Type = recordType                                           // 解析记录类型
-		requestDnsCreate.Value = originValue                                         // 记录值
-		requestDnsCreate.Line = utils.StringToPtr(p.CustomConfig.Line)               // 解析线路
+		requestDnsCreate.Rr = sub_domain                                             // 主机记录
+		requestDnsCreate.Type = record_type                                          // 解析记录类型
+		requestDnsCreate.Value = origin_value                                        // 记录值
+		requestDnsCreate.Line = utils.StringToPtr(p.CustomConfig.LineValue)          // 解析线路
 		requestDnsCreate.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
-		err = p.Provider.Client.CreateRecord(domain, requestDnsCreate, util.NewUUID())
+		err = p.Provider.Client.CreateRecord(domain_name, requestDnsCreate, util.NewUUID())
 		if err != nil {
 			return fmt.Errorf("接口 CreateRecord 失败 %w", err)
 		}
@@ -246,11 +227,11 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, domain string, subdomain 
 
 		// 更新域名记录
 		requestDnsUpdate := &dns.UpdateRecordRequest{}
-		requestDnsUpdate.Rr = subdomain                                              // 主机记录
-		requestDnsUpdate.Type = recordType                                           // 解析记录类型
-		requestDnsUpdate.Value = originValue                                         // 记录值
+		requestDnsUpdate.Rr = sub_domain                                             // 主机记录
+		requestDnsUpdate.Type = record_type                                          // 解析记录类型
+		requestDnsUpdate.Value = origin_value                                        // 记录值
 		requestDnsUpdate.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
-		err = p.Provider.Client.UpdateRecord(domain, p.InternalData.RecordID, requestDnsUpdate, util.NewUUID())
+		err = p.Provider.Client.UpdateRecord(domain_name, p.InternalData.RecordID, requestDnsUpdate, util.NewUUID())
 		if err != nil {
 			return fmt.Errorf("接口 UpdateRecord 失败 %w", err)
 		}
@@ -262,9 +243,10 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, domain string, subdomain 
 
 // 百度云 DNS 自定义配置
 type BaiduDNSCustomConfig struct {
-	Line          string `json:"line"`                       // 解析线路
-	Description   string `json:"description,omitempty"`      // 解析记录描述
-	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
+	ZoneValue     string `json:"zone_value"`                 // 域名编号
+	LineValue     string `json:"line_value"`                 // 线路
+	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // 设备IP组代码
+	Description   string `json:"description,omitempty"`      // 备注
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

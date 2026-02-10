@@ -20,7 +20,6 @@ type TencentDNSConfig struct {
 	Endpoint    string `json:"endpoint,omitempty"`     // 接口地址
 	SecretID    string `json:"secret_id"`              // 密钥ID
 	SecretKey   string `json:"secret_key"`             // 密钥Key
-	DomainName  string `json:"domain_name"`            // 主域名
 	DomainGrade string `json:"domain_grade,omitempty"` // 域名套餐等级
 }
 
@@ -34,14 +33,6 @@ func (cfg *TencentDNSConfig) DefaultValidate() error {
 	}
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
-	}
-	return nil
-}
-
-// DnsValidate 验证配置
-func (cfg *TencentDNSConfig) DnsValidate() error {
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -152,19 +143,14 @@ func (p *TencentDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=DescribeRecordList
-func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
+func (p *TencentDNSProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 查询域名记录
 	requestDnsQuery := dnspod.NewDescribeRecordListRequest()
-	requestDnsQuery.Domain = common.StringPtr(domain)       // 域名
-	requestDnsQuery.Subdomain = common.StringPtr(subdomain) // 解析记录的主机头
-	if recordType != "" {
-		requestDnsQuery.RecordType = common.StringPtr(recordType) // 获取某种类型的解析记录
+	requestDnsQuery.Domain = common.StringPtr(domain_name)   // 域名
+	requestDnsQuery.Subdomain = common.StringPtr(sub_domain) // 解析记录的主机头
+	if record_type != "" {
+		requestDnsQuery.RecordType = common.StringPtr(record_type) // 获取某种类型的解析记录
 	}
 	responseDnsQuery, err := p.Provider.Client.DescribeRecordListWithContext(ctx, requestDnsQuery)
 	if err != nil {
@@ -177,7 +163,7 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 	}
 	for _, item := range responseDnsQuery.Response.RecordList {
 
-		if utils.EqualDomainIgnoreCase(utils.PtrToString(item.Name), subdomain) {
+		if utils.EqualDomainIgnoreCase(utils.PtrToString(item.Name), sub_domain) {
 
 			// 记录数据
 			p.ItemData = *item
@@ -192,7 +178,7 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 			itemRemark := utils.PtrToString(item.Remark)
 
 			// 检查记录类型
-			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
+			if record_type != "" && !utils.EqualDomainIgnoreCase(itemRecordType, record_type) {
 				continue
 			}
 
@@ -200,16 +186,16 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 			p.InternalData.RecordID = cast.ToString(utils.PtrToUint64(item.RecordId))
 
 			// 判断记录值
-			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, origin_value) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", newOriginValue, itemOriginValue)
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", origin_value, itemOriginValue)
 				return p.InternalData, nil
 			}
 
 			// 判断解析记录对应的线路
-			if !utils.EqualDomainIgnoreCase(itemRecordLine, p.CustomConfig.RecordLine) {
+			if !utils.EqualDomainIgnoreCase(itemRecordLine, p.CustomConfig.RecordLineValue) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %v，实际 %v", p.CustomConfig.RecordLine, itemRecordLine)
+				p.InternalData.Tips = fmt.Sprintf("解析记录对应的线路不匹配，期望 %v，实际 %v", p.CustomConfig.RecordLineValue, itemRecordLine)
 				return p.InternalData, nil
 			}
 
@@ -233,23 +219,18 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain string, subdomain
 // Update 更新 DNS 记录
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=CreateRecord
 // https://console.cloud.tencent.com/api/explorer?Product=dnspod&Version=2021-03-23&Action=ModifyRecord
-func (p *TencentDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return fmt.Errorf("配置无效: %w", err)
-	}
+func (p *TencentDNSProvider) Update(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (err error) {
 
 	if p.InternalData.RecordID == "" {
 
 		// 创建域名记录
 		requestDnsCreate := dnspod.NewCreateRecordRequest()
-		requestDnsCreate.Domain = common.StringPtr(domain)                        // 域名
-		requestDnsCreate.RecordType = common.StringPtr(recordType)                // 记录类型
-		requestDnsCreate.Value = common.StringPtr(originValue)                    // 记录值
-		requestDnsCreate.SubDomain = common.StringPtr(subdomain)                  // 主机记录
-		requestDnsCreate.RecordLine = common.StringPtr(p.CustomConfig.RecordLine) // 记录线路
-		requestDnsCreate.Remark = common.StringPtr(p.CustomConfig.Remark)         // 备注
+		requestDnsCreate.Domain = common.StringPtr(domain_name)                        // 域名
+		requestDnsCreate.RecordType = common.StringPtr(record_type)                    // 记录类型
+		requestDnsCreate.Value = common.StringPtr(origin_value)                        // 记录值
+		requestDnsCreate.SubDomain = common.StringPtr(sub_domain)                      // 主机记录
+		requestDnsCreate.RecordLine = common.StringPtr(p.CustomConfig.RecordLineValue) // 记录线路
+		requestDnsCreate.Remark = common.StringPtr(p.CustomConfig.Remark)              // 备注
 		responseDnsCreate, err := p.Provider.Client.CreateRecordWithContext(ctx, requestDnsCreate)
 		if err != nil {
 			return fmt.Errorf("接口 CreateRecordWithContext 失败 %w", err)
@@ -262,12 +243,12 @@ func (p *TencentDNSProvider) Update(ctx context.Context, domain string, subdomai
 
 		// 更新域名记录
 		requestDnsUpdate := dnspod.NewModifyRecordRequest()
-		requestDnsUpdate.Domain = common.StringPtr(domain)                                   // 域名
-		requestDnsUpdate.RecordType = common.StringPtr(recordType)                           // 记录类型
-		requestDnsUpdate.Value = common.StringPtr(originValue)                               // 记录值
+		requestDnsUpdate.Domain = common.StringPtr(domain_name)                              // 域名
+		requestDnsUpdate.RecordType = common.StringPtr(record_type)                          // 记录类型
+		requestDnsUpdate.Value = common.StringPtr(origin_value)                              // 记录值
 		requestDnsUpdate.RecordId = common.Uint64Ptr(cast.ToUint64(p.InternalData.RecordID)) // 记录 ID
-		requestDnsUpdate.SubDomain = common.StringPtr(subdomain)                             // 主机记录
-		requestDnsUpdate.RecordLine = common.StringPtr(p.CustomConfig.RecordLine)            // 记录线路
+		requestDnsUpdate.SubDomain = common.StringPtr(sub_domain)                            // 主机记录
+		requestDnsUpdate.RecordLine = common.StringPtr(p.CustomConfig.RecordLineValue)       // 记录线路
 		requestDnsUpdate.Remark = common.StringPtr(p.CustomConfig.Remark)                    // 备注
 		responseDnsUpdate, err := p.Provider.Client.ModifyRecordWithContext(ctx, requestDnsUpdate)
 		if err != nil {
@@ -284,9 +265,11 @@ func (p *TencentDNSProvider) Update(ctx context.Context, domain string, subdomai
 
 // 腾讯云 DNS 自定义配置
 type TencentDNSCustomConfig struct {
-	RecordLine    string `json:"record_line"`                // 记录线路
-	Remark        string `json:"remark,omitempty"`           // 备注
-	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
+	DomainText      string `json:"domain_text"`                // 域名
+	DomainValue     string `json:"domain_value"`               // 域名编号
+	RecordLineValue string `json:"record_line_value"`          // 线路
+	IPGroupIDCode   string `json:"ip_group_id_code,omitempty"` // 设备IP组代码
+	Remark          string `json:"remark,omitempty"`           // 备注
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置
@@ -315,7 +298,7 @@ func (p *TencentDNSProvider) ListLines(ctx context.Context) (lines []*TencentDNS
 	}
 	// 查询线路列表
 	requestQueryLine := dnspod.NewDescribeRecordLineListRequest()
-	requestQueryLine.Domain = common.StringPtr(p.cfg.DomainName)
+	requestQueryLine.Domain = common.StringPtr(p.CustomConfig.DomainText)
 	requestQueryLine.DomainGrade = common.StringPtr(p.cfg.DomainGrade)
 	responseQueryLine, err := p.Provider.Client.DescribeRecordLineListWithContext(ctx, requestQueryLine)
 	if err != nil {

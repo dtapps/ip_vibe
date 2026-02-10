@@ -88,23 +88,22 @@ func (t *CDNConfigParams) Validate() error {
 }
 
 // Execute 执行 CDN 更新
-func (t *CDNTask) Execute(ctx context.Context, params *CDNConfigParams) (err error) {
+func (t *CDNTask) Execute(ctx context.Context, config *CDNConfigParams) (err error) {
 	if t.provider == nil {
 		return nil
 	}
 	t.logger.InfoContext(ctx, "开始执行",
-		slog.String("域名名称", params.DomainName),
-		slog.String("子域名", params.SubDomain),
-		slog.String("完整域名", params.FullDomain),
-		slog.String("记录类型", params.RecordType),
-		slog.String("源站列表", strings.Join(params.OriginValues, ",")),
+		slog.String("域名名称", config.DomainName),
+		slog.String("子域名", config.SubDomain),
+		slog.String("完整域名", config.FullDomain),
+		slog.String("记录类型", config.RecordType),
+		slog.String("源站列表", strings.Join(config.OriginValues, ",")),
 		slog.String("自定义配置", string(t.record_config_json)),
 	)
 	defer t.logger.InfoContext(ctx, "执行完成")
 
 	// 验证配置
-	t.logger.DebugContext(ctx, "执行验证配置")
-	err = params.Validate()
+	err = config.Validate()
 	if err != nil {
 		t.logger.ErrorContext(ctx, "验证配置失败",
 			slog.Any("err", err),
@@ -112,8 +111,8 @@ func (t *CDNTask) Execute(ctx context.Context, params *CDNConfigParams) (err err
 		return err
 	}
 
+	// 解析 CDN 自定义配置
 	if len(t.record_config_json) > 0 {
-		t.logger.DebugContext(ctx, "执行解析自定义配置")
 		err = t.provider.ParseCustomConfig(t.record_config_json)
 		if err != nil {
 			t.logger.ErrorContext(ctx, "解析自定义配置失败",
@@ -123,14 +122,14 @@ func (t *CDNTask) Execute(ctx context.Context, params *CDNConfigParams) (err err
 		}
 	}
 
-	t.logger.DebugContext(ctx, "执行检查")
+	// 检查 CDN 记录是否存在
 	checkData, err := t.provider.Check(
 		ctx,
-		params.DomainName,
-		params.SubDomain,
-		params.FullDomain,
-		params.RecordType,
-		params.OriginValues,
+		config.DomainName,
+		config.SubDomain,
+		config.FullDomain,
+		config.RecordType,
+		config.OriginValues,
 	)
 	if err != nil {
 		t.logger.ErrorContext(ctx, "检查失败",
@@ -151,11 +150,11 @@ func (t *CDNTask) Execute(ctx context.Context, params *CDNConfigParams) (err err
 	)
 	err = t.provider.Update(
 		ctx,
-		params.DomainName,
-		params.SubDomain,
-		params.FullDomain,
-		params.RecordType,
-		params.OriginValues,
+		config.DomainName,
+		config.SubDomain,
+		config.FullDomain,
+		config.RecordType,
+		config.OriginValues,
 	)
 	if err != nil {
 		t.logger.ErrorContext(ctx, "更新失败",

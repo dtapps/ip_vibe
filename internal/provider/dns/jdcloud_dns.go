@@ -17,11 +17,9 @@ import (
 
 // JdcloudDNSConfig 京东云 DNS 配置
 type JdcloudDNSConfig struct {
-	Region     string `json:"region,omitempty"` // 区域
-	AccessKey  string `json:"access_key"`       // 密钥ID
-	SecretKey  string `json:"secret_key"`       // 密钥密钥
-	ZoneID     string `json:"zone_id"`          // 域名ID
-	DomainName string `json:"domain_name"`      // 主域名
+	Region    string `json:"region,omitempty"` // 区域
+	AccessKey string `json:"access_key"`       // 密钥ID
+	SecretKey string `json:"secret_key"`       // 密钥密钥
 }
 
 // DefaultValidate 验证配置
@@ -34,17 +32,6 @@ func (cfg *JdcloudDNSConfig) DefaultValidate() error {
 	}
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
-	}
-	return nil
-}
-
-// DnsValidate 验证配置
-func (cfg *JdcloudDNSConfig) DnsValidate() error {
-	if cfg.ZoneID == "" {
-		return fmt.Errorf("ZoneID 不能为空")
-	}
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -141,23 +128,15 @@ func (p *JdcloudDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/describeresourcerecord
-func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *JdcloudDNSProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 查询域名记录
 	requestDnsQuery := apis.NewDescribeResourceRecordRequestWithAllParams(
 		p.cfg.Region,
-		p.cfg.ZoneID,
+		p.CustomConfig.DomainValue,
 		utils.IntToPtr(1),
 		utils.IntToPtr(500),
-		utils.StringToPtr(fullDomain),
+		utils.StringToPtr(full_domain),
 	)
 	responseDnsQuery, err := p.Provider.Client.DescribeResourceRecord(requestDnsQuery)
 	if err != nil {
@@ -173,7 +152,7 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 		// 查找域名
 		itemFullDomain := item.HostValue
 
-		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+		if utils.EqualDomainIgnoreCase(itemFullDomain, full_domain) {
 
 			// 记录数据
 			p.ItemData = item
@@ -184,7 +163,7 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 			itemOriginValue := item.HostValue
 
 			// 检查记录类型
-			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
+			if record_type != "" && !utils.EqualDomainIgnoreCase(itemRecordType, record_type) {
 				continue
 			}
 
@@ -192,9 +171,9 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 			p.InternalData.RecordID = cast.ToString(item.Id)
 
 			// 判断记录值
-			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, origin_value) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", newOriginValue, itemOriginValue)
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", origin_value, itemOriginValue)
 				return p.InternalData, nil
 			}
 
@@ -211,26 +190,18 @@ func (p *JdcloudDNSProvider) Check(ctx context.Context, domain string, subdomain
 // Update 更新 DNS 记录
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/createresourcerecord
 // https://docs.jdcloud.com/cn/jd-cloud-dns/api/modifyresourcerecord
-func (p *JdcloudDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
-
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return fmt.Errorf("配置无效: %w", err)
-	}
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *JdcloudDNSProvider) Update(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (err error) {
 
 	if p.InternalData.RecordID == "" {
 
 		// 创建域名记录
 		requestDnsCreate := apis.NewCreateResourceRecordRequest(
 			p.cfg.Region,
-			p.cfg.ZoneID,
+			p.CustomConfig.DomainValue,
 			&models.AddRR{
-				HostRecord: fullDomain,  // 主机记录
-				HostValue:  originValue, // 解析记录的值
-				Type:       recordType,  // 解析的类型
+				HostRecord: full_domain,  // 主机记录
+				HostValue:  origin_value, // 解析记录的值
+				Type:       record_type,  // 解析的类型
 			},
 		)
 		responseDnsCreate, err := p.Provider.Client.CreateResourceRecord(requestDnsCreate)
@@ -246,12 +217,12 @@ func (p *JdcloudDNSProvider) Update(ctx context.Context, domain string, subdomai
 		// 更新域名记录
 		requestDnsUpdate := apis.NewModifyResourceRecordRequest(
 			p.cfg.Region,
-			p.cfg.ZoneID,
+			p.CustomConfig.DomainValue,
 			p.InternalData.RecordID,
 			&models.UpdateRR{
-				HostRecord: fullDomain,  // 主机记录
-				HostValue:  originValue, // 解析记录的值
-				Type:       recordType,  // 解析的类型
+				HostRecord: full_domain,  // 主机记录
+				HostValue:  origin_value, // 解析记录的值
+				Type:       record_type,  // 解析的类型
 			},
 		)
 		_, err = p.Provider.Client.ModifyResourceRecord(requestDnsUpdate)
@@ -266,7 +237,8 @@ func (p *JdcloudDNSProvider) Update(ctx context.Context, domain string, subdomai
 
 // 京东云 DNS 自定义配置
 type JdcloudDNSCustomConfig struct {
-	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
+	DomainValue   string `json:"domain_value"`               // 域名编号
+	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // 设备IP组代码
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

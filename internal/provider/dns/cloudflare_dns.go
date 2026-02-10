@@ -122,19 +122,16 @@ func (p *CloudfareDNSProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
-func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *CloudfareDNSProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 查询域名记录
 	requestDnsQuery := dns.RecordListParams{}
 	requestDnsQuery.ZoneID = cloudflare.String(p.CustomConfig.ZoneValue)
 	requestDnsQuery.Name = cloudflare.F(dns.RecordListParamsName{
-		Exact: cloudflare.String(fullDomain),
+		Exact: cloudflare.String(full_domain),
 	})
-	if recordType != "" {
-		requestDnsQuery.Type = cloudflare.F(dns.RecordListParamsType(recordType))
+	if record_type != "" {
+		requestDnsQuery.Type = cloudflare.F(dns.RecordListParamsType(record_type))
 	}
 	responseDnsQuery, err := p.Provider.Client.DNS.Records.List(ctx, requestDnsQuery)
 	if err != nil {
@@ -150,7 +147,7 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 		// 查找域名
 		itemFullDomain := item.Name
 
-		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+		if utils.EqualDomainIgnoreCase(itemFullDomain, full_domain) {
 
 			// 记录数据
 			p.ItemData = item
@@ -163,7 +160,7 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 			itemComment := item.Comment
 
 			// 检查记录类型
-			if recordType != "" && !utils.EqualDomainIgnoreCase(itemRecordType, recordType) {
+			if record_type != "" && !utils.EqualDomainIgnoreCase(itemRecordType, record_type) {
 				continue
 			}
 
@@ -171,9 +168,9 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 			p.InternalData.RecordID = item.ID
 
 			// 判断记录值
-			if !utils.EqualDomainIgnoreCase(itemOriginValue, newOriginValue) {
+			if !utils.EqualDomainIgnoreCase(itemOriginValue, origin_value) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", newOriginValue, itemOriginValue)
+				p.InternalData.Tips = fmt.Sprintf("记录值不匹配，期望 %v，实际 %v", origin_value, itemOriginValue)
 				return p.InternalData, nil
 			}
 
@@ -197,18 +194,15 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 // Update 更新 DNS 记录
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/edit/
-func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *CloudfareDNSProvider) Update(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (err error) {
 
 	if p.InternalData.RecordID == "" {
 
 		// 创建域名记录
 		requestDnsCreateBody := dns.ARecordParam{}
-		requestDnsCreateBody.Name = cloudflare.String(fullDomain)
-		requestDnsCreateBody.Type = cloudflare.F(dns.ARecordType(recordType))
-		requestDnsCreateBody.Content = cloudflare.String(originValue)
+		requestDnsCreateBody.Name = cloudflare.String(full_domain)
+		requestDnsCreateBody.Type = cloudflare.F(dns.ARecordType(record_type))
+		requestDnsCreateBody.Content = cloudflare.String(origin_value)
 		requestDnsCreateBody.Comment = cloudflare.String(p.CustomConfig.Comment)
 		requestDnsCreate := dns.RecordNewParams{
 			ZoneID: cloudflare.String(p.CustomConfig.ZoneValue),
@@ -229,9 +223,9 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdom
 
 		// 更新域名记录
 		requestDnsUpdateBody := dns.ARecordParam{}
-		requestDnsUpdateBody.Name = cloudflare.String(fullDomain)
-		requestDnsUpdateBody.Type = cloudflare.F(dns.ARecordType(recordType))
-		requestDnsUpdateBody.Content = cloudflare.String(originValue)
+		requestDnsUpdateBody.Name = cloudflare.String(full_domain)
+		requestDnsUpdateBody.Type = cloudflare.F(dns.ARecordType(record_type))
+		requestDnsUpdateBody.Content = cloudflare.String(origin_value)
 		requestDnsUpdateBody.Comment = cloudflare.String(p.CustomConfig.Comment)
 		requestDnsUpdate := dns.RecordEditParams{
 			ZoneID: cloudflare.String(p.CustomConfig.ZoneValue),
@@ -256,11 +250,9 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdom
 
 // Cloudfare DNS 自定义配置
 type CloudfareDNSCustomConfig struct {
-	ZoneText       string `json:"zone_text"`                   // 域名名称
-	ZoneValue      string `json:"zone_value"`                  // 域名编号
-	IPGroupIDValue int64  `json:"ip_group_id_value,omitempty"` // 设备IP组编号
-	IPGroupIDCode  string `json:"ip_group_id_code,omitempty"`  // 设备IP组代码
-	Comment        string `json:"comment,omitempty"`           // 备注
+	ZoneValue     string `json:"zone_value"`                 // 域名编号
+	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // 设备IP组代码
+	Comment       string `json:"comment,omitempty"`          // 备注
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置
