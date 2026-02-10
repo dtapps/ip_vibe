@@ -791,10 +791,10 @@ function buildConfigFromPlatformFields(platform = "") {
       config[`${key}_text`] = text;
       config[`${key}_value`] = val;
 
-      // 如果有 valueType，根据类型转换
-      if (fieldSchema?.valueType === "number" && val !== "") {
+      // 如果有 value_type 根据类型转换
+      if (fieldSchema?.value_type === "number" && val !== "") {
         config[`${key}_value`] = Number(val);
-      } else if (fieldSchema?.valueType === "boolean") {
+      } else if (fieldSchema?.value_type === "boolean") {
         config[`${key}_value`] = val === "true" || val === "1" || val === "yes";
       }
     } else {
