@@ -16,7 +16,6 @@ import (
 	"vibe_ip/internal/utils"
 
 	"github.com/spf13/cast"
-	"github.com/tidwall/gjson"
 	"go.dtapp.net/library/contrib/http_log"
 	"golang.org/x/sync/errgroup"
 )
@@ -82,6 +81,8 @@ func (s *DNSRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.DNSR
 		Platform:   item.Edges.Config.Platform.String(),
 		RecordID:   item.RecordID,
 		SubDomain:  item.SubDomain,
+		DomainName: item.DomainName,
+		FullDomain: item.FullDomain,
 		Type:       item.Type.String(),
 		ConfigJSON: item.ConfigJSON,
 		IsActive:   item.IsActive,
@@ -94,10 +95,6 @@ func (s *DNSRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.DNSR
 	if config, err := item.Edges.ConfigOrErr(); err == nil {
 		resp.ConfigName = config.Name
 		resp.Platform = config.Platform.String()
-		// 从平台配置中获取 ConfigJSON 里的 Domain
-		if len(config.ConfigJSON) > 0 {
-			resp.DomainName = gjson.GetBytes(config.ConfigJSON, "domain_name").String()
-		}
 	}
 
 	// IP 组

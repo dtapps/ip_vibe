@@ -24,7 +24,6 @@ type AliyunCDNConfig struct {
 	Endpoint        string `json:"endpoint,omitempty"` // 接口地址
 	AccessKeyID     string `json:"access_key_id"`      // 访问密钥ID
 	AccessKeySecret string `json:"access_key_secret"`  // 访问密钥Key
-	DomainName      string `json:"domain_name"`        // 主域名
 }
 
 // DefaultValidate 验证配置
@@ -37,14 +36,6 @@ func (cfg *AliyunCDNConfig) DefaultValidate() error {
 	}
 	if cfg.AccessKeySecret == "" {
 		return fmt.Errorf("AccessKeySecret 不能为空")
-	}
-	return nil
-}
-
-// CdnValidate 验证配置
-func (cfg *AliyunCDNConfig) CdnValidate() error {
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -165,23 +156,15 @@ func (p *AliyunCDNProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://next.api.aliyun.com/api/ESA/2024-09-10/ListRecords
-func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
-
-	// 验证配置
-	if err := p.cfg.CdnValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
+func (p *AliyunCDNProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_values []string) (data *provider.CDNProviderInternalData, err error) {
 
 	defaultIP := "192.0.2.0"
 
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
-
 	// 查询加速域名
 	requestCdnQuery := &cdn20180510.DescribeUserDomainsRequest{}
-	requestCdnQuery.DomainName = tea.String(fullDomain) // 加速域名
-	requestCdnQuery.PageNumber = tea.Int32(1)           // 取得第几页
-	requestCdnQuery.PageSize = tea.Int32(500)           // 分页大小
+	requestCdnQuery.DomainName = tea.String(full_domain) // 加速域名
+	requestCdnQuery.PageNumber = tea.Int32(1)            // 取得第几页
+	requestCdnQuery.PageSize = tea.Int32(500)            // 分页大小
 	responseCdnQuery, err := p.Provider.Client.DescribeUserDomainsWithContext(ctx, requestCdnQuery, p.Provider.Runtime)
 	if err != nil {
 		return nil, fmt.Errorf("接口 DescribeUserDomainsWithContext 失败 %w", err)
@@ -196,7 +179,7 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 		// 查找域名
 		itemFullDomain := tea.StringValue(item.GetDomainName())
 
-		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+		if utils.EqualDomainIgnoreCase(itemFullDomain, full_domain) {
 
 			// 记录数据
 			p.ItemData = *item
@@ -219,9 +202,9 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 			p.InternalData.CdnDomain = utils.TrimDotsPrt(item.GetCname())
 
 			// 判断记录值列表
-			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+			if !utils.EqualStringSliceUnordered(itemOriginValues, origin_values) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", newOriginValues, itemOriginValues)
+				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", origin_values, itemOriginValues)
 				return p.InternalData, nil
 			}
 
@@ -245,12 +228,7 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain string, subdomain 
 // Update 更新 CDN 记录
 // https://next.api.aliyun.com/api/Cdn/2018-05-10/AddCdnDomain
 // https://next.api.aliyun.com/api/Cdn/2018-05-10/ModifyCdnDomain
-func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
-
-	// 验证配置
-	if err := p.cfg.CdnValidate(); err != nil {
-		return fmt.Errorf("配置无效: %w", err)
-	}
+func (p *AliyunCDNProvider) Update(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_values []string) (err error) {
 
 	type SourceItem struct {
 		Content  string `json:"content"`  // 回源地址
@@ -259,10 +237,10 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 		Port     int    `json:"port"`     // 端口
 		Weight   string `json:"weight"`   // 权重
 	}
-	sources := make([]SourceItem, 0, len(newOriginValues)*2)
+	sources := make([]SourceItem, 0, len(origin_values)*2)
 
 	// 计算平均权重
-	n := len(newOriginValues)
+	n := len(origin_values)
 	weights := make([]int, n)
 	if n > 0 {
 		base := 100 / n
@@ -277,9 +255,9 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 
 	// TODO: 默认加一个addr
 	defaultIP := "192.0.2.0"
-	newOriginValues = append(newOriginValues, defaultIP)
+	origin_values = append(origin_values, defaultIP)
 
-	for i, addr := range newOriginValues {
+	for i, addr := range origin_values {
 		// 判断是否是默认测试地址
 		isDefaultTestIP := (addr == defaultIP)
 
@@ -312,15 +290,12 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 		}
 	}
 
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
-
 	if p.InternalData.RecordID == "" {
 
 		// 创建加速域名
 		requestCdnCreate := &cdn20180510.AddCdnDomainRequest{}
 		requestCdnCreate.CdnType = tea.String(p.CustomConfig.CdnType)            // 加速域名的业务类型
-		requestCdnCreate.DomainName = tea.String(fullDomain)                     // 需要接入CDN的加速域名
+		requestCdnCreate.DomainName = tea.String(full_domain)                    // 需要接入CDN的加速域名
 		requestCdnCreate.Sources = tea.String(gojson.JsonEncodeNoError(sources)) // 回源地址列表
 		requestCdnCreate.Scope = tea.String(p.CustomConfig.Scope)                // 加速区域
 		_, err = p.Provider.Client.AddCdnDomainWithContext(ctx, requestCdnCreate, p.Provider.Runtime)
@@ -332,7 +307,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain string, subdomain
 
 		// 更新加速域名
 		requestCdnUpdate := &cdn20180510.ModifyCdnDomainRequest{}
-		requestCdnUpdate.DomainName = tea.String(fullDomain)                     // 需要接入CDN的加速域名
+		requestCdnUpdate.DomainName = tea.String(full_domain)                    // 需要接入CDN的加速域名
 		requestCdnUpdate.Sources = tea.String(gojson.JsonEncodeNoError(sources)) // 回源地址列表
 		_, err = p.Provider.Client.ModifyCdnDomainWithContext(ctx, requestCdnUpdate, p.Provider.Runtime)
 		if err != nil {
@@ -350,7 +325,7 @@ type AliyunCDNCustomConfig struct {
 	Scope         string `json:"scope,omitempty"`            // 加速区域
 	HttpPort      int    `json:"http_port,omitempty"`        // HTTP 端口
 	HttpsPort     int    `json:"https_port,omitempty"`       // HTTPS 端口
-	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
+	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // 设备IP组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

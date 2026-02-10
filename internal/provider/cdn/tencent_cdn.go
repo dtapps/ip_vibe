@@ -18,10 +18,9 @@ import (
 
 // TencentCDNConfig 腾讯云 CDN 配置
 type TencentCDNConfig struct {
-	Endpoint   string `json:"endpoint,omitempty"` // 接口地址
-	SecretID   string `json:"secret_id"`          // 密钥ID
-	SecretKey  string `json:"secret_key"`         // 密钥Key
-	DomainName string `json:"domain_name"`        // 主域名
+	Endpoint  string `json:"endpoint,omitempty"` // 接口地址
+	SecretID  string `json:"secret_id"`          // 密钥ID
+	SecretKey string `json:"secret_key"`         // 密钥Key
 }
 
 // DefaultValidate 验证配置
@@ -34,14 +33,6 @@ func (cfg *TencentCDNConfig) DefaultValidate() error {
 	}
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
-	}
-	return nil
-}
-
-// CdnValidate 验证配置
-func (cfg *TencentCDNConfig) CdnValidate() error {
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -152,15 +143,7 @@ func (p *TencentCDNProvider) Name() string {
 
 // Check 检查子域名是否存在
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=DescribeDomains
-func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
-
-	// 验证配置
-	if err := p.cfg.CdnValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *TencentCDNProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_values []string) (data *provider.CDNProviderInternalData, err error) {
 
 	// 请求参数
 	requestCdnQuery := cdn.NewDescribeDomainsRequest()
@@ -169,7 +152,7 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 	requestCdnQuery.Filters = make([]*cdn.DomainFilter, 0, 1)
 	requestCdnQuery.Filters = append(requestCdnQuery.Filters, &cdn.DomainFilter{
 		Name:  common.StringPtr("domain"),
-		Value: common.StringPtrs([]string{fullDomain}),
+		Value: common.StringPtrs([]string{full_domain}),
 		Fuzzy: common.BoolPtr(false),
 	})
 	// 请求
@@ -187,7 +170,7 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 		// 查找域名
 		itemFullDomain := utils.PtrToString(item.Domain)
 
-		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+		if utils.EqualDomainIgnoreCase(itemFullDomain, full_domain) {
 
 			// 记录数据
 			p.ItemData = *item
@@ -209,9 +192,9 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 			p.InternalData.CdnDomain = utils.TrimDotsPrt(item.Cname)
 
 			// 判断记录值列表
-			if !utils.EqualStringSliceUnordered(itemOriginValues, newOriginValues) {
+			if !utils.EqualStringSliceUnordered(itemOriginValues, origin_values) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", newOriginValues, itemOriginValues)
+				p.InternalData.Tips = fmt.Sprintf("记录值列表不匹配，期望 %v，实际 %v", origin_values, itemOriginValues)
 				return p.InternalData, nil
 			}
 
@@ -242,28 +225,20 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain string, subdomain
 // Update 更新 CDN 记录
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=AddCdnDomain
 // https://console.cloud.tencent.com/api/explorer?Product=cdn&Version=2018-06-06&Action=UpdateDomainConfig
-func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
-
-	// 验证配置
-	if err := p.cfg.CdnValidate(); err != nil {
-		return fmt.Errorf("配置无效: %w", err)
-	}
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *TencentCDNProvider) Update(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_values []string) (err error) {
 
 	// 转大写
-	recordType = strings.ToUpper(recordType)
+	record_type = strings.ToUpper(record_type)
 
 	// 主源站类型
-	originType := recordType
-	if len(newOriginValues) > 1 {
+	originType := record_type
+	if len(origin_values) > 1 {
 		originType = "ip_ipv6"
 	} else {
-		if recordType == "AAAA" {
+		if strings.EqualFold(record_type, "AAAA") {
 			originType = "ipv6"
 		}
-		if recordType == "A" {
+		if strings.EqualFold(record_type, "A") {
 			originType = "ip"
 		}
 	}
@@ -272,9 +247,9 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomai
 
 		// 创建加速域名
 		requestCdnCreate := cdn.NewAddCdnDomainRequest()
-		requestCdnCreate.Domain = common.StringPtr(fullDomain) // 域名
+		requestCdnCreate.Domain = common.StringPtr(full_domain) // 域名
 		requestCdnCreate.Origin = &cdn.Origin{
-			Origins:            common.StringPtrs(newOriginValues),                  // 源站地址
+			Origins:            common.StringPtrs(origin_values),                    // 源站地址
 			OriginType:         common.StringPtr(originType),                        // 源站类型
 			OriginPullProtocol: common.StringPtr(p.CustomConfig.OriginPullProtocol), // 回源协议
 		}
@@ -289,11 +264,11 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain string, subdomai
 
 		// 更新加速域名
 		requestCdnUpdate := cdn.NewUpdateDomainConfigRequest()
-		requestCdnUpdate.Domain = common.StringPtr(fullDomain)                              // 域名
+		requestCdnUpdate.Domain = common.StringPtr(full_domain)                             // 域名
 		requestCdnUpdate.ProjectId = common.Int64Ptr(cast.ToInt64(p.InternalData.RecordID)) // 项目 ID
 		requestCdnUpdate.Origin = &cdn.Origin{
-			Origins:    common.StringPtrs(newOriginValues), // 源站地址
-			OriginType: common.StringPtr(originType),       // 源站类型
+			Origins:    common.StringPtrs(origin_values), // 源站地址
+			OriginType: common.StringPtr(originType),     // 源站类型
 		}
 		_, err = p.Provider.Client.UpdateDomainConfigWithContext(ctx, requestCdnUpdate)
 		if err != nil {
@@ -310,7 +285,7 @@ type TencentCDNCustomConfig struct {
 	ServiceType        string `json:"service_type"`               // 加速域名业务类型
 	Area               string `json:"area"`                       // 区域
 	OriginPullProtocol string `json:"origin_pull_protocol"`       // 回源协议
-	IPGroupIDCode      string `json:"ip_group_id_code,omitempty"` // IP 分组代码
+	IPGroupIDCode      string `json:"ip_group_id_code,omitempty"` // 设备IP组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

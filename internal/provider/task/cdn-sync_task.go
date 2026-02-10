@@ -271,21 +271,21 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 		return "", fmt.Errorf("创建CDN更新任务失败: %w", err)
 	}
 
-	// 配置CDN参数
-	cdnTask.Config(
-		record.SubDomain,
-		record.Type.String(),
-		originValues,
-	)
-
 	// 执行CDN更新
-	if err = cdnTask.Execute(ctx); err != nil {
-		return "", err
+	err = cdnTask.Execute(ctx, &provider.CDNConfigParams{
+		DomainName:   record.DomainName,
+		SubDomain:    record.SubDomain,
+		FullDomain:   record.FullDomain,
+		RecordType:   record.Type.String(),
+		OriginValues: originValues,
+	})
+	if err != nil {
+		return "", fmt.Errorf("执行CDN更新失败: %w", err)
 	}
 
 	// 执行CDN通知
 	if cdnTask.IsNotification() {
-		_ = p.webhookSendSyncHandler.AddTask(
+		err = p.webhookSendSyncHandler.AddTask(
 			ctx,
 			p.db,
 			p.businessType,
@@ -301,6 +301,9 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 				RecordNewValue: strings.Join(originValues, ","),
 			},
 		)
+		if err != nil {
+			return "", fmt.Errorf("添加CDN通知任务失败: %w", err)
+		}
 	}
 
 	return fmt.Sprintf("域名 %s 同步成功 (源站:%v)", record.SubDomain, originValues), nil

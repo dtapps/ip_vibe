@@ -17,10 +17,9 @@ import (
 
 // QiniuCDNConfig 七牛云 CDN 配置
 type QiniuCDNConfig struct {
-	Endpoint   string `json:"endpoint,omitempty"` // 接口地址
-	AccessKey  string `json:"access_key"`         // 密钥ID
-	SecretKey  string `json:"secret_key"`         // 密钥Key
-	DomainName string `json:"domain_name"`        // 主域名
+	Endpoint  string `json:"endpoint,omitempty"` // 接口地址
+	AccessKey string `json:"access_key"`         // 密钥ID
+	SecretKey string `json:"secret_key"`         // 密钥Key
 }
 
 // DefaultValidate 验证配置
@@ -33,14 +32,6 @@ func (cfg *QiniuCDNConfig) DefaultValidate() error {
 	}
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
-	}
-	return nil
-}
-
-// CdnValidate 验证配置
-func (cfg *QiniuCDNConfig) CdnValidate() error {
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -160,15 +151,7 @@ type QiniuCDNProviderCheck struct {
 
 // Check 检查子域名是否存在
 // https://developer.qiniu.com/fusion/4246/the-domain-name#11
-func (p *QiniuCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
-
-	// 验证配置
-	if err := p.cfg.CdnValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *QiniuCDNProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_values []string) (data *provider.CDNProviderInternalData, err error) {
 
 	// 获取域名列表
 	var responseCdnList QiniuCDNProviderCheck
@@ -192,7 +175,7 @@ func (p *QiniuCDNProvider) Check(ctx context.Context, domain string, subdomain s
 		// 查找域名
 		itemFullDomain := item.Name
 
-		if utils.EqualDomainIgnoreCase(itemFullDomain, fullDomain) {
+		if utils.EqualDomainIgnoreCase(itemFullDomain, full_domain) {
 
 			// 查找平台类型
 			itemPlatform := item.Platform
@@ -228,7 +211,7 @@ func (p *QiniuCDNProvider) Check(ctx context.Context, domain string, subdomain s
 	// 获取域名信息
 	_, err = p.Provider.Resty.R().
 		SetContext(ctx).
-		SetPathParam("domain", fullDomain).
+		SetPathParam("domain", full_domain).
 		Get("/domain/{domain}")
 	if err != nil {
 		// 未找到记录
@@ -244,10 +227,7 @@ func (p *QiniuCDNProvider) Check(ctx context.Context, domain string, subdomain s
 // Update 更新 CDN 记录
 // https://developer.qiniu.com/fusion/4246/the-domain-name#1
 // https://developer.qiniu.com/fusion/4246/the-domain-name#4
-func (p *QiniuCDNProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
-
-	// 完整域名
-	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
+func (p *QiniuCDNProvider) Update(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_values []string) (err error) {
 
 	// 回源协议
 	if p.CustomConfig.SourceURLScheme == "follow" {
@@ -260,14 +240,14 @@ func (p *QiniuCDNProvider) Update(ctx context.Context, domain string, subdomain 
 		// "sourceURLScheme": p.CustomConfig.SourceURLScheme, // 回源协议
 		// "advancedSources": []map[string]any{
 		// 	{
-		// 		"addr":   newOriginValues[0], // 高级回源的回源地址
+		// 		"addr":   origin_values[0], // 高级回源的回源地址
 		// 		"weight": 100,                // 高级回源的回源addr权重
 		// 		"backup": false,              // 高级回源的回源addr是否为备源地址
 		// 	},
 		// },
 		"sourceType":      "ip",                           // 源站类型
 		"sourceURLScheme": p.CustomConfig.SourceURLScheme, // 回源协议
-		"sourceIPs":       newOriginValues,                // 回源ip
+		"sourceIPs":       origin_values,                  // 回源ip
 		"testURLPath":     "/",                            // 用于测试的URL Path, 检测源站是否可访问
 	}
 
@@ -298,7 +278,7 @@ func (p *QiniuCDNProvider) Update(ctx context.Context, domain string, subdomain 
 				"cache":    cache,                   // 缓存配置
 				"ipTypes":  3,                       // IP协议
 			}).
-			SetPathParam("domain", fullDomain).
+			SetPathParam("domain", full_domain).
 			Post("/domain/{domain}")
 		if err != nil {
 			return fmt.Errorf("接口 post domain/{domain} 失败 %w", err)
@@ -312,7 +292,7 @@ func (p *QiniuCDNProvider) Update(ctx context.Context, domain string, subdomain 
 			SetBody(map[string]any{
 				"source": sources, // 源站配置
 			}).
-			SetPathParam("domain", fullDomain).
+			SetPathParam("domain", full_domain).
 			Put("/domain/{domain}/source")
 		if err != nil {
 			return fmt.Errorf("接口 put domain/{domain}/source 失败 %w", err)
@@ -330,7 +310,7 @@ type QiniuCDNCustomConfig struct {
 	SourceURLScheme string `json:"source_url_scheme"`          // 回源协议
 	HttpPort        int    `json:"http_port,omitempty"`        // HTTP 端口
 	HttpsPort       int    `json:"https_port,omitempty"`       // HTTPS 端口
-	IPGroupIDCode   string `json:"ip_group_id_code,omitempty"` // IP 分组代码
+	IPGroupIDCode   string `json:"ip_group_id_code,omitempty"` // 设备IP组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

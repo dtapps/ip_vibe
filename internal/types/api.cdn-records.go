@@ -17,8 +17,9 @@ type GetCdnRecordResponse struct {
 	ConfigName string          `json:"config_name" jsonschema:"平台配置名称"`                   // 平台配置名称
 	Platform   string          `json:"platform" jsonschema:"平台平台名称"`                      // 平台平台名称
 	RecordID   any             `json:"record_id" jsonschema:"平台侧记录ID"`                    // 平台侧记录ID
-	DomainName string          `json:"domain_name" jsonschema:"域名（例如 www.example.com）"`   // 域名（例如 www.example.com）
 	SubDomain  string          `json:"sub_domain" jsonschema:"子域名（例如 @, www, blog, api）"` // 子域名（例如 @, www, blog, api）
+	DomainName string          `json:"domain_name" jsonschema:"域名名称（例如 example.com）"`     // 域名名称（例如 example.com）
+	FullDomain string          `json:"full_domain" jsonschema:"完整域名（例如 www.example.com）"` // 完整域名（例如 www.example.com）
 	Type       string          `json:"type" jsonschema:"记录类型（A、AAAA）"`                    // 记录类型（A、AAAA）
 	ConfigJSON json.RawMessage `json:"config_json" jsonschema:"CDN记录配置（JSON）"`            // CDN记录配置（JSON）
 	CdnDomain  string          `json:"cdn_domain" jsonschema:"CDN边缘域名（平台提供）"`             // CDN 边缘域名（平台提供）

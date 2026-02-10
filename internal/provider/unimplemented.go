@@ -51,12 +51,12 @@ func (UnimplementedCDNProvider) Name() string {
 }
 
 // Check 检查 CDN 记录是否存在
-func (UnimplementedCDNProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *CDNProviderInternalData, err error) {
+func (UnimplementedCDNProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_values []string) (data *CDNProviderInternalData, err error) {
 	return nil, ErrUnimplemented("CDNProvider", "Check")
 }
 
 // Update 更新 CDN 记录
-func (UnimplementedCDNProvider) Update(ctx context.Context, domain string, subdomain string, originValues []string, recordType string) (err error) {
+func (UnimplementedCDNProvider) Update(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_values []string) (err error) {
 	return ErrUnimplemented("CDNProvider", "Update")
 }
 
