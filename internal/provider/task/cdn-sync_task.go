@@ -284,22 +284,24 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 	}
 
 	// 执行CDN通知
-	_ = p.webhookSendSyncHandler.AddTask(
-		ctx,
-		p.db,
-		p.businessType,
-		record.ID,
-		WebhookSendTaskArgs{
-			EventTitle:   "CDN记录更新",
-			EventType:    "CDN_UPDATE",
-			EventTime:    time.Now().Format("2006-01-02 15:04:05"),
-			EventBody:    "CDN记录更新事件",
-			RecordDomain: record.FullDomain,
-			RecordType:   record.Type.String(),
-			// RecordOldValue: strings.Join(t.config.oldOriginValues, ","),
-			RecordNewValue: strings.Join(originValues, ","),
-		},
-	)
+	if cdnTask.IsNotification() {
+		_ = p.webhookSendSyncHandler.AddTask(
+			ctx,
+			p.db,
+			p.businessType,
+			record.ID,
+			WebhookSendTaskArgs{
+				EventTitle:   "CDN记录更新",
+				EventType:    "CDN_UPDATE",
+				EventTime:    time.Now().Format("2006-01-02 15:04:05"),
+				EventBody:    "CDN记录更新事件",
+				RecordDomain: record.FullDomain,
+				RecordType:   record.Type.String(),
+				// RecordOldValue: strings.Join(t.config.oldOriginValues, ","),
+				RecordNewValue: strings.Join(originValues, ","),
+			},
+		)
+	}
 
 	return fmt.Sprintf("域名 %s 同步成功 (源站:%v)", record.SubDomain, originValues), nil
 }

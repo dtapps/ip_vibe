@@ -280,22 +280,24 @@ func (p *DNSSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 	}
 
 	// 执行DNS通知
-	_ = p.webhookSendSyncHandler.AddTask(
-		ctx,
-		p.db,
-		p.businessType,
-		record.ID,
-		WebhookSendTaskArgs{
-			EventTitle:   "DNS记录更新",
-			EventType:    "DNS_UPDATE",
-			EventTime:    time.Now().Format("2006-01-02 15:04:05"),
-			EventBody:    "DNS记录更新事件",
-			RecordDomain: record.FullDomain,
-			RecordType:   record.Type.String(),
-			// RecordOldValue: t.config.oldOriginValue,
-			RecordNewValue: originValue,
-		},
-	)
+	if dnsTask.IsNotification() {
+		_ = p.webhookSendSyncHandler.AddTask(
+			ctx,
+			p.db,
+			p.businessType,
+			record.ID,
+			WebhookSendTaskArgs{
+				EventTitle:   "DNS记录更新",
+				EventType:    "DNS_UPDATE",
+				EventTime:    time.Now().Format("2006-01-02 15:04:05"),
+				EventBody:    "DNS记录更新事件",
+				RecordDomain: record.FullDomain,
+				RecordType:   record.Type.String(),
+				// RecordOldValue: t.config.oldOriginValue,
+				RecordNewValue: originValue,
+			},
+		)
+	}
 
 	return fmt.Sprintf("域名 %s 同步成功 (源站:%v)", record.SubDomain, originValue), nil
 }

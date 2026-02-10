@@ -185,3 +185,8 @@ func (t *CDNTask) Execute(ctx context.Context) (err error) {
 
 	return nil
 }
+
+// IsNotification 是否通知
+func (t *CDNTask) IsNotification() bool {
+	return t.isNotification
+}

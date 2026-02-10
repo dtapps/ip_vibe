@@ -163,3 +163,8 @@ func (t *TUNTask) Execute(ctx context.Context) (err error) {
 
 	return nil
 }
+
+// IsNotification 是否通知
+func (t *TUNTask) IsNotification() bool {
+	return t.isNotification
+}

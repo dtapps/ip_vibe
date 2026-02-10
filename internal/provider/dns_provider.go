@@ -181,3 +181,8 @@ func (t *DNSTask) Execute(ctx context.Context) (err error) {
 
 	return nil
 }
+
+// IsNotification 是否通知
+func (t *DNSTask) IsNotification() bool {
+	return t.isNotification
+}

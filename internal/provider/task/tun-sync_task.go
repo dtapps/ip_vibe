@@ -148,20 +148,22 @@ func (p *TUNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 	}
 
 	// 执行TUN通知
-	_ = p.webhookSendSyncHandler.AddTask(
-		ctx,
-		p.db,
-		p.businessType,
-		record.ID,
-		WebhookSendTaskArgs{
-			EventTitle:     "TUN记录更新",
-			EventType:      "TUN_UPDATE",
-			EventTime:      time.Now().Format("2006-01-02 15:04:05"),
-			EventBody:      "TUN记录更新事件",
-			RecordType:     record.ServeType.String(),
-			RecordOldValue: record.ServeURI,
-		},
-	)
+	if tunTask.IsNotification() {
+		_ = p.webhookSendSyncHandler.AddTask(
+			ctx,
+			p.db,
+			p.businessType,
+			record.ID,
+			WebhookSendTaskArgs{
+				EventTitle:     "TUN记录更新",
+				EventType:      "TUN_UPDATE",
+				EventTime:      time.Now().Format("2006-01-02 15:04:05"),
+				EventBody:      "TUN记录更新事件",
+				RecordType:     record.ServeType.String(),
+				RecordOldValue: record.ServeURI,
+			},
+		)
+	}
 
 	return fmt.Sprintf("域名 %s 同步成功 (地址:%v)", record.SubDomain, record.ServeURI), nil
 }
