@@ -61,7 +61,7 @@ func (Webhook) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("url").
-			NotEmpty().
+			Optional().
 			Comment("Webhook URL").
 			Annotations(entsql.WithComments(true)),
 

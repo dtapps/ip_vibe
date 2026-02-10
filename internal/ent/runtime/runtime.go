@@ -980,10 +980,6 @@ func init() {
 	webhookDescName := webhookFields[1].Descriptor()
 	// webhook.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	webhook.NameValidator = webhookDescName.Validators[0].(func(string) error)
-	// webhookDescURL is the schema descriptor for url field.
-	webhookDescURL := webhookFields[4].Descriptor()
-	// webhook.URLValidator is a validator for the "url" field. It is called by the builders before save.
-	webhook.URLValidator = webhookDescURL.Validators[0].(func(string) error)
 	// webhookDescIsActive is the schema descriptor for is_active field.
 	webhookDescIsActive := webhookFields[8].Descriptor()
 	// webhook.DefaultIsActive holds the default value on creation for the is_active field.

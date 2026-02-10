@@ -1575,7 +1575,7 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "通知名称"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "通知描述"},
 		{Name: "platform", Type: field.TypeEnum, Comment: "通知平台类型", Enums: []string{"wechat_work", "dingtalk", "feishu", "bark", "ft07", "push_deer", "custom_http"}},
-		{Name: "url", Type: field.TypeString, Comment: "Webhook URL"},
+		{Name: "url", Type: field.TypeString, Nullable: true, Comment: "Webhook URL"},
 		{Name: "secret", Type: field.TypeString, Nullable: true, Comment: "Webhook 签名密钥或额外Token"},
 		{Name: "template_title", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "通知标题 Go Template"},
 		{Name: "template_content", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "通知内容 Go Template"},

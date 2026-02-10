@@ -33689,9 +33689,22 @@ func (m *WebhookMutation) OldURL(ctx context.Context) (v string, err error) {
 	return oldValue.URL, nil
 }
 
+// ClearURL clears the value of the "url" field.
+func (m *WebhookMutation) ClearURL() {
+	m.url = nil
+	m.clearedFields[webhook.FieldURL] = struct{}{}
+}
+
+// URLCleared returns if the "url" field was cleared in this mutation.
+func (m *WebhookMutation) URLCleared() bool {
+	_, ok := m.clearedFields[webhook.FieldURL]
+	return ok
+}
+
 // ResetURL resets all changes to the "url" field.
 func (m *WebhookMutation) ResetURL() {
 	m.url = nil
+	delete(m.clearedFields, webhook.FieldURL)
 }
 
 // SetSecret sets the "secret" field.
@@ -34165,6 +34178,9 @@ func (m *WebhookMutation) ClearedFields() []string {
 	if m.FieldCleared(webhook.FieldDescription) {
 		fields = append(fields, webhook.FieldDescription)
 	}
+	if m.FieldCleared(webhook.FieldURL) {
+		fields = append(fields, webhook.FieldURL)
+	}
 	if m.FieldCleared(webhook.FieldSecret) {
 		fields = append(fields, webhook.FieldSecret)
 	}
@@ -34190,6 +34206,9 @@ func (m *WebhookMutation) ClearField(name string) error {
 	switch name {
 	case webhook.FieldDescription:
 		m.ClearDescription()
+		return nil
+	case webhook.FieldURL:
+		m.ClearURL()
 		return nil
 	case webhook.FieldSecret:
 		m.ClearSecret()

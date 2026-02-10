@@ -83,6 +83,14 @@ func (_c *WebhookCreate) SetURL(v string) *WebhookCreate {
 	return _c
 }
 
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (_c *WebhookCreate) SetNillableURL(v *string) *WebhookCreate {
+	if v != nil {
+		_c.SetURL(*v)
+	}
+	return _c
+}
+
 // SetSecret sets the "secret" field.
 func (_c *WebhookCreate) SetSecret(v string) *WebhookCreate {
 	_c.mutation.SetSecret(v)
@@ -240,14 +248,6 @@ func (_c *WebhookCreate) check() error {
 	if v, ok := _c.mutation.Platform(); ok {
 		if err := webhook.PlatformValidator(v); err != nil {
 			return &ValidationError{Name: "platform", err: fmt.Errorf(`ent: validator failed for field "Webhook.platform": %w`, err)}
-		}
-	}
-	if _, ok := _c.mutation.URL(); !ok {
-		return &ValidationError{Name: "url", err: errors.New(`ent: missing required field "Webhook.url"`)}
-	}
-	if v, ok := _c.mutation.URL(); ok {
-		if err := webhook.URLValidator(v); err != nil {
-			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Webhook.url": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.IsActive(); !ok {
@@ -441,6 +441,12 @@ func (u *WebhookUpsert) UpdateURL() *WebhookUpsert {
 	return u
 }
 
+// ClearURL clears the value of the "url" field.
+func (u *WebhookUpsert) ClearURL() *WebhookUpsert {
+	u.SetNull(webhook.FieldURL)
+	return u
+}
+
 // SetSecret sets the "secret" field.
 func (u *WebhookUpsert) SetSecret(v string) *WebhookUpsert {
 	u.Set(webhook.FieldSecret, v)
@@ -610,6 +616,13 @@ func (u *WebhookUpsertOne) SetURL(v string) *WebhookUpsertOne {
 func (u *WebhookUpsertOne) UpdateURL() *WebhookUpsertOne {
 	return u.Update(func(s *WebhookUpsert) {
 		s.UpdateURL()
+	})
+}
+
+// ClearURL clears the value of the "url" field.
+func (u *WebhookUpsertOne) ClearURL() *WebhookUpsertOne {
+	return u.Update(func(s *WebhookUpsert) {
+		s.ClearURL()
 	})
 }
 
@@ -959,6 +972,13 @@ func (u *WebhookUpsertBulk) SetURL(v string) *WebhookUpsertBulk {
 func (u *WebhookUpsertBulk) UpdateURL() *WebhookUpsertBulk {
 	return u.Update(func(s *WebhookUpsert) {
 		s.UpdateURL()
+	})
+}
+
+// ClearURL clears the value of the "url" field.
+func (u *WebhookUpsertBulk) ClearURL() *WebhookUpsertBulk {
+	return u.Update(func(s *WebhookUpsert) {
+		s.ClearURL()
 	})
 }
 

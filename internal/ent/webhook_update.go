@@ -77,6 +77,12 @@ func (_u *WebhookUpdate) SetNillableURL(v *string) *WebhookUpdate {
 	return _u
 }
 
+// ClearURL clears the value of the "url" field.
+func (_u *WebhookUpdate) ClearURL() *WebhookUpdate {
+	_u.mutation.ClearURL()
+	return _u
+}
+
 // SetSecret sets the "secret" field.
 func (_u *WebhookUpdate) SetSecret(v string) *WebhookUpdate {
 	_u.mutation.SetSecret(v)
@@ -241,11 +247,6 @@ func (_u *WebhookUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Webhook.name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.URL(); ok {
-		if err := webhook.URLValidator(v); err != nil {
-			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Webhook.url": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -281,6 +282,9 @@ func (_u *WebhookUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.URL(); ok {
 		_spec.SetField(webhook.FieldURL, field.TypeString, value)
+	}
+	if _u.mutation.URLCleared() {
+		_spec.ClearField(webhook.FieldURL, field.TypeString)
 	}
 	if value, ok := _u.mutation.Secret(); ok {
 		_spec.SetField(webhook.FieldSecret, field.TypeString, value)
@@ -415,6 +419,12 @@ func (_u *WebhookUpdateOne) SetNillableURL(v *string) *WebhookUpdateOne {
 	if v != nil {
 		_u.SetURL(*v)
 	}
+	return _u
+}
+
+// ClearURL clears the value of the "url" field.
+func (_u *WebhookUpdateOne) ClearURL() *WebhookUpdateOne {
+	_u.mutation.ClearURL()
 	return _u
 }
 
@@ -595,11 +605,6 @@ func (_u *WebhookUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Webhook.name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.URL(); ok {
-		if err := webhook.URLValidator(v); err != nil {
-			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Webhook.url": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -652,6 +657,9 @@ func (_u *WebhookUpdateOne) sqlSave(ctx context.Context) (_node *Webhook, err er
 	}
 	if value, ok := _u.mutation.URL(); ok {
 		_spec.SetField(webhook.FieldURL, field.TypeString, value)
+	}
+	if _u.mutation.URLCleared() {
+		_spec.ClearField(webhook.FieldURL, field.TypeString)
 	}
 	if value, ok := _u.mutation.Secret(); ok {
 		_spec.SetField(webhook.FieldSecret, field.TypeString, value)

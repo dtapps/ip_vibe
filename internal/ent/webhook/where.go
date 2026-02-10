@@ -395,6 +395,16 @@ func URLHasSuffix(v string) predicate.Webhook {
 	return predicate.Webhook(sql.FieldHasSuffix(FieldURL, v))
 }
 
+// URLIsNil applies the IsNil predicate on the "url" field.
+func URLIsNil() predicate.Webhook {
+	return predicate.Webhook(sql.FieldIsNull(FieldURL))
+}
+
+// URLNotNil applies the NotNil predicate on the "url" field.
+func URLNotNil() predicate.Webhook {
+	return predicate.Webhook(sql.FieldNotNull(FieldURL))
+}
+
 // URLEqualFold applies the EqualFold predicate on the "url" field.
 func URLEqualFold(v string) predicate.Webhook {
 	return predicate.Webhook(sql.FieldEqualFold(FieldURL, v))
