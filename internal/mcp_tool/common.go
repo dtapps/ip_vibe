@@ -48,5 +48,5 @@ func successResponse(data any, response any) (*mcp.CallToolResult, any, error) {
 				Text: content,
 			},
 		},
-	}, response, nil
+	}, nil, nil
 }
