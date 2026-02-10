@@ -18,26 +18,13 @@ import (
 
 // CloudfareDNSConfig Cloudfare DNS 配置
 type CloudfareDNSConfig struct {
-	ApiToken   string `json:"api_token"`   // API令牌
-	ZoneID     string `json:"zone_id"`     // 域名ID
-	DomainName string `json:"domain_name"` // 主域名
+	ApiToken string `json:"api_token"` // API令牌
 }
 
 // DefaultValidate 验证配置
 func (cfg *CloudfareDNSConfig) DefaultValidate() error {
 	if cfg.ApiToken == "" {
 		return fmt.Errorf("ApiToken 不能为空")
-	}
-	return nil
-}
-
-// DnsValidate 验证配置
-func (cfg *CloudfareDNSConfig) DnsValidate() error {
-	if cfg.ZoneID == "" {
-		return fmt.Errorf("ZoneID 不能为空")
-	}
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -137,17 +124,12 @@ func (p *CloudfareDNSProvider) Name() string {
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
 func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValue string, recordType string) (data *provider.DNSProviderInternalData, err error) {
 
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
-
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	// 查询域名记录
 	requestDnsQuery := dns.RecordListParams{}
-	requestDnsQuery.ZoneID = cloudflare.String(p.cfg.ZoneID)
+	requestDnsQuery.ZoneID = cloudflare.String(p.CustomConfig.ZoneValue)
 	requestDnsQuery.Name = cloudflare.F(dns.RecordListParamsName{
 		Exact: cloudflare.String(fullDomain),
 	})
@@ -217,11 +199,6 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain string, subdoma
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/edit/
 func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdomain string, originValue string, recordType string) (err error) {
 
-	// 验证配置
-	if err := p.cfg.DnsValidate(); err != nil {
-		return fmt.Errorf("配置无效: %w", err)
-	}
-
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
@@ -234,10 +211,13 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdom
 		requestDnsCreateBody.Content = cloudflare.String(originValue)
 		requestDnsCreateBody.Comment = cloudflare.String(p.CustomConfig.Comment)
 		requestDnsCreate := dns.RecordNewParams{
-			ZoneID: cloudflare.String(p.cfg.ZoneID),
+			ZoneID: cloudflare.String(p.CustomConfig.ZoneValue),
 			Body:   requestDnsCreateBody,
 		}
-		responseDnsCreate, err := p.Provider.Client.DNS.Records.New(ctx, requestDnsCreate)
+		responseDnsCreate, err := p.Provider.Client.DNS.Records.New(
+			ctx,
+			requestDnsCreate,
+		)
 		if err != nil {
 			return fmt.Errorf("接口 DNS.Records.New 失败 %w", err)
 		}
@@ -254,10 +234,14 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdom
 		requestDnsUpdateBody.Content = cloudflare.String(originValue)
 		requestDnsUpdateBody.Comment = cloudflare.String(p.CustomConfig.Comment)
 		requestDnsUpdate := dns.RecordEditParams{
-			ZoneID: cloudflare.String(p.cfg.ZoneID),
+			ZoneID: cloudflare.String(p.CustomConfig.ZoneValue),
 			Body:   requestDnsUpdateBody,
 		}
-		responseDnsUpdate, err := p.Provider.Client.DNS.Records.Edit(ctx, p.InternalData.RecordID, requestDnsUpdate)
+		responseDnsUpdate, err := p.Provider.Client.DNS.Records.Edit(
+			ctx,
+			p.InternalData.RecordID,
+			requestDnsUpdate,
+		)
 		if err != nil {
 			return fmt.Errorf("接口 DNS.Records.Edit 失败 %w", err)
 		}
@@ -272,8 +256,11 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, domain string, subdom
 
 // Cloudfare DNS 自定义配置
 type CloudfareDNSCustomConfig struct {
-	Comment       string `json:"comment"`                    // 记录集的描述信息
-	IPGroupIDCode string `json:"ip_group_id_code,omitempty"` // IP 分组代码
+	ZoneText       string `json:"zone_text"`                   // 域名名称
+	ZoneValue      string `json:"zone_value"`                  // 域名编号
+	IPGroupIDValue int64  `json:"ip_group_id_value,omitempty"` // 设备IP组编号
+	IPGroupIDCode  string `json:"ip_group_id_code,omitempty"`  // 设备IP组代码
+	Comment        string `json:"comment,omitempty"`           // 备注
 }
 
 // ParseCustomConfig 解析 DNS 自定义配置

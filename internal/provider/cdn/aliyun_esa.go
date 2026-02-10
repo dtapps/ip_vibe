@@ -27,8 +27,6 @@ type AliyunESAConfig struct {
 	RegionType      string `json:"region_type,omitempty"` // 区域类型
 	AccessKeyID     string `json:"access_key_id"`         // 访问密钥ID
 	AccessKeySecret string `json:"access_key_secret"`     // 访问密钥Key
-	SiteID          int64  `json:"site_id"`               // 站点ID
-	DomainName      string `json:"domain_name"`           // 主域名
 }
 
 // DefaultValidate 验证配置
@@ -44,17 +42,6 @@ func (cfg *AliyunESAConfig) DefaultValidate() error {
 	}
 	if cfg.AccessKeySecret == "" {
 		return fmt.Errorf("AccessKeySecret 不能为空")
-	}
-	return nil
-}
-
-// CdnValidate 验证配置
-func (cfg *AliyunESAConfig) CdnValidate() error {
-	if cfg.SiteID == 0 {
-		return fmt.Errorf("SiteID 不能为空")
-	}
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -189,11 +176,6 @@ func (p *AliyunESAProvider) Name() string {
 // https://next.api.aliyun.com/api/ESA/2024-09-10/ListRecords
 func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
 
-	// 验证配置
-	if err := p.cfg.CdnValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
-
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
@@ -212,7 +194,7 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 
 	// 查询加速域名
 	requestCdnQuery := &esa20240910.ListRecordsRequest{}
-	requestCdnQuery.SiteId = tea.Int64(p.cfg.SiteID) // 站点ID
+	requestCdnQuery.SiteId = tea.Int64(p.CustomConfig.SiteValue) // 站点ID
 	requestCdnQuery.RecordName = tea.String(fullDomain)
 	requestCdnQuery.PageNumber = tea.Int32(1)
 	requestCdnQuery.PageSize = tea.Int32(500)
@@ -257,9 +239,9 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 判断用于标记DNS记录的业务场景
-			if !utils.EqualDomainIgnoreCase(itemBizName, p.CustomConfig.BizName) {
+			if !utils.EqualDomainIgnoreCase(itemBizName, p.CustomConfig.BizNameValue) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("用于标记DNS记录的业务场景不匹配，期望 %v，实际 %v", p.CustomConfig.BizName, itemBizName)
+				p.InternalData.Tips = fmt.Sprintf("用于标记DNS记录的业务场景不匹配，期望 %v，实际 %v", p.CustomConfig.BizNameValue, itemBizName)
 				return p.InternalData, nil
 			}
 
@@ -291,11 +273,6 @@ func (p *AliyunESAProvider) Check(ctx context.Context, domain string, subdomain 
 // https://next.api.aliyun.com/api/ESA/2024-09-10/CreateRecord
 // https://next.api.aliyun.com/api/ESA/2024-09-10/UpdateRecord
 func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
-
-	// 验证配置
-	if err := p.cfg.CdnValidate(); err != nil {
-		return fmt.Errorf("配置无效: %w", err)
-	}
 
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
@@ -337,13 +314,13 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 
 		// 创建加速域名
 		requestCdnCreate := &esa20240910.CreateRecordRequest{}
-		requestCdnCreate.SiteId = tea.Int64(p.cfg.SiteID)             // 站点ID
-		requestCdnCreate.RecordName = tea.String(fullDomain)          // 记录名称
-		requestCdnCreate.Proxied = tea.Bool(true)                     // 记录是否开启代理加速
-		requestCdnCreate.Type = tea.String(Type)                      // 记录的DNS类型
-		requestCdnCreate.SourceType = tea.String(sourceType)          // CNAME记录的源站类型
-		requestCdnCreate.BizName = tea.String(p.CustomConfig.BizName) // 用于标记DNS记录的业务场景
-		requestCdnCreate.Ttl = tea.Int32(1)                           // 记录的过期时间
+		requestCdnCreate.SiteId = tea.Int64(p.CustomConfig.SiteValue)      // 站点ID
+		requestCdnCreate.RecordName = tea.String(fullDomain)               // 记录名称
+		requestCdnCreate.Proxied = tea.Bool(true)                          // 记录是否开启代理加速
+		requestCdnCreate.Type = tea.String(Type)                           // 记录的DNS类型
+		requestCdnCreate.SourceType = tea.String(sourceType)               // CNAME记录的源站类型
+		requestCdnCreate.BizName = tea.String(p.CustomConfig.BizNameValue) // 用于标记DNS记录的业务场景
+		requestCdnCreate.Ttl = tea.Int32(1)                                // 记录的过期时间
 		requestCdnCreate.Data = &esa20240910.CreateRecordRequestData{
 			Value: tea.String(strings.Join(originValues, ",")), // 记录值或部分内容
 		}
@@ -373,9 +350,9 @@ func (p *AliyunESAProvider) Update(ctx context.Context, domain string, subdomain
 		requestCdnUpdate.Data = &esa20240910.UpdateRecordRequestData{
 			Value: tea.String(strings.Join(originValues, ",")), // 记录值或部分内容
 		}
-		requestCdnUpdate.SourceType = tea.String(sourceType)          // CNAME记录的源站类型
-		requestCdnUpdate.BizName = tea.String(p.CustomConfig.BizName) // 记录加速时的业务场景
-		requestCdnUpdate.Comment = tea.String(p.CustomConfig.Comment) // 记录的备注信息
+		requestCdnUpdate.SourceType = tea.String(sourceType)               // CNAME记录的源站类型
+		requestCdnUpdate.BizName = tea.String(p.CustomConfig.BizNameValue) // 记录加速时的业务场景
+		requestCdnUpdate.Comment = tea.String(p.CustomConfig.Comment)      // 记录的备注信息
 		_, err = p.Provider.Client.UpdateRecordWithContext(ctx, requestCdnUpdate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 UpdateRecordWithContext 失败 %w", err)
@@ -418,7 +395,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 	// 查询源站组
 	requestGroupQuery := &esa20240910.ListOriginPoolsRequest{}
-	requestGroupQuery.SiteId = tea.Int64(p.cfg.SiteID)                // 站点ID
+	requestGroupQuery.SiteId = tea.Int64(p.CustomConfig.SiteValue)    // 站点ID
 	requestGroupQuery.Name = tea.String(p.CustomConfig.IPGroupIDCode) // 源地址池名称
 	requestGroupQuery.MatchType = tea.String("exact")                 // 按名称匹配查询类型
 	responseGroupQuery, err := p.Provider.Client.ListOriginPoolsWithContext(ctx, requestGroupQuery, p.Provider.Runtime)
@@ -468,7 +445,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 		requestGroupCreate := &esa20240910.CreateOriginPoolRequest{}
 		requestGroupCreate.Name = tea.String(p.CustomConfig.IPGroupIDCode)                                        // 列表名称
 		requestGroupCreate.Enabled = tea.Bool(true)                                                               // 源地址池是否启用
-		requestGroupCreate.SiteId = tea.Int64(p.cfg.SiteID)                                                       // 站点ID
+		requestGroupCreate.SiteId = tea.Int64(p.CustomConfig.SiteValue)                                           // 站点ID
 		requestGroupCreate.Origins = make([]*esa20240910.CreateOriginPoolRequestOrigins, 0, len(newOriginValues)) // 源地址池里添加的源站信息
 		for _, originValue := range newOriginValues {
 			requestGroupCreate.Origins = append(requestGroupCreate.Origins, &esa20240910.CreateOriginPoolRequestOrigins{
@@ -486,8 +463,8 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 		// 查询单个源站组
 		requestGroupDetail := &esa20240910.GetOriginPoolRequest{}
-		requestGroupDetail.Id = responseGroupCreate.GetBody().GetId() // 源地址池ID
-		requestGroupDetail.SiteId = tea.Int64(p.cfg.SiteID)           // 站点ID
+		requestGroupDetail.Id = responseGroupCreate.GetBody().GetId()   // 源地址池ID
+		requestGroupDetail.SiteId = tea.Int64(p.CustomConfig.SiteValue) // 站点ID
 		responseGroupDetail, err := p.Provider.Client.GetOriginPoolWithContext(ctx, requestGroupDetail, p.Provider.Runtime)
 		if err != nil {
 			return nil, fmt.Errorf("接口 GetOriginPoolWithContext 失败 %w", err)
@@ -515,7 +492,7 @@ func (p *AliyunESAProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 				Weight:  tea.Int32(weight),
 			})
 		}
-		requestGroupUpdate.SiteId = tea.Int64(p.cfg.SiteID) // 站点ID
+		requestGroupUpdate.SiteId = tea.Int64(p.CustomConfig.SiteValue) // 站点ID
 		_, err = p.Provider.Client.UpdateOriginPoolWithContext(ctx, requestGroupUpdate, p.Provider.Runtime)
 		if err != nil {
 			return nil, fmt.Errorf("接口 UpdateOriginPoolWithContext 失败 %w", err)
@@ -549,11 +526,11 @@ func (p *AliyunESAProvider) getRuleInfo(ctx context.Context, domain string, subd
 
 	// 查询回源规则
 	requestRuleQuery := &esa20240910.ListOriginRulesRequest{}
-	requestRuleQuery.SiteId = tea.Int64(p.cfg.SiteID)    // 站点ID
-	requestRuleQuery.ConfigType = tea.String(configType) // 配置类型
-	requestRuleQuery.PageNumber = tea.Int32(1)           // 第几页
-	requestRuleQuery.PageSize = tea.Int32(500)           // 每页几条
-	requestRuleQuery.RuleName = tea.String(ruleName)     // 回源规则名称
+	requestRuleQuery.SiteId = tea.Int64(p.CustomConfig.SiteValue) // 站点ID
+	requestRuleQuery.ConfigType = tea.String(configType)          // 配置类型
+	requestRuleQuery.PageNumber = tea.Int32(1)                    // 第几页
+	requestRuleQuery.PageSize = tea.Int32(500)                    // 每页几条
+	requestRuleQuery.RuleName = tea.String(ruleName)              // 回源规则名称
 	responseRuleQuery, err := p.Provider.Client.ListOriginRulesWithContext(ctx, requestRuleQuery, p.Provider.Runtime)
 	if err != nil {
 		return fmt.Errorf("接口 ListOriginRulesWithContext 失败 %w", err)
@@ -630,10 +607,10 @@ func (p *AliyunESAProvider) getRuleInfo(ctx context.Context, domain string, subd
 		// 创建回源规则
 		requestRuleCreate := &esa20240910.CreateOriginRuleRequest{}
 		requestRuleCreate.RuleName = tea.String(ruleName)                                             // 规则名称
-		requestRuleCreate.SiteId = tea.Int64(p.cfg.SiteID)                                            // 站点ID
+		requestRuleCreate.SiteId = tea.Int64(p.CustomConfig.SiteValue)                                // 站点ID
 		requestRuleCreate.RuleEnable = tea.String("on")                                               // 规则开关
 		requestRuleCreate.Rule = tea.String(BuildRuleFromDomains(fullDomain))                         // 规则内容
-		requestRuleCreate.OriginScheme = tea.String(p.CustomConfig.OriginScheme)                      // 回源请求使用的协议
+		requestRuleCreate.OriginScheme = tea.String(p.CustomConfig.OriginSchemeValue)                 // 回源请求使用的协议
 		requestRuleCreate.OriginHttpPort = tea.String(cast.ToString(p.CustomConfig.OriginHttpPort))   // 使用HTTP协议回源时访问的源站端口
 		requestRuleCreate.OriginHttpsPort = tea.String(cast.ToString(p.CustomConfig.OriginHttpsPort)) // 使用HTTPS协议回源时访问的源站端口
 		requestRuleCreate.Sequence = tea.Int32(1)                                                     // 规则执行顺序
@@ -647,10 +624,10 @@ func (p *AliyunESAProvider) getRuleInfo(ctx context.Context, domain string, subd
 		// 更新回源规则
 		requestRuleUpdate := &esa20240910.UpdateOriginRuleRequest{}
 		requestRuleUpdate.ConfigId = tea.Int64(configID)                                              // 配置ID
-		requestRuleUpdate.SiteId = tea.Int64(p.cfg.SiteID)                                            // 站点ID
+		requestRuleUpdate.SiteId = tea.Int64(p.CustomConfig.SiteValue)                                // 站点ID
 		requestRuleUpdate.RuleEnable = tea.String("on")                                               // 规则开关
 		requestRuleUpdate.Rule = tea.String(AddDomainToRule(ruleInfo, fullDomain))                    // 规则内容
-		requestRuleUpdate.OriginScheme = tea.String(p.CustomConfig.OriginScheme)                      // 回源请求使用的协议
+		requestRuleUpdate.OriginScheme = tea.String(p.CustomConfig.OriginSchemeValue)                 // 回源请求使用的协议
 		requestRuleUpdate.OriginHttpPort = tea.String(cast.ToString(p.CustomConfig.OriginHttpPort))   // 使用HTTP协议回源时访问的源站端口
 		requestRuleUpdate.OriginHttpsPort = tea.String(cast.ToString(p.CustomConfig.OriginHttpsPort)) // 使用HTTPS协议回源时访问的源站端口
 		requestRuleUpdate.RuleName = tea.String(ruleName)                                             // 规则名称
@@ -730,12 +707,15 @@ func BuildRuleFromDomains(fullDomain string) string {
 
 // 阿里云 ESA 自定义配置
 type AliyunESACustomConfig struct {
-	BizName         string `json:"biz_name"`                   // 用于标记DNS记录的业务场景
-	Comment         string `json:"comment,omitempty"`          // 记录的备注信息
-	OriginScheme    string `json:"origin_scheme"`              // 回源请求使用的协议
-	OriginHttpPort  int    `json:"origin_http_port"`           // 使用HTTP协议回源时访问的源站端口
-	OriginHttpsPort int    `json:"origin_https_port"`          // 使用HTTPS协议回源时访问的源站端口
-	IPGroupIDCode   string `json:"ip_group_id_code,omitempty"` // IP 分组代码
+	SiteText          string `json:"site_text"`                   // 域名名称
+	SiteValue         int64  `json:"site_value"`                  // 域名编号
+	BizNameValue      string `json:"biz_name_value"`              // 业务场景
+	OriginSchemeValue string `json:"origin_scheme_value"`         // 回源请求使用的协议
+	OriginHttpPort    int    `json:"origin_http_port"`            // 使用HTTP协议回源时访问的源站端口
+	OriginHttpsPort   int    `json:"origin_https_port"`           // 使用HTTPS协议回源时访问的源站端口
+	IPGroupIDValue    int64  `json:"ip_group_id_value,omitempty"` // 设备IP组编号
+	IPGroupIDCode     string `json:"ip_group_id_code,omitempty"`  // 设备IP组代码
+	Comment           string `json:"comment,omitempty"`           // 备注
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置

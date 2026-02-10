@@ -21,8 +21,6 @@ type TencentEOConfig struct {
 	RegionType string `json:"region_type,omitempty"` // 区域类型
 	SecretID   string `json:"secret_id"`             // 密钥ID
 	SecretKey  string `json:"secret_key"`            // 密钥Key
-	ZoneID     string `json:"zone_id"`               // 区域ID
-	DomainName string `json:"domain_name"`           // 主域名
 }
 
 // DefaultValidate 验证配置
@@ -38,17 +36,6 @@ func (cfg *TencentEOConfig) DefaultValidate() error {
 	}
 	if cfg.SecretKey == "" {
 		return fmt.Errorf("SecretKey 不能为空")
-	}
-	return nil
-}
-
-// CdnValidate 验证配置
-func (cfg *TencentEOConfig) CdnValidate() error {
-	if cfg.ZoneID == "" {
-		return fmt.Errorf("ZoneID 不能为空")
-	}
-	if cfg.DomainName == "" {
-		return fmt.Errorf("DomainName 不能为空")
 	}
 	return nil
 }
@@ -174,11 +161,6 @@ func (p *TencentEOProvider) Name() string {
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeAccelerationDomains
 func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (data *provider.CDNProviderInternalData, err error) {
 
-	// 验证配置
-	if err := p.cfg.CdnValidate(); err != nil {
-		return nil, fmt.Errorf("配置无效: %w", err)
-	}
-
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
@@ -197,7 +179,7 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 
 	// 查询加速域名
 	requestCdnQuery := teo.NewDescribeAccelerationDomainsRequest()
-	requestCdnQuery.ZoneId = common.StringPtr(p.cfg.ZoneID)
+	requestCdnQuery.ZoneId = common.StringPtr(p.CustomConfig.ZoneValue)
 	requestCdnQuery.Offset = common.Int64Ptr(0)
 	requestCdnQuery.Limit = common.Int64Ptr(200)
 	requestCdnQuery.Filters = make([]*teo.AdvancedFilter, 0, 1)
@@ -251,9 +233,9 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 判断回源协议
-			if !utils.EqualDomainIgnoreCase(itemOriginProtocol, p.CustomConfig.OriginProtocol) {
+			if !utils.EqualDomainIgnoreCase(itemOriginProtocol, p.CustomConfig.OriginProtocolValue) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("回源协议不匹配，期望 %v，实际 %v", p.CustomConfig.OriginProtocol, itemOriginProtocol)
+				p.InternalData.Tips = fmt.Sprintf("回源协议不匹配，期望 %v，实际 %v", p.CustomConfig.OriginProtocolValue, itemOriginProtocol)
 				return p.InternalData, nil
 			}
 
@@ -272,9 +254,9 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 			}
 
 			// 判断IPv6状态
-			if !utils.EqualDomainIgnoreCase(itemIPv6Status, p.CustomConfig.IPv6Status) {
+			if !utils.EqualDomainIgnoreCase(itemIPv6Status, p.CustomConfig.IPv6StatusValue) {
 				p.InternalData.IsContinue = true
-				p.InternalData.Tips = fmt.Sprintf("IPv6状态不匹配，期望 %v，实际 %v", p.CustomConfig.IPv6Status, itemIPv6Status)
+				p.InternalData.Tips = fmt.Sprintf("IPv6状态不匹配，期望 %v，实际 %v", p.CustomConfig.IPv6StatusValue, itemIPv6Status)
 				return p.InternalData, nil
 			}
 
@@ -293,16 +275,11 @@ func (p *TencentEOProvider) Check(ctx context.Context, domain string, subdomain 
 // https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=ModifyAccelerationDomain
 func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain string, newOriginValues []string, recordType string) (err error) {
 
-	// 验证配置
-	if err := p.cfg.CdnValidate(); err != nil {
-		return fmt.Errorf("配置无效: %w", err)
-	}
-
 	// 完整域名
 	fullDomain := fmt.Sprintf("%s.%s", subdomain, domain)
 
 	// 回源协议，转大写
-	p.CustomConfig.OriginProtocol = strings.ToUpper(p.CustomConfig.OriginProtocol)
+	p.CustomConfig.OriginProtocolValue = strings.ToUpper(p.CustomConfig.OriginProtocolValue)
 
 	// 源站信息
 	originInfo := new(teo.OriginInfo{})
@@ -333,13 +310,13 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 
 		// 创建加速域名
 		requestCdnCreate := teo.NewCreateAccelerationDomainRequest()
-		requestCdnCreate.ZoneId = common.StringPtr(p.cfg.ZoneID)                              // 加速域名所属站点 ID
-		requestCdnCreate.DomainName = common.StringPtr(fullDomain)                            // 加速域名
-		requestCdnCreate.OriginInfo = originInfo                                              // 源站信息
-		requestCdnCreate.OriginProtocol = common.StringPtr(p.CustomConfig.OriginProtocol)     // 回源协议
-		requestCdnCreate.HttpOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpPort))   // HTTP回源端口
-		requestCdnCreate.HttpsOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpsPort)) // HTTPS回源端口
-		requestCdnCreate.IPv6Status = common.StringPtr(p.CustomConfig.IPv6Status)             // IPv6状态
+		requestCdnCreate.ZoneId = common.StringPtr(p.CustomConfig.ZoneValue)                   // 加速域名所属站点 ID
+		requestCdnCreate.DomainName = common.StringPtr(fullDomain)                             // 加速域名
+		requestCdnCreate.OriginInfo = originInfo                                               // 源站信息
+		requestCdnCreate.OriginProtocol = common.StringPtr(p.CustomConfig.OriginProtocolValue) // 回源协议
+		requestCdnCreate.HttpOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpPort))    // HTTP回源端口
+		requestCdnCreate.HttpsOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpsPort))  // HTTPS回源端口
+		requestCdnCreate.IPv6Status = common.StringPtr(p.CustomConfig.IPv6StatusValue)         // IPv6状态
 		_, err = p.Provider.Client.CreateAccelerationDomainWithContext(ctx, requestCdnCreate)
 		if err != nil {
 			return fmt.Errorf("接口 CreateAccelerationDomainWithContext 失败 %w", err)
@@ -349,13 +326,13 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain string, subdomain
 
 		// 更新加速域名
 		requestCdnUpdate := teo.NewModifyAccelerationDomainRequest()
-		requestCdnUpdate.ZoneId = common.StringPtr(p.cfg.ZoneID)                              // 加速域名所属站点 ID
-		requestCdnUpdate.DomainName = common.StringPtr(fullDomain)                            // 加速域名
-		requestCdnUpdate.OriginInfo = originInfo                                              // 源站信息
-		requestCdnUpdate.OriginProtocol = common.StringPtr(p.CustomConfig.OriginProtocol)     // 回源协议
-		requestCdnUpdate.HttpOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpPort))   // HTTP回源端口
-		requestCdnUpdate.HttpsOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpsPort)) // HTTPS回源端口
-		requestCdnUpdate.IPv6Status = common.StringPtr(p.CustomConfig.IPv6Status)             // IPv6状态
+		requestCdnUpdate.ZoneId = common.StringPtr(p.CustomConfig.ZoneValue)                   // 加速域名所属站点 ID
+		requestCdnUpdate.DomainName = common.StringPtr(fullDomain)                             // 加速域名
+		requestCdnUpdate.OriginInfo = originInfo                                               // 源站信息
+		requestCdnUpdate.OriginProtocol = common.StringPtr(p.CustomConfig.OriginProtocolValue) // 回源协议
+		requestCdnUpdate.HttpOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpPort))    // HTTP回源端口
+		requestCdnUpdate.HttpsOriginPort = common.Uint64Ptr(uint64(p.CustomConfig.HttpsPort))  // HTTPS回源端口
+		requestCdnUpdate.IPv6Status = common.StringPtr(p.CustomConfig.IPv6StatusValue)         // IPv6状态
 		_, err = p.Provider.Client.ModifyAccelerationDomainWithContext(ctx, requestCdnUpdate)
 		if err != nil {
 			return fmt.Errorf("接口 ModifyAccelerationDomainWithContext 失败 %w", err)
@@ -386,9 +363,9 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 	// 查询源站组
 	requestGroupQuery := teo.NewDescribeOriginGroupRequest()
-	requestGroupQuery.ZoneId = common.StringPtr(p.cfg.ZoneID) // 站点ID
-	requestGroupQuery.Offset = common.Uint64Ptr(0)            // 分页查询偏移量
-	requestGroupQuery.Limit = common.Uint64Ptr(1000)          // 分页查询限制数目
+	requestGroupQuery.ZoneId = common.StringPtr(p.CustomConfig.ZoneValue) // 站点ID
+	requestGroupQuery.Offset = common.Uint64Ptr(0)                        // 分页查询偏移量
+	requestGroupQuery.Limit = common.Uint64Ptr(1000)                      // 分页查询限制数目
 	requestGroupQuery.Filters = make([]*teo.AdvancedFilter, 0, 1)
 	requestGroupQuery.Filters = append(requestGroupQuery.Filters, &teo.AdvancedFilter{
 		Name:   common.StringPtr("origin-group-name"), // 按照源站组名称进行过滤
@@ -437,7 +414,7 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 		// 创建源站组
 		requestGroupCreate := teo.NewCreateOriginGroupRequest()
-		requestGroupCreate.ZoneId = common.StringPtr(p.cfg.ZoneID)                      // 站点ID
+		requestGroupCreate.ZoneId = common.StringPtr(p.CustomConfig.ZoneValue)          // 站点ID
 		requestGroupCreate.Records = make([]*teo.OriginRecord, 0, len(newOriginValues)) // 源站记录信息
 		for _, originValue := range newOriginValues {
 			requestGroupCreate.Records = append(requestGroupCreate.Records, &teo.OriginRecord{
@@ -459,7 +436,7 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 		// 更新源站组
 		requestGroupUpdate := teo.NewModifyOriginGroupRequest()
-		requestGroupUpdate.ZoneId = common.StringPtr(p.cfg.ZoneID)                      // 站点ID
+		requestGroupUpdate.ZoneId = common.StringPtr(p.CustomConfig.ZoneValue)          // 站点ID
 		requestGroupUpdate.GroupId = common.StringPtr(originInfo.ID)                    // 源站组ID
 		requestGroupUpdate.Records = make([]*teo.OriginRecord, 0, len(newOriginValues)) // 源站记录信息
 		for _, originValue := range newOriginValues {
@@ -480,11 +457,14 @@ func (p *TencentEOProvider) getGroupOrigin(ctx context.Context, newOriginValues 
 
 // 腾讯云 EO 自定义配置
 type TencentEOCustomConfig struct {
-	OriginProtocol string `json:"origin_protocol"`            // 回源协议
-	HttpPort       uint64 `json:"http_port,omitempty"`        // HTTP回源端口
-	HttpsPort      uint64 `json:"https_port,omitempty"`       // HTTPS回源端口
-	IPv6Status     string `json:"ipv6_status,omitempty"`      // IPv6状态
-	IPGroupIDCode  string `json:"ip_group_id_code,omitempty"` // IP 分组代码
+	ZoneText            string `json:"zone_text"`                       // 域名名称
+	ZoneValue           string `json:"zone_value"`                      // 域名编号
+	IPv6StatusValue     string `json:"ipv6_status_value,omitempty"`     // IPv6状态
+	OriginProtocolValue string `json:"origin_protocol_value,omitempty"` // 回源协议
+	HttpPort            uint64 `json:"http_port,omitempty"`             // HTTP回源端口
+	HttpsPort           uint64 `json:"https_port,omitempty"`            // HTTPS回源端口
+	IPGroupIDValue      int64  `json:"ip_group_id_value,omitempty"`     // 设备IP组编号
+	IPGroupIDCode       string `json:"ip_group_id_code,omitempty"`      // 设备IP组代码
 }
 
 // ParseCustomConfig 解析 CDN 自定义配置
