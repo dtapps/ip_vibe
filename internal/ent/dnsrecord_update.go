@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/dnsrecord"
@@ -160,66 +159,6 @@ func (_u *DNSRecordUpdate) SetNillableIsActive(v *bool) *DNSRecordUpdate {
 	return _u
 }
 
-// SetLastRefreshAt sets the "last_refresh_at" field.
-func (_u *DNSRecordUpdate) SetLastRefreshAt(v time.Time) *DNSRecordUpdate {
-	_u.mutation.SetLastRefreshAt(v)
-	return _u
-}
-
-// SetNillableLastRefreshAt sets the "last_refresh_at" field if the given value is not nil.
-func (_u *DNSRecordUpdate) SetNillableLastRefreshAt(v *time.Time) *DNSRecordUpdate {
-	if v != nil {
-		_u.SetLastRefreshAt(*v)
-	}
-	return _u
-}
-
-// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
-func (_u *DNSRecordUpdate) ClearLastRefreshAt() *DNSRecordUpdate {
-	_u.mutation.ClearLastRefreshAt()
-	return _u
-}
-
-// SetLastAPIResponse sets the "last_api_response" field.
-func (_u *DNSRecordUpdate) SetLastAPIResponse(v string) *DNSRecordUpdate {
-	_u.mutation.SetLastAPIResponse(v)
-	return _u
-}
-
-// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
-func (_u *DNSRecordUpdate) SetNillableLastAPIResponse(v *string) *DNSRecordUpdate {
-	if v != nil {
-		_u.SetLastAPIResponse(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (_u *DNSRecordUpdate) ClearLastAPIResponse() *DNSRecordUpdate {
-	_u.mutation.ClearLastAPIResponse()
-	return _u
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (_u *DNSRecordUpdate) SetLastAPIResponseAt(v time.Time) *DNSRecordUpdate {
-	_u.mutation.SetLastAPIResponseAt(v)
-	return _u
-}
-
-// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
-func (_u *DNSRecordUpdate) SetNillableLastAPIResponseAt(v *time.Time) *DNSRecordUpdate {
-	if v != nil {
-		_u.SetLastAPIResponseAt(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (_u *DNSRecordUpdate) ClearLastAPIResponseAt() *DNSRecordUpdate {
-	_u.mutation.ClearLastAPIResponseAt()
-	return _u
-}
-
 // SetIPGroup sets the "ip_group" edge to the IpGroup entity.
 func (_u *DNSRecordUpdate) SetIPGroup(v *IpGroup) *DNSRecordUpdate {
 	return _u.SetIPGroupID(v.ID)
@@ -356,24 +295,6 @@ func (_u *DNSRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(dnsrecord.FieldIsActive, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.LastRefreshAt(); ok {
-		_spec.SetField(dnsrecord.FieldLastRefreshAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastRefreshAtCleared() {
-		_spec.ClearField(dnsrecord.FieldLastRefreshAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.LastAPIResponse(); ok {
-		_spec.SetField(dnsrecord.FieldLastAPIResponse, field.TypeString, value)
-	}
-	if _u.mutation.LastAPIResponseCleared() {
-		_spec.ClearField(dnsrecord.FieldLastAPIResponse, field.TypeString)
-	}
-	if value, ok := _u.mutation.LastAPIResponseAt(); ok {
-		_spec.SetField(dnsrecord.FieldLastAPIResponseAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastAPIResponseAtCleared() {
-		_spec.ClearField(dnsrecord.FieldLastAPIResponseAt, field.TypeTime)
 	}
 	if _u.mutation.IPGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -610,66 +531,6 @@ func (_u *DNSRecordUpdateOne) SetNillableIsActive(v *bool) *DNSRecordUpdateOne {
 	return _u
 }
 
-// SetLastRefreshAt sets the "last_refresh_at" field.
-func (_u *DNSRecordUpdateOne) SetLastRefreshAt(v time.Time) *DNSRecordUpdateOne {
-	_u.mutation.SetLastRefreshAt(v)
-	return _u
-}
-
-// SetNillableLastRefreshAt sets the "last_refresh_at" field if the given value is not nil.
-func (_u *DNSRecordUpdateOne) SetNillableLastRefreshAt(v *time.Time) *DNSRecordUpdateOne {
-	if v != nil {
-		_u.SetLastRefreshAt(*v)
-	}
-	return _u
-}
-
-// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
-func (_u *DNSRecordUpdateOne) ClearLastRefreshAt() *DNSRecordUpdateOne {
-	_u.mutation.ClearLastRefreshAt()
-	return _u
-}
-
-// SetLastAPIResponse sets the "last_api_response" field.
-func (_u *DNSRecordUpdateOne) SetLastAPIResponse(v string) *DNSRecordUpdateOne {
-	_u.mutation.SetLastAPIResponse(v)
-	return _u
-}
-
-// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
-func (_u *DNSRecordUpdateOne) SetNillableLastAPIResponse(v *string) *DNSRecordUpdateOne {
-	if v != nil {
-		_u.SetLastAPIResponse(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (_u *DNSRecordUpdateOne) ClearLastAPIResponse() *DNSRecordUpdateOne {
-	_u.mutation.ClearLastAPIResponse()
-	return _u
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (_u *DNSRecordUpdateOne) SetLastAPIResponseAt(v time.Time) *DNSRecordUpdateOne {
-	_u.mutation.SetLastAPIResponseAt(v)
-	return _u
-}
-
-// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
-func (_u *DNSRecordUpdateOne) SetNillableLastAPIResponseAt(v *time.Time) *DNSRecordUpdateOne {
-	if v != nil {
-		_u.SetLastAPIResponseAt(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (_u *DNSRecordUpdateOne) ClearLastAPIResponseAt() *DNSRecordUpdateOne {
-	_u.mutation.ClearLastAPIResponseAt()
-	return _u
-}
-
 // SetIPGroup sets the "ip_group" edge to the IpGroup entity.
 func (_u *DNSRecordUpdateOne) SetIPGroup(v *IpGroup) *DNSRecordUpdateOne {
 	return _u.SetIPGroupID(v.ID)
@@ -836,24 +697,6 @@ func (_u *DNSRecordUpdateOne) sqlSave(ctx context.Context) (_node *DNSRecord, er
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(dnsrecord.FieldIsActive, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.LastRefreshAt(); ok {
-		_spec.SetField(dnsrecord.FieldLastRefreshAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastRefreshAtCleared() {
-		_spec.ClearField(dnsrecord.FieldLastRefreshAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.LastAPIResponse(); ok {
-		_spec.SetField(dnsrecord.FieldLastAPIResponse, field.TypeString, value)
-	}
-	if _u.mutation.LastAPIResponseCleared() {
-		_spec.ClearField(dnsrecord.FieldLastAPIResponse, field.TypeString)
-	}
-	if value, ok := _u.mutation.LastAPIResponseAt(); ok {
-		_spec.SetField(dnsrecord.FieldLastAPIResponseAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastAPIResponseAtCleared() {
-		_spec.ClearField(dnsrecord.FieldLastAPIResponseAt, field.TypeTime)
 	}
 	if _u.mutation.IPGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{

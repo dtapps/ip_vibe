@@ -42,12 +42,6 @@ const (
 	FieldDeviceGroupID = "device_group_id"
 	// FieldIsActive holds the string denoting the is_active field in the database.
 	FieldIsActive = "is_active"
-	// FieldLastRefreshAt holds the string denoting the last_refresh_at field in the database.
-	FieldLastRefreshAt = "last_refresh_at"
-	// FieldLastAPIResponse holds the string denoting the last_api_response field in the database.
-	FieldLastAPIResponse = "last_api_response"
-	// FieldLastAPIResponseAt holds the string denoting the last_api_response_at field in the database.
-	FieldLastAPIResponseAt = "last_api_response_at"
 	// EdgeConfig holds the string denoting the config edge name in mutations.
 	EdgeConfig = "config"
 	// EdgeIPGroup holds the string denoting the ip_group edge name in mutations.
@@ -104,9 +98,6 @@ var Columns = []string{
 	FieldIPGroupID,
 	FieldDeviceGroupID,
 	FieldIsActive,
-	FieldLastRefreshAt,
-	FieldLastAPIResponse,
-	FieldLastAPIResponseAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -235,21 +226,6 @@ func ByDeviceGroupID(opts ...sql.OrderTermOption) OrderOption {
 // ByIsActive orders the results by the is_active field.
 func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
-}
-
-// ByLastRefreshAt orders the results by the last_refresh_at field.
-func ByLastRefreshAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastRefreshAt, opts...).ToFunc()
-}
-
-// ByLastAPIResponse orders the results by the last_api_response field.
-func ByLastAPIResponse(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastAPIResponse, opts...).ToFunc()
-}
-
-// ByLastAPIResponseAt orders the results by the last_api_response_at field.
-func ByLastAPIResponseAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastAPIResponseAt, opts...).ToFunc()
 }
 
 // ByConfigField orders the results by config field.

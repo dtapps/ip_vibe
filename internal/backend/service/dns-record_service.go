@@ -77,20 +77,17 @@ func (s *DNSRecordServiceImpl) SetDebug(debug bool) {
 // BuildResponse 将实体转换为响应
 func (s *DNSRecordServiceImpl) BuildResponse(ctx context.Context, item *ent.DNSRecord) (*types.GetDnsRecordResponse, error) {
 	resp := &types.GetDnsRecordResponse{
-		ID:            item.ID,
-		ConfigID:      item.ConfigID,
-		Platform:      item.Edges.Config.Platform.String(),
-		RecordID:      item.RecordID,
-		SubDomain:     item.SubDomain,
-		Type:          item.Type.String(),
-		ConfigJSON:    item.ConfigJSON,
-		IsActive:      item.IsActive,
-		LastRefreshAt: item.LastRefreshAt,
+		ID:         item.ID,
+		ConfigID:   item.ConfigID,
+		Platform:   item.Edges.Config.Platform.String(),
+		RecordID:   item.RecordID,
+		SubDomain:  item.SubDomain,
+		Type:       item.Type.String(),
+		ConfigJSON: item.ConfigJSON,
+		IsActive:   item.IsActive,
 
-		CreatedAt:         item.CreatedAt,
-		UpdatedAt:         item.UpdatedAt,
-		LastAPIResponse:   item.LastAPIResponse,
-		LastAPIResponseAt: item.LastAPIResponseAt,
+		CreatedAt: item.CreatedAt,
+		UpdatedAt: item.UpdatedAt,
 	}
 
 	// 平台配置

@@ -49,12 +49,6 @@ type DNSRecord struct {
 	CdnRecordID int64 `json:"cdn_record_id,omitempty"`
 	// 是否活跃
 	IsActive bool `json:"is_active,omitempty"`
-	// 最后一次刷新成功时间
-	LastRefreshAt time.Time `json:"last_refresh_at,omitempty"`
-	// 最近一次接口的反馈
-	LastAPIResponse string `json:"-"`
-	// 最近一次接口的反馈时间
-	LastAPIResponseAt time.Time `json:"last_api_response_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DNSRecordQuery when eager-loading is set.
 	Edges        DNSRecordEdges `json:"edges"`
@@ -131,9 +125,9 @@ func (*DNSRecord) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case dnsrecord.FieldID, dnsrecord.FieldConfigID, dnsrecord.FieldIPGroupID, dnsrecord.FieldDeviceGroupID, dnsrecord.FieldCdnRecordID:
 			values[i] = new(sql.NullInt64)
-		case dnsrecord.FieldRecordID, dnsrecord.FieldSubDomain, dnsrecord.FieldDomainName, dnsrecord.FieldFullDomain, dnsrecord.FieldType, dnsrecord.FieldLastAPIResponse:
+		case dnsrecord.FieldRecordID, dnsrecord.FieldSubDomain, dnsrecord.FieldDomainName, dnsrecord.FieldFullDomain, dnsrecord.FieldType:
 			values[i] = new(sql.NullString)
-		case dnsrecord.FieldCreatedAt, dnsrecord.FieldUpdatedAt, dnsrecord.FieldLastRefreshAt, dnsrecord.FieldLastAPIResponseAt:
+		case dnsrecord.FieldCreatedAt, dnsrecord.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -236,24 +230,6 @@ func (_m *DNSRecord) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.IsActive = value.Bool
 			}
-		case dnsrecord.FieldLastRefreshAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field last_refresh_at", values[i])
-			} else if value.Valid {
-				_m.LastRefreshAt = value.Time
-			}
-		case dnsrecord.FieldLastAPIResponse:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field last_api_response", values[i])
-			} else if value.Valid {
-				_m.LastAPIResponse = value.String
-			}
-		case dnsrecord.FieldLastAPIResponseAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field last_api_response_at", values[i])
-			} else if value.Valid {
-				_m.LastAPIResponseAt = value.Time
-			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -348,14 +324,6 @@ func (_m *DNSRecord) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_active=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsActive))
-	builder.WriteString(", ")
-	builder.WriteString("last_refresh_at=")
-	builder.WriteString(_m.LastRefreshAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("last_api_response=<sensitive>")
-	builder.WriteString(", ")
-	builder.WriteString("last_api_response_at=")
-	builder.WriteString(_m.LastAPIResponseAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

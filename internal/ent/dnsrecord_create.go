@@ -161,48 +161,6 @@ func (_c *DNSRecordCreate) SetNillableIsActive(v *bool) *DNSRecordCreate {
 	return _c
 }
 
-// SetLastRefreshAt sets the "last_refresh_at" field.
-func (_c *DNSRecordCreate) SetLastRefreshAt(v time.Time) *DNSRecordCreate {
-	_c.mutation.SetLastRefreshAt(v)
-	return _c
-}
-
-// SetNillableLastRefreshAt sets the "last_refresh_at" field if the given value is not nil.
-func (_c *DNSRecordCreate) SetNillableLastRefreshAt(v *time.Time) *DNSRecordCreate {
-	if v != nil {
-		_c.SetLastRefreshAt(*v)
-	}
-	return _c
-}
-
-// SetLastAPIResponse sets the "last_api_response" field.
-func (_c *DNSRecordCreate) SetLastAPIResponse(v string) *DNSRecordCreate {
-	_c.mutation.SetLastAPIResponse(v)
-	return _c
-}
-
-// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
-func (_c *DNSRecordCreate) SetNillableLastAPIResponse(v *string) *DNSRecordCreate {
-	if v != nil {
-		_c.SetLastAPIResponse(*v)
-	}
-	return _c
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (_c *DNSRecordCreate) SetLastAPIResponseAt(v time.Time) *DNSRecordCreate {
-	_c.mutation.SetLastAPIResponseAt(v)
-	return _c
-}
-
-// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
-func (_c *DNSRecordCreate) SetNillableLastAPIResponseAt(v *time.Time) *DNSRecordCreate {
-	if v != nil {
-		_c.SetLastAPIResponseAt(*v)
-	}
-	return _c
-}
-
 // SetID sets the "id" field.
 func (_c *DNSRecordCreate) SetID(v int64) *DNSRecordCreate {
 	_c.mutation.SetID(v)
@@ -414,18 +372,6 @@ func (_c *DNSRecordCreate) createSpec() (*DNSRecord, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.IsActive(); ok {
 		_spec.SetField(dnsrecord.FieldIsActive, field.TypeBool, value)
 		_node.IsActive = value
-	}
-	if value, ok := _c.mutation.LastRefreshAt(); ok {
-		_spec.SetField(dnsrecord.FieldLastRefreshAt, field.TypeTime, value)
-		_node.LastRefreshAt = value
-	}
-	if value, ok := _c.mutation.LastAPIResponse(); ok {
-		_spec.SetField(dnsrecord.FieldLastAPIResponse, field.TypeString, value)
-		_node.LastAPIResponse = value
-	}
-	if value, ok := _c.mutation.LastAPIResponseAt(); ok {
-		_spec.SetField(dnsrecord.FieldLastAPIResponseAt, field.TypeTime, value)
-		_node.LastAPIResponseAt = value
 	}
 	if nodes := _c.mutation.ConfigIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -661,60 +607,6 @@ func (u *DNSRecordUpsert) UpdateIsActive() *DNSRecordUpsert {
 	return u
 }
 
-// SetLastRefreshAt sets the "last_refresh_at" field.
-func (u *DNSRecordUpsert) SetLastRefreshAt(v time.Time) *DNSRecordUpsert {
-	u.Set(dnsrecord.FieldLastRefreshAt, v)
-	return u
-}
-
-// UpdateLastRefreshAt sets the "last_refresh_at" field to the value that was provided on create.
-func (u *DNSRecordUpsert) UpdateLastRefreshAt() *DNSRecordUpsert {
-	u.SetExcluded(dnsrecord.FieldLastRefreshAt)
-	return u
-}
-
-// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
-func (u *DNSRecordUpsert) ClearLastRefreshAt() *DNSRecordUpsert {
-	u.SetNull(dnsrecord.FieldLastRefreshAt)
-	return u
-}
-
-// SetLastAPIResponse sets the "last_api_response" field.
-func (u *DNSRecordUpsert) SetLastAPIResponse(v string) *DNSRecordUpsert {
-	u.Set(dnsrecord.FieldLastAPIResponse, v)
-	return u
-}
-
-// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
-func (u *DNSRecordUpsert) UpdateLastAPIResponse() *DNSRecordUpsert {
-	u.SetExcluded(dnsrecord.FieldLastAPIResponse)
-	return u
-}
-
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (u *DNSRecordUpsert) ClearLastAPIResponse() *DNSRecordUpsert {
-	u.SetNull(dnsrecord.FieldLastAPIResponse)
-	return u
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (u *DNSRecordUpsert) SetLastAPIResponseAt(v time.Time) *DNSRecordUpsert {
-	u.Set(dnsrecord.FieldLastAPIResponseAt, v)
-	return u
-}
-
-// UpdateLastAPIResponseAt sets the "last_api_response_at" field to the value that was provided on create.
-func (u *DNSRecordUpsert) UpdateLastAPIResponseAt() *DNSRecordUpsert {
-	u.SetExcluded(dnsrecord.FieldLastAPIResponseAt)
-	return u
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (u *DNSRecordUpsert) ClearLastAPIResponseAt() *DNSRecordUpsert {
-	u.SetNull(dnsrecord.FieldLastAPIResponseAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -911,69 +803,6 @@ func (u *DNSRecordUpsertOne) SetIsActive(v bool) *DNSRecordUpsertOne {
 func (u *DNSRecordUpsertOne) UpdateIsActive() *DNSRecordUpsertOne {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.UpdateIsActive()
-	})
-}
-
-// SetLastRefreshAt sets the "last_refresh_at" field.
-func (u *DNSRecordUpsertOne) SetLastRefreshAt(v time.Time) *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetLastRefreshAt(v)
-	})
-}
-
-// UpdateLastRefreshAt sets the "last_refresh_at" field to the value that was provided on create.
-func (u *DNSRecordUpsertOne) UpdateLastRefreshAt() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateLastRefreshAt()
-	})
-}
-
-// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
-func (u *DNSRecordUpsertOne) ClearLastRefreshAt() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearLastRefreshAt()
-	})
-}
-
-// SetLastAPIResponse sets the "last_api_response" field.
-func (u *DNSRecordUpsertOne) SetLastAPIResponse(v string) *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetLastAPIResponse(v)
-	})
-}
-
-// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
-func (u *DNSRecordUpsertOne) UpdateLastAPIResponse() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateLastAPIResponse()
-	})
-}
-
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (u *DNSRecordUpsertOne) ClearLastAPIResponse() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearLastAPIResponse()
-	})
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (u *DNSRecordUpsertOne) SetLastAPIResponseAt(v time.Time) *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetLastAPIResponseAt(v)
-	})
-}
-
-// UpdateLastAPIResponseAt sets the "last_api_response_at" field to the value that was provided on create.
-func (u *DNSRecordUpsertOne) UpdateLastAPIResponseAt() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateLastAPIResponseAt()
-	})
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (u *DNSRecordUpsertOne) ClearLastAPIResponseAt() *DNSRecordUpsertOne {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearLastAPIResponseAt()
 	})
 }
 
@@ -1339,69 +1168,6 @@ func (u *DNSRecordUpsertBulk) SetIsActive(v bool) *DNSRecordUpsertBulk {
 func (u *DNSRecordUpsertBulk) UpdateIsActive() *DNSRecordUpsertBulk {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.UpdateIsActive()
-	})
-}
-
-// SetLastRefreshAt sets the "last_refresh_at" field.
-func (u *DNSRecordUpsertBulk) SetLastRefreshAt(v time.Time) *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetLastRefreshAt(v)
-	})
-}
-
-// UpdateLastRefreshAt sets the "last_refresh_at" field to the value that was provided on create.
-func (u *DNSRecordUpsertBulk) UpdateLastRefreshAt() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateLastRefreshAt()
-	})
-}
-
-// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
-func (u *DNSRecordUpsertBulk) ClearLastRefreshAt() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearLastRefreshAt()
-	})
-}
-
-// SetLastAPIResponse sets the "last_api_response" field.
-func (u *DNSRecordUpsertBulk) SetLastAPIResponse(v string) *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetLastAPIResponse(v)
-	})
-}
-
-// UpdateLastAPIResponse sets the "last_api_response" field to the value that was provided on create.
-func (u *DNSRecordUpsertBulk) UpdateLastAPIResponse() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateLastAPIResponse()
-	})
-}
-
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (u *DNSRecordUpsertBulk) ClearLastAPIResponse() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearLastAPIResponse()
-	})
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (u *DNSRecordUpsertBulk) SetLastAPIResponseAt(v time.Time) *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.SetLastAPIResponseAt(v)
-	})
-}
-
-// UpdateLastAPIResponseAt sets the "last_api_response_at" field to the value that was provided on create.
-func (u *DNSRecordUpsertBulk) UpdateLastAPIResponseAt() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.UpdateLastAPIResponseAt()
-	})
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (u *DNSRecordUpsertBulk) ClearLastAPIResponseAt() *DNSRecordUpsertBulk {
-	return u.Update(func(s *DNSRecordUpsert) {
-		s.ClearLastAPIResponseAt()
 	})
 }
 

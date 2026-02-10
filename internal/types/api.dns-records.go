@@ -12,17 +12,16 @@ type GetDnsRecordsRequest struct {
 
 // 获取DNS记录 响应结构
 type GetDnsRecordResponse struct {
-	ID            int64           `json:"id" jsonschema:"DNS记录序号"`                           // DNS记录序号
-	ConfigID      int64           `json:"config_id" jsonschema:"关联的平台配置ID"`                  // 平台配置序号
-	ConfigName    string          `json:"config_name" jsonschema:"平台配置序号"`                   // 平台配置名称
-	Platform      string          `json:"platform" jsonschema:"平台平台名称"`                      // 平台平台名称
-	RecordID      any             `json:"record_id" jsonschema:"平台侧记录ID"`                    // 平台侧记录ID
-	DomainName    string          `json:"domain_name" jsonschema:"域名（例如 www.example.com）"`   // 域名（例如 www.example.com）
-	SubDomain     string          `json:"sub_domain" jsonschema:"子域名（例如 @, www, blog, api）"` // 子域名（例如 @, www, blog, api）
-	Type          string          `json:"type" jsonschema:"记录类型（A、AAAA、CNAME）"`              // 记录类型（A、AAAA、CNAME）
-	ConfigJSON    json.RawMessage `json:"config_json" jsonschema:"DNS记录配置（JSON）"`            // DNS记录配置（JSON）
-	IsActive      bool            `json:"is_active" jsonschema:"是否活跃"`                       // 是否活跃
-	LastRefreshAt time.Time       `json:"last_refresh_at" jsonschema:"最后一次刷新成功时间"`           // 最后一次刷新成功时间
+	ID         int64           `json:"id" jsonschema:"DNS记录序号"`                           // DNS记录序号
+	ConfigID   int64           `json:"config_id" jsonschema:"关联的平台配置ID"`                  // 平台配置序号
+	ConfigName string          `json:"config_name" jsonschema:"平台配置序号"`                   // 平台配置名称
+	Platform   string          `json:"platform" jsonschema:"平台平台名称"`                      // 平台平台名称
+	RecordID   any             `json:"record_id" jsonschema:"平台侧记录ID"`                    // 平台侧记录ID
+	DomainName string          `json:"domain_name" jsonschema:"域名（例如 www.example.com）"`   // 域名（例如 www.example.com）
+	SubDomain  string          `json:"sub_domain" jsonschema:"子域名（例如 @, www, blog, api）"` // 子域名（例如 @, www, blog, api）
+	Type       string          `json:"type" jsonschema:"记录类型（A、AAAA、CNAME）"`              // 记录类型（A、AAAA、CNAME）
+	ConfigJSON json.RawMessage `json:"config_json" jsonschema:"DNS记录配置（JSON）"`            // DNS记录配置（JSON）
+	IsActive   bool            `json:"is_active" jsonschema:"是否活跃"`                       // 是否活跃
 
 	IPGroupID   int64  `json:"ip_group_id" jsonschema:"关联的IP组序号（与CDN记录序号二选一）"` // IP 组序号（与 cdn_record_id 二选一）
 	IPGroupName string `json:"ip_group_name" jsonschema:"IP组名称"`               // IP 组名称
@@ -32,10 +31,8 @@ type GetDnsRecordResponse struct {
 
 	Webhooks []int64 `json:"webhooks" jsonschema:"关联的Webhook ID列表"` // 关联的 Webhook 列表
 
-	CreatedAt         time.Time `json:"-"` // 创建时间
-	UpdatedAt         time.Time `json:"-"` // 更新时间
-	LastAPIResponse   string    `json:"-"` // 最近一次接口的反馈
-	LastAPIResponseAt time.Time `json:"-"` // 最近一次接口的反馈时间
+	CreatedAt time.Time `json:"-"` // 创建时间
+	UpdatedAt time.Time `json:"-"` // 更新时间
 }
 
 // 获取DNS记录 请求结构

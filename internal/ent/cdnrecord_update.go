@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
 	"vibe_ip/internal/ent/cdnrecord"
 	"vibe_ip/internal/ent/devicegroup"
 	"vibe_ip/internal/ent/dnsrecord"
@@ -157,66 +156,6 @@ func (_u *CDNRecordUpdate) SetNillableIsActive(v *bool) *CDNRecordUpdate {
 	if v != nil {
 		_u.SetIsActive(*v)
 	}
-	return _u
-}
-
-// SetLastRefreshAt sets the "last_refresh_at" field.
-func (_u *CDNRecordUpdate) SetLastRefreshAt(v time.Time) *CDNRecordUpdate {
-	_u.mutation.SetLastRefreshAt(v)
-	return _u
-}
-
-// SetNillableLastRefreshAt sets the "last_refresh_at" field if the given value is not nil.
-func (_u *CDNRecordUpdate) SetNillableLastRefreshAt(v *time.Time) *CDNRecordUpdate {
-	if v != nil {
-		_u.SetLastRefreshAt(*v)
-	}
-	return _u
-}
-
-// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
-func (_u *CDNRecordUpdate) ClearLastRefreshAt() *CDNRecordUpdate {
-	_u.mutation.ClearLastRefreshAt()
-	return _u
-}
-
-// SetLastAPIResponse sets the "last_api_response" field.
-func (_u *CDNRecordUpdate) SetLastAPIResponse(v string) *CDNRecordUpdate {
-	_u.mutation.SetLastAPIResponse(v)
-	return _u
-}
-
-// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
-func (_u *CDNRecordUpdate) SetNillableLastAPIResponse(v *string) *CDNRecordUpdate {
-	if v != nil {
-		_u.SetLastAPIResponse(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (_u *CDNRecordUpdate) ClearLastAPIResponse() *CDNRecordUpdate {
-	_u.mutation.ClearLastAPIResponse()
-	return _u
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (_u *CDNRecordUpdate) SetLastAPIResponseAt(v time.Time) *CDNRecordUpdate {
-	_u.mutation.SetLastAPIResponseAt(v)
-	return _u
-}
-
-// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
-func (_u *CDNRecordUpdate) SetNillableLastAPIResponseAt(v *time.Time) *CDNRecordUpdate {
-	if v != nil {
-		_u.SetLastAPIResponseAt(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (_u *CDNRecordUpdate) ClearLastAPIResponseAt() *CDNRecordUpdate {
-	_u.mutation.ClearLastAPIResponseAt()
 	return _u
 }
 
@@ -387,24 +326,6 @@ func (_u *CDNRecordUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(cdnrecord.FieldIsActive, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.LastRefreshAt(); ok {
-		_spec.SetField(cdnrecord.FieldLastRefreshAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastRefreshAtCleared() {
-		_spec.ClearField(cdnrecord.FieldLastRefreshAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.LastAPIResponse(); ok {
-		_spec.SetField(cdnrecord.FieldLastAPIResponse, field.TypeString, value)
-	}
-	if _u.mutation.LastAPIResponseCleared() {
-		_spec.ClearField(cdnrecord.FieldLastAPIResponse, field.TypeString)
-	}
-	if value, ok := _u.mutation.LastAPIResponseAt(); ok {
-		_spec.SetField(cdnrecord.FieldLastAPIResponseAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastAPIResponseAtCleared() {
-		_spec.ClearField(cdnrecord.FieldLastAPIResponseAt, field.TypeTime)
 	}
 	if _u.mutation.IPGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -657,66 +578,6 @@ func (_u *CDNRecordUpdateOne) SetNillableIsActive(v *bool) *CDNRecordUpdateOne {
 	return _u
 }
 
-// SetLastRefreshAt sets the "last_refresh_at" field.
-func (_u *CDNRecordUpdateOne) SetLastRefreshAt(v time.Time) *CDNRecordUpdateOne {
-	_u.mutation.SetLastRefreshAt(v)
-	return _u
-}
-
-// SetNillableLastRefreshAt sets the "last_refresh_at" field if the given value is not nil.
-func (_u *CDNRecordUpdateOne) SetNillableLastRefreshAt(v *time.Time) *CDNRecordUpdateOne {
-	if v != nil {
-		_u.SetLastRefreshAt(*v)
-	}
-	return _u
-}
-
-// ClearLastRefreshAt clears the value of the "last_refresh_at" field.
-func (_u *CDNRecordUpdateOne) ClearLastRefreshAt() *CDNRecordUpdateOne {
-	_u.mutation.ClearLastRefreshAt()
-	return _u
-}
-
-// SetLastAPIResponse sets the "last_api_response" field.
-func (_u *CDNRecordUpdateOne) SetLastAPIResponse(v string) *CDNRecordUpdateOne {
-	_u.mutation.SetLastAPIResponse(v)
-	return _u
-}
-
-// SetNillableLastAPIResponse sets the "last_api_response" field if the given value is not nil.
-func (_u *CDNRecordUpdateOne) SetNillableLastAPIResponse(v *string) *CDNRecordUpdateOne {
-	if v != nil {
-		_u.SetLastAPIResponse(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponse clears the value of the "last_api_response" field.
-func (_u *CDNRecordUpdateOne) ClearLastAPIResponse() *CDNRecordUpdateOne {
-	_u.mutation.ClearLastAPIResponse()
-	return _u
-}
-
-// SetLastAPIResponseAt sets the "last_api_response_at" field.
-func (_u *CDNRecordUpdateOne) SetLastAPIResponseAt(v time.Time) *CDNRecordUpdateOne {
-	_u.mutation.SetLastAPIResponseAt(v)
-	return _u
-}
-
-// SetNillableLastAPIResponseAt sets the "last_api_response_at" field if the given value is not nil.
-func (_u *CDNRecordUpdateOne) SetNillableLastAPIResponseAt(v *time.Time) *CDNRecordUpdateOne {
-	if v != nil {
-		_u.SetLastAPIResponseAt(*v)
-	}
-	return _u
-}
-
-// ClearLastAPIResponseAt clears the value of the "last_api_response_at" field.
-func (_u *CDNRecordUpdateOne) ClearLastAPIResponseAt() *CDNRecordUpdateOne {
-	_u.mutation.ClearLastAPIResponseAt()
-	return _u
-}
-
 // SetIPGroup sets the "ip_group" edge to the IpGroup entity.
 func (_u *CDNRecordUpdateOne) SetIPGroup(v *IpGroup) *CDNRecordUpdateOne {
 	return _u.SetIPGroupID(v.ID)
@@ -914,24 +775,6 @@ func (_u *CDNRecordUpdateOne) sqlSave(ctx context.Context) (_node *CDNRecord, er
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(cdnrecord.FieldIsActive, field.TypeBool, value)
-	}
-	if value, ok := _u.mutation.LastRefreshAt(); ok {
-		_spec.SetField(cdnrecord.FieldLastRefreshAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastRefreshAtCleared() {
-		_spec.ClearField(cdnrecord.FieldLastRefreshAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.LastAPIResponse(); ok {
-		_spec.SetField(cdnrecord.FieldLastAPIResponse, field.TypeString, value)
-	}
-	if _u.mutation.LastAPIResponseCleared() {
-		_spec.ClearField(cdnrecord.FieldLastAPIResponse, field.TypeString)
-	}
-	if value, ok := _u.mutation.LastAPIResponseAt(); ok {
-		_spec.SetField(cdnrecord.FieldLastAPIResponseAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastAPIResponseAtCleared() {
-		_spec.ClearField(cdnrecord.FieldLastAPIResponseAt, field.TypeTime)
 	}
 	if _u.mutation.IPGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
