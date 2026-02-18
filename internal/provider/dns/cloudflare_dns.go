@@ -130,9 +130,6 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain_name string, su
 	requestDnsQuery.Name = cloudflare.F(dns.RecordListParamsName{
 		Exact: cloudflare.String(full_domain),
 	})
-	if record_type != "" {
-		requestDnsQuery.Type = cloudflare.F(dns.RecordListParamsType(record_type))
-	}
 	responseDnsQuery, err := p.Provider.Client.DNS.Records.List(ctx, requestDnsQuery)
 	if err != nil {
 		return nil, fmt.Errorf("接口 DNS.Records.List 失败 %w", err)
@@ -159,13 +156,15 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain_name string, su
 			// 查找记录集的描述信息
 			itemComment := item.Comment
 
-			// 检查记录类型
-			if record_type != "" && !utils.EqualDomainIgnoreCase(itemRecordType, record_type) {
-				continue
-			}
-
 			// 域名ID
 			p.InternalData.RecordID = item.ID
+
+			// 检查记录类型
+			if record_type != "" && !utils.EqualDomainIgnoreCase(itemRecordType, record_type) {
+				p.InternalData.IsContinue = true
+				p.InternalData.Tips = fmt.Sprintf("记录类型不匹配，期望 %v，实际 %v", record_type, itemRecordType)
+				return p.InternalData, nil
+			}
 
 			// 判断记录值
 			if !utils.EqualDomainIgnoreCase(itemOriginValue, origin_value) {
