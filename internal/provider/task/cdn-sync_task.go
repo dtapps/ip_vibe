@@ -306,6 +306,15 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 		}
 	}
 
+	// 获取CDN域名
+	cdnDomain := cdnTask.GetCdnDomain()
+	if cdnDomain != "" && record.FullDomain != cdnDomain {
+		err = record.Update().SetCdnDomain(cdnDomain).Exec(ctx)
+		if err != nil {
+			return "", fmt.Errorf("更新CDN域名失败: %w", err)
+		}
+	}
+
 	return fmt.Sprintf("域名 %s 同步成功 (源站:%v)", record.SubDomain, originValues), nil
 }
 

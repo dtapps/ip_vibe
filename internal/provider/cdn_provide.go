@@ -38,7 +38,8 @@ type CDNTask struct {
 	platform_config_json json.RawMessage // 平台配置
 	record_config_json   json.RawMessage // 记录配置
 
-	isNotification bool // 是否通知
+	isNotification bool   // 是否通知
+	cdnDomain      string // CDN域名
 }
 
 func NewCDNTask(logger *slog.Logger, provider CDNProvider, platform_config_json json.RawMessage, record_config_json json.RawMessage) (t *CDNTask, err error) {
@@ -138,6 +139,8 @@ func (t *CDNTask) Execute(ctx context.Context, config *CDNConfigParams) (err err
 		return err
 	}
 
+	t.cdnDomain = checkData.CdnDomain
+
 	if !checkData.IsContinue {
 		t.logger.WarnContext(ctx, "没有变化无需更新")
 		return nil
@@ -172,4 +175,9 @@ func (t *CDNTask) Execute(ctx context.Context, config *CDNConfigParams) (err err
 // IsNotification 是否通知
 func (t *CDNTask) IsNotification() bool {
 	return t.isNotification
+}
+
+// GetCdnDomain 获取CDN域名
+func (t *CDNTask) GetCdnDomain() string {
+	return t.cdnDomain
 }
