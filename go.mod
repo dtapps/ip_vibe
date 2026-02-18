@@ -1,6 +1,6 @@
 module vibe_ip
 
-go 1.26rc3
+go 1.26.0
 
 ignore ./cmd/backend/static
 

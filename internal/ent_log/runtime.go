@@ -105,10 +105,6 @@ func init() {
 	operationlogDescCreatedAt := operationlogMixinFields0[0].Descriptor()
 	// operationlog.DefaultCreatedAt holds the default value on creation for the created_at field.
 	operationlog.DefaultCreatedAt = operationlogDescCreatedAt.Default.(func() time.Time)
-	// operationlogDescGoVersion is the schema descriptor for go_version field.
-	operationlogDescGoVersion := operationlogFields[9].Descriptor()
-	// operationlog.DefaultGoVersion holds the default value on creation for the go_version field.
-	operationlog.DefaultGoVersion = operationlogDescGoVersion.Default.(string)
 	// operationlogDescID is the schema descriptor for id field.
 	operationlogDescID := operationlogFields[0].Descriptor()
 	// operationlog.IDValidator is a validator for the "id" field. It is called by the builders before save.

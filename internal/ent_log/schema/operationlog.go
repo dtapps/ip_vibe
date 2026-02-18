@@ -1,7 +1,6 @@
 package schema
 
 import (
-	"runtime"
 	"vibe_ip/internal/ent/schema/schemamixin"
 	"vibe_ip/internal/ent/schema/schematype"
 
@@ -100,7 +99,6 @@ func (OperationLog) Fields() []ent.Field {
 			Annotations(entsql.WithComments(true)),
 
 		field.String("go_version").
-			Default(runtime.Version()).
 			Optional().
 			Immutable().
 			Comment("Go 版本").

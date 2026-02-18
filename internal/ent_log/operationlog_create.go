@@ -199,10 +199,6 @@ func (_c *OperationLogCreate) defaults() {
 		v := operationlog.DefaultStatus
 		_c.mutation.SetStatus(v)
 	}
-	if _, ok := _c.mutation.GoVersion(); !ok {
-		v := operationlog.DefaultGoVersion
-		_c.mutation.SetGoVersion(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.

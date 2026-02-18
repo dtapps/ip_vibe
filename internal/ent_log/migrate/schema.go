@@ -224,7 +224,7 @@ var (
 		{Name: "new_value", Type: field.TypeJSON, Nullable: true, Comment: "新值"},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"unknown", "success", "failed"}, Default: "unknown"},
 		{Name: "message", Type: field.TypeString, Nullable: true, Comment: "详情"},
-		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本", Default: "go1.26rc3"},
+		{Name: "go_version", Type: field.TypeString, Nullable: true, Comment: "Go 版本"},
 	}
 	// OperationLogTable holds the schema information for the "operation_log" table.
 	OperationLogTable = &schema.Table{

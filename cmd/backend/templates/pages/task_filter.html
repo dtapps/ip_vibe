@@ -21,8 +21,8 @@
 
         <div class="flex items-center gap-3">
             <span class="ui-filter-label">任务名称</span>
-            <input type="text" name="entry_id" value="{{ if $filter.Name }}{{ $filter.Name }}{{ end }}"
-                placeholder="任务名称" class="ui-filter-input-compact w-20 font-mono text-center">
+            <input type="text" name="name" value="{{ if $filter.Name }}{{ $filter.Name }}{{ end }}" placeholder="任务名称"
+                class="ui-filter-input-compact w-20 font-mono text-center">
         </div>
 
         <div class="flex items-center gap-3">
