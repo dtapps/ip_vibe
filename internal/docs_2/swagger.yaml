@@ -598,7 +598,10 @@ definitions:
         description: 平台配置名称
         type: string
       domain_name:
-        description: 域名（例如 www.example.com）
+        description: 域名名称（例如 example.com）
+        type: string
+      full_domain:
+        description: 完整域名（例如 www.example.com）
         type: string
       id:
         description: CDN记录序号
@@ -612,9 +615,6 @@ definitions:
       is_active:
         description: 是否活跃
         type: boolean
-      last_refresh_at:
-        description: 最后一次刷新成功时间
-        type: string
       platform:
         description: 平台平台名称
         type: string
@@ -871,7 +871,10 @@ definitions:
         description: 平台配置名称
         type: string
       domain_name:
-        description: 域名（例如 www.example.com）
+        description: 域名名称（例如 example.com）
+        type: string
+      full_domain:
+        description: 完整域名（例如 www.example.com）
         type: string
       id:
         description: DNS记录序号
@@ -885,9 +888,6 @@ definitions:
       is_active:
         description: 是否活跃
         type: boolean
-      last_refresh_at:
-        description: 最后一次刷新成功时间
-        type: string
       platform:
         description: 平台平台名称
         type: string
@@ -1236,20 +1236,8 @@ definitions:
     type: object
   vibe_ip_internal_types.GetSettingResponse:
     properties:
-      cdn_refresh_task_time:
-        description: CDN刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
-        type: string
       device_offline_invalid_time:
         description: 设备离线失效时间（分，默认 12 分钟，0表示不失效）
-        type: integer
-      dns_refresh_task_time:
-        description: DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
-        type: string
-      history_data_retain_time:
-        description: 历史数据保留时间（天，默认 365 天）
-        type: integer
-      http_request_log_record_time:
-        description: HTTP请求日志记录时间（天，默认 90 天）
         type: integer
       ip_report_interval_time:
         description: IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）
@@ -1260,15 +1248,6 @@ definitions:
       port_forward_report_time:
         description: 端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）
         type: string
-      ssl_apply_task_time:
-        description: SSL申请任务时间（时，默认 8-10 小时，多个时用-分隔）
-        type: string
-      ssl_refresh_task_time:
-        description: SSL刷新任务时间（时，默认 12-24 小时，多个时用-分隔）
-        type: string
-      statistic_data_retain_time:
-        description: 统计数据保留时间（天，默认 365 天）
-        type: integer
     type: object
   vibe_ip_internal_types.GetTunRecordResponse:
     properties:
@@ -1785,20 +1764,8 @@ definitions:
     type: object
   vibe_ip_internal_types.UpdateSettingRequest:
     properties:
-      cdn_refresh_task_time:
-        description: CDN刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
-        type: string
       device_offline_invalid_time:
         description: 设备离线失效时间（分，默认 12 分钟，0表示不失效）
-        type: integer
-      dns_refresh_task_time:
-        description: DNS刷新任务时间（分，默认 10-12 分钟，多个时用-分隔）
-        type: string
-      history_data_retain_time:
-        description: 历史数据保留时间（天，默认 365 天）
-        type: integer
-      http_request_log_record_time:
-        description: HTTP请求日志记录时间（天，默认 90 天）
         type: integer
       ip_report_interval_time:
         description: IP上报间隔时间（分，默认 8-12 分钟，多个时用-分隔）
@@ -1809,15 +1776,6 @@ definitions:
       port_forward_report_time:
         description: 端口转发统计上报时间（分，默认 8-12 分钟，多个时用-分隔）
         type: string
-      ssl_apply_task_time:
-        description: SSL申请任务时间（时，默认 8-10 小时，多个时用-分隔）
-        type: string
-      ssl_refresh_task_time:
-        description: SSL刷新任务时间（时，默认 12-24 小时，多个时用-分隔）
-        type: string
-      statistic_data_retain_time:
-        description: 统计数据保留时间（天，默认 365 天）
-        type: integer
     type: object
   vibe_ip_internal_types.UpdateTaskRequest:
     properties:

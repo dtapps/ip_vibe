@@ -8,7 +8,7 @@ import (
 	"vibe_ip/internal/handlers"
 	"vibe_ip/internal/types"
 
-	"github.com/chenyahui/gin-cache"
+	cache "github.com/chenyahui/gin-cache"
 	"github.com/chenyahui/gin-cache/persist"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
