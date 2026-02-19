@@ -428,7 +428,7 @@ github.com/go-acme/alidns-20150109/v4/client
 # github.com/go-acme/esa-20240910/v2 v2.48.0
 ## explicit; go 1.14
 github.com/go-acme/esa-20240910/v2/client
-# github.com/go-acme/lego/v4 v4.31.0
+# github.com/go-acme/lego/v4 v4.32.0
 ## explicit; go 1.24.0
 github.com/go-acme/lego/v4/acme
 github.com/go-acme/lego/v4/acme/api

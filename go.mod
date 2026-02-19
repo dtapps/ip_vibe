@@ -38,7 +38,7 @@ require (
 	github.com/gin-contrib/multitemplate v1.1.1
 	github.com/gin-contrib/requestid v1.0.5
 	github.com/gin-gonic/gin v1.11.0
-	github.com/go-acme/lego/v4 v4.31.0
+	github.com/go-acme/lego/v4 v4.32.0
 	github.com/go-co-op/gocron/v2 v2.19.1
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
