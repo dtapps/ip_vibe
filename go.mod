@@ -32,7 +32,7 @@ require (
 	github.com/corazawaf/coraza/v3 v3.3.3
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/dromara/carbon/v2 v2.6.16
-	github.com/envoyproxy/protoc-gen-validate v1.3.0
+	github.com/envoyproxy/protoc-gen-validate v1.3.3
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-contrib/gzip v1.2.5
 	github.com/gin-contrib/multitemplate v1.1.1
@@ -48,7 +48,7 @@ require (
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.82
 	github.com/miekg/dns v1.1.72
-	github.com/modelcontextprotocol/go-sdk v1.3.0
+	github.com/modelcontextprotocol/go-sdk v1.3.1
 	github.com/qiniu/go-sdk/v7 v7.25.6
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/spf13/cast v1.10.0
@@ -87,7 +87,7 @@ require (
 	google.golang.org/grpc v1.79.1
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	modernc.org/sqlite v1.46.0
+	modernc.org/sqlite v1.46.1
 	resty.dev/v3 v3.0.0-beta.6
 )
 
@@ -172,6 +172,8 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
+	github.com/segmentio/asm v1.2.1 // indirect
+	github.com/segmentio/encoding v0.5.3 // indirect
 	github.com/shoenig/go-m1cpu v0.1.7 // indirect
 	github.com/sv-tools/openapi v0.4.0 // indirect
 	github.com/tidwall/match v1.2.0 // indirect
@@ -193,7 +195,7 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.24.0 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
-	golang.org/x/exp v0.0.0-20260212183809-81e46e3db34a // indirect
+	golang.org/x/exp v0.0.0-20260218203240-3dfff04db8fa // indirect
 	golang.org/x/mod v0.33.0 // indirect
 	golang.org/x/oauth2 v0.35.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect

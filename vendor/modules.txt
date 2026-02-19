@@ -387,8 +387,8 @@ github.com/dromara/carbon/v2/calendar/persian
 # github.com/dustin/go-humanize v1.0.1
 ## explicit; go 1.16
 github.com/dustin/go-humanize
-# github.com/envoyproxy/protoc-gen-validate v1.3.0
-## explicit; go 1.21.1
+# github.com/envoyproxy/protoc-gen-validate v1.3.3
+## explicit; go 1.24.1
 github.com/envoyproxy/protoc-gen-validate/validate
 # github.com/gabriel-vasile/mimetype v1.4.13
 ## explicit; go 1.21
@@ -723,9 +723,10 @@ github.com/miekg/dns
 # github.com/mitchellh/go-wordwrap v1.0.1
 ## explicit; go 1.14
 github.com/mitchellh/go-wordwrap
-# github.com/modelcontextprotocol/go-sdk v1.3.0
+# github.com/modelcontextprotocol/go-sdk v1.3.1
 ## explicit; go 1.23.0
 github.com/modelcontextprotocol/go-sdk/auth
+github.com/modelcontextprotocol/go-sdk/internal/json
 github.com/modelcontextprotocol/go-sdk/internal/jsonrpc2
 github.com/modelcontextprotocol/go-sdk/internal/util
 github.com/modelcontextprotocol/go-sdk/internal/xcontext
@@ -815,6 +816,22 @@ github.com/remyoudompheng/bigfft
 github.com/robfig/cron/v3
 # github.com/rogpeppe/go-internal v1.14.1
 ## explicit; go 1.23
+# github.com/segmentio/asm v1.2.1
+## explicit; go 1.18
+github.com/segmentio/asm/ascii
+github.com/segmentio/asm/base64
+github.com/segmentio/asm/cpu
+github.com/segmentio/asm/cpu/arm
+github.com/segmentio/asm/cpu/arm64
+github.com/segmentio/asm/cpu/cpuid
+github.com/segmentio/asm/cpu/x86
+github.com/segmentio/asm/internal/unsafebytes
+github.com/segmentio/asm/keyset
+# github.com/segmentio/encoding v0.5.3
+## explicit; go 1.23
+github.com/segmentio/encoding/ascii
+github.com/segmentio/encoding/iso8601
+github.com/segmentio/encoding/json
 # github.com/shirou/gopsutil/v3 v3.24.5
 ## explicit; go 1.18
 github.com/shirou/gopsutil/v3/common
@@ -1049,7 +1066,7 @@ golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
 golang.org/x/crypto/ocsp
 golang.org/x/crypto/sha3
-# golang.org/x/exp v0.0.0-20260212183809-81e46e3db34a
+# golang.org/x/exp v0.0.0-20260218203240-3dfff04db8fa
 ## explicit; go 1.25.0
 golang.org/x/exp/constraints
 # golang.org/x/mod v0.33.0
@@ -1309,7 +1326,7 @@ modernc.org/mathutil
 # modernc.org/memory v1.11.0
 ## explicit; go 1.23.0
 modernc.org/memory
-# modernc.org/sqlite v1.46.0
+# modernc.org/sqlite v1.46.1
 ## explicit; go 1.24.0
 modernc.org/sqlite
 modernc.org/sqlite/lib
