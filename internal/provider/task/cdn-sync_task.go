@@ -300,7 +300,7 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 	// 获取远程CDN域名
 	remoteCdnDomain := cdnTask.GetCdnDomain()
 	if remoteCdnDomain != "" {
-		if !utils.EqualDomainIgnoreCase(record.FullDomain, remoteCdnDomain) {
+		if !utils.EqualDomainIgnoreCase(record.CdnDomain, remoteCdnDomain) {
 			updateOne.SetCdnDomain(remoteCdnDomain)
 			isUpdate = true
 		}
