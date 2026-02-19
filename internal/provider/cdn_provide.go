@@ -39,6 +39,7 @@ type CDNTask struct {
 	record_config_json   json.RawMessage // 记录配置
 
 	isNotification bool   // 是否通知
+	recordID       string // 域名ID
 	cdnDomain      string // CDN域名
 }
 
@@ -139,6 +140,7 @@ func (t *CDNTask) Execute(ctx context.Context, config *CDNConfigParams) (err err
 		return err
 	}
 
+	t.recordID = checkData.RecordID
 	t.cdnDomain = checkData.CdnDomain
 
 	if !checkData.IsContinue {
@@ -175,6 +177,11 @@ func (t *CDNTask) Execute(ctx context.Context, config *CDNConfigParams) (err err
 // IsNotification 是否通知
 func (t *CDNTask) IsNotification() bool {
 	return t.isNotification
+}
+
+// GetRecordID 获取域名ID
+func (t *CDNTask) GetRecordID() string {
+	return t.recordID
 }
 
 // GetCdnDomain 获取CDN域名

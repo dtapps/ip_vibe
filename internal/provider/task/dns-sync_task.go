@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/cronjob"
@@ -277,6 +278,27 @@ func (p *DNSSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 	})
 	if err != nil {
 		return "", err
+	}
+
+	// 准备更新
+	updateOne := record.Update()
+	isUpdate := false
+
+	// 获取远程记录ID
+	remoteRecordID := dnsTask.GetRecordID()
+	if remoteRecordID != "" {
+		if !strings.EqualFold(record.RecordID, remoteRecordID) {
+			updateOne.SetRecordID(remoteRecordID)
+			isUpdate = true
+		}
+	}
+
+	// 执行更新
+	if isUpdate {
+		err = updateOne.Exec(ctx)
+		if err != nil {
+			return "", fmt.Errorf("更新DNS记录失败: %w", err)
+		}
 	}
 
 	// 执行DNS通知

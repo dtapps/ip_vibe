@@ -36,7 +36,8 @@ type DNSTask struct {
 	platform_config_json json.RawMessage // 平台配置
 	record_config_json   json.RawMessage // 记录配置
 
-	isNotification bool // 是否通知
+	isNotification bool   // 是否通知
+	recordID       string // 域名ID
 }
 
 // NewDNSTask 创建 DNS 更新任务
@@ -137,6 +138,8 @@ func (t *DNSTask) Execute(ctx context.Context, config *DNSConfigParams) (err err
 		return err
 	}
 
+	t.recordID = checkData.RecordID
+
 	if !checkData.IsContinue {
 		t.logger.WarnContext(ctx, "没有变化无需更新")
 		return nil
@@ -170,4 +173,9 @@ func (t *DNSTask) Execute(ctx context.Context, config *DNSConfigParams) (err err
 // IsNotification 是否通知
 func (t *DNSTask) IsNotification() bool {
 	return t.isNotification
+}
+
+// GetRecordID 获取域名ID
+func (t *DNSTask) GetRecordID() string {
+	return t.recordID
 }

@@ -17,6 +17,7 @@ import (
 	"vibe_ip/internal/helper/db_cache"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/provider/cdn"
+	"vibe_ip/internal/utils"
 
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/gojson"
@@ -283,6 +284,36 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 		return "", fmt.Errorf("执行CDN更新失败: %w", err)
 	}
 
+	// 准备更新
+	updateOne := record.Update()
+	isUpdate := false
+
+	// 获取远程记录ID
+	remoteRecordID := cdnTask.GetRecordID()
+	if remoteRecordID != "" {
+		if !strings.EqualFold(record.RecordID, remoteRecordID) {
+			updateOne.SetRecordID(remoteRecordID)
+			isUpdate = true
+		}
+	}
+
+	// 获取远程CDN域名
+	remoteCdnDomain := cdnTask.GetCdnDomain()
+	if remoteCdnDomain != "" {
+		if !utils.EqualDomainIgnoreCase(record.FullDomain, remoteCdnDomain) {
+			updateOne.SetCdnDomain(remoteCdnDomain)
+			isUpdate = true
+		}
+	}
+
+	// 执行更新
+	if isUpdate {
+		err = updateOne.Exec(ctx)
+		if err != nil {
+			return "", fmt.Errorf("更新CDN记录失败: %w", err)
+		}
+	}
+
 	// 执行CDN通知
 	if cdnTask.IsNotification() {
 		err = p.webhookSendSyncHandler.AddTask(
@@ -303,15 +334,6 @@ func (p *CDNSyncTaskProvider) Process(ctx context.Context, args json.RawMessage,
 		)
 		if err != nil {
 			return "", fmt.Errorf("添加CDN通知任务失败: %w", err)
-		}
-	}
-
-	// 获取CDN域名
-	cdnDomain := cdnTask.GetCdnDomain()
-	if cdnDomain != "" && record.FullDomain != cdnDomain {
-		err = record.Update().SetCdnDomain(cdnDomain).Exec(ctx)
-		if err != nil {
-			return "", fmt.Errorf("更新CDN域名失败: %w", err)
 		}
 	}
 
