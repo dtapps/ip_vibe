@@ -46,7 +46,7 @@ require (
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.187
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
-	github.com/kingsoftcloud/sdk-go/v2 v2.2.82
+	github.com/kingsoftcloud/sdk-go/v2 v2.2.83
 	github.com/miekg/dns v1.1.72
 	github.com/modelcontextprotocol/go-sdk v1.3.1
 	github.com/qiniu/go-sdk/v7 v7.25.6
@@ -61,7 +61,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.48
 	github.com/tidwall/gjson v1.18.0
-	github.com/volcengine/volcengine-go-sdk v1.2.12
+	github.com/volcengine/volcengine-go-sdk v1.2.13
 	github.com/wdcbot/qingfeng v1.6.5
 	go.dtapp.net/library/contrib/http_log v1.0.11
 	go.dtapp.net/library/contrib/req_log v1.0.4
@@ -80,10 +80,10 @@ require (
 	go.dtapp.net/library/utils/gorequest v1.1.3
 	go.dtapp.net/library/utils/gostring v1.0.32
 	go.dtapp.net/library/utils/gotime v1.0.18
-	golang.org/x/net v0.50.0
+	golang.org/x/net v0.51.0
 	golang.org/x/sync v0.19.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20260217215200-42d3e9bedb6d
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260217215200-42d3e9bedb6d
+	google.golang.org/genproto/googleapis/api v0.0.0-20260223185530-2f722ef697dc
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260223185530-2f722ef697dc
 	google.golang.org/grpc v1.79.1
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -112,7 +112,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
-	github.com/corazawaf/libinjection-go v0.2.3 // indirect
+	github.com/corazawaf/libinjection-go v0.3.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
@@ -188,7 +188,7 @@ require (
 	github.com/volcengine/volc-sdk-golang v1.0.237 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	github.com/zclconf/go-cty v1.17.0 // indirect
+	github.com/zclconf/go-cty v1.18.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.2.0 // indirect
 	go.mongodb.org/mongo-driver v1.17.9 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
