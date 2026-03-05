@@ -195,7 +195,8 @@ async function onLiveIPPopup(id, name) {
 
     // 格式化 IP 列表
     const preList = ipGroupDevices.map(
-      (d) => `${d.name} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"}`,
+      (d) =>
+        `${d.name} - ${d.ip_v4 || "-"} / ${d.ip_v6 || "-"} - ${d.online ? "在线" : "离线"} - ${d.status || "-"}`,
     );
 
     // 显示弹窗内容

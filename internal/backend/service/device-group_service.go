@@ -41,6 +41,8 @@ type DeviceGroupServiceImpl struct {
 	logDb  *ent_log.Client // 日志数据库客户端
 	logger *slog.Logger    // 日志记录器
 	debug  bool            // 调试模式
+
+	deviceService DeviceService // 设备服务
 }
 
 // NewDeviceGroupService 创建 IP 组服务实例
@@ -54,6 +56,8 @@ func NewDeviceGroupService(db *ent.Client, logDb *ent_log.Client, logger *slog.L
 		logDb:  logDb,
 		logger: logger,
 		debug:  debug,
+
+		deviceService: NewDeviceService(db, logDb, logger),
 	}
 }
 
@@ -376,16 +380,11 @@ func (s *DeviceGroupServiceImpl) GetDeviceGroupDevices(ctx context.Context, id i
 	deviceGroupDevices := make([]*types.GetDeviceResponse, 0, len(firstDeviceGroup.Edges.Devices))
 	if devices, err := firstDeviceGroup.Edges.DevicesOrErr(); err == nil {
 		for _, item := range devices {
-			deviceGroupDevices = append(deviceGroupDevices, &types.GetDeviceResponse{
-				ID:              item.ID,
-				Code:            item.Code,
-				Name:            item.Name,
-				Description:     item.Description,
-				IPV4:            item.IPV4,
-				IPV6:            item.IPV6,
-				LastReportedAt:  item.LastReportedAt,
-				LastHeartbeatAt: item.LastHeartbeatAt,
-			})
+			itemResp, err := s.deviceService.BuildResponse(ctx, item)
+			if err != nil {
+				return nil, err
+			}
+			deviceGroupDevices = append(deviceGroupDevices, itemResp)
 		}
 	}
 	return deviceGroupDevices, nil
