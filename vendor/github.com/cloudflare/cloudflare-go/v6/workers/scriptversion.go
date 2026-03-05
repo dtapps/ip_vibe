@@ -215,8 +215,8 @@ type ScriptVersionNewResponseResourcesBinding struct {
 	Format ScriptVersionNewResponseResourcesBindingsFormat `json:"format"`
 	// Name of the Vectorize index to bind to.
 	IndexName string `json:"index_name"`
-	// JSON data to use.
-	Json string `json:"json"`
+	// This field can have the runtime type of [interface{}].
+	Json interface{} `json:"json"`
 	// The
 	// [jurisdiction](https://developers.cloudflare.com/r2/reference/data-location/#jurisdictional-restrictions)
 	// of the R2 bucket.
@@ -876,7 +876,7 @@ func (r ScriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNames
 type ScriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutbound struct {
 	// Pass information from the Dispatch Worker to the Outbound Worker through the
 	// parameters.
-	Params []string `json:"params"`
+	Params []ScriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParam `json:"params"`
 	// Outbound worker.
 	Worker ScriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundWorker `json:"worker"`
 	JSON   scriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundJSON   `json:"-"`
@@ -900,8 +900,33 @@ func (r scriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNames
 	return r.raw
 }
 
+type ScriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParam struct {
+	// Name of the parameter.
+	Name string                                                                                        `json:"name,required"`
+	JSON scriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParamJSON `json:"-"`
+}
+
+// scriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParamJSON
+// contains the JSON metadata for the struct
+// [ScriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParam]
+type scriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParamJSON struct {
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ScriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParam) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r scriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParamJSON) RawJSON() string {
+	return r.raw
+}
+
 // Outbound worker.
 type ScriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundWorker struct {
+	// Entrypoint to invoke on the outbound worker.
+	Entrypoint string `json:"entrypoint"`
 	// Environment of the outbound worker.
 	Environment string `json:"environment"`
 	// Name of the outbound worker.
@@ -913,6 +938,7 @@ type ScriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespac
 // contains the JSON metadata for the struct
 // [ScriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundWorker]
 type scriptVersionNewResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundWorkerJSON struct {
+	Entrypoint  apijson.Field
 	Environment apijson.Field
 	Service     apijson.Field
 	raw         string
@@ -1131,7 +1157,7 @@ func (r ScriptVersionNewResponseResourcesBindingsWorkersBindingKindImagesType) I
 
 type ScriptVersionNewResponseResourcesBindingsWorkersBindingKindJson struct {
 	// JSON data to use.
-	Json string `json:"json,required"`
+	Json interface{} `json:"json,required"`
 	// A JavaScript variable name for the binding.
 	Name string `json:"name,required"`
 	// The kind of resource that the binding provides.
@@ -2549,8 +2575,8 @@ type ScriptVersionGetResponseResourcesBinding struct {
 	Format ScriptVersionGetResponseResourcesBindingsFormat `json:"format"`
 	// Name of the Vectorize index to bind to.
 	IndexName string `json:"index_name"`
-	// JSON data to use.
-	Json string `json:"json"`
+	// This field can have the runtime type of [interface{}].
+	Json interface{} `json:"json"`
 	// The
 	// [jurisdiction](https://developers.cloudflare.com/r2/reference/data-location/#jurisdictional-restrictions)
 	// of the R2 bucket.
@@ -3210,7 +3236,7 @@ func (r ScriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNames
 type ScriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutbound struct {
 	// Pass information from the Dispatch Worker to the Outbound Worker through the
 	// parameters.
-	Params []string `json:"params"`
+	Params []ScriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParam `json:"params"`
 	// Outbound worker.
 	Worker ScriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundWorker `json:"worker"`
 	JSON   scriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundJSON   `json:"-"`
@@ -3234,8 +3260,33 @@ func (r scriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNames
 	return r.raw
 }
 
+type ScriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParam struct {
+	// Name of the parameter.
+	Name string                                                                                        `json:"name,required"`
+	JSON scriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParamJSON `json:"-"`
+}
+
+// scriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParamJSON
+// contains the JSON metadata for the struct
+// [ScriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParam]
+type scriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParamJSON struct {
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ScriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParam) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r scriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundParamJSON) RawJSON() string {
+	return r.raw
+}
+
 // Outbound worker.
 type ScriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundWorker struct {
+	// Entrypoint to invoke on the outbound worker.
+	Entrypoint string `json:"entrypoint"`
 	// Environment of the outbound worker.
 	Environment string `json:"environment"`
 	// Name of the outbound worker.
@@ -3247,6 +3298,7 @@ type ScriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespac
 // contains the JSON metadata for the struct
 // [ScriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundWorker]
 type scriptVersionGetResponseResourcesBindingsWorkersBindingKindDispatchNamespaceOutboundWorkerJSON struct {
+	Entrypoint  apijson.Field
 	Environment apijson.Field
 	Service     apijson.Field
 	raw         string
@@ -3465,7 +3517,7 @@ func (r ScriptVersionGetResponseResourcesBindingsWorkersBindingKindImagesType) I
 
 type ScriptVersionGetResponseResourcesBindingsWorkersBindingKindJson struct {
 	// JSON data to use.
-	Json string `json:"json,required"`
+	Json interface{} `json:"json,required"`
 	// A JavaScript variable name for the binding.
 	Name string `json:"name,required"`
 	// The kind of resource that the binding provides.
@@ -4711,6 +4763,10 @@ type ScriptVersionNewParams struct {
 	AccountID param.Field[string] `path:"account_id,required"`
 	// JSON-encoded metadata about the uploaded parts and Worker configuration.
 	Metadata param.Field[ScriptVersionNewParamsMetadata] `json:"metadata,required"`
+	// When set to "strict", the upload will fail if any `inherit` type bindings cannot
+	// be resolved against the previous version of the Worker. Without this,
+	// unresolvable inherit bindings are silently dropped.
+	BindingsInherit param.Field[ScriptVersionNewParamsBindingsInherit] `query:"bindings_inherit"`
 	// An array of modules (often JavaScript files) comprising a Worker script. At
 	// least one module must be present and referenced in the metadata as `main_module`
 	// or `body_part` by filename.<br/>Possible Content-Type(s) are:
@@ -4734,6 +4790,14 @@ func (r ScriptVersionNewParams) MarshalMultipart() (data []byte, contentType str
 		return nil, "", err
 	}
 	return buf.Bytes(), writer.FormDataContentType(), nil
+}
+
+// URLQuery serializes [ScriptVersionNewParams]'s query parameters as `url.Values`.
+func (r ScriptVersionNewParams) URLQuery() (v url.Values) {
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		NestedFormat: apiquery.NestedQueryFormatDots,
+	})
 }
 
 // JSON-encoded metadata about the uploaded parts and Worker configuration.
@@ -4804,9 +4868,8 @@ type ScriptVersionNewParamsMetadataBinding struct {
 	// [Learn more](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#format).
 	Format param.Field[ScriptVersionNewParamsMetadataBindingsFormat] `json:"format"`
 	// Name of the Vectorize index to bind to.
-	IndexName param.Field[string] `json:"index_name"`
-	// JSON data to use.
-	Json param.Field[string] `json:"json"`
+	IndexName param.Field[string]      `json:"index_name"`
+	Json      param.Field[interface{}] `json:"json"`
 	// The
 	// [jurisdiction](https://developers.cloudflare.com/r2/reference/data-location/#jurisdictional-restrictions)
 	// of the R2 bucket.
@@ -5115,7 +5178,7 @@ func (r ScriptVersionNewParamsMetadataBindingsWorkersBindingKindDispatchNamespac
 type ScriptVersionNewParamsMetadataBindingsWorkersBindingKindDispatchNamespaceOutbound struct {
 	// Pass information from the Dispatch Worker to the Outbound Worker through the
 	// parameters.
-	Params param.Field[[]string] `json:"params"`
+	Params param.Field[[]ScriptVersionNewParamsMetadataBindingsWorkersBindingKindDispatchNamespaceOutboundParam] `json:"params"`
 	// Outbound worker.
 	Worker param.Field[ScriptVersionNewParamsMetadataBindingsWorkersBindingKindDispatchNamespaceOutboundWorker] `json:"worker"`
 }
@@ -5124,8 +5187,19 @@ func (r ScriptVersionNewParamsMetadataBindingsWorkersBindingKindDispatchNamespac
 	return apijson.MarshalRoot(r)
 }
 
+type ScriptVersionNewParamsMetadataBindingsWorkersBindingKindDispatchNamespaceOutboundParam struct {
+	// Name of the parameter.
+	Name param.Field[string] `json:"name,required"`
+}
+
+func (r ScriptVersionNewParamsMetadataBindingsWorkersBindingKindDispatchNamespaceOutboundParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
 // Outbound worker.
 type ScriptVersionNewParamsMetadataBindingsWorkersBindingKindDispatchNamespaceOutboundWorker struct {
+	// Entrypoint to invoke on the outbound worker.
+	Entrypoint param.Field[string] `json:"entrypoint"`
 	// Environment of the outbound worker.
 	Environment param.Field[string] `json:"environment"`
 	// Name of the outbound worker.
@@ -5273,7 +5347,7 @@ func (r ScriptVersionNewParamsMetadataBindingsWorkersBindingKindImagesType) IsKn
 
 type ScriptVersionNewParamsMetadataBindingsWorkersBindingKindJson struct {
 	// JSON data to use.
-	Json param.Field[string] `json:"json,required"`
+	Json param.Field[interface{}] `json:"json,required"`
 	// A JavaScript variable name for the binding.
 	Name param.Field[string] `json:"name,required"`
 	// The kind of resource that the binding provides.
@@ -6028,6 +6102,23 @@ const (
 func (r ScriptVersionNewParamsMetadataUsageModel) IsKnown() bool {
 	switch r {
 	case ScriptVersionNewParamsMetadataUsageModelStandard, ScriptVersionNewParamsMetadataUsageModelBundled, ScriptVersionNewParamsMetadataUsageModelUnbound:
+		return true
+	}
+	return false
+}
+
+// When set to "strict", the upload will fail if any `inherit` type bindings cannot
+// be resolved against the previous version of the Worker. Without this,
+// unresolvable inherit bindings are silently dropped.
+type ScriptVersionNewParamsBindingsInherit string
+
+const (
+	ScriptVersionNewParamsBindingsInheritStrict ScriptVersionNewParamsBindingsInherit = "strict"
+)
+
+func (r ScriptVersionNewParamsBindingsInherit) IsKnown() bool {
+	switch r {
+	case ScriptVersionNewParamsBindingsInheritStrict:
 		return true
 	}
 	return false
