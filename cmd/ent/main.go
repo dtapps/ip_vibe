@@ -16,6 +16,7 @@ func main() {
 
 	run_ent()
 	run_ent_log()
+	run_ent_stat()
 
 }
 
@@ -164,9 +165,63 @@ func run_ent_log() {
 			},
 		}, opts...)
 	if err != nil {
-		fmt.Printf("代码生成错误: %v", err)
+		fmt.Printf("ent_log 代码生成错误: %v", err)
 		return
 	}
 
-	fmt.Println("代码生成成功")
+	fmt.Println("ent_log 代码生成成功")
+}
+
+func run_ent_stat() {
+
+	target := "./ent"
+	target = "./internal/ent_stat"
+	schemaPath := target + "/schema"
+
+	fmt.Println("target", target)
+	fmt.Println("schemaPath", schemaPath)
+
+	opts := []entc.Option{}
+	err := entc.Generate(
+		schemaPath,
+		&gen.Config{
+			Target: target,
+			Features: []gen.Feature{
+				gen.FeatureNamedEdges,
+				gen.FeatureBidiEdgeRefs,
+				gen.FeatureModifier,
+				gen.FeatureExecQuery,
+				gen.FeatureUpsert,
+			},
+			Templates: []*gen.Template{
+				gen.MustParse(
+					gen.NewTemplate("custom_funcs").
+						Funcs(template.FuncMap{
+							"now": func() time.Time {
+								return time.Now()
+							},
+							"date": func(layout string, t time.Time) string {
+								return t.Format(layout)
+							},
+						}).
+						ParseFiles(
+							"./internal/ent/template/aggregate.tmpl",
+							"./internal/ent/template/order_by.tmpl",
+							"./internal/ent/template/order_field_by.tmpl",
+							"./internal/ent/template/pagination.tmpl",
+							"./internal/ent/template/to_map.tmpl",
+							"./internal/ent/template/query_gorm_compat.tmpl",
+							"./internal/ent/template/where_if.tmpl",
+							"./internal/ent/template/order_if.tmpl",
+							"./internal/ent/template/json_query.tmpl",
+						),
+				),
+			},
+		}, opts...)
+	if err != nil {
+		fmt.Printf("ent_stat 代码生成错误: %v", err)
+		return
+	}
+
+	fmt.Println("ent_stat 代码生成成功")
 }

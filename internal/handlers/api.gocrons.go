@@ -5,6 +5,7 @@ import (
 	"vibe_ip/internal/backend/service"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
+	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -130,20 +131,8 @@ func CleanAllGocron(c *gin.Context) {
 //	@Router			/gocrons/start-scheduler [post]
 func StartGocronScheduler(c *gin.Context) {
 
-	// 创建服务
-	gocronService := service.NewGocronService(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGinSlog,
-	)
-
 	// 调用 启动调度器
-	err := gocronService.StartScheduler(c)
-	if err != nil {
-		errorResponse(c, http.StatusNotFound, err.Error())
-		return
-	}
+	initialize.StartGoCron(c, global.GvaGocronSlog)
 
 	successResponse(c, nil)
 }
@@ -160,16 +149,8 @@ func StartGocronScheduler(c *gin.Context) {
 //	@Router			/gocrons/stop-scheduler [post]
 func StopGocronScheduler(c *gin.Context) {
 
-	// 创建服务
-	gocronService := service.NewGocronService(
-		global.GvaEntDb,
-		global.GvaEntLogDb,
-		global.GvaGoCron,
-		global.GvaGinSlog,
-	)
-
 	// 调用 停止调度器
-	gocronService.StopScheduler(c)
+	initialize.StopGoCron(c, global.GvaGocronSlog)
 
 	successResponse(c, nil)
 }

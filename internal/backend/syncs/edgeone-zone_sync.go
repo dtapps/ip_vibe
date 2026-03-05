@@ -12,7 +12,8 @@ import (
 	"vibe_ip/internal/ent/edgeonezonednsrecord"
 	"vibe_ip/internal/ent/edgeonezoneorigingroup"
 	"vibe_ip/internal/ent/platformconfig"
-	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/ent_stat"
+	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/provider/cdn"
 	"vibe_ip/internal/utils"
@@ -25,22 +26,18 @@ import (
 
 // EdgeOneZoneSync
 type EdgeOneZoneSync struct {
-	db            *ent.Client                   // 数据库客户端
-	logDb         *ent_log.Client               // 日志数据库客户端
 	logger        *slog.Logger                  // 日志记录器
 	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
 	debug         bool                          // 调试模式
 }
 
 // NewEdgeOneZoneSync 创建EdgeOne站点同步实例
-func NewEdgeOneZoneSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *EdgeOneZoneSync {
+func NewEdgeOneZoneSync(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *EdgeOneZoneSync {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
 	return &EdgeOneZoneSync{
-		db:            db,
-		logDb:         logDb,
 		logger:        logger,
 		httpTransport: httpTransport,
 		debug:         debug,
@@ -81,7 +78,7 @@ func (s *EdgeOneZoneSync) GetApiClient(ctx context.Context, platformConfigJSON j
 func (s *EdgeOneZoneSync) SyncAllZones(ctx context.Context) (err error) {
 
 	// 查询平台配置
-	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
+	allPlatformCofingIDs, err := syncDb.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
 		IDs(ctx)
 	if err != nil {
@@ -110,7 +107,7 @@ func (s *EdgeOneZoneSync) SyncAllZones(ctx context.Context) (err error) {
 func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (err error) {
 
 	// 查询平台配置
-	firstPlatformCofing, err := s.db.PlatformConfig.Query().
+	firstPlatformCofing, err := syncDb.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
 		First(ctx)
@@ -138,8 +135,12 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 
 	// 入库所有站点
 	for _, zone := range zones {
+
+		// 站点序号
+		var edgeoneZoneID int64
+
 		// 查询站点记录
-		firstZone, err := s.db.EdgeOneZone.Query().
+		firstZone, err := syncDb.EdgeOneZone.Query().
 			Where(edgeonezone.ConfigIDEQ(config_id)).
 			Where(edgeonezone.ZoneIDEQ(utils.PtrToString(zone.ZoneId))).
 			First(ctx)
@@ -148,7 +149,7 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 				return fmt.Errorf("查询站点记录失败: %w", err)
 			}
 			// 创建站点记录
-			createOne := s.db.EdgeOneZone.Create()
+			createOne := syncDb.EdgeOneZone.Create()
 			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(zone.CreatedOn)).Time)
 			createOne.SetSyncAt(time.Now())
 			createOne.SetConfigID(firstPlatformCofing.ID)
@@ -166,13 +167,14 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 			createOne.SetActiveStatus(edgeonezone.ActiveStatus(utils.PtrToString(zone.ActiveStatus)))
 			createOne.SetLockStatus(edgeonezone.LockStatus(utils.PtrToString(zone.LockStatus)))
 			createOne.SetPaused(utils.PtrToBool(zone.Paused))
-			err = createOne.Exec(ctx)
+			saveZone, err := createOne.Save(ctx)
 			if err != nil {
 				return fmt.Errorf("创建站点记录失败: %w", err)
 			}
+			edgeoneZoneID = saveZone.ID
 		} else {
 			// 更新站点记录
-			updateOne := s.db.EdgeOneZone.UpdateOne(firstZone)
+			updateOne := syncDb.EdgeOneZone.UpdateOne(firstZone)
 			updateOne.SetSyncAt(time.Now())
 			updateOne.SetZoneName(utils.PtrToString(zone.ZoneName))
 			updateOne.SetAliasZoneName(utils.PtrToString(zone.AliasZoneName))
@@ -191,6 +193,73 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 			if err != nil {
 				return fmt.Errorf("更新站点记录失败: %w", err)
 			}
+			edgeoneZoneID = firstZone.ID
+		}
+
+		// 查询流量分析时序数据
+		analysisDatas, err := cdnProvider.DescribeTimingL7AnalysisData(ctx, utils.PtrToString(zone.ZoneId))
+		if err != nil {
+			s.logger.ErrorContext(ctx, "查询流量分析时序数据失败",
+				slog.Any("err", err),
+			)
+			return nil
+		}
+
+		// 按天聚合：date -> map[metricName]value
+		dayMetrics := make(map[string]map[string]int64)
+		for _, data := range analysisDatas {
+			for _, tv := range data.TypeValue {
+				for _, detail := range tv.Detail {
+					date := gotime.SetCurrentUnix(utils.PtrToInt64(detail.Timestamp)).StartOfDay().SetFormat(gotime.DateFormat)
+					if dayMetrics[date] == nil {
+						dayMetrics[date] = make(map[string]int64)
+					}
+					// 直接存 Value
+					dayMetrics[date][utils.PtrToString(tv.MetricName)] = utils.PtrToInt64(detail.Value)
+				}
+			}
+		}
+
+		// 构建批量 Create 对象
+		createAnalysisDatas := make([]*ent_stat.EdgeOneZoneAnalysisDataCreate, 0, len(dayMetrics))
+		for date, metrics := range dayMetrics {
+			createAnalysisDatas = append(
+				createAnalysisDatas,
+				syncStatDb.EdgeOneZoneAnalysisData.Create().
+					SetEdgeoneZoneID(edgeoneZoneID).
+					SetDate(date).
+					SetL7FlowOutFlux(metrics["l7Flow_outFlux"]).
+					SetL7FlowInFlux(metrics["l7Flow_inFlux"]).
+					SetL7FlowFlux(metrics["l7Flow_flux"]).
+					SetL7FlowOutBandwidth(metrics["l7Flow_outBandwidth"]).
+					SetL7FlowInBandwidth(metrics["l7Flow_inBandwidth"]).
+					SetL7FlowBandwidth(metrics["l7Flow_bandwidth"]).
+					SetL7FlowRequest(metrics["l7Flow_request"]).
+					SetL7FlowAvgResponseTime(metrics["l7Flow_responseTime"]).
+					SetL7FlowAvgFirstByteResponseTime(metrics["l7Flow_firstByteResponseTime"]),
+			)
+		}
+
+		// 批量入库
+		err = syncStatDb.EdgeOneZoneAnalysisData.CreateBulk(createAnalysisDatas...).
+			OnConflictColumns(
+				edgeonezoneanalysisdata.FieldEdgeoneZoneID, edgeonezoneanalysisdata.FieldDate,
+			).
+			// Update(func(u *ent_stat.EdgeOneZoneAnalysisDataUpsert) {
+			// 	// 手动指定只更新这些字段
+			// 	u.SetL7FlowOutFlux(metrics["l7Flow_outFlux"]).
+			// 		SetL7FlowInFlux(metrics["l7Flow_inFlux"]).
+			// 		SetL7FlowFlux(metrics["l7Flow_flux"]).
+			// 		SetL7FlowOutBandwidth(metrics["l7Flow_outBandwidth"]).
+			// 		SetL7FlowInBandwidth(metrics["l7Flow_inBandwidth"]).
+			// 		SetL7FlowBandwidth(metrics["l7Flow_bandwidth"]).
+			// 		SetL7FlowRequest(metrics["l7Flow_request"]).
+			// 		SetL7FlowAvgResponseTime(metrics["l7Flow_responseTime"]).
+			// 		SetL7FlowAvgFirstByteResponseTime(metrics["l7Flow_firstByteResponseTime"])
+			// }).
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("批量入库流量分析时序数据失败: %w", err)
 		}
 	}
 
@@ -201,7 +270,7 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zone_id int64) (err error) {
 
 	// 查询平台配置
-	firstPlatformCofing, err := s.db.PlatformConfig.Query().
+	firstPlatformCofing, err := syncDb.PlatformConfig.Query().
 		Where(platformconfig.IDEQ(config_id)).
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
 		First(ctx)
@@ -210,7 +279,7 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 	}
 
 	// 查询站点记录
-	firstZone, err := s.db.EdgeOneZone.Query().
+	firstZone, err := syncDb.EdgeOneZone.Query().
 		Where(edgeonezone.IDEQ(zone_id)).
 		WithConfig().
 		First(ctx)
@@ -242,7 +311,7 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 			continue
 		}
 		// 更新站点记录
-		updateOne := s.db.EdgeOneZone.UpdateOne(firstZone)
+		updateOne := syncDb.EdgeOneZone.UpdateOne(firstZone)
 		updateOne.SetSyncAt(time.Now())
 		updateOne.SetZoneName(utils.PtrToString(zone.ZoneName))
 		updateOne.SetAliasZoneName(utils.PtrToString(zone.AliasZoneName))
@@ -261,6 +330,72 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 		if err != nil {
 			return fmt.Errorf("更新站点记录失败: %w", err)
 		}
+
+		// 查询流量分析时序数据
+		analysisDatas, err := cdnProvider.DescribeTimingL7AnalysisData(ctx, utils.PtrToString(zone.ZoneId))
+		if err != nil {
+			s.logger.ErrorContext(ctx, "查询流量分析时序数据失败",
+				slog.Any("err", err),
+			)
+			return nil
+		}
+
+		// 按天聚合：date -> map[metricName]value
+		dayMetrics := make(map[string]map[string]int64)
+		for _, data := range analysisDatas {
+			for _, tv := range data.TypeValue {
+				for _, detail := range tv.Detail {
+					date := gotime.SetCurrentUnix(utils.PtrToInt64(detail.Timestamp)).StartOfDay().SetFormat(gotime.DateFormat)
+					if dayMetrics[date] == nil {
+						dayMetrics[date] = make(map[string]int64)
+					}
+					// 直接存 Value
+					dayMetrics[date][utils.PtrToString(tv.MetricName)] = utils.PtrToInt64(detail.Value)
+				}
+			}
+		}
+
+		// 构建批量 Create 对象
+		createAnalysisDatas := make([]*ent_stat.EdgeOneZoneAnalysisDataCreate, 0, len(dayMetrics))
+		for date, metrics := range dayMetrics {
+			createAnalysisDatas = append(
+				createAnalysisDatas,
+				syncStatDb.EdgeOneZoneAnalysisData.Create().
+					SetEdgeoneZoneID(firstZone.ID).
+					SetDate(date).
+					SetL7FlowOutFlux(metrics["l7Flow_outFlux"]).
+					SetL7FlowInFlux(metrics["l7Flow_inFlux"]).
+					SetL7FlowFlux(metrics["l7Flow_flux"]).
+					SetL7FlowOutBandwidth(metrics["l7Flow_outBandwidth"]).
+					SetL7FlowInBandwidth(metrics["l7Flow_inBandwidth"]).
+					SetL7FlowBandwidth(metrics["l7Flow_bandwidth"]).
+					SetL7FlowRequest(metrics["l7Flow_request"]).
+					SetL7FlowAvgResponseTime(metrics["l7Flow_responseTime"]).
+					SetL7FlowAvgFirstByteResponseTime(metrics["l7Flow_firstByteResponseTime"]),
+			)
+		}
+
+		// 批量入库
+		err = syncStatDb.EdgeOneZoneAnalysisData.CreateBulk(createAnalysisDatas...).
+			OnConflictColumns(
+				edgeonezoneanalysisdata.FieldEdgeoneZoneID, edgeonezoneanalysisdata.FieldDate,
+			).
+			// Update(func(u *ent_stat.EdgeOneZoneAnalysisDataUpsert) {
+			// 	// 手动指定只更新这些字段
+			// 	u.SetL7FlowOutFlux(metrics["l7Flow_outFlux"]).
+			// 		SetL7FlowInFlux(metrics["l7Flow_inFlux"]).
+			// 		SetL7FlowFlux(metrics["l7Flow_flux"]).
+			// 		SetL7FlowOutBandwidth(metrics["l7Flow_outBandwidth"]).
+			// 		SetL7FlowInBandwidth(metrics["l7Flow_inBandwidth"]).
+			// 		SetL7FlowBandwidth(metrics["l7Flow_bandwidth"]).
+			// 		SetL7FlowRequest(metrics["l7Flow_request"]).
+			// 		SetL7FlowAvgResponseTime(metrics["l7Flow_responseTime"]).
+			// 		SetL7FlowAvgFirstByteResponseTime(metrics["l7Flow_firstByteResponseTime"])
+			// }).
+			Exec(ctx)
+		if err != nil {
+			return fmt.Errorf("批量入库流量分析时序数据失败: %w", err)
+		}
 	}
 
 	return nil
@@ -270,7 +405,7 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 func (s *EdgeOneZoneSync) SyncAllZoneOriginGroups(ctx context.Context) (err error) {
 
 	// 查询平台配置
-	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
+	allPlatformCofingIDs, err := syncDb.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
 		IDs(ctx)
 	if err != nil {
@@ -299,7 +434,7 @@ func (s *EdgeOneZoneSync) SyncAllZoneOriginGroups(ctx context.Context) (err erro
 func (s *EdgeOneZoneSync) SyncThisZoneOriginGroups(ctx context.Context, config_id int64) (err error) {
 
 	// 查询所有站点
-	allEdgeOneZoneIDs, err := s.db.EdgeOneZone.Query().
+	allEdgeOneZoneIDs, err := syncDb.EdgeOneZone.Query().
 		Where(edgeonezone.ConfigIDEQ(config_id)).
 		IDs(ctx)
 	if err != nil {
@@ -328,7 +463,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneOriginGroups(ctx context.Context, config_i
 func (s *EdgeOneZoneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id int64, zone_id int64) (err error) {
 
 	// 查询站点记录
-	firstEdgeOneZone, err := s.db.EdgeOneZone.Query().
+	firstEdgeOneZone, err := syncDb.EdgeOneZone.Query().
 		Where(edgeonezone.IDEQ(zone_id)).
 		WithConfig().
 		First(ctx)
@@ -357,7 +492,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id
 	// 入库所有源站组
 	for _, originGroup := range originGroups {
 		// 查询源站组记录
-		firstOriginGroup, err := s.db.EdgeOneZoneOriginGroup.Query().
+		firstOriginGroup, err := syncDb.EdgeOneZoneOriginGroup.Query().
 			Where(edgeonezoneorigingroup.EdgeoneZoneIDEQ(firstEdgeOneZone.ID)).
 			Where(edgeonezoneorigingroup.GroupIDEQ(utils.PtrToString(originGroup.GroupId))).
 			First(ctx)
@@ -366,7 +501,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id
 				return fmt.Errorf("查询源站组记录失败: %w", err)
 			}
 			// 创建源站组记录
-			createOne := s.db.EdgeOneZoneOriginGroup.Create()
+			createOne := syncDb.EdgeOneZoneOriginGroup.Create()
 			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(originGroup.CreateTime)).Time)
 			createOne.SetSyncAt(time.Now())
 			createOne.SetEdgeoneZoneID(firstEdgeOneZone.ID)
@@ -384,7 +519,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id
 			}
 		} else {
 			// 更新源站组记录
-			updateOne := s.db.EdgeOneZoneOriginGroup.UpdateOne(firstOriginGroup)
+			updateOne := syncDb.EdgeOneZoneOriginGroup.UpdateOne(firstOriginGroup)
 			updateOne.SetSyncAt(time.Now())
 			updateOne.SetName(utils.PtrToString(originGroup.Name))
 			if utils.PtrToString(originGroup.Type) != "" {
@@ -407,7 +542,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneOriginGroup(ctx context.Context, config_id
 func (s *EdgeOneZoneSync) SyncAllZoneRecords(ctx context.Context) (err error) {
 
 	// 查询平台配置
-	allPlatformCofingIDs, err := s.db.PlatformConfig.Query().
+	allPlatformCofingIDs, err := syncDb.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformTencentEo)).
 		IDs(ctx)
 	if err != nil {
@@ -436,7 +571,7 @@ func (s *EdgeOneZoneSync) SyncAllZoneRecords(ctx context.Context) (err error) {
 func (s *EdgeOneZoneSync) SyncThisZoneRecords(ctx context.Context, config_id int64) (err error) {
 
 	// 查询所有站点
-	allEdgeOneZoneIDs, err := s.db.EdgeOneZone.Query().
+	allEdgeOneZoneIDs, err := syncDb.EdgeOneZone.Query().
 		Where(edgeonezone.ConfigIDEQ(config_id)).
 		IDs(ctx)
 	if err != nil {
@@ -465,7 +600,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecords(ctx context.Context, config_id int
 func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int64, zone_id int64) (err error) {
 
 	// 查询站点记录
-	firstEdgeOneZone, err := s.db.EdgeOneZone.Query().
+	firstEdgeOneZone, err := syncDb.EdgeOneZone.Query().
 		Where(edgeonezone.IDEQ(zone_id)).
 		WithConfig().
 		First(ctx)
@@ -494,7 +629,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int6
 	// 入库所有DNS记录
 	for _, dnsRecord := range dnsRecords {
 		// 查询DNS记录
-		firstDNSRecord, err := s.db.EdgeOneZoneDNSRecord.Query().
+		firstDNSRecord, err := syncDb.EdgeOneZoneDNSRecord.Query().
 			Where(edgeonezonednsrecord.EdgeoneZoneIDEQ(firstEdgeOneZone.ID)).
 			Where(edgeonezonednsrecord.RecordIDEQ(utils.PtrToString(dnsRecord.RecordId))).
 			First(ctx)
@@ -503,7 +638,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int6
 				return fmt.Errorf("查询DNS记录记录失败: %w", err)
 			}
 			// 创建DNS记录记录
-			createOne := s.db.EdgeOneZoneDNSRecord.Create()
+			createOne := syncDb.EdgeOneZoneDNSRecord.Create()
 			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(dnsRecord.CreatedOn)).Time)
 			createOne.SetSyncAt(time.Now())
 			createOne.SetEdgeoneZoneID(firstEdgeOneZone.ID)
@@ -526,7 +661,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int6
 			}
 		} else {
 			// 更新DNS记录记录
-			updateOne := s.db.EdgeOneZoneDNSRecord.UpdateOne(firstDNSRecord)
+			updateOne := syncDb.EdgeOneZoneDNSRecord.UpdateOne(firstDNSRecord)
 			updateOne.SetSyncAt(time.Now())
 			updateOne.SetName(utils.PtrToString(dnsRecord.Name))
 			if utils.PtrToString(dnsRecord.Type) != "" {
@@ -559,7 +694,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int6
 	// 入库所有加速域名
 	for _, accelerationDomain := range accelerationDomains {
 		// 查询加速域名记录
-		firstAccelerationDomain, err := s.db.EdgeOneZoneAccelerationDomain.Query().
+		firstAccelerationDomain, err := syncDb.EdgeOneZoneAccelerationDomain.Query().
 			Where(edgeonezoneaccelerationdomain.EdgeoneZoneIDEQ(firstEdgeOneZone.ID)).
 			Where(edgeonezoneaccelerationdomain.DomainNameEQ(utils.PtrToString(accelerationDomain.DomainName))).
 			First(ctx)
@@ -568,7 +703,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int6
 				return fmt.Errorf("查询加速域名记录失败: %w", err)
 			}
 			// 创建加速域名记录
-			createOne := s.db.EdgeOneZoneAccelerationDomain.Create()
+			createOne := syncDb.EdgeOneZoneAccelerationDomain.Create()
 			createOne.SetRemoteCreatedAt(gotime.SetCurrentParse(utils.PtrToString(accelerationDomain.CreatedOn)).Time)
 			createOne.SetSyncAt(time.Now())
 			createOne.SetEdgeoneZoneID(firstEdgeOneZone.ID)
@@ -597,7 +732,7 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecord(ctx context.Context, config_id int6
 			}
 		} else {
 			// 更新加速域名记录
-			updateOne := s.db.EdgeOneZoneAccelerationDomain.UpdateOne(firstAccelerationDomain)
+			updateOne := syncDb.EdgeOneZoneAccelerationDomain.UpdateOne(firstAccelerationDomain)
 			updateOne.SetSyncAt(time.Now())
 			if utils.PtrToString(accelerationDomain.DomainStatus) != "" {
 				updateOne.SetDomainStatus(edgeonezoneaccelerationdomain.DomainStatus(utils.PtrToString(accelerationDomain.DomainStatus)))

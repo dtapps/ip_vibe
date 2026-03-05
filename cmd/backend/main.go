@@ -72,10 +72,11 @@ func main() {
 	initialize.InitReqSLog("backend")    // 初始化 req 日志
 	initialize.EnsureDefaultSLog()       // 确保日志不为 nil
 
-	initialize.InitEntDb(ctx, global.GvaEntSlog)       // 初始化 业务数据库
-	initialize.InitEntLogDb(ctx, global.GvaEntLogSlog) // 初始化 日志数据库
-	db_cache.InitSetting(ctx, global.GvaEntDb)         // 初始化 设置
-	initialize.InitGoCron(ctx, global.GvaGocronSlog)   // 初始化 GoCron 调度器
+	initialize.InitEntDb(ctx, global.GvaEntSlog)         // 初始化 业务数据库
+	initialize.InitEntLogDb(ctx, global.GvaEntLogSlog)   // 初始化 日志数据库
+	initialize.InitEntStatDb(ctx, global.GvaEntStatSlog) // 初始化 统计数据库
+	db_cache.InitSetting(ctx, global.GvaEntDb)           // 初始化 设置
+	initialize.InitGoCron(ctx, global.GvaGocronSlog)     // 初始化 GoCron 调度器
 
 	initialize.InitEntHttpLog(global.GvaHttpSlog)   // 初始化 HTTP 日志
 	initialize.InitEntRestyLog(global.GvaRestySlog) // 初始化 Resty 日志
@@ -246,6 +247,9 @@ func gracefulShutdown() {
 
 		// 关闭 日志数据库
 		initialize.CloseEntLogDb(ctx, global.GvaEntLogSlog)
+
+		// 关闭 统计数据库
+		initialize.CloseEntStatDb(ctx, global.GvaEntStatSlog)
 
 		slog.Info("所有资源已优雅关闭")
 	})

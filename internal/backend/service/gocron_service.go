@@ -8,7 +8,6 @@ import (
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/helper/gocron_helper"
 	"vibe_ip/internal/helper/sys_env"
-	"vibe_ip/internal/initialize"
 	"vibe_ip/internal/types"
 
 	"github.com/go-co-op/gocron/v2"
@@ -21,8 +20,6 @@ type GocronService interface {
 	RunTask(ctx context.Context, id string) error
 	DeleteTask(ctx context.Context, id string) error
 	CleanAllTask(ctx context.Context) error
-	StartScheduler(ctx context.Context) error
-	StopScheduler(ctx context.Context)
 }
 
 // GocronServiceImpl 任务调度服务实现
@@ -122,19 +119,4 @@ func (s *GocronServiceImpl) CleanAllTask(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-// StartScheduler 启动调度器
-func (s *GocronServiceImpl) StartScheduler(ctx context.Context) error {
-
-	initialize.StartGoCron(ctx, s.logger)
-
-	return nil
-}
-
-// StopScheduler 停止调度器
-func (s *GocronServiceImpl) StopScheduler(ctx context.Context) {
-
-	initialize.StopGoCron(ctx, s.logger)
-
 }

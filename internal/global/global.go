@@ -5,6 +5,7 @@ import (
 	"time"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/ent_stat"
 
 	"github.com/go-co-op/gocron/v2"
 	"go.dtapp.net/library/contrib/http_log"
@@ -29,19 +30,21 @@ var (
 
 // GvaConfig 变量
 var (
-	GvaSlog       *slog.Logger // slog 日志
-	GvaEntSlog    *slog.Logger // ent 日志
-	GvaEntLogSlog *slog.Logger // ent log 日志
-	GvaGinSlog    *slog.Logger // gin 日志
-	GvaGrpcSlog   *slog.Logger // gRPC 日志
-	GvaGocronSlog *slog.Logger // gocron 日志
-	GvaMcpSlog    *slog.Logger // mcp 日志
-	GvaHttpSlog   *slog.Logger // http 日志
-	GvaRestySlog  *slog.Logger // resty 日志
-	GvaReqSlog    *slog.Logger // req 日志
+	GvaSlog        *slog.Logger // slog 日志
+	GvaEntSlog     *slog.Logger // ent 日志
+	GvaEntLogSlog  *slog.Logger // ent log 日志
+	GvaEntStatSlog *slog.Logger // ent stat 日志
+	GvaGinSlog     *slog.Logger // gin 日志
+	GvaGrpcSlog    *slog.Logger // gRPC 日志
+	GvaGocronSlog  *slog.Logger // gocron 日志
+	GvaMcpSlog     *slog.Logger // mcp 日志
+	GvaHttpSlog    *slog.Logger // http 日志
+	GvaRestySlog   *slog.Logger // resty 日志
+	GvaReqSlog     *slog.Logger // req 日志
 
-	GvaEntDb    *ent.Client     // 业务数据库
-	GvaEntLogDb *ent_log.Client // 日志数据库
+	GvaEntDb     *ent.Client      // 业务数据库
+	GvaEntLogDb  *ent_log.Client  // 日志数据库
+	GvaEntStatDb *ent_stat.Client // 统计数据库
 
 	GvaGoCron        gocron.Scheduler // 定时任务
 	GvaGoCronRunning int32            // 定时任务状态 0=停 1=运行

@@ -90,6 +90,10 @@ func InitEntSLog(name string) {
 		golog.WithSLogLumberjack(getLumberjack(prefix+"_log", name)),
 		golog.WithSLogSetLevel(getLevel()),
 	).WithLogger()
+	global.GvaEntStatSlog = golog.NewSlog(
+		golog.WithSLogLumberjack(getLumberjack(prefix+"_stat", name)),
+		golog.WithSLogSetLevel(getLevel()),
+	).WithLogger()
 }
 
 // InitGinSLog 初始化 gin 日志

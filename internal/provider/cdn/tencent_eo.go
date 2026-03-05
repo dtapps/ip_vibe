@@ -13,6 +13,7 @@ import (
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	teo "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901"
+	"go.dtapp.net/library/utils/gotime"
 )
 
 // TencentEOConfig 腾讯云 EO 配置
@@ -529,4 +530,37 @@ func (p *TencentEOProvider) AccelerationDomainsRaw(ctx context.Context, zone_id 
 		return nil, fmt.Errorf("接口 DescribeAccelerationDomainsWithContext 失败 %w", err)
 	}
 	return response.Response.AccelerationDomains, nil
+}
+
+// DescribeTimingL7AnalysisData 查询流量分析时序数据
+// https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeTimingL7AnalysisData
+func (p *TencentEOProvider) DescribeTimingL7AnalysisData(ctx context.Context, zone_id string) (records []*teo.TimingDataRecord, err error) {
+	// 当前时间
+	currentTime := gotime.Current()
+	// 开始时间
+	startTime := currentTime.BeforeDay(30).StartOfDay().Format()
+	// 结束时间
+	endTime := currentTime.Format()
+
+	request := teo.NewDescribeTimingL7AnalysisDataRequest()
+	request.StartTime = common.StringPtr(startTime)
+	request.EndTime = common.StringPtr(endTime)
+	request.MetricNames = common.StringPtrs([]string{
+		"l7Flow_outFlux",                  // L7 EdgeOne 响应流量，单位：Byte
+		"l7Flow_inFlux",                   // L7 客户端请求流量，单位：Byte
+		"l7Flow_flux",                     // L7 访问总流量（EdgeOne 响应+客户端请求），单位：Byte
+		"l7Flow_outBandwidth",             // L7 EdgeOne 响应带宽，单位：bps
+		"l7Flow_inBandwidth",              // L7 客户端请求带宽，单位：bps
+		"l7Flow_bandwidth",                // L7 访问总带宽（EdgeOne 响应+客户端请求），单位：bps
+		"l7Flow_request",                  // L7 访问请求数，单位：次
+		"l7Flow_avgResponseTime",          // L7 访问平均响应耗时，单位：ms
+		"l7Flow_avgFirstByteResponseTime", // L7 访问平均首字节响应耗时，单位：ms
+	})
+	request.ZoneIds = common.StringPtrs([]string{zone_id})
+	request.Interval = common.StringPtr("day")
+	response, err := p.Provider.Client.DescribeTimingL7AnalysisDataWithContext(ctx, request)
+	if err != nil {
+		return nil, fmt.Errorf("接口 DescribeTimingL7AnalysisDataWithContext 失败 %w", err)
+	}
+	return response.Response.Data, nil
 }

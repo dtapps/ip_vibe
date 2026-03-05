@@ -36,8 +36,6 @@ func NewEdgeOneZoneSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logge
 // NewEdgeOneZoneSyncTaskProvider 创建一个新的 EdgeOne站点同步 提供者
 func NewEdgeOneZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *EdgeOneZoneSyncTaskProvider {
 	edgeOneZoneSync := syncs.NewEdgeOneZoneSync(
-		db,
-		logDb,
 		logger,
 		httpTransport,
 	)
