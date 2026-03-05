@@ -196,13 +196,17 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 			edgeoneZoneID = firstZone.ID
 		}
 
+		s.logger.DebugContext(ctx, "查询流量分析时序数据",
+			slog.Any("zone", utils.PtrToString(zone.ZoneId)),
+		)
+
 		// 查询流量分析时序数据
 		analysisDatas, err := cdnProvider.DescribeTimingL7AnalysisData(ctx, utils.PtrToString(zone.ZoneId))
 		if err != nil {
 			s.logger.ErrorContext(ctx, "查询流量分析时序数据失败",
 				slog.Any("err", err),
 			)
-			return nil
+			return err
 		}
 
 		// 按天聚合：date -> map[metricName]value
@@ -227,7 +231,7 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 				createAnalysisDatas,
 				syncStatDb.EdgeOneZoneAnalysisData.Create().
 					SetEdgeoneZoneID(edgeoneZoneID).
-					SetDate(date).
+					SetDate(gotime.SetCurrentParse(date).Time).
 					SetL7FlowOutFlux(metrics["l7Flow_outFlux"]).
 					SetL7FlowInFlux(metrics["l7Flow_inFlux"]).
 					SetL7FlowFlux(metrics["l7Flow_flux"]).
@@ -245,18 +249,7 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 			OnConflictColumns(
 				edgeonezoneanalysisdata.FieldEdgeoneZoneID, edgeonezoneanalysisdata.FieldDate,
 			).
-			// Update(func(u *ent_stat.EdgeOneZoneAnalysisDataUpsert) {
-			// 	// 手动指定只更新这些字段
-			// 	u.SetL7FlowOutFlux(metrics["l7Flow_outFlux"]).
-			// 		SetL7FlowInFlux(metrics["l7Flow_inFlux"]).
-			// 		SetL7FlowFlux(metrics["l7Flow_flux"]).
-			// 		SetL7FlowOutBandwidth(metrics["l7Flow_outBandwidth"]).
-			// 		SetL7FlowInBandwidth(metrics["l7Flow_inBandwidth"]).
-			// 		SetL7FlowBandwidth(metrics["l7Flow_bandwidth"]).
-			// 		SetL7FlowRequest(metrics["l7Flow_request"]).
-			// 		SetL7FlowAvgResponseTime(metrics["l7Flow_responseTime"]).
-			// 		SetL7FlowAvgFirstByteResponseTime(metrics["l7Flow_firstByteResponseTime"])
-			// }).
+			UpdateNewValues().
 			Exec(ctx)
 		if err != nil {
 			return fmt.Errorf("批量入库流量分析时序数据失败: %w", err)
@@ -331,13 +324,17 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 			return fmt.Errorf("更新站点记录失败: %w", err)
 		}
 
+		s.logger.DebugContext(ctx, "查询流量分析时序数据",
+			slog.Any("zone", utils.PtrToString(zone.ZoneId)),
+		)
+
 		// 查询流量分析时序数据
 		analysisDatas, err := cdnProvider.DescribeTimingL7AnalysisData(ctx, utils.PtrToString(zone.ZoneId))
 		if err != nil {
 			s.logger.ErrorContext(ctx, "查询流量分析时序数据失败",
 				slog.Any("err", err),
 			)
-			return nil
+			return err
 		}
 
 		// 按天聚合：date -> map[metricName]value
@@ -362,7 +359,7 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 				createAnalysisDatas,
 				syncStatDb.EdgeOneZoneAnalysisData.Create().
 					SetEdgeoneZoneID(firstZone.ID).
-					SetDate(date).
+					SetDate(gotime.SetCurrentParse(date).Time).
 					SetL7FlowOutFlux(metrics["l7Flow_outFlux"]).
 					SetL7FlowInFlux(metrics["l7Flow_inFlux"]).
 					SetL7FlowFlux(metrics["l7Flow_flux"]).
@@ -380,18 +377,7 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 			OnConflictColumns(
 				edgeonezoneanalysisdata.FieldEdgeoneZoneID, edgeonezoneanalysisdata.FieldDate,
 			).
-			// Update(func(u *ent_stat.EdgeOneZoneAnalysisDataUpsert) {
-			// 	// 手动指定只更新这些字段
-			// 	u.SetL7FlowOutFlux(metrics["l7Flow_outFlux"]).
-			// 		SetL7FlowInFlux(metrics["l7Flow_inFlux"]).
-			// 		SetL7FlowFlux(metrics["l7Flow_flux"]).
-			// 		SetL7FlowOutBandwidth(metrics["l7Flow_outBandwidth"]).
-			// 		SetL7FlowInBandwidth(metrics["l7Flow_inBandwidth"]).
-			// 		SetL7FlowBandwidth(metrics["l7Flow_bandwidth"]).
-			// 		SetL7FlowRequest(metrics["l7Flow_request"]).
-			// 		SetL7FlowAvgResponseTime(metrics["l7Flow_responseTime"]).
-			// 		SetL7FlowAvgFirstByteResponseTime(metrics["l7Flow_firstByteResponseTime"])
-			// }).
+			UpdateNewValues().
 			Exec(ctx)
 		if err != nil {
 			return fmt.Errorf("批量入库流量分析时序数据失败: %w", err)

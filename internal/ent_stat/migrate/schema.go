@@ -14,7 +14,7 @@ var (
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "EdgeOne 站点分析数据序号"},
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "edgeone_zone_id", Type: field.TypeInt64, Comment: "关联 EdgeOne 站点序号"},
-		{Name: "date", Type: field.TypeString, Comment: "分析日期"},
+		{Name: "date", Type: field.TypeTime, Comment: "分析日期"},
 		{Name: "l7_flow_out_flux", Type: field.TypeInt64, Nullable: true, Comment: "L7 EdgeOne 响应流量，单位：Byte"},
 		{Name: "l7_flow_in_flux", Type: field.TypeInt64, Nullable: true, Comment: "L7 客户端请求流量，单位：Byte"},
 		{Name: "l7_flow_flux", Type: field.TypeInt64, Nullable: true, Comment: "L7 访问总流量（EdgeOne 响应+客户端请求），单位：Byte"},

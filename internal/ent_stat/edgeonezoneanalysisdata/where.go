@@ -65,7 +65,7 @@ func EdgeoneZoneID(v int64) predicate.EdgeOneZoneAnalysisData {
 }
 
 // Date applies equality check predicate on the "date" field. It's identical to DateEQ.
-func Date(v string) predicate.EdgeOneZoneAnalysisData {
+func Date(v time.Time) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldDate, v))
 }
 
@@ -195,68 +195,43 @@ func EdgeoneZoneIDLTE(v int64) predicate.EdgeOneZoneAnalysisData {
 }
 
 // DateEQ applies the EQ predicate on the "date" field.
-func DateEQ(v string) predicate.EdgeOneZoneAnalysisData {
+func DateEQ(v time.Time) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldDate, v))
 }
 
 // DateNEQ applies the NEQ predicate on the "date" field.
-func DateNEQ(v string) predicate.EdgeOneZoneAnalysisData {
+func DateNEQ(v time.Time) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldNEQ(FieldDate, v))
 }
 
 // DateIn applies the In predicate on the "date" field.
-func DateIn(vs ...string) predicate.EdgeOneZoneAnalysisData {
+func DateIn(vs ...time.Time) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldIn(FieldDate, vs...))
 }
 
 // DateNotIn applies the NotIn predicate on the "date" field.
-func DateNotIn(vs ...string) predicate.EdgeOneZoneAnalysisData {
+func DateNotIn(vs ...time.Time) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotIn(FieldDate, vs...))
 }
 
 // DateGT applies the GT predicate on the "date" field.
-func DateGT(v string) predicate.EdgeOneZoneAnalysisData {
+func DateGT(v time.Time) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldGT(FieldDate, v))
 }
 
 // DateGTE applies the GTE predicate on the "date" field.
-func DateGTE(v string) predicate.EdgeOneZoneAnalysisData {
+func DateGTE(v time.Time) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldGTE(FieldDate, v))
 }
 
 // DateLT applies the LT predicate on the "date" field.
-func DateLT(v string) predicate.EdgeOneZoneAnalysisData {
+func DateLT(v time.Time) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldLT(FieldDate, v))
 }
 
 // DateLTE applies the LTE predicate on the "date" field.
-func DateLTE(v string) predicate.EdgeOneZoneAnalysisData {
+func DateLTE(v time.Time) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldLTE(FieldDate, v))
-}
-
-// DateContains applies the Contains predicate on the "date" field.
-func DateContains(v string) predicate.EdgeOneZoneAnalysisData {
-	return predicate.EdgeOneZoneAnalysisData(sql.FieldContains(FieldDate, v))
-}
-
-// DateHasPrefix applies the HasPrefix predicate on the "date" field.
-func DateHasPrefix(v string) predicate.EdgeOneZoneAnalysisData {
-	return predicate.EdgeOneZoneAnalysisData(sql.FieldHasPrefix(FieldDate, v))
-}
-
-// DateHasSuffix applies the HasSuffix predicate on the "date" field.
-func DateHasSuffix(v string) predicate.EdgeOneZoneAnalysisData {
-	return predicate.EdgeOneZoneAnalysisData(sql.FieldHasSuffix(FieldDate, v))
-}
-
-// DateEqualFold applies the EqualFold predicate on the "date" field.
-func DateEqualFold(v string) predicate.EdgeOneZoneAnalysisData {
-	return predicate.EdgeOneZoneAnalysisData(sql.FieldEqualFold(FieldDate, v))
-}
-
-// DateContainsFold applies the ContainsFold predicate on the "date" field.
-func DateContainsFold(v string) predicate.EdgeOneZoneAnalysisData {
-	return predicate.EdgeOneZoneAnalysisData(sql.FieldContainsFold(FieldDate, v))
 }
 
 // L7FlowOutFluxEQ applies the EQ predicate on the "l7_flow_out_flux" field.

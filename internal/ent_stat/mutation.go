@@ -36,7 +36,7 @@ type EdgeOneZoneAnalysisDataMutation struct {
 	created_at                              *time.Time
 	edgeone_zone_id                         *int64
 	addedgeone_zone_id                      *int64
-	date                                    *string
+	date                                    *time.Time
 	l7_flow_out_flux                        *int64
 	addl7_flow_out_flux                     *int64
 	l7_flow_in_flux                         *int64
@@ -258,12 +258,12 @@ func (m *EdgeOneZoneAnalysisDataMutation) ResetEdgeoneZoneID() {
 }
 
 // SetDate sets the "date" field.
-func (m *EdgeOneZoneAnalysisDataMutation) SetDate(s string) {
-	m.date = &s
+func (m *EdgeOneZoneAnalysisDataMutation) SetDate(t time.Time) {
+	m.date = &t
 }
 
 // Date returns the value of the "date" field in the mutation.
-func (m *EdgeOneZoneAnalysisDataMutation) Date() (r string, exists bool) {
+func (m *EdgeOneZoneAnalysisDataMutation) Date() (r time.Time, exists bool) {
 	v := m.date
 	if v == nil {
 		return
@@ -274,7 +274,7 @@ func (m *EdgeOneZoneAnalysisDataMutation) Date() (r string, exists bool) {
 // OldDate returns the old "date" field's value of the EdgeOneZoneAnalysisData entity.
 // If the EdgeOneZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneAnalysisDataMutation) OldDate(ctx context.Context) (v string, err error) {
+func (m *EdgeOneZoneAnalysisDataMutation) OldDate(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDate is only allowed on UpdateOne operations")
 	}
@@ -1083,7 +1083,7 @@ func (m *EdgeOneZoneAnalysisDataMutation) SetField(name string, value ent.Value)
 		m.SetEdgeoneZoneID(v)
 		return nil
 	case edgeonezoneanalysisdata.FieldDate:
-		v, ok := value.(string)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

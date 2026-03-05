@@ -43,7 +43,7 @@ func (_c *EdgeOneZoneAnalysisDataCreate) SetEdgeoneZoneID(v int64) *EdgeOneZoneA
 }
 
 // SetDate sets the "date" field.
-func (_c *EdgeOneZoneAnalysisDataCreate) SetDate(v string) *EdgeOneZoneAnalysisDataCreate {
+func (_c *EdgeOneZoneAnalysisDataCreate) SetDate(v time.Time) *EdgeOneZoneAnalysisDataCreate {
 	_c.mutation.SetDate(v)
 	return _c
 }
@@ -284,7 +284,7 @@ func (_c *EdgeOneZoneAnalysisDataCreate) createSpec() (*EdgeOneZoneAnalysisData,
 		_node.EdgeoneZoneID = value
 	}
 	if value, ok := _c.mutation.Date(); ok {
-		_spec.SetField(edgeonezoneanalysisdata.FieldDate, field.TypeString, value)
+		_spec.SetField(edgeonezoneanalysisdata.FieldDate, field.TypeTime, value)
 		_node.Date = value
 	}
 	if value, ok := _c.mutation.L7FlowOutFlux(); ok {

@@ -47,7 +47,7 @@ func (EdgeOneZoneAnalysisData) Fields() []ent.Field {
 			Comment("关联 EdgeOne 站点序号").
 			Annotations(entsql.WithComments(true)),
 
-		field.String("date").
+		field.Time("date").
 			Immutable().
 			Comment("分析日期").
 			Annotations(entsql.WithComments(true)),

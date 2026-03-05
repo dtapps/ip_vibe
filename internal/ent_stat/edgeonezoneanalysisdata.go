@@ -23,7 +23,7 @@ type EdgeOneZoneAnalysisData struct {
 	// 关联 EdgeOne 站点序号
 	EdgeoneZoneID int64 `json:"edgeone_zone_id,omitempty"`
 	// 分析日期
-	Date string `json:"date,omitempty"`
+	Date time.Time `json:"date,omitempty"`
 	// L7 EdgeOne 响应流量，单位：Byte
 	L7FlowOutFlux int64 `json:"l7_flow_out_flux,omitempty"`
 	// L7 客户端请求流量，单位：Byte
@@ -52,9 +52,7 @@ func (*EdgeOneZoneAnalysisData) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case edgeonezoneanalysisdata.FieldID, edgeonezoneanalysisdata.FieldEdgeoneZoneID, edgeonezoneanalysisdata.FieldL7FlowOutFlux, edgeonezoneanalysisdata.FieldL7FlowInFlux, edgeonezoneanalysisdata.FieldL7FlowFlux, edgeonezoneanalysisdata.FieldL7FlowOutBandwidth, edgeonezoneanalysisdata.FieldL7FlowInBandwidth, edgeonezoneanalysisdata.FieldL7FlowBandwidth, edgeonezoneanalysisdata.FieldL7FlowRequest, edgeonezoneanalysisdata.FieldL7FlowAvgResponseTime, edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime:
 			values[i] = new(sql.NullInt64)
-		case edgeonezoneanalysisdata.FieldDate:
-			values[i] = new(sql.NullString)
-		case edgeonezoneanalysisdata.FieldCreatedAt:
+		case edgeonezoneanalysisdata.FieldCreatedAt, edgeonezoneanalysisdata.FieldDate:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -90,10 +88,10 @@ func (_m *EdgeOneZoneAnalysisData) assignValues(columns []string, values []any) 
 				_m.EdgeoneZoneID = value.Int64
 			}
 		case edgeonezoneanalysisdata.FieldDate:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field date", values[i])
 			} else if value.Valid {
-				_m.Date = value.String
+				_m.Date = value.Time
 			}
 		case edgeonezoneanalysisdata.FieldL7FlowOutFlux:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -192,7 +190,7 @@ func (_m *EdgeOneZoneAnalysisData) String() string {
 	builder.WriteString(fmt.Sprintf("%v", _m.EdgeoneZoneID))
 	builder.WriteString(", ")
 	builder.WriteString("date=")
-	builder.WriteString(_m.Date)
+	builder.WriteString(_m.Date.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("l7_flow_out_flux=")
 	builder.WriteString(fmt.Sprintf("%v", _m.L7FlowOutFlux))

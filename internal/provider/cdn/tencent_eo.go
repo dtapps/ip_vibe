@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"time"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
@@ -538,9 +539,9 @@ func (p *TencentEOProvider) DescribeTimingL7AnalysisData(ctx context.Context, zo
 	// 当前时间
 	currentTime := gotime.Current()
 	// 开始时间
-	startTime := currentTime.BeforeDay(30).StartOfDay().Format()
+	startTime := currentTime.BeforeDay(30).StartOfDay().SetFormat(time.RFC3339)
 	// 结束时间
-	endTime := currentTime.Format()
+	endTime := currentTime.SetFormat(time.RFC3339)
 
 	request := teo.NewDescribeTimingL7AnalysisDataRequest()
 	request.StartTime = common.StringPtr(startTime)
