@@ -12,6 +12,7 @@ import (
 	"vibe_ip/internal/ent_stat/migrate"
 
 	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
+	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -27,6 +28,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// EdgeOneZoneAnalysisData is the client for interacting with the EdgeOneZoneAnalysisData builders.
 	EdgeOneZoneAnalysisData *EdgeOneZoneAnalysisDataClient
+	// EsaSiteAnalysisData is the client for interacting with the EsaSiteAnalysisData builders.
+	EsaSiteAnalysisData *EsaSiteAnalysisDataClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -39,6 +42,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.EdgeOneZoneAnalysisData = NewEdgeOneZoneAnalysisDataClient(c.config)
+	c.EsaSiteAnalysisData = NewEsaSiteAnalysisDataClient(c.config)
 }
 
 type (
@@ -132,6 +136,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                     ctx,
 		config:                  cfg,
 		EdgeOneZoneAnalysisData: NewEdgeOneZoneAnalysisDataClient(cfg),
+		EsaSiteAnalysisData:     NewEsaSiteAnalysisDataClient(cfg),
 	}, nil
 }
 
@@ -152,6 +157,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                     ctx,
 		config:                  cfg,
 		EdgeOneZoneAnalysisData: NewEdgeOneZoneAnalysisDataClient(cfg),
+		EsaSiteAnalysisData:     NewEsaSiteAnalysisDataClient(cfg),
 	}, nil
 }
 
@@ -181,12 +187,14 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.EdgeOneZoneAnalysisData.Use(hooks...)
+	c.EsaSiteAnalysisData.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.EdgeOneZoneAnalysisData.Intercept(interceptors...)
+	c.EsaSiteAnalysisData.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -194,6 +202,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *EdgeOneZoneAnalysisDataMutation:
 		return c.EdgeOneZoneAnalysisData.mutate(ctx, m)
+	case *EsaSiteAnalysisDataMutation:
+		return c.EsaSiteAnalysisData.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent_stat: unknown mutation type %T", m)
 	}
@@ -332,13 +342,146 @@ func (c *EdgeOneZoneAnalysisDataClient) mutate(ctx context.Context, m *EdgeOneZo
 	}
 }
 
+// EsaSiteAnalysisDataClient is a client for the EsaSiteAnalysisData schema.
+type EsaSiteAnalysisDataClient struct {
+	config
+}
+
+// NewEsaSiteAnalysisDataClient returns a client for the EsaSiteAnalysisData from the given config.
+func NewEsaSiteAnalysisDataClient(c config) *EsaSiteAnalysisDataClient {
+	return &EsaSiteAnalysisDataClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `esasiteanalysisdata.Hooks(f(g(h())))`.
+func (c *EsaSiteAnalysisDataClient) Use(hooks ...Hook) {
+	c.hooks.EsaSiteAnalysisData = append(c.hooks.EsaSiteAnalysisData, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `esasiteanalysisdata.Intercept(f(g(h())))`.
+func (c *EsaSiteAnalysisDataClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EsaSiteAnalysisData = append(c.inters.EsaSiteAnalysisData, interceptors...)
+}
+
+// Create returns a builder for creating a EsaSiteAnalysisData entity.
+func (c *EsaSiteAnalysisDataClient) Create() *EsaSiteAnalysisDataCreate {
+	mutation := newEsaSiteAnalysisDataMutation(c.config, OpCreate)
+	return &EsaSiteAnalysisDataCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EsaSiteAnalysisData entities.
+func (c *EsaSiteAnalysisDataClient) CreateBulk(builders ...*EsaSiteAnalysisDataCreate) *EsaSiteAnalysisDataCreateBulk {
+	return &EsaSiteAnalysisDataCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EsaSiteAnalysisDataClient) MapCreateBulk(slice any, setFunc func(*EsaSiteAnalysisDataCreate, int)) *EsaSiteAnalysisDataCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EsaSiteAnalysisDataCreateBulk{err: fmt.Errorf("calling to EsaSiteAnalysisDataClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EsaSiteAnalysisDataCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EsaSiteAnalysisDataCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EsaSiteAnalysisData.
+func (c *EsaSiteAnalysisDataClient) Update() *EsaSiteAnalysisDataUpdate {
+	mutation := newEsaSiteAnalysisDataMutation(c.config, OpUpdate)
+	return &EsaSiteAnalysisDataUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EsaSiteAnalysisDataClient) UpdateOne(_m *EsaSiteAnalysisData) *EsaSiteAnalysisDataUpdateOne {
+	mutation := newEsaSiteAnalysisDataMutation(c.config, OpUpdateOne, withEsaSiteAnalysisData(_m))
+	return &EsaSiteAnalysisDataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EsaSiteAnalysisDataClient) UpdateOneID(id int64) *EsaSiteAnalysisDataUpdateOne {
+	mutation := newEsaSiteAnalysisDataMutation(c.config, OpUpdateOne, withEsaSiteAnalysisDataID(id))
+	return &EsaSiteAnalysisDataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EsaSiteAnalysisData.
+func (c *EsaSiteAnalysisDataClient) Delete() *EsaSiteAnalysisDataDelete {
+	mutation := newEsaSiteAnalysisDataMutation(c.config, OpDelete)
+	return &EsaSiteAnalysisDataDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EsaSiteAnalysisDataClient) DeleteOne(_m *EsaSiteAnalysisData) *EsaSiteAnalysisDataDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EsaSiteAnalysisDataClient) DeleteOneID(id int64) *EsaSiteAnalysisDataDeleteOne {
+	builder := c.Delete().Where(esasiteanalysisdata.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EsaSiteAnalysisDataDeleteOne{builder}
+}
+
+// Query returns a query builder for EsaSiteAnalysisData.
+func (c *EsaSiteAnalysisDataClient) Query() *EsaSiteAnalysisDataQuery {
+	return &EsaSiteAnalysisDataQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEsaSiteAnalysisData},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EsaSiteAnalysisData entity by its id.
+func (c *EsaSiteAnalysisDataClient) Get(ctx context.Context, id int64) (*EsaSiteAnalysisData, error) {
+	return c.Query().Where(esasiteanalysisdata.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EsaSiteAnalysisDataClient) GetX(ctx context.Context, id int64) *EsaSiteAnalysisData {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *EsaSiteAnalysisDataClient) Hooks() []Hook {
+	return c.hooks.EsaSiteAnalysisData
+}
+
+// Interceptors returns the client interceptors.
+func (c *EsaSiteAnalysisDataClient) Interceptors() []Interceptor {
+	return c.inters.EsaSiteAnalysisData
+}
+
+func (c *EsaSiteAnalysisDataClient) mutate(ctx context.Context, m *EsaSiteAnalysisDataMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EsaSiteAnalysisDataCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EsaSiteAnalysisDataUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EsaSiteAnalysisDataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EsaSiteAnalysisDataDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent_stat: unknown EsaSiteAnalysisData mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		EdgeOneZoneAnalysisData []ent.Hook
+		EdgeOneZoneAnalysisData, EsaSiteAnalysisData []ent.Hook
 	}
 	inters struct {
-		EdgeOneZoneAnalysisData []ent.Interceptor
+		EdgeOneZoneAnalysisData, EsaSiteAnalysisData []ent.Interceptor
 	}
 )
 

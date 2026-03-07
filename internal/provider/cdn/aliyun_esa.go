@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"regexp"
 	"strings"
+	"time"
 	"vibe_ip/internal/helper/aliyun_helper"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
@@ -19,6 +20,7 @@ import (
 	credential "github.com/aliyun/credentials-go/credentials"
 	"github.com/spf13/cast"
 	"go.dtapp.net/library/utils/gomd5"
+	"go.dtapp.net/library/utils/gotime"
 )
 
 // AliyunESAConfig 阿里云 ESA 配置
@@ -786,4 +788,52 @@ func (p *AliyunESAProvider) EdgeContainerRecordsRaw(ctx context.Context, site_id
 		return nil, fmt.Errorf("接口 ListEdgeContainerRecordsWithContext 失败 %w", err)
 	}
 	return response.Body.Records, nil
+}
+
+// DescribeSiteTimeSeriesData 查询账户维度或站点维度流量分析时序数据
+// https://next.api.aliyun.com/api/ESA/2024-09-10/DescribeSiteTimeSeriesData
+func (p *AliyunESAProvider) DescribeSiteTimeSeriesData(ctx context.Context, site_id int64) (records []*esa20240910.DescribeSiteTimeSeriesDataResponseBodyData, err error) {
+	// 当前时间
+	currentTime := gotime.Current()
+	// 开始时间
+	startTime := currentTime.BeforeDay(7).StartOfDay().SetFormat(time.RFC3339)
+	// 结束时间
+	endTime := currentTime.SetFormat(time.RFC3339)
+
+	request := &esa20240910.DescribeSiteTimeSeriesDataRequest{}
+	request.SiteId = tea.String(fmt.Sprintf("%d", site_id))
+	request.StartTime = tea.String(startTime)
+	request.EndTime = tea.String(endTime)
+	request.Interval = tea.String("86400")
+	request.Fields = []*esa20240910.DescribeSiteTimeSeriesDataRequestFields{
+		{
+			FieldName: tea.String("Traffic"), // ESA节点响应返回给客户端的大小，单位：Byte
+			Dimension: []*string{
+				tea.String("ALL"),
+			},
+		},
+		{
+			FieldName: tea.String("Requests"), // 请求数
+			Dimension: []*string{
+				tea.String("ALL"),
+			},
+		},
+		{
+			FieldName: tea.String("RequestTraffic"), // 客户端请求的大小，单位：Byte
+			Dimension: []*string{
+				tea.String("ALL"),
+			},
+		},
+		{
+			FieldName: tea.String("PageView"), // 页面浏览量
+			Dimension: []*string{
+				tea.String("ALL"),
+			},
+		},
+	}
+	response, err := p.Provider.Client.DescribeSiteTimeSeriesDataWithContext(ctx, request, p.Provider.Runtime)
+	if err != nil {
+		return nil, fmt.Errorf("接口 DescribeSiteTimeSeriesDataWithContext 失败 %w", err)
+	}
+	return response.Body.Data, nil
 }

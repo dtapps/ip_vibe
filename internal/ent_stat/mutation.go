@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
+	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 	"vibe_ip/internal/ent_stat/predicate"
 
 	"entgo.io/ent"
@@ -25,6 +26,7 @@ const (
 
 	// Node types.
 	TypeEdgeOneZoneAnalysisData = "EdgeOneZoneAnalysisData"
+	TypeEsaSiteAnalysisData     = "EsaSiteAnalysisData"
 )
 
 // EdgeOneZoneAnalysisDataMutation represents an operation that mutates the EdgeOneZoneAnalysisData nodes in the graph.
@@ -1467,4 +1469,911 @@ func (m *EdgeOneZoneAnalysisDataMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *EdgeOneZoneAnalysisDataMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown EdgeOneZoneAnalysisData edge %s", name)
+}
+
+// EsaSiteAnalysisDataMutation represents an operation that mutates the EsaSiteAnalysisData nodes in the graph.
+type EsaSiteAnalysisDataMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *int64
+	created_at         *time.Time
+	esa_site_id        *int64
+	addesa_site_id     *int64
+	date               *time.Time
+	traffic            *int64
+	addtraffic         *int64
+	requests           *int64
+	addrequests        *int64
+	request_traffic    *int64
+	addrequest_traffic *int64
+	page_view          *int64
+	addpage_view       *int64
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*EsaSiteAnalysisData, error)
+	predicates         []predicate.EsaSiteAnalysisData
+}
+
+var _ ent.Mutation = (*EsaSiteAnalysisDataMutation)(nil)
+
+// esasiteanalysisdataOption allows management of the mutation configuration using functional options.
+type esasiteanalysisdataOption func(*EsaSiteAnalysisDataMutation)
+
+// newEsaSiteAnalysisDataMutation creates new mutation for the EsaSiteAnalysisData entity.
+func newEsaSiteAnalysisDataMutation(c config, op Op, opts ...esasiteanalysisdataOption) *EsaSiteAnalysisDataMutation {
+	m := &EsaSiteAnalysisDataMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEsaSiteAnalysisData,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEsaSiteAnalysisDataID sets the ID field of the mutation.
+func withEsaSiteAnalysisDataID(id int64) esasiteanalysisdataOption {
+	return func(m *EsaSiteAnalysisDataMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *EsaSiteAnalysisData
+		)
+		m.oldValue = func(ctx context.Context) (*EsaSiteAnalysisData, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().EsaSiteAnalysisData.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEsaSiteAnalysisData sets the old EsaSiteAnalysisData of the mutation.
+func withEsaSiteAnalysisData(node *EsaSiteAnalysisData) esasiteanalysisdataOption {
+	return func(m *EsaSiteAnalysisDataMutation) {
+		m.oldValue = func(context.Context) (*EsaSiteAnalysisData, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EsaSiteAnalysisDataMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EsaSiteAnalysisDataMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent_stat: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of EsaSiteAnalysisData entities.
+func (m *EsaSiteAnalysisDataMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *EsaSiteAnalysisDataMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *EsaSiteAnalysisDataMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().EsaSiteAnalysisData.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *EsaSiteAnalysisDataMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *EsaSiteAnalysisDataMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the EsaSiteAnalysisData entity.
+// If the EsaSiteAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteAnalysisDataMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *EsaSiteAnalysisDataMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetEsaSiteID sets the "esa_site_id" field.
+func (m *EsaSiteAnalysisDataMutation) SetEsaSiteID(i int64) {
+	m.esa_site_id = &i
+	m.addesa_site_id = nil
+}
+
+// EsaSiteID returns the value of the "esa_site_id" field in the mutation.
+func (m *EsaSiteAnalysisDataMutation) EsaSiteID() (r int64, exists bool) {
+	v := m.esa_site_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEsaSiteID returns the old "esa_site_id" field's value of the EsaSiteAnalysisData entity.
+// If the EsaSiteAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteAnalysisDataMutation) OldEsaSiteID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEsaSiteID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEsaSiteID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEsaSiteID: %w", err)
+	}
+	return oldValue.EsaSiteID, nil
+}
+
+// AddEsaSiteID adds i to the "esa_site_id" field.
+func (m *EsaSiteAnalysisDataMutation) AddEsaSiteID(i int64) {
+	if m.addesa_site_id != nil {
+		*m.addesa_site_id += i
+	} else {
+		m.addesa_site_id = &i
+	}
+}
+
+// AddedEsaSiteID returns the value that was added to the "esa_site_id" field in this mutation.
+func (m *EsaSiteAnalysisDataMutation) AddedEsaSiteID() (r int64, exists bool) {
+	v := m.addesa_site_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetEsaSiteID resets all changes to the "esa_site_id" field.
+func (m *EsaSiteAnalysisDataMutation) ResetEsaSiteID() {
+	m.esa_site_id = nil
+	m.addesa_site_id = nil
+}
+
+// SetDate sets the "date" field.
+func (m *EsaSiteAnalysisDataMutation) SetDate(t time.Time) {
+	m.date = &t
+}
+
+// Date returns the value of the "date" field in the mutation.
+func (m *EsaSiteAnalysisDataMutation) Date() (r time.Time, exists bool) {
+	v := m.date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDate returns the old "date" field's value of the EsaSiteAnalysisData entity.
+// If the EsaSiteAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteAnalysisDataMutation) OldDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDate: %w", err)
+	}
+	return oldValue.Date, nil
+}
+
+// ResetDate resets all changes to the "date" field.
+func (m *EsaSiteAnalysisDataMutation) ResetDate() {
+	m.date = nil
+}
+
+// SetTraffic sets the "traffic" field.
+func (m *EsaSiteAnalysisDataMutation) SetTraffic(i int64) {
+	m.traffic = &i
+	m.addtraffic = nil
+}
+
+// Traffic returns the value of the "traffic" field in the mutation.
+func (m *EsaSiteAnalysisDataMutation) Traffic() (r int64, exists bool) {
+	v := m.traffic
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTraffic returns the old "traffic" field's value of the EsaSiteAnalysisData entity.
+// If the EsaSiteAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteAnalysisDataMutation) OldTraffic(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTraffic is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTraffic requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTraffic: %w", err)
+	}
+	return oldValue.Traffic, nil
+}
+
+// AddTraffic adds i to the "traffic" field.
+func (m *EsaSiteAnalysisDataMutation) AddTraffic(i int64) {
+	if m.addtraffic != nil {
+		*m.addtraffic += i
+	} else {
+		m.addtraffic = &i
+	}
+}
+
+// AddedTraffic returns the value that was added to the "traffic" field in this mutation.
+func (m *EsaSiteAnalysisDataMutation) AddedTraffic() (r int64, exists bool) {
+	v := m.addtraffic
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTraffic clears the value of the "traffic" field.
+func (m *EsaSiteAnalysisDataMutation) ClearTraffic() {
+	m.traffic = nil
+	m.addtraffic = nil
+	m.clearedFields[esasiteanalysisdata.FieldTraffic] = struct{}{}
+}
+
+// TrafficCleared returns if the "traffic" field was cleared in this mutation.
+func (m *EsaSiteAnalysisDataMutation) TrafficCleared() bool {
+	_, ok := m.clearedFields[esasiteanalysisdata.FieldTraffic]
+	return ok
+}
+
+// ResetTraffic resets all changes to the "traffic" field.
+func (m *EsaSiteAnalysisDataMutation) ResetTraffic() {
+	m.traffic = nil
+	m.addtraffic = nil
+	delete(m.clearedFields, esasiteanalysisdata.FieldTraffic)
+}
+
+// SetRequests sets the "requests" field.
+func (m *EsaSiteAnalysisDataMutation) SetRequests(i int64) {
+	m.requests = &i
+	m.addrequests = nil
+}
+
+// Requests returns the value of the "requests" field in the mutation.
+func (m *EsaSiteAnalysisDataMutation) Requests() (r int64, exists bool) {
+	v := m.requests
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequests returns the old "requests" field's value of the EsaSiteAnalysisData entity.
+// If the EsaSiteAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteAnalysisDataMutation) OldRequests(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequests is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequests requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequests: %w", err)
+	}
+	return oldValue.Requests, nil
+}
+
+// AddRequests adds i to the "requests" field.
+func (m *EsaSiteAnalysisDataMutation) AddRequests(i int64) {
+	if m.addrequests != nil {
+		*m.addrequests += i
+	} else {
+		m.addrequests = &i
+	}
+}
+
+// AddedRequests returns the value that was added to the "requests" field in this mutation.
+func (m *EsaSiteAnalysisDataMutation) AddedRequests() (r int64, exists bool) {
+	v := m.addrequests
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRequests clears the value of the "requests" field.
+func (m *EsaSiteAnalysisDataMutation) ClearRequests() {
+	m.requests = nil
+	m.addrequests = nil
+	m.clearedFields[esasiteanalysisdata.FieldRequests] = struct{}{}
+}
+
+// RequestsCleared returns if the "requests" field was cleared in this mutation.
+func (m *EsaSiteAnalysisDataMutation) RequestsCleared() bool {
+	_, ok := m.clearedFields[esasiteanalysisdata.FieldRequests]
+	return ok
+}
+
+// ResetRequests resets all changes to the "requests" field.
+func (m *EsaSiteAnalysisDataMutation) ResetRequests() {
+	m.requests = nil
+	m.addrequests = nil
+	delete(m.clearedFields, esasiteanalysisdata.FieldRequests)
+}
+
+// SetRequestTraffic sets the "request_traffic" field.
+func (m *EsaSiteAnalysisDataMutation) SetRequestTraffic(i int64) {
+	m.request_traffic = &i
+	m.addrequest_traffic = nil
+}
+
+// RequestTraffic returns the value of the "request_traffic" field in the mutation.
+func (m *EsaSiteAnalysisDataMutation) RequestTraffic() (r int64, exists bool) {
+	v := m.request_traffic
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestTraffic returns the old "request_traffic" field's value of the EsaSiteAnalysisData entity.
+// If the EsaSiteAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteAnalysisDataMutation) OldRequestTraffic(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestTraffic is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestTraffic requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestTraffic: %w", err)
+	}
+	return oldValue.RequestTraffic, nil
+}
+
+// AddRequestTraffic adds i to the "request_traffic" field.
+func (m *EsaSiteAnalysisDataMutation) AddRequestTraffic(i int64) {
+	if m.addrequest_traffic != nil {
+		*m.addrequest_traffic += i
+	} else {
+		m.addrequest_traffic = &i
+	}
+}
+
+// AddedRequestTraffic returns the value that was added to the "request_traffic" field in this mutation.
+func (m *EsaSiteAnalysisDataMutation) AddedRequestTraffic() (r int64, exists bool) {
+	v := m.addrequest_traffic
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRequestTraffic clears the value of the "request_traffic" field.
+func (m *EsaSiteAnalysisDataMutation) ClearRequestTraffic() {
+	m.request_traffic = nil
+	m.addrequest_traffic = nil
+	m.clearedFields[esasiteanalysisdata.FieldRequestTraffic] = struct{}{}
+}
+
+// RequestTrafficCleared returns if the "request_traffic" field was cleared in this mutation.
+func (m *EsaSiteAnalysisDataMutation) RequestTrafficCleared() bool {
+	_, ok := m.clearedFields[esasiteanalysisdata.FieldRequestTraffic]
+	return ok
+}
+
+// ResetRequestTraffic resets all changes to the "request_traffic" field.
+func (m *EsaSiteAnalysisDataMutation) ResetRequestTraffic() {
+	m.request_traffic = nil
+	m.addrequest_traffic = nil
+	delete(m.clearedFields, esasiteanalysisdata.FieldRequestTraffic)
+}
+
+// SetPageView sets the "page_view" field.
+func (m *EsaSiteAnalysisDataMutation) SetPageView(i int64) {
+	m.page_view = &i
+	m.addpage_view = nil
+}
+
+// PageView returns the value of the "page_view" field in the mutation.
+func (m *EsaSiteAnalysisDataMutation) PageView() (r int64, exists bool) {
+	v := m.page_view
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPageView returns the old "page_view" field's value of the EsaSiteAnalysisData entity.
+// If the EsaSiteAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EsaSiteAnalysisDataMutation) OldPageView(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPageView is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPageView requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPageView: %w", err)
+	}
+	return oldValue.PageView, nil
+}
+
+// AddPageView adds i to the "page_view" field.
+func (m *EsaSiteAnalysisDataMutation) AddPageView(i int64) {
+	if m.addpage_view != nil {
+		*m.addpage_view += i
+	} else {
+		m.addpage_view = &i
+	}
+}
+
+// AddedPageView returns the value that was added to the "page_view" field in this mutation.
+func (m *EsaSiteAnalysisDataMutation) AddedPageView() (r int64, exists bool) {
+	v := m.addpage_view
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPageView clears the value of the "page_view" field.
+func (m *EsaSiteAnalysisDataMutation) ClearPageView() {
+	m.page_view = nil
+	m.addpage_view = nil
+	m.clearedFields[esasiteanalysisdata.FieldPageView] = struct{}{}
+}
+
+// PageViewCleared returns if the "page_view" field was cleared in this mutation.
+func (m *EsaSiteAnalysisDataMutation) PageViewCleared() bool {
+	_, ok := m.clearedFields[esasiteanalysisdata.FieldPageView]
+	return ok
+}
+
+// ResetPageView resets all changes to the "page_view" field.
+func (m *EsaSiteAnalysisDataMutation) ResetPageView() {
+	m.page_view = nil
+	m.addpage_view = nil
+	delete(m.clearedFields, esasiteanalysisdata.FieldPageView)
+}
+
+// Where appends a list predicates to the EsaSiteAnalysisDataMutation builder.
+func (m *EsaSiteAnalysisDataMutation) Where(ps ...predicate.EsaSiteAnalysisData) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the EsaSiteAnalysisDataMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *EsaSiteAnalysisDataMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.EsaSiteAnalysisData, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *EsaSiteAnalysisDataMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *EsaSiteAnalysisDataMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (EsaSiteAnalysisData).
+func (m *EsaSiteAnalysisDataMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EsaSiteAnalysisDataMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.created_at != nil {
+		fields = append(fields, esasiteanalysisdata.FieldCreatedAt)
+	}
+	if m.esa_site_id != nil {
+		fields = append(fields, esasiteanalysisdata.FieldEsaSiteID)
+	}
+	if m.date != nil {
+		fields = append(fields, esasiteanalysisdata.FieldDate)
+	}
+	if m.traffic != nil {
+		fields = append(fields, esasiteanalysisdata.FieldTraffic)
+	}
+	if m.requests != nil {
+		fields = append(fields, esasiteanalysisdata.FieldRequests)
+	}
+	if m.request_traffic != nil {
+		fields = append(fields, esasiteanalysisdata.FieldRequestTraffic)
+	}
+	if m.page_view != nil {
+		fields = append(fields, esasiteanalysisdata.FieldPageView)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EsaSiteAnalysisDataMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case esasiteanalysisdata.FieldCreatedAt:
+		return m.CreatedAt()
+	case esasiteanalysisdata.FieldEsaSiteID:
+		return m.EsaSiteID()
+	case esasiteanalysisdata.FieldDate:
+		return m.Date()
+	case esasiteanalysisdata.FieldTraffic:
+		return m.Traffic()
+	case esasiteanalysisdata.FieldRequests:
+		return m.Requests()
+	case esasiteanalysisdata.FieldRequestTraffic:
+		return m.RequestTraffic()
+	case esasiteanalysisdata.FieldPageView:
+		return m.PageView()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EsaSiteAnalysisDataMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case esasiteanalysisdata.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case esasiteanalysisdata.FieldEsaSiteID:
+		return m.OldEsaSiteID(ctx)
+	case esasiteanalysisdata.FieldDate:
+		return m.OldDate(ctx)
+	case esasiteanalysisdata.FieldTraffic:
+		return m.OldTraffic(ctx)
+	case esasiteanalysisdata.FieldRequests:
+		return m.OldRequests(ctx)
+	case esasiteanalysisdata.FieldRequestTraffic:
+		return m.OldRequestTraffic(ctx)
+	case esasiteanalysisdata.FieldPageView:
+		return m.OldPageView(ctx)
+	}
+	return nil, fmt.Errorf("unknown EsaSiteAnalysisData field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EsaSiteAnalysisDataMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case esasiteanalysisdata.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case esasiteanalysisdata.FieldEsaSiteID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEsaSiteID(v)
+		return nil
+	case esasiteanalysisdata.FieldDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDate(v)
+		return nil
+	case esasiteanalysisdata.FieldTraffic:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTraffic(v)
+		return nil
+	case esasiteanalysisdata.FieldRequests:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequests(v)
+		return nil
+	case esasiteanalysisdata.FieldRequestTraffic:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestTraffic(v)
+		return nil
+	case esasiteanalysisdata.FieldPageView:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPageView(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteAnalysisData field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EsaSiteAnalysisDataMutation) AddedFields() []string {
+	var fields []string
+	if m.addesa_site_id != nil {
+		fields = append(fields, esasiteanalysisdata.FieldEsaSiteID)
+	}
+	if m.addtraffic != nil {
+		fields = append(fields, esasiteanalysisdata.FieldTraffic)
+	}
+	if m.addrequests != nil {
+		fields = append(fields, esasiteanalysisdata.FieldRequests)
+	}
+	if m.addrequest_traffic != nil {
+		fields = append(fields, esasiteanalysisdata.FieldRequestTraffic)
+	}
+	if m.addpage_view != nil {
+		fields = append(fields, esasiteanalysisdata.FieldPageView)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EsaSiteAnalysisDataMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case esasiteanalysisdata.FieldEsaSiteID:
+		return m.AddedEsaSiteID()
+	case esasiteanalysisdata.FieldTraffic:
+		return m.AddedTraffic()
+	case esasiteanalysisdata.FieldRequests:
+		return m.AddedRequests()
+	case esasiteanalysisdata.FieldRequestTraffic:
+		return m.AddedRequestTraffic()
+	case esasiteanalysisdata.FieldPageView:
+		return m.AddedPageView()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EsaSiteAnalysisDataMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case esasiteanalysisdata.FieldEsaSiteID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddEsaSiteID(v)
+		return nil
+	case esasiteanalysisdata.FieldTraffic:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTraffic(v)
+		return nil
+	case esasiteanalysisdata.FieldRequests:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRequests(v)
+		return nil
+	case esasiteanalysisdata.FieldRequestTraffic:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRequestTraffic(v)
+		return nil
+	case esasiteanalysisdata.FieldPageView:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPageView(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteAnalysisData numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EsaSiteAnalysisDataMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(esasiteanalysisdata.FieldTraffic) {
+		fields = append(fields, esasiteanalysisdata.FieldTraffic)
+	}
+	if m.FieldCleared(esasiteanalysisdata.FieldRequests) {
+		fields = append(fields, esasiteanalysisdata.FieldRequests)
+	}
+	if m.FieldCleared(esasiteanalysisdata.FieldRequestTraffic) {
+		fields = append(fields, esasiteanalysisdata.FieldRequestTraffic)
+	}
+	if m.FieldCleared(esasiteanalysisdata.FieldPageView) {
+		fields = append(fields, esasiteanalysisdata.FieldPageView)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EsaSiteAnalysisDataMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EsaSiteAnalysisDataMutation) ClearField(name string) error {
+	switch name {
+	case esasiteanalysisdata.FieldTraffic:
+		m.ClearTraffic()
+		return nil
+	case esasiteanalysisdata.FieldRequests:
+		m.ClearRequests()
+		return nil
+	case esasiteanalysisdata.FieldRequestTraffic:
+		m.ClearRequestTraffic()
+		return nil
+	case esasiteanalysisdata.FieldPageView:
+		m.ClearPageView()
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteAnalysisData nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EsaSiteAnalysisDataMutation) ResetField(name string) error {
+	switch name {
+	case esasiteanalysisdata.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case esasiteanalysisdata.FieldEsaSiteID:
+		m.ResetEsaSiteID()
+		return nil
+	case esasiteanalysisdata.FieldDate:
+		m.ResetDate()
+		return nil
+	case esasiteanalysisdata.FieldTraffic:
+		m.ResetTraffic()
+		return nil
+	case esasiteanalysisdata.FieldRequests:
+		m.ResetRequests()
+		return nil
+	case esasiteanalysisdata.FieldRequestTraffic:
+		m.ResetRequestTraffic()
+		return nil
+	case esasiteanalysisdata.FieldPageView:
+		m.ResetPageView()
+		return nil
+	}
+	return fmt.Errorf("unknown EsaSiteAnalysisData field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EsaSiteAnalysisDataMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EsaSiteAnalysisDataMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EsaSiteAnalysisDataMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EsaSiteAnalysisDataMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EsaSiteAnalysisDataMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EsaSiteAnalysisDataMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EsaSiteAnalysisDataMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown EsaSiteAnalysisData unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EsaSiteAnalysisDataMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown EsaSiteAnalysisData edge %s", name)
 }

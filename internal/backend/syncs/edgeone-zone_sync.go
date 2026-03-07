@@ -197,7 +197,7 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 		}
 
 		s.logger.DebugContext(ctx, "查询流量分析时序数据",
-			slog.Any("zone", utils.PtrToString(zone.ZoneId)),
+			slog.String("zone", utils.PtrToString(zone.ZoneId)),
 		)
 
 		// 查询流量分析时序数据
@@ -244,7 +244,7 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 			)
 		}
 
-		// 批量入库流量分析时序数据
+		// 批量入库统计数据
 		err = syncStatDb.EdgeOneZoneAnalysisData.CreateBulk(createAnalysisDatas...).
 			OnConflictColumns(
 				edgeonezoneanalysisdata.FieldEdgeoneZoneID, edgeonezoneanalysisdata.FieldDate,
@@ -252,14 +252,14 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 			UpdateNewValues().
 			Exec(ctx)
 		if err != nil {
-			s.logger.ErrorContext(ctx, "批量入库流量分析时序数据失败",
+			s.logger.ErrorContext(ctx, "批量入库统计数据失败",
 				slog.Any("err", err),
 			)
-			return fmt.Errorf("批量入库流量分析时序数据失败: %w", err)
+			return fmt.Errorf("批量入库统计数据失败: %w", err)
 		}
 
-		s.logger.DebugContext(ctx, "批量入库流量分析时序数据成功",
-			slog.Any("zone", utils.PtrToString(zone.ZoneId)),
+		s.logger.DebugContext(ctx, "批量入库统计数据成功",
+			slog.String("zone", utils.PtrToString(zone.ZoneId)),
 		)
 	}
 
@@ -332,7 +332,7 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 		}
 
 		s.logger.DebugContext(ctx, "查询流量分析时序数据",
-			slog.Any("zone", utils.PtrToString(zone.ZoneId)),
+			slog.String("zone", utils.PtrToString(zone.ZoneId)),
 		)
 
 		// 查询流量分析时序数据
@@ -379,7 +379,7 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 			)
 		}
 
-		// 批量入库流量分析时序数据
+		// 批量入库统计数据
 		err = syncStatDb.EdgeOneZoneAnalysisData.CreateBulk(createAnalysisDatas...).
 			OnConflictColumns(
 				edgeonezoneanalysisdata.FieldEdgeoneZoneID, edgeonezoneanalysisdata.FieldDate,
@@ -387,14 +387,14 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 			UpdateNewValues().
 			Exec(ctx)
 		if err != nil {
-			s.logger.ErrorContext(ctx, "批量入库流量分析时序数据失败",
+			s.logger.ErrorContext(ctx, "批量入库统计数据失败",
 				slog.Any("err", err),
 			)
-			return fmt.Errorf("批量入库流量分析时序数据失败: %w", err)
+			return fmt.Errorf("批量入库统计数据失败: %w", err)
 		}
 
-		s.logger.DebugContext(ctx, "批量入库流量分析时序数据成功",
-			slog.Any("zone", utils.PtrToString(zone.ZoneId)),
+		s.logger.DebugContext(ctx, "批量入库统计数据成功",
+			slog.String("zone", utils.PtrToString(zone.ZoneId)),
 		)
 	}
 

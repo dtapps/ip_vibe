@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"sync"
 	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
+	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -74,6 +75,7 @@ func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			edgeonezoneanalysisdata.Table: edgeonezoneanalysisdata.ValidColumn,
+			esasiteanalysisdata.Table:     esasiteanalysisdata.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

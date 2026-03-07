@@ -5,6 +5,7 @@ package ent_stat
 import (
 	"fmt"
 	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
+	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 )
 
 // OrderIf 动态地添加一个 ORDER 子句到查询构建器。
@@ -20,6 +21,26 @@ func (q *EdgeOneZoneAnalysisDataQuery) OrderIf(condition bool, o edgeonezoneanal
 // OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Order 列表
 func (q *EdgeOneZoneAnalysisDataQuery) OrderIfs(condition bool, o ...edgeonezoneanalysisdata.OrderOption) *EdgeOneZoneAnalysisDataQuery {
+	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o...)
+	}
+	return q
+}
+
+// OrderIf 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteAnalysisDataQuery) OrderIf(condition bool, o esasiteanalysisdata.OrderOption) *EsaSiteAnalysisDataQuery {
+	q.log("OrderIf: condition=", condition, ", orderOption=", fmt.Sprintf("%#v", o))
+	if condition {
+		q.Order(o)
+	}
+	return q
+}
+
+// OrderIfs 动态地添加一个 ORDER 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Order 列表
+func (q *EsaSiteAnalysisDataQuery) OrderIfs(condition bool, o ...esasiteanalysisdata.OrderOption) *EsaSiteAnalysisDataQuery {
 	q.log("OrderIfs: condition=", condition, ", orderOptions=", fmt.Sprintf("%#v", o))
 	if condition {
 		q.Order(o...)

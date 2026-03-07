@@ -5,6 +5,7 @@ package ent_stat
 import (
 	"time"
 	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
+	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 	"vibe_ip/internal/ent_stat/schema"
 )
 
@@ -29,4 +30,21 @@ func init() {
 	edgeonezoneanalysisdataDescID := edgeonezoneanalysisdataFields[0].Descriptor()
 	// edgeonezoneanalysisdata.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	edgeonezoneanalysisdata.IDValidator = edgeonezoneanalysisdataDescID.Validators[0].(func(int64) error)
+	esasiteanalysisdataMixin := schema.EsaSiteAnalysisData{}.Mixin()
+	esasiteanalysisdataMixinFields0 := esasiteanalysisdataMixin[0].Fields()
+	_ = esasiteanalysisdataMixinFields0
+	esasiteanalysisdataFields := schema.EsaSiteAnalysisData{}.Fields()
+	_ = esasiteanalysisdataFields
+	// esasiteanalysisdataDescCreatedAt is the schema descriptor for created_at field.
+	esasiteanalysisdataDescCreatedAt := esasiteanalysisdataMixinFields0[0].Descriptor()
+	// esasiteanalysisdata.DefaultCreatedAt holds the default value on creation for the created_at field.
+	esasiteanalysisdata.DefaultCreatedAt = esasiteanalysisdataDescCreatedAt.Default.(func() time.Time)
+	// esasiteanalysisdataDescEsaSiteID is the schema descriptor for esa_site_id field.
+	esasiteanalysisdataDescEsaSiteID := esasiteanalysisdataFields[1].Descriptor()
+	// esasiteanalysisdata.EsaSiteIDValidator is a validator for the "esa_site_id" field. It is called by the builders before save.
+	esasiteanalysisdata.EsaSiteIDValidator = esasiteanalysisdataDescEsaSiteID.Validators[0].(func(int64) error)
+	// esasiteanalysisdataDescID is the schema descriptor for id field.
+	esasiteanalysisdataDescID := esasiteanalysisdataFields[0].Descriptor()
+	// esasiteanalysisdata.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	esasiteanalysisdata.IDValidator = esasiteanalysisdataDescID.Validators[0].(func(int64) error)
 }

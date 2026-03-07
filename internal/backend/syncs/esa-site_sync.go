@@ -14,11 +14,13 @@ import (
 	"vibe_ip/internal/ent/esasiterecord"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/ent_stat"
+	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/provider/cdn"
 
 	"github.com/alibabacloud-go/tea/tea"
-
+	"github.com/spf13/cast"
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/gojson"
 	"go.dtapp.net/library/utils/gotime"
@@ -140,6 +142,10 @@ func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err e
 
 	// 入库所有站点
 	for _, site := range sites {
+
+		// 站点序号
+		var esaSiteID int64
+
 		// 查询站点记录
 		firstSite, err := s.db.EsaSite.Query().
 			Where(esasite.ConfigIDEQ(config_id)).
@@ -171,10 +177,11 @@ func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err e
 				createOne.SetStatus(esasite.Status(tea.StringValue(site.Status)))
 			}
 			createOne.SetOfflineReason(tea.StringValue(site.OfflineReason))
-			err = createOne.Exec(ctx)
+			saveSite, err := createOne.Save(ctx)
 			if err != nil {
 				return fmt.Errorf("创建站点记录失败: %w", err)
 			}
+			esaSiteID = saveSite.ID
 		} else {
 			// 更新站点记录
 			updateOne := s.db.EsaSite.UpdateOne(firstSite)
@@ -199,7 +206,67 @@ func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err e
 			if err != nil {
 				return fmt.Errorf("更新站点记录失败: %w", err)
 			}
+			esaSiteID = firstSite.ID
 		}
+
+		s.logger.DebugContext(ctx, "查询账户维度或站点维度流量分析时序数据",
+			slog.Int64("zone", tea.Int64Value(site.SiteId)),
+		)
+
+		// 查询账户维度或站点维度流量分析时序数据
+		analysisDatas, err := cdnProvider.DescribeSiteTimeSeriesData(ctx, tea.Int64Value(site.SiteId))
+		if err != nil {
+			s.logger.ErrorContext(ctx, "查询账户维度或站点维度流量分析时序数据失败",
+				slog.Any("err", err),
+			)
+			return err
+		}
+
+		// 按天聚合：date -> map[metricName]value
+		dayMetrics := make(map[string]map[string]int64)
+		for _, tv := range analysisDatas {
+			for _, detail := range tv.DetailData {
+				date := gotime.SetCurrentUnix(cast.ToInt64(tea.StringValue(detail.TimeStamp))).StartOfDay().SetFormat(gotime.DateFormat)
+				if dayMetrics[date] == nil {
+					dayMetrics[date] = make(map[string]int64)
+				}
+				// 直接存 Value
+				dayMetrics[date][tea.StringValue(tv.FieldName)] = cast.ToInt64(detail.Value)
+			}
+		}
+
+		// 构建批量 Create 对象
+		createAnalysisDatas := make([]*ent_stat.EsaSiteAnalysisDataCreate, 0, len(dayMetrics))
+		for date, metrics := range dayMetrics {
+			createAnalysisDatas = append(
+				createAnalysisDatas,
+				syncStatDb.EsaSiteAnalysisData.Create().
+					SetEsaSiteID(esaSiteID).
+					SetDate(gotime.SetCurrentParse(date).Time).
+					SetTraffic(metrics["Traffic"]).
+					SetRequests(metrics["Requests"]).
+					SetRequestTraffic(metrics["RequestTraffic"]).
+					SetPageView(metrics["PageView"]),
+			)
+		}
+
+		// 批量入库统计数据
+		err = syncStatDb.EsaSiteAnalysisData.CreateBulk(createAnalysisDatas...).
+			OnConflictColumns(
+				esasiteanalysisdata.FieldEsaSiteID, esasiteanalysisdata.FieldDate,
+			).
+			UpdateNewValues().
+			Exec(ctx)
+		if err != nil {
+			s.logger.ErrorContext(ctx, "批量入库统计数据失败",
+				slog.Any("err", err),
+			)
+			return fmt.Errorf("批量入库统计数据失败: %w", err)
+		}
+
+		s.logger.DebugContext(ctx, "批量入库统计数据成功",
+			slog.Int64("site_id", firstSite.ID),
+		)
 	}
 
 	return nil
@@ -272,6 +339,65 @@ func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id
 		if err != nil {
 			return fmt.Errorf("更新站点记录失败: %w", err)
 		}
+
+		s.logger.DebugContext(ctx, "查询账户维度或站点维度流量分析时序数据",
+			slog.Int64("zone", tea.Int64Value(site.SiteId)),
+		)
+
+		// 查询账户维度或站点维度流量分析时序数据
+		analysisDatas, err := cdnProvider.DescribeSiteTimeSeriesData(ctx, tea.Int64Value(site.SiteId))
+		if err != nil {
+			s.logger.ErrorContext(ctx, "查询账户维度或站点维度流量分析时序数据失败",
+				slog.Any("err", err),
+			)
+			return err
+		}
+
+		// 按天聚合：date -> map[metricName]value
+		dayMetrics := make(map[string]map[string]int64)
+		for _, tv := range analysisDatas {
+			for _, detail := range tv.DetailData {
+				date := gotime.SetCurrentUnix(cast.ToInt64(tea.StringValue(detail.TimeStamp))).StartOfDay().SetFormat(gotime.DateFormat)
+				if dayMetrics[date] == nil {
+					dayMetrics[date] = make(map[string]int64)
+				}
+				// 直接存 Value
+				dayMetrics[date][tea.StringValue(tv.FieldName)] = cast.ToInt64(detail.Value)
+			}
+		}
+
+		// 构建批量 Create 对象
+		createAnalysisDatas := make([]*ent_stat.EsaSiteAnalysisDataCreate, 0, len(dayMetrics))
+		for date, metrics := range dayMetrics {
+			createAnalysisDatas = append(
+				createAnalysisDatas,
+				syncStatDb.EsaSiteAnalysisData.Create().
+					SetEsaSiteID(firstSite.ID).
+					SetDate(gotime.SetCurrentParse(date).Time).
+					SetTraffic(metrics["Traffic"]).
+					SetRequests(metrics["Requests"]).
+					SetRequestTraffic(metrics["RequestTraffic"]).
+					SetPageView(metrics["PageView"]),
+			)
+		}
+
+		// 批量入库统计数据
+		err = syncStatDb.EsaSiteAnalysisData.CreateBulk(createAnalysisDatas...).
+			OnConflictColumns(
+				esasiteanalysisdata.FieldEsaSiteID, esasiteanalysisdata.FieldDate,
+			).
+			UpdateNewValues().
+			Exec(ctx)
+		if err != nil {
+			s.logger.ErrorContext(ctx, "批量入库统计数据失败",
+				slog.Any("err", err),
+			)
+			return fmt.Errorf("批量入库统计数据失败: %w", err)
+		}
+
+		s.logger.DebugContext(ctx, "批量入库统计数据成功",
+			slog.Int64("site_id", firstSite.ID),
+		)
 	}
 
 	return nil

@@ -20,6 +20,18 @@ func (f EdgeOneZoneAnalysisDataFunc) Mutate(ctx context.Context, m ent_stat.Muta
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_stat.EdgeOneZoneAnalysisDataMutation", m)
 }
 
+// The EsaSiteAnalysisDataFunc type is an adapter to allow the use of ordinary
+// function as EsaSiteAnalysisData mutator.
+type EsaSiteAnalysisDataFunc func(context.Context, *ent_stat.EsaSiteAnalysisDataMutation) (ent_stat.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EsaSiteAnalysisDataFunc) Mutate(ctx context.Context, m ent_stat.Mutation) (ent_stat.Value, error) {
+	if mv, ok := m.(*ent_stat.EsaSiteAnalysisDataMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_stat.EsaSiteAnalysisDataMutation", m)
+}
+
 // Condition is a hook condition function.
 type Condition func(context.Context, ent_stat.Mutation) bool
 

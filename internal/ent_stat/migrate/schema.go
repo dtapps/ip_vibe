@@ -60,14 +60,64 @@ var (
 			},
 		},
 	}
+	// EsaSiteAnalysisDataColumns holds the columns for the "esa_site_analysis_data" table.
+	EsaSiteAnalysisDataColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "ESA 站点记录序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "esa_site_id", Type: field.TypeInt64, Comment: "关联 ESA 站点序号"},
+		{Name: "date", Type: field.TypeTime, Comment: "分析日期"},
+		{Name: "traffic", Type: field.TypeInt64, Nullable: true, Comment: "ESA节点响应返回给客户端的大小，单位：Byte"},
+		{Name: "requests", Type: field.TypeInt64, Nullable: true, Comment: "请求数"},
+		{Name: "request_traffic", Type: field.TypeInt64, Nullable: true, Comment: "客户端请求的大小，单位：Byte"},
+		{Name: "page_view", Type: field.TypeInt64, Nullable: true, Comment: "页面浏览量"},
+	}
+	// EsaSiteAnalysisDataTable holds the schema information for the "esa_site_analysis_data" table.
+	EsaSiteAnalysisDataTable = &schema.Table{
+		Name:       "esa_site_analysis_data",
+		Comment:    "ESA 站点分析数据",
+		Columns:    EsaSiteAnalysisDataColumns,
+		PrimaryKey: []*schema.Column{EsaSiteAnalysisDataColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "esasiteanalysisdata_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteAnalysisDataColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "esasiteanalysisdata_esa_site_id",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteAnalysisDataColumns[2]},
+			},
+			{
+				Name:    "esasiteanalysisdata_date",
+				Unique:  false,
+				Columns: []*schema.Column{EsaSiteAnalysisDataColumns[3]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "esasiteanalysisdata_esa_site_id_date",
+				Unique:  true,
+				Columns: []*schema.Column{EsaSiteAnalysisDataColumns[2], EsaSiteAnalysisDataColumns[3]},
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		EdgeOneZoneAnalysisDataTable,
+		EsaSiteAnalysisDataTable,
 	}
 )
 
 func init() {
 	EdgeOneZoneAnalysisDataTable.Annotation = &entsql.Annotation{
 		Table: "edge_one_zone_analysis_data",
+	}
+	EsaSiteAnalysisDataTable.Annotation = &entsql.Annotation{
+		Table: "esa_site_analysis_data",
 	}
 }

@@ -8,3 +8,6 @@ import (
 
 // EdgeOneZoneAnalysisData is the predicate function for edgeonezoneanalysisdata builders.
 type EdgeOneZoneAnalysisData func(*sql.Selector)
+
+// EsaSiteAnalysisData is the predicate function for esasiteanalysisdata builders.
+type EsaSiteAnalysisData func(*sql.Selector)

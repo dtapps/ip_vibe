@@ -16,6 +16,8 @@ type Tx struct {
 	config
 	// EdgeOneZoneAnalysisData is the client for interacting with the EdgeOneZoneAnalysisData builders.
 	EdgeOneZoneAnalysisData *EdgeOneZoneAnalysisDataClient
+	// EsaSiteAnalysisData is the client for interacting with the EsaSiteAnalysisData builders.
+	EsaSiteAnalysisData *EsaSiteAnalysisDataClient
 
 	// lazily loaded.
 	client     *Client
@@ -148,6 +150,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.EdgeOneZoneAnalysisData = NewEdgeOneZoneAnalysisDataClient(tx.config)
+	tx.EsaSiteAnalysisData = NewEsaSiteAnalysisDataClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
