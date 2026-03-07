@@ -564,37 +564,69 @@ func (m *CronServerManager) SyncPlatformConfigJob(ctx context.Context, record *e
 		if record.Capability == platformconfig.CapabilityTun || record.Capability == platformconfig.CapabilityAll {
 			// 加载 Cloudflare隧道同步 任务
 			cloudflareTunnelSyncHandler := task.NewCloudflareTunnelSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
-			cloudflareTunnelSyncHandler.LoadTask(ctx, m.db, record)
-			m.logger.InfoContext(ctx, "[SyncPlatformConfigJob] 加载 Cloudflare隧道同步 任务",
-				slog.String("platform", record.Platform.String()),
-				slog.String("capability", record.Capability.String()),
-			)
+			err := cloudflareTunnelSyncHandler.LoadTask(ctx, m.db, record)
+			if err != nil {
+				m.logger.ErrorContext(ctx, "[SyncPlatformConfigJob] 加载 Cloudflare隧道同步 任务失败",
+					slog.String("platform", record.Platform.String()),
+					slog.String("capability", record.Capability.String()),
+					slog.Any("err", err),
+				)
+			} else {
+				m.logger.InfoContext(ctx, "[SyncPlatformConfigJob] 加载 Cloudflare隧道同步 任务成功",
+					slog.String("platform", record.Platform.String()),
+					slog.String("capability", record.Capability.String()),
+				)
+			}
 		}
 		if record.Capability == platformconfig.CapabilityDNS || record.Capability == platformconfig.CapabilityCdn || record.Capability == platformconfig.CapabilityAll {
 			// 加载 Cloudflare站点同步 任务
 			cloudflareZoneSyncHandler := task.NewCloudflareZoneSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
-			cloudflareZoneSyncHandler.LoadTask(ctx, m.db, record)
-			m.logger.InfoContext(ctx, "[SyncPlatformConfigJob] 加载 Cloudflare站点同步 任务",
-				slog.String("platform", record.Platform.String()),
-				slog.String("capability", record.Capability.String()),
-			)
+			err := cloudflareZoneSyncHandler.LoadTask(ctx, m.db, record)
+			if err != nil {
+				m.logger.ErrorContext(ctx, "[SyncPlatformConfigJob] 加载 Cloudflare站点同步 任务失败",
+					slog.String("platform", record.Platform.String()),
+					slog.String("capability", record.Capability.String()),
+					slog.Any("err", err),
+				)
+			} else {
+				m.logger.InfoContext(ctx, "[SyncPlatformConfigJob] 加载 Cloudflare站点同步 任务成功",
+					slog.String("platform", record.Platform.String()),
+					slog.String("capability", record.Capability.String()),
+				)
+			}
 		}
 	case platformconfig.PlatformTencentEo:
 		// 加载 EdgeOne站点同步 任务
 		edgeOneZoneSyncHandler := task.NewEdgeOneZoneSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
-		edgeOneZoneSyncHandler.LoadTask(ctx, m.db, record)
-		m.logger.InfoContext(ctx, "[SyncPlatformConfigJob] 加载 EdgeOne站点同步 任务",
-			slog.String("platform", record.Platform.String()),
-			slog.String("capability", record.Capability.String()),
-		)
+		err := edgeOneZoneSyncHandler.LoadTask(ctx, m.db, record)
+		if err != nil {
+			m.logger.ErrorContext(ctx, "[SyncPlatformConfigJob] 加载 EdgeOne站点同步 任务失败",
+				slog.String("platform", record.Platform.String()),
+				slog.String("capability", record.Capability.String()),
+				slog.Any("err", err),
+			)
+		} else {
+			m.logger.InfoContext(ctx, "[SyncPlatformConfigJob] 加载 EdgeOne站点同步 任务成功",
+				slog.String("platform", record.Platform.String()),
+				slog.String("capability", record.Capability.String()),
+			)
+		}
 	case platformconfig.PlatformAliyunEsa:
 		// 加载 ESA站点同步 任务
 		esaSiteSyncHandler := task.NewESASiteSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
-		esaSiteSyncHandler.LoadTask(ctx, m.db, record)
-		m.logger.InfoContext(ctx, "[SyncPlatformConfigJob] 加载 ESA站点同步 任务",
-			slog.String("platform", record.Platform.String()),
-			slog.String("capability", record.Capability.String()),
-		)
+		err := esaSiteSyncHandler.LoadTask(ctx, m.db, record)
+		if err != nil {
+			m.logger.ErrorContext(ctx, "[SyncPlatformConfigJob] 加载 ESA站点同步 任务失败",
+				slog.String("platform", record.Platform.String()),
+				slog.String("capability", record.Capability.String()),
+				slog.Any("err", err),
+			)
+		} else {
+			m.logger.InfoContext(ctx, "[SyncPlatformConfigJob] 加载 ESA站点同步 任务成功",
+				slog.String("platform", record.Platform.String()),
+				slog.String("capability", record.Capability.String()),
+			)
+		}
 	}
 	return nil
 }
