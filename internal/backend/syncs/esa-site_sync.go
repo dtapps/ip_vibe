@@ -226,7 +226,7 @@ func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err e
 		dayMetrics := make(map[string]map[string]int64)
 		for _, tv := range analysisDatas {
 			for _, detail := range tv.DetailData {
-				date := gotime.SetCurrentUnix(cast.ToInt64(tea.StringValue(detail.TimeStamp))).StartOfDay().SetFormat(gotime.DateFormat)
+				date := gotime.SetCurrentParse(tea.StringValue(detail.TimeStamp)).StartOfDay().SetFormat(gotime.DateFormat)
 				if dayMetrics[date] == nil {
 					dayMetrics[date] = make(map[string]int64)
 				}
@@ -357,7 +357,7 @@ func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id
 		dayMetrics := make(map[string]map[string]int64)
 		for _, tv := range analysisDatas {
 			for _, detail := range tv.DetailData {
-				date := gotime.SetCurrentUnix(cast.ToInt64(tea.StringValue(detail.TimeStamp))).StartOfDay().SetFormat(gotime.DateFormat)
+				date := gotime.SetCurrentParse(tea.StringValue(detail.TimeStamp)).StartOfDay().SetFormat(gotime.DateFormat)
 				if dayMetrics[date] == nil {
 					dayMetrics[date] = make(map[string]int64)
 				}
