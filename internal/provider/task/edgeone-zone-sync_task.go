@@ -46,7 +46,7 @@ func NewEdgeOneZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, lo
 		httpTransport:   httpTransport,
 		edgeOneZoneSync: edgeOneZoneSync,
 
-		businessType: cronjob.BusinessTypeEdgeone,
+		businessType: cronjob.BusinessTypeEdgeoneZone,
 	}
 }
 

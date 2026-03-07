@@ -48,7 +48,7 @@ func NewCloudflareZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client,
 		httpTransport:      httpTransport,
 		cloudflareZoneSync: cloudflareZoneSync,
 
-		businessType: cronjob.BusinessTypeCloudflare,
+		businessType: cronjob.BusinessTypeCloudflareZone,
 	}
 }
 

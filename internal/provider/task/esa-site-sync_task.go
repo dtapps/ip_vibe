@@ -48,7 +48,7 @@ func NewESASiteSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger
 		httpTransport: httpTransport,
 		esaSiteSync:   esaSiteSync,
 
-		businessType: cronjob.BusinessTypeEsa,
+		businessType: cronjob.BusinessTypeEsaSite,
 	}
 }
 

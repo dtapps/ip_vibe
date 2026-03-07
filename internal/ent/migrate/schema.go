@@ -351,7 +351,7 @@ var (
 		{Name: "task_type", Type: field.TypeEnum, Comment: "任务类型: one_off 一次性, recurring 周期性", Enums: []string{"one_off", "recurring"}},
 		{Name: "job_type", Type: field.TypeEnum, Comment: "运行类型: cron cron 表达式, duration 固定间隔, random 随机间隔", Enums: []string{"cron", "duration", "random"}},
 		{Name: "job_category", Type: field.TypeEnum, Comment: "任务分类: system 系统内置, custom 用户自定义", Enums: []string{"system", "custom"}},
-		{Name: "business_type", Type: field.TypeEnum, Nullable: true, Comment: "业务类型: cdn, dns, ssl, domain, tun, webhook, device, cloudflare, edgeone, esa, system", Enums: []string{"cdn", "dns", "ssl", "domain", "tun", "webhook", "device", "cloudflare", "edgeone", "esa", "system"}},
+		{Name: "business_type", Type: field.TypeEnum, Nullable: true, Comment: "业务类型: cdn, dns, ssl, domain, tun, webhook, device, cloudflare, edgeone, esa, system", Enums: []string{"cdn", "dns", "ssl", "domain", "tun", "webhook", "device", "cloudflare_tunnel", "cloudflare_zone", "edgeone_zone", "esa_site", "system"}},
 		{Name: "business_id", Type: field.TypeInt64, Nullable: true, Comment: "业务序号"},
 		{Name: "business_key", Type: field.TypeString, Nullable: true, Comment: "业务键"},
 		{Name: "cron_expr", Type: field.TypeString, Nullable: true, Comment: "cron 表达式"},
