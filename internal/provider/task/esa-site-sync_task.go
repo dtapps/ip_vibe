@@ -174,8 +174,8 @@ func (p *ESASiteSyncTaskProvider) LoadTask(ctx context.Context, db *ent.Client, 
 			SetJobCategory(jobCategory).
 			SetBusinessType(p.businessType).
 			SetBusinessID(record.ID).
-			SetMinInterval(6).
-			SetMaxInterval(8).
+			SetMinInterval(1).
+			SetMaxInterval(2).
 			SetIntervalUnit(cronjob.IntervalUnitHours).
 			SetStatus(cronjob.StatusRunning).
 			SetIsSingleton(true). // 单例模式
