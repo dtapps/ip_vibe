@@ -42,6 +42,10 @@
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "ent_log_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
                 Ent Log 语句
             </a>
+            <a href="?type=ent_stat_file&file_name=ent_stat_backend.log" role="tab"
+                class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "ent_stat_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
+                Ent Stat 语句
+            </a>
             <a href="?type=gin_file&file_name=gin_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "gin_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
                 Gin 流水
