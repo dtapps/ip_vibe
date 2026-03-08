@@ -39,10 +39,24 @@ type EdgeOneZoneAnalysisData struct {
 	// L7 访问请求数，单位：次
 	L7FlowRequest int64 `json:"l7_flow_request,omitempty"`
 	// L7 访问平均响应耗时，单位：ms
-	L7FlowAvgResponseTime int64 `json:"l7_flow_avg_response_time,omitempty"`
+	L7FlowAvgResponseTime float64 `json:"l7_flow_avg_response_time,omitempty"`
 	// L7 访问平均首字节响应耗时，单位：ms
-	L7FlowAvgFirstByteResponseTime int64 `json:"l7_flow_avg_first_byte_response_time,omitempty"`
-	selectValues                   sql.SelectValues
+	L7FlowAvgFirstByteResponseTime float64 `json:"l7_flow_avg_first_byte_response_time,omitempty"`
+	// L4 访问总流量，单位：Byte
+	L4FlowFlux int64 `json:"l4_flow_flux,omitempty"`
+	// L4 访问入流量，单位：Byte
+	L4FlowInFlux int64 `json:"l4_flow_in_flux,omitempty"`
+	// L4 访问出流量，单位：Byte
+	L4FlowOutFlux int64 `json:"l4_flow_out_flux,omitempty"`
+	// L4 访问入向带宽峰值，单位：bps
+	L4FlowInBandwidth int64 `json:"l4_flow_in_bandwidth,omitempty"`
+	// L4 访问出向带宽峰值，单位：bps
+	L4FlowOutBandwidth int64 `json:"l4_flow_out_bandwidth,omitempty"`
+	// L4 访问并发连接数，单位：个
+	L4FlowConnections int64 `json:"l4_flow_connections,omitempty"`
+	// L4 新建连接数速率，单位：个/秒
+	L4FlowNewConnectionsRate int64 `json:"l4_flow_new_connections_rate,omitempty"`
+	selectValues             sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -50,7 +64,9 @@ func (*EdgeOneZoneAnalysisData) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case edgeonezoneanalysisdata.FieldID, edgeonezoneanalysisdata.FieldEdgeoneZoneID, edgeonezoneanalysisdata.FieldL7FlowOutFlux, edgeonezoneanalysisdata.FieldL7FlowInFlux, edgeonezoneanalysisdata.FieldL7FlowFlux, edgeonezoneanalysisdata.FieldL7FlowOutBandwidth, edgeonezoneanalysisdata.FieldL7FlowInBandwidth, edgeonezoneanalysisdata.FieldL7FlowBandwidth, edgeonezoneanalysisdata.FieldL7FlowRequest, edgeonezoneanalysisdata.FieldL7FlowAvgResponseTime, edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime:
+		case edgeonezoneanalysisdata.FieldL7FlowAvgResponseTime, edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime:
+			values[i] = new(sql.NullFloat64)
+		case edgeonezoneanalysisdata.FieldID, edgeonezoneanalysisdata.FieldEdgeoneZoneID, edgeonezoneanalysisdata.FieldL7FlowOutFlux, edgeonezoneanalysisdata.FieldL7FlowInFlux, edgeonezoneanalysisdata.FieldL7FlowFlux, edgeonezoneanalysisdata.FieldL7FlowOutBandwidth, edgeonezoneanalysisdata.FieldL7FlowInBandwidth, edgeonezoneanalysisdata.FieldL7FlowBandwidth, edgeonezoneanalysisdata.FieldL7FlowRequest, edgeonezoneanalysisdata.FieldL4FlowFlux, edgeonezoneanalysisdata.FieldL4FlowInFlux, edgeonezoneanalysisdata.FieldL4FlowOutFlux, edgeonezoneanalysisdata.FieldL4FlowInBandwidth, edgeonezoneanalysisdata.FieldL4FlowOutBandwidth, edgeonezoneanalysisdata.FieldL4FlowConnections, edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate:
 			values[i] = new(sql.NullInt64)
 		case edgeonezoneanalysisdata.FieldCreatedAt, edgeonezoneanalysisdata.FieldDate:
 			values[i] = new(sql.NullTime)
@@ -136,16 +152,58 @@ func (_m *EdgeOneZoneAnalysisData) assignValues(columns []string, values []any) 
 				_m.L7FlowRequest = value.Int64
 			}
 		case edgeonezoneanalysisdata.FieldL7FlowAvgResponseTime:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field l7_flow_avg_response_time", values[i])
 			} else if value.Valid {
-				_m.L7FlowAvgResponseTime = value.Int64
+				_m.L7FlowAvgResponseTime = value.Float64
 			}
 		case edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field l7_flow_avg_first_byte_response_time", values[i])
 			} else if value.Valid {
-				_m.L7FlowAvgFirstByteResponseTime = value.Int64
+				_m.L7FlowAvgFirstByteResponseTime = value.Float64
+			}
+		case edgeonezoneanalysisdata.FieldL4FlowFlux:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field l4_flow_flux", values[i])
+			} else if value.Valid {
+				_m.L4FlowFlux = value.Int64
+			}
+		case edgeonezoneanalysisdata.FieldL4FlowInFlux:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field l4_flow_in_flux", values[i])
+			} else if value.Valid {
+				_m.L4FlowInFlux = value.Int64
+			}
+		case edgeonezoneanalysisdata.FieldL4FlowOutFlux:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field l4_flow_out_flux", values[i])
+			} else if value.Valid {
+				_m.L4FlowOutFlux = value.Int64
+			}
+		case edgeonezoneanalysisdata.FieldL4FlowInBandwidth:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field l4_flow_in_bandwidth", values[i])
+			} else if value.Valid {
+				_m.L4FlowInBandwidth = value.Int64
+			}
+		case edgeonezoneanalysisdata.FieldL4FlowOutBandwidth:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field l4_flow_out_bandwidth", values[i])
+			} else if value.Valid {
+				_m.L4FlowOutBandwidth = value.Int64
+			}
+		case edgeonezoneanalysisdata.FieldL4FlowConnections:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field l4_flow_connections", values[i])
+			} else if value.Valid {
+				_m.L4FlowConnections = value.Int64
+			}
+		case edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field l4_flow_new_connections_rate", values[i])
+			} else if value.Valid {
+				_m.L4FlowNewConnectionsRate = value.Int64
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -218,6 +276,27 @@ func (_m *EdgeOneZoneAnalysisData) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("l7_flow_avg_first_byte_response_time=")
 	builder.WriteString(fmt.Sprintf("%v", _m.L7FlowAvgFirstByteResponseTime))
+	builder.WriteString(", ")
+	builder.WriteString("l4_flow_flux=")
+	builder.WriteString(fmt.Sprintf("%v", _m.L4FlowFlux))
+	builder.WriteString(", ")
+	builder.WriteString("l4_flow_in_flux=")
+	builder.WriteString(fmt.Sprintf("%v", _m.L4FlowInFlux))
+	builder.WriteString(", ")
+	builder.WriteString("l4_flow_out_flux=")
+	builder.WriteString(fmt.Sprintf("%v", _m.L4FlowOutFlux))
+	builder.WriteString(", ")
+	builder.WriteString("l4_flow_in_bandwidth=")
+	builder.WriteString(fmt.Sprintf("%v", _m.L4FlowInBandwidth))
+	builder.WriteString(", ")
+	builder.WriteString("l4_flow_out_bandwidth=")
+	builder.WriteString(fmt.Sprintf("%v", _m.L4FlowOutBandwidth))
+	builder.WriteString(", ")
+	builder.WriteString("l4_flow_connections=")
+	builder.WriteString(fmt.Sprintf("%v", _m.L4FlowConnections))
+	builder.WriteString(", ")
+	builder.WriteString("l4_flow_new_connections_rate=")
+	builder.WriteString(fmt.Sprintf("%v", _m.L4FlowNewConnectionsRate))
 	builder.WriteByte(')')
 	return builder.String()
 }

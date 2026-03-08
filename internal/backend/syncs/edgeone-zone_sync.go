@@ -18,6 +18,7 @@ import (
 	"vibe_ip/internal/provider/cdn"
 	"vibe_ip/internal/utils"
 
+	"github.com/spf13/cast"
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/gojson"
 	"go.dtapp.net/library/utils/gotime"
@@ -239,8 +240,8 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 					SetL7FlowInBandwidth(metrics["l7Flow_inBandwidth"]).
 					SetL7FlowBandwidth(metrics["l7Flow_bandwidth"]).
 					SetL7FlowRequest(metrics["l7Flow_request"]).
-					SetL7FlowAvgResponseTime(metrics["l7Flow_responseTime"]).
-					SetL7FlowAvgFirstByteResponseTime(metrics["l7Flow_firstByteResponseTime"]),
+					SetL7FlowAvgResponseTime(cast.ToFloat64(metrics["l7Flow_responseTime"])).
+					SetL7FlowAvgFirstByteResponseTime(cast.ToFloat64(metrics["l7Flow_firstByteResponseTime"])),
 			)
 		}
 
@@ -374,8 +375,8 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 					SetL7FlowInBandwidth(metrics["l7Flow_inBandwidth"]).
 					SetL7FlowBandwidth(metrics["l7Flow_bandwidth"]).
 					SetL7FlowRequest(metrics["l7Flow_request"]).
-					SetL7FlowAvgResponseTime(metrics["l7Flow_responseTime"]).
-					SetL7FlowAvgFirstByteResponseTime(metrics["l7Flow_firstByteResponseTime"]),
+					SetL7FlowAvgResponseTime(cast.ToFloat64(metrics["l7Flow_responseTime"])).
+					SetL7FlowAvgFirstByteResponseTime(cast.ToFloat64(metrics["l7Flow_firstByteResponseTime"])),
 			)
 		}
 

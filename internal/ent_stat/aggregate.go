@@ -870,9 +870,9 @@ func (q *EdgeOneZoneAnalysisDataQuery) StddevL7FlowRequestOrZero(ctx context.Con
 // SumL7FlowAvgResponseTimeOrZero 计算字段 l7_flow_avg_response_time 的总和。
 // 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
 // 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
-func (q *EdgeOneZoneAnalysisDataQuery) SumL7FlowAvgResponseTimeOrZero(ctx context.Context) (int64, error) {
+func (q *EdgeOneZoneAnalysisDataQuery) SumL7FlowAvgResponseTimeOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
-		Val sql.NullInt64 `json:"val"`
+		Val sql.NullFloat64 `json:"val"`
 	}
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
@@ -885,16 +885,16 @@ func (q *EdgeOneZoneAnalysisDataQuery) SumL7FlowAvgResponseTimeOrZero(ctx contex
 	if len(results) == 0 || !results[0].Val.Valid {
 		return 0, nil
 	}
-	return results[0].Val.Int64, nil
+	return results[0].Val.Float64, nil
 }
 
 // MaxL7FlowAvgResponseTimeOrZero 获取字段 l7_flow_avg_response_time 的最大值。
 // 如果结果为 NULL（例如表为空），则返回 0。
 // 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
 // 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
-func (q *EdgeOneZoneAnalysisDataQuery) MaxL7FlowAvgResponseTimeOrZero(ctx context.Context) (int64, error) {
+func (q *EdgeOneZoneAnalysisDataQuery) MaxL7FlowAvgResponseTimeOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
-		Val sql.NullInt64 `json:"val"`
+		Val sql.NullFloat64 `json:"val"`
 	}
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
@@ -907,16 +907,16 @@ func (q *EdgeOneZoneAnalysisDataQuery) MaxL7FlowAvgResponseTimeOrZero(ctx contex
 	if len(results) == 0 || !results[0].Val.Valid {
 		return 0, nil
 	}
-	return results[0].Val.Int64, nil
+	return results[0].Val.Float64, nil
 }
 
 // MinL7FlowAvgResponseTimeOrZero 获取字段 l7_flow_avg_response_time 的最小值。
 // 如果结果为 NULL（例如表为空），则返回 0。
 // 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
 // 适用于默认值可安全设为 0 的场景。
-func (q *EdgeOneZoneAnalysisDataQuery) MinL7FlowAvgResponseTimeOrZero(ctx context.Context) (int64, error) {
+func (q *EdgeOneZoneAnalysisDataQuery) MinL7FlowAvgResponseTimeOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
-		Val sql.NullInt64 `json:"val"`
+		Val sql.NullFloat64 `json:"val"`
 	}
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
@@ -929,7 +929,7 @@ func (q *EdgeOneZoneAnalysisDataQuery) MinL7FlowAvgResponseTimeOrZero(ctx contex
 	if len(results) == 0 || !results[0].Val.Valid {
 		return 0, nil
 	}
-	return results[0].Val.Int64, nil
+	return results[0].Val.Float64, nil
 }
 
 // AvgL7FlowAvgResponseTimeOrZero 计算字段 l7_flow_avg_response_time 的平均值。
@@ -977,9 +977,9 @@ func (q *EdgeOneZoneAnalysisDataQuery) StddevL7FlowAvgResponseTimeOrZero(ctx con
 // SumL7FlowAvgFirstByteResponseTimeOrZero 计算字段 l7_flow_avg_first_byte_response_time 的总和。
 // 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
 // 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
-func (q *EdgeOneZoneAnalysisDataQuery) SumL7FlowAvgFirstByteResponseTimeOrZero(ctx context.Context) (int64, error) {
+func (q *EdgeOneZoneAnalysisDataQuery) SumL7FlowAvgFirstByteResponseTimeOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
-		Val sql.NullInt64 `json:"val"`
+		Val sql.NullFloat64 `json:"val"`
 	}
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
@@ -992,16 +992,16 @@ func (q *EdgeOneZoneAnalysisDataQuery) SumL7FlowAvgFirstByteResponseTimeOrZero(c
 	if len(results) == 0 || !results[0].Val.Valid {
 		return 0, nil
 	}
-	return results[0].Val.Int64, nil
+	return results[0].Val.Float64, nil
 }
 
 // MaxL7FlowAvgFirstByteResponseTimeOrZero 获取字段 l7_flow_avg_first_byte_response_time 的最大值。
 // 如果结果为 NULL（例如表为空），则返回 0。
 // 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
 // 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
-func (q *EdgeOneZoneAnalysisDataQuery) MaxL7FlowAvgFirstByteResponseTimeOrZero(ctx context.Context) (int64, error) {
+func (q *EdgeOneZoneAnalysisDataQuery) MaxL7FlowAvgFirstByteResponseTimeOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
-		Val sql.NullInt64 `json:"val"`
+		Val sql.NullFloat64 `json:"val"`
 	}
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
@@ -1014,16 +1014,16 @@ func (q *EdgeOneZoneAnalysisDataQuery) MaxL7FlowAvgFirstByteResponseTimeOrZero(c
 	if len(results) == 0 || !results[0].Val.Valid {
 		return 0, nil
 	}
-	return results[0].Val.Int64, nil
+	return results[0].Val.Float64, nil
 }
 
 // MinL7FlowAvgFirstByteResponseTimeOrZero 获取字段 l7_flow_avg_first_byte_response_time 的最小值。
 // 如果结果为 NULL（例如表为空），则返回 0。
 // 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
 // 适用于默认值可安全设为 0 的场景。
-func (q *EdgeOneZoneAnalysisDataQuery) MinL7FlowAvgFirstByteResponseTimeOrZero(ctx context.Context) (int64, error) {
+func (q *EdgeOneZoneAnalysisDataQuery) MinL7FlowAvgFirstByteResponseTimeOrZero(ctx context.Context) (float64, error) {
 	var results []struct {
-		Val sql.NullInt64 `json:"val"`
+		Val sql.NullFloat64 `json:"val"`
 	}
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
@@ -1036,7 +1036,7 @@ func (q *EdgeOneZoneAnalysisDataQuery) MinL7FlowAvgFirstByteResponseTimeOrZero(c
 	if len(results) == 0 || !results[0].Val.Valid {
 		return 0, nil
 	}
-	return results[0].Val.Int64, nil
+	return results[0].Val.Float64, nil
 }
 
 // AvgL7FlowAvgFirstByteResponseTimeOrZero 计算字段 l7_flow_avg_first_byte_response_time 的平均值。
@@ -1070,6 +1070,755 @@ func (q *EdgeOneZoneAnalysisDataQuery) StddevL7FlowAvgFirstByteResponseTimeOrZer
 	err := q.Aggregate(
 		func(s *sql.Selector) string {
 			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumL4FlowFluxOrZero 计算字段 l4_flow_flux 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *EdgeOneZoneAnalysisDataQuery) SumL4FlowFluxOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxL4FlowFluxOrZero 获取字段 l4_flow_flux 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *EdgeOneZoneAnalysisDataQuery) MaxL4FlowFluxOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinL4FlowFluxOrZero 获取字段 l4_flow_flux 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *EdgeOneZoneAnalysisDataQuery) MinL4FlowFluxOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgL4FlowFluxOrZero 计算字段 l4_flow_flux 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *EdgeOneZoneAnalysisDataQuery) AvgL4FlowFluxOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevL4FlowFluxOrZero 计算字段 l4_flow_flux 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *EdgeOneZoneAnalysisDataQuery) StddevL4FlowFluxOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumL4FlowInFluxOrZero 计算字段 l4_flow_in_flux 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *EdgeOneZoneAnalysisDataQuery) SumL4FlowInFluxOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowInFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxL4FlowInFluxOrZero 获取字段 l4_flow_in_flux 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *EdgeOneZoneAnalysisDataQuery) MaxL4FlowInFluxOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowInFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinL4FlowInFluxOrZero 获取字段 l4_flow_in_flux 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *EdgeOneZoneAnalysisDataQuery) MinL4FlowInFluxOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowInFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgL4FlowInFluxOrZero 计算字段 l4_flow_in_flux 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *EdgeOneZoneAnalysisDataQuery) AvgL4FlowInFluxOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowInFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevL4FlowInFluxOrZero 计算字段 l4_flow_in_flux 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *EdgeOneZoneAnalysisDataQuery) StddevL4FlowInFluxOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowInFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumL4FlowOutFluxOrZero 计算字段 l4_flow_out_flux 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *EdgeOneZoneAnalysisDataQuery) SumL4FlowOutFluxOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowOutFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxL4FlowOutFluxOrZero 获取字段 l4_flow_out_flux 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *EdgeOneZoneAnalysisDataQuery) MaxL4FlowOutFluxOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowOutFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinL4FlowOutFluxOrZero 获取字段 l4_flow_out_flux 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *EdgeOneZoneAnalysisDataQuery) MinL4FlowOutFluxOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowOutFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgL4FlowOutFluxOrZero 计算字段 l4_flow_out_flux 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *EdgeOneZoneAnalysisDataQuery) AvgL4FlowOutFluxOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowOutFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevL4FlowOutFluxOrZero 计算字段 l4_flow_out_flux 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *EdgeOneZoneAnalysisDataQuery) StddevL4FlowOutFluxOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowOutFlux))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumL4FlowInBandwidthOrZero 计算字段 l4_flow_in_bandwidth 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *EdgeOneZoneAnalysisDataQuery) SumL4FlowInBandwidthOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowInBandwidth))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxL4FlowInBandwidthOrZero 获取字段 l4_flow_in_bandwidth 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *EdgeOneZoneAnalysisDataQuery) MaxL4FlowInBandwidthOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowInBandwidth))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinL4FlowInBandwidthOrZero 获取字段 l4_flow_in_bandwidth 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *EdgeOneZoneAnalysisDataQuery) MinL4FlowInBandwidthOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowInBandwidth))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgL4FlowInBandwidthOrZero 计算字段 l4_flow_in_bandwidth 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *EdgeOneZoneAnalysisDataQuery) AvgL4FlowInBandwidthOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowInBandwidth))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevL4FlowInBandwidthOrZero 计算字段 l4_flow_in_bandwidth 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *EdgeOneZoneAnalysisDataQuery) StddevL4FlowInBandwidthOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowInBandwidth))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumL4FlowOutBandwidthOrZero 计算字段 l4_flow_out_bandwidth 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *EdgeOneZoneAnalysisDataQuery) SumL4FlowOutBandwidthOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxL4FlowOutBandwidthOrZero 获取字段 l4_flow_out_bandwidth 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *EdgeOneZoneAnalysisDataQuery) MaxL4FlowOutBandwidthOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinL4FlowOutBandwidthOrZero 获取字段 l4_flow_out_bandwidth 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *EdgeOneZoneAnalysisDataQuery) MinL4FlowOutBandwidthOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgL4FlowOutBandwidthOrZero 计算字段 l4_flow_out_bandwidth 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *EdgeOneZoneAnalysisDataQuery) AvgL4FlowOutBandwidthOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevL4FlowOutBandwidthOrZero 计算字段 l4_flow_out_bandwidth 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *EdgeOneZoneAnalysisDataQuery) StddevL4FlowOutBandwidthOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumL4FlowConnectionsOrZero 计算字段 l4_flow_connections 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *EdgeOneZoneAnalysisDataQuery) SumL4FlowConnectionsOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowConnections))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxL4FlowConnectionsOrZero 获取字段 l4_flow_connections 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *EdgeOneZoneAnalysisDataQuery) MaxL4FlowConnectionsOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowConnections))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinL4FlowConnectionsOrZero 获取字段 l4_flow_connections 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *EdgeOneZoneAnalysisDataQuery) MinL4FlowConnectionsOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowConnections))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgL4FlowConnectionsOrZero 计算字段 l4_flow_connections 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *EdgeOneZoneAnalysisDataQuery) AvgL4FlowConnectionsOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowConnections))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevL4FlowConnectionsOrZero 计算字段 l4_flow_connections 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *EdgeOneZoneAnalysisDataQuery) StddevL4FlowConnectionsOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowConnections))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumL4FlowNewConnectionsRateOrZero 计算字段 l4_flow_new_connections_rate 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *EdgeOneZoneAnalysisDataQuery) SumL4FlowNewConnectionsRateOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxL4FlowNewConnectionsRateOrZero 获取字段 l4_flow_new_connections_rate 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *EdgeOneZoneAnalysisDataQuery) MaxL4FlowNewConnectionsRateOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinL4FlowNewConnectionsRateOrZero 获取字段 l4_flow_new_connections_rate 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *EdgeOneZoneAnalysisDataQuery) MinL4FlowNewConnectionsRateOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgL4FlowNewConnectionsRateOrZero 计算字段 l4_flow_new_connections_rate 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *EdgeOneZoneAnalysisDataQuery) AvgL4FlowNewConnectionsRateOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevL4FlowNewConnectionsRateOrZero 计算字段 l4_flow_new_connections_rate 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *EdgeOneZoneAnalysisDataQuery) StddevL4FlowNewConnectionsRateOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate))
 		},
 	).Scan(ctx, &results)
 	if err != nil {

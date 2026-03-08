@@ -336,6 +336,28 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 		"formatNumber": func(b int64) string {
 			return humanize.Comma(b)
 		},
+		// 格式化字节率为人类可读格式，如 "1.23 KB/s"
+		"formatBps": func(b int64) string {
+			// 使用 SI 标准 (1000进制)
+			const unit = 1000
+			if b < unit {
+				return fmt.Sprintf("%d bps", b)
+			}
+			div, exp := int64(unit), 0
+			for n := b / unit; n >= unit; n /= unit {
+				div *= unit
+				exp++
+			}
+			// "kMGTPE"[exp] 对应 K, M, G, T...
+			return fmt.Sprintf("%.2f %cbps", float64(b)/float64(div), "kMGTPE"[exp])
+		},
+		// 格式化毫秒为人类可读格式，如 "1.23 s" 或 "123.45 ms"
+		"formatMs": func(ms float64) string {
+			if ms >= 1000 {
+				return fmt.Sprintf("%.2f s", ms/1000)
+			}
+			return fmt.Sprintf("%.2f ms", ms)
+		},
 		// 字符串去空格
 		"trim": strings.TrimSpace,
 		// 字符串转换为大写

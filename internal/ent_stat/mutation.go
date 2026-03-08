@@ -53,10 +53,24 @@ type EdgeOneZoneAnalysisDataMutation struct {
 	addl7_flow_bandwidth                    *int64
 	l7_flow_request                         *int64
 	addl7_flow_request                      *int64
-	l7_flow_avg_response_time               *int64
-	addl7_flow_avg_response_time            *int64
-	l7_flow_avg_first_byte_response_time    *int64
-	addl7_flow_avg_first_byte_response_time *int64
+	l7_flow_avg_response_time               *float64
+	addl7_flow_avg_response_time            *float64
+	l7_flow_avg_first_byte_response_time    *float64
+	addl7_flow_avg_first_byte_response_time *float64
+	l4_flow_flux                            *int64
+	addl4_flow_flux                         *int64
+	l4_flow_in_flux                         *int64
+	addl4_flow_in_flux                      *int64
+	l4_flow_out_flux                        *int64
+	addl4_flow_out_flux                     *int64
+	l4_flow_in_bandwidth                    *int64
+	addl4_flow_in_bandwidth                 *int64
+	l4_flow_out_bandwidth                   *int64
+	addl4_flow_out_bandwidth                *int64
+	l4_flow_connections                     *int64
+	addl4_flow_connections                  *int64
+	l4_flow_new_connections_rate            *int64
+	addl4_flow_new_connections_rate         *int64
 	clearedFields                           map[string]struct{}
 	done                                    bool
 	oldValue                                func(context.Context) (*EdgeOneZoneAnalysisData, error)
@@ -786,13 +800,13 @@ func (m *EdgeOneZoneAnalysisDataMutation) ResetL7FlowRequest() {
 }
 
 // SetL7FlowAvgResponseTime sets the "l7_flow_avg_response_time" field.
-func (m *EdgeOneZoneAnalysisDataMutation) SetL7FlowAvgResponseTime(i int64) {
-	m.l7_flow_avg_response_time = &i
+func (m *EdgeOneZoneAnalysisDataMutation) SetL7FlowAvgResponseTime(f float64) {
+	m.l7_flow_avg_response_time = &f
 	m.addl7_flow_avg_response_time = nil
 }
 
 // L7FlowAvgResponseTime returns the value of the "l7_flow_avg_response_time" field in the mutation.
-func (m *EdgeOneZoneAnalysisDataMutation) L7FlowAvgResponseTime() (r int64, exists bool) {
+func (m *EdgeOneZoneAnalysisDataMutation) L7FlowAvgResponseTime() (r float64, exists bool) {
 	v := m.l7_flow_avg_response_time
 	if v == nil {
 		return
@@ -803,7 +817,7 @@ func (m *EdgeOneZoneAnalysisDataMutation) L7FlowAvgResponseTime() (r int64, exis
 // OldL7FlowAvgResponseTime returns the old "l7_flow_avg_response_time" field's value of the EdgeOneZoneAnalysisData entity.
 // If the EdgeOneZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneAnalysisDataMutation) OldL7FlowAvgResponseTime(ctx context.Context) (v int64, err error) {
+func (m *EdgeOneZoneAnalysisDataMutation) OldL7FlowAvgResponseTime(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldL7FlowAvgResponseTime is only allowed on UpdateOne operations")
 	}
@@ -817,17 +831,17 @@ func (m *EdgeOneZoneAnalysisDataMutation) OldL7FlowAvgResponseTime(ctx context.C
 	return oldValue.L7FlowAvgResponseTime, nil
 }
 
-// AddL7FlowAvgResponseTime adds i to the "l7_flow_avg_response_time" field.
-func (m *EdgeOneZoneAnalysisDataMutation) AddL7FlowAvgResponseTime(i int64) {
+// AddL7FlowAvgResponseTime adds f to the "l7_flow_avg_response_time" field.
+func (m *EdgeOneZoneAnalysisDataMutation) AddL7FlowAvgResponseTime(f float64) {
 	if m.addl7_flow_avg_response_time != nil {
-		*m.addl7_flow_avg_response_time += i
+		*m.addl7_flow_avg_response_time += f
 	} else {
-		m.addl7_flow_avg_response_time = &i
+		m.addl7_flow_avg_response_time = &f
 	}
 }
 
 // AddedL7FlowAvgResponseTime returns the value that was added to the "l7_flow_avg_response_time" field in this mutation.
-func (m *EdgeOneZoneAnalysisDataMutation) AddedL7FlowAvgResponseTime() (r int64, exists bool) {
+func (m *EdgeOneZoneAnalysisDataMutation) AddedL7FlowAvgResponseTime() (r float64, exists bool) {
 	v := m.addl7_flow_avg_response_time
 	if v == nil {
 		return
@@ -856,13 +870,13 @@ func (m *EdgeOneZoneAnalysisDataMutation) ResetL7FlowAvgResponseTime() {
 }
 
 // SetL7FlowAvgFirstByteResponseTime sets the "l7_flow_avg_first_byte_response_time" field.
-func (m *EdgeOneZoneAnalysisDataMutation) SetL7FlowAvgFirstByteResponseTime(i int64) {
-	m.l7_flow_avg_first_byte_response_time = &i
+func (m *EdgeOneZoneAnalysisDataMutation) SetL7FlowAvgFirstByteResponseTime(f float64) {
+	m.l7_flow_avg_first_byte_response_time = &f
 	m.addl7_flow_avg_first_byte_response_time = nil
 }
 
 // L7FlowAvgFirstByteResponseTime returns the value of the "l7_flow_avg_first_byte_response_time" field in the mutation.
-func (m *EdgeOneZoneAnalysisDataMutation) L7FlowAvgFirstByteResponseTime() (r int64, exists bool) {
+func (m *EdgeOneZoneAnalysisDataMutation) L7FlowAvgFirstByteResponseTime() (r float64, exists bool) {
 	v := m.l7_flow_avg_first_byte_response_time
 	if v == nil {
 		return
@@ -873,7 +887,7 @@ func (m *EdgeOneZoneAnalysisDataMutation) L7FlowAvgFirstByteResponseTime() (r in
 // OldL7FlowAvgFirstByteResponseTime returns the old "l7_flow_avg_first_byte_response_time" field's value of the EdgeOneZoneAnalysisData entity.
 // If the EdgeOneZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneAnalysisDataMutation) OldL7FlowAvgFirstByteResponseTime(ctx context.Context) (v int64, err error) {
+func (m *EdgeOneZoneAnalysisDataMutation) OldL7FlowAvgFirstByteResponseTime(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldL7FlowAvgFirstByteResponseTime is only allowed on UpdateOne operations")
 	}
@@ -887,17 +901,17 @@ func (m *EdgeOneZoneAnalysisDataMutation) OldL7FlowAvgFirstByteResponseTime(ctx 
 	return oldValue.L7FlowAvgFirstByteResponseTime, nil
 }
 
-// AddL7FlowAvgFirstByteResponseTime adds i to the "l7_flow_avg_first_byte_response_time" field.
-func (m *EdgeOneZoneAnalysisDataMutation) AddL7FlowAvgFirstByteResponseTime(i int64) {
+// AddL7FlowAvgFirstByteResponseTime adds f to the "l7_flow_avg_first_byte_response_time" field.
+func (m *EdgeOneZoneAnalysisDataMutation) AddL7FlowAvgFirstByteResponseTime(f float64) {
 	if m.addl7_flow_avg_first_byte_response_time != nil {
-		*m.addl7_flow_avg_first_byte_response_time += i
+		*m.addl7_flow_avg_first_byte_response_time += f
 	} else {
-		m.addl7_flow_avg_first_byte_response_time = &i
+		m.addl7_flow_avg_first_byte_response_time = &f
 	}
 }
 
 // AddedL7FlowAvgFirstByteResponseTime returns the value that was added to the "l7_flow_avg_first_byte_response_time" field in this mutation.
-func (m *EdgeOneZoneAnalysisDataMutation) AddedL7FlowAvgFirstByteResponseTime() (r int64, exists bool) {
+func (m *EdgeOneZoneAnalysisDataMutation) AddedL7FlowAvgFirstByteResponseTime() (r float64, exists bool) {
 	v := m.addl7_flow_avg_first_byte_response_time
 	if v == nil {
 		return
@@ -923,6 +937,496 @@ func (m *EdgeOneZoneAnalysisDataMutation) ResetL7FlowAvgFirstByteResponseTime() 
 	m.l7_flow_avg_first_byte_response_time = nil
 	m.addl7_flow_avg_first_byte_response_time = nil
 	delete(m.clearedFields, edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime)
+}
+
+// SetL4FlowFlux sets the "l4_flow_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) SetL4FlowFlux(i int64) {
+	m.l4_flow_flux = &i
+	m.addl4_flow_flux = nil
+}
+
+// L4FlowFlux returns the value of the "l4_flow_flux" field in the mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowFlux() (r int64, exists bool) {
+	v := m.l4_flow_flux
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldL4FlowFlux returns the old "l4_flow_flux" field's value of the EdgeOneZoneAnalysisData entity.
+// If the EdgeOneZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAnalysisDataMutation) OldL4FlowFlux(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldL4FlowFlux is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldL4FlowFlux requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldL4FlowFlux: %w", err)
+	}
+	return oldValue.L4FlowFlux, nil
+}
+
+// AddL4FlowFlux adds i to the "l4_flow_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) AddL4FlowFlux(i int64) {
+	if m.addl4_flow_flux != nil {
+		*m.addl4_flow_flux += i
+	} else {
+		m.addl4_flow_flux = &i
+	}
+}
+
+// AddedL4FlowFlux returns the value that was added to the "l4_flow_flux" field in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) AddedL4FlowFlux() (r int64, exists bool) {
+	v := m.addl4_flow_flux
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearL4FlowFlux clears the value of the "l4_flow_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ClearL4FlowFlux() {
+	m.l4_flow_flux = nil
+	m.addl4_flow_flux = nil
+	m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowFlux] = struct{}{}
+}
+
+// L4FlowFluxCleared returns if the "l4_flow_flux" field was cleared in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowFluxCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowFlux]
+	return ok
+}
+
+// ResetL4FlowFlux resets all changes to the "l4_flow_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ResetL4FlowFlux() {
+	m.l4_flow_flux = nil
+	m.addl4_flow_flux = nil
+	delete(m.clearedFields, edgeonezoneanalysisdata.FieldL4FlowFlux)
+}
+
+// SetL4FlowInFlux sets the "l4_flow_in_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) SetL4FlowInFlux(i int64) {
+	m.l4_flow_in_flux = &i
+	m.addl4_flow_in_flux = nil
+}
+
+// L4FlowInFlux returns the value of the "l4_flow_in_flux" field in the mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowInFlux() (r int64, exists bool) {
+	v := m.l4_flow_in_flux
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldL4FlowInFlux returns the old "l4_flow_in_flux" field's value of the EdgeOneZoneAnalysisData entity.
+// If the EdgeOneZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAnalysisDataMutation) OldL4FlowInFlux(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldL4FlowInFlux is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldL4FlowInFlux requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldL4FlowInFlux: %w", err)
+	}
+	return oldValue.L4FlowInFlux, nil
+}
+
+// AddL4FlowInFlux adds i to the "l4_flow_in_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) AddL4FlowInFlux(i int64) {
+	if m.addl4_flow_in_flux != nil {
+		*m.addl4_flow_in_flux += i
+	} else {
+		m.addl4_flow_in_flux = &i
+	}
+}
+
+// AddedL4FlowInFlux returns the value that was added to the "l4_flow_in_flux" field in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) AddedL4FlowInFlux() (r int64, exists bool) {
+	v := m.addl4_flow_in_flux
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearL4FlowInFlux clears the value of the "l4_flow_in_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ClearL4FlowInFlux() {
+	m.l4_flow_in_flux = nil
+	m.addl4_flow_in_flux = nil
+	m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowInFlux] = struct{}{}
+}
+
+// L4FlowInFluxCleared returns if the "l4_flow_in_flux" field was cleared in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowInFluxCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowInFlux]
+	return ok
+}
+
+// ResetL4FlowInFlux resets all changes to the "l4_flow_in_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ResetL4FlowInFlux() {
+	m.l4_flow_in_flux = nil
+	m.addl4_flow_in_flux = nil
+	delete(m.clearedFields, edgeonezoneanalysisdata.FieldL4FlowInFlux)
+}
+
+// SetL4FlowOutFlux sets the "l4_flow_out_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) SetL4FlowOutFlux(i int64) {
+	m.l4_flow_out_flux = &i
+	m.addl4_flow_out_flux = nil
+}
+
+// L4FlowOutFlux returns the value of the "l4_flow_out_flux" field in the mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowOutFlux() (r int64, exists bool) {
+	v := m.l4_flow_out_flux
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldL4FlowOutFlux returns the old "l4_flow_out_flux" field's value of the EdgeOneZoneAnalysisData entity.
+// If the EdgeOneZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAnalysisDataMutation) OldL4FlowOutFlux(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldL4FlowOutFlux is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldL4FlowOutFlux requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldL4FlowOutFlux: %w", err)
+	}
+	return oldValue.L4FlowOutFlux, nil
+}
+
+// AddL4FlowOutFlux adds i to the "l4_flow_out_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) AddL4FlowOutFlux(i int64) {
+	if m.addl4_flow_out_flux != nil {
+		*m.addl4_flow_out_flux += i
+	} else {
+		m.addl4_flow_out_flux = &i
+	}
+}
+
+// AddedL4FlowOutFlux returns the value that was added to the "l4_flow_out_flux" field in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) AddedL4FlowOutFlux() (r int64, exists bool) {
+	v := m.addl4_flow_out_flux
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearL4FlowOutFlux clears the value of the "l4_flow_out_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ClearL4FlowOutFlux() {
+	m.l4_flow_out_flux = nil
+	m.addl4_flow_out_flux = nil
+	m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowOutFlux] = struct{}{}
+}
+
+// L4FlowOutFluxCleared returns if the "l4_flow_out_flux" field was cleared in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowOutFluxCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowOutFlux]
+	return ok
+}
+
+// ResetL4FlowOutFlux resets all changes to the "l4_flow_out_flux" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ResetL4FlowOutFlux() {
+	m.l4_flow_out_flux = nil
+	m.addl4_flow_out_flux = nil
+	delete(m.clearedFields, edgeonezoneanalysisdata.FieldL4FlowOutFlux)
+}
+
+// SetL4FlowInBandwidth sets the "l4_flow_in_bandwidth" field.
+func (m *EdgeOneZoneAnalysisDataMutation) SetL4FlowInBandwidth(i int64) {
+	m.l4_flow_in_bandwidth = &i
+	m.addl4_flow_in_bandwidth = nil
+}
+
+// L4FlowInBandwidth returns the value of the "l4_flow_in_bandwidth" field in the mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowInBandwidth() (r int64, exists bool) {
+	v := m.l4_flow_in_bandwidth
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldL4FlowInBandwidth returns the old "l4_flow_in_bandwidth" field's value of the EdgeOneZoneAnalysisData entity.
+// If the EdgeOneZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAnalysisDataMutation) OldL4FlowInBandwidth(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldL4FlowInBandwidth is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldL4FlowInBandwidth requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldL4FlowInBandwidth: %w", err)
+	}
+	return oldValue.L4FlowInBandwidth, nil
+}
+
+// AddL4FlowInBandwidth adds i to the "l4_flow_in_bandwidth" field.
+func (m *EdgeOneZoneAnalysisDataMutation) AddL4FlowInBandwidth(i int64) {
+	if m.addl4_flow_in_bandwidth != nil {
+		*m.addl4_flow_in_bandwidth += i
+	} else {
+		m.addl4_flow_in_bandwidth = &i
+	}
+}
+
+// AddedL4FlowInBandwidth returns the value that was added to the "l4_flow_in_bandwidth" field in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) AddedL4FlowInBandwidth() (r int64, exists bool) {
+	v := m.addl4_flow_in_bandwidth
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearL4FlowInBandwidth clears the value of the "l4_flow_in_bandwidth" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ClearL4FlowInBandwidth() {
+	m.l4_flow_in_bandwidth = nil
+	m.addl4_flow_in_bandwidth = nil
+	m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowInBandwidth] = struct{}{}
+}
+
+// L4FlowInBandwidthCleared returns if the "l4_flow_in_bandwidth" field was cleared in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowInBandwidthCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowInBandwidth]
+	return ok
+}
+
+// ResetL4FlowInBandwidth resets all changes to the "l4_flow_in_bandwidth" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ResetL4FlowInBandwidth() {
+	m.l4_flow_in_bandwidth = nil
+	m.addl4_flow_in_bandwidth = nil
+	delete(m.clearedFields, edgeonezoneanalysisdata.FieldL4FlowInBandwidth)
+}
+
+// SetL4FlowOutBandwidth sets the "l4_flow_out_bandwidth" field.
+func (m *EdgeOneZoneAnalysisDataMutation) SetL4FlowOutBandwidth(i int64) {
+	m.l4_flow_out_bandwidth = &i
+	m.addl4_flow_out_bandwidth = nil
+}
+
+// L4FlowOutBandwidth returns the value of the "l4_flow_out_bandwidth" field in the mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowOutBandwidth() (r int64, exists bool) {
+	v := m.l4_flow_out_bandwidth
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldL4FlowOutBandwidth returns the old "l4_flow_out_bandwidth" field's value of the EdgeOneZoneAnalysisData entity.
+// If the EdgeOneZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAnalysisDataMutation) OldL4FlowOutBandwidth(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldL4FlowOutBandwidth is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldL4FlowOutBandwidth requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldL4FlowOutBandwidth: %w", err)
+	}
+	return oldValue.L4FlowOutBandwidth, nil
+}
+
+// AddL4FlowOutBandwidth adds i to the "l4_flow_out_bandwidth" field.
+func (m *EdgeOneZoneAnalysisDataMutation) AddL4FlowOutBandwidth(i int64) {
+	if m.addl4_flow_out_bandwidth != nil {
+		*m.addl4_flow_out_bandwidth += i
+	} else {
+		m.addl4_flow_out_bandwidth = &i
+	}
+}
+
+// AddedL4FlowOutBandwidth returns the value that was added to the "l4_flow_out_bandwidth" field in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) AddedL4FlowOutBandwidth() (r int64, exists bool) {
+	v := m.addl4_flow_out_bandwidth
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearL4FlowOutBandwidth clears the value of the "l4_flow_out_bandwidth" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ClearL4FlowOutBandwidth() {
+	m.l4_flow_out_bandwidth = nil
+	m.addl4_flow_out_bandwidth = nil
+	m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowOutBandwidth] = struct{}{}
+}
+
+// L4FlowOutBandwidthCleared returns if the "l4_flow_out_bandwidth" field was cleared in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowOutBandwidthCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowOutBandwidth]
+	return ok
+}
+
+// ResetL4FlowOutBandwidth resets all changes to the "l4_flow_out_bandwidth" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ResetL4FlowOutBandwidth() {
+	m.l4_flow_out_bandwidth = nil
+	m.addl4_flow_out_bandwidth = nil
+	delete(m.clearedFields, edgeonezoneanalysisdata.FieldL4FlowOutBandwidth)
+}
+
+// SetL4FlowConnections sets the "l4_flow_connections" field.
+func (m *EdgeOneZoneAnalysisDataMutation) SetL4FlowConnections(i int64) {
+	m.l4_flow_connections = &i
+	m.addl4_flow_connections = nil
+}
+
+// L4FlowConnections returns the value of the "l4_flow_connections" field in the mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowConnections() (r int64, exists bool) {
+	v := m.l4_flow_connections
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldL4FlowConnections returns the old "l4_flow_connections" field's value of the EdgeOneZoneAnalysisData entity.
+// If the EdgeOneZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAnalysisDataMutation) OldL4FlowConnections(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldL4FlowConnections is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldL4FlowConnections requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldL4FlowConnections: %w", err)
+	}
+	return oldValue.L4FlowConnections, nil
+}
+
+// AddL4FlowConnections adds i to the "l4_flow_connections" field.
+func (m *EdgeOneZoneAnalysisDataMutation) AddL4FlowConnections(i int64) {
+	if m.addl4_flow_connections != nil {
+		*m.addl4_flow_connections += i
+	} else {
+		m.addl4_flow_connections = &i
+	}
+}
+
+// AddedL4FlowConnections returns the value that was added to the "l4_flow_connections" field in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) AddedL4FlowConnections() (r int64, exists bool) {
+	v := m.addl4_flow_connections
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearL4FlowConnections clears the value of the "l4_flow_connections" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ClearL4FlowConnections() {
+	m.l4_flow_connections = nil
+	m.addl4_flow_connections = nil
+	m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowConnections] = struct{}{}
+}
+
+// L4FlowConnectionsCleared returns if the "l4_flow_connections" field was cleared in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowConnectionsCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowConnections]
+	return ok
+}
+
+// ResetL4FlowConnections resets all changes to the "l4_flow_connections" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ResetL4FlowConnections() {
+	m.l4_flow_connections = nil
+	m.addl4_flow_connections = nil
+	delete(m.clearedFields, edgeonezoneanalysisdata.FieldL4FlowConnections)
+}
+
+// SetL4FlowNewConnectionsRate sets the "l4_flow_new_connections_rate" field.
+func (m *EdgeOneZoneAnalysisDataMutation) SetL4FlowNewConnectionsRate(i int64) {
+	m.l4_flow_new_connections_rate = &i
+	m.addl4_flow_new_connections_rate = nil
+}
+
+// L4FlowNewConnectionsRate returns the value of the "l4_flow_new_connections_rate" field in the mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowNewConnectionsRate() (r int64, exists bool) {
+	v := m.l4_flow_new_connections_rate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldL4FlowNewConnectionsRate returns the old "l4_flow_new_connections_rate" field's value of the EdgeOneZoneAnalysisData entity.
+// If the EdgeOneZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EdgeOneZoneAnalysisDataMutation) OldL4FlowNewConnectionsRate(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldL4FlowNewConnectionsRate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldL4FlowNewConnectionsRate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldL4FlowNewConnectionsRate: %w", err)
+	}
+	return oldValue.L4FlowNewConnectionsRate, nil
+}
+
+// AddL4FlowNewConnectionsRate adds i to the "l4_flow_new_connections_rate" field.
+func (m *EdgeOneZoneAnalysisDataMutation) AddL4FlowNewConnectionsRate(i int64) {
+	if m.addl4_flow_new_connections_rate != nil {
+		*m.addl4_flow_new_connections_rate += i
+	} else {
+		m.addl4_flow_new_connections_rate = &i
+	}
+}
+
+// AddedL4FlowNewConnectionsRate returns the value that was added to the "l4_flow_new_connections_rate" field in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) AddedL4FlowNewConnectionsRate() (r int64, exists bool) {
+	v := m.addl4_flow_new_connections_rate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearL4FlowNewConnectionsRate clears the value of the "l4_flow_new_connections_rate" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ClearL4FlowNewConnectionsRate() {
+	m.l4_flow_new_connections_rate = nil
+	m.addl4_flow_new_connections_rate = nil
+	m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate] = struct{}{}
+}
+
+// L4FlowNewConnectionsRateCleared returns if the "l4_flow_new_connections_rate" field was cleared in this mutation.
+func (m *EdgeOneZoneAnalysisDataMutation) L4FlowNewConnectionsRateCleared() bool {
+	_, ok := m.clearedFields[edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate]
+	return ok
+}
+
+// ResetL4FlowNewConnectionsRate resets all changes to the "l4_flow_new_connections_rate" field.
+func (m *EdgeOneZoneAnalysisDataMutation) ResetL4FlowNewConnectionsRate() {
+	m.l4_flow_new_connections_rate = nil
+	m.addl4_flow_new_connections_rate = nil
+	delete(m.clearedFields, edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate)
 }
 
 // Where appends a list predicates to the EdgeOneZoneAnalysisDataMutation builder.
@@ -959,7 +1463,7 @@ func (m *EdgeOneZoneAnalysisDataMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EdgeOneZoneAnalysisDataMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, edgeonezoneanalysisdata.FieldCreatedAt)
 	}
@@ -996,6 +1500,27 @@ func (m *EdgeOneZoneAnalysisDataMutation) Fields() []string {
 	if m.l7_flow_avg_first_byte_response_time != nil {
 		fields = append(fields, edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime)
 	}
+	if m.l4_flow_flux != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowFlux)
+	}
+	if m.l4_flow_in_flux != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowInFlux)
+	}
+	if m.l4_flow_out_flux != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowOutFlux)
+	}
+	if m.l4_flow_in_bandwidth != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowInBandwidth)
+	}
+	if m.l4_flow_out_bandwidth != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowOutBandwidth)
+	}
+	if m.l4_flow_connections != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowConnections)
+	}
+	if m.l4_flow_new_connections_rate != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate)
+	}
 	return fields
 }
 
@@ -1028,6 +1553,20 @@ func (m *EdgeOneZoneAnalysisDataMutation) Field(name string) (ent.Value, bool) {
 		return m.L7FlowAvgResponseTime()
 	case edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime:
 		return m.L7FlowAvgFirstByteResponseTime()
+	case edgeonezoneanalysisdata.FieldL4FlowFlux:
+		return m.L4FlowFlux()
+	case edgeonezoneanalysisdata.FieldL4FlowInFlux:
+		return m.L4FlowInFlux()
+	case edgeonezoneanalysisdata.FieldL4FlowOutFlux:
+		return m.L4FlowOutFlux()
+	case edgeonezoneanalysisdata.FieldL4FlowInBandwidth:
+		return m.L4FlowInBandwidth()
+	case edgeonezoneanalysisdata.FieldL4FlowOutBandwidth:
+		return m.L4FlowOutBandwidth()
+	case edgeonezoneanalysisdata.FieldL4FlowConnections:
+		return m.L4FlowConnections()
+	case edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate:
+		return m.L4FlowNewConnectionsRate()
 	}
 	return nil, false
 }
@@ -1061,6 +1600,20 @@ func (m *EdgeOneZoneAnalysisDataMutation) OldField(ctx context.Context, name str
 		return m.OldL7FlowAvgResponseTime(ctx)
 	case edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime:
 		return m.OldL7FlowAvgFirstByteResponseTime(ctx)
+	case edgeonezoneanalysisdata.FieldL4FlowFlux:
+		return m.OldL4FlowFlux(ctx)
+	case edgeonezoneanalysisdata.FieldL4FlowInFlux:
+		return m.OldL4FlowInFlux(ctx)
+	case edgeonezoneanalysisdata.FieldL4FlowOutFlux:
+		return m.OldL4FlowOutFlux(ctx)
+	case edgeonezoneanalysisdata.FieldL4FlowInBandwidth:
+		return m.OldL4FlowInBandwidth(ctx)
+	case edgeonezoneanalysisdata.FieldL4FlowOutBandwidth:
+		return m.OldL4FlowOutBandwidth(ctx)
+	case edgeonezoneanalysisdata.FieldL4FlowConnections:
+		return m.OldL4FlowConnections(ctx)
+	case edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate:
+		return m.OldL4FlowNewConnectionsRate(ctx)
 	}
 	return nil, fmt.Errorf("unknown EdgeOneZoneAnalysisData field %s", name)
 }
@@ -1141,18 +1694,67 @@ func (m *EdgeOneZoneAnalysisDataMutation) SetField(name string, value ent.Value)
 		m.SetL7FlowRequest(v)
 		return nil
 	case edgeonezoneanalysisdata.FieldL7FlowAvgResponseTime:
-		v, ok := value.(int64)
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetL7FlowAvgResponseTime(v)
 		return nil
 	case edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime:
-		v, ok := value.(int64)
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetL7FlowAvgFirstByteResponseTime(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowFlux:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetL4FlowFlux(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowInFlux:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetL4FlowInFlux(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowOutFlux:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetL4FlowOutFlux(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowInBandwidth:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetL4FlowInBandwidth(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowOutBandwidth:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetL4FlowOutBandwidth(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowConnections:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetL4FlowConnections(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetL4FlowNewConnectionsRate(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZoneAnalysisData field %s", name)
@@ -1192,6 +1794,27 @@ func (m *EdgeOneZoneAnalysisDataMutation) AddedFields() []string {
 	if m.addl7_flow_avg_first_byte_response_time != nil {
 		fields = append(fields, edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime)
 	}
+	if m.addl4_flow_flux != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowFlux)
+	}
+	if m.addl4_flow_in_flux != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowInFlux)
+	}
+	if m.addl4_flow_out_flux != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowOutFlux)
+	}
+	if m.addl4_flow_in_bandwidth != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowInBandwidth)
+	}
+	if m.addl4_flow_out_bandwidth != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowOutBandwidth)
+	}
+	if m.addl4_flow_connections != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowConnections)
+	}
+	if m.addl4_flow_new_connections_rate != nil {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate)
+	}
 	return fields
 }
 
@@ -1220,6 +1843,20 @@ func (m *EdgeOneZoneAnalysisDataMutation) AddedField(name string) (ent.Value, bo
 		return m.AddedL7FlowAvgResponseTime()
 	case edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime:
 		return m.AddedL7FlowAvgFirstByteResponseTime()
+	case edgeonezoneanalysisdata.FieldL4FlowFlux:
+		return m.AddedL4FlowFlux()
+	case edgeonezoneanalysisdata.FieldL4FlowInFlux:
+		return m.AddedL4FlowInFlux()
+	case edgeonezoneanalysisdata.FieldL4FlowOutFlux:
+		return m.AddedL4FlowOutFlux()
+	case edgeonezoneanalysisdata.FieldL4FlowInBandwidth:
+		return m.AddedL4FlowInBandwidth()
+	case edgeonezoneanalysisdata.FieldL4FlowOutBandwidth:
+		return m.AddedL4FlowOutBandwidth()
+	case edgeonezoneanalysisdata.FieldL4FlowConnections:
+		return m.AddedL4FlowConnections()
+	case edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate:
+		return m.AddedL4FlowNewConnectionsRate()
 	}
 	return nil, false
 }
@@ -1286,18 +1923,67 @@ func (m *EdgeOneZoneAnalysisDataMutation) AddField(name string, value ent.Value)
 		m.AddL7FlowRequest(v)
 		return nil
 	case edgeonezoneanalysisdata.FieldL7FlowAvgResponseTime:
-		v, ok := value.(int64)
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddL7FlowAvgResponseTime(v)
 		return nil
 	case edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime:
-		v, ok := value.(int64)
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddL7FlowAvgFirstByteResponseTime(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowFlux:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddL4FlowFlux(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowInFlux:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddL4FlowInFlux(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowOutFlux:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddL4FlowOutFlux(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowInBandwidth:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddL4FlowInBandwidth(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowOutBandwidth:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddL4FlowOutBandwidth(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowConnections:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddL4FlowConnections(v)
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddL4FlowNewConnectionsRate(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZoneAnalysisData numeric field %s", name)
@@ -1333,6 +2019,27 @@ func (m *EdgeOneZoneAnalysisDataMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime) {
 		fields = append(fields, edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime)
+	}
+	if m.FieldCleared(edgeonezoneanalysisdata.FieldL4FlowFlux) {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowFlux)
+	}
+	if m.FieldCleared(edgeonezoneanalysisdata.FieldL4FlowInFlux) {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowInFlux)
+	}
+	if m.FieldCleared(edgeonezoneanalysisdata.FieldL4FlowOutFlux) {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowOutFlux)
+	}
+	if m.FieldCleared(edgeonezoneanalysisdata.FieldL4FlowInBandwidth) {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowInBandwidth)
+	}
+	if m.FieldCleared(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth) {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowOutBandwidth)
+	}
+	if m.FieldCleared(edgeonezoneanalysisdata.FieldL4FlowConnections) {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowConnections)
+	}
+	if m.FieldCleared(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate) {
+		fields = append(fields, edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate)
 	}
 	return fields
 }
@@ -1374,6 +2081,27 @@ func (m *EdgeOneZoneAnalysisDataMutation) ClearField(name string) error {
 		return nil
 	case edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime:
 		m.ClearL7FlowAvgFirstByteResponseTime()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowFlux:
+		m.ClearL4FlowFlux()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowInFlux:
+		m.ClearL4FlowInFlux()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowOutFlux:
+		m.ClearL4FlowOutFlux()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowInBandwidth:
+		m.ClearL4FlowInBandwidth()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowOutBandwidth:
+		m.ClearL4FlowOutBandwidth()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowConnections:
+		m.ClearL4FlowConnections()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate:
+		m.ClearL4FlowNewConnectionsRate()
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZoneAnalysisData nullable field %s", name)
@@ -1418,6 +2146,27 @@ func (m *EdgeOneZoneAnalysisDataMutation) ResetField(name string) error {
 		return nil
 	case edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime:
 		m.ResetL7FlowAvgFirstByteResponseTime()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowFlux:
+		m.ResetL4FlowFlux()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowInFlux:
+		m.ResetL4FlowInFlux()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowOutFlux:
+		m.ResetL4FlowOutFlux()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowInBandwidth:
+		m.ResetL4FlowInBandwidth()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowOutBandwidth:
+		m.ResetL4FlowOutBandwidth()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowConnections:
+		m.ResetL4FlowConnections()
+		return nil
+	case edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate:
+		m.ResetL4FlowNewConnectionsRate()
 		return nil
 	}
 	return fmt.Errorf("unknown EdgeOneZoneAnalysisData field %s", name)

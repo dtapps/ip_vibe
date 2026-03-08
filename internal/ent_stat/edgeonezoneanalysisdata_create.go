@@ -147,13 +147,13 @@ func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL7FlowRequest(v *int64) *Edg
 }
 
 // SetL7FlowAvgResponseTime sets the "l7_flow_avg_response_time" field.
-func (_c *EdgeOneZoneAnalysisDataCreate) SetL7FlowAvgResponseTime(v int64) *EdgeOneZoneAnalysisDataCreate {
+func (_c *EdgeOneZoneAnalysisDataCreate) SetL7FlowAvgResponseTime(v float64) *EdgeOneZoneAnalysisDataCreate {
 	_c.mutation.SetL7FlowAvgResponseTime(v)
 	return _c
 }
 
 // SetNillableL7FlowAvgResponseTime sets the "l7_flow_avg_response_time" field if the given value is not nil.
-func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL7FlowAvgResponseTime(v *int64) *EdgeOneZoneAnalysisDataCreate {
+func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL7FlowAvgResponseTime(v *float64) *EdgeOneZoneAnalysisDataCreate {
 	if v != nil {
 		_c.SetL7FlowAvgResponseTime(*v)
 	}
@@ -161,15 +161,113 @@ func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL7FlowAvgResponseTime(v *int
 }
 
 // SetL7FlowAvgFirstByteResponseTime sets the "l7_flow_avg_first_byte_response_time" field.
-func (_c *EdgeOneZoneAnalysisDataCreate) SetL7FlowAvgFirstByteResponseTime(v int64) *EdgeOneZoneAnalysisDataCreate {
+func (_c *EdgeOneZoneAnalysisDataCreate) SetL7FlowAvgFirstByteResponseTime(v float64) *EdgeOneZoneAnalysisDataCreate {
 	_c.mutation.SetL7FlowAvgFirstByteResponseTime(v)
 	return _c
 }
 
 // SetNillableL7FlowAvgFirstByteResponseTime sets the "l7_flow_avg_first_byte_response_time" field if the given value is not nil.
-func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL7FlowAvgFirstByteResponseTime(v *int64) *EdgeOneZoneAnalysisDataCreate {
+func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL7FlowAvgFirstByteResponseTime(v *float64) *EdgeOneZoneAnalysisDataCreate {
 	if v != nil {
 		_c.SetL7FlowAvgFirstByteResponseTime(*v)
+	}
+	return _c
+}
+
+// SetL4FlowFlux sets the "l4_flow_flux" field.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetL4FlowFlux(v int64) *EdgeOneZoneAnalysisDataCreate {
+	_c.mutation.SetL4FlowFlux(v)
+	return _c
+}
+
+// SetNillableL4FlowFlux sets the "l4_flow_flux" field if the given value is not nil.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL4FlowFlux(v *int64) *EdgeOneZoneAnalysisDataCreate {
+	if v != nil {
+		_c.SetL4FlowFlux(*v)
+	}
+	return _c
+}
+
+// SetL4FlowInFlux sets the "l4_flow_in_flux" field.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetL4FlowInFlux(v int64) *EdgeOneZoneAnalysisDataCreate {
+	_c.mutation.SetL4FlowInFlux(v)
+	return _c
+}
+
+// SetNillableL4FlowInFlux sets the "l4_flow_in_flux" field if the given value is not nil.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL4FlowInFlux(v *int64) *EdgeOneZoneAnalysisDataCreate {
+	if v != nil {
+		_c.SetL4FlowInFlux(*v)
+	}
+	return _c
+}
+
+// SetL4FlowOutFlux sets the "l4_flow_out_flux" field.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetL4FlowOutFlux(v int64) *EdgeOneZoneAnalysisDataCreate {
+	_c.mutation.SetL4FlowOutFlux(v)
+	return _c
+}
+
+// SetNillableL4FlowOutFlux sets the "l4_flow_out_flux" field if the given value is not nil.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL4FlowOutFlux(v *int64) *EdgeOneZoneAnalysisDataCreate {
+	if v != nil {
+		_c.SetL4FlowOutFlux(*v)
+	}
+	return _c
+}
+
+// SetL4FlowInBandwidth sets the "l4_flow_in_bandwidth" field.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetL4FlowInBandwidth(v int64) *EdgeOneZoneAnalysisDataCreate {
+	_c.mutation.SetL4FlowInBandwidth(v)
+	return _c
+}
+
+// SetNillableL4FlowInBandwidth sets the "l4_flow_in_bandwidth" field if the given value is not nil.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL4FlowInBandwidth(v *int64) *EdgeOneZoneAnalysisDataCreate {
+	if v != nil {
+		_c.SetL4FlowInBandwidth(*v)
+	}
+	return _c
+}
+
+// SetL4FlowOutBandwidth sets the "l4_flow_out_bandwidth" field.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetL4FlowOutBandwidth(v int64) *EdgeOneZoneAnalysisDataCreate {
+	_c.mutation.SetL4FlowOutBandwidth(v)
+	return _c
+}
+
+// SetNillableL4FlowOutBandwidth sets the "l4_flow_out_bandwidth" field if the given value is not nil.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL4FlowOutBandwidth(v *int64) *EdgeOneZoneAnalysisDataCreate {
+	if v != nil {
+		_c.SetL4FlowOutBandwidth(*v)
+	}
+	return _c
+}
+
+// SetL4FlowConnections sets the "l4_flow_connections" field.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetL4FlowConnections(v int64) *EdgeOneZoneAnalysisDataCreate {
+	_c.mutation.SetL4FlowConnections(v)
+	return _c
+}
+
+// SetNillableL4FlowConnections sets the "l4_flow_connections" field if the given value is not nil.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL4FlowConnections(v *int64) *EdgeOneZoneAnalysisDataCreate {
+	if v != nil {
+		_c.SetL4FlowConnections(*v)
+	}
+	return _c
+}
+
+// SetL4FlowNewConnectionsRate sets the "l4_flow_new_connections_rate" field.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetL4FlowNewConnectionsRate(v int64) *EdgeOneZoneAnalysisDataCreate {
+	_c.mutation.SetL4FlowNewConnectionsRate(v)
+	return _c
+}
+
+// SetNillableL4FlowNewConnectionsRate sets the "l4_flow_new_connections_rate" field if the given value is not nil.
+func (_c *EdgeOneZoneAnalysisDataCreate) SetNillableL4FlowNewConnectionsRate(v *int64) *EdgeOneZoneAnalysisDataCreate {
+	if v != nil {
+		_c.SetL4FlowNewConnectionsRate(*v)
 	}
 	return _c
 }
@@ -316,12 +414,40 @@ func (_c *EdgeOneZoneAnalysisDataCreate) createSpec() (*EdgeOneZoneAnalysisData,
 		_node.L7FlowRequest = value
 	}
 	if value, ok := _c.mutation.L7FlowAvgResponseTime(); ok {
-		_spec.SetField(edgeonezoneanalysisdata.FieldL7FlowAvgResponseTime, field.TypeInt64, value)
+		_spec.SetField(edgeonezoneanalysisdata.FieldL7FlowAvgResponseTime, field.TypeFloat64, value)
 		_node.L7FlowAvgResponseTime = value
 	}
 	if value, ok := _c.mutation.L7FlowAvgFirstByteResponseTime(); ok {
-		_spec.SetField(edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime, field.TypeInt64, value)
+		_spec.SetField(edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime, field.TypeFloat64, value)
 		_node.L7FlowAvgFirstByteResponseTime = value
+	}
+	if value, ok := _c.mutation.L4FlowFlux(); ok {
+		_spec.SetField(edgeonezoneanalysisdata.FieldL4FlowFlux, field.TypeInt64, value)
+		_node.L4FlowFlux = value
+	}
+	if value, ok := _c.mutation.L4FlowInFlux(); ok {
+		_spec.SetField(edgeonezoneanalysisdata.FieldL4FlowInFlux, field.TypeInt64, value)
+		_node.L4FlowInFlux = value
+	}
+	if value, ok := _c.mutation.L4FlowOutFlux(); ok {
+		_spec.SetField(edgeonezoneanalysisdata.FieldL4FlowOutFlux, field.TypeInt64, value)
+		_node.L4FlowOutFlux = value
+	}
+	if value, ok := _c.mutation.L4FlowInBandwidth(); ok {
+		_spec.SetField(edgeonezoneanalysisdata.FieldL4FlowInBandwidth, field.TypeInt64, value)
+		_node.L4FlowInBandwidth = value
+	}
+	if value, ok := _c.mutation.L4FlowOutBandwidth(); ok {
+		_spec.SetField(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth, field.TypeInt64, value)
+		_node.L4FlowOutBandwidth = value
+	}
+	if value, ok := _c.mutation.L4FlowConnections(); ok {
+		_spec.SetField(edgeonezoneanalysisdata.FieldL4FlowConnections, field.TypeInt64, value)
+		_node.L4FlowConnections = value
+	}
+	if value, ok := _c.mutation.L4FlowNewConnectionsRate(); ok {
+		_spec.SetField(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate, field.TypeInt64, value)
+		_node.L4FlowNewConnectionsRate = value
 	}
 	return _node, _spec
 }
@@ -544,7 +670,7 @@ func (u *EdgeOneZoneAnalysisDataUpsert) ClearL7FlowRequest() *EdgeOneZoneAnalysi
 }
 
 // SetL7FlowAvgResponseTime sets the "l7_flow_avg_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsert) SetL7FlowAvgResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsert {
+func (u *EdgeOneZoneAnalysisDataUpsert) SetL7FlowAvgResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsert {
 	u.Set(edgeonezoneanalysisdata.FieldL7FlowAvgResponseTime, v)
 	return u
 }
@@ -556,7 +682,7 @@ func (u *EdgeOneZoneAnalysisDataUpsert) UpdateL7FlowAvgResponseTime() *EdgeOneZo
 }
 
 // AddL7FlowAvgResponseTime adds v to the "l7_flow_avg_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsert) AddL7FlowAvgResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsert {
+func (u *EdgeOneZoneAnalysisDataUpsert) AddL7FlowAvgResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsert {
 	u.Add(edgeonezoneanalysisdata.FieldL7FlowAvgResponseTime, v)
 	return u
 }
@@ -568,7 +694,7 @@ func (u *EdgeOneZoneAnalysisDataUpsert) ClearL7FlowAvgResponseTime() *EdgeOneZon
 }
 
 // SetL7FlowAvgFirstByteResponseTime sets the "l7_flow_avg_first_byte_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsert) SetL7FlowAvgFirstByteResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsert {
+func (u *EdgeOneZoneAnalysisDataUpsert) SetL7FlowAvgFirstByteResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsert {
 	u.Set(edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime, v)
 	return u
 }
@@ -580,7 +706,7 @@ func (u *EdgeOneZoneAnalysisDataUpsert) UpdateL7FlowAvgFirstByteResponseTime() *
 }
 
 // AddL7FlowAvgFirstByteResponseTime adds v to the "l7_flow_avg_first_byte_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsert) AddL7FlowAvgFirstByteResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsert {
+func (u *EdgeOneZoneAnalysisDataUpsert) AddL7FlowAvgFirstByteResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsert {
 	u.Add(edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime, v)
 	return u
 }
@@ -588,6 +714,174 @@ func (u *EdgeOneZoneAnalysisDataUpsert) AddL7FlowAvgFirstByteResponseTime(v int6
 // ClearL7FlowAvgFirstByteResponseTime clears the value of the "l7_flow_avg_first_byte_response_time" field.
 func (u *EdgeOneZoneAnalysisDataUpsert) ClearL7FlowAvgFirstByteResponseTime() *EdgeOneZoneAnalysisDataUpsert {
 	u.SetNull(edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime)
+	return u
+}
+
+// SetL4FlowFlux sets the "l4_flow_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) SetL4FlowFlux(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Set(edgeonezoneanalysisdata.FieldL4FlowFlux, v)
+	return u
+}
+
+// UpdateL4FlowFlux sets the "l4_flow_flux" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsert) UpdateL4FlowFlux() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetExcluded(edgeonezoneanalysisdata.FieldL4FlowFlux)
+	return u
+}
+
+// AddL4FlowFlux adds v to the "l4_flow_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) AddL4FlowFlux(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Add(edgeonezoneanalysisdata.FieldL4FlowFlux, v)
+	return u
+}
+
+// ClearL4FlowFlux clears the value of the "l4_flow_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) ClearL4FlowFlux() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetNull(edgeonezoneanalysisdata.FieldL4FlowFlux)
+	return u
+}
+
+// SetL4FlowInFlux sets the "l4_flow_in_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) SetL4FlowInFlux(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Set(edgeonezoneanalysisdata.FieldL4FlowInFlux, v)
+	return u
+}
+
+// UpdateL4FlowInFlux sets the "l4_flow_in_flux" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsert) UpdateL4FlowInFlux() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetExcluded(edgeonezoneanalysisdata.FieldL4FlowInFlux)
+	return u
+}
+
+// AddL4FlowInFlux adds v to the "l4_flow_in_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) AddL4FlowInFlux(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Add(edgeonezoneanalysisdata.FieldL4FlowInFlux, v)
+	return u
+}
+
+// ClearL4FlowInFlux clears the value of the "l4_flow_in_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) ClearL4FlowInFlux() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetNull(edgeonezoneanalysisdata.FieldL4FlowInFlux)
+	return u
+}
+
+// SetL4FlowOutFlux sets the "l4_flow_out_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) SetL4FlowOutFlux(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Set(edgeonezoneanalysisdata.FieldL4FlowOutFlux, v)
+	return u
+}
+
+// UpdateL4FlowOutFlux sets the "l4_flow_out_flux" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsert) UpdateL4FlowOutFlux() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetExcluded(edgeonezoneanalysisdata.FieldL4FlowOutFlux)
+	return u
+}
+
+// AddL4FlowOutFlux adds v to the "l4_flow_out_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) AddL4FlowOutFlux(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Add(edgeonezoneanalysisdata.FieldL4FlowOutFlux, v)
+	return u
+}
+
+// ClearL4FlowOutFlux clears the value of the "l4_flow_out_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) ClearL4FlowOutFlux() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetNull(edgeonezoneanalysisdata.FieldL4FlowOutFlux)
+	return u
+}
+
+// SetL4FlowInBandwidth sets the "l4_flow_in_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) SetL4FlowInBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Set(edgeonezoneanalysisdata.FieldL4FlowInBandwidth, v)
+	return u
+}
+
+// UpdateL4FlowInBandwidth sets the "l4_flow_in_bandwidth" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsert) UpdateL4FlowInBandwidth() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetExcluded(edgeonezoneanalysisdata.FieldL4FlowInBandwidth)
+	return u
+}
+
+// AddL4FlowInBandwidth adds v to the "l4_flow_in_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) AddL4FlowInBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Add(edgeonezoneanalysisdata.FieldL4FlowInBandwidth, v)
+	return u
+}
+
+// ClearL4FlowInBandwidth clears the value of the "l4_flow_in_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) ClearL4FlowInBandwidth() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetNull(edgeonezoneanalysisdata.FieldL4FlowInBandwidth)
+	return u
+}
+
+// SetL4FlowOutBandwidth sets the "l4_flow_out_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) SetL4FlowOutBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Set(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth, v)
+	return u
+}
+
+// UpdateL4FlowOutBandwidth sets the "l4_flow_out_bandwidth" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsert) UpdateL4FlowOutBandwidth() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetExcluded(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth)
+	return u
+}
+
+// AddL4FlowOutBandwidth adds v to the "l4_flow_out_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) AddL4FlowOutBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Add(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth, v)
+	return u
+}
+
+// ClearL4FlowOutBandwidth clears the value of the "l4_flow_out_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) ClearL4FlowOutBandwidth() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetNull(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth)
+	return u
+}
+
+// SetL4FlowConnections sets the "l4_flow_connections" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) SetL4FlowConnections(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Set(edgeonezoneanalysisdata.FieldL4FlowConnections, v)
+	return u
+}
+
+// UpdateL4FlowConnections sets the "l4_flow_connections" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsert) UpdateL4FlowConnections() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetExcluded(edgeonezoneanalysisdata.FieldL4FlowConnections)
+	return u
+}
+
+// AddL4FlowConnections adds v to the "l4_flow_connections" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) AddL4FlowConnections(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Add(edgeonezoneanalysisdata.FieldL4FlowConnections, v)
+	return u
+}
+
+// ClearL4FlowConnections clears the value of the "l4_flow_connections" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) ClearL4FlowConnections() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetNull(edgeonezoneanalysisdata.FieldL4FlowConnections)
+	return u
+}
+
+// SetL4FlowNewConnectionsRate sets the "l4_flow_new_connections_rate" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) SetL4FlowNewConnectionsRate(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Set(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate, v)
+	return u
+}
+
+// UpdateL4FlowNewConnectionsRate sets the "l4_flow_new_connections_rate" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsert) UpdateL4FlowNewConnectionsRate() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetExcluded(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate)
+	return u
+}
+
+// AddL4FlowNewConnectionsRate adds v to the "l4_flow_new_connections_rate" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) AddL4FlowNewConnectionsRate(v int64) *EdgeOneZoneAnalysisDataUpsert {
+	u.Add(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate, v)
+	return u
+}
+
+// ClearL4FlowNewConnectionsRate clears the value of the "l4_flow_new_connections_rate" field.
+func (u *EdgeOneZoneAnalysisDataUpsert) ClearL4FlowNewConnectionsRate() *EdgeOneZoneAnalysisDataUpsert {
+	u.SetNull(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate)
 	return u
 }
 
@@ -845,14 +1139,14 @@ func (u *EdgeOneZoneAnalysisDataUpsertOne) ClearL7FlowRequest() *EdgeOneZoneAnal
 }
 
 // SetL7FlowAvgResponseTime sets the "l7_flow_avg_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsertOne) SetL7FlowAvgResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+func (u *EdgeOneZoneAnalysisDataUpsertOne) SetL7FlowAvgResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
 		s.SetL7FlowAvgResponseTime(v)
 	})
 }
 
 // AddL7FlowAvgResponseTime adds v to the "l7_flow_avg_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsertOne) AddL7FlowAvgResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+func (u *EdgeOneZoneAnalysisDataUpsertOne) AddL7FlowAvgResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
 		s.AddL7FlowAvgResponseTime(v)
 	})
@@ -873,14 +1167,14 @@ func (u *EdgeOneZoneAnalysisDataUpsertOne) ClearL7FlowAvgResponseTime() *EdgeOne
 }
 
 // SetL7FlowAvgFirstByteResponseTime sets the "l7_flow_avg_first_byte_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsertOne) SetL7FlowAvgFirstByteResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+func (u *EdgeOneZoneAnalysisDataUpsertOne) SetL7FlowAvgFirstByteResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
 		s.SetL7FlowAvgFirstByteResponseTime(v)
 	})
 }
 
 // AddL7FlowAvgFirstByteResponseTime adds v to the "l7_flow_avg_first_byte_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsertOne) AddL7FlowAvgFirstByteResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+func (u *EdgeOneZoneAnalysisDataUpsertOne) AddL7FlowAvgFirstByteResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
 		s.AddL7FlowAvgFirstByteResponseTime(v)
 	})
@@ -897,6 +1191,202 @@ func (u *EdgeOneZoneAnalysisDataUpsertOne) UpdateL7FlowAvgFirstByteResponseTime(
 func (u *EdgeOneZoneAnalysisDataUpsertOne) ClearL7FlowAvgFirstByteResponseTime() *EdgeOneZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
 		s.ClearL7FlowAvgFirstByteResponseTime()
+	})
+}
+
+// SetL4FlowFlux sets the "l4_flow_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) SetL4FlowFlux(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowFlux(v)
+	})
+}
+
+// AddL4FlowFlux adds v to the "l4_flow_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) AddL4FlowFlux(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowFlux(v)
+	})
+}
+
+// UpdateL4FlowFlux sets the "l4_flow_flux" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) UpdateL4FlowFlux() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowFlux()
+	})
+}
+
+// ClearL4FlowFlux clears the value of the "l4_flow_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) ClearL4FlowFlux() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowFlux()
+	})
+}
+
+// SetL4FlowInFlux sets the "l4_flow_in_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) SetL4FlowInFlux(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowInFlux(v)
+	})
+}
+
+// AddL4FlowInFlux adds v to the "l4_flow_in_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) AddL4FlowInFlux(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowInFlux(v)
+	})
+}
+
+// UpdateL4FlowInFlux sets the "l4_flow_in_flux" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) UpdateL4FlowInFlux() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowInFlux()
+	})
+}
+
+// ClearL4FlowInFlux clears the value of the "l4_flow_in_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) ClearL4FlowInFlux() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowInFlux()
+	})
+}
+
+// SetL4FlowOutFlux sets the "l4_flow_out_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) SetL4FlowOutFlux(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowOutFlux(v)
+	})
+}
+
+// AddL4FlowOutFlux adds v to the "l4_flow_out_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) AddL4FlowOutFlux(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowOutFlux(v)
+	})
+}
+
+// UpdateL4FlowOutFlux sets the "l4_flow_out_flux" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) UpdateL4FlowOutFlux() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowOutFlux()
+	})
+}
+
+// ClearL4FlowOutFlux clears the value of the "l4_flow_out_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) ClearL4FlowOutFlux() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowOutFlux()
+	})
+}
+
+// SetL4FlowInBandwidth sets the "l4_flow_in_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) SetL4FlowInBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowInBandwidth(v)
+	})
+}
+
+// AddL4FlowInBandwidth adds v to the "l4_flow_in_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) AddL4FlowInBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowInBandwidth(v)
+	})
+}
+
+// UpdateL4FlowInBandwidth sets the "l4_flow_in_bandwidth" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) UpdateL4FlowInBandwidth() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowInBandwidth()
+	})
+}
+
+// ClearL4FlowInBandwidth clears the value of the "l4_flow_in_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) ClearL4FlowInBandwidth() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowInBandwidth()
+	})
+}
+
+// SetL4FlowOutBandwidth sets the "l4_flow_out_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) SetL4FlowOutBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowOutBandwidth(v)
+	})
+}
+
+// AddL4FlowOutBandwidth adds v to the "l4_flow_out_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) AddL4FlowOutBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowOutBandwidth(v)
+	})
+}
+
+// UpdateL4FlowOutBandwidth sets the "l4_flow_out_bandwidth" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) UpdateL4FlowOutBandwidth() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowOutBandwidth()
+	})
+}
+
+// ClearL4FlowOutBandwidth clears the value of the "l4_flow_out_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) ClearL4FlowOutBandwidth() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowOutBandwidth()
+	})
+}
+
+// SetL4FlowConnections sets the "l4_flow_connections" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) SetL4FlowConnections(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowConnections(v)
+	})
+}
+
+// AddL4FlowConnections adds v to the "l4_flow_connections" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) AddL4FlowConnections(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowConnections(v)
+	})
+}
+
+// UpdateL4FlowConnections sets the "l4_flow_connections" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) UpdateL4FlowConnections() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowConnections()
+	})
+}
+
+// ClearL4FlowConnections clears the value of the "l4_flow_connections" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) ClearL4FlowConnections() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowConnections()
+	})
+}
+
+// SetL4FlowNewConnectionsRate sets the "l4_flow_new_connections_rate" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) SetL4FlowNewConnectionsRate(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowNewConnectionsRate(v)
+	})
+}
+
+// AddL4FlowNewConnectionsRate adds v to the "l4_flow_new_connections_rate" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) AddL4FlowNewConnectionsRate(v int64) *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowNewConnectionsRate(v)
+	})
+}
+
+// UpdateL4FlowNewConnectionsRate sets the "l4_flow_new_connections_rate" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) UpdateL4FlowNewConnectionsRate() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowNewConnectionsRate()
+	})
+}
+
+// ClearL4FlowNewConnectionsRate clears the value of the "l4_flow_new_connections_rate" field.
+func (u *EdgeOneZoneAnalysisDataUpsertOne) ClearL4FlowNewConnectionsRate() *EdgeOneZoneAnalysisDataUpsertOne {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowNewConnectionsRate()
 	})
 }
 
@@ -1320,14 +1810,14 @@ func (u *EdgeOneZoneAnalysisDataUpsertBulk) ClearL7FlowRequest() *EdgeOneZoneAna
 }
 
 // SetL7FlowAvgResponseTime sets the "l7_flow_avg_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsertBulk) SetL7FlowAvgResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) SetL7FlowAvgResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
 		s.SetL7FlowAvgResponseTime(v)
 	})
 }
 
 // AddL7FlowAvgResponseTime adds v to the "l7_flow_avg_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsertBulk) AddL7FlowAvgResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) AddL7FlowAvgResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
 		s.AddL7FlowAvgResponseTime(v)
 	})
@@ -1348,14 +1838,14 @@ func (u *EdgeOneZoneAnalysisDataUpsertBulk) ClearL7FlowAvgResponseTime() *EdgeOn
 }
 
 // SetL7FlowAvgFirstByteResponseTime sets the "l7_flow_avg_first_byte_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsertBulk) SetL7FlowAvgFirstByteResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) SetL7FlowAvgFirstByteResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
 		s.SetL7FlowAvgFirstByteResponseTime(v)
 	})
 }
 
 // AddL7FlowAvgFirstByteResponseTime adds v to the "l7_flow_avg_first_byte_response_time" field.
-func (u *EdgeOneZoneAnalysisDataUpsertBulk) AddL7FlowAvgFirstByteResponseTime(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) AddL7FlowAvgFirstByteResponseTime(v float64) *EdgeOneZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
 		s.AddL7FlowAvgFirstByteResponseTime(v)
 	})
@@ -1372,6 +1862,202 @@ func (u *EdgeOneZoneAnalysisDataUpsertBulk) UpdateL7FlowAvgFirstByteResponseTime
 func (u *EdgeOneZoneAnalysisDataUpsertBulk) ClearL7FlowAvgFirstByteResponseTime() *EdgeOneZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
 		s.ClearL7FlowAvgFirstByteResponseTime()
+	})
+}
+
+// SetL4FlowFlux sets the "l4_flow_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) SetL4FlowFlux(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowFlux(v)
+	})
+}
+
+// AddL4FlowFlux adds v to the "l4_flow_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) AddL4FlowFlux(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowFlux(v)
+	})
+}
+
+// UpdateL4FlowFlux sets the "l4_flow_flux" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) UpdateL4FlowFlux() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowFlux()
+	})
+}
+
+// ClearL4FlowFlux clears the value of the "l4_flow_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) ClearL4FlowFlux() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowFlux()
+	})
+}
+
+// SetL4FlowInFlux sets the "l4_flow_in_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) SetL4FlowInFlux(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowInFlux(v)
+	})
+}
+
+// AddL4FlowInFlux adds v to the "l4_flow_in_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) AddL4FlowInFlux(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowInFlux(v)
+	})
+}
+
+// UpdateL4FlowInFlux sets the "l4_flow_in_flux" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) UpdateL4FlowInFlux() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowInFlux()
+	})
+}
+
+// ClearL4FlowInFlux clears the value of the "l4_flow_in_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) ClearL4FlowInFlux() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowInFlux()
+	})
+}
+
+// SetL4FlowOutFlux sets the "l4_flow_out_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) SetL4FlowOutFlux(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowOutFlux(v)
+	})
+}
+
+// AddL4FlowOutFlux adds v to the "l4_flow_out_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) AddL4FlowOutFlux(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowOutFlux(v)
+	})
+}
+
+// UpdateL4FlowOutFlux sets the "l4_flow_out_flux" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) UpdateL4FlowOutFlux() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowOutFlux()
+	})
+}
+
+// ClearL4FlowOutFlux clears the value of the "l4_flow_out_flux" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) ClearL4FlowOutFlux() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowOutFlux()
+	})
+}
+
+// SetL4FlowInBandwidth sets the "l4_flow_in_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) SetL4FlowInBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowInBandwidth(v)
+	})
+}
+
+// AddL4FlowInBandwidth adds v to the "l4_flow_in_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) AddL4FlowInBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowInBandwidth(v)
+	})
+}
+
+// UpdateL4FlowInBandwidth sets the "l4_flow_in_bandwidth" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) UpdateL4FlowInBandwidth() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowInBandwidth()
+	})
+}
+
+// ClearL4FlowInBandwidth clears the value of the "l4_flow_in_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) ClearL4FlowInBandwidth() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowInBandwidth()
+	})
+}
+
+// SetL4FlowOutBandwidth sets the "l4_flow_out_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) SetL4FlowOutBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowOutBandwidth(v)
+	})
+}
+
+// AddL4FlowOutBandwidth adds v to the "l4_flow_out_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) AddL4FlowOutBandwidth(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowOutBandwidth(v)
+	})
+}
+
+// UpdateL4FlowOutBandwidth sets the "l4_flow_out_bandwidth" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) UpdateL4FlowOutBandwidth() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowOutBandwidth()
+	})
+}
+
+// ClearL4FlowOutBandwidth clears the value of the "l4_flow_out_bandwidth" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) ClearL4FlowOutBandwidth() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowOutBandwidth()
+	})
+}
+
+// SetL4FlowConnections sets the "l4_flow_connections" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) SetL4FlowConnections(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowConnections(v)
+	})
+}
+
+// AddL4FlowConnections adds v to the "l4_flow_connections" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) AddL4FlowConnections(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowConnections(v)
+	})
+}
+
+// UpdateL4FlowConnections sets the "l4_flow_connections" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) UpdateL4FlowConnections() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowConnections()
+	})
+}
+
+// ClearL4FlowConnections clears the value of the "l4_flow_connections" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) ClearL4FlowConnections() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowConnections()
+	})
+}
+
+// SetL4FlowNewConnectionsRate sets the "l4_flow_new_connections_rate" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) SetL4FlowNewConnectionsRate(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.SetL4FlowNewConnectionsRate(v)
+	})
+}
+
+// AddL4FlowNewConnectionsRate adds v to the "l4_flow_new_connections_rate" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) AddL4FlowNewConnectionsRate(v int64) *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.AddL4FlowNewConnectionsRate(v)
+	})
+}
+
+// UpdateL4FlowNewConnectionsRate sets the "l4_flow_new_connections_rate" field to the value that was provided on create.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) UpdateL4FlowNewConnectionsRate() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.UpdateL4FlowNewConnectionsRate()
+	})
+}
+
+// ClearL4FlowNewConnectionsRate clears the value of the "l4_flow_new_connections_rate" field.
+func (u *EdgeOneZoneAnalysisDataUpsertBulk) ClearL4FlowNewConnectionsRate() *EdgeOneZoneAnalysisDataUpsertBulk {
+	return u.Update(func(s *EdgeOneZoneAnalysisDataUpsert) {
+		s.ClearL4FlowNewConnectionsRate()
 	})
 }
 

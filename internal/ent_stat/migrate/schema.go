@@ -22,8 +22,15 @@ var (
 		{Name: "l7_flow_in_bandwidth", Type: field.TypeInt64, Nullable: true, Comment: "L7 客户端请求带宽，单位：bps"},
 		{Name: "l7_flow_bandwidth", Type: field.TypeInt64, Nullable: true, Comment: "L7 访问总带宽（EdgeOne 响应+客户端请求），单位：bps"},
 		{Name: "l7_flow_request", Type: field.TypeInt64, Nullable: true, Comment: "L7 访问请求数，单位：次"},
-		{Name: "l7_flow_avg_response_time", Type: field.TypeInt64, Nullable: true, Comment: "L7 访问平均响应耗时，单位：ms"},
-		{Name: "l7_flow_avg_first_byte_response_time", Type: field.TypeInt64, Nullable: true, Comment: "L7 访问平均首字节响应耗时，单位：ms"},
+		{Name: "l7_flow_avg_response_time", Type: field.TypeFloat64, Nullable: true, Comment: "L7 访问平均响应耗时，单位：ms"},
+		{Name: "l7_flow_avg_first_byte_response_time", Type: field.TypeFloat64, Nullable: true, Comment: "L7 访问平均首字节响应耗时，单位：ms"},
+		{Name: "l4_flow_flux", Type: field.TypeInt64, Nullable: true, Comment: "L4 访问总流量，单位：Byte"},
+		{Name: "l4_flow_in_flux", Type: field.TypeInt64, Nullable: true, Comment: "L4 访问入流量，单位：Byte"},
+		{Name: "l4_flow_out_flux", Type: field.TypeInt64, Nullable: true, Comment: "L4 访问出流量，单位：Byte"},
+		{Name: "l4_flow_in_bandwidth", Type: field.TypeInt64, Nullable: true, Comment: "L4 访问入向带宽峰值，单位：bps"},
+		{Name: "l4_flow_out_bandwidth", Type: field.TypeInt64, Nullable: true, Comment: "L4 访问出向带宽峰值，单位：bps"},
+		{Name: "l4_flow_connections", Type: field.TypeInt64, Nullable: true, Comment: "L4 访问并发连接数，单位：个"},
+		{Name: "l4_flow_new_connections_rate", Type: field.TypeInt64, Nullable: true, Comment: "L4 新建连接数速率，单位：个/秒"},
 	}
 	// EdgeOneZoneAnalysisDataTable holds the schema information for the "edge_one_zone_analysis_data" table.
 	EdgeOneZoneAnalysisDataTable = &schema.Table{

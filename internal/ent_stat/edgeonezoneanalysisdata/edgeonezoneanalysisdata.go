@@ -37,6 +37,20 @@ const (
 	FieldL7FlowAvgResponseTime = "l7_flow_avg_response_time"
 	// FieldL7FlowAvgFirstByteResponseTime holds the string denoting the l7_flow_avg_first_byte_response_time field in the database.
 	FieldL7FlowAvgFirstByteResponseTime = "l7_flow_avg_first_byte_response_time"
+	// FieldL4FlowFlux holds the string denoting the l4_flow_flux field in the database.
+	FieldL4FlowFlux = "l4_flow_flux"
+	// FieldL4FlowInFlux holds the string denoting the l4_flow_in_flux field in the database.
+	FieldL4FlowInFlux = "l4_flow_in_flux"
+	// FieldL4FlowOutFlux holds the string denoting the l4_flow_out_flux field in the database.
+	FieldL4FlowOutFlux = "l4_flow_out_flux"
+	// FieldL4FlowInBandwidth holds the string denoting the l4_flow_in_bandwidth field in the database.
+	FieldL4FlowInBandwidth = "l4_flow_in_bandwidth"
+	// FieldL4FlowOutBandwidth holds the string denoting the l4_flow_out_bandwidth field in the database.
+	FieldL4FlowOutBandwidth = "l4_flow_out_bandwidth"
+	// FieldL4FlowConnections holds the string denoting the l4_flow_connections field in the database.
+	FieldL4FlowConnections = "l4_flow_connections"
+	// FieldL4FlowNewConnectionsRate holds the string denoting the l4_flow_new_connections_rate field in the database.
+	FieldL4FlowNewConnectionsRate = "l4_flow_new_connections_rate"
 	// Table holds the table name of the edgeonezoneanalysisdata in the database.
 	Table = "edge_one_zone_analysis_data"
 )
@@ -56,6 +70,13 @@ var Columns = []string{
 	FieldL7FlowRequest,
 	FieldL7FlowAvgResponseTime,
 	FieldL7FlowAvgFirstByteResponseTime,
+	FieldL4FlowFlux,
+	FieldL4FlowInFlux,
+	FieldL4FlowOutFlux,
+	FieldL4FlowInBandwidth,
+	FieldL4FlowOutBandwidth,
+	FieldL4FlowConnections,
+	FieldL4FlowNewConnectionsRate,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -143,4 +164,39 @@ func ByL7FlowAvgResponseTime(opts ...sql.OrderTermOption) OrderOption {
 // ByL7FlowAvgFirstByteResponseTime orders the results by the l7_flow_avg_first_byte_response_time field.
 func ByL7FlowAvgFirstByteResponseTime(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldL7FlowAvgFirstByteResponseTime, opts...).ToFunc()
+}
+
+// ByL4FlowFlux orders the results by the l4_flow_flux field.
+func ByL4FlowFlux(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldL4FlowFlux, opts...).ToFunc()
+}
+
+// ByL4FlowInFlux orders the results by the l4_flow_in_flux field.
+func ByL4FlowInFlux(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldL4FlowInFlux, opts...).ToFunc()
+}
+
+// ByL4FlowOutFlux orders the results by the l4_flow_out_flux field.
+func ByL4FlowOutFlux(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldL4FlowOutFlux, opts...).ToFunc()
+}
+
+// ByL4FlowInBandwidth orders the results by the l4_flow_in_bandwidth field.
+func ByL4FlowInBandwidth(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldL4FlowInBandwidth, opts...).ToFunc()
+}
+
+// ByL4FlowOutBandwidth orders the results by the l4_flow_out_bandwidth field.
+func ByL4FlowOutBandwidth(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldL4FlowOutBandwidth, opts...).ToFunc()
+}
+
+// ByL4FlowConnections orders the results by the l4_flow_connections field.
+func ByL4FlowConnections(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldL4FlowConnections, opts...).ToFunc()
+}
+
+// ByL4FlowNewConnectionsRate orders the results by the l4_flow_new_connections_rate field.
+func ByL4FlowNewConnectionsRate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldL4FlowNewConnectionsRate, opts...).ToFunc()
 }

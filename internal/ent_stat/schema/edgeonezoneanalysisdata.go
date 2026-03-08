@@ -87,14 +87,49 @@ func (EdgeOneZoneAnalysisData) Fields() []ent.Field {
 			Comment("L7 访问请求数，单位：次").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int64("l7_flow_avg_response_time").
+		field.Float("l7_flow_avg_response_time").
 			Optional().
 			Comment("L7 访问平均响应耗时，单位：ms").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int64("l7_flow_avg_first_byte_response_time").
+		field.Float("l7_flow_avg_first_byte_response_time").
 			Optional().
 			Comment("L7 访问平均首字节响应耗时，单位：ms").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("l4_flow_flux").
+			Optional().
+			Comment("L4 访问总流量，单位：Byte").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("l4_flow_in_flux").
+			Optional().
+			Comment("L4 访问入流量，单位：Byte").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("l4_flow_out_flux").
+			Optional().
+			Comment("L4 访问出流量，单位：Byte").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("l4_flow_in_bandwidth").
+			Optional().
+			Comment("L4 访问入向带宽峰值，单位：bps").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("l4_flow_out_bandwidth").
+			Optional().
+			Comment("L4 访问出向带宽峰值，单位：bps").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("l4_flow_connections").
+			Optional().
+			Comment("L4 访问并发连接数，单位：个").
+			Annotations(entsql.WithComments(true)),
+
+		field.Int64("l4_flow_new_connections_rate").
+			Optional().
+			Comment("L4 新建连接数速率，单位：个/秒").
 			Annotations(entsql.WithComments(true)),
 	}
 }

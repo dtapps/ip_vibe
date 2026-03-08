@@ -105,13 +105,48 @@ func L7FlowRequest(v int64) predicate.EdgeOneZoneAnalysisData {
 }
 
 // L7FlowAvgResponseTime applies equality check predicate on the "l7_flow_avg_response_time" field. It's identical to L7FlowAvgResponseTimeEQ.
-func L7FlowAvgResponseTime(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgResponseTime(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL7FlowAvgResponseTime, v))
 }
 
 // L7FlowAvgFirstByteResponseTime applies equality check predicate on the "l7_flow_avg_first_byte_response_time" field. It's identical to L7FlowAvgFirstByteResponseTimeEQ.
-func L7FlowAvgFirstByteResponseTime(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgFirstByteResponseTime(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL7FlowAvgFirstByteResponseTime, v))
+}
+
+// L4FlowFlux applies equality check predicate on the "l4_flow_flux" field. It's identical to L4FlowFluxEQ.
+func L4FlowFlux(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowFlux, v))
+}
+
+// L4FlowInFlux applies equality check predicate on the "l4_flow_in_flux" field. It's identical to L4FlowInFluxEQ.
+func L4FlowInFlux(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowInFlux, v))
+}
+
+// L4FlowOutFlux applies equality check predicate on the "l4_flow_out_flux" field. It's identical to L4FlowOutFluxEQ.
+func L4FlowOutFlux(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowOutFlux, v))
+}
+
+// L4FlowInBandwidth applies equality check predicate on the "l4_flow_in_bandwidth" field. It's identical to L4FlowInBandwidthEQ.
+func L4FlowInBandwidth(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowInBandwidth, v))
+}
+
+// L4FlowOutBandwidth applies equality check predicate on the "l4_flow_out_bandwidth" field. It's identical to L4FlowOutBandwidthEQ.
+func L4FlowOutBandwidth(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowOutBandwidth, v))
+}
+
+// L4FlowConnections applies equality check predicate on the "l4_flow_connections" field. It's identical to L4FlowConnectionsEQ.
+func L4FlowConnections(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowConnections, v))
+}
+
+// L4FlowNewConnectionsRate applies equality check predicate on the "l4_flow_new_connections_rate" field. It's identical to L4FlowNewConnectionsRateEQ.
+func L4FlowNewConnectionsRate(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowNewConnectionsRate, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -585,42 +620,42 @@ func L7FlowRequestNotNil() predicate.EdgeOneZoneAnalysisData {
 }
 
 // L7FlowAvgResponseTimeEQ applies the EQ predicate on the "l7_flow_avg_response_time" field.
-func L7FlowAvgResponseTimeEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgResponseTimeEQ(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL7FlowAvgResponseTime, v))
 }
 
 // L7FlowAvgResponseTimeNEQ applies the NEQ predicate on the "l7_flow_avg_response_time" field.
-func L7FlowAvgResponseTimeNEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgResponseTimeNEQ(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldNEQ(FieldL7FlowAvgResponseTime, v))
 }
 
 // L7FlowAvgResponseTimeIn applies the In predicate on the "l7_flow_avg_response_time" field.
-func L7FlowAvgResponseTimeIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgResponseTimeIn(vs ...float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldIn(FieldL7FlowAvgResponseTime, vs...))
 }
 
 // L7FlowAvgResponseTimeNotIn applies the NotIn predicate on the "l7_flow_avg_response_time" field.
-func L7FlowAvgResponseTimeNotIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgResponseTimeNotIn(vs ...float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotIn(FieldL7FlowAvgResponseTime, vs...))
 }
 
 // L7FlowAvgResponseTimeGT applies the GT predicate on the "l7_flow_avg_response_time" field.
-func L7FlowAvgResponseTimeGT(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgResponseTimeGT(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldGT(FieldL7FlowAvgResponseTime, v))
 }
 
 // L7FlowAvgResponseTimeGTE applies the GTE predicate on the "l7_flow_avg_response_time" field.
-func L7FlowAvgResponseTimeGTE(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgResponseTimeGTE(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldGTE(FieldL7FlowAvgResponseTime, v))
 }
 
 // L7FlowAvgResponseTimeLT applies the LT predicate on the "l7_flow_avg_response_time" field.
-func L7FlowAvgResponseTimeLT(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgResponseTimeLT(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldLT(FieldL7FlowAvgResponseTime, v))
 }
 
 // L7FlowAvgResponseTimeLTE applies the LTE predicate on the "l7_flow_avg_response_time" field.
-func L7FlowAvgResponseTimeLTE(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgResponseTimeLTE(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldLTE(FieldL7FlowAvgResponseTime, v))
 }
 
@@ -635,42 +670,42 @@ func L7FlowAvgResponseTimeNotNil() predicate.EdgeOneZoneAnalysisData {
 }
 
 // L7FlowAvgFirstByteResponseTimeEQ applies the EQ predicate on the "l7_flow_avg_first_byte_response_time" field.
-func L7FlowAvgFirstByteResponseTimeEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgFirstByteResponseTimeEQ(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL7FlowAvgFirstByteResponseTime, v))
 }
 
 // L7FlowAvgFirstByteResponseTimeNEQ applies the NEQ predicate on the "l7_flow_avg_first_byte_response_time" field.
-func L7FlowAvgFirstByteResponseTimeNEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgFirstByteResponseTimeNEQ(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldNEQ(FieldL7FlowAvgFirstByteResponseTime, v))
 }
 
 // L7FlowAvgFirstByteResponseTimeIn applies the In predicate on the "l7_flow_avg_first_byte_response_time" field.
-func L7FlowAvgFirstByteResponseTimeIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgFirstByteResponseTimeIn(vs ...float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldIn(FieldL7FlowAvgFirstByteResponseTime, vs...))
 }
 
 // L7FlowAvgFirstByteResponseTimeNotIn applies the NotIn predicate on the "l7_flow_avg_first_byte_response_time" field.
-func L7FlowAvgFirstByteResponseTimeNotIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgFirstByteResponseTimeNotIn(vs ...float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotIn(FieldL7FlowAvgFirstByteResponseTime, vs...))
 }
 
 // L7FlowAvgFirstByteResponseTimeGT applies the GT predicate on the "l7_flow_avg_first_byte_response_time" field.
-func L7FlowAvgFirstByteResponseTimeGT(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgFirstByteResponseTimeGT(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldGT(FieldL7FlowAvgFirstByteResponseTime, v))
 }
 
 // L7FlowAvgFirstByteResponseTimeGTE applies the GTE predicate on the "l7_flow_avg_first_byte_response_time" field.
-func L7FlowAvgFirstByteResponseTimeGTE(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgFirstByteResponseTimeGTE(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldGTE(FieldL7FlowAvgFirstByteResponseTime, v))
 }
 
 // L7FlowAvgFirstByteResponseTimeLT applies the LT predicate on the "l7_flow_avg_first_byte_response_time" field.
-func L7FlowAvgFirstByteResponseTimeLT(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgFirstByteResponseTimeLT(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldLT(FieldL7FlowAvgFirstByteResponseTime, v))
 }
 
 // L7FlowAvgFirstByteResponseTimeLTE applies the LTE predicate on the "l7_flow_avg_first_byte_response_time" field.
-func L7FlowAvgFirstByteResponseTimeLTE(v int64) predicate.EdgeOneZoneAnalysisData {
+func L7FlowAvgFirstByteResponseTimeLTE(v float64) predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldLTE(FieldL7FlowAvgFirstByteResponseTime, v))
 }
 
@@ -682,6 +717,356 @@ func L7FlowAvgFirstByteResponseTimeIsNil() predicate.EdgeOneZoneAnalysisData {
 // L7FlowAvgFirstByteResponseTimeNotNil applies the NotNil predicate on the "l7_flow_avg_first_byte_response_time" field.
 func L7FlowAvgFirstByteResponseTimeNotNil() predicate.EdgeOneZoneAnalysisData {
 	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotNull(FieldL7FlowAvgFirstByteResponseTime))
+}
+
+// L4FlowFluxEQ applies the EQ predicate on the "l4_flow_flux" field.
+func L4FlowFluxEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowFlux, v))
+}
+
+// L4FlowFluxNEQ applies the NEQ predicate on the "l4_flow_flux" field.
+func L4FlowFluxNEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNEQ(FieldL4FlowFlux, v))
+}
+
+// L4FlowFluxIn applies the In predicate on the "l4_flow_flux" field.
+func L4FlowFluxIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIn(FieldL4FlowFlux, vs...))
+}
+
+// L4FlowFluxNotIn applies the NotIn predicate on the "l4_flow_flux" field.
+func L4FlowFluxNotIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotIn(FieldL4FlowFlux, vs...))
+}
+
+// L4FlowFluxGT applies the GT predicate on the "l4_flow_flux" field.
+func L4FlowFluxGT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGT(FieldL4FlowFlux, v))
+}
+
+// L4FlowFluxGTE applies the GTE predicate on the "l4_flow_flux" field.
+func L4FlowFluxGTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGTE(FieldL4FlowFlux, v))
+}
+
+// L4FlowFluxLT applies the LT predicate on the "l4_flow_flux" field.
+func L4FlowFluxLT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLT(FieldL4FlowFlux, v))
+}
+
+// L4FlowFluxLTE applies the LTE predicate on the "l4_flow_flux" field.
+func L4FlowFluxLTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLTE(FieldL4FlowFlux, v))
+}
+
+// L4FlowFluxIsNil applies the IsNil predicate on the "l4_flow_flux" field.
+func L4FlowFluxIsNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIsNull(FieldL4FlowFlux))
+}
+
+// L4FlowFluxNotNil applies the NotNil predicate on the "l4_flow_flux" field.
+func L4FlowFluxNotNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotNull(FieldL4FlowFlux))
+}
+
+// L4FlowInFluxEQ applies the EQ predicate on the "l4_flow_in_flux" field.
+func L4FlowInFluxEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowInFlux, v))
+}
+
+// L4FlowInFluxNEQ applies the NEQ predicate on the "l4_flow_in_flux" field.
+func L4FlowInFluxNEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNEQ(FieldL4FlowInFlux, v))
+}
+
+// L4FlowInFluxIn applies the In predicate on the "l4_flow_in_flux" field.
+func L4FlowInFluxIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIn(FieldL4FlowInFlux, vs...))
+}
+
+// L4FlowInFluxNotIn applies the NotIn predicate on the "l4_flow_in_flux" field.
+func L4FlowInFluxNotIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotIn(FieldL4FlowInFlux, vs...))
+}
+
+// L4FlowInFluxGT applies the GT predicate on the "l4_flow_in_flux" field.
+func L4FlowInFluxGT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGT(FieldL4FlowInFlux, v))
+}
+
+// L4FlowInFluxGTE applies the GTE predicate on the "l4_flow_in_flux" field.
+func L4FlowInFluxGTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGTE(FieldL4FlowInFlux, v))
+}
+
+// L4FlowInFluxLT applies the LT predicate on the "l4_flow_in_flux" field.
+func L4FlowInFluxLT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLT(FieldL4FlowInFlux, v))
+}
+
+// L4FlowInFluxLTE applies the LTE predicate on the "l4_flow_in_flux" field.
+func L4FlowInFluxLTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLTE(FieldL4FlowInFlux, v))
+}
+
+// L4FlowInFluxIsNil applies the IsNil predicate on the "l4_flow_in_flux" field.
+func L4FlowInFluxIsNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIsNull(FieldL4FlowInFlux))
+}
+
+// L4FlowInFluxNotNil applies the NotNil predicate on the "l4_flow_in_flux" field.
+func L4FlowInFluxNotNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotNull(FieldL4FlowInFlux))
+}
+
+// L4FlowOutFluxEQ applies the EQ predicate on the "l4_flow_out_flux" field.
+func L4FlowOutFluxEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowOutFlux, v))
+}
+
+// L4FlowOutFluxNEQ applies the NEQ predicate on the "l4_flow_out_flux" field.
+func L4FlowOutFluxNEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNEQ(FieldL4FlowOutFlux, v))
+}
+
+// L4FlowOutFluxIn applies the In predicate on the "l4_flow_out_flux" field.
+func L4FlowOutFluxIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIn(FieldL4FlowOutFlux, vs...))
+}
+
+// L4FlowOutFluxNotIn applies the NotIn predicate on the "l4_flow_out_flux" field.
+func L4FlowOutFluxNotIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotIn(FieldL4FlowOutFlux, vs...))
+}
+
+// L4FlowOutFluxGT applies the GT predicate on the "l4_flow_out_flux" field.
+func L4FlowOutFluxGT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGT(FieldL4FlowOutFlux, v))
+}
+
+// L4FlowOutFluxGTE applies the GTE predicate on the "l4_flow_out_flux" field.
+func L4FlowOutFluxGTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGTE(FieldL4FlowOutFlux, v))
+}
+
+// L4FlowOutFluxLT applies the LT predicate on the "l4_flow_out_flux" field.
+func L4FlowOutFluxLT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLT(FieldL4FlowOutFlux, v))
+}
+
+// L4FlowOutFluxLTE applies the LTE predicate on the "l4_flow_out_flux" field.
+func L4FlowOutFluxLTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLTE(FieldL4FlowOutFlux, v))
+}
+
+// L4FlowOutFluxIsNil applies the IsNil predicate on the "l4_flow_out_flux" field.
+func L4FlowOutFluxIsNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIsNull(FieldL4FlowOutFlux))
+}
+
+// L4FlowOutFluxNotNil applies the NotNil predicate on the "l4_flow_out_flux" field.
+func L4FlowOutFluxNotNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotNull(FieldL4FlowOutFlux))
+}
+
+// L4FlowInBandwidthEQ applies the EQ predicate on the "l4_flow_in_bandwidth" field.
+func L4FlowInBandwidthEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowInBandwidth, v))
+}
+
+// L4FlowInBandwidthNEQ applies the NEQ predicate on the "l4_flow_in_bandwidth" field.
+func L4FlowInBandwidthNEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNEQ(FieldL4FlowInBandwidth, v))
+}
+
+// L4FlowInBandwidthIn applies the In predicate on the "l4_flow_in_bandwidth" field.
+func L4FlowInBandwidthIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIn(FieldL4FlowInBandwidth, vs...))
+}
+
+// L4FlowInBandwidthNotIn applies the NotIn predicate on the "l4_flow_in_bandwidth" field.
+func L4FlowInBandwidthNotIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotIn(FieldL4FlowInBandwidth, vs...))
+}
+
+// L4FlowInBandwidthGT applies the GT predicate on the "l4_flow_in_bandwidth" field.
+func L4FlowInBandwidthGT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGT(FieldL4FlowInBandwidth, v))
+}
+
+// L4FlowInBandwidthGTE applies the GTE predicate on the "l4_flow_in_bandwidth" field.
+func L4FlowInBandwidthGTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGTE(FieldL4FlowInBandwidth, v))
+}
+
+// L4FlowInBandwidthLT applies the LT predicate on the "l4_flow_in_bandwidth" field.
+func L4FlowInBandwidthLT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLT(FieldL4FlowInBandwidth, v))
+}
+
+// L4FlowInBandwidthLTE applies the LTE predicate on the "l4_flow_in_bandwidth" field.
+func L4FlowInBandwidthLTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLTE(FieldL4FlowInBandwidth, v))
+}
+
+// L4FlowInBandwidthIsNil applies the IsNil predicate on the "l4_flow_in_bandwidth" field.
+func L4FlowInBandwidthIsNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIsNull(FieldL4FlowInBandwidth))
+}
+
+// L4FlowInBandwidthNotNil applies the NotNil predicate on the "l4_flow_in_bandwidth" field.
+func L4FlowInBandwidthNotNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotNull(FieldL4FlowInBandwidth))
+}
+
+// L4FlowOutBandwidthEQ applies the EQ predicate on the "l4_flow_out_bandwidth" field.
+func L4FlowOutBandwidthEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowOutBandwidth, v))
+}
+
+// L4FlowOutBandwidthNEQ applies the NEQ predicate on the "l4_flow_out_bandwidth" field.
+func L4FlowOutBandwidthNEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNEQ(FieldL4FlowOutBandwidth, v))
+}
+
+// L4FlowOutBandwidthIn applies the In predicate on the "l4_flow_out_bandwidth" field.
+func L4FlowOutBandwidthIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIn(FieldL4FlowOutBandwidth, vs...))
+}
+
+// L4FlowOutBandwidthNotIn applies the NotIn predicate on the "l4_flow_out_bandwidth" field.
+func L4FlowOutBandwidthNotIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotIn(FieldL4FlowOutBandwidth, vs...))
+}
+
+// L4FlowOutBandwidthGT applies the GT predicate on the "l4_flow_out_bandwidth" field.
+func L4FlowOutBandwidthGT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGT(FieldL4FlowOutBandwidth, v))
+}
+
+// L4FlowOutBandwidthGTE applies the GTE predicate on the "l4_flow_out_bandwidth" field.
+func L4FlowOutBandwidthGTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGTE(FieldL4FlowOutBandwidth, v))
+}
+
+// L4FlowOutBandwidthLT applies the LT predicate on the "l4_flow_out_bandwidth" field.
+func L4FlowOutBandwidthLT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLT(FieldL4FlowOutBandwidth, v))
+}
+
+// L4FlowOutBandwidthLTE applies the LTE predicate on the "l4_flow_out_bandwidth" field.
+func L4FlowOutBandwidthLTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLTE(FieldL4FlowOutBandwidth, v))
+}
+
+// L4FlowOutBandwidthIsNil applies the IsNil predicate on the "l4_flow_out_bandwidth" field.
+func L4FlowOutBandwidthIsNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIsNull(FieldL4FlowOutBandwidth))
+}
+
+// L4FlowOutBandwidthNotNil applies the NotNil predicate on the "l4_flow_out_bandwidth" field.
+func L4FlowOutBandwidthNotNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotNull(FieldL4FlowOutBandwidth))
+}
+
+// L4FlowConnectionsEQ applies the EQ predicate on the "l4_flow_connections" field.
+func L4FlowConnectionsEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowConnections, v))
+}
+
+// L4FlowConnectionsNEQ applies the NEQ predicate on the "l4_flow_connections" field.
+func L4FlowConnectionsNEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNEQ(FieldL4FlowConnections, v))
+}
+
+// L4FlowConnectionsIn applies the In predicate on the "l4_flow_connections" field.
+func L4FlowConnectionsIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIn(FieldL4FlowConnections, vs...))
+}
+
+// L4FlowConnectionsNotIn applies the NotIn predicate on the "l4_flow_connections" field.
+func L4FlowConnectionsNotIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotIn(FieldL4FlowConnections, vs...))
+}
+
+// L4FlowConnectionsGT applies the GT predicate on the "l4_flow_connections" field.
+func L4FlowConnectionsGT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGT(FieldL4FlowConnections, v))
+}
+
+// L4FlowConnectionsGTE applies the GTE predicate on the "l4_flow_connections" field.
+func L4FlowConnectionsGTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGTE(FieldL4FlowConnections, v))
+}
+
+// L4FlowConnectionsLT applies the LT predicate on the "l4_flow_connections" field.
+func L4FlowConnectionsLT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLT(FieldL4FlowConnections, v))
+}
+
+// L4FlowConnectionsLTE applies the LTE predicate on the "l4_flow_connections" field.
+func L4FlowConnectionsLTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLTE(FieldL4FlowConnections, v))
+}
+
+// L4FlowConnectionsIsNil applies the IsNil predicate on the "l4_flow_connections" field.
+func L4FlowConnectionsIsNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIsNull(FieldL4FlowConnections))
+}
+
+// L4FlowConnectionsNotNil applies the NotNil predicate on the "l4_flow_connections" field.
+func L4FlowConnectionsNotNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotNull(FieldL4FlowConnections))
+}
+
+// L4FlowNewConnectionsRateEQ applies the EQ predicate on the "l4_flow_new_connections_rate" field.
+func L4FlowNewConnectionsRateEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldEQ(FieldL4FlowNewConnectionsRate, v))
+}
+
+// L4FlowNewConnectionsRateNEQ applies the NEQ predicate on the "l4_flow_new_connections_rate" field.
+func L4FlowNewConnectionsRateNEQ(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNEQ(FieldL4FlowNewConnectionsRate, v))
+}
+
+// L4FlowNewConnectionsRateIn applies the In predicate on the "l4_flow_new_connections_rate" field.
+func L4FlowNewConnectionsRateIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIn(FieldL4FlowNewConnectionsRate, vs...))
+}
+
+// L4FlowNewConnectionsRateNotIn applies the NotIn predicate on the "l4_flow_new_connections_rate" field.
+func L4FlowNewConnectionsRateNotIn(vs ...int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotIn(FieldL4FlowNewConnectionsRate, vs...))
+}
+
+// L4FlowNewConnectionsRateGT applies the GT predicate on the "l4_flow_new_connections_rate" field.
+func L4FlowNewConnectionsRateGT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGT(FieldL4FlowNewConnectionsRate, v))
+}
+
+// L4FlowNewConnectionsRateGTE applies the GTE predicate on the "l4_flow_new_connections_rate" field.
+func L4FlowNewConnectionsRateGTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldGTE(FieldL4FlowNewConnectionsRate, v))
+}
+
+// L4FlowNewConnectionsRateLT applies the LT predicate on the "l4_flow_new_connections_rate" field.
+func L4FlowNewConnectionsRateLT(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLT(FieldL4FlowNewConnectionsRate, v))
+}
+
+// L4FlowNewConnectionsRateLTE applies the LTE predicate on the "l4_flow_new_connections_rate" field.
+func L4FlowNewConnectionsRateLTE(v int64) predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldLTE(FieldL4FlowNewConnectionsRate, v))
+}
+
+// L4FlowNewConnectionsRateIsNil applies the IsNil predicate on the "l4_flow_new_connections_rate" field.
+func L4FlowNewConnectionsRateIsNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldIsNull(FieldL4FlowNewConnectionsRate))
+}
+
+// L4FlowNewConnectionsRateNotNil applies the NotNil predicate on the "l4_flow_new_connections_rate" field.
+func L4FlowNewConnectionsRateNotNil() predicate.EdgeOneZoneAnalysisData {
+	return predicate.EdgeOneZoneAnalysisData(sql.FieldNotNull(FieldL4FlowNewConnectionsRate))
 }
 
 // And groups predicates with the AND operator between them.

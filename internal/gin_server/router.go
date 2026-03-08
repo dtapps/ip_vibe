@@ -106,6 +106,7 @@ func (m *GinServerManager) setupWebRouter() {
 
 	// EdgeOne 站点管理页面 - 提供HTML页面并渲染数据
 	r.GET("/edgeone-zone", handlers.EdgeOneZone)
+	r.GET("/edgeone-zone/:id/analysis", handlers.EdgeOneZoneAnalysis)
 	r.GET("/edgeone-zone/:id/record", handlers.EdgeOneZoneRecord)
 	r.GET("/edgeone-zone/:id/origin-group", handlers.EdgeOneZoneOriginGroup)
 

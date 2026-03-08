@@ -58,6 +58,11 @@
 <div class="ui-panel shadow-2xl">
     <div class="ui-header border-b border-base-300 px-8 flex justify-between items-center">
         <div class="flex gap-6">
+            <a href="/edgeone-zone/{{ $item.ID }}/analysis"
+                class="text-sm font-black uppercase tracking-widest opacity-30 hover:opacity-100">
+                数据分析
+            </a>
+            <div class="h-4 w-[1px] bg-base-300"></div>
             <h2 class="text-sm font-black uppercase tracking-widest text-primary">
                 {{ if eq $item.Type "full" }}
                 DNS记录
@@ -71,7 +76,9 @@
                 源站组
             </a>
         </div>
-        <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">TOTAL: {{ $total }}</div>
+        <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">
+            TOTAL: {{ $total }}
+        </div>
     </div>
 
     <div class="p-4">

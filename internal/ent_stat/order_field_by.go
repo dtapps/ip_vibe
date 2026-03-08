@@ -332,6 +332,181 @@ func (q *EdgeOneZoneAnalysisDataQuery) OrderByL7FlowAvgFirstByteResponseTimeAsc(
 	return q.Order(Asc(edgeonezoneanalysisdata.FieldL7FlowAvgFirstByteResponseTime))
 }
 
+// OrderByL4FlowFluxDesc 按字段 l4_flow_flux 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowFluxDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowFluxDesc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Desc(edgeonezoneanalysisdata.FieldL4FlowFlux))
+}
+
+// OrderByL4FlowFluxAsc 按字段 l4_flow_flux 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowFluxAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowFluxAsc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Asc(edgeonezoneanalysisdata.FieldL4FlowFlux))
+}
+
+// OrderByL4FlowInFluxDesc 按字段 l4_flow_in_flux 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowInFluxDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowInFluxDesc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Desc(edgeonezoneanalysisdata.FieldL4FlowInFlux))
+}
+
+// OrderByL4FlowInFluxAsc 按字段 l4_flow_in_flux 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowInFluxAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowInFluxAsc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Asc(edgeonezoneanalysisdata.FieldL4FlowInFlux))
+}
+
+// OrderByL4FlowOutFluxDesc 按字段 l4_flow_out_flux 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowOutFluxDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowOutFluxDesc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Desc(edgeonezoneanalysisdata.FieldL4FlowOutFlux))
+}
+
+// OrderByL4FlowOutFluxAsc 按字段 l4_flow_out_flux 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowOutFluxAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowOutFluxAsc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Asc(edgeonezoneanalysisdata.FieldL4FlowOutFlux))
+}
+
+// OrderByL4FlowInBandwidthDesc 按字段 l4_flow_in_bandwidth 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowInBandwidthDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowInBandwidthDesc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Desc(edgeonezoneanalysisdata.FieldL4FlowInBandwidth))
+}
+
+// OrderByL4FlowInBandwidthAsc 按字段 l4_flow_in_bandwidth 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowInBandwidthAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowInBandwidthAsc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Asc(edgeonezoneanalysisdata.FieldL4FlowInBandwidth))
+}
+
+// OrderByL4FlowOutBandwidthDesc 按字段 l4_flow_out_bandwidth 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowOutBandwidthDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowOutBandwidthDesc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Desc(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth))
+}
+
+// OrderByL4FlowOutBandwidthAsc 按字段 l4_flow_out_bandwidth 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowOutBandwidthAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowOutBandwidthAsc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Asc(edgeonezoneanalysisdata.FieldL4FlowOutBandwidth))
+}
+
+// OrderByL4FlowConnectionsDesc 按字段 l4_flow_connections 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowConnectionsDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowConnectionsDesc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Desc(edgeonezoneanalysisdata.FieldL4FlowConnections))
+}
+
+// OrderByL4FlowConnectionsAsc 按字段 l4_flow_connections 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowConnectionsAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowConnectionsAsc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Asc(edgeonezoneanalysisdata.FieldL4FlowConnections))
+}
+
+// OrderByL4FlowNewConnectionsRateDesc 按字段 l4_flow_new_connections_rate 降序排列查询结果。
+// 降序排列表示从大到小的顺序，适用于时间字段（最新在前）、数值字段（最大在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowNewConnectionsRateDesc().
+//	    Limit(10).
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowNewConnectionsRateDesc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Desc(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate))
+}
+
+// OrderByL4FlowNewConnectionsRateAsc 按字段 l4_flow_new_connections_rate 升序排列查询结果。
+// 升序排列表示从小到大的顺序，适用于时间字段（最早在前）、数值字段（最小在前）等场景。
+// 返回值类型为 *EdgeOneZoneAnalysisDataQuery，支持链式调用其他查询方法。
+// 示例：
+//
+//	records, err := client.EdgeOneZoneAnalysisData.Query().
+//	    OrderByL4FlowNewConnectionsRateAsc().
+//	    All(ctx)
+func (q *EdgeOneZoneAnalysisDataQuery) OrderByL4FlowNewConnectionsRateAsc() *EdgeOneZoneAnalysisDataQuery {
+	return q.Order(Asc(edgeonezoneanalysisdata.FieldL4FlowNewConnectionsRate))
+}
+
 // OrderByIDDesc 按主键 ID 降序排列查询结果。
 // 降序排列表示从大到小的顺序，通常用于获取最新创建的记录（自增ID场景下）。
 // 返回值类型为 *EsaSiteAnalysisDataQuery，支持链式调用其他查询方法（如 Limit、Offset、Where 等）。
