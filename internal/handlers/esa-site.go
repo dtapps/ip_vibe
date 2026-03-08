@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
 	"path/filepath"
 	"vibe_ip/internal/ent"
@@ -62,6 +63,12 @@ func ESASite(c *gin.Context) {
 				Sites:       sites,
 			})
 		}
+	} else {
+		slog.ErrorContext(c, "查询全部ESA配置",
+			slog.Any("request", requestParams),
+			slog.String("platform", platformconfig.PlatformAliyunEsa.String()),
+			slog.Any("err", err),
+		)
 	}
 
 	pageData.Page = allPlatformConfig.Page
@@ -143,6 +150,12 @@ func ESASiteAnalysis(c *gin.Context) {
 			pageData.Stat.RequestTraffic += item.RequestTraffic
 			pageData.Stat.PageView += item.PageView
 		}
+	} else {
+		slog.ErrorContext(c, "查询站点统计分析数据",
+			slog.Any("request", requestParams),
+			slog.Int64("id", firstSite.ID),
+			slog.Any("err", err),
+		)
 	}
 
 	// 查询站点历史分析数据
@@ -154,6 +167,12 @@ func ESASiteAnalysis(c *gin.Context) {
 		for _, item := range listData.Items {
 			pageData.List = append(pageData.List, *item)
 		}
+	} else {
+		slog.ErrorContext(c, "查询站点历史分析数据",
+			slog.Any("request", requestParams),
+			slog.Int64("id", firstSite.ID),
+			slog.Any("err", err),
+		)
 	}
 
 	pageData.Page = listData.Page
@@ -202,6 +221,7 @@ func ESASiteRecord(c *gin.Context) {
 	}
 	pageData.Item = *firstSite
 
+	// 查询站点DNS记录
 	allRecord, err := firstSite.QueryRecords().
 		OrderByRemoteCreatedAtDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
@@ -209,6 +229,11 @@ func ESASiteRecord(c *gin.Context) {
 		for _, item := range allRecord.Items {
 			pageData.List = append(pageData.List, *item)
 		}
+	} else {
+		slog.ErrorContext(c, "查询站点DNS记录",
+			slog.Any("request", requestParams),
+			slog.Any("err", err),
+		)
 	}
 
 	pageData.Page = allRecord.Page
@@ -257,6 +282,7 @@ func ESASiteOriginPool(c *gin.Context) {
 	}
 	pageData.Item = *firstSite
 
+	// 查询站点源地址池
 	allOriginpool, err := firstSite.QueryOriginPools().
 		OrderByNameAsc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
@@ -264,6 +290,11 @@ func ESASiteOriginPool(c *gin.Context) {
 		for _, item := range allOriginpool.Items {
 			pageData.List = append(pageData.List, *item)
 		}
+	} else {
+		slog.ErrorContext(c, "查询站点源地址池",
+			slog.Any("request", requestParams),
+			slog.Any("err", err),
+		)
 	}
 
 	pageData.Page = allOriginpool.Page
