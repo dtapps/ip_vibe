@@ -188,18 +188,28 @@
             <table class="ui-table">
                 <thead>
                     <tr>
-                        <th class="ui-th">统计日期</th>
-                        <th class="ui-th">流量 (Out)</th>
-                        <th class="ui-th">流量 (In)</th>
-                        <th class="ui-th">请求数</th>
-                        <th class="ui-th">PV</th>
+                        <th class="ui-th">
+                            统计日期
+                        </th>
+                        <th class="ui-th">
+                            ESA 响应流量
+                        </th>
+                        <th class="ui-th">
+                            客户端请求流量
+                        </th>
+                        <th class="ui-th">
+                            总请求数
+                        </th>
+                        <th class="ui-th">
+                            页面浏览量
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     {{ range $row := $list }}
                     <tr class="hover:bg-base-200/50 transition-colors font-mono">
                         <td class="ui-td font-black italic text-primary">
-                            {{ $row.Date.Format "2006-01-02" }}
+                            {{ diffForHumans $row.Date }} : {{ $row.Date.Format "2006-01-02" }}
                         </td>
                         <td class="ui-td font-bold">
                             {{ formatBytes $row.Traffic }}
@@ -225,6 +235,12 @@
                 </tbody>
             </table>
         </div>
+
+        <div class="border-t border-base-200 bg-base-100/50">
+            <!-- 分页 -->
+            {{ template "pagination" (dict "Page" $page "Total" $total "PageSize" $pageSize) }}
+        </div>
+
     </div>
 </div>
 
