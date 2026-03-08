@@ -86,9 +86,17 @@
                 class='btn btn-xs {{ if eq $timeRange "yesterday" }}btn-primary{{ else }}btn-ghost opacity-50{{ end }} font-black uppercase italic'>
                 昨天
             </a>
+            <a href="?range=before_yesterday"
+                class='btn btn-xs {{ if eq $timeRange "before_yesterday" }}btn-primary{{ else }}btn-ghost opacity-50{{ end }} font-black uppercase italic'>
+                前天
+            </a>
             <a href="?range=7d"
                 class='btn btn-xs {{ if eq $timeRange "7d" }}btn-primary{{ else }}btn-ghost opacity-50{{ end }} font-black uppercase italic'>
                 最近7天
+            </a>
+            <a href="?range=15d"
+                class='btn btn-xs {{ if eq $timeRange "15d" }}btn-primary{{ else }}btn-ghost opacity-50{{ end }} font-black uppercase italic'>
+                最近15天
             </a>
             <a href="?range=30d"
                 class='btn btn-xs {{ if eq $timeRange "30d" }}btn-primary{{ else }}btn-ghost opacity-50{{ end }} font-black uppercase italic'>
@@ -107,7 +115,7 @@
                 class="bg-base-200/30 p-6 rounded-[2rem] border border-base-300/50 group hover:border-primary/50 transition-all">
                 <div class="flex justify-between items-start mb-4">
                     <span class="text-[10px] font-black uppercase tracking-widest opacity-30">
-                        Traffic Out
+                        ESA 响应流量
                     </span>
                     <div class="p-2 bg-primary/10 rounded-lg text-primary">
                         {{ template "icons" (dict "Name" "i-lucide-arrow-up-right" "Class" "w-4 h-4") }}
@@ -117,7 +125,7 @@
                     {{ formatBytes $stat.Traffic }}
                 </div>
                 <div class="text-[9px] font-bold opacity-20 uppercase mt-1">
-                    边缘节点响应流量
+                    经由 ESA 向客户端传输的数据
                 </div>
             </div>
 
@@ -125,7 +133,7 @@
                 class="bg-base-200/30 p-6 rounded-[2rem] border border-base-300/50 group hover:border-info/50 transition-all">
                 <div class="flex justify-between items-start mb-4">
                     <span class="text-[10px] font-black uppercase tracking-widest opacity-30">
-                        Traffic In
+                        客户端请求流量
                     </span>
                     <div class="p-2 bg-info/10 rounded-lg text-info">
                         {{ template "icons" (dict "Name" "i-lucide-arrow-down-left" "Class" "w-4 h-4") }}
@@ -135,7 +143,7 @@
                     {{ formatBytes $stat.RequestTraffic }}
                 </div>
                 <div class="text-[9px] font-bold opacity-20 uppercase mt-1">
-                    客户端请求流量
+                    ESA 节点接收到客户端请求的流量
                 </div>
             </div>
 
@@ -143,7 +151,7 @@
                 class="bg-base-200/30 p-6 rounded-[2rem] border border-base-300/50 group hover:border-success/50 transition-all">
                 <div class="flex justify-between items-start mb-4">
                     <span class="text-[10px] font-black uppercase tracking-widest opacity-30">
-                        Total Requests
+                        总请求数
                     </span>
                     <div class="p-2 bg-success/10 rounded-lg text-success">
                         {{ template "icons" (dict "Name" "i-lucide-layers" "Class" "w-4 h-4") }}
@@ -153,14 +161,16 @@
                     {{ formatNumber $stat.Requests }}
                 </div>
                 <div class="text-[9px] font-bold opacity-20 uppercase mt-1">
-                    总计请求次数
+                    ESA 节点接收到来自客户端的全部请求数
                 </div>
             </div>
 
             <div
                 class="bg-base-200/30 p-6 rounded-[2rem] border border-base-300/50 group hover:border-warning/50 transition-all">
                 <div class="flex justify-between items-start mb-4">
-                    <span class="text-[10px] font-black uppercase tracking-widest opacity-30">Page Views</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest opacity-30">
+                        页面浏览量
+                    </span>
                     <div class="p-2 bg-warning/10 rounded-lg text-warning">
                         {{ template "icons" (dict "Name" "i-lucide-mouse-pointer-click" "Class" "w-4 h-4") }}
                     </div>
@@ -169,7 +179,7 @@
                     {{ formatNumber $stat.PageView }}
                 </div>
                 <div class="text-[9px] font-bold opacity-20 uppercase mt-1">
-                    页面访问总量
+                    内容类型为 HTML 的成功 HTTP 响应数量
                 </div>
             </div>
         </div>
@@ -186,7 +196,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{ range $row := .Data.List }}
+                    {{ range $row := $list }}
                     <tr class="hover:bg-base-200/50 transition-colors font-mono">
                         <td class="ui-td font-black italic text-primary">
                             {{ $row.Date.Format "2006-01-02" }}

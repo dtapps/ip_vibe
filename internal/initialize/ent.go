@@ -74,6 +74,10 @@ func InitEntDb(ctx context.Context, logger *slog.Logger) {
 		}
 		global.GvaEntDb = ent.NewClient(opts...)
 
+		if sys_env.GvaEnv.DEBUG {
+			global.GvaEntDb = global.GvaEntDb.Debug()
+		}
+
 		// 4. 自动迁移
 		if err := global.GvaEntDb.Schema.Create(ctx); err != nil {
 			logger.ErrorContext(ctx, "[初始化 业务数据库] 自动迁移失败",
@@ -152,6 +156,10 @@ func InitEntLogDb(ctx context.Context, logger *slog.Logger) {
 		}
 		global.GvaEntLogDb = ent_log.NewClient(opts...)
 
+		if sys_env.GvaEnv.DEBUG {
+			global.GvaEntLogDb = global.GvaEntLogDb.Debug()
+		}
+
 		// 4. 自动迁移
 		if err := global.GvaEntLogDb.Schema.Create(ctx); err != nil {
 			logger.ErrorContext(ctx, "[初始化 日志数据库] 自动迁移失败",
@@ -229,6 +237,10 @@ func InitEntStatDb(ctx context.Context, logger *slog.Logger) {
 			)
 		}
 		global.GvaEntStatDb = ent_stat.NewClient(opts...)
+
+		if sys_env.GvaEnv.DEBUG {
+			global.GvaEntStatDb = global.GvaEntStatDb.Debug()
+		}
 
 		// 4. 自动迁移
 		if err := global.GvaEntStatDb.Schema.Create(ctx); err != nil {

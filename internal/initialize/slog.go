@@ -85,14 +85,17 @@ func InitEntSLog(name string) {
 	global.GvaEntSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
+		golog.WithSLogShowLine(getShowLine()),
 	).WithLogger()
 	global.GvaEntLogSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix+"_log", name)),
 		golog.WithSLogSetLevel(getLevel()),
+		golog.WithSLogShowLine(getShowLine()),
 	).WithLogger()
 	global.GvaEntStatSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix+"_stat", name)),
 		golog.WithSLogSetLevel(getLevel()),
+		golog.WithSLogShowLine(getShowLine()),
 	).WithLogger()
 }
 
@@ -102,6 +105,7 @@ func InitGinSLog(name string) {
 	global.GvaGinSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
+		golog.WithSLogShowLine(getShowLine()),
 	).WithLogger()
 }
 
@@ -111,6 +115,7 @@ func InitGrpcSLog(name string) {
 	global.GvaGrpcSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
+		golog.WithSLogShowLine(getShowLine()),
 	).WithLogger()
 }
 
@@ -120,6 +125,7 @@ func InitGocronSLog(name string) {
 	global.GvaGocronSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
+		golog.WithSLogShowLine(getShowLine()),
 	).WithLogger()
 }
 
@@ -129,6 +135,7 @@ func InitMcpSLog(name string) {
 	global.GvaMcpSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
+		golog.WithSLogShowLine(getShowLine()),
 	).WithLogger()
 }
 
@@ -138,6 +145,7 @@ func InitHttpSLog(name string) {
 	global.GvaHttpSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
+		golog.WithSLogShowLine(getShowLine()),
 	).WithLogger()
 }
 
@@ -147,6 +155,7 @@ func InitRestySLog(name string) {
 	global.GvaRestySlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
+		golog.WithSLogShowLine(getShowLine()),
 	).WithLogger()
 }
 
@@ -156,6 +165,7 @@ func InitReqSLog(name string) {
 	global.GvaReqSlog = golog.NewSlog(
 		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
 		golog.WithSLogSetLevel(getLevel()),
+		golog.WithSLogShowLine(getShowLine()),
 	).WithLogger()
 }
 
@@ -169,6 +179,9 @@ func EnsureDefaultSLog() {
 		}
 		if global.GvaEntLogSlog == nil {
 			global.GvaEntLogSlog = global.GvaSlog
+		}
+		if global.GvaEntStatSlog == nil {
+			global.GvaEntStatSlog = global.GvaSlog
 		}
 		if global.GvaGinSlog == nil {
 			global.GvaGinSlog = global.GvaSlog

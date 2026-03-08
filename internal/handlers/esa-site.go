@@ -123,25 +123,33 @@ func ESASiteAnalysis(c *gin.Context) {
 	pageData.Item = *firstSite
 
 	// 查询站点统计分析数据
-	pageData.Stat = ent_stat.EsaSiteAnalysisData{}
 	startTime := gotime.Current().StartOfDay().Time
 	endTime := gotime.Current().EndOfDay().Time
-	if requestParams.TimeRange == "yesterday" {
+	switch requestParams.TimeRange {
+	case "today":
+		startTime = gotime.Current().StartOfDay().Time
+		endTime = gotime.Current().EndOfDay().Time
+	case "yesterday":
 		startTime = gotime.Current().BeforeDay(1).StartOfDay().Time
 		endTime = gotime.Current().BeforeDay(1).EndOfDay().Time
-	}
-	if requestParams.TimeRange == "7d" {
+	case "before_yesterday":
+		startTime = gotime.Current().BeforeDay(2).StartOfDay().Time
+		endTime = gotime.Current().BeforeDay(2).EndOfDay().Time
+	case "7d":
 		startTime = gotime.Current().BeforeDay(7).StartOfDay().Time
 		endTime = gotime.Current().EndOfDay().Time
-	}
-	if requestParams.TimeRange == "30d" {
+	case "15d":
+		startTime = gotime.Current().BeforeDay(15).StartOfDay().Time
+		endTime = gotime.Current().EndOfDay().Time
+	case "30d":
 		startTime = gotime.Current().BeforeDay(30).StartOfDay().Time
 		endTime = gotime.Current().EndOfDay().Time
 	}
 	analysisData, err := global.GvaEntStatDb.EsaSiteAnalysisData.Query().
-		Where(esasiteanalysisdata.IDEQ(firstSite.ID)).
+		Where(esasiteanalysisdata.EsaSiteIDEQ(firstSite.ID)).
 		WhereIf(requestParams.TimeRange != "all", esasiteanalysisdata.DateGTE(startTime)).
 		WhereIf(requestParams.TimeRange != "all", esasiteanalysisdata.DateLTE(endTime)).
+		OrderByDateAsc().
 		All(c)
 	if err == nil {
 		for _, item := range analysisData {
@@ -160,7 +168,7 @@ func ESASiteAnalysis(c *gin.Context) {
 
 	// 查询站点历史分析数据
 	listData, err := global.GvaEntStatDb.EsaSiteAnalysisData.Query().
-		Where(esasiteanalysisdata.IDEQ(firstSite.ID)).
+		Where(esasiteanalysisdata.EsaSiteIDEQ(firstSite.ID)).
 		OrderByDateDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
