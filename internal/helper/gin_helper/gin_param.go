@@ -1,6 +1,7 @@
 package gin_helper
 
 import (
+	"log/slog"
 	"reflect"
 	"strconv"
 	"strings"
@@ -95,17 +96,32 @@ func BindQueryWithDefaults(c *gin.Context, obj any) (err error) {
 	// 先设默认值
 	setDefaults(obj)
 
-	// var (
-	// 	method        = c.Request.Method
-	// 	path          = c.Request.URL.Path
-	// 	contentLength = c.Request.ContentLength
-	// 	contentType   = c.GetHeader("Content-Type")
-	// )
-
-	// 再绑定，覆盖传了的字段
+	// 再绑定 URL 参数，覆盖掉 Cookie 和 默认值
 	err = c.ShouldBindQuery(obj)
 	if err != nil {
 		return err
+	}
+
+	// 定义一个局部接口来“钩出”分页方法
+	type pageSetter interface {
+		GetPageSize() int
+		SetPageSize(int)
+	}
+
+	// 断言并修改
+	if p, ok := obj.(pageSetter); ok {
+		// 如果 URL 没传参数（PageSize 为 0 或 10）
+		if p.GetPageSize() <= 10 {
+			if cookie, _ := c.Cookie("pref_page_size"); cookie != "" {
+				if size, _ := strconv.Atoi(cookie); size > 0 {
+					// 这里调用的就是 CommonPageRequest 的方法，直接改内存！
+					slog.DebugContext(c, "BindQueryWithDefaults",
+						slog.Int("pageSize", size),
+					)
+					p.SetPageSize(size)
+				}
+			}
+		}
 	}
 
 	return nil

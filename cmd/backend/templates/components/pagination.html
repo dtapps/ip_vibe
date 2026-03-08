@@ -21,6 +21,14 @@
 {{ if gt $total 0 }}
 <div class="ui-pagination">
 
+  <select class="join-item ui-filter-select !h-8 !border-y-0 !border-l-0 !rounded-none font-mono text-[10px]"
+    onchange="window.components.pagination.changePage(1, this.value)">
+    <option value="10" {{ if eq $size 10 }}selected{{ end }}>10 / 页</option>
+    <option value="20" {{ if eq $size 20 }}selected{{ end }}>20 / 页</option>
+    <option value="50" {{ if eq $size 50 }}selected{{ end }}>50 / 页</option>
+    <option value="100" {{ if eq $size 100 }}selected{{ end }}>100 / 页</option>
+  </select>
+
   <a class="ui-page-btn" onclick="window.components.pagination.changePage(`1`, `{{ $size }}`)">首页</a>
 
   {{ $totalPages := div (add $total (sub $size 1)) $size }} {{ if gt $page 1 }}

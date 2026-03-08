@@ -52,6 +52,14 @@ type CommonPageRequest struct {
 	PageSize int `form:"page_size" default:"10"` // 每页数量
 }
 
+func (c *CommonPageRequest) SetPageSize(size int) {
+	c.PageSize = size
+}
+
+func (c *CommonPageRequest) GetPageSize() int {
+	return c.PageSize
+}
+
 // 公共 页面分页 响应结构
 type CommonPageResponse[ListT any, FilterT any] struct {
 	Filter   FilterT `json:"filter"`    // 筛选参数
