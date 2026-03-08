@@ -202,7 +202,7 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 		)
 
 		// 查询流量分析时序数据
-		analysisDatas, err := cdnProvider.DescribeTimingL7AnalysisData(ctx, utils.PtrToString(zone.ZoneId))
+		analysisDatasL7, err := cdnProvider.DescribeTimingL7AnalysisData(ctx, utils.PtrToString(zone.ZoneId))
 		if err != nil {
 			s.logger.ErrorContext(ctx, "查询流量分析时序数据失败",
 				slog.Any("err", err),
@@ -210,9 +210,30 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 			return err
 		}
 
+		// 查询四层流量时序数据
+		analysisDatasL4, err := cdnProvider.DescribeTimingL4Data(ctx, utils.PtrToString(zone.ZoneId))
+		if err != nil {
+			s.logger.ErrorContext(ctx, "查询四层流量时序数据失败",
+				slog.Any("err", err),
+			)
+			return err
+		}
+
 		// 按天聚合：date -> map[metricName]value
 		dayMetrics := make(map[string]map[string]int64)
-		for _, data := range analysisDatas {
+		for _, data := range analysisDatasL7 {
+			for _, tv := range data.TypeValue {
+				for _, detail := range tv.Detail {
+					date := gotime.SetCurrentUnix(utils.PtrToInt64(detail.Timestamp)).StartOfDay().SetFormat(gotime.DateFormat)
+					if dayMetrics[date] == nil {
+						dayMetrics[date] = make(map[string]int64)
+					}
+					// 直接存 Value
+					dayMetrics[date][utils.PtrToString(tv.MetricName)] = utils.PtrToInt64(detail.Value)
+				}
+			}
+		}
+		for _, data := range analysisDatasL4 {
 			for _, tv := range data.TypeValue {
 				for _, detail := range tv.Detail {
 					date := gotime.SetCurrentUnix(utils.PtrToInt64(detail.Timestamp)).StartOfDay().SetFormat(gotime.DateFormat)
@@ -337,7 +358,7 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 		)
 
 		// 查询流量分析时序数据
-		analysisDatas, err := cdnProvider.DescribeTimingL7AnalysisData(ctx, utils.PtrToString(zone.ZoneId))
+		analysisDatasL7, err := cdnProvider.DescribeTimingL7AnalysisData(ctx, utils.PtrToString(zone.ZoneId))
 		if err != nil {
 			s.logger.ErrorContext(ctx, "查询流量分析时序数据失败",
 				slog.Any("err", err),
@@ -345,9 +366,30 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 			return err
 		}
 
+		// 查询流量分析时序数据
+		analysisDatasL4, err := cdnProvider.DescribeTimingL4Data(ctx, utils.PtrToString(zone.ZoneId))
+		if err != nil {
+			s.logger.ErrorContext(ctx, "查询四层流量时序数据失败",
+				slog.Any("err", err),
+			)
+			return err
+		}
+
 		// 按天聚合：date -> map[metricName]value
 		dayMetrics := make(map[string]map[string]int64)
-		for _, data := range analysisDatas {
+		for _, data := range analysisDatasL7 {
+			for _, tv := range data.TypeValue {
+				for _, detail := range tv.Detail {
+					date := gotime.SetCurrentUnix(utils.PtrToInt64(detail.Timestamp)).StartOfDay().SetFormat(gotime.DateFormat)
+					if dayMetrics[date] == nil {
+						dayMetrics[date] = make(map[string]int64)
+					}
+					// 直接存 Value
+					dayMetrics[date][utils.PtrToString(tv.MetricName)] = utils.PtrToInt64(detail.Value)
+				}
+			}
+		}
+		for _, data := range analysisDatasL4 {
 			for _, tv := range data.TypeValue {
 				for _, detail := range tv.Detail {
 					date := gotime.SetCurrentUnix(utils.PtrToInt64(detail.Timestamp)).StartOfDay().SetFormat(gotime.DateFormat)

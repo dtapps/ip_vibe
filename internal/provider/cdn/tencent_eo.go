@@ -565,3 +565,34 @@ func (p *TencentEOProvider) DescribeTimingL7AnalysisData(ctx context.Context, zo
 	}
 	return response.Response.Data, nil
 }
+
+// DescribeTimingL4Data 查询四层流量时序数据
+// https://console.cloud.tencent.com/api/explorer?Product=teo&Version=2022-09-01&Action=DescribeTimingL7AnalysisData
+func (p *TencentEOProvider) DescribeTimingL4Data(ctx context.Context, zone_id string) (records []*teo.TimingDataRecord, err error) {
+	// 当前时间
+	currentTime := gotime.Current()
+	// 开始时间
+	startTime := currentTime.BeforeDay(30).StartOfDay().SetFormat(time.RFC3339)
+	// 结束时间
+	endTime := currentTime.SetFormat(time.RFC3339)
+
+	request := teo.NewDescribeTimingL4DataRequest()
+	request.StartTime = common.StringPtr(startTime)
+	request.EndTime = common.StringPtr(endTime)
+	request.MetricNames = common.StringPtrs([]string{
+		"l4Flow_flux",               // L4 访问总流量，单位：Byte
+		"l4Flow_inFlux",             // L4 访问入流量，单位：Byte
+		"l4Flow_outFlux",            // L4 访问出流量，单位：Byte
+		"l4Flow_inBandwidth",        // L4 访问入向带宽峰值，单位：bps
+		"l4Flow_outBandwidth",       // L4 访问出向带宽峰值，单位：bps
+		"l4Flow_connections",        // L4 访问并发连接数，单位：个
+		"l4Flow_newConnectionsRate", // L4 新建连接数速率，单位：个/秒，指标值类型： Float，保留两位小数
+	})
+	request.ZoneIds = common.StringPtrs([]string{zone_id})
+	request.Interval = common.StringPtr("day")
+	response, err := p.Provider.Client.DescribeTimingL4DataWithContext(ctx, request)
+	if err != nil {
+		return nil, fmt.Errorf("接口 DescribeTimingL4DataWithContext 失败 %w", err)
+	}
+	return response.Response.Data, nil
+}
