@@ -132,7 +132,7 @@ func ESASiteAnalysis(c *gin.Context) {
 		endTime = gotime.Current().EndOfDay().Time
 	}
 	analysisData, err := global.GvaEntStatDb.EsaSiteAnalysisData.Query().
-		Where(esasiteanalysisdata.IDEQ(requestParams.ID)).
+		Where(esasiteanalysisdata.IDEQ(firstSite.ID)).
 		WhereIf(requestParams.TimeRange != "all", esasiteanalysisdata.DateGTE(startTime)).
 		WhereIf(requestParams.TimeRange != "all", esasiteanalysisdata.DateLTE(endTime)).
 		All(c)
@@ -147,7 +147,7 @@ func ESASiteAnalysis(c *gin.Context) {
 
 	// 查询站点历史分析数据
 	listData, err := global.GvaEntStatDb.EsaSiteAnalysisData.Query().
-		Where(esasiteanalysisdata.IDEQ(requestParams.ID)).
+		Where(esasiteanalysisdata.IDEQ(firstSite.ID)).
 		OrderByDateDesc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
