@@ -67,6 +67,13 @@ type CommonPageWithItemResponse[ItemT any, ListT any, FilterT any] struct {
 	CommonPageResponse[ListT, FilterT]
 }
 
+// 公共 页面分页带单个项带统计 响应结构
+type CommonPageWithItemAndStatResponse[statT any, ItemT any, ListT any, FilterT any] struct {
+	Stat statT `json:"stat"` // 统计数据
+	Item ItemT `json:"item"` // 单个项
+	CommonPageResponse[ListT, FilterT]
+}
+
 type NullableBool struct {
 	boolVal *bool
 	Set     bool // 仅当传了有效 true/false 时为 true

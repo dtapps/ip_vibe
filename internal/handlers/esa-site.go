@@ -6,12 +6,15 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/esasite"
 	"vibe_ip/internal/ent/platformconfig"
+	"vibe_ip/internal/ent_stat"
+	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 	"vibe_ip/internal/global"
 	"vibe_ip/internal/helper/gin_helper"
 	"vibe_ip/internal/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
+	"go.dtapp.net/library/utils/gotime"
 )
 
 func ESASite(c *gin.Context) {
@@ -73,6 +76,99 @@ func ESASite(c *gin.Context) {
 			Title: "ESA 站点管理",
 			Data:  pageData,
 		},
+	)
+}
+
+func ESASiteAnalysis(c *gin.Context) {
+	// 请求参数
+	var requestParams types.ESASiteAnalysisRequest
+	requestParams.ID = cast.ToInt64(c.Param("id"))
+	if err := gin_helper.BindQueryWithDefaults(c, &requestParams); err != nil {
+		errorResponse(c, http.StatusBadRequest, "无效的请求参数:"+err.Error())
+		return
+	}
+
+	// 时间范围
+	if requestParams.TimeRange == "" {
+		requestParams.TimeRange = "today"
+	}
+
+	// 准备页面数据
+	pageData := types.ESASiteAnalysisResponse{
+		CommonPageWithItemAndStatResponse: types.CommonPageWithItemAndStatResponse[ent_stat.EsaSiteAnalysisData, ent.EsaSite, ent_stat.EsaSiteAnalysisData, types.ESASiteAnalysisRequest]{
+			Stat: ent_stat.EsaSiteAnalysisData{},
+			Item: ent.EsaSite{},
+			CommonPageResponse: types.CommonPageResponse[ent_stat.EsaSiteAnalysisData, types.ESASiteAnalysisRequest]{
+				Filter: requestParams,
+				List:   []ent_stat.EsaSiteAnalysisData{},
+			},
+		},
+	}
+
+	// 查询站点
+	firstSite, err := global.GvaEntDb.EsaSite.Query().
+		Where(esasite.IDEQ(requestParams.ID)).
+		First(c)
+	if err != nil {
+		errorResponse(c, http.StatusNotFound, "未查询到站点:"+err.Error())
+		return
+	}
+	pageData.Item = *firstSite
+
+	// 查询站点统计分析数据
+	pageData.Stat = ent_stat.EsaSiteAnalysisData{}
+	startTime := gotime.Current().StartOfDay().Time
+	endTime := gotime.Current().EndOfDay().Time
+	if requestParams.TimeRange == "yesterday" {
+		startTime = gotime.Current().BeforeDay(1).StartOfDay().Time
+		endTime = gotime.Current().BeforeDay(1).EndOfDay().Time
+	}
+	if requestParams.TimeRange == "7d" {
+		startTime = gotime.Current().BeforeDay(7).StartOfDay().Time
+		endTime = gotime.Current().EndOfDay().Time
+	}
+	if requestParams.TimeRange == "30d" {
+		startTime = gotime.Current().BeforeDay(30).StartOfDay().Time
+		endTime = gotime.Current().EndOfDay().Time
+	}
+	analysisData, err := global.GvaEntStatDb.EsaSiteAnalysisData.Query().
+		Where(esasiteanalysisdata.IDEQ(requestParams.ID)).
+		WhereIf(requestParams.TimeRange != "all", esasiteanalysisdata.DateGTE(startTime)).
+		WhereIf(requestParams.TimeRange != "all", esasiteanalysisdata.DateLTE(endTime)).
+		All(c)
+	if err == nil {
+		for _, item := range analysisData {
+			pageData.Stat.Traffic += item.Traffic
+			pageData.Stat.Requests += item.Requests
+			pageData.Stat.RequestTraffic += item.RequestTraffic
+			pageData.Stat.PageView += item.PageView
+		}
+	}
+
+	// 查询站点历史分析数据
+	listData, err := global.GvaEntStatDb.EsaSiteAnalysisData.Query().
+		Where(esasiteanalysisdata.IDEQ(requestParams.ID)).
+		OrderByDateDesc().
+		Paginate(c, requestParams.Page, requestParams.PageSize)
+	if err == nil {
+		for _, item := range listData.Items {
+			pageData.List = append(pageData.List, *item)
+		}
+	}
+
+	pageData.Page = listData.Page
+	pageData.PageSize = listData.Size
+	pageData.Total = listData.Total
+
+	// 渲染模板
+	renderHTMLWithMenu(
+		c,
+		filepath.Join("pages", "esa-site-analysis.html"),
+		types.BasePageData[types.ESASiteAnalysisResponse]{
+			Title: "ESA 站点分析",
+			Data:  pageData,
+		},
+		"esa-site",
 	)
 }
 

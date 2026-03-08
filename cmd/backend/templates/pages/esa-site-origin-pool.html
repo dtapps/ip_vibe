@@ -56,6 +56,11 @@
 <div class="ui-panel shadow-2xl">
     <div class="ui-header border-b border-base-300 px-8 flex justify-between items-center">
         <div class="flex gap-6">
+            <a href="/esa-site/{{ $item.ID }}/analysis"
+                class='text-sm font-black uppercase tracking-widest opacity-30 hover:opacity-100'>
+                数据分析
+            </a>
+            <div class="h-4 w-[1px] bg-base-300"></div>
             <a href="/esa-site/{{ $item.ID }}/record"
                 class="text-sm font-black uppercase tracking-widest opacity-30 hover:opacity-100">
                 DNS记录
@@ -65,7 +70,9 @@
                 源地址池
             </h2>
         </div>
-        <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">TOTAL: {{ $total }}</div>
+        <div class="badge badge-outline border-base-300 opacity-50 font-mono text-[10px]">
+            TOTAL: {{ $total }}
+        </div>
     </div>
 
     <div class="p-4">

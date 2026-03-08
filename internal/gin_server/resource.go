@@ -20,6 +20,7 @@ import (
 
 	"github.com/denisbrodbeck/machineid"
 	"github.com/dromara/carbon/v2"
+	"github.com/dustin/go-humanize"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
@@ -322,6 +323,18 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 				return "—"
 			}
 			return carbon.NewCarbon(t).DiffForHumans()
+		},
+		// 格式化时间为 "HH:mm:ss" 格式，如 "14:30:00"
+		"formatTime": func(t time.Time) string {
+			return t.Format("15:04:05")
+		},
+		// 格式化字节为人类可读格式，如 "1.23 MB"
+		"formatBytes": func(b int64) string {
+			return humanize.Bytes(uint64(b))
+		},
+		// 格式化数字为人类可读格式，如 "1,234"
+		"formatNumber": func(b int64) string {
+			return humanize.Comma(b)
 		},
 		// 字符串去空格
 		"trim": strings.TrimSpace,
