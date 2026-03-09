@@ -57,11 +57,11 @@ func getLevel() slog.Level {
 
 // getShowLine 获取是否显示行号
 func getShowLine() bool {
-	if sys_env.GvaEnv.DEBUG {
-		return true
-	} else {
-		return false
-	}
+	// if sys_env.GvaEnv.DEBUG {
+	// 	return true
+	// } else {
+	return false
+	// }
 }
 
 var setSlogOnce sync.Once

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
+	"time"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
@@ -14,6 +16,7 @@ import (
 	"github.com/cloudflare/cloudflare-go/v6/option"
 	"github.com/cloudflare/cloudflare-go/v6/zones"
 	"github.com/spf13/cast"
+	"resty.dev/v3"
 )
 
 // CloudfareDNSConfig Cloudfare DNS 配置
@@ -57,6 +60,7 @@ type CloudfareDNSProvider struct {
 	Provider     struct {
 		Opts   []option.RequestOption
 		Client *cloudflare.Client
+		Resty  *resty.Client
 	}
 
 	// 内部数据
@@ -111,6 +115,20 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *C
 
 	// 实例化
 	p.Provider.Client = cloudflare.NewClient(p.Provider.Opts...)
+
+	// 实例化 Resty 客户端
+	p.Provider.Resty = resty.New()
+
+	// 设置 请求头 Authorization
+	p.Provider.Resty.SetHeader("Authorization", fmt.Sprintf("Bearer %s", p.cfg.ApiToken))
+
+	// 设置 请求头 Content-Type
+	p.Provider.Resty.SetHeader("Content-Type", "application/json")
+
+	// 如果提供了日志传输器，则设置HTTP客户端
+	if p.opts.httpTransport != nil {
+		p.Provider.Resty.SetTransport(p.opts.httpTransport.Instance(p.Provider.Resty.Transport()))
+	}
 
 	return p, nil
 }
@@ -292,4 +310,260 @@ func (p *CloudfareDNSProvider) RecordsRaw(ctx context.Context, zone_id string) (
 		return nil, fmt.Errorf("接口 DNS.Records.List 失败 %w", err)
 	}
 	return responseQueryList.Result, nil
+}
+
+// GraphQLError GraphQL 通用错误结构体
+type GraphQLError struct {
+	Message    string         `json:"message"`
+	Path       []string       `json:"path"`
+	Extensions map[string]any `json:"extensions"`
+}
+
+// 按天统计（请求数 + 带宽 + 唯一访客）
+type StatsByDay struct {
+	Date string `json:"date"` // 日期（YYYY-MM-DD）
+
+	Requests int64 `json:"requests"` // 请求总数（单位：次）
+
+	CachedRequests   int64 `json:"cachedRequests"`   // 已缓存请求数（单位：次）
+	UncachedRequests int64 `json:"uncachedRequests"` // 未缓存请求数（单位：次）
+
+	Bandwidth int64 `json:"bandwidth"` // 总带宽（单位：Bytes）
+
+	CachedBandwidth   int64 `json:"cachedBandwidth"`   // 已缓存带宽（单位：Bytes）
+	UncachedBandwidth int64 `json:"uncachedBandwidth"` // 未缓存带宽（单位：Bytes）
+
+	Uniques int64 `json:"uniques"` // 唯一访问者数量（单位：人）
+}
+
+// StatsByDay 按天统计（请求数 + 带宽 + 唯一访客）
+func (p *CloudfareDNSProvider) StatsByDay(ctx context.Context, zoneID string) ([]StatsByDay, error) {
+	until := time.Now().UTC()
+	since := until.AddDate(0, 0, -6)
+
+	var gqlResp struct {
+		Data struct {
+			Viewer struct {
+				Zones []struct {
+					HttpRequests1dGroups []struct {
+						Dimensions struct {
+							Date string `json:"date"` // 日期
+						} `json:"dimensions"`
+						Sum struct {
+							Bytes    int64 `json:"bytes"`    // 总带宽
+							Requests int64 `json:"requests"` // 请求总数
+						} `json:"sum"`
+						Uniq struct {
+							Uniques int64 `json:"uniques"` // 唯一访客
+						} `json:"uniq"`
+					} `json:"httpRequests1dGroups"`
+				} `json:"zones"`
+			} `json:"viewer"`
+		} `json:"data"`
+		Errors []GraphQLError `json:"errors"`
+	}
+
+	// GraphQL 查询语句
+	query := fmt.Sprintf(`
+query StatsByDay {
+  viewer {
+    zones(filter: {zoneTag: "%s"}) {
+      httpRequests1dGroups(
+        filter: {date_geq: "%s", date_leq: "%s"}
+        limit: 1000
+        orderBy: [date_ASC]
+      ) {
+        dimensions {
+          date
+        }
+        sum {
+          requests
+          bytes
+        }
+        uniq {
+          uniques
+        }
+      }
+    }
+  }
+}
+`,
+		zoneID,
+		since.Format(time.DateOnly),
+		until.Format(time.DateOnly),
+	)
+
+	// 发起 GraphQL 请求
+	resp, err := p.Provider.Resty.R().
+		SetContext(ctx).
+		SetBody(map[string]string{"query": query}).
+		SetResult(&gqlResp).
+		Post("https://api.cloudflare.com/client/v4/graphql")
+	if err != nil {
+		return nil, fmt.Errorf("GraphQL 请求失败: %w", err)
+	}
+
+	// 检查 HTTP 状态码
+	if !resp.IsSuccess() {
+		return nil, fmt.Errorf("GraphQL 请求返回非成功状态 [%d]: %s",
+			resp.StatusCode(),
+			resp.String(),
+		)
+	}
+
+	// 处理 GraphQL 业务错误
+	if len(gqlResp.Errors) > 0 {
+		errMsgs := make([]string, len(gqlResp.Errors))
+		for i, e := range gqlResp.Errors {
+			errMsgs[i] = fmt.Sprintf("%s (path: %v)", e.Message, e.Path)
+		}
+		return nil, fmt.Errorf("GraphQL 查询错误: %v", strings.Join(errMsgs, "; "))
+	}
+
+	if len(gqlResp.Data.Viewer.Zones) == 0 {
+		return nil, fmt.Errorf("zone %s 未返回统计数据", zoneID)
+	}
+
+	groups := gqlResp.Data.Viewer.Zones[0].HttpRequests1dGroups
+	result := make([]StatsByDay, 0, len(groups))
+	for _, g := range groups {
+
+		date, err := time.Parse(time.DateOnly, g.Dimensions.Date)
+		if err != nil {
+			return nil, err
+		}
+
+		cache, err := p.CacheStats(
+			ctx,
+			zoneID,
+			date,
+			date.Add(24*time.Hour),
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, StatsByDay{
+			Date: g.Dimensions.Date,
+
+			Requests: g.Sum.Requests,
+
+			Bandwidth: g.Sum.Bytes,
+
+			Uniques: g.Uniq.Uniques,
+
+			CachedRequests:   cache.CachedRequests,
+			UncachedRequests: cache.UncachedRequests,
+
+			CachedBandwidth:   cache.CachedBandwidth,
+			UncachedBandwidth: cache.UncachedBandwidth,
+		})
+	}
+
+	return result, nil
+}
+
+// CacheStats 按天统计（已缓存请求 + 未缓存请求 + 已缓存带宽 + 未缓存带宽）
+type CacheStats struct {
+	Date              string `json:"date"`              // 日期
+	CachedRequests    int64  `json:"cachedRequests"`    // 已缓存请求
+	UncachedRequests  int64  `json:"uncachedRequests"`  // 未缓存请求
+	CachedBandwidth   int64  `json:"cachedBandwidth"`   // 已缓存带宽
+	UncachedBandwidth int64  `json:"uncachedBandwidth"` // 未缓存带宽
+}
+
+// CacheStats 按天统计（已缓存请求 + 未缓存请求 + 已缓存带宽 + 未缓存带宽）
+func (p *CloudfareDNSProvider) CacheStats(ctx context.Context, zoneID string, since time.Time, until time.Time) (*CacheStats, error) {
+
+	var gqlResp struct {
+		Data struct {
+			Viewer struct {
+				Zones []struct {
+					HttpRequestsAdaptiveGroups []struct {
+						Count      int64 `json:"count"` // 请求总数
+						Dimensions struct {
+							CacheStatus string `json:"cacheStatus"` // 缓存状态
+						} `json:"dimensions"`
+						Sum struct {
+							EdgeResponseBytes int64 `json:"edgeResponseBytes"` // 已缓存带宽
+						} `json:"sum"`
+					} `json:"httpRequestsAdaptiveGroups"`
+				} `json:"zones"`
+			} `json:"viewer"`
+		} `json:"data"`
+		Errors []GraphQLError `json:"errors"`
+	}
+
+	// GraphQL 查询语句
+	query := fmt.Sprintf(`
+query CacheStats {
+  viewer {
+    zones(filter: {zoneTag: "%s"}) {
+      httpRequestsAdaptiveGroups(
+        filter: {datetime_geq: "%s", datetime_lt: "%s"}
+        limit: 1000
+      ) {
+        count
+        sum {
+          edgeResponseBytes
+        }
+        dimensions {
+          cacheStatus
+        }
+      }
+    }
+  }
+}
+`,
+		zoneID,
+		since.Format(time.RFC3339),
+		until.Format(time.RFC3339),
+	)
+
+	// 发起 GraphQL 请求
+	resp, err := p.Provider.Resty.R().
+		SetContext(ctx).
+		SetBody(map[string]string{"query": query}).
+		SetResult(&gqlResp).
+		Post("https://api.cloudflare.com/client/v4/graphql")
+	if err != nil {
+		return nil, fmt.Errorf("GraphQL 请求失败: %w", err)
+	}
+
+	// 检查 HTTP 状态码
+	if !resp.IsSuccess() {
+		return nil, fmt.Errorf("GraphQL 请求返回非成功状态 [%d]: %s",
+			resp.StatusCode(),
+			resp.String(),
+		)
+	}
+
+	// 处理 GraphQL 业务错误
+	if len(gqlResp.Errors) > 0 {
+		errMsgs := make([]string, len(gqlResp.Errors))
+		for i, e := range gqlResp.Errors {
+			errMsgs[i] = fmt.Sprintf("%s (path: %v)", e.Message, e.Path)
+		}
+		return nil, fmt.Errorf("GraphQL 查询错误: %v", strings.Join(errMsgs, "; "))
+	}
+
+	if len(gqlResp.Data.Viewer.Zones) == 0 {
+		return nil, fmt.Errorf("zone %s 未返回统计数据", zoneID)
+	}
+
+	stats := &CacheStats{
+		Date: since.Format(time.DateOnly),
+	}
+	for _, item := range gqlResp.Data.Viewer.Zones[0].HttpRequestsAdaptiveGroups {
+		switch item.Dimensions.CacheStatus {
+		case "hit":
+			stats.CachedRequests += item.Count
+			stats.CachedBandwidth += item.Sum.EdgeResponseBytes
+		case "miss", "dynamic", "none", "expired", "bypass":
+			stats.UncachedRequests += item.Count
+			stats.UncachedBandwidth += item.Sum.EdgeResponseBytes
+		}
+	}
+
+	return stats, nil
 }

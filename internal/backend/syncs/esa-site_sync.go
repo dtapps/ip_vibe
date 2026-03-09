@@ -209,10 +209,6 @@ func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err e
 			esaSiteID = firstSite.ID
 		}
 
-		s.logger.DebugContext(ctx, "查询账户维度或站点维度流量分析时序数据",
-			slog.Int64("zone", tea.Int64Value(site.SiteId)),
-		)
-
 		// 查询账户维度或站点维度流量分析时序数据
 		analysisDatas, err := cdnProvider.DescribeSiteTimeSeriesData(ctx, tea.Int64Value(site.SiteId))
 		if err != nil {
@@ -221,6 +217,12 @@ func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err e
 			)
 			return err
 		}
+
+		s.logger.DebugContext(ctx, "查询统计数据",
+			slog.Int64("zone", tea.Int64Value(site.SiteId)),
+			slog.Int64("esaSiteID", esaSiteID),
+			slog.Any("analysisDatas", analysisDatas),
+		)
 
 		// 按天聚合：date -> map[metricName]value
 		dayMetrics := make(map[string]map[string]int64)
@@ -340,10 +342,6 @@ func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id
 			return fmt.Errorf("更新站点记录失败: %w", err)
 		}
 
-		s.logger.DebugContext(ctx, "查询账户维度或站点维度流量分析时序数据",
-			slog.Int64("zone", tea.Int64Value(site.SiteId)),
-		)
-
 		// 查询账户维度或站点维度流量分析时序数据
 		analysisDatas, err := cdnProvider.DescribeSiteTimeSeriesData(ctx, tea.Int64Value(site.SiteId))
 		if err != nil {
@@ -352,6 +350,12 @@ func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id
 			)
 			return err
 		}
+
+		s.logger.DebugContext(ctx, "查询统计数据",
+			slog.Int64("zone", tea.Int64Value(site.SiteId)),
+
+			slog.Any("analysisDatas", analysisDatas),
+		)
 
 		// 按天聚合：date -> map[metricName]value
 		dayMetrics := make(map[string]map[string]int64)

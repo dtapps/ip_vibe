@@ -134,6 +134,10 @@ func (s *CloudflareZoneSync) SyncThisZones(ctx context.Context, config_id int64)
 
 	// 入库所有站点
 	for _, zone := range zones {
+
+		// 站点序号
+		var cloudflareZoneID int64
+
 		// 查询站点记录
 		firstZone, err := s.db.CloudflareZone.Query().
 			Where(cloudflarezone.ConfigIDEQ(config_id)).
@@ -162,10 +166,11 @@ func (s *CloudflareZoneSync) SyncThisZones(ctx context.Context, config_id int64)
 			if zone.Type != "" {
 				createOne.SetType(cloudflarezone.Type(zone.Type))
 			}
-			err = createOne.Exec(ctx)
+			saveZone, err := createOne.Save(ctx)
 			if err != nil {
 				return fmt.Errorf("创建站点记录失败: %w", err)
 			}
+			cloudflareZoneID = saveZone.ID
 		} else {
 			// 更新站点记录
 			updateOne := s.db.CloudflareZone.UpdateOne(firstZone)
@@ -187,7 +192,33 @@ func (s *CloudflareZoneSync) SyncThisZones(ctx context.Context, config_id int64)
 			if err != nil {
 				return fmt.Errorf("更新站点记录失败: %w", err)
 			}
+			cloudflareZoneID = firstZone.ID
 		}
+
+		// 按天统计（请求数 + 带宽 + 唯一访客）
+		statsByDayData, err := dnsProvider.StatsByDay(ctx, zone.ID)
+		if err != nil {
+			s.logger.ErrorContext(ctx, "按天统计（请求数 + 带宽 + 唯一访客）失败",
+				slog.Any("err", err),
+			)
+			return err
+		}
+
+		// 按天统计（已缓存请求 + 未缓存请求 + 已缓存带宽 + 未缓存带宽）
+		// cacheStatsData, err := dnsProvider.CacheStats(ctx, zone.ID, time.Now().UTC().AddDate(0, 0, -1), time.Now().UTC())
+		// if err != nil {
+		// 	s.logger.ErrorContext(ctx, "按天统计（已缓存请求 + 未缓存请求 + 已缓存带宽 + 未缓存带宽）失败",
+		// 		slog.Any("err", err),
+		// 	)
+		// 	return err
+		// }
+
+		s.logger.DebugContext(ctx, "查询统计数据",
+			slog.String("zone", zone.ID),
+			slog.Int64("cloudflareZoneID", cloudflareZoneID),
+			slog.Any("statsByDayData", statsByDayData),
+			// slog.Any("cacheStatsData", cacheStatsData),
+		)
 	}
 
 	return nil
@@ -257,6 +288,30 @@ func (s *CloudflareZoneSync) SyncThisSite(ctx context.Context, config_id int64, 
 		if err != nil {
 			return fmt.Errorf("更新站点记录失败: %w", err)
 		}
+
+		// 按天统计（请求数 + 带宽 + 唯一访客）
+		statsByDayData, err := dnsProvider.StatsByDay(ctx, zone.ID)
+		if err != nil {
+			s.logger.ErrorContext(ctx, "按天统计（请求数 + 带宽 + 唯一访客）失败",
+				slog.Any("err", err),
+			)
+			return err
+		}
+
+		// 按天统计（已缓存请求 + 未缓存请求 + 已缓存带宽 + 未缓存带宽）
+		// cacheStatsData, err := dnsProvider.CacheStats(ctx, zone.ID, time.Now().UTC().AddDate(0, 0, -1), time.Now().UTC())
+		// if err != nil {
+		// 	s.logger.ErrorContext(ctx, "按天统计（已缓存请求 + 未缓存请求 + 已缓存带宽 + 未缓存带宽）失败",
+		// 		slog.Any("err", err),
+		// 	)
+		// 	return err
+		// }
+
+		s.logger.DebugContext(ctx, "查询统计数据",
+			slog.String("zone", zone.ID),
+			slog.Any("statsByDayData", statsByDayData),
+			// slog.Any("cacheStatsData", cacheStatsData),
+		)
 	}
 
 	return nil
