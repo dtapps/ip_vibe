@@ -37,7 +37,12 @@ func CloudflareZone(c *gin.Context) {
 	// 查询全部Cloudflare配置
 	allPlatformConfig, err := global.GvaEntDb.PlatformConfig.Query().
 		Where(platformconfig.PlatformEQ(platformconfig.PlatformCloudflare)).
-		WhereConfigJSONContainsFieldExistsAndNotEmpty("account_id").
+		Where(platformconfig.CapabilityIn(
+			platformconfig.CapabilityDNS,
+			platformconfig.CapabilityCdn,
+			platformconfig.CapabilityAll,
+		)).
+		// WhereConfigJSONContainsFieldExistsAndNotEmpty("account_id").
 		OrderByCreatedAtAsc().
 		Paginate(c, requestParams.Page, requestParams.PageSize)
 	if err == nil {
