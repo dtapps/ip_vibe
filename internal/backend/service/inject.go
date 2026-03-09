@@ -5,6 +5,8 @@ import (
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/ent_stat"
+
+	"go.dtapp.net/library/contrib/http_log"
 )
 
 var (
@@ -40,5 +42,17 @@ var (
 func InjectStatDb(statDb *ent_stat.Client) {
 	serviceStatDbOnce.Do(func() {
 		serviceStatDb = statDb
+	})
+}
+
+var (
+	serviceHttpTransport     *http_log.LoggingRoundTripper
+	serviceHttpTransportOnce sync.Once
+)
+
+// 注入HTTP传输客户端
+func InjectHttpTransport(httpTransport *http_log.LoggingRoundTripper) {
+	serviceHttpTransportOnce.Do(func() {
+		serviceHttpTransport = httpTransport
 	})
 }

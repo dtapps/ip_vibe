@@ -39,7 +39,6 @@ func NewCloudflareTunnelSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Clien
 		db,
 		logDb,
 		logger,
-		httpTransport,
 	)
 	return &CloudflareTunnelSyncTaskProvider{
 		db:                   db,

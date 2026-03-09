@@ -43,7 +43,7 @@ type DeviceOpenServiceImpl struct {
 }
 
 // NewDeviceOpenService 创建设备服务实例
-func NewDeviceOpenService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) DeviceOpenService {
+func NewDeviceOpenService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) DeviceOpenService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -54,13 +54,13 @@ func NewDeviceOpenService(ctx context.Context, db *ent.Client, logDb *ent_log.Cl
 		db,
 		logDb,
 		logger,
-		httpTransport,
+		serviceHttpTransport,
 	)
 	return &DeviceOpenServiceImpl{
 		db:                     db,
 		logDb:                  logDb,
 		logger:                 logger,
-		httpTransport:          httpTransport,
+		httpTransport:          serviceHttpTransport,
 		webhookSendSyncHandler: webhookSendSyncHandler,
 		debug:                  debug,
 	}

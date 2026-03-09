@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+	"vibe_ip/internal/ent_stat/cloudflarezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 
@@ -74,8 +75,9 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			edgeonezoneanalysisdata.Table: edgeonezoneanalysisdata.ValidColumn,
-			esasiteanalysisdata.Table:     esasiteanalysisdata.ValidColumn,
+			cloudflarezoneanalysisdata.Table: cloudflarezoneanalysisdata.ValidColumn,
+			edgeonezoneanalysisdata.Table:    edgeonezoneanalysisdata.ValidColumn,
+			esasiteanalysisdata.Table:        esasiteanalysisdata.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

@@ -52,7 +52,6 @@ func getWebhookList(ctx context.Context, req *mcp.CallToolRequest, params *types
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -73,7 +72,6 @@ func getWebhookDetail(ctx context.Context, req *mcp.CallToolRequest, params *typ
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -94,7 +92,6 @@ func createWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -115,7 +112,6 @@ func updateWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -136,7 +132,6 @@ func updateWebhookActive(ctx context.Context, req *mcp.CallToolRequest, params *
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -157,7 +152,6 @@ func deleteWebhook(ctx context.Context, req *mcp.CallToolRequest, params *types.
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaMcpSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用

@@ -46,7 +46,7 @@ type CDNRecordServiceImpl struct {
 }
 
 // NewCDNRecordService 创建 CDN 记录服务实例
-func NewCDNRecordService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) CDNRecordService {
+func NewCDNRecordService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) CDNRecordService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -57,13 +57,13 @@ func NewCDNRecordService(ctx context.Context, db *ent.Client, logDb *ent_log.Cli
 		db,
 		logDb,
 		logger,
-		httpTransport,
+		serviceHttpTransport,
 	)
 	return &CDNRecordServiceImpl{
 		db:             db,
 		logDb:          logDb,
 		logger:         logger,
-		httpTransport:  httpTransport,
+		httpTransport:  serviceHttpTransport,
 		cdnSyncHandler: cdnSyncHandler,
 		debug:          debug,
 	}

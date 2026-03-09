@@ -105,7 +105,6 @@ func main() {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGrpcSlog,
-		global.GvaHttpLog,
 		grpc_server.Config{
 			Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
 			Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
@@ -217,7 +216,6 @@ func gracefulShutdown() {
 			global.GvaEntDb,
 			global.GvaEntLogDb,
 			global.GvaGrpcSlog,
-			global.GvaHttpLog,
 			grpc_server.Config{},
 		)
 

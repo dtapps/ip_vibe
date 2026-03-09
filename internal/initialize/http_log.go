@@ -5,6 +5,8 @@ import (
 	"log/slog"
 	"net/http"
 	"sync"
+	"vibe_ip/internal/backend/service"
+	"vibe_ip/internal/backend/syncs"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
 
@@ -142,5 +144,9 @@ func InitEntHttpLog(logger *slog.Logger) {
 		// global.GvaHttpClientWithLogNoBody = &http.Client{
 		// 	Transport: cloneNoBody,
 		// }
+
+		// 注入 HTTP 传输客户端
+		service.InjectHttpTransport(global.GvaHttpLog)
+		syncs.InjectHttpTransport(global.GvaHttpLog)
 	})
 }

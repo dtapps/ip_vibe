@@ -37,7 +37,6 @@ func GetDnsRecords(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -76,7 +75,6 @@ func GetDnsRecordDetail(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -114,7 +112,6 @@ func CreateDnsRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -154,7 +151,6 @@ func UpdateDnsRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -194,7 +190,6 @@ func UpdateDnsRecordActive(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -232,7 +227,6 @@ func BatchUpdateDnsRecordActive(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -271,7 +265,6 @@ func DeleteDnsRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -309,7 +302,6 @@ func BatchDeleteDnsRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -348,7 +340,6 @@ func HealthCheckDnsRecord(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用

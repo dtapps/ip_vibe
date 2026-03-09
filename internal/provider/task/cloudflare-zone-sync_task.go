@@ -39,7 +39,6 @@ func NewCloudflareZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client,
 		db,
 		logDb,
 		logger,
-		httpTransport,
 	)
 	return &CloudflareZoneSyncTaskProvider{
 		db:                 db,

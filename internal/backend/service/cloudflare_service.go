@@ -33,7 +33,7 @@ type CloudflareServiceImpl struct {
 }
 
 // NewCloudflareService 创建Cloudflare服务实例
-func NewCloudflareService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) CloudflareService {
+func NewCloudflareService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) CloudflareService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -42,7 +42,7 @@ func NewCloudflareService(db *ent.Client, logDb *ent_log.Client, logger *slog.Lo
 		db:            db,
 		logDb:         logDb,
 		logger:        logger,
-		httpTransport: httpTransport,
+		httpTransport: serviceHttpTransport,
 		debug:         debug,
 	}
 }

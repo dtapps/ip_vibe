@@ -34,7 +34,6 @@ func getDomainMonitorList(ctx context.Context, req *mcp.ReadResourceRequest) (*m
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -63,7 +62,6 @@ func getDomainMonitorDetail(ctx context.Context, tpl *mcp.ResourceTemplate, req 
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用

@@ -37,7 +37,6 @@ func GetWebhooks(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -76,7 +75,6 @@ func GetWebhookDetail(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -114,7 +112,6 @@ func CreateWebhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -154,7 +151,6 @@ func UpdateWebhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -194,7 +190,6 @@ func UpdateWebhookActive(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -232,7 +227,6 @@ func BatchUpdateWebhookActive(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -271,7 +265,6 @@ func DeleteWebhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -309,7 +302,6 @@ func BatchDeleteWebhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -348,7 +340,6 @@ func TestWebhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用

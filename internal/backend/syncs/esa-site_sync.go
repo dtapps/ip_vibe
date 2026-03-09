@@ -37,7 +37,7 @@ type ESASiteSync struct {
 }
 
 // NewESASiteSync 创建ESA站点同步实例
-func NewESASiteSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *ESASiteSync {
+func NewESASiteSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *ESASiteSync {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -46,7 +46,7 @@ func NewESASiteSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, 
 		db:            db,
 		logDb:         logDb,
 		logger:        logger,
-		httpTransport: httpTransport,
+		httpTransport: syncHttpTransport,
 		debug:         debug,
 	}
 }

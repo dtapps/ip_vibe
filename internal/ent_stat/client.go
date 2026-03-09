@@ -11,6 +11,7 @@ import (
 
 	"vibe_ip/internal/ent_stat/migrate"
 
+	"vibe_ip/internal/ent_stat/cloudflarezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 
@@ -26,6 +27,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// CloudflareZoneAnalysisData is the client for interacting with the CloudflareZoneAnalysisData builders.
+	CloudflareZoneAnalysisData *CloudflareZoneAnalysisDataClient
 	// EdgeOneZoneAnalysisData is the client for interacting with the EdgeOneZoneAnalysisData builders.
 	EdgeOneZoneAnalysisData *EdgeOneZoneAnalysisDataClient
 	// EsaSiteAnalysisData is the client for interacting with the EsaSiteAnalysisData builders.
@@ -41,6 +44,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.CloudflareZoneAnalysisData = NewCloudflareZoneAnalysisDataClient(c.config)
 	c.EdgeOneZoneAnalysisData = NewEdgeOneZoneAnalysisDataClient(c.config)
 	c.EsaSiteAnalysisData = NewEsaSiteAnalysisDataClient(c.config)
 }
@@ -133,10 +137,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                     ctx,
-		config:                  cfg,
-		EdgeOneZoneAnalysisData: NewEdgeOneZoneAnalysisDataClient(cfg),
-		EsaSiteAnalysisData:     NewEsaSiteAnalysisDataClient(cfg),
+		ctx:                        ctx,
+		config:                     cfg,
+		CloudflareZoneAnalysisData: NewCloudflareZoneAnalysisDataClient(cfg),
+		EdgeOneZoneAnalysisData:    NewEdgeOneZoneAnalysisDataClient(cfg),
+		EsaSiteAnalysisData:        NewEsaSiteAnalysisDataClient(cfg),
 	}, nil
 }
 
@@ -154,17 +159,18 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                     ctx,
-		config:                  cfg,
-		EdgeOneZoneAnalysisData: NewEdgeOneZoneAnalysisDataClient(cfg),
-		EsaSiteAnalysisData:     NewEsaSiteAnalysisDataClient(cfg),
+		ctx:                        ctx,
+		config:                     cfg,
+		CloudflareZoneAnalysisData: NewCloudflareZoneAnalysisDataClient(cfg),
+		EdgeOneZoneAnalysisData:    NewEdgeOneZoneAnalysisDataClient(cfg),
+		EsaSiteAnalysisData:        NewEsaSiteAnalysisDataClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		EdgeOneZoneAnalysisData.
+//		CloudflareZoneAnalysisData.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -186,6 +192,7 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.CloudflareZoneAnalysisData.Use(hooks...)
 	c.EdgeOneZoneAnalysisData.Use(hooks...)
 	c.EsaSiteAnalysisData.Use(hooks...)
 }
@@ -193,6 +200,7 @@ func (c *Client) Use(hooks ...Hook) {
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
+	c.CloudflareZoneAnalysisData.Intercept(interceptors...)
 	c.EdgeOneZoneAnalysisData.Intercept(interceptors...)
 	c.EsaSiteAnalysisData.Intercept(interceptors...)
 }
@@ -200,12 +208,147 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *CloudflareZoneAnalysisDataMutation:
+		return c.CloudflareZoneAnalysisData.mutate(ctx, m)
 	case *EdgeOneZoneAnalysisDataMutation:
 		return c.EdgeOneZoneAnalysisData.mutate(ctx, m)
 	case *EsaSiteAnalysisDataMutation:
 		return c.EsaSiteAnalysisData.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent_stat: unknown mutation type %T", m)
+	}
+}
+
+// CloudflareZoneAnalysisDataClient is a client for the CloudflareZoneAnalysisData schema.
+type CloudflareZoneAnalysisDataClient struct {
+	config
+}
+
+// NewCloudflareZoneAnalysisDataClient returns a client for the CloudflareZoneAnalysisData from the given config.
+func NewCloudflareZoneAnalysisDataClient(c config) *CloudflareZoneAnalysisDataClient {
+	return &CloudflareZoneAnalysisDataClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `cloudflarezoneanalysisdata.Hooks(f(g(h())))`.
+func (c *CloudflareZoneAnalysisDataClient) Use(hooks ...Hook) {
+	c.hooks.CloudflareZoneAnalysisData = append(c.hooks.CloudflareZoneAnalysisData, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `cloudflarezoneanalysisdata.Intercept(f(g(h())))`.
+func (c *CloudflareZoneAnalysisDataClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CloudflareZoneAnalysisData = append(c.inters.CloudflareZoneAnalysisData, interceptors...)
+}
+
+// Create returns a builder for creating a CloudflareZoneAnalysisData entity.
+func (c *CloudflareZoneAnalysisDataClient) Create() *CloudflareZoneAnalysisDataCreate {
+	mutation := newCloudflareZoneAnalysisDataMutation(c.config, OpCreate)
+	return &CloudflareZoneAnalysisDataCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CloudflareZoneAnalysisData entities.
+func (c *CloudflareZoneAnalysisDataClient) CreateBulk(builders ...*CloudflareZoneAnalysisDataCreate) *CloudflareZoneAnalysisDataCreateBulk {
+	return &CloudflareZoneAnalysisDataCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CloudflareZoneAnalysisDataClient) MapCreateBulk(slice any, setFunc func(*CloudflareZoneAnalysisDataCreate, int)) *CloudflareZoneAnalysisDataCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CloudflareZoneAnalysisDataCreateBulk{err: fmt.Errorf("calling to CloudflareZoneAnalysisDataClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CloudflareZoneAnalysisDataCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CloudflareZoneAnalysisDataCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CloudflareZoneAnalysisData.
+func (c *CloudflareZoneAnalysisDataClient) Update() *CloudflareZoneAnalysisDataUpdate {
+	mutation := newCloudflareZoneAnalysisDataMutation(c.config, OpUpdate)
+	return &CloudflareZoneAnalysisDataUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CloudflareZoneAnalysisDataClient) UpdateOne(_m *CloudflareZoneAnalysisData) *CloudflareZoneAnalysisDataUpdateOne {
+	mutation := newCloudflareZoneAnalysisDataMutation(c.config, OpUpdateOne, withCloudflareZoneAnalysisData(_m))
+	return &CloudflareZoneAnalysisDataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CloudflareZoneAnalysisDataClient) UpdateOneID(id int64) *CloudflareZoneAnalysisDataUpdateOne {
+	mutation := newCloudflareZoneAnalysisDataMutation(c.config, OpUpdateOne, withCloudflareZoneAnalysisDataID(id))
+	return &CloudflareZoneAnalysisDataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CloudflareZoneAnalysisData.
+func (c *CloudflareZoneAnalysisDataClient) Delete() *CloudflareZoneAnalysisDataDelete {
+	mutation := newCloudflareZoneAnalysisDataMutation(c.config, OpDelete)
+	return &CloudflareZoneAnalysisDataDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CloudflareZoneAnalysisDataClient) DeleteOne(_m *CloudflareZoneAnalysisData) *CloudflareZoneAnalysisDataDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CloudflareZoneAnalysisDataClient) DeleteOneID(id int64) *CloudflareZoneAnalysisDataDeleteOne {
+	builder := c.Delete().Where(cloudflarezoneanalysisdata.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CloudflareZoneAnalysisDataDeleteOne{builder}
+}
+
+// Query returns a query builder for CloudflareZoneAnalysisData.
+func (c *CloudflareZoneAnalysisDataClient) Query() *CloudflareZoneAnalysisDataQuery {
+	return &CloudflareZoneAnalysisDataQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCloudflareZoneAnalysisData},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CloudflareZoneAnalysisData entity by its id.
+func (c *CloudflareZoneAnalysisDataClient) Get(ctx context.Context, id int64) (*CloudflareZoneAnalysisData, error) {
+	return c.Query().Where(cloudflarezoneanalysisdata.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CloudflareZoneAnalysisDataClient) GetX(ctx context.Context, id int64) *CloudflareZoneAnalysisData {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CloudflareZoneAnalysisDataClient) Hooks() []Hook {
+	return c.hooks.CloudflareZoneAnalysisData
+}
+
+// Interceptors returns the client interceptors.
+func (c *CloudflareZoneAnalysisDataClient) Interceptors() []Interceptor {
+	return c.inters.CloudflareZoneAnalysisData
+}
+
+func (c *CloudflareZoneAnalysisDataClient) mutate(ctx context.Context, m *CloudflareZoneAnalysisDataMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CloudflareZoneAnalysisDataCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CloudflareZoneAnalysisDataUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CloudflareZoneAnalysisDataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CloudflareZoneAnalysisDataDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent_stat: unknown CloudflareZoneAnalysisData mutation op: %q", m.Op())
 	}
 }
 
@@ -478,10 +621,12 @@ func (c *EsaSiteAnalysisDataClient) mutate(ctx context.Context, m *EsaSiteAnalys
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		EdgeOneZoneAnalysisData, EsaSiteAnalysisData []ent.Hook
+		CloudflareZoneAnalysisData, EdgeOneZoneAnalysisData,
+		EsaSiteAnalysisData []ent.Hook
 	}
 	inters struct {
-		EdgeOneZoneAnalysisData, EsaSiteAnalysisData []ent.Interceptor
+		CloudflareZoneAnalysisData, EdgeOneZoneAnalysisData,
+		EsaSiteAnalysisData []ent.Interceptor
 	}
 )
 

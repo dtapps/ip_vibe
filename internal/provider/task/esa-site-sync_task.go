@@ -39,7 +39,6 @@ func NewESASiteSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger
 		db,
 		logDb,
 		logger,
-		httpTransport,
 	)
 	return &ESASiteSyncTaskProvider{
 		db:            db,

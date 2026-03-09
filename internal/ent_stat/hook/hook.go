@@ -8,6 +8,18 @@ import (
 	"vibe_ip/internal/ent_stat"
 )
 
+// The CloudflareZoneAnalysisDataFunc type is an adapter to allow the use of ordinary
+// function as CloudflareZoneAnalysisData mutator.
+type CloudflareZoneAnalysisDataFunc func(context.Context, *ent_stat.CloudflareZoneAnalysisDataMutation) (ent_stat.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CloudflareZoneAnalysisDataFunc) Mutate(ctx context.Context, m ent_stat.Mutation) (ent_stat.Value, error) {
+	if mv, ok := m.(*ent_stat.CloudflareZoneAnalysisDataMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent_stat.CloudflareZoneAnalysisDataMutation", m)
+}
+
 // The EdgeOneZoneAnalysisDataFunc type is an adapter to allow the use of ordinary
 // function as EdgeOneZoneAnalysisData mutator.
 type EdgeOneZoneAnalysisDataFunc func(context.Context, *ent_stat.EdgeOneZoneAnalysisDataMutation) (ent_stat.Value, error)

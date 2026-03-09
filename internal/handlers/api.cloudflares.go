@@ -37,7 +37,6 @@ func GetCloudflareDomain(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用 获取Cloudflare隧道全部入站规则

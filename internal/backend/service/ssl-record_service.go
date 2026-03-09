@@ -48,7 +48,7 @@ type SSLRecordServiceImpl struct {
 }
 
 // NewSSLRecordService 创建 SSL 记录服务实例
-func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) SSLRecordService {
+func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) SSLRecordService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -58,13 +58,13 @@ func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Log
 		db,
 		logDb,
 		logger,
-		httpTransport,
+		serviceHttpTransport,
 	)
 	return &SSLRecordServiceImpl{
 		db:              db,
 		logDb:           logDb,
 		logger:          logger,
-		httpTransport:   httpTransport,
+		httpTransport:   serviceHttpTransport,
 		sslApplyHandler: sslApplyHandler,
 		debug:           debug,
 	}

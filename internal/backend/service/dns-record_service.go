@@ -45,7 +45,7 @@ type DNSRecordServiceImpl struct {
 }
 
 // NewDNSRecordService 创建 DNS 记录服务实例
-func NewDNSRecordService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) DNSRecordService {
+func NewDNSRecordService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) DNSRecordService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -56,13 +56,13 @@ func NewDNSRecordService(ctx context.Context, db *ent.Client, logDb *ent_log.Cli
 		db,
 		logDb,
 		logger,
-		httpTransport,
+		serviceHttpTransport,
 	)
 	return &DNSRecordServiceImpl{
 		db:             db,
 		logDb:          logDb,
 		logger:         logger,
-		httpTransport:  httpTransport,
+		httpTransport:  serviceHttpTransport,
 		dnsSyncHandler: dnsSyncHandler,
 		debug:          debug,
 	}

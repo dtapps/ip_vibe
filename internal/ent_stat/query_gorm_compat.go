@@ -4,11 +4,31 @@ package ent_stat
 
 import (
 	"context"
+	"vibe_ip/internal/ent_stat/cloudflarezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 
 	"entgo.io/ent/dialect/sql"
 )
+
+// Take 获取任意一条记录（不保证顺序），等价于 LIMIT 1。
+// 行为与 GORM 的 Take(ctx) 一致：不添加 ORDER，仅限制结果为 1 行。
+func (q *CloudflareZoneAnalysisDataQuery) Take(ctx context.Context) (*CloudflareZoneAnalysisData, error) {
+	return q.Limit(1).First(ctx)
+}
+
+// Last 获取最后一条记录，按主键降序排列（ORDER BY id DESC LIMIT 1）。
+// 行为与 GORM 的 Last(ctx) 一致。
+// 仅当实体启用了默认 ID（即未设置 ID(false)）时可用。
+func (q *CloudflareZoneAnalysisDataQuery) Last(ctx context.Context) (*CloudflareZoneAnalysisData, error) {
+	return q.Order(cloudflarezoneanalysisdata.ByID(sql.OrderDesc())).First(ctx)
+}
+
+// Find 获取所有匹配的记录。
+// 行为类比 GORM 的 Find(ctx, &dest)，此处直接返回 []*T。
+func (q *CloudflareZoneAnalysisDataQuery) Find(ctx context.Context) ([]*CloudflareZoneAnalysisData, error) {
+	return q.All(ctx)
+}
 
 // Take 获取任意一条记录（不保证顺序），等价于 LIMIT 1。
 // 行为与 GORM 的 Take(ctx) 一致：不添加 ORDER，仅限制结果为 1 行。

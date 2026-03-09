@@ -9,6 +9,37 @@ import (
 
 // WhereIf 动态地添加一个 WHERE 子句到查询构建器。
 // 如果 condition 为 true，则应用给定的 Where 列表
+func (q *CloudflareZoneAnalysisDataQuery) WhereIf(condition bool, p predicate.CloudflareZoneAnalysisData) *CloudflareZoneAnalysisDataQuery {
+	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p)
+	}
+	return q
+}
+
+// WhereIfs 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
+func (q *CloudflareZoneAnalysisDataQuery) WhereIfs(condition bool, p ...predicate.CloudflareZoneAnalysisData) *CloudflareZoneAnalysisDataQuery {
+	q.log("WhereIfs: condition=", condition, ", predicates=", fmt.Sprintf("%#v", p))
+	if condition {
+		q.Where(p...)
+	}
+	return q
+}
+
+// WhereIfFunc 动态地添加一个 WHERE 子句到查询构建器。
+// conditionFunc 决定是否应用过滤。
+// predicateFunc 只有在 conditionFunc 返回 true 时才会被调用。
+func (q *CloudflareZoneAnalysisDataQuery) WhereIfFunc(condition bool, predicateFunc func() predicate.CloudflareZoneAnalysisData) *CloudflareZoneAnalysisDataQuery {
+	q.log("WhereIfFunc: condition=", condition, ", hasPredicate=", predicateFunc != nil)
+	if condition {
+		q.Where(predicateFunc())
+	}
+	return q
+}
+
+// WhereIf 动态地添加一个 WHERE 子句到查询构建器。
+// 如果 condition 为 true，则应用给定的 Where 列表
 func (q *EdgeOneZoneAnalysisDataQuery) WhereIf(condition bool, p predicate.EdgeOneZoneAnalysisData) *EdgeOneZoneAnalysisDataQuery {
 	q.log("WhereIf: condition=", condition, ", predicate=", fmt.Sprintf("%#v", p))
 	if condition {

@@ -37,7 +37,6 @@ func NewEdgeOneZoneSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logge
 func NewEdgeOneZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *EdgeOneZoneSyncTaskProvider {
 	edgeOneZoneSync := syncs.NewEdgeOneZoneSync(
 		logger,
-		httpTransport,
 	)
 	return &EdgeOneZoneSyncTaskProvider{
 		db:              db,

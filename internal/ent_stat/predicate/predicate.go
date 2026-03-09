@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// CloudflareZoneAnalysisData is the predicate function for cloudflarezoneanalysisdata builders.
+type CloudflareZoneAnalysisData func(*sql.Selector)
+
 // EdgeOneZoneAnalysisData is the predicate function for edgeonezoneanalysisdata builders.
 type EdgeOneZoneAnalysisData func(*sql.Selector)
 

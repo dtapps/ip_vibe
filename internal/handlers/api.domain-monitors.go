@@ -37,7 +37,6 @@ func GetDomainMonitors(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -76,7 +75,6 @@ func GetDomainMonitorDetail(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -114,7 +112,6 @@ func CreateDomainMonitor(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -154,7 +151,6 @@ func UpdateDomainMonitor(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -194,7 +190,6 @@ func UpdateDomainMonitorActive(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -232,7 +227,6 @@ func BatchUpdateDomainMonitorActive(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -271,7 +265,6 @@ func DeleteDomainMonitor(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -309,7 +302,6 @@ func BatchDeleteDomainMonitor(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -348,7 +340,6 @@ func CheckDomainMonitor(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用

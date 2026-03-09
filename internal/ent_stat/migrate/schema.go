@@ -9,6 +9,55 @@ import (
 )
 
 var (
+	// CloudflareZoneAnalysisDataColumns holds the columns for the "cloudflare_zone_analysis_data" table.
+	CloudflareZoneAnalysisDataColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "EdgeOne 站点分析数据序号"},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
+		{Name: "cloudflare_zone_id", Type: field.TypeInt64, Comment: "关联 Cloudflare 站点序号"},
+		{Name: "date", Type: field.TypeTime, Comment: "分析日期"},
+		{Name: "query_count", Type: field.TypeInt64, Nullable: true, Comment: "查询计数"},
+		{Name: "uncached_count", Type: field.TypeInt64, Nullable: true, Comment: "未缓存查询计数"},
+		{Name: "stale_count", Type: field.TypeInt64, Nullable: true, Comment: "未缓存查询计数"},
+		{Name: "response_time_avg", Type: field.TypeFloat64, Nullable: true, Comment: "响应耗时平均值，单位：ms"},
+		{Name: "response_time_median", Type: field.TypeFloat64, Nullable: true, Comment: "响应耗时中位数，单位：ms"},
+		{Name: "response_time_90th", Type: field.TypeFloat64, Nullable: true, Comment: "响应耗时90分位数，单位：ms"},
+		{Name: "response_time_99th", Type: field.TypeFloat64, Nullable: true, Comment: "响应耗时99分位数，单位：ms"},
+	}
+	// CloudflareZoneAnalysisDataTable holds the schema information for the "cloudflare_zone_analysis_data" table.
+	CloudflareZoneAnalysisDataTable = &schema.Table{
+		Name:       "cloudflare_zone_analysis_data",
+		Comment:    "Cloudflare 站点分析数据",
+		Columns:    CloudflareZoneAnalysisDataColumns,
+		PrimaryKey: []*schema.Column{CloudflareZoneAnalysisDataColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cloudflarezoneanalysisdata_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneAnalysisDataColumns[1]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "cloudflarezoneanalysisdata_cloudflare_zone_id",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneAnalysisDataColumns[2]},
+			},
+			{
+				Name:    "cloudflarezoneanalysisdata_date",
+				Unique:  false,
+				Columns: []*schema.Column{CloudflareZoneAnalysisDataColumns[3]},
+				Annotation: &entsql.IndexAnnotation{
+					Desc: true,
+				},
+			},
+			{
+				Name:    "cloudflarezoneanalysisdata_cloudflare_zone_id_date",
+				Unique:  true,
+				Columns: []*schema.Column{CloudflareZoneAnalysisDataColumns[2], CloudflareZoneAnalysisDataColumns[3]},
+			},
+		},
+	}
 	// EdgeOneZoneAnalysisDataColumns holds the columns for the "edge_one_zone_analysis_data" table.
 	EdgeOneZoneAnalysisDataColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "EdgeOne 站点分析数据序号"},
@@ -115,12 +164,16 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		CloudflareZoneAnalysisDataTable,
 		EdgeOneZoneAnalysisDataTable,
 		EsaSiteAnalysisDataTable,
 	}
 )
 
 func init() {
+	CloudflareZoneAnalysisDataTable.Annotation = &entsql.Annotation{
+		Table: "cloudflare_zone_analysis_data",
+	}
 	EdgeOneZoneAnalysisDataTable.Annotation = &entsql.Annotation{
 		Table: "edge_one_zone_analysis_data",
 	}

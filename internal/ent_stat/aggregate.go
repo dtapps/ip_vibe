@@ -5,11 +5,880 @@ package ent_stat
 import (
 	"context"
 	"fmt"
+	"vibe_ip/internal/ent_stat/cloudflarezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 
 	"entgo.io/ent/dialect/sql"
 )
+
+// SumCloudflareZoneIDOrZero 计算字段 cloudflare_zone_id 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneAnalysisDataQuery) SumCloudflareZoneIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldCloudflareZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxCloudflareZoneIDOrZero 获取字段 cloudflare_zone_id 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneAnalysisDataQuery) MaxCloudflareZoneIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldCloudflareZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinCloudflareZoneIDOrZero 获取字段 cloudflare_zone_id 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneAnalysisDataQuery) MinCloudflareZoneIDOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldCloudflareZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgCloudflareZoneIDOrZero 计算字段 cloudflare_zone_id 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneAnalysisDataQuery) AvgCloudflareZoneIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldCloudflareZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevCloudflareZoneIDOrZero 计算字段 cloudflare_zone_id 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneAnalysisDataQuery) StddevCloudflareZoneIDOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldCloudflareZoneID))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumQueryCountOrZero 计算字段 query_count 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneAnalysisDataQuery) SumQueryCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldQueryCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxQueryCountOrZero 获取字段 query_count 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneAnalysisDataQuery) MaxQueryCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldQueryCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinQueryCountOrZero 获取字段 query_count 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneAnalysisDataQuery) MinQueryCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldQueryCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgQueryCountOrZero 计算字段 query_count 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneAnalysisDataQuery) AvgQueryCountOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldQueryCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevQueryCountOrZero 计算字段 query_count 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneAnalysisDataQuery) StddevQueryCountOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldQueryCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumUncachedCountOrZero 计算字段 uncached_count 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneAnalysisDataQuery) SumUncachedCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldUncachedCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxUncachedCountOrZero 获取字段 uncached_count 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneAnalysisDataQuery) MaxUncachedCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldUncachedCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinUncachedCountOrZero 获取字段 uncached_count 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneAnalysisDataQuery) MinUncachedCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldUncachedCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgUncachedCountOrZero 计算字段 uncached_count 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneAnalysisDataQuery) AvgUncachedCountOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldUncachedCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevUncachedCountOrZero 计算字段 uncached_count 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneAnalysisDataQuery) StddevUncachedCountOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldUncachedCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumStaleCountOrZero 计算字段 stale_count 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneAnalysisDataQuery) SumStaleCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldStaleCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MaxStaleCountOrZero 获取字段 stale_count 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneAnalysisDataQuery) MaxStaleCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldStaleCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// MinStaleCountOrZero 获取字段 stale_count 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneAnalysisDataQuery) MinStaleCountOrZero(ctx context.Context) (int64, error) {
+	var results []struct {
+		Val sql.NullInt64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldStaleCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Int64, nil
+}
+
+// AvgStaleCountOrZero 计算字段 stale_count 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneAnalysisDataQuery) AvgStaleCountOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldStaleCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevStaleCountOrZero 计算字段 stale_count 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneAnalysisDataQuery) StddevStaleCountOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldStaleCount))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumResponseTimeAvgOrZero 计算字段 response_time_avg 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneAnalysisDataQuery) SumResponseTimeAvgOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTimeAvg))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// MaxResponseTimeAvgOrZero 获取字段 response_time_avg 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneAnalysisDataQuery) MaxResponseTimeAvgOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTimeAvg))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// MinResponseTimeAvgOrZero 获取字段 response_time_avg 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneAnalysisDataQuery) MinResponseTimeAvgOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTimeAvg))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// AvgResponseTimeAvgOrZero 计算字段 response_time_avg 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneAnalysisDataQuery) AvgResponseTimeAvgOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTimeAvg))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevResponseTimeAvgOrZero 计算字段 response_time_avg 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneAnalysisDataQuery) StddevResponseTimeAvgOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTimeAvg))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumResponseTimeMedianOrZero 计算字段 response_time_median 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneAnalysisDataQuery) SumResponseTimeMedianOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTimeMedian))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// MaxResponseTimeMedianOrZero 获取字段 response_time_median 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneAnalysisDataQuery) MaxResponseTimeMedianOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTimeMedian))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// MinResponseTimeMedianOrZero 获取字段 response_time_median 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneAnalysisDataQuery) MinResponseTimeMedianOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTimeMedian))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// AvgResponseTimeMedianOrZero 计算字段 response_time_median 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneAnalysisDataQuery) AvgResponseTimeMedianOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTimeMedian))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevResponseTimeMedianOrZero 计算字段 response_time_median 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneAnalysisDataQuery) StddevResponseTimeMedianOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTimeMedian))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumResponseTime90thOrZero 计算字段 response_time_90th 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneAnalysisDataQuery) SumResponseTime90thOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTime90th))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// MaxResponseTime90thOrZero 获取字段 response_time_90th 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneAnalysisDataQuery) MaxResponseTime90thOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTime90th))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// MinResponseTime90thOrZero 获取字段 response_time_90th 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneAnalysisDataQuery) MinResponseTime90thOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTime90th))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// AvgResponseTime90thOrZero 计算字段 response_time_90th 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneAnalysisDataQuery) AvgResponseTime90thOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTime90th))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevResponseTime90thOrZero 计算字段 response_time_90th 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneAnalysisDataQuery) StddevResponseTime90thOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTime90th))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// SumResponseTime99thOrZero 计算字段 response_time_99th 的总和。
+// 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。
+// 返回值始终为非负或合法数值，便于在业务逻辑中直接使用。
+func (q *CloudflareZoneAnalysisDataQuery) SumResponseTime99thOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(SUM(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTime99th))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// MaxResponseTime99thOrZero 获取字段 response_time_99th 的最大值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：对于全为负数的整数字段，0 可能不是实际最大值；但此行为是为了避免返回无效状态。
+// 若需区分“无数据”与“最大值为0”，应使用原生 Max 方法（需自行处理 NULL）。
+func (q *CloudflareZoneAnalysisDataQuery) MaxResponseTime99thOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MAX(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTime99th))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// MinResponseTime99thOrZero 获取字段 response_time_99th 的最小值。
+// 如果结果为 NULL（例如表为空），则返回 0。
+// 注意：与 Max 类似，此方法在无数据时返回 0，可能掩盖真实业务语义。
+// 适用于默认值可安全设为 0 的场景。
+func (q *CloudflareZoneAnalysisDataQuery) MinResponseTime99thOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(MIN(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTime99th))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// AvgResponseTime99thOrZero 计算字段 response_time_99th 的平均值。
+// 如果结果为 NULL（例如表为空或无有效数值），则返回 0。
+// 返回类型固定为 float64，即使字段是整数类型。
+func (q *CloudflareZoneAnalysisDataQuery) AvgResponseTime99thOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(AVG(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTime99th))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// StddevResponseTime99thOrZero 计算字段 response_time_99th 的样本标准差（STDDEV）。
+// 如果结果为 NULL（例如数据不足或表为空），则返回 0。
+// ⚠️ 注意：STDDEV 函数在部分数据库（如 SQLite）中可能不支持，使用前请确认数据库兼容性。
+func (q *CloudflareZoneAnalysisDataQuery) StddevResponseTime99thOrZero(ctx context.Context) (float64, error) {
+	var results []struct {
+		Val sql.NullFloat64 `json:"val"`
+	}
+	err := q.Aggregate(
+		func(s *sql.Selector) string {
+			return fmt.Sprintf("COALESCE(STDDEV(%s), 0) AS val", s.C(cloudflarezoneanalysisdata.FieldResponseTime99th))
+		},
+	).Scan(ctx, &results)
+	if err != nil {
+		return 0, err
+	}
+	if len(results) == 0 || !results[0].Val.Valid {
+		return 0, nil
+	}
+	return results[0].Val.Float64, nil
+}
+
+// CountOrZero 返回满足当前查询条件的记录总数。
+// 如果查询执行失败（如数据库连接错误），则返回 0 和原始错误。
+// 适用于希望“失败时返回 0 而非中断流程”的场景（如监控指标、非关键统计）。
+// 若需严格错误处理，请使用原生 Count 方法。
+func (q *CloudflareZoneAnalysisDataQuery) CountOrZero(ctx context.Context) (int64, error) {
+	count, err := q.Count(ctx)
+	if err != nil {
+		return 0, err
+	}
+	return int64(count), nil
+}
 
 // SumEdgeoneZoneIDOrZero 计算字段 edgeone_zone_id 的总和。
 // 如果结果为 NULL（例如表为空或所有值为 NULL），则返回 0 而非错误。

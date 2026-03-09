@@ -34,7 +34,6 @@ func Webhook(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 查询全部通知

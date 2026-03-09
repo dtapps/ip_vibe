@@ -378,7 +378,6 @@ func GetDeviceStatus(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGrpcSlog,
-		global.GvaHttpLog,
 		grpc_server.Config{},
 	)
 

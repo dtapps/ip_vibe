@@ -42,7 +42,7 @@ type WebhookServiceImpl struct {
 }
 
 // NewWebhookService 创建通知服务实例
-func NewWebhookService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) WebhookService {
+func NewWebhookService(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) WebhookService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -53,13 +53,13 @@ func NewWebhookService(ctx context.Context, db *ent.Client, logDb *ent_log.Clien
 		db,
 		logDb,
 		logger,
-		httpTransport,
+		serviceHttpTransport,
 	)
 	return &WebhookServiceImpl{
 		db:                     db,
 		logDb:                  logDb,
 		logger:                 logger,
-		httpTransport:          httpTransport,
+		httpTransport:          serviceHttpTransport,
 		webhookSendSyncHandler: webhookSendSyncHandler,
 		debug:                  debug,
 	}

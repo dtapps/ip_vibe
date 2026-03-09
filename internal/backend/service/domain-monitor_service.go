@@ -44,7 +44,7 @@ type DomainMonitorServiceImpl struct {
 }
 
 // NewDomainMonitorService 创建域名监控服务实例
-func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) DomainMonitorService {
+func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger) DomainMonitorService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -54,14 +54,14 @@ func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, cron gocron.
 		db,
 		logDb,
 		logger,
-		httpTransport,
+		serviceHttpTransport,
 	)
 	return &DomainMonitorServiceImpl{
 		db:                   db,
 		logDb:                logDb,
 		cron:                 cron,
 		logger:               logger,
-		httpTransport:        httpTransport,
+		httpTransport:        serviceHttpTransport,
 		domainMonitorHandler: domainMonitorHandler,
 		debug:                debug,
 	}

@@ -14,6 +14,8 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// CloudflareZoneAnalysisData is the client for interacting with the CloudflareZoneAnalysisData builders.
+	CloudflareZoneAnalysisData *CloudflareZoneAnalysisDataClient
 	// EdgeOneZoneAnalysisData is the client for interacting with the EdgeOneZoneAnalysisData builders.
 	EdgeOneZoneAnalysisData *EdgeOneZoneAnalysisDataClient
 	// EsaSiteAnalysisData is the client for interacting with the EsaSiteAnalysisData builders.
@@ -149,6 +151,7 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.CloudflareZoneAnalysisData = NewCloudflareZoneAnalysisDataClient(tx.config)
 	tx.EdgeOneZoneAnalysisData = NewEdgeOneZoneAnalysisDataClient(tx.config)
 	tx.EsaSiteAnalysisData = NewEsaSiteAnalysisDataClient(tx.config)
 }
@@ -160,7 +163,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: EdgeOneZoneAnalysisData.QueryXXX(), the query will be executed
+// applies a query, for example: CloudflareZoneAnalysisData.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

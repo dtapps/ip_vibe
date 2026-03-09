@@ -103,7 +103,6 @@ func GetCloudflareTunnelIngress(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用 获取Cloudflare隧道全部入站规则
@@ -144,7 +143,6 @@ func GetCloudflareTunnelIngressDetail(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用 获取Cloudflare隧道入站规则详情
@@ -183,7 +181,6 @@ func CreateCloudflareTunnelIngress(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用 创建Cloudflare隧道入站规则
@@ -224,7 +221,6 @@ func UpdateCloudflareTunnelIngress(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用 更新Cloudflare隧道入站规则
@@ -265,7 +261,6 @@ func DeleteCloudflareTunnelIngress(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用 删除Cloudflare隧道入站规则

@@ -39,7 +39,6 @@ func DomainMonitor(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 查询全部域名监控
@@ -93,7 +92,6 @@ func DomainMonitorDetail(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 准备页面数据
@@ -176,7 +174,6 @@ func DomainMonitorHistory(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 准备页面数据

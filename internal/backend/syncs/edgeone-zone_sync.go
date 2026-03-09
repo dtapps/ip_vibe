@@ -33,14 +33,14 @@ type EdgeOneZoneSync struct {
 }
 
 // NewEdgeOneZoneSync 创建EdgeOne站点同步实例
-func NewEdgeOneZoneSync(logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *EdgeOneZoneSync {
+func NewEdgeOneZoneSync(logger *slog.Logger) *EdgeOneZoneSync {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
 	return &EdgeOneZoneSync{
 		logger:        logger,
-		httpTransport: httpTransport,
+		httpTransport: syncHttpTransport,
 		debug:         debug,
 	}
 }

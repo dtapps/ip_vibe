@@ -30,7 +30,7 @@ type CloudflareTunnelSync struct {
 }
 
 // NewCloudflareTunnelSync 创建Cloudflare隧道同步实例
-func NewCloudflareTunnelSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CloudflareTunnelSync {
+func NewCloudflareTunnelSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *CloudflareTunnelSync {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -39,7 +39,7 @@ func NewCloudflareTunnelSync(db *ent.Client, logDb *ent_log.Client, logger *slog
 		db:            db,
 		logDb:         logDb,
 		logger:        logger,
-		httpTransport: httpTransport,
+		httpTransport: syncHttpTransport,
 		debug:         debug,
 	}
 }

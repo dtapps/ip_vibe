@@ -57,7 +57,6 @@ func getDomainMonitorList(ctx context.Context, req *mcp.CallToolRequest, params 
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -78,7 +77,6 @@ func getDomainMonitorDetail(ctx context.Context, req *mcp.CallToolRequest, param
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -99,7 +97,6 @@ func createDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -120,7 +117,6 @@ func updateDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -141,7 +137,6 @@ func updateDomainMonitorActive(ctx context.Context, req *mcp.CallToolRequest, pa
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -162,7 +157,6 @@ func deleteDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用
@@ -183,7 +177,6 @@ func checkDomainMonitor(ctx context.Context, req *mcp.CallToolRequest, params *t
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 
 	// 调用

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"sync"
 	"time"
+	"vibe_ip/internal/ent_stat/cloudflarezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 	"vibe_ip/internal/ent_stat/predicate"
@@ -25,9 +26,1238 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeEdgeOneZoneAnalysisData = "EdgeOneZoneAnalysisData"
-	TypeEsaSiteAnalysisData     = "EsaSiteAnalysisData"
+	TypeCloudflareZoneAnalysisData = "CloudflareZoneAnalysisData"
+	TypeEdgeOneZoneAnalysisData    = "EdgeOneZoneAnalysisData"
+	TypeEsaSiteAnalysisData        = "EsaSiteAnalysisData"
 )
+
+// CloudflareZoneAnalysisDataMutation represents an operation that mutates the CloudflareZoneAnalysisData nodes in the graph.
+type CloudflareZoneAnalysisDataMutation struct {
+	config
+	op                      Op
+	typ                     string
+	id                      *int64
+	created_at              *time.Time
+	cloudflare_zone_id      *int64
+	addcloudflare_zone_id   *int64
+	date                    *time.Time
+	query_count             *int64
+	addquery_count          *int64
+	uncached_count          *int64
+	adduncached_count       *int64
+	stale_count             *int64
+	addstale_count          *int64
+	response_time_avg       *float64
+	addresponse_time_avg    *float64
+	response_time_median    *float64
+	addresponse_time_median *float64
+	response_time_90th      *float64
+	addresponse_time_90th   *float64
+	response_time_99th      *float64
+	addresponse_time_99th   *float64
+	clearedFields           map[string]struct{}
+	done                    bool
+	oldValue                func(context.Context) (*CloudflareZoneAnalysisData, error)
+	predicates              []predicate.CloudflareZoneAnalysisData
+}
+
+var _ ent.Mutation = (*CloudflareZoneAnalysisDataMutation)(nil)
+
+// cloudflarezoneanalysisdataOption allows management of the mutation configuration using functional options.
+type cloudflarezoneanalysisdataOption func(*CloudflareZoneAnalysisDataMutation)
+
+// newCloudflareZoneAnalysisDataMutation creates new mutation for the CloudflareZoneAnalysisData entity.
+func newCloudflareZoneAnalysisDataMutation(c config, op Op, opts ...cloudflarezoneanalysisdataOption) *CloudflareZoneAnalysisDataMutation {
+	m := &CloudflareZoneAnalysisDataMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCloudflareZoneAnalysisData,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCloudflareZoneAnalysisDataID sets the ID field of the mutation.
+func withCloudflareZoneAnalysisDataID(id int64) cloudflarezoneanalysisdataOption {
+	return func(m *CloudflareZoneAnalysisDataMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CloudflareZoneAnalysisData
+		)
+		m.oldValue = func(ctx context.Context) (*CloudflareZoneAnalysisData, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CloudflareZoneAnalysisData.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCloudflareZoneAnalysisData sets the old CloudflareZoneAnalysisData of the mutation.
+func withCloudflareZoneAnalysisData(node *CloudflareZoneAnalysisData) cloudflarezoneanalysisdataOption {
+	return func(m *CloudflareZoneAnalysisDataMutation) {
+		m.oldValue = func(context.Context) (*CloudflareZoneAnalysisData, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CloudflareZoneAnalysisDataMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CloudflareZoneAnalysisDataMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent_stat: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of CloudflareZoneAnalysisData entities.
+func (m *CloudflareZoneAnalysisDataMutation) SetID(id int64) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CloudflareZoneAnalysisDataMutation) ID() (id int64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CloudflareZoneAnalysisDataMutation) IDs(ctx context.Context) ([]int64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CloudflareZoneAnalysisData.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CloudflareZoneAnalysisDataMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CloudflareZoneAnalysisDataMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the CloudflareZoneAnalysisData entity.
+// If the CloudflareZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneAnalysisDataMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CloudflareZoneAnalysisDataMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetCloudflareZoneID sets the "cloudflare_zone_id" field.
+func (m *CloudflareZoneAnalysisDataMutation) SetCloudflareZoneID(i int64) {
+	m.cloudflare_zone_id = &i
+	m.addcloudflare_zone_id = nil
+}
+
+// CloudflareZoneID returns the value of the "cloudflare_zone_id" field in the mutation.
+func (m *CloudflareZoneAnalysisDataMutation) CloudflareZoneID() (r int64, exists bool) {
+	v := m.cloudflare_zone_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCloudflareZoneID returns the old "cloudflare_zone_id" field's value of the CloudflareZoneAnalysisData entity.
+// If the CloudflareZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneAnalysisDataMutation) OldCloudflareZoneID(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCloudflareZoneID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCloudflareZoneID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCloudflareZoneID: %w", err)
+	}
+	return oldValue.CloudflareZoneID, nil
+}
+
+// AddCloudflareZoneID adds i to the "cloudflare_zone_id" field.
+func (m *CloudflareZoneAnalysisDataMutation) AddCloudflareZoneID(i int64) {
+	if m.addcloudflare_zone_id != nil {
+		*m.addcloudflare_zone_id += i
+	} else {
+		m.addcloudflare_zone_id = &i
+	}
+}
+
+// AddedCloudflareZoneID returns the value that was added to the "cloudflare_zone_id" field in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) AddedCloudflareZoneID() (r int64, exists bool) {
+	v := m.addcloudflare_zone_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCloudflareZoneID resets all changes to the "cloudflare_zone_id" field.
+func (m *CloudflareZoneAnalysisDataMutation) ResetCloudflareZoneID() {
+	m.cloudflare_zone_id = nil
+	m.addcloudflare_zone_id = nil
+}
+
+// SetDate sets the "date" field.
+func (m *CloudflareZoneAnalysisDataMutation) SetDate(t time.Time) {
+	m.date = &t
+}
+
+// Date returns the value of the "date" field in the mutation.
+func (m *CloudflareZoneAnalysisDataMutation) Date() (r time.Time, exists bool) {
+	v := m.date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDate returns the old "date" field's value of the CloudflareZoneAnalysisData entity.
+// If the CloudflareZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneAnalysisDataMutation) OldDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDate: %w", err)
+	}
+	return oldValue.Date, nil
+}
+
+// ResetDate resets all changes to the "date" field.
+func (m *CloudflareZoneAnalysisDataMutation) ResetDate() {
+	m.date = nil
+}
+
+// SetQueryCount sets the "query_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) SetQueryCount(i int64) {
+	m.query_count = &i
+	m.addquery_count = nil
+}
+
+// QueryCount returns the value of the "query_count" field in the mutation.
+func (m *CloudflareZoneAnalysisDataMutation) QueryCount() (r int64, exists bool) {
+	v := m.query_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldQueryCount returns the old "query_count" field's value of the CloudflareZoneAnalysisData entity.
+// If the CloudflareZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneAnalysisDataMutation) OldQueryCount(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldQueryCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldQueryCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldQueryCount: %w", err)
+	}
+	return oldValue.QueryCount, nil
+}
+
+// AddQueryCount adds i to the "query_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) AddQueryCount(i int64) {
+	if m.addquery_count != nil {
+		*m.addquery_count += i
+	} else {
+		m.addquery_count = &i
+	}
+}
+
+// AddedQueryCount returns the value that was added to the "query_count" field in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) AddedQueryCount() (r int64, exists bool) {
+	v := m.addquery_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearQueryCount clears the value of the "query_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) ClearQueryCount() {
+	m.query_count = nil
+	m.addquery_count = nil
+	m.clearedFields[cloudflarezoneanalysisdata.FieldQueryCount] = struct{}{}
+}
+
+// QueryCountCleared returns if the "query_count" field was cleared in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) QueryCountCleared() bool {
+	_, ok := m.clearedFields[cloudflarezoneanalysisdata.FieldQueryCount]
+	return ok
+}
+
+// ResetQueryCount resets all changes to the "query_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) ResetQueryCount() {
+	m.query_count = nil
+	m.addquery_count = nil
+	delete(m.clearedFields, cloudflarezoneanalysisdata.FieldQueryCount)
+}
+
+// SetUncachedCount sets the "uncached_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) SetUncachedCount(i int64) {
+	m.uncached_count = &i
+	m.adduncached_count = nil
+}
+
+// UncachedCount returns the value of the "uncached_count" field in the mutation.
+func (m *CloudflareZoneAnalysisDataMutation) UncachedCount() (r int64, exists bool) {
+	v := m.uncached_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUncachedCount returns the old "uncached_count" field's value of the CloudflareZoneAnalysisData entity.
+// If the CloudflareZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneAnalysisDataMutation) OldUncachedCount(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUncachedCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUncachedCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUncachedCount: %w", err)
+	}
+	return oldValue.UncachedCount, nil
+}
+
+// AddUncachedCount adds i to the "uncached_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) AddUncachedCount(i int64) {
+	if m.adduncached_count != nil {
+		*m.adduncached_count += i
+	} else {
+		m.adduncached_count = &i
+	}
+}
+
+// AddedUncachedCount returns the value that was added to the "uncached_count" field in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) AddedUncachedCount() (r int64, exists bool) {
+	v := m.adduncached_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUncachedCount clears the value of the "uncached_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) ClearUncachedCount() {
+	m.uncached_count = nil
+	m.adduncached_count = nil
+	m.clearedFields[cloudflarezoneanalysisdata.FieldUncachedCount] = struct{}{}
+}
+
+// UncachedCountCleared returns if the "uncached_count" field was cleared in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) UncachedCountCleared() bool {
+	_, ok := m.clearedFields[cloudflarezoneanalysisdata.FieldUncachedCount]
+	return ok
+}
+
+// ResetUncachedCount resets all changes to the "uncached_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) ResetUncachedCount() {
+	m.uncached_count = nil
+	m.adduncached_count = nil
+	delete(m.clearedFields, cloudflarezoneanalysisdata.FieldUncachedCount)
+}
+
+// SetStaleCount sets the "stale_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) SetStaleCount(i int64) {
+	m.stale_count = &i
+	m.addstale_count = nil
+}
+
+// StaleCount returns the value of the "stale_count" field in the mutation.
+func (m *CloudflareZoneAnalysisDataMutation) StaleCount() (r int64, exists bool) {
+	v := m.stale_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStaleCount returns the old "stale_count" field's value of the CloudflareZoneAnalysisData entity.
+// If the CloudflareZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneAnalysisDataMutation) OldStaleCount(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStaleCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStaleCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStaleCount: %w", err)
+	}
+	return oldValue.StaleCount, nil
+}
+
+// AddStaleCount adds i to the "stale_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) AddStaleCount(i int64) {
+	if m.addstale_count != nil {
+		*m.addstale_count += i
+	} else {
+		m.addstale_count = &i
+	}
+}
+
+// AddedStaleCount returns the value that was added to the "stale_count" field in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) AddedStaleCount() (r int64, exists bool) {
+	v := m.addstale_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearStaleCount clears the value of the "stale_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) ClearStaleCount() {
+	m.stale_count = nil
+	m.addstale_count = nil
+	m.clearedFields[cloudflarezoneanalysisdata.FieldStaleCount] = struct{}{}
+}
+
+// StaleCountCleared returns if the "stale_count" field was cleared in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) StaleCountCleared() bool {
+	_, ok := m.clearedFields[cloudflarezoneanalysisdata.FieldStaleCount]
+	return ok
+}
+
+// ResetStaleCount resets all changes to the "stale_count" field.
+func (m *CloudflareZoneAnalysisDataMutation) ResetStaleCount() {
+	m.stale_count = nil
+	m.addstale_count = nil
+	delete(m.clearedFields, cloudflarezoneanalysisdata.FieldStaleCount)
+}
+
+// SetResponseTimeAvg sets the "response_time_avg" field.
+func (m *CloudflareZoneAnalysisDataMutation) SetResponseTimeAvg(f float64) {
+	m.response_time_avg = &f
+	m.addresponse_time_avg = nil
+}
+
+// ResponseTimeAvg returns the value of the "response_time_avg" field in the mutation.
+func (m *CloudflareZoneAnalysisDataMutation) ResponseTimeAvg() (r float64, exists bool) {
+	v := m.response_time_avg
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResponseTimeAvg returns the old "response_time_avg" field's value of the CloudflareZoneAnalysisData entity.
+// If the CloudflareZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneAnalysisDataMutation) OldResponseTimeAvg(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResponseTimeAvg is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResponseTimeAvg requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResponseTimeAvg: %w", err)
+	}
+	return oldValue.ResponseTimeAvg, nil
+}
+
+// AddResponseTimeAvg adds f to the "response_time_avg" field.
+func (m *CloudflareZoneAnalysisDataMutation) AddResponseTimeAvg(f float64) {
+	if m.addresponse_time_avg != nil {
+		*m.addresponse_time_avg += f
+	} else {
+		m.addresponse_time_avg = &f
+	}
+}
+
+// AddedResponseTimeAvg returns the value that was added to the "response_time_avg" field in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) AddedResponseTimeAvg() (r float64, exists bool) {
+	v := m.addresponse_time_avg
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearResponseTimeAvg clears the value of the "response_time_avg" field.
+func (m *CloudflareZoneAnalysisDataMutation) ClearResponseTimeAvg() {
+	m.response_time_avg = nil
+	m.addresponse_time_avg = nil
+	m.clearedFields[cloudflarezoneanalysisdata.FieldResponseTimeAvg] = struct{}{}
+}
+
+// ResponseTimeAvgCleared returns if the "response_time_avg" field was cleared in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) ResponseTimeAvgCleared() bool {
+	_, ok := m.clearedFields[cloudflarezoneanalysisdata.FieldResponseTimeAvg]
+	return ok
+}
+
+// ResetResponseTimeAvg resets all changes to the "response_time_avg" field.
+func (m *CloudflareZoneAnalysisDataMutation) ResetResponseTimeAvg() {
+	m.response_time_avg = nil
+	m.addresponse_time_avg = nil
+	delete(m.clearedFields, cloudflarezoneanalysisdata.FieldResponseTimeAvg)
+}
+
+// SetResponseTimeMedian sets the "response_time_median" field.
+func (m *CloudflareZoneAnalysisDataMutation) SetResponseTimeMedian(f float64) {
+	m.response_time_median = &f
+	m.addresponse_time_median = nil
+}
+
+// ResponseTimeMedian returns the value of the "response_time_median" field in the mutation.
+func (m *CloudflareZoneAnalysisDataMutation) ResponseTimeMedian() (r float64, exists bool) {
+	v := m.response_time_median
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResponseTimeMedian returns the old "response_time_median" field's value of the CloudflareZoneAnalysisData entity.
+// If the CloudflareZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneAnalysisDataMutation) OldResponseTimeMedian(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResponseTimeMedian is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResponseTimeMedian requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResponseTimeMedian: %w", err)
+	}
+	return oldValue.ResponseTimeMedian, nil
+}
+
+// AddResponseTimeMedian adds f to the "response_time_median" field.
+func (m *CloudflareZoneAnalysisDataMutation) AddResponseTimeMedian(f float64) {
+	if m.addresponse_time_median != nil {
+		*m.addresponse_time_median += f
+	} else {
+		m.addresponse_time_median = &f
+	}
+}
+
+// AddedResponseTimeMedian returns the value that was added to the "response_time_median" field in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) AddedResponseTimeMedian() (r float64, exists bool) {
+	v := m.addresponse_time_median
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearResponseTimeMedian clears the value of the "response_time_median" field.
+func (m *CloudflareZoneAnalysisDataMutation) ClearResponseTimeMedian() {
+	m.response_time_median = nil
+	m.addresponse_time_median = nil
+	m.clearedFields[cloudflarezoneanalysisdata.FieldResponseTimeMedian] = struct{}{}
+}
+
+// ResponseTimeMedianCleared returns if the "response_time_median" field was cleared in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) ResponseTimeMedianCleared() bool {
+	_, ok := m.clearedFields[cloudflarezoneanalysisdata.FieldResponseTimeMedian]
+	return ok
+}
+
+// ResetResponseTimeMedian resets all changes to the "response_time_median" field.
+func (m *CloudflareZoneAnalysisDataMutation) ResetResponseTimeMedian() {
+	m.response_time_median = nil
+	m.addresponse_time_median = nil
+	delete(m.clearedFields, cloudflarezoneanalysisdata.FieldResponseTimeMedian)
+}
+
+// SetResponseTime90th sets the "response_time_90th" field.
+func (m *CloudflareZoneAnalysisDataMutation) SetResponseTime90th(f float64) {
+	m.response_time_90th = &f
+	m.addresponse_time_90th = nil
+}
+
+// ResponseTime90th returns the value of the "response_time_90th" field in the mutation.
+func (m *CloudflareZoneAnalysisDataMutation) ResponseTime90th() (r float64, exists bool) {
+	v := m.response_time_90th
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResponseTime90th returns the old "response_time_90th" field's value of the CloudflareZoneAnalysisData entity.
+// If the CloudflareZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneAnalysisDataMutation) OldResponseTime90th(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResponseTime90th is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResponseTime90th requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResponseTime90th: %w", err)
+	}
+	return oldValue.ResponseTime90th, nil
+}
+
+// AddResponseTime90th adds f to the "response_time_90th" field.
+func (m *CloudflareZoneAnalysisDataMutation) AddResponseTime90th(f float64) {
+	if m.addresponse_time_90th != nil {
+		*m.addresponse_time_90th += f
+	} else {
+		m.addresponse_time_90th = &f
+	}
+}
+
+// AddedResponseTime90th returns the value that was added to the "response_time_90th" field in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) AddedResponseTime90th() (r float64, exists bool) {
+	v := m.addresponse_time_90th
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearResponseTime90th clears the value of the "response_time_90th" field.
+func (m *CloudflareZoneAnalysisDataMutation) ClearResponseTime90th() {
+	m.response_time_90th = nil
+	m.addresponse_time_90th = nil
+	m.clearedFields[cloudflarezoneanalysisdata.FieldResponseTime90th] = struct{}{}
+}
+
+// ResponseTime90thCleared returns if the "response_time_90th" field was cleared in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) ResponseTime90thCleared() bool {
+	_, ok := m.clearedFields[cloudflarezoneanalysisdata.FieldResponseTime90th]
+	return ok
+}
+
+// ResetResponseTime90th resets all changes to the "response_time_90th" field.
+func (m *CloudflareZoneAnalysisDataMutation) ResetResponseTime90th() {
+	m.response_time_90th = nil
+	m.addresponse_time_90th = nil
+	delete(m.clearedFields, cloudflarezoneanalysisdata.FieldResponseTime90th)
+}
+
+// SetResponseTime99th sets the "response_time_99th" field.
+func (m *CloudflareZoneAnalysisDataMutation) SetResponseTime99th(f float64) {
+	m.response_time_99th = &f
+	m.addresponse_time_99th = nil
+}
+
+// ResponseTime99th returns the value of the "response_time_99th" field in the mutation.
+func (m *CloudflareZoneAnalysisDataMutation) ResponseTime99th() (r float64, exists bool) {
+	v := m.response_time_99th
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResponseTime99th returns the old "response_time_99th" field's value of the CloudflareZoneAnalysisData entity.
+// If the CloudflareZoneAnalysisData object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CloudflareZoneAnalysisDataMutation) OldResponseTime99th(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResponseTime99th is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResponseTime99th requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResponseTime99th: %w", err)
+	}
+	return oldValue.ResponseTime99th, nil
+}
+
+// AddResponseTime99th adds f to the "response_time_99th" field.
+func (m *CloudflareZoneAnalysisDataMutation) AddResponseTime99th(f float64) {
+	if m.addresponse_time_99th != nil {
+		*m.addresponse_time_99th += f
+	} else {
+		m.addresponse_time_99th = &f
+	}
+}
+
+// AddedResponseTime99th returns the value that was added to the "response_time_99th" field in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) AddedResponseTime99th() (r float64, exists bool) {
+	v := m.addresponse_time_99th
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearResponseTime99th clears the value of the "response_time_99th" field.
+func (m *CloudflareZoneAnalysisDataMutation) ClearResponseTime99th() {
+	m.response_time_99th = nil
+	m.addresponse_time_99th = nil
+	m.clearedFields[cloudflarezoneanalysisdata.FieldResponseTime99th] = struct{}{}
+}
+
+// ResponseTime99thCleared returns if the "response_time_99th" field was cleared in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) ResponseTime99thCleared() bool {
+	_, ok := m.clearedFields[cloudflarezoneanalysisdata.FieldResponseTime99th]
+	return ok
+}
+
+// ResetResponseTime99th resets all changes to the "response_time_99th" field.
+func (m *CloudflareZoneAnalysisDataMutation) ResetResponseTime99th() {
+	m.response_time_99th = nil
+	m.addresponse_time_99th = nil
+	delete(m.clearedFields, cloudflarezoneanalysisdata.FieldResponseTime99th)
+}
+
+// Where appends a list predicates to the CloudflareZoneAnalysisDataMutation builder.
+func (m *CloudflareZoneAnalysisDataMutation) Where(ps ...predicate.CloudflareZoneAnalysisData) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CloudflareZoneAnalysisDataMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CloudflareZoneAnalysisDataMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CloudflareZoneAnalysisData, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CloudflareZoneAnalysisDataMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CloudflareZoneAnalysisDataMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CloudflareZoneAnalysisData).
+func (m *CloudflareZoneAnalysisDataMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CloudflareZoneAnalysisDataMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.created_at != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldCreatedAt)
+	}
+	if m.cloudflare_zone_id != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldCloudflareZoneID)
+	}
+	if m.date != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldDate)
+	}
+	if m.query_count != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldQueryCount)
+	}
+	if m.uncached_count != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldUncachedCount)
+	}
+	if m.stale_count != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldStaleCount)
+	}
+	if m.response_time_avg != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTimeAvg)
+	}
+	if m.response_time_median != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTimeMedian)
+	}
+	if m.response_time_90th != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTime90th)
+	}
+	if m.response_time_99th != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTime99th)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CloudflareZoneAnalysisDataMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case cloudflarezoneanalysisdata.FieldCreatedAt:
+		return m.CreatedAt()
+	case cloudflarezoneanalysisdata.FieldCloudflareZoneID:
+		return m.CloudflareZoneID()
+	case cloudflarezoneanalysisdata.FieldDate:
+		return m.Date()
+	case cloudflarezoneanalysisdata.FieldQueryCount:
+		return m.QueryCount()
+	case cloudflarezoneanalysisdata.FieldUncachedCount:
+		return m.UncachedCount()
+	case cloudflarezoneanalysisdata.FieldStaleCount:
+		return m.StaleCount()
+	case cloudflarezoneanalysisdata.FieldResponseTimeAvg:
+		return m.ResponseTimeAvg()
+	case cloudflarezoneanalysisdata.FieldResponseTimeMedian:
+		return m.ResponseTimeMedian()
+	case cloudflarezoneanalysisdata.FieldResponseTime90th:
+		return m.ResponseTime90th()
+	case cloudflarezoneanalysisdata.FieldResponseTime99th:
+		return m.ResponseTime99th()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CloudflareZoneAnalysisDataMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case cloudflarezoneanalysisdata.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case cloudflarezoneanalysisdata.FieldCloudflareZoneID:
+		return m.OldCloudflareZoneID(ctx)
+	case cloudflarezoneanalysisdata.FieldDate:
+		return m.OldDate(ctx)
+	case cloudflarezoneanalysisdata.FieldQueryCount:
+		return m.OldQueryCount(ctx)
+	case cloudflarezoneanalysisdata.FieldUncachedCount:
+		return m.OldUncachedCount(ctx)
+	case cloudflarezoneanalysisdata.FieldStaleCount:
+		return m.OldStaleCount(ctx)
+	case cloudflarezoneanalysisdata.FieldResponseTimeAvg:
+		return m.OldResponseTimeAvg(ctx)
+	case cloudflarezoneanalysisdata.FieldResponseTimeMedian:
+		return m.OldResponseTimeMedian(ctx)
+	case cloudflarezoneanalysisdata.FieldResponseTime90th:
+		return m.OldResponseTime90th(ctx)
+	case cloudflarezoneanalysisdata.FieldResponseTime99th:
+		return m.OldResponseTime99th(ctx)
+	}
+	return nil, fmt.Errorf("unknown CloudflareZoneAnalysisData field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CloudflareZoneAnalysisDataMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case cloudflarezoneanalysisdata.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldCloudflareZoneID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCloudflareZoneID(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDate(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldQueryCount:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetQueryCount(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldUncachedCount:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUncachedCount(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldStaleCount:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStaleCount(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTimeAvg:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResponseTimeAvg(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTimeMedian:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResponseTimeMedian(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTime90th:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResponseTime90th(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTime99th:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResponseTime99th(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZoneAnalysisData field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) AddedFields() []string {
+	var fields []string
+	if m.addcloudflare_zone_id != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldCloudflareZoneID)
+	}
+	if m.addquery_count != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldQueryCount)
+	}
+	if m.adduncached_count != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldUncachedCount)
+	}
+	if m.addstale_count != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldStaleCount)
+	}
+	if m.addresponse_time_avg != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTimeAvg)
+	}
+	if m.addresponse_time_median != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTimeMedian)
+	}
+	if m.addresponse_time_90th != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTime90th)
+	}
+	if m.addresponse_time_99th != nil {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTime99th)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CloudflareZoneAnalysisDataMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case cloudflarezoneanalysisdata.FieldCloudflareZoneID:
+		return m.AddedCloudflareZoneID()
+	case cloudflarezoneanalysisdata.FieldQueryCount:
+		return m.AddedQueryCount()
+	case cloudflarezoneanalysisdata.FieldUncachedCount:
+		return m.AddedUncachedCount()
+	case cloudflarezoneanalysisdata.FieldStaleCount:
+		return m.AddedStaleCount()
+	case cloudflarezoneanalysisdata.FieldResponseTimeAvg:
+		return m.AddedResponseTimeAvg()
+	case cloudflarezoneanalysisdata.FieldResponseTimeMedian:
+		return m.AddedResponseTimeMedian()
+	case cloudflarezoneanalysisdata.FieldResponseTime90th:
+		return m.AddedResponseTime90th()
+	case cloudflarezoneanalysisdata.FieldResponseTime99th:
+		return m.AddedResponseTime99th()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CloudflareZoneAnalysisDataMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case cloudflarezoneanalysisdata.FieldCloudflareZoneID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCloudflareZoneID(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldQueryCount:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddQueryCount(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldUncachedCount:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUncachedCount(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldStaleCount:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStaleCount(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTimeAvg:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddResponseTimeAvg(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTimeMedian:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddResponseTimeMedian(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTime90th:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddResponseTime90th(v)
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTime99th:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddResponseTime99th(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZoneAnalysisData numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CloudflareZoneAnalysisDataMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(cloudflarezoneanalysisdata.FieldQueryCount) {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldQueryCount)
+	}
+	if m.FieldCleared(cloudflarezoneanalysisdata.FieldUncachedCount) {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldUncachedCount)
+	}
+	if m.FieldCleared(cloudflarezoneanalysisdata.FieldStaleCount) {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldStaleCount)
+	}
+	if m.FieldCleared(cloudflarezoneanalysisdata.FieldResponseTimeAvg) {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTimeAvg)
+	}
+	if m.FieldCleared(cloudflarezoneanalysisdata.FieldResponseTimeMedian) {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTimeMedian)
+	}
+	if m.FieldCleared(cloudflarezoneanalysisdata.FieldResponseTime90th) {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTime90th)
+	}
+	if m.FieldCleared(cloudflarezoneanalysisdata.FieldResponseTime99th) {
+		fields = append(fields, cloudflarezoneanalysisdata.FieldResponseTime99th)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CloudflareZoneAnalysisDataMutation) ClearField(name string) error {
+	switch name {
+	case cloudflarezoneanalysisdata.FieldQueryCount:
+		m.ClearQueryCount()
+		return nil
+	case cloudflarezoneanalysisdata.FieldUncachedCount:
+		m.ClearUncachedCount()
+		return nil
+	case cloudflarezoneanalysisdata.FieldStaleCount:
+		m.ClearStaleCount()
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTimeAvg:
+		m.ClearResponseTimeAvg()
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTimeMedian:
+		m.ClearResponseTimeMedian()
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTime90th:
+		m.ClearResponseTime90th()
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTime99th:
+		m.ClearResponseTime99th()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZoneAnalysisData nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CloudflareZoneAnalysisDataMutation) ResetField(name string) error {
+	switch name {
+	case cloudflarezoneanalysisdata.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case cloudflarezoneanalysisdata.FieldCloudflareZoneID:
+		m.ResetCloudflareZoneID()
+		return nil
+	case cloudflarezoneanalysisdata.FieldDate:
+		m.ResetDate()
+		return nil
+	case cloudflarezoneanalysisdata.FieldQueryCount:
+		m.ResetQueryCount()
+		return nil
+	case cloudflarezoneanalysisdata.FieldUncachedCount:
+		m.ResetUncachedCount()
+		return nil
+	case cloudflarezoneanalysisdata.FieldStaleCount:
+		m.ResetStaleCount()
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTimeAvg:
+		m.ResetResponseTimeAvg()
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTimeMedian:
+		m.ResetResponseTimeMedian()
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTime90th:
+		m.ResetResponseTime90th()
+		return nil
+	case cloudflarezoneanalysisdata.FieldResponseTime99th:
+		m.ResetResponseTime99th()
+		return nil
+	}
+	return fmt.Errorf("unknown CloudflareZoneAnalysisData field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CloudflareZoneAnalysisDataMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CloudflareZoneAnalysisDataMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown CloudflareZoneAnalysisData unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CloudflareZoneAnalysisDataMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown CloudflareZoneAnalysisData edge %s", name)
+}
 
 // EdgeOneZoneAnalysisDataMutation represents an operation that mutates the EdgeOneZoneAnalysisData nodes in the graph.
 type EdgeOneZoneAnalysisDataMutation struct {

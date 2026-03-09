@@ -4,6 +4,7 @@ package ent_stat
 
 import (
 	"time"
+	"vibe_ip/internal/ent_stat/cloudflarezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/edgeonezoneanalysisdata"
 	"vibe_ip/internal/ent_stat/esasiteanalysisdata"
 	"vibe_ip/internal/ent_stat/schema"
@@ -13,6 +14,23 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	cloudflarezoneanalysisdataMixin := schema.CloudflareZoneAnalysisData{}.Mixin()
+	cloudflarezoneanalysisdataMixinFields0 := cloudflarezoneanalysisdataMixin[0].Fields()
+	_ = cloudflarezoneanalysisdataMixinFields0
+	cloudflarezoneanalysisdataFields := schema.CloudflareZoneAnalysisData{}.Fields()
+	_ = cloudflarezoneanalysisdataFields
+	// cloudflarezoneanalysisdataDescCreatedAt is the schema descriptor for created_at field.
+	cloudflarezoneanalysisdataDescCreatedAt := cloudflarezoneanalysisdataMixinFields0[0].Descriptor()
+	// cloudflarezoneanalysisdata.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cloudflarezoneanalysisdata.DefaultCreatedAt = cloudflarezoneanalysisdataDescCreatedAt.Default.(func() time.Time)
+	// cloudflarezoneanalysisdataDescCloudflareZoneID is the schema descriptor for cloudflare_zone_id field.
+	cloudflarezoneanalysisdataDescCloudflareZoneID := cloudflarezoneanalysisdataFields[1].Descriptor()
+	// cloudflarezoneanalysisdata.CloudflareZoneIDValidator is a validator for the "cloudflare_zone_id" field. It is called by the builders before save.
+	cloudflarezoneanalysisdata.CloudflareZoneIDValidator = cloudflarezoneanalysisdataDescCloudflareZoneID.Validators[0].(func(int64) error)
+	// cloudflarezoneanalysisdataDescID is the schema descriptor for id field.
+	cloudflarezoneanalysisdataDescID := cloudflarezoneanalysisdataFields[0].Descriptor()
+	// cloudflarezoneanalysisdata.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	cloudflarezoneanalysisdata.IDValidator = cloudflarezoneanalysisdataDescID.Validators[0].(func(int64) error)
 	edgeonezoneanalysisdataMixin := schema.EdgeOneZoneAnalysisData{}.Mixin()
 	edgeonezoneanalysisdataMixinFields0 := edgeonezoneanalysisdataMixin[0].Fields()
 	_ = edgeonezoneanalysisdataMixinFields0

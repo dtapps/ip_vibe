@@ -38,7 +38,7 @@ type CloudflareTunnelServiceImpl struct {
 }
 
 // NewCloudflareTunnelService 创建Cloudflare隧道服务实例
-func NewCloudflareTunnelService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) CloudflareTunnelService {
+func NewCloudflareTunnelService(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) CloudflareTunnelService {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -47,13 +47,12 @@ func NewCloudflareTunnelService(db *ent.Client, logDb *ent_log.Client, logger *s
 		db,
 		logDb,
 		logger,
-		httpTransport,
 	)
 	return &CloudflareTunnelServiceImpl{
 		db:                   db,
 		logDb:                logDb,
 		logger:               logger,
-		httpTransport:        httpTransport,
+		httpTransport:        serviceHttpTransport,
 		cloudflareTunnelSync: cloudflareTunnelSync,
 		debug:                debug,
 	}

@@ -29,7 +29,7 @@ type CloudflareZoneSync struct {
 }
 
 // NewCloudflareZoneSync 创建Cloudflare站点同步实例
-func NewCloudflareZoneSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CloudflareZoneSync {
+func NewCloudflareZoneSync(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *CloudflareZoneSync {
 	debug := false
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
@@ -38,7 +38,7 @@ func NewCloudflareZoneSync(db *ent.Client, logDb *ent_log.Client, logger *slog.L
 		db:            db,
 		logDb:         logDb,
 		logger:        logger,
-		httpTransport: httpTransport,
+		httpTransport: syncHttpTransport,
 		debug:         debug,
 	}
 }
