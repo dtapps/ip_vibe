@@ -24,21 +24,21 @@ type CloudflareZoneAnalysisData struct {
 	CloudflareZoneID int64 `json:"cloudflare_zone_id,omitempty"`
 	// 分析日期
 	Date time.Time `json:"date,omitempty"`
-	// 查询计数
-	QueryCount int64 `json:"query_count,omitempty"`
-	// 未缓存查询计数
-	UncachedCount int64 `json:"uncached_count,omitempty"`
-	// 未缓存查询计数
-	StaleCount int64 `json:"stale_count,omitempty"`
-	// 响应耗时平均值，单位：ms
-	ResponseTimeAvg float64 `json:"response_time_avg,omitempty"`
-	// 响应耗时中位数，单位：ms
-	ResponseTimeMedian float64 `json:"response_time_median,omitempty"`
-	// 响应耗时90分位数，单位：ms
-	ResponseTime90th float64 `json:"response_time_90th,omitempty"`
-	// 响应耗时99分位数，单位：ms
-	ResponseTime99th float64 `json:"response_time_99th,omitempty"`
-	selectValues     sql.SelectValues
+	// 请求总数（单位：次）
+	Requests int64 `json:"requests,omitempty"`
+	// 已缓存请求数（单位：次）
+	CachedRequests int64 `json:"cached_requests,omitempty"`
+	// 未缓存请求数（单位：次）
+	UncachedRequests int64 `json:"uncached_requests,omitempty"`
+	// 总带宽（单位：Bytes）
+	Bandwidth int64 `json:"bandwidth,omitempty"`
+	// 已缓存带宽（单位：Bytes）
+	CachedBandwidth int64 `json:"cached_bandwidth,omitempty"`
+	// 未缓存带宽（单位：Bytes）
+	UncachedBandwidth int64 `json:"uncached_bandwidth,omitempty"`
+	// 唯一访问者数量（单位：人）
+	Uniques      int64 `json:"uniques,omitempty"`
+	selectValues sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -46,9 +46,7 @@ func (*CloudflareZoneAnalysisData) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case cloudflarezoneanalysisdata.FieldResponseTimeAvg, cloudflarezoneanalysisdata.FieldResponseTimeMedian, cloudflarezoneanalysisdata.FieldResponseTime90th, cloudflarezoneanalysisdata.FieldResponseTime99th:
-			values[i] = new(sql.NullFloat64)
-		case cloudflarezoneanalysisdata.FieldID, cloudflarezoneanalysisdata.FieldCloudflareZoneID, cloudflarezoneanalysisdata.FieldQueryCount, cloudflarezoneanalysisdata.FieldUncachedCount, cloudflarezoneanalysisdata.FieldStaleCount:
+		case cloudflarezoneanalysisdata.FieldID, cloudflarezoneanalysisdata.FieldCloudflareZoneID, cloudflarezoneanalysisdata.FieldRequests, cloudflarezoneanalysisdata.FieldCachedRequests, cloudflarezoneanalysisdata.FieldUncachedRequests, cloudflarezoneanalysisdata.FieldBandwidth, cloudflarezoneanalysisdata.FieldCachedBandwidth, cloudflarezoneanalysisdata.FieldUncachedBandwidth, cloudflarezoneanalysisdata.FieldUniques:
 			values[i] = new(sql.NullInt64)
 		case cloudflarezoneanalysisdata.FieldCreatedAt, cloudflarezoneanalysisdata.FieldDate:
 			values[i] = new(sql.NullTime)
@@ -91,47 +89,47 @@ func (_m *CloudflareZoneAnalysisData) assignValues(columns []string, values []an
 			} else if value.Valid {
 				_m.Date = value.Time
 			}
-		case cloudflarezoneanalysisdata.FieldQueryCount:
+		case cloudflarezoneanalysisdata.FieldRequests:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field query_count", values[i])
+				return fmt.Errorf("unexpected type %T for field requests", values[i])
 			} else if value.Valid {
-				_m.QueryCount = value.Int64
+				_m.Requests = value.Int64
 			}
-		case cloudflarezoneanalysisdata.FieldUncachedCount:
+		case cloudflarezoneanalysisdata.FieldCachedRequests:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field uncached_count", values[i])
+				return fmt.Errorf("unexpected type %T for field cached_requests", values[i])
 			} else if value.Valid {
-				_m.UncachedCount = value.Int64
+				_m.CachedRequests = value.Int64
 			}
-		case cloudflarezoneanalysisdata.FieldStaleCount:
+		case cloudflarezoneanalysisdata.FieldUncachedRequests:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field stale_count", values[i])
+				return fmt.Errorf("unexpected type %T for field uncached_requests", values[i])
 			} else if value.Valid {
-				_m.StaleCount = value.Int64
+				_m.UncachedRequests = value.Int64
 			}
-		case cloudflarezoneanalysisdata.FieldResponseTimeAvg:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field response_time_avg", values[i])
+		case cloudflarezoneanalysisdata.FieldBandwidth:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field bandwidth", values[i])
 			} else if value.Valid {
-				_m.ResponseTimeAvg = value.Float64
+				_m.Bandwidth = value.Int64
 			}
-		case cloudflarezoneanalysisdata.FieldResponseTimeMedian:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field response_time_median", values[i])
+		case cloudflarezoneanalysisdata.FieldCachedBandwidth:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field cached_bandwidth", values[i])
 			} else if value.Valid {
-				_m.ResponseTimeMedian = value.Float64
+				_m.CachedBandwidth = value.Int64
 			}
-		case cloudflarezoneanalysisdata.FieldResponseTime90th:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field response_time_90th", values[i])
+		case cloudflarezoneanalysisdata.FieldUncachedBandwidth:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field uncached_bandwidth", values[i])
 			} else if value.Valid {
-				_m.ResponseTime90th = value.Float64
+				_m.UncachedBandwidth = value.Int64
 			}
-		case cloudflarezoneanalysisdata.FieldResponseTime99th:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field response_time_99th", values[i])
+		case cloudflarezoneanalysisdata.FieldUniques:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field uniques", values[i])
 			} else if value.Valid {
-				_m.ResponseTime99th = value.Float64
+				_m.Uniques = value.Int64
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -178,26 +176,26 @@ func (_m *CloudflareZoneAnalysisData) String() string {
 	builder.WriteString("date=")
 	builder.WriteString(_m.Date.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("query_count=")
-	builder.WriteString(fmt.Sprintf("%v", _m.QueryCount))
+	builder.WriteString("requests=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Requests))
 	builder.WriteString(", ")
-	builder.WriteString("uncached_count=")
-	builder.WriteString(fmt.Sprintf("%v", _m.UncachedCount))
+	builder.WriteString("cached_requests=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CachedRequests))
 	builder.WriteString(", ")
-	builder.WriteString("stale_count=")
-	builder.WriteString(fmt.Sprintf("%v", _m.StaleCount))
+	builder.WriteString("uncached_requests=")
+	builder.WriteString(fmt.Sprintf("%v", _m.UncachedRequests))
 	builder.WriteString(", ")
-	builder.WriteString("response_time_avg=")
-	builder.WriteString(fmt.Sprintf("%v", _m.ResponseTimeAvg))
+	builder.WriteString("bandwidth=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Bandwidth))
 	builder.WriteString(", ")
-	builder.WriteString("response_time_median=")
-	builder.WriteString(fmt.Sprintf("%v", _m.ResponseTimeMedian))
+	builder.WriteString("cached_bandwidth=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CachedBandwidth))
 	builder.WriteString(", ")
-	builder.WriteString("response_time_90th=")
-	builder.WriteString(fmt.Sprintf("%v", _m.ResponseTime90th))
+	builder.WriteString("uncached_bandwidth=")
+	builder.WriteString(fmt.Sprintf("%v", _m.UncachedBandwidth))
 	builder.WriteString(", ")
-	builder.WriteString("response_time_99th=")
-	builder.WriteString(fmt.Sprintf("%v", _m.ResponseTime99th))
+	builder.WriteString("uniques=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Uniques))
 	builder.WriteByte(')')
 	return builder.String()
 }

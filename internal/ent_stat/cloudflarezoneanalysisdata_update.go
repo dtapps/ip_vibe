@@ -28,192 +28,192 @@ func (_u *CloudflareZoneAnalysisDataUpdate) Where(ps ...predicate.CloudflareZone
 	return _u
 }
 
-// SetQueryCount sets the "query_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetQueryCount(v int64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ResetQueryCount()
-	_u.mutation.SetQueryCount(v)
+// SetRequests sets the "requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetRequests(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ResetRequests()
+	_u.mutation.SetRequests(v)
 	return _u
 }
 
-// SetNillableQueryCount sets the "query_count" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableQueryCount(v *int64) *CloudflareZoneAnalysisDataUpdate {
+// SetNillableRequests sets the "requests" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableRequests(v *int64) *CloudflareZoneAnalysisDataUpdate {
 	if v != nil {
-		_u.SetQueryCount(*v)
+		_u.SetRequests(*v)
 	}
 	return _u
 }
 
-// AddQueryCount adds value to the "query_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) AddQueryCount(v int64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.AddQueryCount(v)
+// AddRequests adds value to the "requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) AddRequests(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.AddRequests(v)
 	return _u
 }
 
-// ClearQueryCount clears the value of the "query_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) ClearQueryCount() *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ClearQueryCount()
+// ClearRequests clears the value of the "requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) ClearRequests() *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ClearRequests()
 	return _u
 }
 
-// SetUncachedCount sets the "uncached_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetUncachedCount(v int64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ResetUncachedCount()
-	_u.mutation.SetUncachedCount(v)
+// SetCachedRequests sets the "cached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetCachedRequests(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ResetCachedRequests()
+	_u.mutation.SetCachedRequests(v)
 	return _u
 }
 
-// SetNillableUncachedCount sets the "uncached_count" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableUncachedCount(v *int64) *CloudflareZoneAnalysisDataUpdate {
+// SetNillableCachedRequests sets the "cached_requests" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableCachedRequests(v *int64) *CloudflareZoneAnalysisDataUpdate {
 	if v != nil {
-		_u.SetUncachedCount(*v)
+		_u.SetCachedRequests(*v)
 	}
 	return _u
 }
 
-// AddUncachedCount adds value to the "uncached_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) AddUncachedCount(v int64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.AddUncachedCount(v)
+// AddCachedRequests adds value to the "cached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) AddCachedRequests(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.AddCachedRequests(v)
 	return _u
 }
 
-// ClearUncachedCount clears the value of the "uncached_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) ClearUncachedCount() *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ClearUncachedCount()
+// ClearCachedRequests clears the value of the "cached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) ClearCachedRequests() *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ClearCachedRequests()
 	return _u
 }
 
-// SetStaleCount sets the "stale_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetStaleCount(v int64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ResetStaleCount()
-	_u.mutation.SetStaleCount(v)
+// SetUncachedRequests sets the "uncached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetUncachedRequests(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ResetUncachedRequests()
+	_u.mutation.SetUncachedRequests(v)
 	return _u
 }
 
-// SetNillableStaleCount sets the "stale_count" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableStaleCount(v *int64) *CloudflareZoneAnalysisDataUpdate {
+// SetNillableUncachedRequests sets the "uncached_requests" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableUncachedRequests(v *int64) *CloudflareZoneAnalysisDataUpdate {
 	if v != nil {
-		_u.SetStaleCount(*v)
+		_u.SetUncachedRequests(*v)
 	}
 	return _u
 }
 
-// AddStaleCount adds value to the "stale_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) AddStaleCount(v int64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.AddStaleCount(v)
+// AddUncachedRequests adds value to the "uncached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) AddUncachedRequests(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.AddUncachedRequests(v)
 	return _u
 }
 
-// ClearStaleCount clears the value of the "stale_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) ClearStaleCount() *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ClearStaleCount()
+// ClearUncachedRequests clears the value of the "uncached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) ClearUncachedRequests() *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ClearUncachedRequests()
 	return _u
 }
 
-// SetResponseTimeAvg sets the "response_time_avg" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetResponseTimeAvg(v float64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ResetResponseTimeAvg()
-	_u.mutation.SetResponseTimeAvg(v)
+// SetBandwidth sets the "bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetBandwidth(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ResetBandwidth()
+	_u.mutation.SetBandwidth(v)
 	return _u
 }
 
-// SetNillableResponseTimeAvg sets the "response_time_avg" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableResponseTimeAvg(v *float64) *CloudflareZoneAnalysisDataUpdate {
+// SetNillableBandwidth sets the "bandwidth" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableBandwidth(v *int64) *CloudflareZoneAnalysisDataUpdate {
 	if v != nil {
-		_u.SetResponseTimeAvg(*v)
+		_u.SetBandwidth(*v)
 	}
 	return _u
 }
 
-// AddResponseTimeAvg adds value to the "response_time_avg" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) AddResponseTimeAvg(v float64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.AddResponseTimeAvg(v)
+// AddBandwidth adds value to the "bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) AddBandwidth(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.AddBandwidth(v)
 	return _u
 }
 
-// ClearResponseTimeAvg clears the value of the "response_time_avg" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) ClearResponseTimeAvg() *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ClearResponseTimeAvg()
+// ClearBandwidth clears the value of the "bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) ClearBandwidth() *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ClearBandwidth()
 	return _u
 }
 
-// SetResponseTimeMedian sets the "response_time_median" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetResponseTimeMedian(v float64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ResetResponseTimeMedian()
-	_u.mutation.SetResponseTimeMedian(v)
+// SetCachedBandwidth sets the "cached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetCachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ResetCachedBandwidth()
+	_u.mutation.SetCachedBandwidth(v)
 	return _u
 }
 
-// SetNillableResponseTimeMedian sets the "response_time_median" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableResponseTimeMedian(v *float64) *CloudflareZoneAnalysisDataUpdate {
+// SetNillableCachedBandwidth sets the "cached_bandwidth" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableCachedBandwidth(v *int64) *CloudflareZoneAnalysisDataUpdate {
 	if v != nil {
-		_u.SetResponseTimeMedian(*v)
+		_u.SetCachedBandwidth(*v)
 	}
 	return _u
 }
 
-// AddResponseTimeMedian adds value to the "response_time_median" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) AddResponseTimeMedian(v float64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.AddResponseTimeMedian(v)
+// AddCachedBandwidth adds value to the "cached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) AddCachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.AddCachedBandwidth(v)
 	return _u
 }
 
-// ClearResponseTimeMedian clears the value of the "response_time_median" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) ClearResponseTimeMedian() *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ClearResponseTimeMedian()
+// ClearCachedBandwidth clears the value of the "cached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) ClearCachedBandwidth() *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ClearCachedBandwidth()
 	return _u
 }
 
-// SetResponseTime90th sets the "response_time_90th" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetResponseTime90th(v float64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ResetResponseTime90th()
-	_u.mutation.SetResponseTime90th(v)
+// SetUncachedBandwidth sets the "uncached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetUncachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ResetUncachedBandwidth()
+	_u.mutation.SetUncachedBandwidth(v)
 	return _u
 }
 
-// SetNillableResponseTime90th sets the "response_time_90th" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableResponseTime90th(v *float64) *CloudflareZoneAnalysisDataUpdate {
+// SetNillableUncachedBandwidth sets the "uncached_bandwidth" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableUncachedBandwidth(v *int64) *CloudflareZoneAnalysisDataUpdate {
 	if v != nil {
-		_u.SetResponseTime90th(*v)
+		_u.SetUncachedBandwidth(*v)
 	}
 	return _u
 }
 
-// AddResponseTime90th adds value to the "response_time_90th" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) AddResponseTime90th(v float64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.AddResponseTime90th(v)
+// AddUncachedBandwidth adds value to the "uncached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) AddUncachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.AddUncachedBandwidth(v)
 	return _u
 }
 
-// ClearResponseTime90th clears the value of the "response_time_90th" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) ClearResponseTime90th() *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ClearResponseTime90th()
+// ClearUncachedBandwidth clears the value of the "uncached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) ClearUncachedBandwidth() *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ClearUncachedBandwidth()
 	return _u
 }
 
-// SetResponseTime99th sets the "response_time_99th" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetResponseTime99th(v float64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ResetResponseTime99th()
-	_u.mutation.SetResponseTime99th(v)
+// SetUniques sets the "uniques" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetUniques(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ResetUniques()
+	_u.mutation.SetUniques(v)
 	return _u
 }
 
-// SetNillableResponseTime99th sets the "response_time_99th" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableResponseTime99th(v *float64) *CloudflareZoneAnalysisDataUpdate {
+// SetNillableUniques sets the "uniques" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdate) SetNillableUniques(v *int64) *CloudflareZoneAnalysisDataUpdate {
 	if v != nil {
-		_u.SetResponseTime99th(*v)
+		_u.SetUniques(*v)
 	}
 	return _u
 }
 
-// AddResponseTime99th adds value to the "response_time_99th" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) AddResponseTime99th(v float64) *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.AddResponseTime99th(v)
+// AddUniques adds value to the "uniques" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) AddUniques(v int64) *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.AddUniques(v)
 	return _u
 }
 
-// ClearResponseTime99th clears the value of the "response_time_99th" field.
-func (_u *CloudflareZoneAnalysisDataUpdate) ClearResponseTime99th() *CloudflareZoneAnalysisDataUpdate {
-	_u.mutation.ClearResponseTime99th()
+// ClearUniques clears the value of the "uniques" field.
+func (_u *CloudflareZoneAnalysisDataUpdate) ClearUniques() *CloudflareZoneAnalysisDataUpdate {
+	_u.mutation.ClearUniques()
 	return _u
 }
 
@@ -264,68 +264,68 @@ func (_u *CloudflareZoneAnalysisDataUpdate) sqlSave(ctx context.Context) (_node 
 			}
 		}
 	}
-	if value, ok := _u.mutation.QueryCount(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldQueryCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.Requests(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldRequests, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedQueryCount(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldQueryCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.AddedRequests(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldRequests, field.TypeInt64, value)
 	}
-	if _u.mutation.QueryCountCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldQueryCount, field.TypeInt64)
+	if _u.mutation.RequestsCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldRequests, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.UncachedCount(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldUncachedCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.CachedRequests(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldCachedRequests, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedUncachedCount(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldUncachedCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.AddedCachedRequests(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldCachedRequests, field.TypeInt64, value)
 	}
-	if _u.mutation.UncachedCountCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldUncachedCount, field.TypeInt64)
+	if _u.mutation.CachedRequestsCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldCachedRequests, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.StaleCount(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldStaleCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.UncachedRequests(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldUncachedRequests, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedStaleCount(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldStaleCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.AddedUncachedRequests(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldUncachedRequests, field.TypeInt64, value)
 	}
-	if _u.mutation.StaleCountCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldStaleCount, field.TypeInt64)
+	if _u.mutation.UncachedRequestsCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldUncachedRequests, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.ResponseTimeAvg(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTimeAvg, field.TypeFloat64, value)
+	if value, ok := _u.mutation.Bandwidth(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldBandwidth, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedResponseTimeAvg(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldResponseTimeAvg, field.TypeFloat64, value)
+	if value, ok := _u.mutation.AddedBandwidth(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldBandwidth, field.TypeInt64, value)
 	}
-	if _u.mutation.ResponseTimeAvgCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldResponseTimeAvg, field.TypeFloat64)
+	if _u.mutation.BandwidthCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldBandwidth, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.ResponseTimeMedian(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTimeMedian, field.TypeFloat64, value)
+	if value, ok := _u.mutation.CachedBandwidth(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldCachedBandwidth, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedResponseTimeMedian(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldResponseTimeMedian, field.TypeFloat64, value)
+	if value, ok := _u.mutation.AddedCachedBandwidth(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldCachedBandwidth, field.TypeInt64, value)
 	}
-	if _u.mutation.ResponseTimeMedianCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldResponseTimeMedian, field.TypeFloat64)
+	if _u.mutation.CachedBandwidthCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldCachedBandwidth, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.ResponseTime90th(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTime90th, field.TypeFloat64, value)
+	if value, ok := _u.mutation.UncachedBandwidth(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldUncachedBandwidth, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedResponseTime90th(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldResponseTime90th, field.TypeFloat64, value)
+	if value, ok := _u.mutation.AddedUncachedBandwidth(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldUncachedBandwidth, field.TypeInt64, value)
 	}
-	if _u.mutation.ResponseTime90thCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldResponseTime90th, field.TypeFloat64)
+	if _u.mutation.UncachedBandwidthCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldUncachedBandwidth, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.ResponseTime99th(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTime99th, field.TypeFloat64, value)
+	if value, ok := _u.mutation.Uniques(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldUniques, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedResponseTime99th(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldResponseTime99th, field.TypeFloat64, value)
+	if value, ok := _u.mutation.AddedUniques(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldUniques, field.TypeInt64, value)
 	}
-	if _u.mutation.ResponseTime99thCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldResponseTime99th, field.TypeFloat64)
+	if _u.mutation.UniquesCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldUniques, field.TypeInt64)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -349,192 +349,192 @@ type CloudflareZoneAnalysisDataUpdateOne struct {
 	modifiers []func(*sql.UpdateBuilder)
 }
 
-// SetQueryCount sets the "query_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetQueryCount(v int64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ResetQueryCount()
-	_u.mutation.SetQueryCount(v)
+// SetRequests sets the "requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetRequests(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ResetRequests()
+	_u.mutation.SetRequests(v)
 	return _u
 }
 
-// SetNillableQueryCount sets the "query_count" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableQueryCount(v *int64) *CloudflareZoneAnalysisDataUpdateOne {
+// SetNillableRequests sets the "requests" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableRequests(v *int64) *CloudflareZoneAnalysisDataUpdateOne {
 	if v != nil {
-		_u.SetQueryCount(*v)
+		_u.SetRequests(*v)
 	}
 	return _u
 }
 
-// AddQueryCount adds value to the "query_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) AddQueryCount(v int64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.AddQueryCount(v)
+// AddRequests adds value to the "requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) AddRequests(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.AddRequests(v)
 	return _u
 }
 
-// ClearQueryCount clears the value of the "query_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearQueryCount() *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ClearQueryCount()
+// ClearRequests clears the value of the "requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearRequests() *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ClearRequests()
 	return _u
 }
 
-// SetUncachedCount sets the "uncached_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetUncachedCount(v int64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ResetUncachedCount()
-	_u.mutation.SetUncachedCount(v)
+// SetCachedRequests sets the "cached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetCachedRequests(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ResetCachedRequests()
+	_u.mutation.SetCachedRequests(v)
 	return _u
 }
 
-// SetNillableUncachedCount sets the "uncached_count" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableUncachedCount(v *int64) *CloudflareZoneAnalysisDataUpdateOne {
+// SetNillableCachedRequests sets the "cached_requests" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableCachedRequests(v *int64) *CloudflareZoneAnalysisDataUpdateOne {
 	if v != nil {
-		_u.SetUncachedCount(*v)
+		_u.SetCachedRequests(*v)
 	}
 	return _u
 }
 
-// AddUncachedCount adds value to the "uncached_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) AddUncachedCount(v int64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.AddUncachedCount(v)
+// AddCachedRequests adds value to the "cached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) AddCachedRequests(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.AddCachedRequests(v)
 	return _u
 }
 
-// ClearUncachedCount clears the value of the "uncached_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearUncachedCount() *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ClearUncachedCount()
+// ClearCachedRequests clears the value of the "cached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearCachedRequests() *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ClearCachedRequests()
 	return _u
 }
 
-// SetStaleCount sets the "stale_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetStaleCount(v int64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ResetStaleCount()
-	_u.mutation.SetStaleCount(v)
+// SetUncachedRequests sets the "uncached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetUncachedRequests(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ResetUncachedRequests()
+	_u.mutation.SetUncachedRequests(v)
 	return _u
 }
 
-// SetNillableStaleCount sets the "stale_count" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableStaleCount(v *int64) *CloudflareZoneAnalysisDataUpdateOne {
+// SetNillableUncachedRequests sets the "uncached_requests" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableUncachedRequests(v *int64) *CloudflareZoneAnalysisDataUpdateOne {
 	if v != nil {
-		_u.SetStaleCount(*v)
+		_u.SetUncachedRequests(*v)
 	}
 	return _u
 }
 
-// AddStaleCount adds value to the "stale_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) AddStaleCount(v int64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.AddStaleCount(v)
+// AddUncachedRequests adds value to the "uncached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) AddUncachedRequests(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.AddUncachedRequests(v)
 	return _u
 }
 
-// ClearStaleCount clears the value of the "stale_count" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearStaleCount() *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ClearStaleCount()
+// ClearUncachedRequests clears the value of the "uncached_requests" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearUncachedRequests() *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ClearUncachedRequests()
 	return _u
 }
 
-// SetResponseTimeAvg sets the "response_time_avg" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetResponseTimeAvg(v float64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ResetResponseTimeAvg()
-	_u.mutation.SetResponseTimeAvg(v)
+// SetBandwidth sets the "bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetBandwidth(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ResetBandwidth()
+	_u.mutation.SetBandwidth(v)
 	return _u
 }
 
-// SetNillableResponseTimeAvg sets the "response_time_avg" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableResponseTimeAvg(v *float64) *CloudflareZoneAnalysisDataUpdateOne {
+// SetNillableBandwidth sets the "bandwidth" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableBandwidth(v *int64) *CloudflareZoneAnalysisDataUpdateOne {
 	if v != nil {
-		_u.SetResponseTimeAvg(*v)
+		_u.SetBandwidth(*v)
 	}
 	return _u
 }
 
-// AddResponseTimeAvg adds value to the "response_time_avg" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) AddResponseTimeAvg(v float64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.AddResponseTimeAvg(v)
+// AddBandwidth adds value to the "bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) AddBandwidth(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.AddBandwidth(v)
 	return _u
 }
 
-// ClearResponseTimeAvg clears the value of the "response_time_avg" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearResponseTimeAvg() *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ClearResponseTimeAvg()
+// ClearBandwidth clears the value of the "bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearBandwidth() *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ClearBandwidth()
 	return _u
 }
 
-// SetResponseTimeMedian sets the "response_time_median" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetResponseTimeMedian(v float64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ResetResponseTimeMedian()
-	_u.mutation.SetResponseTimeMedian(v)
+// SetCachedBandwidth sets the "cached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetCachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ResetCachedBandwidth()
+	_u.mutation.SetCachedBandwidth(v)
 	return _u
 }
 
-// SetNillableResponseTimeMedian sets the "response_time_median" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableResponseTimeMedian(v *float64) *CloudflareZoneAnalysisDataUpdateOne {
+// SetNillableCachedBandwidth sets the "cached_bandwidth" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableCachedBandwidth(v *int64) *CloudflareZoneAnalysisDataUpdateOne {
 	if v != nil {
-		_u.SetResponseTimeMedian(*v)
+		_u.SetCachedBandwidth(*v)
 	}
 	return _u
 }
 
-// AddResponseTimeMedian adds value to the "response_time_median" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) AddResponseTimeMedian(v float64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.AddResponseTimeMedian(v)
+// AddCachedBandwidth adds value to the "cached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) AddCachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.AddCachedBandwidth(v)
 	return _u
 }
 
-// ClearResponseTimeMedian clears the value of the "response_time_median" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearResponseTimeMedian() *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ClearResponseTimeMedian()
+// ClearCachedBandwidth clears the value of the "cached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearCachedBandwidth() *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ClearCachedBandwidth()
 	return _u
 }
 
-// SetResponseTime90th sets the "response_time_90th" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetResponseTime90th(v float64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ResetResponseTime90th()
-	_u.mutation.SetResponseTime90th(v)
+// SetUncachedBandwidth sets the "uncached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetUncachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ResetUncachedBandwidth()
+	_u.mutation.SetUncachedBandwidth(v)
 	return _u
 }
 
-// SetNillableResponseTime90th sets the "response_time_90th" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableResponseTime90th(v *float64) *CloudflareZoneAnalysisDataUpdateOne {
+// SetNillableUncachedBandwidth sets the "uncached_bandwidth" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableUncachedBandwidth(v *int64) *CloudflareZoneAnalysisDataUpdateOne {
 	if v != nil {
-		_u.SetResponseTime90th(*v)
+		_u.SetUncachedBandwidth(*v)
 	}
 	return _u
 }
 
-// AddResponseTime90th adds value to the "response_time_90th" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) AddResponseTime90th(v float64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.AddResponseTime90th(v)
+// AddUncachedBandwidth adds value to the "uncached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) AddUncachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.AddUncachedBandwidth(v)
 	return _u
 }
 
-// ClearResponseTime90th clears the value of the "response_time_90th" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearResponseTime90th() *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ClearResponseTime90th()
+// ClearUncachedBandwidth clears the value of the "uncached_bandwidth" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearUncachedBandwidth() *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ClearUncachedBandwidth()
 	return _u
 }
 
-// SetResponseTime99th sets the "response_time_99th" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetResponseTime99th(v float64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ResetResponseTime99th()
-	_u.mutation.SetResponseTime99th(v)
+// SetUniques sets the "uniques" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetUniques(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ResetUniques()
+	_u.mutation.SetUniques(v)
 	return _u
 }
 
-// SetNillableResponseTime99th sets the "response_time_99th" field if the given value is not nil.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableResponseTime99th(v *float64) *CloudflareZoneAnalysisDataUpdateOne {
+// SetNillableUniques sets the "uniques" field if the given value is not nil.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) SetNillableUniques(v *int64) *CloudflareZoneAnalysisDataUpdateOne {
 	if v != nil {
-		_u.SetResponseTime99th(*v)
+		_u.SetUniques(*v)
 	}
 	return _u
 }
 
-// AddResponseTime99th adds value to the "response_time_99th" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) AddResponseTime99th(v float64) *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.AddResponseTime99th(v)
+// AddUniques adds value to the "uniques" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) AddUniques(v int64) *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.AddUniques(v)
 	return _u
 }
 
-// ClearResponseTime99th clears the value of the "response_time_99th" field.
-func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearResponseTime99th() *CloudflareZoneAnalysisDataUpdateOne {
-	_u.mutation.ClearResponseTime99th()
+// ClearUniques clears the value of the "uniques" field.
+func (_u *CloudflareZoneAnalysisDataUpdateOne) ClearUniques() *CloudflareZoneAnalysisDataUpdateOne {
+	_u.mutation.ClearUniques()
 	return _u
 }
 
@@ -615,68 +615,68 @@ func (_u *CloudflareZoneAnalysisDataUpdateOne) sqlSave(ctx context.Context) (_no
 			}
 		}
 	}
-	if value, ok := _u.mutation.QueryCount(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldQueryCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.Requests(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldRequests, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedQueryCount(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldQueryCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.AddedRequests(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldRequests, field.TypeInt64, value)
 	}
-	if _u.mutation.QueryCountCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldQueryCount, field.TypeInt64)
+	if _u.mutation.RequestsCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldRequests, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.UncachedCount(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldUncachedCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.CachedRequests(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldCachedRequests, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedUncachedCount(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldUncachedCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.AddedCachedRequests(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldCachedRequests, field.TypeInt64, value)
 	}
-	if _u.mutation.UncachedCountCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldUncachedCount, field.TypeInt64)
+	if _u.mutation.CachedRequestsCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldCachedRequests, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.StaleCount(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldStaleCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.UncachedRequests(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldUncachedRequests, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedStaleCount(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldStaleCount, field.TypeInt64, value)
+	if value, ok := _u.mutation.AddedUncachedRequests(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldUncachedRequests, field.TypeInt64, value)
 	}
-	if _u.mutation.StaleCountCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldStaleCount, field.TypeInt64)
+	if _u.mutation.UncachedRequestsCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldUncachedRequests, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.ResponseTimeAvg(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTimeAvg, field.TypeFloat64, value)
+	if value, ok := _u.mutation.Bandwidth(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldBandwidth, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedResponseTimeAvg(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldResponseTimeAvg, field.TypeFloat64, value)
+	if value, ok := _u.mutation.AddedBandwidth(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldBandwidth, field.TypeInt64, value)
 	}
-	if _u.mutation.ResponseTimeAvgCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldResponseTimeAvg, field.TypeFloat64)
+	if _u.mutation.BandwidthCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldBandwidth, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.ResponseTimeMedian(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTimeMedian, field.TypeFloat64, value)
+	if value, ok := _u.mutation.CachedBandwidth(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldCachedBandwidth, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedResponseTimeMedian(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldResponseTimeMedian, field.TypeFloat64, value)
+	if value, ok := _u.mutation.AddedCachedBandwidth(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldCachedBandwidth, field.TypeInt64, value)
 	}
-	if _u.mutation.ResponseTimeMedianCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldResponseTimeMedian, field.TypeFloat64)
+	if _u.mutation.CachedBandwidthCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldCachedBandwidth, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.ResponseTime90th(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTime90th, field.TypeFloat64, value)
+	if value, ok := _u.mutation.UncachedBandwidth(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldUncachedBandwidth, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedResponseTime90th(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldResponseTime90th, field.TypeFloat64, value)
+	if value, ok := _u.mutation.AddedUncachedBandwidth(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldUncachedBandwidth, field.TypeInt64, value)
 	}
-	if _u.mutation.ResponseTime90thCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldResponseTime90th, field.TypeFloat64)
+	if _u.mutation.UncachedBandwidthCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldUncachedBandwidth, field.TypeInt64)
 	}
-	if value, ok := _u.mutation.ResponseTime99th(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTime99th, field.TypeFloat64, value)
+	if value, ok := _u.mutation.Uniques(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldUniques, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedResponseTime99th(); ok {
-		_spec.AddField(cloudflarezoneanalysisdata.FieldResponseTime99th, field.TypeFloat64, value)
+	if value, ok := _u.mutation.AddedUniques(); ok {
+		_spec.AddField(cloudflarezoneanalysisdata.FieldUniques, field.TypeInt64, value)
 	}
-	if _u.mutation.ResponseTime99thCleared() {
-		_spec.ClearField(cloudflarezoneanalysisdata.FieldResponseTime99th, field.TypeFloat64)
+	if _u.mutation.UniquesCleared() {
+		_spec.ClearField(cloudflarezoneanalysisdata.FieldUniques, field.TypeInt64)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &CloudflareZoneAnalysisData{config: _u.config}

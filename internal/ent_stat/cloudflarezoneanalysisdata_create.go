@@ -48,100 +48,100 @@ func (_c *CloudflareZoneAnalysisDataCreate) SetDate(v time.Time) *CloudflareZone
 	return _c
 }
 
-// SetQueryCount sets the "query_count" field.
-func (_c *CloudflareZoneAnalysisDataCreate) SetQueryCount(v int64) *CloudflareZoneAnalysisDataCreate {
-	_c.mutation.SetQueryCount(v)
+// SetRequests sets the "requests" field.
+func (_c *CloudflareZoneAnalysisDataCreate) SetRequests(v int64) *CloudflareZoneAnalysisDataCreate {
+	_c.mutation.SetRequests(v)
 	return _c
 }
 
-// SetNillableQueryCount sets the "query_count" field if the given value is not nil.
-func (_c *CloudflareZoneAnalysisDataCreate) SetNillableQueryCount(v *int64) *CloudflareZoneAnalysisDataCreate {
+// SetNillableRequests sets the "requests" field if the given value is not nil.
+func (_c *CloudflareZoneAnalysisDataCreate) SetNillableRequests(v *int64) *CloudflareZoneAnalysisDataCreate {
 	if v != nil {
-		_c.SetQueryCount(*v)
+		_c.SetRequests(*v)
 	}
 	return _c
 }
 
-// SetUncachedCount sets the "uncached_count" field.
-func (_c *CloudflareZoneAnalysisDataCreate) SetUncachedCount(v int64) *CloudflareZoneAnalysisDataCreate {
-	_c.mutation.SetUncachedCount(v)
+// SetCachedRequests sets the "cached_requests" field.
+func (_c *CloudflareZoneAnalysisDataCreate) SetCachedRequests(v int64) *CloudflareZoneAnalysisDataCreate {
+	_c.mutation.SetCachedRequests(v)
 	return _c
 }
 
-// SetNillableUncachedCount sets the "uncached_count" field if the given value is not nil.
-func (_c *CloudflareZoneAnalysisDataCreate) SetNillableUncachedCount(v *int64) *CloudflareZoneAnalysisDataCreate {
+// SetNillableCachedRequests sets the "cached_requests" field if the given value is not nil.
+func (_c *CloudflareZoneAnalysisDataCreate) SetNillableCachedRequests(v *int64) *CloudflareZoneAnalysisDataCreate {
 	if v != nil {
-		_c.SetUncachedCount(*v)
+		_c.SetCachedRequests(*v)
 	}
 	return _c
 }
 
-// SetStaleCount sets the "stale_count" field.
-func (_c *CloudflareZoneAnalysisDataCreate) SetStaleCount(v int64) *CloudflareZoneAnalysisDataCreate {
-	_c.mutation.SetStaleCount(v)
+// SetUncachedRequests sets the "uncached_requests" field.
+func (_c *CloudflareZoneAnalysisDataCreate) SetUncachedRequests(v int64) *CloudflareZoneAnalysisDataCreate {
+	_c.mutation.SetUncachedRequests(v)
 	return _c
 }
 
-// SetNillableStaleCount sets the "stale_count" field if the given value is not nil.
-func (_c *CloudflareZoneAnalysisDataCreate) SetNillableStaleCount(v *int64) *CloudflareZoneAnalysisDataCreate {
+// SetNillableUncachedRequests sets the "uncached_requests" field if the given value is not nil.
+func (_c *CloudflareZoneAnalysisDataCreate) SetNillableUncachedRequests(v *int64) *CloudflareZoneAnalysisDataCreate {
 	if v != nil {
-		_c.SetStaleCount(*v)
+		_c.SetUncachedRequests(*v)
 	}
 	return _c
 }
 
-// SetResponseTimeAvg sets the "response_time_avg" field.
-func (_c *CloudflareZoneAnalysisDataCreate) SetResponseTimeAvg(v float64) *CloudflareZoneAnalysisDataCreate {
-	_c.mutation.SetResponseTimeAvg(v)
+// SetBandwidth sets the "bandwidth" field.
+func (_c *CloudflareZoneAnalysisDataCreate) SetBandwidth(v int64) *CloudflareZoneAnalysisDataCreate {
+	_c.mutation.SetBandwidth(v)
 	return _c
 }
 
-// SetNillableResponseTimeAvg sets the "response_time_avg" field if the given value is not nil.
-func (_c *CloudflareZoneAnalysisDataCreate) SetNillableResponseTimeAvg(v *float64) *CloudflareZoneAnalysisDataCreate {
+// SetNillableBandwidth sets the "bandwidth" field if the given value is not nil.
+func (_c *CloudflareZoneAnalysisDataCreate) SetNillableBandwidth(v *int64) *CloudflareZoneAnalysisDataCreate {
 	if v != nil {
-		_c.SetResponseTimeAvg(*v)
+		_c.SetBandwidth(*v)
 	}
 	return _c
 }
 
-// SetResponseTimeMedian sets the "response_time_median" field.
-func (_c *CloudflareZoneAnalysisDataCreate) SetResponseTimeMedian(v float64) *CloudflareZoneAnalysisDataCreate {
-	_c.mutation.SetResponseTimeMedian(v)
+// SetCachedBandwidth sets the "cached_bandwidth" field.
+func (_c *CloudflareZoneAnalysisDataCreate) SetCachedBandwidth(v int64) *CloudflareZoneAnalysisDataCreate {
+	_c.mutation.SetCachedBandwidth(v)
 	return _c
 }
 
-// SetNillableResponseTimeMedian sets the "response_time_median" field if the given value is not nil.
-func (_c *CloudflareZoneAnalysisDataCreate) SetNillableResponseTimeMedian(v *float64) *CloudflareZoneAnalysisDataCreate {
+// SetNillableCachedBandwidth sets the "cached_bandwidth" field if the given value is not nil.
+func (_c *CloudflareZoneAnalysisDataCreate) SetNillableCachedBandwidth(v *int64) *CloudflareZoneAnalysisDataCreate {
 	if v != nil {
-		_c.SetResponseTimeMedian(*v)
+		_c.SetCachedBandwidth(*v)
 	}
 	return _c
 }
 
-// SetResponseTime90th sets the "response_time_90th" field.
-func (_c *CloudflareZoneAnalysisDataCreate) SetResponseTime90th(v float64) *CloudflareZoneAnalysisDataCreate {
-	_c.mutation.SetResponseTime90th(v)
+// SetUncachedBandwidth sets the "uncached_bandwidth" field.
+func (_c *CloudflareZoneAnalysisDataCreate) SetUncachedBandwidth(v int64) *CloudflareZoneAnalysisDataCreate {
+	_c.mutation.SetUncachedBandwidth(v)
 	return _c
 }
 
-// SetNillableResponseTime90th sets the "response_time_90th" field if the given value is not nil.
-func (_c *CloudflareZoneAnalysisDataCreate) SetNillableResponseTime90th(v *float64) *CloudflareZoneAnalysisDataCreate {
+// SetNillableUncachedBandwidth sets the "uncached_bandwidth" field if the given value is not nil.
+func (_c *CloudflareZoneAnalysisDataCreate) SetNillableUncachedBandwidth(v *int64) *CloudflareZoneAnalysisDataCreate {
 	if v != nil {
-		_c.SetResponseTime90th(*v)
+		_c.SetUncachedBandwidth(*v)
 	}
 	return _c
 }
 
-// SetResponseTime99th sets the "response_time_99th" field.
-func (_c *CloudflareZoneAnalysisDataCreate) SetResponseTime99th(v float64) *CloudflareZoneAnalysisDataCreate {
-	_c.mutation.SetResponseTime99th(v)
+// SetUniques sets the "uniques" field.
+func (_c *CloudflareZoneAnalysisDataCreate) SetUniques(v int64) *CloudflareZoneAnalysisDataCreate {
+	_c.mutation.SetUniques(v)
 	return _c
 }
 
-// SetNillableResponseTime99th sets the "response_time_99th" field if the given value is not nil.
-func (_c *CloudflareZoneAnalysisDataCreate) SetNillableResponseTime99th(v *float64) *CloudflareZoneAnalysisDataCreate {
+// SetNillableUniques sets the "uniques" field if the given value is not nil.
+func (_c *CloudflareZoneAnalysisDataCreate) SetNillableUniques(v *int64) *CloudflareZoneAnalysisDataCreate {
 	if v != nil {
-		_c.SetResponseTime99th(*v)
+		_c.SetUniques(*v)
 	}
 	return _c
 }
@@ -259,33 +259,33 @@ func (_c *CloudflareZoneAnalysisDataCreate) createSpec() (*CloudflareZoneAnalysi
 		_spec.SetField(cloudflarezoneanalysisdata.FieldDate, field.TypeTime, value)
 		_node.Date = value
 	}
-	if value, ok := _c.mutation.QueryCount(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldQueryCount, field.TypeInt64, value)
-		_node.QueryCount = value
+	if value, ok := _c.mutation.Requests(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldRequests, field.TypeInt64, value)
+		_node.Requests = value
 	}
-	if value, ok := _c.mutation.UncachedCount(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldUncachedCount, field.TypeInt64, value)
-		_node.UncachedCount = value
+	if value, ok := _c.mutation.CachedRequests(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldCachedRequests, field.TypeInt64, value)
+		_node.CachedRequests = value
 	}
-	if value, ok := _c.mutation.StaleCount(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldStaleCount, field.TypeInt64, value)
-		_node.StaleCount = value
+	if value, ok := _c.mutation.UncachedRequests(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldUncachedRequests, field.TypeInt64, value)
+		_node.UncachedRequests = value
 	}
-	if value, ok := _c.mutation.ResponseTimeAvg(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTimeAvg, field.TypeFloat64, value)
-		_node.ResponseTimeAvg = value
+	if value, ok := _c.mutation.Bandwidth(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldBandwidth, field.TypeInt64, value)
+		_node.Bandwidth = value
 	}
-	if value, ok := _c.mutation.ResponseTimeMedian(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTimeMedian, field.TypeFloat64, value)
-		_node.ResponseTimeMedian = value
+	if value, ok := _c.mutation.CachedBandwidth(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldCachedBandwidth, field.TypeInt64, value)
+		_node.CachedBandwidth = value
 	}
-	if value, ok := _c.mutation.ResponseTime90th(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTime90th, field.TypeFloat64, value)
-		_node.ResponseTime90th = value
+	if value, ok := _c.mutation.UncachedBandwidth(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldUncachedBandwidth, field.TypeInt64, value)
+		_node.UncachedBandwidth = value
 	}
-	if value, ok := _c.mutation.ResponseTime99th(); ok {
-		_spec.SetField(cloudflarezoneanalysisdata.FieldResponseTime99th, field.TypeFloat64, value)
-		_node.ResponseTime99th = value
+	if value, ok := _c.mutation.Uniques(); ok {
+		_spec.SetField(cloudflarezoneanalysisdata.FieldUniques, field.TypeInt64, value)
+		_node.Uniques = value
 	}
 	return _node, _spec
 }
@@ -339,171 +339,171 @@ type (
 	}
 )
 
-// SetQueryCount sets the "query_count" field.
-func (u *CloudflareZoneAnalysisDataUpsert) SetQueryCount(v int64) *CloudflareZoneAnalysisDataUpsert {
-	u.Set(cloudflarezoneanalysisdata.FieldQueryCount, v)
+// SetRequests sets the "requests" field.
+func (u *CloudflareZoneAnalysisDataUpsert) SetRequests(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Set(cloudflarezoneanalysisdata.FieldRequests, v)
 	return u
 }
 
-// UpdateQueryCount sets the "query_count" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsert) UpdateQueryCount() *CloudflareZoneAnalysisDataUpsert {
-	u.SetExcluded(cloudflarezoneanalysisdata.FieldQueryCount)
+// UpdateRequests sets the "requests" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsert) UpdateRequests() *CloudflareZoneAnalysisDataUpsert {
+	u.SetExcluded(cloudflarezoneanalysisdata.FieldRequests)
 	return u
 }
 
-// AddQueryCount adds v to the "query_count" field.
-func (u *CloudflareZoneAnalysisDataUpsert) AddQueryCount(v int64) *CloudflareZoneAnalysisDataUpsert {
-	u.Add(cloudflarezoneanalysisdata.FieldQueryCount, v)
+// AddRequests adds v to the "requests" field.
+func (u *CloudflareZoneAnalysisDataUpsert) AddRequests(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Add(cloudflarezoneanalysisdata.FieldRequests, v)
 	return u
 }
 
-// ClearQueryCount clears the value of the "query_count" field.
-func (u *CloudflareZoneAnalysisDataUpsert) ClearQueryCount() *CloudflareZoneAnalysisDataUpsert {
-	u.SetNull(cloudflarezoneanalysisdata.FieldQueryCount)
+// ClearRequests clears the value of the "requests" field.
+func (u *CloudflareZoneAnalysisDataUpsert) ClearRequests() *CloudflareZoneAnalysisDataUpsert {
+	u.SetNull(cloudflarezoneanalysisdata.FieldRequests)
 	return u
 }
 
-// SetUncachedCount sets the "uncached_count" field.
-func (u *CloudflareZoneAnalysisDataUpsert) SetUncachedCount(v int64) *CloudflareZoneAnalysisDataUpsert {
-	u.Set(cloudflarezoneanalysisdata.FieldUncachedCount, v)
+// SetCachedRequests sets the "cached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsert) SetCachedRequests(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Set(cloudflarezoneanalysisdata.FieldCachedRequests, v)
 	return u
 }
 
-// UpdateUncachedCount sets the "uncached_count" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsert) UpdateUncachedCount() *CloudflareZoneAnalysisDataUpsert {
-	u.SetExcluded(cloudflarezoneanalysisdata.FieldUncachedCount)
+// UpdateCachedRequests sets the "cached_requests" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsert) UpdateCachedRequests() *CloudflareZoneAnalysisDataUpsert {
+	u.SetExcluded(cloudflarezoneanalysisdata.FieldCachedRequests)
 	return u
 }
 
-// AddUncachedCount adds v to the "uncached_count" field.
-func (u *CloudflareZoneAnalysisDataUpsert) AddUncachedCount(v int64) *CloudflareZoneAnalysisDataUpsert {
-	u.Add(cloudflarezoneanalysisdata.FieldUncachedCount, v)
+// AddCachedRequests adds v to the "cached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsert) AddCachedRequests(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Add(cloudflarezoneanalysisdata.FieldCachedRequests, v)
 	return u
 }
 
-// ClearUncachedCount clears the value of the "uncached_count" field.
-func (u *CloudflareZoneAnalysisDataUpsert) ClearUncachedCount() *CloudflareZoneAnalysisDataUpsert {
-	u.SetNull(cloudflarezoneanalysisdata.FieldUncachedCount)
+// ClearCachedRequests clears the value of the "cached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsert) ClearCachedRequests() *CloudflareZoneAnalysisDataUpsert {
+	u.SetNull(cloudflarezoneanalysisdata.FieldCachedRequests)
 	return u
 }
 
-// SetStaleCount sets the "stale_count" field.
-func (u *CloudflareZoneAnalysisDataUpsert) SetStaleCount(v int64) *CloudflareZoneAnalysisDataUpsert {
-	u.Set(cloudflarezoneanalysisdata.FieldStaleCount, v)
+// SetUncachedRequests sets the "uncached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsert) SetUncachedRequests(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Set(cloudflarezoneanalysisdata.FieldUncachedRequests, v)
 	return u
 }
 
-// UpdateStaleCount sets the "stale_count" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsert) UpdateStaleCount() *CloudflareZoneAnalysisDataUpsert {
-	u.SetExcluded(cloudflarezoneanalysisdata.FieldStaleCount)
+// UpdateUncachedRequests sets the "uncached_requests" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsert) UpdateUncachedRequests() *CloudflareZoneAnalysisDataUpsert {
+	u.SetExcluded(cloudflarezoneanalysisdata.FieldUncachedRequests)
 	return u
 }
 
-// AddStaleCount adds v to the "stale_count" field.
-func (u *CloudflareZoneAnalysisDataUpsert) AddStaleCount(v int64) *CloudflareZoneAnalysisDataUpsert {
-	u.Add(cloudflarezoneanalysisdata.FieldStaleCount, v)
+// AddUncachedRequests adds v to the "uncached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsert) AddUncachedRequests(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Add(cloudflarezoneanalysisdata.FieldUncachedRequests, v)
 	return u
 }
 
-// ClearStaleCount clears the value of the "stale_count" field.
-func (u *CloudflareZoneAnalysisDataUpsert) ClearStaleCount() *CloudflareZoneAnalysisDataUpsert {
-	u.SetNull(cloudflarezoneanalysisdata.FieldStaleCount)
+// ClearUncachedRequests clears the value of the "uncached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsert) ClearUncachedRequests() *CloudflareZoneAnalysisDataUpsert {
+	u.SetNull(cloudflarezoneanalysisdata.FieldUncachedRequests)
 	return u
 }
 
-// SetResponseTimeAvg sets the "response_time_avg" field.
-func (u *CloudflareZoneAnalysisDataUpsert) SetResponseTimeAvg(v float64) *CloudflareZoneAnalysisDataUpsert {
-	u.Set(cloudflarezoneanalysisdata.FieldResponseTimeAvg, v)
+// SetBandwidth sets the "bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsert) SetBandwidth(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Set(cloudflarezoneanalysisdata.FieldBandwidth, v)
 	return u
 }
 
-// UpdateResponseTimeAvg sets the "response_time_avg" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsert) UpdateResponseTimeAvg() *CloudflareZoneAnalysisDataUpsert {
-	u.SetExcluded(cloudflarezoneanalysisdata.FieldResponseTimeAvg)
+// UpdateBandwidth sets the "bandwidth" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsert) UpdateBandwidth() *CloudflareZoneAnalysisDataUpsert {
+	u.SetExcluded(cloudflarezoneanalysisdata.FieldBandwidth)
 	return u
 }
 
-// AddResponseTimeAvg adds v to the "response_time_avg" field.
-func (u *CloudflareZoneAnalysisDataUpsert) AddResponseTimeAvg(v float64) *CloudflareZoneAnalysisDataUpsert {
-	u.Add(cloudflarezoneanalysisdata.FieldResponseTimeAvg, v)
+// AddBandwidth adds v to the "bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsert) AddBandwidth(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Add(cloudflarezoneanalysisdata.FieldBandwidth, v)
 	return u
 }
 
-// ClearResponseTimeAvg clears the value of the "response_time_avg" field.
-func (u *CloudflareZoneAnalysisDataUpsert) ClearResponseTimeAvg() *CloudflareZoneAnalysisDataUpsert {
-	u.SetNull(cloudflarezoneanalysisdata.FieldResponseTimeAvg)
+// ClearBandwidth clears the value of the "bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsert) ClearBandwidth() *CloudflareZoneAnalysisDataUpsert {
+	u.SetNull(cloudflarezoneanalysisdata.FieldBandwidth)
 	return u
 }
 
-// SetResponseTimeMedian sets the "response_time_median" field.
-func (u *CloudflareZoneAnalysisDataUpsert) SetResponseTimeMedian(v float64) *CloudflareZoneAnalysisDataUpsert {
-	u.Set(cloudflarezoneanalysisdata.FieldResponseTimeMedian, v)
+// SetCachedBandwidth sets the "cached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsert) SetCachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Set(cloudflarezoneanalysisdata.FieldCachedBandwidth, v)
 	return u
 }
 
-// UpdateResponseTimeMedian sets the "response_time_median" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsert) UpdateResponseTimeMedian() *CloudflareZoneAnalysisDataUpsert {
-	u.SetExcluded(cloudflarezoneanalysisdata.FieldResponseTimeMedian)
+// UpdateCachedBandwidth sets the "cached_bandwidth" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsert) UpdateCachedBandwidth() *CloudflareZoneAnalysisDataUpsert {
+	u.SetExcluded(cloudflarezoneanalysisdata.FieldCachedBandwidth)
 	return u
 }
 
-// AddResponseTimeMedian adds v to the "response_time_median" field.
-func (u *CloudflareZoneAnalysisDataUpsert) AddResponseTimeMedian(v float64) *CloudflareZoneAnalysisDataUpsert {
-	u.Add(cloudflarezoneanalysisdata.FieldResponseTimeMedian, v)
+// AddCachedBandwidth adds v to the "cached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsert) AddCachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Add(cloudflarezoneanalysisdata.FieldCachedBandwidth, v)
 	return u
 }
 
-// ClearResponseTimeMedian clears the value of the "response_time_median" field.
-func (u *CloudflareZoneAnalysisDataUpsert) ClearResponseTimeMedian() *CloudflareZoneAnalysisDataUpsert {
-	u.SetNull(cloudflarezoneanalysisdata.FieldResponseTimeMedian)
+// ClearCachedBandwidth clears the value of the "cached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsert) ClearCachedBandwidth() *CloudflareZoneAnalysisDataUpsert {
+	u.SetNull(cloudflarezoneanalysisdata.FieldCachedBandwidth)
 	return u
 }
 
-// SetResponseTime90th sets the "response_time_90th" field.
-func (u *CloudflareZoneAnalysisDataUpsert) SetResponseTime90th(v float64) *CloudflareZoneAnalysisDataUpsert {
-	u.Set(cloudflarezoneanalysisdata.FieldResponseTime90th, v)
+// SetUncachedBandwidth sets the "uncached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsert) SetUncachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Set(cloudflarezoneanalysisdata.FieldUncachedBandwidth, v)
 	return u
 }
 
-// UpdateResponseTime90th sets the "response_time_90th" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsert) UpdateResponseTime90th() *CloudflareZoneAnalysisDataUpsert {
-	u.SetExcluded(cloudflarezoneanalysisdata.FieldResponseTime90th)
+// UpdateUncachedBandwidth sets the "uncached_bandwidth" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsert) UpdateUncachedBandwidth() *CloudflareZoneAnalysisDataUpsert {
+	u.SetExcluded(cloudflarezoneanalysisdata.FieldUncachedBandwidth)
 	return u
 }
 
-// AddResponseTime90th adds v to the "response_time_90th" field.
-func (u *CloudflareZoneAnalysisDataUpsert) AddResponseTime90th(v float64) *CloudflareZoneAnalysisDataUpsert {
-	u.Add(cloudflarezoneanalysisdata.FieldResponseTime90th, v)
+// AddUncachedBandwidth adds v to the "uncached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsert) AddUncachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Add(cloudflarezoneanalysisdata.FieldUncachedBandwidth, v)
 	return u
 }
 
-// ClearResponseTime90th clears the value of the "response_time_90th" field.
-func (u *CloudflareZoneAnalysisDataUpsert) ClearResponseTime90th() *CloudflareZoneAnalysisDataUpsert {
-	u.SetNull(cloudflarezoneanalysisdata.FieldResponseTime90th)
+// ClearUncachedBandwidth clears the value of the "uncached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsert) ClearUncachedBandwidth() *CloudflareZoneAnalysisDataUpsert {
+	u.SetNull(cloudflarezoneanalysisdata.FieldUncachedBandwidth)
 	return u
 }
 
-// SetResponseTime99th sets the "response_time_99th" field.
-func (u *CloudflareZoneAnalysisDataUpsert) SetResponseTime99th(v float64) *CloudflareZoneAnalysisDataUpsert {
-	u.Set(cloudflarezoneanalysisdata.FieldResponseTime99th, v)
+// SetUniques sets the "uniques" field.
+func (u *CloudflareZoneAnalysisDataUpsert) SetUniques(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Set(cloudflarezoneanalysisdata.FieldUniques, v)
 	return u
 }
 
-// UpdateResponseTime99th sets the "response_time_99th" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsert) UpdateResponseTime99th() *CloudflareZoneAnalysisDataUpsert {
-	u.SetExcluded(cloudflarezoneanalysisdata.FieldResponseTime99th)
+// UpdateUniques sets the "uniques" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsert) UpdateUniques() *CloudflareZoneAnalysisDataUpsert {
+	u.SetExcluded(cloudflarezoneanalysisdata.FieldUniques)
 	return u
 }
 
-// AddResponseTime99th adds v to the "response_time_99th" field.
-func (u *CloudflareZoneAnalysisDataUpsert) AddResponseTime99th(v float64) *CloudflareZoneAnalysisDataUpsert {
-	u.Add(cloudflarezoneanalysisdata.FieldResponseTime99th, v)
+// AddUniques adds v to the "uniques" field.
+func (u *CloudflareZoneAnalysisDataUpsert) AddUniques(v int64) *CloudflareZoneAnalysisDataUpsert {
+	u.Add(cloudflarezoneanalysisdata.FieldUniques, v)
 	return u
 }
 
-// ClearResponseTime99th clears the value of the "response_time_99th" field.
-func (u *CloudflareZoneAnalysisDataUpsert) ClearResponseTime99th() *CloudflareZoneAnalysisDataUpsert {
-	u.SetNull(cloudflarezoneanalysisdata.FieldResponseTime99th)
+// ClearUniques clears the value of the "uniques" field.
+func (u *CloudflareZoneAnalysisDataUpsert) ClearUniques() *CloudflareZoneAnalysisDataUpsert {
+	u.SetNull(cloudflarezoneanalysisdata.FieldUniques)
 	return u
 }
 
@@ -564,199 +564,199 @@ func (u *CloudflareZoneAnalysisDataUpsertOne) Update(set func(*CloudflareZoneAna
 	return u
 }
 
-// SetQueryCount sets the "query_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) SetQueryCount(v int64) *CloudflareZoneAnalysisDataUpsertOne {
+// SetRequests sets the "requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) SetRequests(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetQueryCount(v)
+		s.SetRequests(v)
 	})
 }
 
-// AddQueryCount adds v to the "query_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) AddQueryCount(v int64) *CloudflareZoneAnalysisDataUpsertOne {
+// AddRequests adds v to the "requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) AddRequests(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddQueryCount(v)
+		s.AddRequests(v)
 	})
 }
 
-// UpdateQueryCount sets the "query_count" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateQueryCount() *CloudflareZoneAnalysisDataUpsertOne {
+// UpdateRequests sets the "requests" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateRequests() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateQueryCount()
+		s.UpdateRequests()
 	})
 }
 
-// ClearQueryCount clears the value of the "query_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) ClearQueryCount() *CloudflareZoneAnalysisDataUpsertOne {
+// ClearRequests clears the value of the "requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) ClearRequests() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearQueryCount()
+		s.ClearRequests()
 	})
 }
 
-// SetUncachedCount sets the "uncached_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) SetUncachedCount(v int64) *CloudflareZoneAnalysisDataUpsertOne {
+// SetCachedRequests sets the "cached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) SetCachedRequests(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetUncachedCount(v)
+		s.SetCachedRequests(v)
 	})
 }
 
-// AddUncachedCount adds v to the "uncached_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) AddUncachedCount(v int64) *CloudflareZoneAnalysisDataUpsertOne {
+// AddCachedRequests adds v to the "cached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) AddCachedRequests(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddUncachedCount(v)
+		s.AddCachedRequests(v)
 	})
 }
 
-// UpdateUncachedCount sets the "uncached_count" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateUncachedCount() *CloudflareZoneAnalysisDataUpsertOne {
+// UpdateCachedRequests sets the "cached_requests" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateCachedRequests() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateUncachedCount()
+		s.UpdateCachedRequests()
 	})
 }
 
-// ClearUncachedCount clears the value of the "uncached_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) ClearUncachedCount() *CloudflareZoneAnalysisDataUpsertOne {
+// ClearCachedRequests clears the value of the "cached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) ClearCachedRequests() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearUncachedCount()
+		s.ClearCachedRequests()
 	})
 }
 
-// SetStaleCount sets the "stale_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) SetStaleCount(v int64) *CloudflareZoneAnalysisDataUpsertOne {
+// SetUncachedRequests sets the "uncached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) SetUncachedRequests(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetStaleCount(v)
+		s.SetUncachedRequests(v)
 	})
 }
 
-// AddStaleCount adds v to the "stale_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) AddStaleCount(v int64) *CloudflareZoneAnalysisDataUpsertOne {
+// AddUncachedRequests adds v to the "uncached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) AddUncachedRequests(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddStaleCount(v)
+		s.AddUncachedRequests(v)
 	})
 }
 
-// UpdateStaleCount sets the "stale_count" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateStaleCount() *CloudflareZoneAnalysisDataUpsertOne {
+// UpdateUncachedRequests sets the "uncached_requests" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateUncachedRequests() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateStaleCount()
+		s.UpdateUncachedRequests()
 	})
 }
 
-// ClearStaleCount clears the value of the "stale_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) ClearStaleCount() *CloudflareZoneAnalysisDataUpsertOne {
+// ClearUncachedRequests clears the value of the "uncached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) ClearUncachedRequests() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearStaleCount()
+		s.ClearUncachedRequests()
 	})
 }
 
-// SetResponseTimeAvg sets the "response_time_avg" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) SetResponseTimeAvg(v float64) *CloudflareZoneAnalysisDataUpsertOne {
+// SetBandwidth sets the "bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) SetBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetResponseTimeAvg(v)
+		s.SetBandwidth(v)
 	})
 }
 
-// AddResponseTimeAvg adds v to the "response_time_avg" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) AddResponseTimeAvg(v float64) *CloudflareZoneAnalysisDataUpsertOne {
+// AddBandwidth adds v to the "bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) AddBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddResponseTimeAvg(v)
+		s.AddBandwidth(v)
 	})
 }
 
-// UpdateResponseTimeAvg sets the "response_time_avg" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateResponseTimeAvg() *CloudflareZoneAnalysisDataUpsertOne {
+// UpdateBandwidth sets the "bandwidth" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateBandwidth() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateResponseTimeAvg()
+		s.UpdateBandwidth()
 	})
 }
 
-// ClearResponseTimeAvg clears the value of the "response_time_avg" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) ClearResponseTimeAvg() *CloudflareZoneAnalysisDataUpsertOne {
+// ClearBandwidth clears the value of the "bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) ClearBandwidth() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearResponseTimeAvg()
+		s.ClearBandwidth()
 	})
 }
 
-// SetResponseTimeMedian sets the "response_time_median" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) SetResponseTimeMedian(v float64) *CloudflareZoneAnalysisDataUpsertOne {
+// SetCachedBandwidth sets the "cached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) SetCachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetResponseTimeMedian(v)
+		s.SetCachedBandwidth(v)
 	})
 }
 
-// AddResponseTimeMedian adds v to the "response_time_median" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) AddResponseTimeMedian(v float64) *CloudflareZoneAnalysisDataUpsertOne {
+// AddCachedBandwidth adds v to the "cached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) AddCachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddResponseTimeMedian(v)
+		s.AddCachedBandwidth(v)
 	})
 }
 
-// UpdateResponseTimeMedian sets the "response_time_median" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateResponseTimeMedian() *CloudflareZoneAnalysisDataUpsertOne {
+// UpdateCachedBandwidth sets the "cached_bandwidth" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateCachedBandwidth() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateResponseTimeMedian()
+		s.UpdateCachedBandwidth()
 	})
 }
 
-// ClearResponseTimeMedian clears the value of the "response_time_median" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) ClearResponseTimeMedian() *CloudflareZoneAnalysisDataUpsertOne {
+// ClearCachedBandwidth clears the value of the "cached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) ClearCachedBandwidth() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearResponseTimeMedian()
+		s.ClearCachedBandwidth()
 	})
 }
 
-// SetResponseTime90th sets the "response_time_90th" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) SetResponseTime90th(v float64) *CloudflareZoneAnalysisDataUpsertOne {
+// SetUncachedBandwidth sets the "uncached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) SetUncachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetResponseTime90th(v)
+		s.SetUncachedBandwidth(v)
 	})
 }
 
-// AddResponseTime90th adds v to the "response_time_90th" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) AddResponseTime90th(v float64) *CloudflareZoneAnalysisDataUpsertOne {
+// AddUncachedBandwidth adds v to the "uncached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) AddUncachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddResponseTime90th(v)
+		s.AddUncachedBandwidth(v)
 	})
 }
 
-// UpdateResponseTime90th sets the "response_time_90th" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateResponseTime90th() *CloudflareZoneAnalysisDataUpsertOne {
+// UpdateUncachedBandwidth sets the "uncached_bandwidth" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateUncachedBandwidth() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateResponseTime90th()
+		s.UpdateUncachedBandwidth()
 	})
 }
 
-// ClearResponseTime90th clears the value of the "response_time_90th" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) ClearResponseTime90th() *CloudflareZoneAnalysisDataUpsertOne {
+// ClearUncachedBandwidth clears the value of the "uncached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) ClearUncachedBandwidth() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearResponseTime90th()
+		s.ClearUncachedBandwidth()
 	})
 }
 
-// SetResponseTime99th sets the "response_time_99th" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) SetResponseTime99th(v float64) *CloudflareZoneAnalysisDataUpsertOne {
+// SetUniques sets the "uniques" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) SetUniques(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetResponseTime99th(v)
+		s.SetUniques(v)
 	})
 }
 
-// AddResponseTime99th adds v to the "response_time_99th" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) AddResponseTime99th(v float64) *CloudflareZoneAnalysisDataUpsertOne {
+// AddUniques adds v to the "uniques" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) AddUniques(v int64) *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddResponseTime99th(v)
+		s.AddUniques(v)
 	})
 }
 
-// UpdateResponseTime99th sets the "response_time_99th" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateResponseTime99th() *CloudflareZoneAnalysisDataUpsertOne {
+// UpdateUniques sets the "uniques" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertOne) UpdateUniques() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateResponseTime99th()
+		s.UpdateUniques()
 	})
 }
 
-// ClearResponseTime99th clears the value of the "response_time_99th" field.
-func (u *CloudflareZoneAnalysisDataUpsertOne) ClearResponseTime99th() *CloudflareZoneAnalysisDataUpsertOne {
+// ClearUniques clears the value of the "uniques" field.
+func (u *CloudflareZoneAnalysisDataUpsertOne) ClearUniques() *CloudflareZoneAnalysisDataUpsertOne {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearResponseTime99th()
+		s.ClearUniques()
 	})
 }
 
@@ -983,199 +983,199 @@ func (u *CloudflareZoneAnalysisDataUpsertBulk) Update(set func(*CloudflareZoneAn
 	return u
 }
 
-// SetQueryCount sets the "query_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) SetQueryCount(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
+// SetRequests sets the "requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) SetRequests(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetQueryCount(v)
+		s.SetRequests(v)
 	})
 }
 
-// AddQueryCount adds v to the "query_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) AddQueryCount(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
+// AddRequests adds v to the "requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) AddRequests(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddQueryCount(v)
+		s.AddRequests(v)
 	})
 }
 
-// UpdateQueryCount sets the "query_count" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateQueryCount() *CloudflareZoneAnalysisDataUpsertBulk {
+// UpdateRequests sets the "requests" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateRequests() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateQueryCount()
+		s.UpdateRequests()
 	})
 }
 
-// ClearQueryCount clears the value of the "query_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearQueryCount() *CloudflareZoneAnalysisDataUpsertBulk {
+// ClearRequests clears the value of the "requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearRequests() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearQueryCount()
+		s.ClearRequests()
 	})
 }
 
-// SetUncachedCount sets the "uncached_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) SetUncachedCount(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
+// SetCachedRequests sets the "cached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) SetCachedRequests(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetUncachedCount(v)
+		s.SetCachedRequests(v)
 	})
 }
 
-// AddUncachedCount adds v to the "uncached_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) AddUncachedCount(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
+// AddCachedRequests adds v to the "cached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) AddCachedRequests(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddUncachedCount(v)
+		s.AddCachedRequests(v)
 	})
 }
 
-// UpdateUncachedCount sets the "uncached_count" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateUncachedCount() *CloudflareZoneAnalysisDataUpsertBulk {
+// UpdateCachedRequests sets the "cached_requests" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateCachedRequests() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateUncachedCount()
+		s.UpdateCachedRequests()
 	})
 }
 
-// ClearUncachedCount clears the value of the "uncached_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearUncachedCount() *CloudflareZoneAnalysisDataUpsertBulk {
+// ClearCachedRequests clears the value of the "cached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearCachedRequests() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearUncachedCount()
+		s.ClearCachedRequests()
 	})
 }
 
-// SetStaleCount sets the "stale_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) SetStaleCount(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
+// SetUncachedRequests sets the "uncached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) SetUncachedRequests(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetStaleCount(v)
+		s.SetUncachedRequests(v)
 	})
 }
 
-// AddStaleCount adds v to the "stale_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) AddStaleCount(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
+// AddUncachedRequests adds v to the "uncached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) AddUncachedRequests(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddStaleCount(v)
+		s.AddUncachedRequests(v)
 	})
 }
 
-// UpdateStaleCount sets the "stale_count" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateStaleCount() *CloudflareZoneAnalysisDataUpsertBulk {
+// UpdateUncachedRequests sets the "uncached_requests" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateUncachedRequests() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateStaleCount()
+		s.UpdateUncachedRequests()
 	})
 }
 
-// ClearStaleCount clears the value of the "stale_count" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearStaleCount() *CloudflareZoneAnalysisDataUpsertBulk {
+// ClearUncachedRequests clears the value of the "uncached_requests" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearUncachedRequests() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearStaleCount()
+		s.ClearUncachedRequests()
 	})
 }
 
-// SetResponseTimeAvg sets the "response_time_avg" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) SetResponseTimeAvg(v float64) *CloudflareZoneAnalysisDataUpsertBulk {
+// SetBandwidth sets the "bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) SetBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetResponseTimeAvg(v)
+		s.SetBandwidth(v)
 	})
 }
 
-// AddResponseTimeAvg adds v to the "response_time_avg" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) AddResponseTimeAvg(v float64) *CloudflareZoneAnalysisDataUpsertBulk {
+// AddBandwidth adds v to the "bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) AddBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddResponseTimeAvg(v)
+		s.AddBandwidth(v)
 	})
 }
 
-// UpdateResponseTimeAvg sets the "response_time_avg" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateResponseTimeAvg() *CloudflareZoneAnalysisDataUpsertBulk {
+// UpdateBandwidth sets the "bandwidth" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateBandwidth() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateResponseTimeAvg()
+		s.UpdateBandwidth()
 	})
 }
 
-// ClearResponseTimeAvg clears the value of the "response_time_avg" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearResponseTimeAvg() *CloudflareZoneAnalysisDataUpsertBulk {
+// ClearBandwidth clears the value of the "bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearBandwidth() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearResponseTimeAvg()
+		s.ClearBandwidth()
 	})
 }
 
-// SetResponseTimeMedian sets the "response_time_median" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) SetResponseTimeMedian(v float64) *CloudflareZoneAnalysisDataUpsertBulk {
+// SetCachedBandwidth sets the "cached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) SetCachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetResponseTimeMedian(v)
+		s.SetCachedBandwidth(v)
 	})
 }
 
-// AddResponseTimeMedian adds v to the "response_time_median" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) AddResponseTimeMedian(v float64) *CloudflareZoneAnalysisDataUpsertBulk {
+// AddCachedBandwidth adds v to the "cached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) AddCachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddResponseTimeMedian(v)
+		s.AddCachedBandwidth(v)
 	})
 }
 
-// UpdateResponseTimeMedian sets the "response_time_median" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateResponseTimeMedian() *CloudflareZoneAnalysisDataUpsertBulk {
+// UpdateCachedBandwidth sets the "cached_bandwidth" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateCachedBandwidth() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateResponseTimeMedian()
+		s.UpdateCachedBandwidth()
 	})
 }
 
-// ClearResponseTimeMedian clears the value of the "response_time_median" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearResponseTimeMedian() *CloudflareZoneAnalysisDataUpsertBulk {
+// ClearCachedBandwidth clears the value of the "cached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearCachedBandwidth() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearResponseTimeMedian()
+		s.ClearCachedBandwidth()
 	})
 }
 
-// SetResponseTime90th sets the "response_time_90th" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) SetResponseTime90th(v float64) *CloudflareZoneAnalysisDataUpsertBulk {
+// SetUncachedBandwidth sets the "uncached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) SetUncachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetResponseTime90th(v)
+		s.SetUncachedBandwidth(v)
 	})
 }
 
-// AddResponseTime90th adds v to the "response_time_90th" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) AddResponseTime90th(v float64) *CloudflareZoneAnalysisDataUpsertBulk {
+// AddUncachedBandwidth adds v to the "uncached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) AddUncachedBandwidth(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddResponseTime90th(v)
+		s.AddUncachedBandwidth(v)
 	})
 }
 
-// UpdateResponseTime90th sets the "response_time_90th" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateResponseTime90th() *CloudflareZoneAnalysisDataUpsertBulk {
+// UpdateUncachedBandwidth sets the "uncached_bandwidth" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateUncachedBandwidth() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateResponseTime90th()
+		s.UpdateUncachedBandwidth()
 	})
 }
 
-// ClearResponseTime90th clears the value of the "response_time_90th" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearResponseTime90th() *CloudflareZoneAnalysisDataUpsertBulk {
+// ClearUncachedBandwidth clears the value of the "uncached_bandwidth" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearUncachedBandwidth() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearResponseTime90th()
+		s.ClearUncachedBandwidth()
 	})
 }
 
-// SetResponseTime99th sets the "response_time_99th" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) SetResponseTime99th(v float64) *CloudflareZoneAnalysisDataUpsertBulk {
+// SetUniques sets the "uniques" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) SetUniques(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.SetResponseTime99th(v)
+		s.SetUniques(v)
 	})
 }
 
-// AddResponseTime99th adds v to the "response_time_99th" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) AddResponseTime99th(v float64) *CloudflareZoneAnalysisDataUpsertBulk {
+// AddUniques adds v to the "uniques" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) AddUniques(v int64) *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.AddResponseTime99th(v)
+		s.AddUniques(v)
 	})
 }
 
-// UpdateResponseTime99th sets the "response_time_99th" field to the value that was provided on create.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateResponseTime99th() *CloudflareZoneAnalysisDataUpsertBulk {
+// UpdateUniques sets the "uniques" field to the value that was provided on create.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) UpdateUniques() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.UpdateResponseTime99th()
+		s.UpdateUniques()
 	})
 }
 
-// ClearResponseTime99th clears the value of the "response_time_99th" field.
-func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearResponseTime99th() *CloudflareZoneAnalysisDataUpsertBulk {
+// ClearUniques clears the value of the "uniques" field.
+func (u *CloudflareZoneAnalysisDataUpsertBulk) ClearUniques() *CloudflareZoneAnalysisDataUpsertBulk {
 	return u.Update(func(s *CloudflareZoneAnalysisDataUpsert) {
-		s.ClearResponseTime99th()
+		s.ClearUniques()
 	})
 }
 

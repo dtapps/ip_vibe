@@ -52,39 +52,39 @@ func (CloudflareZoneAnalysisData) Fields() []ent.Field {
 			Comment("分析日期").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int64("query_count").
+		field.Int64("requests").
 			Optional().
-			Comment("查询计数").
+			Comment("请求总数（单位：次）").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int64("uncached_count").
+		field.Int64("cached_requests").
 			Optional().
-			Comment("未缓存查询计数").
+			Comment("已缓存请求数（单位：次）").
 			Annotations(entsql.WithComments(true)),
 
-		field.Int64("stale_count").
+		field.Int64("uncached_requests").
 			Optional().
-			Comment("未缓存查询计数").
+			Comment("未缓存请求数（单位：次）").
 			Annotations(entsql.WithComments(true)),
 
-		field.Float("response_time_avg").
+		field.Int64("bandwidth").
 			Optional().
-			Comment("响应耗时平均值，单位：ms").
+			Comment("总带宽（单位：Bytes）").
 			Annotations(entsql.WithComments(true)),
 
-		field.Float("response_time_median").
+		field.Int64("cached_bandwidth").
 			Optional().
-			Comment("响应耗时中位数，单位：ms").
+			Comment("已缓存带宽（单位：Bytes）").
 			Annotations(entsql.WithComments(true)),
 
-		field.Float("response_time_90th").
+		field.Int64("uncached_bandwidth").
 			Optional().
-			Comment("响应耗时90分位数，单位：ms").
+			Comment("未缓存带宽（单位：Bytes）").
 			Annotations(entsql.WithComments(true)),
 
-		field.Float("response_time_99th").
+		field.Int64("uniques").
 			Optional().
-			Comment("响应耗时99分位数，单位：ms").
+			Comment("唯一访问者数量（单位：人）").
 			Annotations(entsql.WithComments(true)),
 	}
 }

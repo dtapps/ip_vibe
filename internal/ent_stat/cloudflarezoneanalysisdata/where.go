@@ -69,39 +69,39 @@ func Date(v time.Time) predicate.CloudflareZoneAnalysisData {
 	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldDate, v))
 }
 
-// QueryCount applies equality check predicate on the "query_count" field. It's identical to QueryCountEQ.
-func QueryCount(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldQueryCount, v))
+// Requests applies equality check predicate on the "requests" field. It's identical to RequestsEQ.
+func Requests(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldRequests, v))
 }
 
-// UncachedCount applies equality check predicate on the "uncached_count" field. It's identical to UncachedCountEQ.
-func UncachedCount(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldUncachedCount, v))
+// CachedRequests applies equality check predicate on the "cached_requests" field. It's identical to CachedRequestsEQ.
+func CachedRequests(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldCachedRequests, v))
 }
 
-// StaleCount applies equality check predicate on the "stale_count" field. It's identical to StaleCountEQ.
-func StaleCount(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldStaleCount, v))
+// UncachedRequests applies equality check predicate on the "uncached_requests" field. It's identical to UncachedRequestsEQ.
+func UncachedRequests(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldUncachedRequests, v))
 }
 
-// ResponseTimeAvg applies equality check predicate on the "response_time_avg" field. It's identical to ResponseTimeAvgEQ.
-func ResponseTimeAvg(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldResponseTimeAvg, v))
+// Bandwidth applies equality check predicate on the "bandwidth" field. It's identical to BandwidthEQ.
+func Bandwidth(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldBandwidth, v))
 }
 
-// ResponseTimeMedian applies equality check predicate on the "response_time_median" field. It's identical to ResponseTimeMedianEQ.
-func ResponseTimeMedian(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldResponseTimeMedian, v))
+// CachedBandwidth applies equality check predicate on the "cached_bandwidth" field. It's identical to CachedBandwidthEQ.
+func CachedBandwidth(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldCachedBandwidth, v))
 }
 
-// ResponseTime90th applies equality check predicate on the "response_time_90th" field. It's identical to ResponseTime90thEQ.
-func ResponseTime90th(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldResponseTime90th, v))
+// UncachedBandwidth applies equality check predicate on the "uncached_bandwidth" field. It's identical to UncachedBandwidthEQ.
+func UncachedBandwidth(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldUncachedBandwidth, v))
 }
 
-// ResponseTime99th applies equality check predicate on the "response_time_99th" field. It's identical to ResponseTime99thEQ.
-func ResponseTime99th(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldResponseTime99th, v))
+// Uniques applies equality check predicate on the "uniques" field. It's identical to UniquesEQ.
+func Uniques(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldUniques, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -224,354 +224,354 @@ func DateLTE(v time.Time) predicate.CloudflareZoneAnalysisData {
 	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldDate, v))
 }
 
-// QueryCountEQ applies the EQ predicate on the "query_count" field.
-func QueryCountEQ(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldQueryCount, v))
+// RequestsEQ applies the EQ predicate on the "requests" field.
+func RequestsEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldRequests, v))
 }
 
-// QueryCountNEQ applies the NEQ predicate on the "query_count" field.
-func QueryCountNEQ(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldQueryCount, v))
+// RequestsNEQ applies the NEQ predicate on the "requests" field.
+func RequestsNEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldRequests, v))
 }
 
-// QueryCountIn applies the In predicate on the "query_count" field.
-func QueryCountIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldQueryCount, vs...))
+// RequestsIn applies the In predicate on the "requests" field.
+func RequestsIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldRequests, vs...))
 }
 
-// QueryCountNotIn applies the NotIn predicate on the "query_count" field.
-func QueryCountNotIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldQueryCount, vs...))
+// RequestsNotIn applies the NotIn predicate on the "requests" field.
+func RequestsNotIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldRequests, vs...))
 }
 
-// QueryCountGT applies the GT predicate on the "query_count" field.
-func QueryCountGT(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldQueryCount, v))
+// RequestsGT applies the GT predicate on the "requests" field.
+func RequestsGT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldRequests, v))
 }
 
-// QueryCountGTE applies the GTE predicate on the "query_count" field.
-func QueryCountGTE(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldQueryCount, v))
+// RequestsGTE applies the GTE predicate on the "requests" field.
+func RequestsGTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldRequests, v))
 }
 
-// QueryCountLT applies the LT predicate on the "query_count" field.
-func QueryCountLT(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldQueryCount, v))
+// RequestsLT applies the LT predicate on the "requests" field.
+func RequestsLT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldRequests, v))
 }
 
-// QueryCountLTE applies the LTE predicate on the "query_count" field.
-func QueryCountLTE(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldQueryCount, v))
+// RequestsLTE applies the LTE predicate on the "requests" field.
+func RequestsLTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldRequests, v))
 }
 
-// QueryCountIsNil applies the IsNil predicate on the "query_count" field.
-func QueryCountIsNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldQueryCount))
+// RequestsIsNil applies the IsNil predicate on the "requests" field.
+func RequestsIsNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldRequests))
 }
 
-// QueryCountNotNil applies the NotNil predicate on the "query_count" field.
-func QueryCountNotNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldQueryCount))
+// RequestsNotNil applies the NotNil predicate on the "requests" field.
+func RequestsNotNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldRequests))
 }
 
-// UncachedCountEQ applies the EQ predicate on the "uncached_count" field.
-func UncachedCountEQ(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldUncachedCount, v))
+// CachedRequestsEQ applies the EQ predicate on the "cached_requests" field.
+func CachedRequestsEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldCachedRequests, v))
 }
 
-// UncachedCountNEQ applies the NEQ predicate on the "uncached_count" field.
-func UncachedCountNEQ(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldUncachedCount, v))
+// CachedRequestsNEQ applies the NEQ predicate on the "cached_requests" field.
+func CachedRequestsNEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldCachedRequests, v))
 }
 
-// UncachedCountIn applies the In predicate on the "uncached_count" field.
-func UncachedCountIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldUncachedCount, vs...))
+// CachedRequestsIn applies the In predicate on the "cached_requests" field.
+func CachedRequestsIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldCachedRequests, vs...))
 }
 
-// UncachedCountNotIn applies the NotIn predicate on the "uncached_count" field.
-func UncachedCountNotIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldUncachedCount, vs...))
+// CachedRequestsNotIn applies the NotIn predicate on the "cached_requests" field.
+func CachedRequestsNotIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldCachedRequests, vs...))
 }
 
-// UncachedCountGT applies the GT predicate on the "uncached_count" field.
-func UncachedCountGT(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldUncachedCount, v))
+// CachedRequestsGT applies the GT predicate on the "cached_requests" field.
+func CachedRequestsGT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldCachedRequests, v))
 }
 
-// UncachedCountGTE applies the GTE predicate on the "uncached_count" field.
-func UncachedCountGTE(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldUncachedCount, v))
+// CachedRequestsGTE applies the GTE predicate on the "cached_requests" field.
+func CachedRequestsGTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldCachedRequests, v))
 }
 
-// UncachedCountLT applies the LT predicate on the "uncached_count" field.
-func UncachedCountLT(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldUncachedCount, v))
+// CachedRequestsLT applies the LT predicate on the "cached_requests" field.
+func CachedRequestsLT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldCachedRequests, v))
 }
 
-// UncachedCountLTE applies the LTE predicate on the "uncached_count" field.
-func UncachedCountLTE(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldUncachedCount, v))
+// CachedRequestsLTE applies the LTE predicate on the "cached_requests" field.
+func CachedRequestsLTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldCachedRequests, v))
 }
 
-// UncachedCountIsNil applies the IsNil predicate on the "uncached_count" field.
-func UncachedCountIsNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldUncachedCount))
+// CachedRequestsIsNil applies the IsNil predicate on the "cached_requests" field.
+func CachedRequestsIsNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldCachedRequests))
 }
 
-// UncachedCountNotNil applies the NotNil predicate on the "uncached_count" field.
-func UncachedCountNotNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldUncachedCount))
+// CachedRequestsNotNil applies the NotNil predicate on the "cached_requests" field.
+func CachedRequestsNotNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldCachedRequests))
 }
 
-// StaleCountEQ applies the EQ predicate on the "stale_count" field.
-func StaleCountEQ(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldStaleCount, v))
+// UncachedRequestsEQ applies the EQ predicate on the "uncached_requests" field.
+func UncachedRequestsEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldUncachedRequests, v))
 }
 
-// StaleCountNEQ applies the NEQ predicate on the "stale_count" field.
-func StaleCountNEQ(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldStaleCount, v))
+// UncachedRequestsNEQ applies the NEQ predicate on the "uncached_requests" field.
+func UncachedRequestsNEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldUncachedRequests, v))
 }
 
-// StaleCountIn applies the In predicate on the "stale_count" field.
-func StaleCountIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldStaleCount, vs...))
+// UncachedRequestsIn applies the In predicate on the "uncached_requests" field.
+func UncachedRequestsIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldUncachedRequests, vs...))
 }
 
-// StaleCountNotIn applies the NotIn predicate on the "stale_count" field.
-func StaleCountNotIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldStaleCount, vs...))
+// UncachedRequestsNotIn applies the NotIn predicate on the "uncached_requests" field.
+func UncachedRequestsNotIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldUncachedRequests, vs...))
 }
 
-// StaleCountGT applies the GT predicate on the "stale_count" field.
-func StaleCountGT(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldStaleCount, v))
+// UncachedRequestsGT applies the GT predicate on the "uncached_requests" field.
+func UncachedRequestsGT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldUncachedRequests, v))
 }
 
-// StaleCountGTE applies the GTE predicate on the "stale_count" field.
-func StaleCountGTE(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldStaleCount, v))
+// UncachedRequestsGTE applies the GTE predicate on the "uncached_requests" field.
+func UncachedRequestsGTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldUncachedRequests, v))
 }
 
-// StaleCountLT applies the LT predicate on the "stale_count" field.
-func StaleCountLT(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldStaleCount, v))
+// UncachedRequestsLT applies the LT predicate on the "uncached_requests" field.
+func UncachedRequestsLT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldUncachedRequests, v))
 }
 
-// StaleCountLTE applies the LTE predicate on the "stale_count" field.
-func StaleCountLTE(v int64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldStaleCount, v))
+// UncachedRequestsLTE applies the LTE predicate on the "uncached_requests" field.
+func UncachedRequestsLTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldUncachedRequests, v))
 }
 
-// StaleCountIsNil applies the IsNil predicate on the "stale_count" field.
-func StaleCountIsNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldStaleCount))
+// UncachedRequestsIsNil applies the IsNil predicate on the "uncached_requests" field.
+func UncachedRequestsIsNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldUncachedRequests))
 }
 
-// StaleCountNotNil applies the NotNil predicate on the "stale_count" field.
-func StaleCountNotNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldStaleCount))
+// UncachedRequestsNotNil applies the NotNil predicate on the "uncached_requests" field.
+func UncachedRequestsNotNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldUncachedRequests))
 }
 
-// ResponseTimeAvgEQ applies the EQ predicate on the "response_time_avg" field.
-func ResponseTimeAvgEQ(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldResponseTimeAvg, v))
+// BandwidthEQ applies the EQ predicate on the "bandwidth" field.
+func BandwidthEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldBandwidth, v))
 }
 
-// ResponseTimeAvgNEQ applies the NEQ predicate on the "response_time_avg" field.
-func ResponseTimeAvgNEQ(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldResponseTimeAvg, v))
+// BandwidthNEQ applies the NEQ predicate on the "bandwidth" field.
+func BandwidthNEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldBandwidth, v))
 }
 
-// ResponseTimeAvgIn applies the In predicate on the "response_time_avg" field.
-func ResponseTimeAvgIn(vs ...float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldResponseTimeAvg, vs...))
+// BandwidthIn applies the In predicate on the "bandwidth" field.
+func BandwidthIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldBandwidth, vs...))
 }
 
-// ResponseTimeAvgNotIn applies the NotIn predicate on the "response_time_avg" field.
-func ResponseTimeAvgNotIn(vs ...float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldResponseTimeAvg, vs...))
+// BandwidthNotIn applies the NotIn predicate on the "bandwidth" field.
+func BandwidthNotIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldBandwidth, vs...))
 }
 
-// ResponseTimeAvgGT applies the GT predicate on the "response_time_avg" field.
-func ResponseTimeAvgGT(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldResponseTimeAvg, v))
+// BandwidthGT applies the GT predicate on the "bandwidth" field.
+func BandwidthGT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldBandwidth, v))
 }
 
-// ResponseTimeAvgGTE applies the GTE predicate on the "response_time_avg" field.
-func ResponseTimeAvgGTE(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldResponseTimeAvg, v))
+// BandwidthGTE applies the GTE predicate on the "bandwidth" field.
+func BandwidthGTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldBandwidth, v))
 }
 
-// ResponseTimeAvgLT applies the LT predicate on the "response_time_avg" field.
-func ResponseTimeAvgLT(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldResponseTimeAvg, v))
+// BandwidthLT applies the LT predicate on the "bandwidth" field.
+func BandwidthLT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldBandwidth, v))
 }
 
-// ResponseTimeAvgLTE applies the LTE predicate on the "response_time_avg" field.
-func ResponseTimeAvgLTE(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldResponseTimeAvg, v))
+// BandwidthLTE applies the LTE predicate on the "bandwidth" field.
+func BandwidthLTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldBandwidth, v))
 }
 
-// ResponseTimeAvgIsNil applies the IsNil predicate on the "response_time_avg" field.
-func ResponseTimeAvgIsNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldResponseTimeAvg))
+// BandwidthIsNil applies the IsNil predicate on the "bandwidth" field.
+func BandwidthIsNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldBandwidth))
 }
 
-// ResponseTimeAvgNotNil applies the NotNil predicate on the "response_time_avg" field.
-func ResponseTimeAvgNotNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldResponseTimeAvg))
+// BandwidthNotNil applies the NotNil predicate on the "bandwidth" field.
+func BandwidthNotNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldBandwidth))
 }
 
-// ResponseTimeMedianEQ applies the EQ predicate on the "response_time_median" field.
-func ResponseTimeMedianEQ(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldResponseTimeMedian, v))
+// CachedBandwidthEQ applies the EQ predicate on the "cached_bandwidth" field.
+func CachedBandwidthEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldCachedBandwidth, v))
 }
 
-// ResponseTimeMedianNEQ applies the NEQ predicate on the "response_time_median" field.
-func ResponseTimeMedianNEQ(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldResponseTimeMedian, v))
+// CachedBandwidthNEQ applies the NEQ predicate on the "cached_bandwidth" field.
+func CachedBandwidthNEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldCachedBandwidth, v))
 }
 
-// ResponseTimeMedianIn applies the In predicate on the "response_time_median" field.
-func ResponseTimeMedianIn(vs ...float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldResponseTimeMedian, vs...))
+// CachedBandwidthIn applies the In predicate on the "cached_bandwidth" field.
+func CachedBandwidthIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldCachedBandwidth, vs...))
 }
 
-// ResponseTimeMedianNotIn applies the NotIn predicate on the "response_time_median" field.
-func ResponseTimeMedianNotIn(vs ...float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldResponseTimeMedian, vs...))
+// CachedBandwidthNotIn applies the NotIn predicate on the "cached_bandwidth" field.
+func CachedBandwidthNotIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldCachedBandwidth, vs...))
 }
 
-// ResponseTimeMedianGT applies the GT predicate on the "response_time_median" field.
-func ResponseTimeMedianGT(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldResponseTimeMedian, v))
+// CachedBandwidthGT applies the GT predicate on the "cached_bandwidth" field.
+func CachedBandwidthGT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldCachedBandwidth, v))
 }
 
-// ResponseTimeMedianGTE applies the GTE predicate on the "response_time_median" field.
-func ResponseTimeMedianGTE(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldResponseTimeMedian, v))
+// CachedBandwidthGTE applies the GTE predicate on the "cached_bandwidth" field.
+func CachedBandwidthGTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldCachedBandwidth, v))
 }
 
-// ResponseTimeMedianLT applies the LT predicate on the "response_time_median" field.
-func ResponseTimeMedianLT(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldResponseTimeMedian, v))
+// CachedBandwidthLT applies the LT predicate on the "cached_bandwidth" field.
+func CachedBandwidthLT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldCachedBandwidth, v))
 }
 
-// ResponseTimeMedianLTE applies the LTE predicate on the "response_time_median" field.
-func ResponseTimeMedianLTE(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldResponseTimeMedian, v))
+// CachedBandwidthLTE applies the LTE predicate on the "cached_bandwidth" field.
+func CachedBandwidthLTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldCachedBandwidth, v))
 }
 
-// ResponseTimeMedianIsNil applies the IsNil predicate on the "response_time_median" field.
-func ResponseTimeMedianIsNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldResponseTimeMedian))
+// CachedBandwidthIsNil applies the IsNil predicate on the "cached_bandwidth" field.
+func CachedBandwidthIsNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldCachedBandwidth))
 }
 
-// ResponseTimeMedianNotNil applies the NotNil predicate on the "response_time_median" field.
-func ResponseTimeMedianNotNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldResponseTimeMedian))
+// CachedBandwidthNotNil applies the NotNil predicate on the "cached_bandwidth" field.
+func CachedBandwidthNotNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldCachedBandwidth))
 }
 
-// ResponseTime90thEQ applies the EQ predicate on the "response_time_90th" field.
-func ResponseTime90thEQ(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldResponseTime90th, v))
+// UncachedBandwidthEQ applies the EQ predicate on the "uncached_bandwidth" field.
+func UncachedBandwidthEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldUncachedBandwidth, v))
 }
 
-// ResponseTime90thNEQ applies the NEQ predicate on the "response_time_90th" field.
-func ResponseTime90thNEQ(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldResponseTime90th, v))
+// UncachedBandwidthNEQ applies the NEQ predicate on the "uncached_bandwidth" field.
+func UncachedBandwidthNEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldUncachedBandwidth, v))
 }
 
-// ResponseTime90thIn applies the In predicate on the "response_time_90th" field.
-func ResponseTime90thIn(vs ...float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldResponseTime90th, vs...))
+// UncachedBandwidthIn applies the In predicate on the "uncached_bandwidth" field.
+func UncachedBandwidthIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldUncachedBandwidth, vs...))
 }
 
-// ResponseTime90thNotIn applies the NotIn predicate on the "response_time_90th" field.
-func ResponseTime90thNotIn(vs ...float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldResponseTime90th, vs...))
+// UncachedBandwidthNotIn applies the NotIn predicate on the "uncached_bandwidth" field.
+func UncachedBandwidthNotIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldUncachedBandwidth, vs...))
 }
 
-// ResponseTime90thGT applies the GT predicate on the "response_time_90th" field.
-func ResponseTime90thGT(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldResponseTime90th, v))
+// UncachedBandwidthGT applies the GT predicate on the "uncached_bandwidth" field.
+func UncachedBandwidthGT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldUncachedBandwidth, v))
 }
 
-// ResponseTime90thGTE applies the GTE predicate on the "response_time_90th" field.
-func ResponseTime90thGTE(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldResponseTime90th, v))
+// UncachedBandwidthGTE applies the GTE predicate on the "uncached_bandwidth" field.
+func UncachedBandwidthGTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldUncachedBandwidth, v))
 }
 
-// ResponseTime90thLT applies the LT predicate on the "response_time_90th" field.
-func ResponseTime90thLT(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldResponseTime90th, v))
+// UncachedBandwidthLT applies the LT predicate on the "uncached_bandwidth" field.
+func UncachedBandwidthLT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldUncachedBandwidth, v))
 }
 
-// ResponseTime90thLTE applies the LTE predicate on the "response_time_90th" field.
-func ResponseTime90thLTE(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldResponseTime90th, v))
+// UncachedBandwidthLTE applies the LTE predicate on the "uncached_bandwidth" field.
+func UncachedBandwidthLTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldUncachedBandwidth, v))
 }
 
-// ResponseTime90thIsNil applies the IsNil predicate on the "response_time_90th" field.
-func ResponseTime90thIsNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldResponseTime90th))
+// UncachedBandwidthIsNil applies the IsNil predicate on the "uncached_bandwidth" field.
+func UncachedBandwidthIsNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldUncachedBandwidth))
 }
 
-// ResponseTime90thNotNil applies the NotNil predicate on the "response_time_90th" field.
-func ResponseTime90thNotNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldResponseTime90th))
+// UncachedBandwidthNotNil applies the NotNil predicate on the "uncached_bandwidth" field.
+func UncachedBandwidthNotNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldUncachedBandwidth))
 }
 
-// ResponseTime99thEQ applies the EQ predicate on the "response_time_99th" field.
-func ResponseTime99thEQ(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldResponseTime99th, v))
+// UniquesEQ applies the EQ predicate on the "uniques" field.
+func UniquesEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldEQ(FieldUniques, v))
 }
 
-// ResponseTime99thNEQ applies the NEQ predicate on the "response_time_99th" field.
-func ResponseTime99thNEQ(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldResponseTime99th, v))
+// UniquesNEQ applies the NEQ predicate on the "uniques" field.
+func UniquesNEQ(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNEQ(FieldUniques, v))
 }
 
-// ResponseTime99thIn applies the In predicate on the "response_time_99th" field.
-func ResponseTime99thIn(vs ...float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldResponseTime99th, vs...))
+// UniquesIn applies the In predicate on the "uniques" field.
+func UniquesIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIn(FieldUniques, vs...))
 }
 
-// ResponseTime99thNotIn applies the NotIn predicate on the "response_time_99th" field.
-func ResponseTime99thNotIn(vs ...float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldResponseTime99th, vs...))
+// UniquesNotIn applies the NotIn predicate on the "uniques" field.
+func UniquesNotIn(vs ...int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotIn(FieldUniques, vs...))
 }
 
-// ResponseTime99thGT applies the GT predicate on the "response_time_99th" field.
-func ResponseTime99thGT(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldResponseTime99th, v))
+// UniquesGT applies the GT predicate on the "uniques" field.
+func UniquesGT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGT(FieldUniques, v))
 }
 
-// ResponseTime99thGTE applies the GTE predicate on the "response_time_99th" field.
-func ResponseTime99thGTE(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldResponseTime99th, v))
+// UniquesGTE applies the GTE predicate on the "uniques" field.
+func UniquesGTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldGTE(FieldUniques, v))
 }
 
-// ResponseTime99thLT applies the LT predicate on the "response_time_99th" field.
-func ResponseTime99thLT(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldResponseTime99th, v))
+// UniquesLT applies the LT predicate on the "uniques" field.
+func UniquesLT(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLT(FieldUniques, v))
 }
 
-// ResponseTime99thLTE applies the LTE predicate on the "response_time_99th" field.
-func ResponseTime99thLTE(v float64) predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldResponseTime99th, v))
+// UniquesLTE applies the LTE predicate on the "uniques" field.
+func UniquesLTE(v int64) predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldLTE(FieldUniques, v))
 }
 
-// ResponseTime99thIsNil applies the IsNil predicate on the "response_time_99th" field.
-func ResponseTime99thIsNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldResponseTime99th))
+// UniquesIsNil applies the IsNil predicate on the "uniques" field.
+func UniquesIsNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldIsNull(FieldUniques))
 }
 
-// ResponseTime99thNotNil applies the NotNil predicate on the "response_time_99th" field.
-func ResponseTime99thNotNil() predicate.CloudflareZoneAnalysisData {
-	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldResponseTime99th))
+// UniquesNotNil applies the NotNil predicate on the "uniques" field.
+func UniquesNotNil() predicate.CloudflareZoneAnalysisData {
+	return predicate.CloudflareZoneAnalysisData(sql.FieldNotNull(FieldUniques))
 }
 
 // And groups predicates with the AND operator between them.

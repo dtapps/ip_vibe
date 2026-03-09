@@ -11,11 +11,14 @@ import (
 	"vibe_ip/internal/ent/cloudflarezonerecord"
 	"vibe_ip/internal/ent/platformconfig"
 	"vibe_ip/internal/ent_log"
+	"vibe_ip/internal/ent_stat"
+	"vibe_ip/internal/ent_stat/cloudflarezoneanalysisdata"
 	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/provider/dns"
 
 	"go.dtapp.net/library/contrib/http_log"
 	"go.dtapp.net/library/utils/gojson"
+	"go.dtapp.net/library/utils/gotime"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -195,30 +198,47 @@ func (s *CloudflareZoneSync) SyncThisZones(ctx context.Context, config_id int64)
 			cloudflareZoneID = firstZone.ID
 		}
 
-		// 按天统计（请求数 + 带宽 + 唯一访客）
+		// 按天统计的网站访问数据
 		statsByDayData, err := dnsProvider.StatsByDay(ctx, zone.ID)
 		if err != nil {
-			s.logger.ErrorContext(ctx, "按天统计（请求数 + 带宽 + 唯一访客）失败",
+			s.logger.ErrorContext(ctx, "按天统计的网站访问数据失败",
 				slog.Any("err", err),
 			)
 			return err
 		}
 
-		// 按天统计（已缓存请求 + 未缓存请求 + 已缓存带宽 + 未缓存带宽）
-		// cacheStatsData, err := dnsProvider.CacheStats(ctx, zone.ID, time.Now().UTC().AddDate(0, 0, -1), time.Now().UTC())
-		// if err != nil {
-		// 	s.logger.ErrorContext(ctx, "按天统计（已缓存请求 + 未缓存请求 + 已缓存带宽 + 未缓存带宽）失败",
-		// 		slog.Any("err", err),
-		// 	)
-		// 	return err
-		// }
+		// 构建批量 Create 对象
+		createAnalysisDatas := make([]*ent_stat.CloudflareZoneAnalysisDataCreate, 0, len(statsByDayData))
+		for _, item := range statsByDayData {
+			createAnalysisDatas = append(
+				createAnalysisDatas,
+				syncStatDb.CloudflareZoneAnalysisData.Create().
+					SetCloudflareZoneID(cloudflareZoneID).
+					SetDate(gotime.SetCurrentParse(item.Date).Time).
+					SetRequests(item.Requests).
+					SetCachedRequests(item.CachedRequests).
+					SetUncachedRequests(item.UncachedRequests).
+					SetBandwidth(item.Bandwidth).
+					SetCachedBandwidth(item.CachedBandwidth).
+					SetUncachedBandwidth(item.UncachedBandwidth).
+					SetUniques(item.Uniques),
+			)
+		}
 
-		s.logger.DebugContext(ctx, "查询统计数据",
-			slog.String("zone", zone.ID),
-			slog.Int64("cloudflareZoneID", cloudflareZoneID),
-			slog.Any("statsByDayData", statsByDayData),
-			// slog.Any("cacheStatsData", cacheStatsData),
-		)
+		// 批量入库统计数据
+		err = syncStatDb.CloudflareZoneAnalysisData.CreateBulk(createAnalysisDatas...).
+			OnConflictColumns(
+				cloudflarezoneanalysisdata.FieldCloudflareZoneID, cloudflarezoneanalysisdata.FieldDate,
+			).
+			UpdateNewValues().
+			Exec(ctx)
+		if err != nil {
+			s.logger.ErrorContext(ctx, "批量入库统计数据失败",
+				slog.Any("err", err),
+			)
+			return fmt.Errorf("批量入库统计数据失败: %w", err)
+		}
+
 	}
 
 	return nil
@@ -289,29 +309,47 @@ func (s *CloudflareZoneSync) SyncThisSite(ctx context.Context, config_id int64, 
 			return fmt.Errorf("更新站点记录失败: %w", err)
 		}
 
-		// 按天统计（请求数 + 带宽 + 唯一访客）
+		// 按天统计的网站访问数据
 		statsByDayData, err := dnsProvider.StatsByDay(ctx, zone.ID)
 		if err != nil {
-			s.logger.ErrorContext(ctx, "按天统计（请求数 + 带宽 + 唯一访客）失败",
+			s.logger.ErrorContext(ctx, "按天统计的网站访问数据失败",
 				slog.Any("err", err),
 			)
 			return err
 		}
 
-		// 按天统计（已缓存请求 + 未缓存请求 + 已缓存带宽 + 未缓存带宽）
-		// cacheStatsData, err := dnsProvider.CacheStats(ctx, zone.ID, time.Now().UTC().AddDate(0, 0, -1), time.Now().UTC())
-		// if err != nil {
-		// 	s.logger.ErrorContext(ctx, "按天统计（已缓存请求 + 未缓存请求 + 已缓存带宽 + 未缓存带宽）失败",
-		// 		slog.Any("err", err),
-		// 	)
-		// 	return err
-		// }
+		// 构建批量 Create 对象
+		createAnalysisDatas := make([]*ent_stat.CloudflareZoneAnalysisDataCreate, 0, len(statsByDayData))
+		for _, item := range statsByDayData {
+			createAnalysisDatas = append(
+				createAnalysisDatas,
+				syncStatDb.CloudflareZoneAnalysisData.Create().
+					SetCloudflareZoneID(firstPlatformCofing.ID).
+					SetDate(gotime.SetCurrentParse(item.Date).Time).
+					SetRequests(item.Requests).
+					SetCachedRequests(item.CachedRequests).
+					SetUncachedRequests(item.UncachedRequests).
+					SetBandwidth(item.Bandwidth).
+					SetCachedBandwidth(item.CachedBandwidth).
+					SetUncachedBandwidth(item.UncachedBandwidth).
+					SetUniques(item.Uniques),
+			)
+		}
 
-		s.logger.DebugContext(ctx, "查询统计数据",
-			slog.String("zone", zone.ID),
-			slog.Any("statsByDayData", statsByDayData),
-			// slog.Any("cacheStatsData", cacheStatsData),
-		)
+		// 批量入库统计数据
+		err = syncStatDb.CloudflareZoneAnalysisData.CreateBulk(createAnalysisDatas...).
+			OnConflictColumns(
+				cloudflarezoneanalysisdata.FieldCloudflareZoneID, cloudflarezoneanalysisdata.FieldDate,
+			).
+			UpdateNewValues().
+			Exec(ctx)
+		if err != nil {
+			s.logger.ErrorContext(ctx, "批量入库统计数据失败",
+				slog.Any("err", err),
+			)
+			return fmt.Errorf("批量入库统计数据失败: %w", err)
+		}
+
 	}
 
 	return nil

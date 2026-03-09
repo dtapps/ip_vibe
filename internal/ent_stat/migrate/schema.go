@@ -15,13 +15,13 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间"},
 		{Name: "cloudflare_zone_id", Type: field.TypeInt64, Comment: "关联 Cloudflare 站点序号"},
 		{Name: "date", Type: field.TypeTime, Comment: "分析日期"},
-		{Name: "query_count", Type: field.TypeInt64, Nullable: true, Comment: "查询计数"},
-		{Name: "uncached_count", Type: field.TypeInt64, Nullable: true, Comment: "未缓存查询计数"},
-		{Name: "stale_count", Type: field.TypeInt64, Nullable: true, Comment: "未缓存查询计数"},
-		{Name: "response_time_avg", Type: field.TypeFloat64, Nullable: true, Comment: "响应耗时平均值，单位：ms"},
-		{Name: "response_time_median", Type: field.TypeFloat64, Nullable: true, Comment: "响应耗时中位数，单位：ms"},
-		{Name: "response_time_90th", Type: field.TypeFloat64, Nullable: true, Comment: "响应耗时90分位数，单位：ms"},
-		{Name: "response_time_99th", Type: field.TypeFloat64, Nullable: true, Comment: "响应耗时99分位数，单位：ms"},
+		{Name: "requests", Type: field.TypeInt64, Nullable: true, Comment: "请求总数（单位：次）"},
+		{Name: "cached_requests", Type: field.TypeInt64, Nullable: true, Comment: "已缓存请求数（单位：次）"},
+		{Name: "uncached_requests", Type: field.TypeInt64, Nullable: true, Comment: "未缓存请求数（单位：次）"},
+		{Name: "bandwidth", Type: field.TypeInt64, Nullable: true, Comment: "总带宽（单位：Bytes）"},
+		{Name: "cached_bandwidth", Type: field.TypeInt64, Nullable: true, Comment: "已缓存带宽（单位：Bytes）"},
+		{Name: "uncached_bandwidth", Type: field.TypeInt64, Nullable: true, Comment: "未缓存带宽（单位：Bytes）"},
+		{Name: "uniques", Type: field.TypeInt64, Nullable: true, Comment: "唯一访问者数量（单位：人）"},
 	}
 	// CloudflareZoneAnalysisDataTable holds the schema information for the "cloudflare_zone_analysis_data" table.
 	CloudflareZoneAnalysisDataTable = &schema.Table{

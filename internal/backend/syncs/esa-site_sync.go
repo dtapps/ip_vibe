@@ -218,12 +218,6 @@ func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err e
 			return err
 		}
 
-		s.logger.DebugContext(ctx, "查询统计数据",
-			slog.Int64("zone", tea.Int64Value(site.SiteId)),
-			slog.Int64("esaSiteID", esaSiteID),
-			slog.Any("analysisDatas", analysisDatas),
-		)
-
 		// 按天聚合：date -> map[metricName]value
 		dayMetrics := make(map[string]map[string]int64)
 		for _, tv := range analysisDatas {
@@ -266,9 +260,6 @@ func (s *ESASiteSync) SyncThisSites(ctx context.Context, config_id int64) (err e
 			return fmt.Errorf("批量入库统计数据失败: %w", err)
 		}
 
-		s.logger.DebugContext(ctx, "批量入库统计数据成功",
-			slog.Int64("site_id", firstSite.ID),
-		)
 	}
 
 	return nil
@@ -351,12 +342,6 @@ func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id
 			return err
 		}
 
-		s.logger.DebugContext(ctx, "查询统计数据",
-			slog.Int64("zone", tea.Int64Value(site.SiteId)),
-
-			slog.Any("analysisDatas", analysisDatas),
-		)
-
 		// 按天聚合：date -> map[metricName]value
 		dayMetrics := make(map[string]map[string]int64)
 		for _, tv := range analysisDatas {
@@ -398,10 +383,6 @@ func (s *ESASiteSync) SyncThisSite(ctx context.Context, config_id int64, site_id
 			)
 			return fmt.Errorf("批量入库统计数据失败: %w", err)
 		}
-
-		s.logger.DebugContext(ctx, "批量入库统计数据成功",
-			slog.Int64("site_id", firstSite.ID),
-		)
 	}
 
 	return nil

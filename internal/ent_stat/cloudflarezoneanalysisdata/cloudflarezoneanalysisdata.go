@@ -19,20 +19,20 @@ const (
 	FieldCloudflareZoneID = "cloudflare_zone_id"
 	// FieldDate holds the string denoting the date field in the database.
 	FieldDate = "date"
-	// FieldQueryCount holds the string denoting the query_count field in the database.
-	FieldQueryCount = "query_count"
-	// FieldUncachedCount holds the string denoting the uncached_count field in the database.
-	FieldUncachedCount = "uncached_count"
-	// FieldStaleCount holds the string denoting the stale_count field in the database.
-	FieldStaleCount = "stale_count"
-	// FieldResponseTimeAvg holds the string denoting the response_time_avg field in the database.
-	FieldResponseTimeAvg = "response_time_avg"
-	// FieldResponseTimeMedian holds the string denoting the response_time_median field in the database.
-	FieldResponseTimeMedian = "response_time_median"
-	// FieldResponseTime90th holds the string denoting the response_time_90th field in the database.
-	FieldResponseTime90th = "response_time_90th"
-	// FieldResponseTime99th holds the string denoting the response_time_99th field in the database.
-	FieldResponseTime99th = "response_time_99th"
+	// FieldRequests holds the string denoting the requests field in the database.
+	FieldRequests = "requests"
+	// FieldCachedRequests holds the string denoting the cached_requests field in the database.
+	FieldCachedRequests = "cached_requests"
+	// FieldUncachedRequests holds the string denoting the uncached_requests field in the database.
+	FieldUncachedRequests = "uncached_requests"
+	// FieldBandwidth holds the string denoting the bandwidth field in the database.
+	FieldBandwidth = "bandwidth"
+	// FieldCachedBandwidth holds the string denoting the cached_bandwidth field in the database.
+	FieldCachedBandwidth = "cached_bandwidth"
+	// FieldUncachedBandwidth holds the string denoting the uncached_bandwidth field in the database.
+	FieldUncachedBandwidth = "uncached_bandwidth"
+	// FieldUniques holds the string denoting the uniques field in the database.
+	FieldUniques = "uniques"
 	// Table holds the table name of the cloudflarezoneanalysisdata in the database.
 	Table = "cloudflare_zone_analysis_data"
 )
@@ -43,13 +43,13 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldCloudflareZoneID,
 	FieldDate,
-	FieldQueryCount,
-	FieldUncachedCount,
-	FieldStaleCount,
-	FieldResponseTimeAvg,
-	FieldResponseTimeMedian,
-	FieldResponseTime90th,
-	FieldResponseTime99th,
+	FieldRequests,
+	FieldCachedRequests,
+	FieldUncachedRequests,
+	FieldBandwidth,
+	FieldCachedBandwidth,
+	FieldUncachedBandwidth,
+	FieldUniques,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -94,37 +94,37 @@ func ByDate(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDate, opts...).ToFunc()
 }
 
-// ByQueryCount orders the results by the query_count field.
-func ByQueryCount(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldQueryCount, opts...).ToFunc()
+// ByRequests orders the results by the requests field.
+func ByRequests(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRequests, opts...).ToFunc()
 }
 
-// ByUncachedCount orders the results by the uncached_count field.
-func ByUncachedCount(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUncachedCount, opts...).ToFunc()
+// ByCachedRequests orders the results by the cached_requests field.
+func ByCachedRequests(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCachedRequests, opts...).ToFunc()
 }
 
-// ByStaleCount orders the results by the stale_count field.
-func ByStaleCount(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStaleCount, opts...).ToFunc()
+// ByUncachedRequests orders the results by the uncached_requests field.
+func ByUncachedRequests(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUncachedRequests, opts...).ToFunc()
 }
 
-// ByResponseTimeAvg orders the results by the response_time_avg field.
-func ByResponseTimeAvg(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldResponseTimeAvg, opts...).ToFunc()
+// ByBandwidth orders the results by the bandwidth field.
+func ByBandwidth(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBandwidth, opts...).ToFunc()
 }
 
-// ByResponseTimeMedian orders the results by the response_time_median field.
-func ByResponseTimeMedian(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldResponseTimeMedian, opts...).ToFunc()
+// ByCachedBandwidth orders the results by the cached_bandwidth field.
+func ByCachedBandwidth(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCachedBandwidth, opts...).ToFunc()
 }
 
-// ByResponseTime90th orders the results by the response_time_90th field.
-func ByResponseTime90th(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldResponseTime90th, opts...).ToFunc()
+// ByUncachedBandwidth orders the results by the uncached_bandwidth field.
+func ByUncachedBandwidth(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUncachedBandwidth, opts...).ToFunc()
 }
 
-// ByResponseTime99th orders the results by the response_time_99th field.
-func ByResponseTime99th(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldResponseTime99th, opts...).ToFunc()
+// ByUniques orders the results by the uniques field.
+func ByUniques(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUniques, opts...).ToFunc()
 }

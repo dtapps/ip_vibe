@@ -215,12 +215,6 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 			return err
 		}
 
-		s.logger.DebugContext(ctx, "查询统计数据",
-			slog.String("zone", utils.PtrToString(zone.ZoneId)),
-			slog.Any("analysisDatasL7", analysisDatasL7),
-			slog.Any("analysisDatasL4", analysisDatasL4),
-		)
-
 		// 按天聚合：date -> map[metricName]value
 		dayMetrics := make(map[string]map[string]int64)
 		for _, data := range analysisDatasL7 {
@@ -282,9 +276,6 @@ func (s *EdgeOneZoneSync) SyncThisZones(ctx context.Context, config_id int64) (e
 			return fmt.Errorf("批量入库统计数据失败: %w", err)
 		}
 
-		s.logger.DebugContext(ctx, "批量入库统计数据成功",
-			slog.String("zone", utils.PtrToString(zone.ZoneId)),
-		)
 	}
 
 	return nil
@@ -373,13 +364,6 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 			return err
 		}
 
-		s.logger.DebugContext(ctx, "查询统计数据",
-			slog.String("zone", utils.PtrToString(zone.ZoneId)),
-			slog.Int64("edgeoneZoneID", firstZone.ID),
-			slog.Any("analysisDatasL7", analysisDatasL7),
-			slog.Any("analysisDatasL4", analysisDatasL4),
-		)
-
 		// 按天聚合：date -> map[metricName]value
 		dayMetrics := make(map[string]map[string]int64)
 		for _, data := range analysisDatasL7 {
@@ -441,9 +425,6 @@ func (s *EdgeOneZoneSync) SyncThisZone(ctx context.Context, config_id int64, zon
 			return fmt.Errorf("批量入库统计数据失败: %w", err)
 		}
 
-		s.logger.DebugContext(ctx, "批量入库统计数据成功",
-			slog.String("zone", utils.PtrToString(zone.ZoneId)),
-		)
 	}
 
 	return nil
