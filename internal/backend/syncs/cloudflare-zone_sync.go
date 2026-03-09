@@ -324,7 +324,7 @@ func (s *CloudflareZoneSync) SyncThisSite(ctx context.Context, config_id int64, 
 			createAnalysisDatas = append(
 				createAnalysisDatas,
 				syncStatDb.CloudflareZoneAnalysisData.Create().
-					SetCloudflareZoneID(firstPlatformCofing.ID).
+					SetCloudflareZoneID(firstZone.ID).
 					SetDate(gotime.SetCurrentParse(item.Date).Time).
 					SetRequests(item.Requests).
 					SetCachedRequests(item.CachedRequests).

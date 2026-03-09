@@ -54,6 +54,11 @@ func EdgeOneZone(c *gin.Context) {
 				for _, zone := range allZone {
 					zones = append(zones, *zone)
 				}
+			} else {
+				slog.ErrorContext(c, "查询全部EdgeOne配置",
+					slog.Any("request", requestParams),
+					slog.Any("err", err),
+				)
 			}
 			pageData.List = append(pageData.List, types.GetEdgeOneZoneResponse{
 				ID:          item.ID,

@@ -35,7 +35,7 @@ type ESASiteRecordRequest struct {
 
 // ESA页面 - 站点记录  响应结构
 type ESASiteRecordResponse struct {
-	CommonPageWithItemResponse[ent.EsaSite, any, ESASiteRecordRequest]
+	CommonPageWithItemResponse[ent.EsaSite, ent.EsaSiteRecord, ESASiteRecordRequest]
 }
 
 // ESA页面 - 站点源地址池 请求结构

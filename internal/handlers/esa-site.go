@@ -210,11 +210,11 @@ func ESASiteRecord(c *gin.Context) {
 
 	// 准备页面数据
 	pageData := types.ESASiteRecordResponse{
-		CommonPageWithItemResponse: types.CommonPageWithItemResponse[ent.EsaSite, any, types.ESASiteRecordRequest]{
+		CommonPageWithItemResponse: types.CommonPageWithItemResponse[ent.EsaSite, ent.EsaSiteRecord, types.ESASiteRecordRequest]{
 			Item: ent.EsaSite{},
-			CommonPageResponse: types.CommonPageResponse[any, types.ESASiteRecordRequest]{
+			CommonPageResponse: types.CommonPageResponse[ent.EsaSiteRecord, types.ESASiteRecordRequest]{
 				Filter: requestParams,
-				List:   []any{},
+				List:   []ent.EsaSiteRecord{},
 			},
 		},
 	}

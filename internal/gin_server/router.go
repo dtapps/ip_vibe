@@ -102,6 +102,7 @@ func (m *GinServerManager) setupWebRouter() {
 
 	// Cloudflare 站点管理页面 - 提供HTML页面并渲染数据
 	r.GET("/cloudflare-zone", handlers.CloudflareZone)
+	r.GET("/cloudflare-zone/:id/analysis", handlers.CloudflareZoneAnalysis)
 	r.GET("/cloudflare-zone/:id/record", handlers.CloudflareZoneRecord)
 
 	// EdgeOne 站点管理页面 - 提供HTML页面并渲染数据
