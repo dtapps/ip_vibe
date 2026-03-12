@@ -16,9 +16,11 @@ import (
 
 // Config gRPC 服务所需的配置参数
 type Config struct {
-	Addr     string // 地址
 	Username string // 用户名
 	Password string // 密码
+
+	Debug   bool   // 是否开启调试模式
+	Version string // 版本号
 }
 
 // GRPCServerManager gRPC 服务管理器
@@ -127,58 +129,6 @@ func (m *GRPCServerManager) GetServer() *grpc.Server {
 		m.initServer()
 	}
 	return m.server
-}
-
-// Run 启动 gRPC 服务
-func (m *GRPCServerManager) Run(ctx context.Context) {
-
-	// 确保 server 已初始化
-	m.GetServer()
-
-	// 日志
-	logger := m.logger.With(
-		slog.String("addr", m.config.Addr),
-	)
-
-	// 检查地址
-	if m.config.Addr == "" {
-		logger.ErrorContext(ctx, "gRPC 服务启动错误，未配置地址")
-		return
-	}
-
-	var err error
-	m.listener, err = net.Listen("tcp", m.config.Addr)
-	if err != nil {
-		logger.ErrorContext(ctx, "gRPC 服务监听失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
-
-	logger.InfoContext(ctx, "gRPC 服务启动成功")
-
-	if err := m.server.Serve(m.listener); err != nil {
-		logger.ErrorContext(ctx, "gRPC 服务启动失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
-}
-
-// Stop 优雅关闭
-func (m *GRPCServerManager) Stop(ctx context.Context) {
-	if m.server != nil {
-		m.logger.InfoContext(ctx, "gRPC 服务正在优雅关闭...")
-		m.server.GracefulStop()
-	}
-	if m.listener != nil {
-		if err := m.listener.Close(); err != nil {
-			m.logger.ErrorContext(ctx, "gRPC 服务关闭监听失败",
-				slog.Any("err", err),
-			)
-		}
-	}
-	m.logger.InfoContext(ctx, "gRPC 服务已安全停止")
 }
 
 // GetDeviceService 返回 DeviceService 实例

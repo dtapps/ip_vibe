@@ -108,6 +108,8 @@ func main() {
 		grpc_server.Config{
 			Username: sys_env.GvaEnv.BASIC_AUTH_USERNAME,
 			Password: sys_env.GvaEnv.BASIC_AUTH_PASSWORD,
+			Debug:    sys_env.GvaEnv.DEBUG,
+			Version:  global.Version,
 		})
 
 	// 初始化 Gin 资源、路由

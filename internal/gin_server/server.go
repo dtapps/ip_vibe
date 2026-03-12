@@ -1,8 +1,6 @@
 package gin_server
 
 import (
-	"context"
-	"errors"
 	"log/slog"
 	"net/http"
 	"sync"
@@ -18,12 +16,11 @@ import (
 
 // Config Gin 服务所需的配置参数
 type Config struct {
-	Addr     string
-	Username string
-	Password string
+	Username string // 用户名
+	Password string // 密码
 
-	Debug   bool
-	Version string
+	Debug   bool   // 是否开启调试模式
+	Version string // 版本号
 }
 
 // GinServerManager Gin 服务管理器
@@ -127,49 +124,4 @@ func (m *GinServerManager) GetServer() *gin.Engine {
 		m.initServer()
 	}
 	return m.engine
-}
-
-// Run 启动 Gin 服务
-func (m *GinServerManager) Run(ctx context.Context) {
-
-	// 确保 engine 已初始化
-	m.GetServer()
-
-	// 日志
-	logger := m.logger.With(
-		slog.String("addr", m.config.Addr),
-	)
-
-	// 检查地址
-	if m.config.Addr == "" {
-		logger.ErrorContext(ctx, "Gin 服务启动错误，未配置地址")
-		return
-	}
-
-	m.server = &http.Server{
-		Addr:    m.config.Addr,
-		Handler: m.engine,
-	}
-
-	logger.InfoContext(ctx, "Gin 服务启动成功")
-
-	if err := m.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		logger.ErrorContext(ctx, "Gin 服务启动失败",
-			slog.Any("err", err),
-		)
-		panic(err)
-	}
-}
-
-// Stop 优雅关闭
-func (m *GinServerManager) Stop(ctx context.Context) {
-	if m.server != nil {
-		m.logger.InfoContext(ctx, "Gin 服务正在优雅关闭...")
-		if err := m.server.Shutdown(ctx); err != nil {
-			m.logger.ErrorContext(ctx, "Gin 服务关闭失败",
-				slog.Any("err", err),
-			)
-		}
-	}
-	m.logger.InfoContext(ctx, "Gin 服务已安全停止")
 }
