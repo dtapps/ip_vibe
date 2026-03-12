@@ -29,7 +29,7 @@ require (
 	github.com/chenyahui/gin-cache v1.10.0
 	github.com/cloudflare/cloudflare-go/v6 v6.8.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
-	github.com/corazawaf/coraza/v3 v3.3.3
+	github.com/corazawaf/coraza/v3 v3.4.0
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/dromara/carbon/v2 v2.6.16
 	github.com/dustin/go-humanize v1.0.1
@@ -50,19 +50,19 @@ require (
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.90
 	github.com/miekg/dns v1.1.72
 	github.com/modelcontextprotocol/go-sdk v1.4.0
-	github.com/qiniu/go-sdk/v7 v7.26.3
+	github.com/qiniu/go-sdk/v7 v7.26.4
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/spf13/cast v1.10.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.36
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.52
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.54
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.54
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.48
 	github.com/tidwall/gjson v1.18.0
-	github.com/volcengine/volcengine-go-sdk v1.2.17
+	github.com/volcengine/volcengine-go-sdk v1.2.18
 	github.com/wdcbot/qingfeng v1.6.5
 	go.dtapp.net/library/contrib/http_log v1.0.11
 	go.dtapp.net/library/contrib/req_log v1.0.4
@@ -81,10 +81,10 @@ require (
 	go.dtapp.net/library/utils/gorequest v1.1.3
 	go.dtapp.net/library/utils/gostring v1.0.32
 	go.dtapp.net/library/utils/gotime v1.0.19
-	golang.org/x/net v0.51.0
+	golang.org/x/net v0.52.0
 	golang.org/x/sync v0.20.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20260226221140-a57be14db171
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260226221140-a57be14db171
+	google.golang.org/genproto/googleapis/api v0.0.0-20260311181403-84a4fc48630c
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260311181403-84a4fc48630c
 	google.golang.org/grpc v1.79.2
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -122,6 +122,7 @@ require (
 	github.com/go-acme/tencentclouddnspod v1.3.24 // indirect
 	github.com/go-acme/tencentedgdeone v1.3.38 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.3 // indirect
+	github.com/go-json-experiment/json v0.0.0-20260214004413-d219187c3433 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-openapi/inflect v0.21.5 // indirect
 	github.com/go-openapi/jsonpointer v0.22.5 // indirect
@@ -151,11 +152,15 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12 // indirect
+	github.com/kaptinlin/go-i18n v0.2.12 // indirect
+	github.com/kaptinlin/jsonpointer v0.4.17 // indirect
+	github.com/kaptinlin/jsonschema v0.7.5 // indirect
+	github.com/kaptinlin/messageformat-go v0.4.18 // indirect
 	github.com/klauspost/compress v1.18.4 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20260216142805-b3301c5f2a88 // indirect
-	github.com/magefile/mage v1.16.0 // indirect
+	github.com/magefile/mage v1.16.1 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -173,8 +178,8 @@ require (
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
-	github.com/segmentio/encoding v0.5.3 // indirect
-	github.com/shoenig/go-m1cpu v0.1.7 // indirect
+	github.com/segmentio/encoding v0.5.4 // indirect
+	github.com/shoenig/go-m1cpu v0.2.0 // indirect
 	github.com/sv-tools/openapi v0.4.0 // indirect
 	github.com/tidwall/match v1.2.0 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
@@ -195,12 +200,12 @@ require (
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.25.0 // indirect
-	golang.org/x/crypto v0.48.0 // indirect
-	golang.org/x/mod v0.33.0 // indirect
+	golang.org/x/crypto v0.49.0 // indirect
+	golang.org/x/mod v0.34.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sys v0.42.0 // indirect
-	golang.org/x/text v0.34.0 // indirect
-	golang.org/x/tools v0.42.0 // indirect
+	golang.org/x/text v0.35.0 // indirect
+	golang.org/x/tools v0.43.0 // indirect
 	gopkg.in/ini.v1 v1.67.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
