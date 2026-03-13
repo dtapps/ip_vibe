@@ -54,7 +54,6 @@ func NewDeviceOpenService(ctx context.Context, db *ent.Client, logDb *ent_log.Cl
 		db,
 		logDb,
 		logger,
-		serviceHttpTransport,
 	)
 	return &DeviceOpenServiceImpl{
 		db:                     db,

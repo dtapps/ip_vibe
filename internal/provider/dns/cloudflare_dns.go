@@ -107,6 +107,9 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *C
 	p.Provider.Opts = append(p.Provider.Opts, option.WithMaxRetries(3))
 
 	// 如果提供了日志传输器，则设置HTTP客户端
+	if p.opts.httpTransport == nil {
+		p.opts.httpTransport = dnsHttpTransport
+	}
 	if p.opts.httpTransport != nil {
 		p.Provider.Opts = append(p.Provider.Opts, option.WithHTTPClient(&http.Client{
 			Transport: p.opts.httpTransport.Instance(nil),
@@ -126,6 +129,9 @@ func NewCloudfareDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *C
 	p.Provider.Resty.SetHeader("Content-Type", "application/json")
 
 	// 如果提供了日志传输器，则设置HTTP客户端
+	if p.opts.httpTransport == nil {
+		p.opts.httpTransport = dnsHttpTransport
+	}
 	if p.opts.httpTransport != nil {
 		p.Provider.Resty.SetTransport(p.opts.httpTransport.Instance(p.Provider.Resty.Transport()))
 	}

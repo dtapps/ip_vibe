@@ -56,7 +56,6 @@ func NewDNSRecordService(ctx context.Context, db *ent.Client, logDb *ent_log.Cli
 		db,
 		logDb,
 		logger,
-		serviceHttpTransport,
 	)
 	return &DNSRecordServiceImpl{
 		db:             db,

@@ -17,19 +17,17 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/google/uuid"
-	"go.dtapp.net/library/contrib/http_log"
 )
 
 type CronServerManager struct {
-	db            *ent.Client                   // 数据库客户端
-	logDb         *ent_log.Client               // 日志数据库客户端
-	cron          gocron.Scheduler              // 定时任务调度器
-	logger        *slog.Logger                  // 日志记录器
-	httpTransport *http_log.LoggingRoundTripper // HTTP日志记录器
-	taskRegistry  *provider.TaskTask            // 任务注册中心
-	mu            sync.Mutex                    // 引入读写锁
-	runningJobs   map[int64]gocron.Job          // 正在运行的任务映射
-	jobConfigs    map[int64]string              // 任务配置映射
+	db           *ent.Client          // 数据库客户端
+	logDb        *ent_log.Client      // 日志数据库客户端
+	cron         gocron.Scheduler     // 定时任务调度器
+	logger       *slog.Logger         // 日志记录器
+	taskRegistry *provider.TaskTask   // 任务注册中心
+	mu           sync.Mutex           // 引入读写锁
+	runningJobs  map[int64]gocron.Job // 正在运行的任务映射
+	jobConfigs   map[int64]string     // 任务配置映射
 }
 
 var (
@@ -38,7 +36,7 @@ var (
 )
 
 // NewCronServerManager 创建定时任务服务管理器实例
-func NewCronServerManager(ctx context.Context, db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) (*CronServerManager, error) {
+func NewCronServerManager(ctx context.Context, db *ent.Client, logDb *ent_log.Client, cron gocron.Scheduler, logger *slog.Logger) (*CronServerManager, error) {
 	taskRegistry, err := provider.NewTaskTask(ctx, logger)
 	if err != nil {
 		return nil, err
@@ -48,14 +46,13 @@ func NewCronServerManager(ctx context.Context, db *ent.Client, logDb *ent_log.Cl
 			logger = slog.Default()
 		}
 		instanceCronServer = &CronServerManager{
-			db:            db,
-			logDb:         logDb,
-			cron:          cron,
-			logger:        logger,
-			httpTransport: httpTransport,
-			taskRegistry:  taskRegistry,
-			runningJobs:   make(map[int64]gocron.Job),
-			jobConfigs:    make(map[int64]string),
+			db:           db,
+			logDb:        logDb,
+			cron:         cron,
+			logger:       logger,
+			taskRegistry: taskRegistry,
+			runningJobs:  make(map[int64]gocron.Job),
+			jobConfigs:   make(map[int64]string),
 		}
 	})
 	return instanceCronServer, nil
@@ -70,39 +67,39 @@ func GetCronServerInstance() *CronServerManager {
 func (m *CronServerManager) InitHandlers(ctx context.Context) {
 
 	// 注册 CDN同步 处理器
-	cdnSyncHandler := task.NewCDNSyncTaskProvider(ctx, m.db, m.logDb, m.logger, m.httpTransport)
+	cdnSyncHandler := task.NewCDNSyncTaskProvider(ctx, m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.CDNSyncTaskName, cdnSyncHandler)
 
 	// 注册 DNS同步 处理器
-	dnsSynHandler := task.NewDNSSyncTaskProvider(ctx, m.db, m.logDb, m.logger, m.httpTransport)
+	dnsSynHandler := task.NewDNSSyncTaskProvider(ctx, m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.DNSSyncTaskName, dnsSynHandler)
 
 	// 注册 域名监控 处理器
-	domainMonitorHandler := task.NewDomainMonitorTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	domainMonitorHandler := task.NewDomainMonitorTaskProvider(m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.DomainMonitorTaskName, domainMonitorHandler)
 
 	// 注册 SSL申请 处理器
-	sslApplyHandler := task.NewSSLApplyTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	sslApplyHandler := task.NewSSLApplyTaskProvider(m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.SSLApplyTaskName, sslApplyHandler)
 
 	// 注册 SSL刷新 处理器
-	sslRefreshHandler := task.NewSSLRefreshTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	sslRefreshHandler := task.NewSSLRefreshTaskProvider(m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.SSLRefreshTaskName, sslRefreshHandler)
 
 	// 注册 Cloudflare隧道同步 处理器
-	cloudflareTunnelSyncHandler := task.NewCloudflareTunnelSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	cloudflareTunnelSyncHandler := task.NewCloudflareTunnelSyncTaskProvider(m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.CloudflareTunnelSyncTaskName, cloudflareTunnelSyncHandler)
 
 	// 注册 Cloudflare站点同步 处理器
-	cloudflareZoneSyncHandler := task.NewCloudflareZoneSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	cloudflareZoneSyncHandler := task.NewCloudflareZoneSyncTaskProvider(m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.CloudflareZoneSyncTaskName, cloudflareZoneSyncHandler)
 
 	// 注册 EdgeOne站点同步 处理器
-	edgeOneZoneSyncHandler := task.NewEdgeOneZoneSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	edgeOneZoneSyncHandler := task.NewEdgeOneZoneSyncTaskProvider(m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.EdgeOneZoneSyncTaskName, edgeOneZoneSyncHandler)
 
 	// 注册 ESA站点 处理器
-	esaSiteSyncHandler := task.NewESASiteSyncTaskProvider(m.db, m.logDb, m.logger, m.httpTransport)
+	esaSiteSyncHandler := task.NewESASiteSyncTaskProvider(m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.ESASiteSyncTaskName, esaSiteSyncHandler)
 
 	// 注册 数据清除 处理器
@@ -110,7 +107,7 @@ func (m *CronServerManager) InitHandlers(ctx context.Context) {
 	m.taskRegistry.RegisterTask(ctx, task.ClearDataTaskName, clearDataHandler)
 
 	// 注册 Webhook发送 处理器
-	webhookSendHandler := task.NewWebhookSendTaskProvider(ctx, m.db, m.logDb, m.logger, m.httpTransport)
+	webhookSendHandler := task.NewWebhookSendTaskProvider(ctx, m.db, m.logDb, m.logger)
 	m.taskRegistry.RegisterTask(ctx, task.WebhookSendTaskName, webhookSendHandler)
 
 	m.logger.InfoContext(ctx, "所有任务处理器注册完成")
@@ -120,7 +117,7 @@ func (m *CronServerManager) InitHandlers(ctx context.Context) {
 func (m *CronServerManager) LoadTasks(ctx context.Context) {
 
 	// 加载 SSL刷新 任务
-	sslRefreshHandler := task.NewSSLRefreshTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
+	sslRefreshHandler := task.NewSSLRefreshTaskProviderRaw(m.db, m.logDb, m.logger)
 	sslRefreshHandlerTable := map[string]bool{
 		ent.TypeSSLRecord: true,
 		ent.TypeSSLImport: true,
@@ -563,7 +560,7 @@ func (m *CronServerManager) SyncPlatformConfigJob(ctx context.Context, record *e
 	case platformconfig.PlatformCloudflare:
 		if record.Capability == platformconfig.CapabilityTun || record.Capability == platformconfig.CapabilityAll {
 			// 加载 Cloudflare隧道同步 任务
-			cloudflareTunnelSyncHandler := task.NewCloudflareTunnelSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
+			cloudflareTunnelSyncHandler := task.NewCloudflareTunnelSyncTaskProviderRaw(m.db, m.logDb, m.logger)
 			err := cloudflareTunnelSyncHandler.LoadTask(ctx, m.db, record)
 			if err != nil {
 				m.logger.ErrorContext(ctx, "[SyncPlatformConfigJob] 加载 Cloudflare隧道同步 任务失败",
@@ -580,7 +577,7 @@ func (m *CronServerManager) SyncPlatformConfigJob(ctx context.Context, record *e
 		}
 		if record.Capability == platformconfig.CapabilityDNS || record.Capability == platformconfig.CapabilityCdn || record.Capability == platformconfig.CapabilityAll {
 			// 加载 Cloudflare站点同步 任务
-			cloudflareZoneSyncHandler := task.NewCloudflareZoneSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
+			cloudflareZoneSyncHandler := task.NewCloudflareZoneSyncTaskProviderRaw(m.db, m.logDb, m.logger)
 			err := cloudflareZoneSyncHandler.LoadTask(ctx, m.db, record)
 			if err != nil {
 				m.logger.ErrorContext(ctx, "[SyncPlatformConfigJob] 加载 Cloudflare站点同步 任务失败",
@@ -597,7 +594,7 @@ func (m *CronServerManager) SyncPlatformConfigJob(ctx context.Context, record *e
 		}
 	case platformconfig.PlatformTencentEo:
 		// 加载 EdgeOne站点同步 任务
-		edgeOneZoneSyncHandler := task.NewEdgeOneZoneSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
+		edgeOneZoneSyncHandler := task.NewEdgeOneZoneSyncTaskProviderRaw(m.db, m.logDb, m.logger)
 		err := edgeOneZoneSyncHandler.LoadTask(ctx, m.db, record)
 		if err != nil {
 			m.logger.ErrorContext(ctx, "[SyncPlatformConfigJob] 加载 EdgeOne站点同步 任务失败",
@@ -613,7 +610,7 @@ func (m *CronServerManager) SyncPlatformConfigJob(ctx context.Context, record *e
 		}
 	case platformconfig.PlatformAliyunEsa:
 		// 加载 ESA站点同步 任务
-		esaSiteSyncHandler := task.NewESASiteSyncTaskProviderRaw(m.db, m.logDb, m.logger, m.httpTransport)
+		esaSiteSyncHandler := task.NewESASiteSyncTaskProviderRaw(m.db, m.logDb, m.logger)
 		err := esaSiteSyncHandler.LoadTask(ctx, m.db, record)
 		if err != nil {
 			m.logger.ErrorContext(ctx, "[SyncPlatformConfigJob] 加载 ESA站点同步 任务失败",

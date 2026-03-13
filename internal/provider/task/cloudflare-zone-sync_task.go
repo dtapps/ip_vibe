@@ -29,12 +29,12 @@ type CloudflareZoneSyncTaskProvider struct {
 }
 
 // NewCloudflareZoneSyncTaskProvider 创建一个新的 Cloudflare站点同步 提供者
-func NewCloudflareZoneSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewCloudflareZoneSyncTaskProviderRaw(db, logDb, logger, httpTransport)
+func NewCloudflareZoneSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
+	return NewCloudflareZoneSyncTaskProviderRaw(db, logDb, logger)
 }
 
 // NewCloudflareZoneSyncTaskProvider 创建一个新的 Cloudflare站点同步 提供者
-func NewCloudflareZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CloudflareZoneSyncTaskProvider {
+func NewCloudflareZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *CloudflareZoneSyncTaskProvider {
 	cloudflareZoneSync := syncs.NewCloudflareZoneSync(
 		db,
 		logDb,
@@ -44,7 +44,7 @@ func NewCloudflareZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client,
 		db:                 db,
 		logDb:              logDb,
 		logger:             logger.With(slog.String("handler", "cloudflare-zone-sync")),
-		httpTransport:      httpTransport,
+		httpTransport:      taskHttpTransport,
 		cloudflareZoneSync: cloudflareZoneSync,
 
 		businessType: cronjob.BusinessTypeCloudflareZone,

@@ -54,7 +54,6 @@ func NewDomainMonitorService(db *ent.Client, logDb *ent_log.Client, cron gocron.
 		db,
 		logDb,
 		logger,
-		serviceHttpTransport,
 	)
 	return &DomainMonitorServiceImpl{
 		db:                   db,

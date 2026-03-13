@@ -35,17 +35,17 @@ type SSLApplyTaskProvider struct {
 }
 
 // NewSSLApplyTaskProvider 创建一个新的 SSL申请 提供者
-func NewSSLApplyTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewSSLApplyTaskProviderRaw(db, logDb, logger, httpTransport)
+func NewSSLApplyTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
+	return NewSSLApplyTaskProviderRaw(db, logDb, logger)
 }
 
 // NewSSLApplyTaskProvider 创建一个新的 SSL申请 提供者
-func NewSSLApplyTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *SSLApplyTaskProvider {
+func NewSSLApplyTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *SSLApplyTaskProvider {
 	return &SSLApplyTaskProvider{
 		db:            db,
 		logDb:         logDb,
 		logger:        logger.With(slog.String("handler", "ssl-apply")),
-		httpTransport: httpTransport,
+		httpTransport: taskHttpTransport,
 
 		businessType: cronjob.BusinessTypeSsl,
 	}

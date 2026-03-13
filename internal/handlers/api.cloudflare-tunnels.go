@@ -38,7 +38,6 @@ func SyncCloudflareTunnels(c *gin.Context) {
 		global.GvaEntDb,
 		global.GvaEntLogDb,
 		global.GvaGinSlog,
-		global.GvaHttpLog,
 	)
 
 	if strings.EqualFold(requestParams.Type, "all") {

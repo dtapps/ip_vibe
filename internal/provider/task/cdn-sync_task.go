@@ -37,25 +37,24 @@ type CDNSyncTaskProvider struct {
 }
 
 // NewCDNSyncTaskProvider 创建一个新的 CDN同步 提供者
-func NewCDNSyncTaskProvider(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewCDNSyncTaskProviderRaw(ctx, db, logDb, logger, httpTransport)
+func NewCDNSyncTaskProvider(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
+	return NewCDNSyncTaskProviderRaw(ctx, db, logDb, logger)
 }
 
 // NewCDNSyncTaskProvider 创建一个新的 CDN同步 提供者
-func NewCDNSyncTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CDNSyncTaskProvider {
+func NewCDNSyncTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *CDNSyncTaskProvider {
 	// 创建 Webhook发送 处理器
 	webhookSendSyncHandler := NewWebhookSendTaskProviderRaw(
 		ctx,
 		db,
 		logDb,
 		logger,
-		httpTransport,
 	)
 	return &CDNSyncTaskProvider{
 		db:                     db,
 		logDb:                  logDb,
 		logger:                 logger.With(slog.String("handler", "cdn-sync")),
-		httpTransport:          httpTransport,
+		httpTransport:          taskHttpTransport,
 		webhookSendSyncHandler: webhookSendSyncHandler,
 
 		businessType: cronjob.BusinessTypeCdn,

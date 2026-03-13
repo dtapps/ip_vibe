@@ -33,25 +33,24 @@ type TUNSyncTaskProvider struct {
 }
 
 // NewTUNSyncTaskProvider 创建一个新的 TUN同步 提供者
-func NewTUNSyncTaskProvider(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewTUNSyncTaskProviderRaw(ctx, db, logDb, logger, httpTransport)
+func NewTUNSyncTaskProvider(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
+	return NewTUNSyncTaskProviderRaw(ctx, db, logDb, logger)
 }
 
 // NewTUNSyncTaskProvider 创建一个新的 TUN同步 提供者
-func NewTUNSyncTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *TUNSyncTaskProvider {
+func NewTUNSyncTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *TUNSyncTaskProvider {
 	// 创建 Webhook发送 处理器
 	webhookSendSyncHandler := NewWebhookSendTaskProviderRaw(
 		ctx,
 		db,
 		logDb,
 		logger,
-		httpTransport,
 	)
 	return &TUNSyncTaskProvider{
 		db:                     db,
 		logDb:                  logDb,
 		logger:                 logger.With(slog.String("handler", "tun-sync")),
-		httpTransport:          httpTransport,
+		httpTransport:          taskHttpTransport,
 		webhookSendSyncHandler: webhookSendSyncHandler,
 
 		businessType: cronjob.BusinessTypeTun,

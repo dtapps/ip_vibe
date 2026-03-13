@@ -31,17 +31,17 @@ type DomainMonitorTaskProvider struct {
 }
 
 // NewDomainMonitorTaskProvider 创建一个新的 域名监控 提供者
-func NewDomainMonitorTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewDomainMonitorTaskProviderRaw(db, logDb, logger, httpTransport)
+func NewDomainMonitorTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
+	return NewDomainMonitorTaskProviderRaw(db, logDb, logger)
 }
 
 // NewDomainMonitorTaskProvider 创建一个新的 域名监控 提供者
-func NewDomainMonitorTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *DomainMonitorTaskProvider {
+func NewDomainMonitorTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *DomainMonitorTaskProvider {
 	return &DomainMonitorTaskProvider{
 		db:            db,
 		logDb:         logDb,
 		logger:        logger.With(slog.String("handler", "domain-monitor")),
-		httpTransport: httpTransport,
+		httpTransport: taskHttpTransport,
 
 		businessType: cronjob.BusinessTypeDomain,
 	}

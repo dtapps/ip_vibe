@@ -9,6 +9,10 @@ import (
 	"vibe_ip/internal/backend/syncs"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/provider/cdn"
+	"vibe_ip/internal/provider/dns"
+	"vibe_ip/internal/provider/task"
+	"vibe_ip/internal/provider/tun"
 
 	"go.dtapp.net/library/contrib/http_log"
 )
@@ -148,5 +152,9 @@ func InitEntHttpLog(logger *slog.Logger) {
 		// 注入 HTTP 传输客户端
 		service.InjectHttpTransport(global.GvaHttpLog)
 		syncs.InjectHttpTransport(global.GvaHttpLog)
+		cdn.InjectHttpTransport(global.GvaHttpLog)
+		dns.InjectHttpTransport(global.GvaHttpLog)
+		task.InjectHttpTransport(global.GvaHttpLog)
+		tun.InjectHttpTransport(global.GvaHttpLog)
 	})
 }

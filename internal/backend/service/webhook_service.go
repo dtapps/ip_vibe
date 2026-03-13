@@ -53,7 +53,6 @@ func NewWebhookService(ctx context.Context, db *ent.Client, logDb *ent_log.Clien
 		db,
 		logDb,
 		logger,
-		serviceHttpTransport,
 	)
 	return &WebhookServiceImpl{
 		db:                     db,

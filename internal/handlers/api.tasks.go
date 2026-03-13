@@ -32,7 +32,6 @@ func SyncTasksToScheduler(c *gin.Context) {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 	if err != nil {
 		errorResponse(c, http.StatusNotFound, err.Error())

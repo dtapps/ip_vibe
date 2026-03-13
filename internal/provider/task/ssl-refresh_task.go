@@ -32,17 +32,17 @@ type SSLRefreshTaskProvider struct {
 }
 
 // NewSSLRefreshTaskProvider 创建一个新的 SSL刷新 提供者
-func NewSSLRefreshTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewSSLRefreshTaskProviderRaw(db, logDb, logger, httpTransport)
+func NewSSLRefreshTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
+	return NewSSLRefreshTaskProviderRaw(db, logDb, logger)
 }
 
 // NewSSLRefreshTaskProvider 创建一个新的 SSL刷新 提供者
-func NewSSLRefreshTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *SSLRefreshTaskProvider {
+func NewSSLRefreshTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *SSLRefreshTaskProvider {
 	return &SSLRefreshTaskProvider{
 		db:            db,
 		logDb:         logDb,
 		logger:        logger.With(slog.String("handler", "ssl-refresh")),
-		httpTransport: httpTransport,
+		httpTransport: taskHttpTransport,
 
 		businessType: cronjob.BusinessTypeSsl,
 	}

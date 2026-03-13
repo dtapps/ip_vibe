@@ -29,12 +29,12 @@ type EdgeOneZoneSyncTaskProvider struct {
 }
 
 // NewEdgeOneZoneSyncTaskProvider 创建一个新的 EdgeOne站点同步 提供者
-func NewEdgeOneZoneSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewEdgeOneZoneSyncTaskProviderRaw(db, logDb, logger, httpTransport)
+func NewEdgeOneZoneSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
+	return NewEdgeOneZoneSyncTaskProviderRaw(db, logDb, logger)
 }
 
 // NewEdgeOneZoneSyncTaskProvider 创建一个新的 EdgeOne站点同步 提供者
-func NewEdgeOneZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *EdgeOneZoneSyncTaskProvider {
+func NewEdgeOneZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *EdgeOneZoneSyncTaskProvider {
 	edgeOneZoneSync := syncs.NewEdgeOneZoneSync(
 		logger,
 	)
@@ -42,7 +42,7 @@ func NewEdgeOneZoneSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, lo
 		db:              db,
 		logDb:           logDb,
 		logger:          logger.With(slog.String("handler", "edgeone-zone-sync")),
-		httpTransport:   httpTransport,
+		httpTransport:   taskHttpTransport,
 		edgeOneZoneSync: edgeOneZoneSync,
 
 		businessType: cronjob.BusinessTypeEdgeoneZone,

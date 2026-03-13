@@ -47,19 +47,19 @@ type WebhookSendTaskProvider struct {
 }
 
 // NewWebhookSendTaskProvider 创建一个新的 Webhook发送 提供者
-func NewWebhookSendTaskProvider(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewWebhookSendTaskProviderRaw(ctx, db, logDb, logger, httpTransport)
+func NewWebhookSendTaskProvider(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
+	return NewWebhookSendTaskProviderRaw(ctx, db, logDb, logger)
 }
 
 // NewWebhookSendTaskProvider 创建一个新的 Webhook发送 提供者
-func NewWebhookSendTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *WebhookSendTaskProvider {
+func NewWebhookSendTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *WebhookSendTaskProvider {
 
 	// 创建 Resty 客户端
 	client := resty.New()
 
 	// 添加 HTTP 日志记录器
-	if httpTransport != nil {
-		client.SetTransport(httpTransport.Instance(client.Transport()))
+	if taskHttpTransport != nil {
+		client.SetTransport(taskHttpTransport.Instance(client.Transport()))
 	}
 
 	// 企业微信
@@ -102,7 +102,7 @@ func NewWebhookSendTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *e
 		db:               db,
 		logDb:            logDb,
 		logger:           logger.With(slog.String("handler", "webhook-send")),
-		httpTransport:    httpTransport,
+		httpTransport:    taskHttpTransport,
 		client:           client,
 		wechatWorkClient: wechatWorkClient,
 		dingTalkClient:   dingTalkClient,

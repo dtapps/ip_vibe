@@ -57,7 +57,6 @@ func NewCDNRecordService(ctx context.Context, db *ent.Client, logDb *ent_log.Cli
 		db,
 		logDb,
 		logger,
-		serviceHttpTransport,
 	)
 	return &CDNRecordServiceImpl{
 		db:             db,

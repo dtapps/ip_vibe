@@ -36,25 +36,24 @@ type DNSSyncTaskProvider struct {
 }
 
 // NewDNSSyncTaskProvider 创建一个新的 DNS同步 提供者
-func NewDNSSyncTaskProvider(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewDNSSyncTaskProviderRaw(ctx, db, logDb, logger, httpTransport)
+func NewDNSSyncTaskProvider(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
+	return NewDNSSyncTaskProviderRaw(ctx, db, logDb, logger)
 }
 
 // NewDNSSyncTaskProvider 创建一个新的 DNS同步 提供者
-func NewDNSSyncTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *DNSSyncTaskProvider {
+func NewDNSSyncTaskProviderRaw(ctx context.Context, db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *DNSSyncTaskProvider {
 	// 创建 Webhook发送 处理器
 	webhookSendSyncHandler := NewWebhookSendTaskProviderRaw(
 		ctx,
 		db,
 		logDb,
 		logger,
-		httpTransport,
 	)
 	return &DNSSyncTaskProvider{
 		db:                     db,
 		logDb:                  logDb,
 		logger:                 logger.With(slog.String("handler", "cdn-sync")),
-		httpTransport:          httpTransport,
+		httpTransport:          taskHttpTransport,
 		webhookSendSyncHandler: webhookSendSyncHandler,
 
 		businessType: cronjob.BusinessTypeDNS,

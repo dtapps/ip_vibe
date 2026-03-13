@@ -132,6 +132,9 @@ func NewHuaweiCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Huaw
 		WithCredential(p.Provider.Auth)
 
 	// 如果提供了日志传输器，则设置HTTP客户端
+	if p.opts.httpTransport == nil {
+		p.opts.httpTransport = cdnHttpTransport
+	}
 	if p.opts.httpTransport != nil {
 		p.Provider.ClientBuilder.WithHttpConfig(config.DefaultHttpConfig().
 			WithHttpRoundTripper(p.opts.httpTransport.Instance(nil)))

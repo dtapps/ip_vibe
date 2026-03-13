@@ -153,7 +153,6 @@ func main() {
 		global.GvaEntLogDb,
 		global.GvaGoCron,
 		global.GvaGocronSlog,
-		global.GvaHttpLog,
 	)
 	if err != nil {
 		slog.Error("创建 定时任务 管理器失败",

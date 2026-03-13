@@ -58,7 +58,6 @@ func NewSSLRecordService(db *ent.Client, logDb *ent_log.Client, logger *slog.Log
 		db,
 		logDb,
 		logger,
-		serviceHttpTransport,
 	)
 	return &SSLRecordServiceImpl{
 		db:              db,

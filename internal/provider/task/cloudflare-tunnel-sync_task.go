@@ -29,12 +29,12 @@ type CloudflareTunnelSyncTaskProvider struct {
 }
 
 // NewCloudflareTunnelSyncTaskProvider 创建一个新的 Cloudflare隧道同步 提供者
-func NewCloudflareTunnelSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewCloudflareTunnelSyncTaskProviderRaw(db, logDb, logger, httpTransport)
+func NewCloudflareTunnelSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
+	return NewCloudflareTunnelSyncTaskProviderRaw(db, logDb, logger)
 }
 
 // NewCloudflareTunnelSyncTaskProvider 创建一个新的 Cloudflare隧道同步 提供者
-func NewCloudflareTunnelSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *CloudflareTunnelSyncTaskProvider {
+func NewCloudflareTunnelSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *CloudflareTunnelSyncTaskProvider {
 	cloudflareTunnelSync := syncs.NewCloudflareTunnelSync(
 		db,
 		logDb,
@@ -44,7 +44,7 @@ func NewCloudflareTunnelSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Clien
 		db:                   db,
 		logDb:                logDb,
 		logger:               logger.With(slog.String("handler", "cloudflare-tunnel-sync")),
-		httpTransport:        httpTransport,
+		httpTransport:        taskHttpTransport,
 		cloudflareTunnelSync: cloudflareTunnelSync,
 
 		businessType: cronjob.BusinessTypeCloudflareTunnel,

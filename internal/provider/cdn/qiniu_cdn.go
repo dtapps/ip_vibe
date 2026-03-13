@@ -114,6 +114,9 @@ func NewQiniuCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Qiniu
 	p.Provider.SignTransport = qiniu.NewSignTransport(nil, p.cfg.AccessKey, p.cfg.SecretKey)
 
 	// 如果提供了日志传输器，则设置HTTP客户端
+	if p.opts.httpTransport == nil {
+		p.opts.httpTransport = cdnHttpTransport
+	}
 	if p.opts.httpTransport != nil {
 		p.Provider.SignTransport = qiniu.NewSignTransport(p.opts.httpTransport, p.cfg.AccessKey, p.cfg.SecretKey)
 	}

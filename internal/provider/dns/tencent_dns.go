@@ -129,6 +129,9 @@ func NewTencentDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Ten
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
+	if p.opts.httpTransport == nil {
+		p.opts.httpTransport = dnsHttpTransport
+	}
 	if p.opts.httpTransport != nil {
 		p.Provider.Client.WithHttpTransport(p.opts.httpTransport.Instance(nil))
 	}

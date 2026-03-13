@@ -29,12 +29,12 @@ type ESASiteSyncTaskProvider struct {
 }
 
 // NewESASiteSyncTaskProvider 创建一个新的 ESA站点同步 提供者
-func NewESASiteSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) provider.TaskProvider {
-	return NewESASiteSyncTaskProviderRaw(db, logDb, logger, httpTransport)
+func NewESASiteSyncTaskProvider(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) provider.TaskProvider {
+	return NewESASiteSyncTaskProviderRaw(db, logDb, logger)
 }
 
 // NewESASiteSyncTaskProvider 创建一个新的 ESA站点同步 提供者
-func NewESASiteSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger, httpTransport *http_log.LoggingRoundTripper) *ESASiteSyncTaskProvider {
+func NewESASiteSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger *slog.Logger) *ESASiteSyncTaskProvider {
 	esaSiteSync := syncs.NewESASiteSync(
 		db,
 		logDb,
@@ -44,7 +44,7 @@ func NewESASiteSyncTaskProviderRaw(db *ent.Client, logDb *ent_log.Client, logger
 		db:            db,
 		logDb:         logDb,
 		logger:        logger.With(slog.String("handler", "esa-site-sync")),
-		httpTransport: httpTransport,
+		httpTransport: taskHttpTransport,
 		esaSiteSync:   esaSiteSync,
 
 		businessType: cronjob.BusinessTypeEsaSite,

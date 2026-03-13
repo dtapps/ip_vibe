@@ -115,6 +115,9 @@ func NewJdcloudDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Jdc
 	p.Provider.Client = client.NewDomainserviceClient(p.Provider.Auth)
 
 	// 如果提供了日志传输器，则设置HTTP客户端
+	if p.opts.httpTransport == nil {
+		p.opts.httpTransport = dnsHttpTransport
+	}
 	if p.opts.httpTransport != nil {
 	}
 

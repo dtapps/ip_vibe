@@ -127,6 +127,9 @@ func NewAliyunDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
+	if p.opts.httpTransport == nil {
+		p.opts.httpTransport = dnsHttpTransport
+	}
 	if p.opts.httpTransport != nil {
 		httpHandler := aliyun_helper.NewHttpHandler(p.opts.httpTransport)
 		p.Provider.Cfg.HttpClient = httpHandler
