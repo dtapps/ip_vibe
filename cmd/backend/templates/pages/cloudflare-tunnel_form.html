@@ -225,8 +225,12 @@
                     return;
                 }
 
+                // 域名ID
+                const zone_id = els.domain_name.selectedOptions[0]?.dataset.zone_id || ""
+
                 // 表单数据
                 const form_data = {
+                    zone_id: zone_id,
                     sub_domain: els.sub_domain.value.trim(),
                     domain_name: els.domain_name.value.trim(),
                     domain_path: els.domain_path.value.trim(),

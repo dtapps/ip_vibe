@@ -34,6 +34,7 @@ type GetCloudflareTunnelIngressDetailResponse struct {
 
 // 创建Cloudflare隧道入站配置 请求结构
 type CreateCloudflareTunnelIngressRequest struct {
+	ZoneID         string `json:"zone_id" binding:"required" jsonschema:"域名区域ID"`                 // 域名区域ID
 	TunnelID       int64  `uri:"tunnel_id" json:"tunnel_id" binding:"required" jsonschema:"隧道序号"` // 隧道序号
 	SubDomain      string `json:"sub_domain" binding:"required" jsonschema:"子域"`                  // 子域
 	DomainName     string `json:"domain_name" binding:"required" jsonschema:"域名"`                 // 域名

@@ -152,6 +152,7 @@ func (s *CloudflareTunnelServiceImpl) CreateCloudflareTunnelIngress(ctx context.
 	if newHostname != "" {
 		err = dnsProvider.CreateRecord(
 			ctx,
+			request.ZoneID,
 			newHostname,
 			"CNAME",
 			fmt.Sprintf("%s.cfargotunnel.com", firstPlatformCofing.TunnelID),

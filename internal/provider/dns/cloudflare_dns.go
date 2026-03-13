@@ -460,19 +460,19 @@ query StatsByDay {
 
 // CreateRecord 创建 DNS 记录
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
-func (p *CloudfareDNSProvider) CreateRecord(ctx context.Context, full_domain string, record_type string, origin_value string, proxied bool) (err error) {
-	requestDnsCreateBody := dns.ARecordParam{}
-	requestDnsCreateBody.Name = cloudflare.String(full_domain)
-	requestDnsCreateBody.Type = cloudflare.F(dns.ARecordType(record_type))
-	requestDnsCreateBody.Content = cloudflare.String(origin_value)
-	requestDnsCreateBody.Proxied = cloudflare.Bool(proxied)
-	requestDnsCreate := dns.RecordNewParams{
-		ZoneID: cloudflare.String(p.CustomConfig.ZoneValue),
-		Body:   requestDnsCreateBody,
+func (p *CloudfareDNSProvider) CreateRecord(ctx context.Context, zone_id string, full_domain string, record_type string, origin_value string, proxied bool) (err error) {
+	requestBody := dns.ARecordParam{}
+	requestBody.Name = cloudflare.String(full_domain)
+	requestBody.Type = cloudflare.F(dns.ARecordType(record_type))
+	requestBody.Content = cloudflare.String(origin_value)
+	requestBody.Proxied = cloudflare.Bool(proxied)
+	request := dns.RecordNewParams{
+		ZoneID: cloudflare.String(zone_id),
+		Body:   requestBody,
 	}
 	_, err = p.Provider.Client.DNS.Records.New(
 		ctx,
-		requestDnsCreate,
+		request,
 	)
 	if err != nil {
 		return fmt.Errorf("接口 DNS.Records.New 失败 %w", err)

@@ -22,14 +22,14 @@
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "http_log" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
                 Http 请求
             </a>
-            <a href="?type=resty_log" role="tab"
+            <!-- <a href="?type=resty_log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "resty_log" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
                 Resty 请求
             </a>
             <a href="?type=req_log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "req_log" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
                 Req 请求
-            </a>
+            </a> -->
             <a href="?type=slog_file&file_name=slog_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "slog_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
                 Slog 流水
@@ -62,14 +62,14 @@
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "http_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
                 Http 流水
             </a>
-            <a href="?type=resty_file&file_name=resty_backend.log" role="tab"
+            <!-- <a href="?type=resty_file&file_name=resty_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "resty_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
                 Resty 流水
             </a>
             <a href="?type=req_file&file_name=req_backend.log" role="tab"
                 class='tab h-14 [--tab-bg:var(--color-base-100)] font-black uppercase tracking-tighter {{ if eq $filter.Type "req_file" }}tab-active text-primary{{ else }}opacity-40 hover:opacity-100{{ end }}'>
                 Req 流水
-            </a>
+            </a> -->
         </div>
     </div>
 
