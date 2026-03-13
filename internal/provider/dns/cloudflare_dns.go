@@ -451,3 +451,25 @@ query StatsByDay {
 
 	return result, nil
 }
+
+// CreateRecord 创建 DNS 记录
+// https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
+func (p *CloudfareDNSProvider) CreateRecord(ctx context.Context, full_domain string, record_type string, origin_value string, proxied bool) (err error) {
+	requestDnsCreateBody := dns.ARecordParam{}
+	requestDnsCreateBody.Name = cloudflare.String(full_domain)
+	requestDnsCreateBody.Type = cloudflare.F(dns.ARecordType(record_type))
+	requestDnsCreateBody.Content = cloudflare.String(origin_value)
+	requestDnsCreateBody.Proxied = cloudflare.Bool(proxied)
+	requestDnsCreate := dns.RecordNewParams{
+		ZoneID: cloudflare.String(p.CustomConfig.ZoneValue),
+		Body:   requestDnsCreateBody,
+	}
+	_, err = p.Provider.Client.DNS.Records.New(
+		ctx,
+		requestDnsCreate,
+	)
+	if err != nil {
+		return fmt.Errorf("接口 DNS.Records.New 失败 %w", err)
+	}
+	return nil
+}

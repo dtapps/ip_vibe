@@ -17,7 +17,7 @@
     "@tailwindcss/cli": "^4.2.1",
     "clipboard": "^2.0.11",
     "daisyui": "^5.5.19",
-    "dayjs": "^1.11.19",
+    "dayjs": "^1.11.20",
     "echarts": "^6.0.0",
     "jquery": "^4.0.0",
     "loadjs": "^4.3.0",

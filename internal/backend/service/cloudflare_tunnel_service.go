@@ -33,6 +33,7 @@ type CloudflareTunnelServiceImpl struct {
 	logDb                *ent_log.Client               // 日志数据库客户端
 	logger               *slog.Logger                  // 日志记录器
 	httpTransport        *http_log.LoggingRoundTripper // HTTP日志记录器
+	cloudflareDnsSync    *syncs.CloudflareZoneSync     // CloudFlare DNS同步
 	cloudflareTunnelSync *syncs.CloudflareTunnelSync   // CloudFlare Tunnel同步
 	debug                bool                          // 调试模式
 }
@@ -43,6 +44,11 @@ func NewCloudflareTunnelService(db *ent.Client, logDb *ent_log.Client, logger *s
 	if sys_env.GvaEnv != nil {
 		debug = sys_env.GvaEnv.DEBUG
 	}
+	cloudflareDnsSync := syncs.NewCloudflareZoneSync(
+		db,
+		logDb,
+		logger,
+	)
 	cloudflareTunnelSync := syncs.NewCloudflareTunnelSync(
 		db,
 		logDb,
@@ -53,6 +59,7 @@ func NewCloudflareTunnelService(db *ent.Client, logDb *ent_log.Client, logger *s
 		logDb:                logDb,
 		logger:               logger,
 		httpTransport:        serviceHttpTransport,
+		cloudflareDnsSync:    cloudflareDnsSync,
 		cloudflareTunnelSync: cloudflareTunnelSync,
 		debug:                debug,
 	}
@@ -121,6 +128,12 @@ func (s *CloudflareTunnelServiceImpl) CreateCloudflareTunnelIngress(ctx context.
 		return fmt.Errorf("查询Cloudflare隧道及关联配置失败: %w", err)
 	}
 
+	// 获取Cloudflare DNS提供程序
+	dnsProvider, err := s.cloudflareDnsSync.GetApiClient(ctx, firstPlatformCofing.Edges.Config.ConfigJSON)
+	if err != nil {
+		return fmt.Errorf("获取Cloudflare DNS提供程序失败: %w", err)
+	}
+
 	// 获取Cloudflare Tunnel提供程序
 	tunProvider, err := s.cloudflareTunnelSync.GetApiClient(ctx, firstPlatformCofing.Edges.Config.ConfigJSON)
 	if err != nil {
@@ -134,6 +147,20 @@ func (s *CloudflareTunnelServiceImpl) CreateCloudflareTunnelIngress(ctx context.
 		request.ServiceType,
 		request.ServiceContent,
 	)
+
+	// 创建Cloudflare DNS记录
+	if newHostname != "" {
+		err = dnsProvider.CreateRecord(
+			ctx,
+			newHostname,
+			"CNAME",
+			fmt.Sprintf("%s.cfargotunnel.com", firstPlatformCofing.TunnelID),
+			true,
+		)
+		if err != nil {
+			return fmt.Errorf("创建Cloudflare DNS记录失败: %w", err)
+		}
+	}
 
 	// 获取远程隧道入站规则列表
 	ingresses, err := tunProvider.IngresssRaw(ctx, firstPlatformCofing.TunnelID)

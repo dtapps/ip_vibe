@@ -49,5 +49,5 @@ func init() {
 	GvaEnv.DEVICE_CODE = getVal("DEVICE_CODE", "")
 	GvaEnv.DEVICE_NAME = getVal("DEVICE_NAME", "")
 
-	fmt.Println("sys_env:", GvaEnv)
+	fmt.Printf("sys_env:%+v\n", GvaEnv)
 }
