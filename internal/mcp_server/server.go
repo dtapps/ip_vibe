@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
-	"strings"
 	"sync"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/gin_middleware"
@@ -44,7 +43,7 @@ func NewManager(logger *slog.Logger, cfg Config, ginRouter *gin.Engine) *MCPServ
 			logger = slog.Default()
 		}
 		instance = &MCPServerManager{
-			logger:          logger.With(slog.String("component", "mcp_server")),
+			logger:          logger,
 			config:          cfg,
 			ginRouter:       ginRouter,
 			ginRouterPrefix: "/mcp",
@@ -139,41 +138,8 @@ func (m *MCPServerManager) Run(ctx context.Context) {
 			slog.String("methods", "GET, POST"),
 		)
 
-		m.ginRouter.Any("/*any", func(c *gin.Context) {
-			path := c.Request.URL.Path
-			query := c.Request.URL.RawQuery
-
-			// 判断条件：根路径 或 路径为空 或 明确带 sessionid query 的 /mcp 请求
-			shouldRewrite := path == "/" ||
-				path == "" ||
-				(path == "/mcp" && strings.Contains(query, "sessionid="))
-
-			if shouldRewrite {
-				// 构造新的路径，保留原有 query 参数
-				newPath := m.ginRouterPrefix // "/mcp"
-				if path != "" && path != "/" {
-					newPath += path
-				}
-				if query != "" {
-					newPath += "?" + query
-				}
-
-				m.logger.WarnContext(ctx, "Rewriting fallback path",
-					slog.String("original_path", path),
-					slog.String("original_query", query),
-					slog.String("new_path", newPath),
-				)
-
-				// 修改请求路径并重新进入 Gin 处理链
-				c.Request.URL.Path = newPath
-
-				// 重新处理请求（不会产生 HTTP 重定向）
-				m.ginRouter.HandleContext(c)
-				return
-			}
-
-			// 不匹配就继续走默认 404
-			c.Next()
+		mcpRouter.Any("/*any", func(c *gin.Context) {
+			gin.WrapH(http.StripPrefix(m.ginRouterPrefix, httpTransport))(c)
 		})
 	}
 
