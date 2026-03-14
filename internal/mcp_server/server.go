@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
+	"strings"
 	"sync"
 	"vibe_ip/internal/ent_log/operationlog"
 	"vibe_ip/internal/gin_middleware"
@@ -43,7 +44,7 @@ func NewManager(logger *slog.Logger, cfg Config, ginRouter *gin.Engine) *MCPServ
 			logger = slog.Default()
 		}
 		instance = &MCPServerManager{
-			logger:          logger,
+			logger:          logger.With(slog.String("component", "mcp_server")),
 			config:          cfg,
 			ginRouter:       ginRouter,
 			ginRouterPrefix: "/mcp",
@@ -123,14 +124,6 @@ func (m *MCPServerManager) Run(ctx context.Context) {
 		nil,
 	)
 
-	// 创建 SSE 处理程序
-	sseTransport := mcp.NewSSEHandler(
-		func(r *http.Request) *mcp.Server {
-			return m.server
-		},
-		nil,
-	)
-
 	// 挂载到路由
 	if m.ginRouter != nil {
 		mcpRouter := m.ginRouter.Group(m.ginRouterPrefix).
@@ -138,17 +131,50 @@ func (m *MCPServerManager) Run(ctx context.Context) {
 				operationlog.SourceMcp,
 			))
 
-		// 挂载 SSE 处理程序
-		mcpRouter.GET("/sse", gin.WrapH(sseTransport))
-		m.logger.InfoContext(ctx, "MCP SSE 端点已启用",
-			slog.String("endpoint", m.ginRouterPrefix+"/sse"),
+		// 挂载 HTTP 处理程序
+		mcpRouter.GET("", gin.WrapH(http.StripPrefix(m.ginRouterPrefix, httpTransport)))
+		mcpRouter.POST("", gin.WrapH(http.StripPrefix(m.ginRouterPrefix, httpTransport)))
+		m.logger.InfoContext(ctx, "MCP HTTP 端点已启用",
+			slog.String("endpoint", m.ginRouterPrefix),
+			slog.String("methods", "GET, POST"),
 		)
 
-		// 挂载 HTTP 处理程序
-		mcpRouter.Any("/*path", gin.WrapH(http.StripPrefix(m.ginRouterPrefix, httpTransport)))
-		m.logger.InfoContext(ctx, "MCP 已挂载到 Gin 路由",
-			slog.String("endpoint", m.ginRouterPrefix+"/*path"),
-		)
+		m.ginRouter.Any("/*any", func(c *gin.Context) {
+			path := c.Request.URL.Path
+			query := c.Request.URL.RawQuery
+
+			// 判断条件：根路径 或 路径为空 或 明确带 sessionid query 的 /mcp 请求
+			shouldRewrite := path == "/" ||
+				path == "" ||
+				(path == "/mcp" && strings.Contains(query, "sessionid="))
+
+			if shouldRewrite {
+				// 构造新的路径，保留原有 query 参数
+				newPath := m.ginRouterPrefix // "/mcp"
+				if path != "" && path != "/" {
+					newPath += path
+				}
+				if query != "" {
+					newPath += "?" + query
+				}
+
+				m.logger.WarnContext(ctx, "Rewriting fallback path",
+					slog.String("original_path", path),
+					slog.String("original_query", query),
+					slog.String("new_path", newPath),
+				)
+
+				// 修改请求路径并重新进入 Gin 处理链
+				c.Request.URL.Path = newPath
+
+				// 重新处理请求（不会产生 HTTP 重定向）
+				m.ginRouter.HandleContext(c)
+				return
+			}
+
+			// 不匹配就继续走默认 404
+			c.Next()
+		})
 	}
 
 }
