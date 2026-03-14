@@ -49,7 +49,7 @@ require (
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.90
 	github.com/miekg/dns v1.1.72
-	github.com/modelcontextprotocol/go-sdk v1.4.0
+	github.com/modelcontextprotocol/go-sdk v1.4.1
 	github.com/qiniu/go-sdk/v7 v7.26.4
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/spf13/cast v1.10.0
