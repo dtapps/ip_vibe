@@ -123,24 +123,32 @@ func (m *MCPServerManager) Run(ctx context.Context) {
 		nil,
 	)
 
+	// 创建 SSE 处理程序
+	sseTransport := mcp.NewSSEHandler(
+		func(r *http.Request) *mcp.Server {
+			return m.server
+		},
+		nil,
+	)
+
 	// 挂载到路由
 	if m.ginRouter != nil {
 		mcpRouter := m.ginRouter.Group(m.ginRouterPrefix).
 			Use(gin_middleware.AuditContextMiddleware(
 				operationlog.SourceMcp,
 			))
+
+		// 挂载 SSE 处理程序
+		mcpRouter.GET("/sse", gin.WrapH(sseTransport))
+		m.logger.InfoContext(ctx, "MCP SSE 端点已启用",
+			slog.String("endpoint", m.ginRouterPrefix+"/sse"),
+		)
+
+		// 挂载 HTTP 处理程序
 		mcpRouter.Any("/*path", gin.WrapH(http.StripPrefix(m.ginRouterPrefix, httpTransport)))
 		m.logger.InfoContext(ctx, "MCP 已挂载到 Gin 路由",
-			slog.String("prefix", m.ginRouterPrefix),
+			slog.String("endpoint", m.ginRouterPrefix+"/*path"),
 		)
 	}
 
-}
-
-// Stop 优雅关闭
-func (m *MCPServerManager) Stop(ctx context.Context) {
-	if m.server != nil {
-		m.logger.InfoContext(ctx, "MCP 服务正在优雅关闭...")
-	}
-	m.logger.InfoContext(ctx, "MCP 服务已安全停止")
 }

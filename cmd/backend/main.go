@@ -234,10 +234,6 @@ func gracefulShutdown() {
 		)
 		go mixedMgr.Stop(ctx)
 
-		// 优雅关闭 MCP 服务
-		mcpMgr := mcp_server.NewManager(global.GvaMcpSlog, mcp_server.Config{}, nil)
-		mcpMgr.Stop(ctx)
-
 		// 关闭 GoCron 调度器
 		initialize.CloseGoCron(ctx, global.GvaGocronSlog)
 
