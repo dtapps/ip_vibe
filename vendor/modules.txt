@@ -74,7 +74,7 @@ github.com/alibabacloud-go/tea/utils
 # github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 ## explicit; go 1.14
 github.com/alibabacloud-go/tea-utils/v2/service
-# github.com/aliyun/credentials-go v1.4.11
+# github.com/aliyun/credentials-go v1.4.12
 ## explicit; go 1.14
 github.com/aliyun/credentials-go
 github.com/aliyun/credentials-go/credentials
@@ -885,7 +885,7 @@ github.com/swaggo/swag/v2/gen
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.54
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.56
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.57
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -893,10 +893,10 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/http
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/json
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/regions
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.57
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.48
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.57
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901
 # github.com/tidwall/gjson v1.18.0

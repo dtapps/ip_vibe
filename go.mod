@@ -24,7 +24,7 @@ require (
 	github.com/alibabacloud-go/esa-20240910/v2 v2.48.0
 	github.com/alibabacloud-go/tea v1.4.0
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
-	github.com/aliyun/credentials-go v1.4.11
+	github.com/aliyun/credentials-go v1.4.12
 	github.com/baidubce/bce-sdk-go v0.9.261
 	github.com/chenyahui/gin-cache v1.10.0
 	github.com/cloudflare/cloudflare-go/v6 v6.8.0
@@ -58,9 +58,9 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.54
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.56
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.24
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.48
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.57
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.57
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.57
 	github.com/tidwall/gjson v1.18.0
 	github.com/volcengine/volcengine-go-sdk v1.2.19
 	github.com/wdcbot/qingfeng v1.6.5
