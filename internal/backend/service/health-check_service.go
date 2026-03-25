@@ -79,7 +79,6 @@ func CheckDomainHealth(ctx context.Context, domain string, httpPort, httpsPort i
 	dnsEg.SetLimit(len(dnsServers))
 
 	for _, server := range dnsServers {
-		server := server // 闭包捕获
 		dnsEg.Go(func() error {
 			// 检查是否已有结果，避免无效工作
 			select {

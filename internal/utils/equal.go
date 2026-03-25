@@ -2,6 +2,7 @@ package utils
 
 import (
 	"net/url"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -76,12 +77,7 @@ func EqualUrlSliceUnordered(sm1, sm2 []string) bool {
 
 // ContainsString 判断 slice 中是否包含 target（区分大小写）
 func ContainsString(slice []string, target string) bool {
-	for _, s := range slice {
-		if s == target {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(slice, target)
 }
 
 // ContainsStringIgnoreCase 判断 slice 中是否包含 target（忽略大小写）

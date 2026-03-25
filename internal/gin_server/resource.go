@@ -656,12 +656,12 @@ func (m *GinServerManager) loadTemplates(logger *slog.Logger, templatePath strin
 		var extras []string
 
 		var baseName string
-		if strings.HasSuffix(p, "_detail.html") {
+		if before, ok := strings.CutSuffix(p, "_detail.html"); ok {
 			// 特殊情况：如 p = "index_detail.html" → baseName = "index"
-			baseName = strings.TrimSuffix(p, "_detail.html")
-		} else if strings.HasSuffix(p, "_history.html") {
+			baseName = before
+		} else if before, ok := strings.CutSuffix(p, "_history.html"); ok {
 			// 普通情况，如 p = "index_history.html" → baseName = "index"
-			baseName = strings.TrimSuffix(p, "_history.html")
+			baseName = before
 		} else {
 			// 普通情况，如 p = "index.html" → baseName = "index"
 			baseName = strings.TrimSuffix(p, ".html")
@@ -758,12 +758,12 @@ func (m *GinServerManager) loadTemplatesFS(logger *slog.Logger, efs embed.FS, fu
 		var extras []string
 
 		var baseName string
-		if strings.HasSuffix(p, "_detail.html") {
+		if before, ok := strings.CutSuffix(p, "_detail.html"); ok {
 			// 特殊情况：如 p = "index_detail.html" → baseName = "index"
-			baseName = strings.TrimSuffix(p, "_detail.html")
-		} else if strings.HasSuffix(p, "_history.html") {
+			baseName = before
+		} else if before, ok := strings.CutSuffix(p, "_history.html"); ok {
 			// 普通情况，如 p = "index_history.html" → baseName = "index"
-			baseName = strings.TrimSuffix(p, "_history.html")
+			baseName = before
 		} else {
 			// 普通情况，如 p = "index.html" → baseName = "index"
 			baseName = strings.TrimSuffix(p, ".html")

@@ -74,7 +74,7 @@ func (bai *BasicAuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 
 // 流式调用
 func (bai *BasicAuthInterceptor) Stream() grpc.StreamServerInterceptor {
-	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	return func(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 
 		// 如果用户名或密码为空就不校验
 		if bai.username == "" || bai.password == "" {

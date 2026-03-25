@@ -507,7 +507,7 @@ func (s *DeviceServiceImpl) calculatePortForwardStats(raw []*ent_log.PortForward
 	rates := make([]types.GetDevicePortForwardStatsRates, 0, aggCount)
 	var totalIn, totalOut, totalErr int64
 
-	for i := 0; i < aggCount; i++ {
+	for i := range aggCount {
 		curr := sortedPoints[i]
 		var inKbps, outKbps float64
 

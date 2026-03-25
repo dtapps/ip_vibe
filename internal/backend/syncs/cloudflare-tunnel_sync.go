@@ -89,7 +89,6 @@ func (s *CloudflareTunnelSync) SyncAllCloudflareTunnels(ctx context.Context) err
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
-		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
 			return s.SyncThisCloudflareTunnels(egCtx, itemPlatformCofingID)
 		})
@@ -204,7 +203,6 @@ func (s *CloudflareTunnelSync) SyncAllCloudflareTunnelIngresses(ctx context.Cont
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
-		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
 			return s.SyncThisCloudflareTunnelIngresses(egCtx, itemPlatformCofingID)
 		})
@@ -234,7 +232,6 @@ func (s *CloudflareTunnelSync) SyncThisCloudflareTunnelIngresses(ctx context.Con
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemCloudflareTunnel := range allCloudflareTunnel {
-		itemCloudflareTunnel := itemCloudflareTunnel
 		eg.Go(func() error {
 
 			// 判断是否存在 账号ID

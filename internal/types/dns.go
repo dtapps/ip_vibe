@@ -10,7 +10,7 @@ type DnsRequest struct {
 	Type        string       `json:"type,omitempty" form:"type,omitempty"`                   // 记录类型（A、AAAA、CNAME）
 	IPGroupID   int64        `json:"ip_group_id,omitempty" form:"ip_group_id,omitempty"`     // IP组序号（与 cdn_record_id 二选一）
 	CdnRecordID int64        `json:"cdn_record_id,omitempty" form:"cdn_record_id,omitempty"` // CDN记录序号（与 ip_group_id 二选一 、 一个 CDN 记录只能被一条 DNS 引用）
-	IsActive    NullableBool `json:"is_active,omitempty" form:"is_active,omitempty"`         // 是否活跃
+	IsActive    NullableBool `json:"is_active" form:"is_active,omitempty"`                   // 是否活跃
 }
 
 // DNS页面 响应结构

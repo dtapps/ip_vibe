@@ -156,14 +156,14 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain_name string, s
 
 	// 查询域名记录
 	requestDnsQuery := &dns.ListRecordsInput{}
-	requestDnsQuery.Host = volcengine.String(full_domain)   // 主机记录
-	requestDnsQuery.PageNumber = volcengine.Int32(1)        // 页码
-	requestDnsQuery.PageSize = volcengine.Int32(500)        // 每页包含的解析记录的数量
-	requestDnsQuery.SearchMode = volcengine.String("exact") // Host 匹配模式
+	requestDnsQuery.Host = new(full_domain)          // 主机记录
+	requestDnsQuery.PageNumber = volcengine.Int32(1) // 页码
+	requestDnsQuery.PageSize = volcengine.Int32(500) // 每页包含的解析记录的数量
+	requestDnsQuery.SearchMode = new("exact")        // Host 匹配模式
 	if record_type != "" {
-		requestDnsQuery.Type = volcengine.String(record_type) // 记录类型
+		requestDnsQuery.Type = new(record_type) // 记录类型
 	}
-	requestDnsQuery.ZID = volcengine.Int64(p.CustomConfig.ZoneValue) // 域名ID
+	requestDnsQuery.ZID = new(p.CustomConfig.ZoneValue) // 域名ID
 	responseDnsQuery, err := p.Provider.Client.ListRecordsWithContext(ctx, requestDnsQuery)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ListRecordsWithContext 失败 %w", err)
@@ -240,12 +240,12 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, domain_name string, 
 
 		// 创建域名记录
 		requestDnsCreate := &dns.CreateRecordInput{}
-		requestDnsCreate.Host = volcengine.String(full_domain)              // 主机记录
-		requestDnsCreate.Type = volcengine.String(record_type)              // 记录类型
-		requestDnsCreate.Value = volcengine.String(origin_value)            // 解析记录的记录值
-		requestDnsCreate.ZID = volcengine.Int64(p.CustomConfig.ZoneValue)   // 域名ID
-		requestDnsCreate.Line = volcengine.String(p.CustomConfig.LineValue) // 解析记录对应的线路
-		requestDnsCreate.Remark = volcengine.String(p.CustomConfig.Remark)  // 解析记录的备注
+		requestDnsCreate.Host = new(full_domain)              // 主机记录
+		requestDnsCreate.Type = new(record_type)              // 记录类型
+		requestDnsCreate.Value = new(origin_value)            // 解析记录的记录值
+		requestDnsCreate.ZID = new(p.CustomConfig.ZoneValue)  // 域名ID
+		requestDnsCreate.Line = new(p.CustomConfig.LineValue) // 解析记录对应的线路
+		requestDnsCreate.Remark = new(p.CustomConfig.Remark)  // 解析记录的备注
 		responseDnsCreate, err := p.Provider.Client.CreateRecordWithContext(ctx, requestDnsCreate)
 		if err != nil {
 			return fmt.Errorf("接口 CreateRecordWithContext 失败 %w", err)
@@ -258,12 +258,12 @@ func (p *VolcengineDNSProvider) Update(ctx context.Context, domain_name string, 
 
 		// 更新域名记录
 		requestDnsUpdate := &dns.UpdateRecordInput{}
-		requestDnsUpdate.Host = volcengine.String(full_domain)                 // 主机记录
-		requestDnsUpdate.RecordID = volcengine.String(p.InternalData.RecordID) // 需要更新的解析记录的 ID
-		requestDnsUpdate.Type = volcengine.String(record_type)                 // 记录类型
-		requestDnsUpdate.Value = volcengine.String(origin_value)               // 解析记录的记录值
-		requestDnsUpdate.Line = volcengine.String(p.CustomConfig.LineValue)    // 解析记录对应的线路
-		requestDnsUpdate.Remark = volcengine.String(p.CustomConfig.Remark)     // 解析记录的备注
+		requestDnsUpdate.Host = new(full_domain)                 // 主机记录
+		requestDnsUpdate.RecordID = new(p.InternalData.RecordID) // 需要更新的解析记录的 ID
+		requestDnsUpdate.Type = new(record_type)                 // 记录类型
+		requestDnsUpdate.Value = new(origin_value)               // 解析记录的记录值
+		requestDnsUpdate.Line = new(p.CustomConfig.LineValue)    // 解析记录对应的线路
+		requestDnsUpdate.Remark = new(p.CustomConfig.Remark)     // 解析记录的备注
 		responseDnsUpdate, err := p.Provider.Client.UpdateRecordWithContext(ctx, requestDnsUpdate)
 		if err != nil {
 			return fmt.Errorf("接口 UpdateRecordWithContext 失败 %w", err)
@@ -307,7 +307,7 @@ type VolcengineDNSProviderLine struct {
 func (p *VolcengineDNSProvider) ListLines(ctx context.Context) (lines []*VolcengineDNSProviderLine, err error) {
 	// 查询线路列表
 	requestQueryLine := &dns.ListLinesInput{}
-	requestQueryLine.ZID = volcengine.Int64(p.CustomConfig.ZoneValue) // 域名ID
+	requestQueryLine.ZID = new(p.CustomConfig.ZoneValue) // 域名ID
 	responseQueryLine, err := p.Provider.Client.ListLinesWithContext(ctx, requestQueryLine)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ListLinesWithContext 失败 %w", err)

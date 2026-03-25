@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"slices"
 	"vibe_ip/internal/ent"
 	"vibe_ip/internal/ent/webhooksubscription"
 )
@@ -130,13 +131,7 @@ func (ws *WebhookSubscription) Update(ctx context.Context, webhookIDs []int64, o
 	// 删除：数据库中有，但 webhook_ids 中没有的
 	var toDeleteWebhookIDs []int64
 	for _, wid := range existingWebhookIDs {
-		found := false
-		for _, reqWID := range webhookIDs {
-			if wid == reqWID {
-				found = true
-				break
-			}
-		}
+		found := slices.Contains(webhookIDs, wid)
 		if !found {
 			toDeleteWebhookIDs = append(toDeleteWebhookIDs, wid)
 		}

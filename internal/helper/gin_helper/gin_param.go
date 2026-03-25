@@ -12,7 +12,7 @@ import (
 
 func setDefaults(obj any) {
 	v := reflect.ValueOf(obj)
-	if v.Kind() != reflect.Ptr || v.IsNil() {
+	if v.Kind() != reflect.Pointer || v.IsNil() {
 		return
 	}
 	v = v.Elem()
@@ -23,7 +23,7 @@ func setDefaults(obj any) {
 }
 
 func setDefaultsRecursive(v reflect.Value) {
-	if v.Kind() == reflect.Ptr {
+	if v.Kind() == reflect.Pointer {
 		if v.IsNil() {
 			return
 		}

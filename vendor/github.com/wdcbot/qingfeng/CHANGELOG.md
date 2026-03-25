@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.7] - 2026-03-23
+
+### Fixed
+- 🐛 **修复数组元素 allOf 渲染遗漏** - 当数组 items 使用 allOf 组合时，Model 视图无法递归展开
+- 🔧 **修复 truncateString 中文截断** - Banner 中文标题按字节截断导致乱码，改为按字符（rune）截断
+- 📌 **同步前端版本号** - app.js 默认版本号从 1.3.0 更新到 1.6.7
+
+## [1.6.6] - 2026-03-23
+
+### Fixed
+- 🐛 **修复嵌套 allOf 响应解析** - 修复 OpenAPI 3.0 中嵌套 allOf + $ref 组合的响应 schema 无法正确解析的问题
+  - `resolveSchema` 新增 allOf 递归解析支持
+  - `renderSchemaModel` 属性递归渲染条件增加 `allOf` 判断
+  - `generateExample` 深度限制从 5 提升到 10，避免嵌套 allOf 被截断
+  - 三个主题（default/minimal/modern）同步修复
+- 🔧 **修复编译错误** - 移除 `generator.go` 中未使用的 `github.com/swaggo/swag/v2` import，解决用户编译失败问题
+
 ## [1.6.1] - 2026-01-06
 
 ### Added

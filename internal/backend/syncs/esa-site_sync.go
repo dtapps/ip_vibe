@@ -96,7 +96,6 @@ func (s *ESASiteSync) SyncAllSites(ctx context.Context) (err error) {
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
-		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
 			return s.SyncThisSites(egCtx, itemPlatformCofingID)
 		})
@@ -403,7 +402,6 @@ func (s *ESASiteSync) SyncAllSiteOriginPools(ctx context.Context) (err error) {
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
-		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
 			return s.SyncThisSiteOriginPools(egCtx, itemPlatformCofingID)
 		})
@@ -432,7 +430,6 @@ func (s *ESASiteSync) SyncThisSiteOriginPools(ctx context.Context, config_id int
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, allEsaSiteSiteID := range allEsaSiteSiteIDs {
-		allEsaSiteSiteID := allEsaSiteSiteID
 		eg.Go(func() error {
 			return s.SyncThisSiteOriginPool(egCtx, config_id, allEsaSiteSiteID)
 		})
@@ -537,7 +534,6 @@ func (s *ESASiteSync) SyncAllSiteRecords(ctx context.Context) (err error) {
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
-		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
 			return s.SyncThisSiteRecords(egCtx, itemPlatformCofingID)
 		})
@@ -566,7 +562,6 @@ func (s *ESASiteSync) SyncThisSiteRecords(ctx context.Context, config_id int64) 
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, allEsaSiteSiteID := range allEsaSiteSiteIDs {
-		allEsaSiteSiteID := allEsaSiteSiteID
 		eg.Go(func() error {
 			return s.SyncThisSiteRecord(egCtx, config_id, allEsaSiteSiteID)
 		})

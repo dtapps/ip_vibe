@@ -153,7 +153,6 @@ func (c *IPHelper) GetIP(ctx context.Context, ipType IPType) (*IPResult, error) 
 
 	// 启动goroutine来并发请求所有URL
 	for _, url := range urls {
-		url := url // 创建局部变量避免闭包问题
 		g.Go(func() error {
 			// 检查上下文是否已取消
 			select {
@@ -234,7 +233,6 @@ func (c *IPHelper) GetAllIP(ctx context.Context, ipType IPType) ([]*IPResult, er
 
 	// 启动goroutine来并发请求所有URL
 	for _, url := range urls {
-		url := url // 创建局部变量避免闭包问题
 		g.Go(func() error {
 			// 检查上下文是否已取消
 			select {

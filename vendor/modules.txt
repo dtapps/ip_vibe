@@ -13,8 +13,8 @@ ariga.io/atlas/sql/sqlclient
 ariga.io/atlas/sql/sqlite
 ariga.io/atlas/sql/sqlspec
 ariga.io/atlas/sql/sqltool
-# entgo.io/ent v0.14.5
-## explicit; go 1.23
+# entgo.io/ent v0.14.6
+## explicit; go 1.24
 entgo.io/ent
 entgo.io/ent/dialect
 entgo.io/ent/dialect/entsql
@@ -49,13 +49,13 @@ github.com/agext/levenshtein
 # github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5
 ## explicit; go 1.14
 github.com/alibabacloud-go/alibabacloud-gateway-spi/client
-# github.com/alibabacloud-go/alidns-20150109/v5 v5.3.1
+# github.com/alibabacloud-go/alidns-20150109/v5 v5.3.2
 ## explicit; go 1.14
 github.com/alibabacloud-go/alidns-20150109/v5/client
 # github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 ## explicit; go 1.14
 github.com/alibabacloud-go/cdn-20180510/v9/client
-# github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.15
+# github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.16
 ## explicit; go 1.14
 github.com/alibabacloud-go/darabonba-openapi/v2/client
 github.com/alibabacloud-go/darabonba-openapi/v2/models
@@ -427,7 +427,7 @@ github.com/go-acme/alidns-20150109/v4/client
 # github.com/go-acme/esa-20240910/v2 v2.48.0
 ## explicit; go 1.14
 github.com/go-acme/esa-20240910/v2/client
-# github.com/go-acme/lego/v4 v4.32.0
+# github.com/go-acme/lego/v4 v4.33.0
 ## explicit; go 1.24.0
 github.com/go-acme/lego/v4/acme
 github.com/go-acme/lego/v4/acme/api
@@ -611,7 +611,7 @@ github.com/hashicorp/hcl/v2/hclparse
 github.com/hashicorp/hcl/v2/hclsyntax
 github.com/hashicorp/hcl/v2/hclwrite
 github.com/hashicorp/hcl/v2/json
-# github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.188
+# github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.189
 ## explicit; go 1.14
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth
@@ -703,15 +703,15 @@ github.com/kaptinlin/jsonschema/pkg/tagparser
 # github.com/kaptinlin/messageformat-go v0.4.18
 ## explicit; go 1.26
 github.com/kaptinlin/messageformat-go/v1
-# github.com/kingsoftcloud/sdk-go/v2 v2.2.90
+# github.com/kingsoftcloud/sdk-go/v2 v2.2.92
 ## explicit; go 1.17
 github.com/kingsoftcloud/sdk-go/v2/ksyun/client/cdn/v3
 github.com/kingsoftcloud/sdk-go/v2/ksyun/common
 github.com/kingsoftcloud/sdk-go/v2/ksyun/common/errors
 github.com/kingsoftcloud/sdk-go/v2/ksyun/common/http
 github.com/kingsoftcloud/sdk-go/v2/ksyun/common/profile
-# github.com/klauspost/compress v1.18.4
-## explicit; go 1.23
+# github.com/klauspost/compress v1.18.5
+## explicit; go 1.24
 github.com/klauspost/compress
 github.com/klauspost/compress/fse
 github.com/klauspost/compress/huff0
@@ -727,7 +727,7 @@ github.com/klauspost/cpuid/v2
 ## explicit; go 1.18
 github.com/leodido/go-urn
 github.com/leodido/go-urn/scim/schema
-# github.com/lufia/plan9stats v0.0.0-20260216142805-b3301c5f2a88
+# github.com/lufia/plan9stats v0.0.0-20260324052639-156f7da3f749
 ## explicit; go 1.21
 github.com/lufia/plan9stats
 # github.com/magefile/mage v1.16.1
@@ -766,11 +766,10 @@ github.com/ncruces/go-strftime
 # github.com/nrdcg/dnspod-go v0.4.0
 ## explicit; go 1.13
 github.com/nrdcg/dnspod-go
-# github.com/pelletier/go-toml/v2 v2.2.4
+# github.com/pelletier/go-toml/v2 v2.3.0
 ## explicit; go 1.21.0
 github.com/pelletier/go-toml/v2
 github.com/pelletier/go-toml/v2/internal/characters
-github.com/pelletier/go-toml/v2/internal/danger
 github.com/pelletier/go-toml/v2/internal/tracker
 github.com/pelletier/go-toml/v2/unstable
 # github.com/petar-dambovaliev/aho-corasick v0.0.0-20250424160509-463d218d4745
@@ -782,7 +781,7 @@ github.com/pkg/errors
 # github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55
 ## explicit; go 1.14
 github.com/power-devops/perfstat
-# github.com/qiniu/go-sdk/v7 v7.26.5
+# github.com/qiniu/go-sdk/v7 v7.26.6
 ## explicit; go 1.22
 github.com/qiniu/go-sdk/v7
 github.com/qiniu/go-sdk/v7/auth
@@ -882,10 +881,10 @@ github.com/swaggo/swag
 ## explicit; go 1.18
 github.com/swaggo/swag/v2
 github.com/swaggo/swag/v2/gen
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.54
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.61
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.59
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.64
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -893,10 +892,10 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/http
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/json
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/regions
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.59
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.64
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.57
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.62
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901
 # github.com/tidwall/gjson v1.18.0
@@ -949,12 +948,12 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/events/application/enums
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects
 github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
-# github.com/volcengine/volc-sdk-golang v1.0.238
+# github.com/volcengine/volc-sdk-golang v1.0.239
 ## explicit; go 1.14
 github.com/volcengine/volc-sdk-golang/base
 github.com/volcengine/volc-sdk-golang/service/dns
 github.com/volcengine/volc-sdk-golang/service/sts
-# github.com/volcengine/volcengine-go-sdk v1.2.20
+# github.com/volcengine/volcengine-go-sdk v1.2.21
 ## explicit; go 1.14
 github.com/volcengine/volcengine-go-sdk/internal/ini
 github.com/volcengine/volcengine-go-sdk/internal/sdkio
@@ -985,7 +984,7 @@ github.com/volcengine/volcengine-go-sdk/volcengine/volcenginebody
 github.com/volcengine/volcengine-go-sdk/volcengine/volcengineerr
 github.com/volcengine/volcengine-go-sdk/volcengine/volcenginequery
 github.com/volcengine/volcengine-go-sdk/volcengine/volcengineutil
-# github.com/wdcbot/qingfeng v1.6.5
+# github.com/wdcbot/qingfeng v1.6.7
 ## explicit; go 1.20
 github.com/wdcbot/qingfeng
 # github.com/yosida95/uritemplate/v3 v3.0.2
@@ -1201,12 +1200,12 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typeparams
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/api v0.0.0-20260316180232-0b37fe3546d5
+# google.golang.org/genproto/googleapis/api v0.0.0-20260319201613-d00831a3d3e7
 ## explicit; go 1.25.0
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20260316180232-0b37fe3546d5
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20260319201613-d00831a3d3e7
 ## explicit; go 1.25.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.79.3

@@ -9,7 +9,7 @@ type CdnRequest struct {
 	SubDomain string       `json:"sub_domain,omitempty" form:"sub_domain,omitempty"`   // 子域名（例如 @, www, blog, api）
 	Type      string       `json:"type,omitempty" form:"type,omitempty"`               // 记录类型（A、AAAA）
 	IPGroupID int64        `json:"ip_group_id,omitempty" form:"ip_group_id,omitempty"` // IP组序号
-	IsActive  NullableBool `json:"is_active,omitempty" form:"is_active,omitempty"`     // 是否活跃
+	IsActive  NullableBool `json:"is_active" form:"is_active,omitempty"`               // 是否活跃
 }
 
 // CDN页面 响应结构

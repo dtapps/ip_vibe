@@ -89,7 +89,6 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 
 		for _, record := range allRecord {
 			// 创建副本以避免闭包问题
-			record := record
 			eg.Go(func() error {
 
 				// 解析证书
@@ -145,7 +144,6 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 
 		for _, record := range allRecord {
 			// 创建副本以避免闭包问题
-			record := record
 			eg.Go(func() error {
 
 				// 解析证书

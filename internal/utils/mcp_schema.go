@@ -25,7 +25,7 @@ func AutoSchema(obj any) map[string]any {
 
 // 递归构建 Schema，支持嵌套结构体展开
 func buildSchemaFromType(t reflect.Type) map[string]any {
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
 
@@ -65,8 +65,8 @@ type fieldInfo struct {
 func collectAllFields(t reflect.Type) []fieldInfo {
 	var fields []fieldInfo
 
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
+	for field := range t.Fields() {
+		field := field
 
 		if !field.IsExported() {
 			continue
@@ -112,7 +112,7 @@ func processFieldWithPath(fieldInfo fieldInfo, schema map[string]any) {
 
 	// 获取字段类型（处理指针）
 	fieldType := field.Type
-	if fieldType.Kind() == reflect.Ptr {
+	if fieldType.Kind() == reflect.Pointer {
 		fieldType = fieldType.Elem()
 	}
 
@@ -165,7 +165,7 @@ func isRequiredField(jsonTag, bindingTag string, fieldType reflect.Type) bool {
 	}
 
 	// 如果 json tag 没有 omitempty 且不是指针类型 → 必需
-	if !strings.Contains(jsonTag, "omitempty") && fieldType.Kind() != reflect.Ptr {
+	if !strings.Contains(jsonTag, "omitempty") && fieldType.Kind() != reflect.Pointer {
 		return true
 	}
 

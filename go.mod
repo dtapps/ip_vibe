@@ -17,10 +17,10 @@ replace github.com/quic-go/quic-go => github.com/quic-go/quic-go v0.58.0
 replace github.com/imroc/req/v3 => github.com/imroc/req/v3 v3.57.0
 
 require (
-	entgo.io/ent v0.14.5
-	github.com/alibabacloud-go/alidns-20150109/v5 v5.3.1
+	entgo.io/ent v0.14.6
+	github.com/alibabacloud-go/alidns-20150109/v5 v5.3.2
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
-	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.15
+	github.com/alibabacloud-go/darabonba-openapi/v2 v2.1.16
 	github.com/alibabacloud-go/esa-20240910/v2 v2.48.0
 	github.com/alibabacloud-go/tea v1.4.0
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
@@ -39,31 +39,31 @@ require (
 	github.com/gin-contrib/multitemplate v1.1.1
 	github.com/gin-contrib/requestid v1.0.5
 	github.com/gin-gonic/gin v1.12.0
-	github.com/go-acme/lego/v4 v4.32.0
+	github.com/go-acme/lego/v4 v4.33.0
 	github.com/go-co-op/gocron/v2 v2.19.1
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.188
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.189
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
-	github.com/kingsoftcloud/sdk-go/v2 v2.2.90
+	github.com/kingsoftcloud/sdk-go/v2 v2.2.92
 	github.com/miekg/dns v1.1.72
 	github.com/modelcontextprotocol/go-sdk v1.4.1
-	github.com/qiniu/go-sdk/v7 v7.26.5
+	github.com/qiniu/go-sdk/v7 v7.26.6
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/spf13/cast v1.10.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.54
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.59
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.59
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.57
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.61
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.64
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.64
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.62
 	github.com/tidwall/gjson v1.18.0
-	github.com/volcengine/volcengine-go-sdk v1.2.20
-	github.com/wdcbot/qingfeng v1.6.5
+	github.com/volcengine/volcengine-go-sdk v1.2.21
+	github.com/wdcbot/qingfeng v1.6.7
 	go.dtapp.net/library/contrib/http_log v1.0.11
 	go.dtapp.net/library/contrib/req_log v1.0.4
 	go.dtapp.net/library/contrib/resty_log v1.0.15
@@ -83,8 +83,8 @@ require (
 	go.dtapp.net/library/utils/gotime v1.0.19
 	golang.org/x/net v0.52.0
 	golang.org/x/sync v0.20.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20260316180232-0b37fe3546d5
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260316180232-0b37fe3546d5
+	google.golang.org/genproto/googleapis/api v0.0.0-20260319201613-d00831a3d3e7
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260319201613-d00831a3d3e7
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -156,10 +156,10 @@ require (
 	github.com/kaptinlin/jsonpointer v0.4.17 // indirect
 	github.com/kaptinlin/jsonschema v0.7.6 // indirect
 	github.com/kaptinlin/messageformat-go v0.4.18 // indirect
-	github.com/klauspost/compress v1.18.4 // indirect
+	github.com/klauspost/compress v1.18.5 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/lufia/plan9stats v0.0.0-20260216142805-b3301c5f2a88 // indirect
+	github.com/lufia/plan9stats v0.0.0-20260324052639-156f7da3f749 // indirect
 	github.com/magefile/mage v1.16.1 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
@@ -167,7 +167,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/nrdcg/dnspod-go v0.4.0 // indirect
-	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
+	github.com/pelletier/go-toml/v2 v2.3.0 // indirect
 	github.com/petar-dambovaliev/aho-corasick v0.0.0-20250424160509-463d218d4745 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
@@ -190,7 +190,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.1 // indirect
 	github.com/valllabh/ocsf-schema-golang v1.0.3 // indirect
-	github.com/volcengine/volc-sdk-golang v1.0.238 // indirect
+	github.com/volcengine/volc-sdk-golang v1.0.239 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	github.com/zclconf/go-cty v1.18.0 // indirect

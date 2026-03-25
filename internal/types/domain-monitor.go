@@ -12,7 +12,7 @@ type DomainMonitorRequest struct {
 	Name          string       `json:"name,omitempty" form:"name,omitempty"`                     // 域名监控名称
 	Domain        string       `json:"domain,omitempty" form:"domain,omitempty"`                 // 域名
 	CheckProtocol string       `json:"check_protocol,omitempty" form:"check_protocol,omitempty"` // 检查类型（HTTP/HTTPS）
-	IsActive      NullableBool `json:"is_active,omitempty" form:"is_active,omitempty"`           // 是否活跃
+	IsActive      NullableBool `json:"is_active" form:"is_active,omitempty"`                     // 是否活跃
 	CurrentStatus string       `json:"current_status,omitempty" form:"current_status,omitempty"` // 当前运行状态
 }
 

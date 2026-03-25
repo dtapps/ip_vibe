@@ -150,10 +150,10 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain_name string, sub_
 
 	// 查询域名记录
 	requestDnsQuery := dnspod.NewDescribeRecordListRequest()
-	requestDnsQuery.Domain = common.StringPtr(domain_name)   // 域名
-	requestDnsQuery.Subdomain = common.StringPtr(sub_domain) // 解析记录的主机头
+	requestDnsQuery.Domain = new(domain_name)   // 域名
+	requestDnsQuery.Subdomain = new(sub_domain) // 解析记录的主机头
 	if record_type != "" {
-		requestDnsQuery.RecordType = common.StringPtr(record_type) // 获取某种类型的解析记录
+		requestDnsQuery.RecordType = new(record_type) // 获取某种类型的解析记录
 	}
 	responseDnsQuery, err := p.Provider.Client.DescribeRecordListWithContext(ctx, requestDnsQuery)
 	if err != nil {
@@ -228,12 +228,12 @@ func (p *TencentDNSProvider) Update(ctx context.Context, domain_name string, sub
 
 		// 创建域名记录
 		requestDnsCreate := dnspod.NewCreateRecordRequest()
-		requestDnsCreate.Domain = common.StringPtr(domain_name)                        // 域名
-		requestDnsCreate.RecordType = common.StringPtr(record_type)                    // 记录类型
-		requestDnsCreate.Value = common.StringPtr(origin_value)                        // 记录值
-		requestDnsCreate.SubDomain = common.StringPtr(sub_domain)                      // 主机记录
-		requestDnsCreate.RecordLine = common.StringPtr(p.CustomConfig.RecordLineValue) // 记录线路
-		requestDnsCreate.Remark = common.StringPtr(p.CustomConfig.Remark)              // 备注
+		requestDnsCreate.Domain = new(domain_name)                        // 域名
+		requestDnsCreate.RecordType = new(record_type)                    // 记录类型
+		requestDnsCreate.Value = new(origin_value)                        // 记录值
+		requestDnsCreate.SubDomain = new(sub_domain)                      // 主机记录
+		requestDnsCreate.RecordLine = new(p.CustomConfig.RecordLineValue) // 记录线路
+		requestDnsCreate.Remark = new(p.CustomConfig.Remark)              // 备注
 		responseDnsCreate, err := p.Provider.Client.CreateRecordWithContext(ctx, requestDnsCreate)
 		if err != nil {
 			return fmt.Errorf("接口 CreateRecordWithContext 失败 %w", err)
@@ -246,13 +246,13 @@ func (p *TencentDNSProvider) Update(ctx context.Context, domain_name string, sub
 
 		// 更新域名记录
 		requestDnsUpdate := dnspod.NewModifyRecordRequest()
-		requestDnsUpdate.Domain = common.StringPtr(domain_name)                              // 域名
-		requestDnsUpdate.RecordType = common.StringPtr(record_type)                          // 记录类型
-		requestDnsUpdate.Value = common.StringPtr(origin_value)                              // 记录值
-		requestDnsUpdate.RecordId = common.Uint64Ptr(cast.ToUint64(p.InternalData.RecordID)) // 记录 ID
-		requestDnsUpdate.SubDomain = common.StringPtr(sub_domain)                            // 主机记录
-		requestDnsUpdate.RecordLine = common.StringPtr(p.CustomConfig.RecordLineValue)       // 记录线路
-		requestDnsUpdate.Remark = common.StringPtr(p.CustomConfig.Remark)                    // 备注
+		requestDnsUpdate.Domain = new(domain_name)                              // 域名
+		requestDnsUpdate.RecordType = new(record_type)                          // 记录类型
+		requestDnsUpdate.Value = new(origin_value)                              // 记录值
+		requestDnsUpdate.RecordId = new(cast.ToUint64(p.InternalData.RecordID)) // 记录 ID
+		requestDnsUpdate.SubDomain = new(sub_domain)                            // 主机记录
+		requestDnsUpdate.RecordLine = new(p.CustomConfig.RecordLineValue)       // 记录线路
+		requestDnsUpdate.Remark = new(p.CustomConfig.Remark)                    // 备注
 		responseDnsUpdate, err := p.Provider.Client.ModifyRecordWithContext(ctx, requestDnsUpdate)
 		if err != nil {
 			return fmt.Errorf("接口 ModifyRecordWithContext 失败 %w", err)
@@ -301,8 +301,8 @@ func (p *TencentDNSProvider) ListLines(ctx context.Context) (lines []*TencentDNS
 	}
 	// 查询线路列表
 	requestQueryLine := dnspod.NewDescribeRecordLineListRequest()
-	requestQueryLine.Domain = common.StringPtr(p.CustomConfig.DomainText)
-	requestQueryLine.DomainGrade = common.StringPtr(p.cfg.DomainGrade)
+	requestQueryLine.Domain = new(p.CustomConfig.DomainText)
+	requestQueryLine.DomainGrade = new(p.cfg.DomainGrade)
 	responseQueryLine, err := p.Provider.Client.DescribeRecordLineListWithContext(ctx, requestQueryLine)
 	if err != nil {
 		return nil, fmt.Errorf("接口 DescribeRecordLineListWithContext 失败 %w", err)

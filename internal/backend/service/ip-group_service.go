@@ -413,7 +413,6 @@ func (s *IPGroupServiceImpl) HealthcheckIPGroup(ctx context.Context, id int64) (
 	eg.SetLimit(10) // 最多 10 个并发
 
 	for _, item := range firstIpGroup.Edges.Devices {
-		item := item // 创建副本以避免闭包问题
 		if item.IPV4 != "" {
 			// 检测 IP 是否可通过 HTTP/HTTPS 访问
 			eg.Go(func() error {
@@ -558,7 +557,7 @@ func (s *IPGroupServiceImpl) calculatePortForwardStats(raw []*ent_log.PortForwar
 	var totalIn, totalOut, totalErr int64
 	rates := make([]types.GetIPGroupDevicePortForwardStatsRates, 0, aggCount)
 
-	for i := 0; i < aggCount; i++ {
+	for i := range aggCount {
 		curr := sorted[i]
 		var inKbps, outKbps float64
 

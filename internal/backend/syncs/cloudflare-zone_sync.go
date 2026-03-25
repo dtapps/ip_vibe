@@ -91,7 +91,6 @@ func (s *CloudflareZoneSync) SyncAllZones(ctx context.Context) (err error) {
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
-		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
 			return s.SyncThisZones(egCtx, itemPlatformCofingID)
 		})
@@ -370,7 +369,6 @@ func (s *CloudflareZoneSync) SyncAllZoneRecords(ctx context.Context) (err error)
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
-		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
 			return s.SyncThisZoneRecords(egCtx, itemPlatformCofingID)
 		})
@@ -399,7 +397,6 @@ func (s *CloudflareZoneSync) SyncThisZoneRecords(ctx context.Context, config_id 
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, allZoneID := range allZoneIDs {
-		allZoneID := allZoneID
 		eg.Go(func() error {
 			return s.SyncThisZoneRecord(egCtx, config_id, allZoneID)
 		})

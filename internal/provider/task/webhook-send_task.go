@@ -232,7 +232,6 @@ func (p *WebhookSendTaskProvider) Process(ctx context.Context, args json.RawMess
 		eg.SetLimit(10) // 最多 10 个并发
 
 		for _, record := range records {
-			record := record // 创建副本以避免闭包问题
 			eg.Go(func() (err error) {
 
 				// 获取关联的通知

@@ -154,9 +154,9 @@ func (p *TencentCDNProvider) Check(ctx context.Context, domain_name string, sub_
 	requestCdnQuery.Limit = common.Int64Ptr(1000)
 	requestCdnQuery.Filters = make([]*cdn.DomainFilter, 0, 1)
 	requestCdnQuery.Filters = append(requestCdnQuery.Filters, &cdn.DomainFilter{
-		Name:  common.StringPtr("domain"),
+		Name:  new("domain"),
 		Value: common.StringPtrs([]string{full_domain}),
-		Fuzzy: common.BoolPtr(false),
+		Fuzzy: new(false),
 	})
 	// 请求
 	responseCdnQuery, err := p.Provider.Client.DescribeDomainsWithContext(ctx, requestCdnQuery)
@@ -250,14 +250,14 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain_name string, sub
 
 		// 创建加速域名
 		requestCdnCreate := cdn.NewAddCdnDomainRequest()
-		requestCdnCreate.Domain = common.StringPtr(full_domain) // 域名
+		requestCdnCreate.Domain = new(full_domain) // 域名
 		requestCdnCreate.Origin = &cdn.Origin{
-			Origins:            common.StringPtrs(origin_values),                    // 源站地址
-			OriginType:         common.StringPtr(originType),                        // 源站类型
-			OriginPullProtocol: common.StringPtr(p.CustomConfig.OriginPullProtocol), // 回源协议
+			Origins:            common.StringPtrs(origin_values),       // 源站地址
+			OriginType:         new(originType),                        // 源站类型
+			OriginPullProtocol: new(p.CustomConfig.OriginPullProtocol), // 回源协议
 		}
-		requestCdnCreate.ServiceType = common.StringPtr(p.CustomConfig.ServiceType) // 加速域名业务类型
-		requestCdnCreate.Area = common.StringPtr(p.CustomConfig.Area)               // 区域
+		requestCdnCreate.ServiceType = new(p.CustomConfig.ServiceType) // 加速域名业务类型
+		requestCdnCreate.Area = new(p.CustomConfig.Area)               // 区域
 		_, err = p.Provider.Client.AddCdnDomainWithContext(ctx, requestCdnCreate)
 		if err != nil {
 			return fmt.Errorf("接口 AddCdnDomainWithContext 失败 %w", err)
@@ -267,11 +267,11 @@ func (p *TencentCDNProvider) Update(ctx context.Context, domain_name string, sub
 
 		// 更新加速域名
 		requestCdnUpdate := cdn.NewUpdateDomainConfigRequest()
-		requestCdnUpdate.Domain = common.StringPtr(full_domain)                             // 域名
-		requestCdnUpdate.ProjectId = common.Int64Ptr(cast.ToInt64(p.InternalData.RecordID)) // 项目 ID
+		requestCdnUpdate.Domain = new(full_domain)                              // 域名
+		requestCdnUpdate.ProjectId = new(cast.ToInt64(p.InternalData.RecordID)) // 项目 ID
 		requestCdnUpdate.Origin = &cdn.Origin{
 			Origins:    common.StringPtrs(origin_values), // 源站地址
-			OriginType: common.StringPtr(originType),     // 源站类型
+			OriginType: new(originType),                  // 源站类型
 		}
 		_, err = p.Provider.Client.UpdateDomainConfigWithContext(ctx, requestCdnUpdate)
 		if err != nil {

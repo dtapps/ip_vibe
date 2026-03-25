@@ -462,7 +462,7 @@ func (s *PortForwardServiceImpl) calculatePortForwardStats(raw []*ent_log.PortFo
 	var totalIn, totalOut, totalErr int64
 	rates := make([]types.GetPortForwardStatsRates, 0, count)
 
-	for i := 0; i < count; i++ {
+	for i := range count {
 		curr := raw[i]
 		var inKbps, outKbps float64
 

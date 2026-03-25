@@ -14,7 +14,7 @@
   "devDependencies": {
     "@egoist/tailwindcss-icons": "^1.9.2",
     "@iconify-json/lucide": "^1.2.98",
-    "@tailwindcss/cli": "^4.2.1",
+    "@tailwindcss/cli": "^4.2.2",
     "clipboard": "^2.0.11",
     "daisyui": "^5.5.19",
     "dayjs": "^1.11.20",
@@ -23,6 +23,6 @@
     "loadjs": "^4.3.0",
     "select2": "4.1.0-rc.0",
     "select2-tailwindcss-v4-theme": "^1.2.1",
-    "tailwindcss": "^4.2.1"
+    "tailwindcss": "^4.2.2"
   }
 }

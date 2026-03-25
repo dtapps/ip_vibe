@@ -3,6 +3,7 @@ package grpc_service
 import (
 	"context"
 	"log/slog"
+	"maps"
 	"sync"
 	"time"
 	"vibe_ip/internal/grpc_generated"
@@ -59,9 +60,7 @@ func (s *DeviceService) GetClients() map[string]*ClientState {
 
 	// 深拷贝或只读视图，避免外部修改
 	result := make(map[string]*ClientState, len(s.clients))
-	for k, v := range s.clients {
-		result[k] = v
-	}
+	maps.Copy(result, s.clients)
 	return result
 }
 

@@ -90,7 +90,6 @@ func (s *EdgeOneZoneSync) SyncAllZones(ctx context.Context) (err error) {
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
-		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
 			return s.SyncThisZones(egCtx, itemPlatformCofingID)
 		})
@@ -445,7 +444,6 @@ func (s *EdgeOneZoneSync) SyncAllZoneOriginGroups(ctx context.Context) (err erro
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
-		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
 			return s.SyncThisZoneOriginGroups(egCtx, itemPlatformCofingID)
 		})
@@ -474,7 +472,6 @@ func (s *EdgeOneZoneSync) SyncThisZoneOriginGroups(ctx context.Context, config_i
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemEdgeOneZoneID := range allEdgeOneZoneIDs {
-		itemEdgeOneZoneID := itemEdgeOneZoneID
 		eg.Go(func() error {
 			return s.SyncThisZoneOriginGroup(egCtx, config_id, itemEdgeOneZoneID)
 		})
@@ -582,7 +579,6 @@ func (s *EdgeOneZoneSync) SyncAllZoneRecords(ctx context.Context) (err error) {
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemPlatformCofingID := range allPlatformCofingIDs {
-		itemPlatformCofingID := itemPlatformCofingID
 		eg.Go(func() error {
 			return s.SyncThisZoneRecords(egCtx, itemPlatformCofingID)
 		})
@@ -611,7 +607,6 @@ func (s *EdgeOneZoneSync) SyncThisZoneRecords(ctx context.Context, config_id int
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(5) // 最多 5 个并发
 	for _, itemEdgeOneZoneID := range allEdgeOneZoneIDs {
-		itemEdgeOneZoneID := itemEdgeOneZoneID
 		eg.Go(func() error {
 			return s.SyncThisZoneRecord(egCtx, config_id, itemEdgeOneZoneID)
 		})

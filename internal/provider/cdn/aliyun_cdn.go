@@ -114,9 +114,9 @@ func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 
 	// 密钥信息
 	p.Provider.Auth, err = credential.NewCredential(&credential.Config{
-		Type:            tea.String("access_key"),
-		AccessKeyId:     tea.String(p.cfg.AccessKeyID),
-		AccessKeySecret: tea.String(p.cfg.AccessKeySecret),
+		Type:            new("access_key"),
+		AccessKeyId:     new(p.cfg.AccessKeyID),
+		AccessKeySecret: new(p.cfg.AccessKeySecret),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("创建凭证失败 %w", err)
@@ -125,7 +125,7 @@ func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 	// 选项
 	p.Provider.Cfg = &openapi.Config{
 		Credential: p.Provider.Auth,
-		Endpoint:   tea.String(p.cfg.Endpoint),
+		Endpoint:   new(p.cfg.Endpoint),
 	}
 
 	// 如果提供了日志传输器，则设置HTTP客户端
@@ -145,8 +145,8 @@ func NewAliyunCDNProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Aliy
 
 	// 定义最大重试次数
 	p.Provider.Runtime = &dara.RuntimeOptions{
-		Autoretry:   tea.Bool(true),
-		MaxAttempts: tea.Int(3),
+		Autoretry:   new(true),
+		MaxAttempts: new(3),
 	}
 
 	return p, nil
@@ -165,9 +165,9 @@ func (p *AliyunCDNProvider) Check(ctx context.Context, domain_name string, sub_d
 
 	// 查询加速域名
 	requestCdnQuery := &cdn20180510.DescribeUserDomainsRequest{}
-	requestCdnQuery.DomainName = tea.String(full_domain) // 加速域名
-	requestCdnQuery.PageNumber = tea.Int32(1)            // 取得第几页
-	requestCdnQuery.PageSize = tea.Int32(500)            // 分页大小
+	requestCdnQuery.DomainName = new(full_domain) // 加速域名
+	requestCdnQuery.PageNumber = tea.Int32(1)     // 取得第几页
+	requestCdnQuery.PageSize = tea.Int32(500)     // 分页大小
 	responseCdnQuery, err := p.Provider.Client.DescribeUserDomainsWithContext(ctx, requestCdnQuery, p.Provider.Runtime)
 	if err != nil {
 		return nil, fmt.Errorf("接口 DescribeUserDomainsWithContext 失败 %w", err)
@@ -248,7 +248,7 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain_name string, sub_
 	if n > 0 {
 		base := 100 / n
 		remainder := 100 % n
-		for i := 0; i < n; i++ {
+		for i := range n {
 			weights[i] = base
 			if i < remainder {
 				weights[i]++ // 前 remainder 个加 1，保证总和=100
@@ -297,10 +297,10 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain_name string, sub_
 
 		// 创建加速域名
 		requestCdnCreate := &cdn20180510.AddCdnDomainRequest{}
-		requestCdnCreate.CdnType = tea.String(p.CustomConfig.CdnType)            // 加速域名的业务类型
-		requestCdnCreate.DomainName = tea.String(full_domain)                    // 需要接入CDN的加速域名
-		requestCdnCreate.Sources = tea.String(gojson.JsonEncodeNoError(sources)) // 回源地址列表
-		requestCdnCreate.Scope = tea.String(p.CustomConfig.Scope)                // 加速区域
+		requestCdnCreate.CdnType = new(p.CustomConfig.CdnType)            // 加速域名的业务类型
+		requestCdnCreate.DomainName = new(full_domain)                    // 需要接入CDN的加速域名
+		requestCdnCreate.Sources = new(gojson.JsonEncodeNoError(sources)) // 回源地址列表
+		requestCdnCreate.Scope = new(p.CustomConfig.Scope)                // 加速区域
 		_, err = p.Provider.Client.AddCdnDomainWithContext(ctx, requestCdnCreate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 AddCdnDomainWithContext 失败 %w", err)
@@ -310,8 +310,8 @@ func (p *AliyunCDNProvider) Update(ctx context.Context, domain_name string, sub_
 
 		// 更新加速域名
 		requestCdnUpdate := &cdn20180510.ModifyCdnDomainRequest{}
-		requestCdnUpdate.DomainName = tea.String(full_domain)                    // 需要接入CDN的加速域名
-		requestCdnUpdate.Sources = tea.String(gojson.JsonEncodeNoError(sources)) // 回源地址列表
+		requestCdnUpdate.DomainName = new(full_domain)                    // 需要接入CDN的加速域名
+		requestCdnUpdate.Sources = new(gojson.JsonEncodeNoError(sources)) // 回源地址列表
 		_, err = p.Provider.Client.ModifyCdnDomainWithContext(ctx, requestCdnUpdate, p.Provider.Runtime)
 		if err != nil {
 			return fmt.Errorf("接口 ModifyCdnDomainWithContext 失败 %w", err)

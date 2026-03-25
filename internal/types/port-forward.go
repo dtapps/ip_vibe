@@ -7,10 +7,10 @@ import (
 // 端口转发页面 请求结构
 type PortForwardRequest struct {
 	CommonPageRequest
-	ID          int64        `json:"id,omitempty" form:"id,omitempty"`                     // 设备端口转发序号
-	Name        string       `json:"name,omitempty" form:"name,omitempty"`                 // 设备端口转发名称
-	AutoForward NullableBool `json:"auto_forward,omitempty" form:"auto_forward,omitempty"` // 防火墙自动放行
-	IsActive    NullableBool `json:"is_active,omitempty" form:"is_active,omitempty"`       // 是否活跃
+	ID          int64        `json:"id,omitempty" form:"id,omitempty"`           // 设备端口转发序号
+	Name        string       `json:"name,omitempty" form:"name,omitempty"`       // 设备端口转发名称
+	AutoForward NullableBool `json:"auto_forward" form:"auto_forward,omitempty"` // 防火墙自动放行
+	IsActive    NullableBool `json:"is_active" form:"is_active,omitempty"`       // 是否活跃
 }
 
 // 端口转发页面 响应结构

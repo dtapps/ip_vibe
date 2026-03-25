@@ -50,7 +50,7 @@ func (s *auditContextServerStream) Context() context.Context {
 
 // 流式调用
 func (aci *AuditContextInterceptor) Stream() grpc.StreamServerInterceptor {
-	return func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	return func(srv any, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		// 将 source 注入到 context 中
 		newCtx := schemahook.WithSource(stream.Context(), aci.source.String())
 
