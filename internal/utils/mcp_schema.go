@@ -66,7 +66,6 @@ func collectAllFields(t reflect.Type) []fieldInfo {
 	var fields []fieldInfo
 
 	for field := range t.Fields() {
-		field := field
 
 		if !field.IsExported() {
 			continue

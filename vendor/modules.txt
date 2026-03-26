@@ -703,7 +703,7 @@ github.com/kaptinlin/jsonschema/pkg/tagparser
 # github.com/kaptinlin/messageformat-go v0.4.18
 ## explicit; go 1.26
 github.com/kaptinlin/messageformat-go/v1
-# github.com/kingsoftcloud/sdk-go/v2 v2.2.92
+# github.com/kingsoftcloud/sdk-go/v2 v2.2.93
 ## explicit; go 1.17
 github.com/kingsoftcloud/sdk-go/v2/ksyun/client/cdn/v3
 github.com/kingsoftcloud/sdk-go/v2/ksyun/common
@@ -730,8 +730,8 @@ github.com/leodido/go-urn/scim/schema
 # github.com/lufia/plan9stats v0.0.0-20260324052639-156f7da3f749
 ## explicit; go 1.21
 github.com/lufia/plan9stats
-# github.com/magefile/mage v1.16.1
-## explicit; go 1.12
+# github.com/magefile/mage v1.17.0
+## explicit; go 1.18
 github.com/magefile/mage/mg
 github.com/magefile/mage/sh
 # github.com/mattn/go-isatty v0.0.20

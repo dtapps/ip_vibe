@@ -47,7 +47,7 @@ require (
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.189
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.64.0
-	github.com/kingsoftcloud/sdk-go/v2 v2.2.92
+	github.com/kingsoftcloud/sdk-go/v2 v2.2.93
 	github.com/miekg/dns v1.1.72
 	github.com/modelcontextprotocol/go-sdk v1.4.1
 	github.com/qiniu/go-sdk/v7 v7.26.6
@@ -160,7 +160,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20260324052639-156f7da3f749 // indirect
-	github.com/magefile/mage v1.16.1 // indirect
+	github.com/magefile/mage v1.17.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
