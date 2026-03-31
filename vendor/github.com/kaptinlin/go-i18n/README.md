@@ -27,6 +27,10 @@
 -   [Translations](#translations)
     -   [Passing Data to Translation](#passing-data-to-translation)
     -   [Direct Formatting](#direct-formatting)
+-   [Translation Lookup](#translation-lookup)
+    -   [Detecting Fallback vs Direct Hit](#detecting-fallback-vs-direct-hit)
+    -   [Google AIP-193 Compliance](#google-aip-193-compliance)
+    -   [Translation Coverage Analytics](#translation-coverage-analytics)
 -   [Pluralization](#pluralization)
 -   [Text-based Translations](#text-based-translations)
     -   [Disambiguation by context](#disambiguation-by-context)
@@ -451,15 +455,15 @@ If a translation cannot be found from any language, the token name will be outpu
 
 ```go
 // `ja-jp` is the default language
-bundle :=i18n.New(
+bundle := i18n.NewBundle(
     i18n.WithDefaultLocale("ja-JP"),
     i18n.WithFallback(map[string][]string{
         // `zh-Hans` uses `zh`, `zh-Hant` as fallbacks.
         // `en-GB` uses `en-US` as fallback.
-        "zh-Hans": []string{"zh", "zh-Hant"},
-        "en-GB": []string{"en-US"},
-    },
-))
+        "zh-Hans": {"zh", "zh-Hant"},
+        "en-GB":   {"en-US"},
+    }),
+)
 ```
 
 Lookup path looks like this with the example above:
@@ -471,7 +475,105 @@ en-GB -> en-US -> ja-JP
 
 Recursive fallback is also supported. If `zh-Hans` has a `zh` fallback, and `zh` has a `zh-Hant` fallback, `zh-Hans` will have either `zh` and `zh-Hant` fallbacks.
 
-Fallback only works if the translation exists in default language.
+**Important:** Fallback chains only apply to keys that exist in the default locale. If a key exists in a fallback locale but not in the default locale, it will not be automatically propagated to other locales. Ensure your default locale contains all possible translation keys.
+
+&nbsp;
+
+## Translation Lookup
+
+When you need to know which locale provided a translation — for debugging, analytics, or [Google AIP-193](https://google.aip.dev/193) compliance — use the `Lookup` method. It returns a `TranslationResult` with the translated text, source locale, and whether the key was found.
+
+```go
+r := localizer.Lookup("hello", i18n.Vars{"name": "World"})
+fmt.Println(r.Text)   // "你好，World！"
+fmt.Println(r.Locale) // "zh-Hans"
+fmt.Println(r.Found)  // true
+```
+
+`TranslationResult` fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `Text` | `string` | Translated message, or the key itself if not found. Always populated. |
+| `Locale` | `string` | BCP 47 locale tag that provided the translation. Always populated. |
+| `Found` | `bool` | Whether the key existed in loaded translations. |
+
+**Complete Example:**
+
+```go
+bundle := i18n.NewBundle(
+    i18n.WithDefaultLocale("en"),
+    i18n.WithLocales("en", "zh-Hans"),
+)
+
+bundle.LoadMessages(map[string]map[string]string{
+    "en":      {"hello": "Hello", "bye": "Goodbye"},
+    "zh-Hans": {"hello": "你好"},
+})
+
+localizer := bundle.NewLocalizer("zh-Hans")
+
+// Direct hit in requested locale
+r := localizer.Lookup("hello")
+// r.Text: "你好", r.Locale: "zh-Hans", r.Found: true
+
+// Fallback to default locale
+r = localizer.Lookup("bye")
+// r.Text: "Goodbye", r.Locale: "en", r.Found: true
+
+// Not found anywhere
+r = localizer.Lookup("nonexistent")
+// r.Text: "nonexistent", r.Locale: "en", r.Found: false
+
+// With context (use the full key convention)
+r = localizer.Lookup("Post <verb>")
+```
+
+&nbsp;
+
+### Detecting Fallback vs Direct Hit
+
+```go
+r := localizer.Lookup("hello")
+
+switch {
+case !r.Found:
+    // Key not in any translation file
+case r.Locale != localizer.Locale():
+    // Found, but via fallback chain
+default:
+    // Direct hit in requested locale
+}
+```
+
+&nbsp;
+
+### Google AIP-193 Compliance
+
+`TranslationResult` maps directly to [AIP-193 `LocalizedMessage`](https://google.aip.dev/193):
+
+```go
+r := localizer.Lookup("error_invalid_input", i18n.Vars{"field": fieldName})
+
+// Both fields always populated — AIP-193 compliant
+localizedMsg := &errdetails.LocalizedMessage{
+    Locale:  r.Locale, // e.g. "zh-Hans" or "en" (never empty)
+    Message: r.Text,   // e.g. "字段无效" or "error_invalid_input" (never empty)
+}
+```
+
+&nbsp;
+
+### Translation Coverage Analytics
+
+```go
+r := localizer.Lookup(key, data)
+if r.Found {
+    metrics.TranslationHit(r.Locale, key)
+} else {
+    metrics.TranslationMiss(r.Locale, key)
+}
+```
 
 &nbsp;
 

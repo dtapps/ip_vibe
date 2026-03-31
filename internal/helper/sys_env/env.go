@@ -10,6 +10,9 @@ type Env struct {
 	// [backend][reporter][forwarder] 是否开启调试模式
 	DEBUG bool `json:"debug" env:"DEBUG"`
 
+	// [backend]是否开启日志
+	ENABLE_LOG bool `json:"enable_log" env:"ENABLE_LOG"`
+
 	// [backend] 服务地址
 	SERVER_ADDR string `json:"server_addr" env:"SERVER_ADDR"`
 
@@ -42,6 +45,7 @@ func init() {
 	// 设置变量
 	GvaEnv = new(Env)
 	GvaEnv.DEBUG = getVal("DEBUG", "false") == "true"
+	GvaEnv.ENABLE_LOG = getVal("ENABLE_LOG", "false") == "true"
 	GvaEnv.SERVER_ADDR = getVal("SERVER_ADDR", "0.0.0.0:8080")
 	GvaEnv.BACKEND_ENDPOINT = getVal("BACKEND_ENDPOINT", "127.0.0.1:8080")
 	GvaEnv.BASIC_AUTH_USERNAME = getVal("BASIC_AUTH_USERNAME", "")

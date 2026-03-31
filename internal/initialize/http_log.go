@@ -9,6 +9,7 @@ import (
 	"vibe_ip/internal/backend/syncs"
 	"vibe_ip/internal/ent_log"
 	"vibe_ip/internal/global"
+	"vibe_ip/internal/helper/sys_env"
 	"vibe_ip/internal/provider/cdn"
 	"vibe_ip/internal/provider/dns"
 	"vibe_ip/internal/provider/task"
@@ -24,6 +25,9 @@ type EntHttpLogSaver struct {
 }
 
 func (s *EntHttpLogSaver) HandleLog(ctx context.Context, data *http_log.LogData) error {
+	if !sys_env.GvaEnv.ENABLE_LOG {
+		return nil
+	}
 	s.logger.DebugContext(ctx, "[接口方式]准备保存日志",
 		slog.String("Hostname", data.Hostname),
 		slog.String("Method", data.Method),
@@ -76,6 +80,9 @@ func InitEntHttpLog(logger *slog.Logger) {
 
 		// 定义回调函数
 		callbackFunc := func(ctx context.Context, data *http_log.LogData) error {
+			if !sys_env.GvaEnv.ENABLE_LOG {
+				return nil
+			}
 			logger.DebugContext(ctx, "[回调方式]准备保存日志",
 				slog.String("Hostname", data.Hostname),
 				slog.String("Method", data.Method),

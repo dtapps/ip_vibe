@@ -48,6 +48,9 @@ PROJECT_ROOT := $(CURDIR)
 version:
 	go version
 
+fix:
+	go fix ./...
+
 download:
 	go get -u ./...
 
@@ -62,6 +65,7 @@ mod:
 	go get -u ./...
 	go mod tidy
 	go mod vendor
+	go fix ./...
 
 # generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
 generate: swag_v1_all swag_v2_all grpc_generate_all
@@ -75,6 +79,9 @@ ent_new:
 
 ent_new_log:
 	ent new CronJobLog --target ./internal/ent_log/schema
+
+ent_new_stat:
+	ent new CloudflareZoneAnalysisData --target ./internal/ent_stat/schema
 
 swag_v1_all: swag_v1_version swag_v1_fmt swag_v1_init
 
