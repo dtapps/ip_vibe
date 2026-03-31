@@ -441,13 +441,14 @@ func (s *DeviceServiceImpl) GetDevicePortForwardStats(ctx context.Context, id in
 // 根据时间范围计算起始时间
 func (s *DeviceServiceImpl) getStartTimeFromRange(rangeStr string) time.Time {
 	startTime := time.Now().Add(-6 * time.Hour) // 默认 6 小时
-	if rangeStr == "1h" {
+	switch rangeStr {
+	case "1h":
 		startTime = time.Now().Add(-1 * time.Hour)
-	} else if rangeStr == "6h" {
+	case "6h":
 		startTime = time.Now().Add(-6 * time.Hour)
-	} else if rangeStr == "24h" {
+	case "24h":
 		startTime = time.Now().Add(-24 * time.Hour)
-	} else if rangeStr == "7d" {
+	case "7d":
 		startTime = time.Now().AddDate(0, 0, -7)
 	}
 	return startTime

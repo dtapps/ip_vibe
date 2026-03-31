@@ -373,3 +373,10 @@ build-darwin-arm64:
 	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-arm64 .
 	@echo "编译 $(BINARY_NAME_FORWARDER) 为 darwin/arm64... (version: $(VERSION))"
 	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64 .
+
+
+check: 
+	golangci-lint fmt
+	golangci-lint run --build-tags goolm,stdjson
+	golangci-lint run --fix --build-tags goolm,stdjson
+
