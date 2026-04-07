@@ -215,7 +215,7 @@ github.com/chenyahui/gin-cache/persist
 # github.com/clbanning/mxj/v2 v2.7.0
 ## explicit; go 1.15
 github.com/clbanning/mxj/v2
-# github.com/cloudflare/cloudflare-go/v6 v6.8.0
+# github.com/cloudflare/cloudflare-go/v6 v6.9.0
 ## explicit; go 1.22
 github.com/cloudflare/cloudflare-go/v6
 github.com/cloudflare/cloudflare-go/v6/abuse_reports
@@ -254,9 +254,11 @@ github.com/cloudflare/cloudflare-go/v6/dns_firewall
 github.com/cloudflare/cloudflare-go/v6/durable_objects
 github.com/cloudflare/cloudflare-go/v6/email_routing
 github.com/cloudflare/cloudflare-go/v6/email_security
+github.com/cloudflare/cloudflare-go/v6/email_sending
 github.com/cloudflare/cloudflare-go/v6/filters
 github.com/cloudflare/cloudflare-go/v6/firewall
 github.com/cloudflare/cloudflare-go/v6/fraud
+github.com/cloudflare/cloudflare-go/v6/google_tag_gateway
 github.com/cloudflare/cloudflare-go/v6/healthchecks
 github.com/cloudflare/cloudflare-go/v6/hostnames
 github.com/cloudflare/cloudflare-go/v6/hyperdrive
@@ -303,6 +305,7 @@ github.com/cloudflare/cloudflare-go/v6/realtime_kit
 github.com/cloudflare/cloudflare-go/v6/registrar
 github.com/cloudflare/cloudflare-go/v6/request_tracers
 github.com/cloudflare/cloudflare-go/v6/resource_sharing
+github.com/cloudflare/cloudflare-go/v6/resource_tagging
 github.com/cloudflare/cloudflare-go/v6/rules
 github.com/cloudflare/cloudflare-go/v6/rulesets
 github.com/cloudflare/cloudflare-go/v6/rum
@@ -340,7 +343,7 @@ github.com/cloudwego/base64x/internal/rt
 # github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
 ## explicit; go 1.18
 github.com/corazawaf/coraza-coreruleset
-# github.com/corazawaf/coraza/v3 v3.6.0
+# github.com/corazawaf/coraza/v3 v3.7.0
 ## explicit; go 1.25.0
 github.com/corazawaf/coraza/v3
 github.com/corazawaf/coraza/v3/collection
@@ -473,7 +476,7 @@ github.com/go-acme/tencentclouddnspod/v20210323
 # github.com/go-acme/tencentedgdeone v1.3.38
 ## explicit; go 1.14
 github.com/go-acme/tencentedgdeone/v20220901
-# github.com/go-co-op/gocron/v2 v2.19.1
+# github.com/go-co-op/gocron/v2 v2.20.0
 ## explicit; go 1.21.4
 github.com/go-co-op/gocron/v2
 # github.com/go-jose/go-jose/v4 v4.1.4
@@ -691,8 +694,8 @@ github.com/jonboulle/clockwork
 # github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
 ## explicit; go 1.12
 github.com/json-iterator/go
-# github.com/kaptinlin/go-i18n v0.3.0
-## explicit; go 1.26
+# github.com/kaptinlin/go-i18n v0.3.1
+## explicit; go 1.26.1
 github.com/kaptinlin/go-i18n
 # github.com/kaptinlin/jsonpointer v0.4.17
 ## explicit; go 1.26
@@ -885,7 +888,7 @@ github.com/swaggo/swag/v2/gen
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.61
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.71
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.72
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -896,7 +899,7 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/regions
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.64
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.71
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.72
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901
 # github.com/tidwall/gjson v1.18.0
@@ -1201,12 +1204,12 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typeparams
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/api v0.0.0-20260401024825-9d38bb4040a9
+# google.golang.org/genproto/googleapis/api v0.0.0-20260406210006-6f92a3bedf2d
 ## explicit; go 1.25.0
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20260401024825-9d38bb4040a9
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20260406210006-6f92a3bedf2d
 ## explicit; go 1.25.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.80.0
@@ -1360,7 +1363,7 @@ modernc.org/mathutil
 # modernc.org/memory v1.11.0
 ## explicit; go 1.23.0
 modernc.org/memory
-# modernc.org/sqlite v1.48.0
+# modernc.org/sqlite v1.48.1
 ## explicit; go 1.25.0
 modernc.org/sqlite
 modernc.org/sqlite/lib

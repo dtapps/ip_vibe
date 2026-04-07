@@ -27,9 +27,9 @@ require (
 	github.com/aliyun/credentials-go v1.4.12
 	github.com/baidubce/bce-sdk-go v0.9.263
 	github.com/chenyahui/gin-cache v1.10.0
-	github.com/cloudflare/cloudflare-go/v6 v6.8.0
+	github.com/cloudflare/cloudflare-go/v6 v6.9.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
-	github.com/corazawaf/coraza/v3 v3.6.0
+	github.com/corazawaf/coraza/v3 v3.7.0
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/dromara/carbon/v2 v2.6.16
 	github.com/dustin/go-humanize v1.0.1
@@ -40,7 +40,7 @@ require (
 	github.com/gin-contrib/requestid v1.0.6
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-acme/lego/v4 v4.33.0
-	github.com/go-co-op/gocron/v2 v2.19.1
+	github.com/go-co-op/gocron/v2 v2.20.0
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0
@@ -58,9 +58,9 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.61
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.71
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.72
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.64
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.71
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.72
 	github.com/tidwall/gjson v1.18.0
 	github.com/volcengine/volcengine-go-sdk v1.2.23
 	github.com/wdcbot/qingfeng v1.6.7
@@ -83,12 +83,12 @@ require (
 	go.dtapp.net/library/utils/gotime v1.0.19
 	golang.org/x/net v0.52.0
 	golang.org/x/sync v0.20.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20260401024825-9d38bb4040a9
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260401024825-9d38bb4040a9
+	google.golang.org/genproto/googleapis/api v0.0.0-20260406210006-6f92a3bedf2d
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260406210006-6f92a3bedf2d
 	google.golang.org/grpc v1.80.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	modernc.org/sqlite v1.48.0
+	modernc.org/sqlite v1.48.1
 	resty.dev/v3 v3.0.0-beta.6
 )
 
@@ -152,7 +152,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12 // indirect
-	github.com/kaptinlin/go-i18n v0.3.0 // indirect
+	github.com/kaptinlin/go-i18n v0.3.1 // indirect
 	github.com/kaptinlin/jsonpointer v0.4.17 // indirect
 	github.com/kaptinlin/jsonschema v0.7.7 // indirect
 	github.com/kaptinlin/messageformat-go v0.4.19 // indirect
