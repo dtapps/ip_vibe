@@ -281,11 +281,6 @@ dev_forwarder_basic_auth:
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
 
-# 已应用的优化：
-# CGO_ENABLED=0 - 禁用CGO，实现完全静态链接
-# -ldflags="-s -w" - 移除符号表和调试信息
-# -gcflags="-m" - 启用内联优化分析
-
 # 版本信息（支持外部传入）
 VERSION ?= dev
 COMMIT  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
@@ -295,88 +290,92 @@ BUILDTIME ?= $(shell date -u '+%Y-%m-%d %H:%M:%S UTC')
 PKG_PATH = vibe_ip/internal/global
 
 # ldflags 模板（注意：单引号在 Make 中需转义或使用双引号包裹）
+# -ldflags="-s -w" - 移除符号表和调试信息
+# -gcflags="-m" - 启用内联优化分析
 LDFLAGS = -s -w \
 	-X '$(PKG_PATH).Version=$(VERSION)' \
 	-X '$(PKG_PATH).GitCommit=$(COMMIT)' \
 	-X '$(PKG_PATH).BuildTime=$(BUILDTIME)'
 
+# 已应用的优化：
+CGO_ENABLED=0 - 禁用CGO，实现完全静态链接
+
 # 构建所有平台
-build-all: clean build-linux-amd64 build-linux-arm64 build-windows-amd64 build-windows-arm64 build-darwin-amd64 build-darwin-arm64
+build-all: clean \
+	build-linux-amd64 \
+	build-linux-arm64 \
+	build-linux-arm-v7 \
+	build-linux-mipsle \
+	build-linux-riscv64 \
+	build-windows-amd64 \
+	build-windows-arm64 \
+	build-darwin-amd64 \
+	build-darwin-arm64
 
 clean:
-	@echo "清理..."
-# 	@rm -f $(BUILD_DIR)/$(BINARY_NAME_CLI)-*
-	@rm -f $(BUILD_DIR)/$(BINARY_NAME_BACKEND)-*
-	@rm -f $(BUILD_DIR)/$(BINARY_NAME_REPORTER)-*
-	@rm -f $(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-*
+	@echo "[Clean] 清理构建目录..."
+	@rm -rf $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)
 
 build-frontend:
-	@echo "编译 $(BINARY_NAME_FRONTEND) 为 静态文件... (version: $(VERSION))"
+	@echo "[构建] 前端静态文件..."
 	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm build
 
 build-linux-amd64:
-# 	@echo "编译 $(BINARY_NAME_CLI) 为 linux/amd64... (version: $(VERSION))"
-# 	@cd cmd/$(BINARY_NAME_CLI) && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_CLI)-linux-amd64 .
-	@echo "编译 $(BINARY_NAME_BACKEND) 为 linux/amd64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-amd64 .
-	@echo "编译 $(BINARY_NAME_REPORTER) 为 linux/amd64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-amd64 .
-	@echo "编译 $(BINARY_NAME_FORWARDER) 为 linux/amd64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-amd64 .
+	@echo "[构建] Linux AMD64 (通用服务器/PC x86_64)"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-amd64 .
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-amd64 .
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-amd64 .
 
 build-linux-arm64:
-# 	@echo "编译 $(BINARY_NAME_CLI) 为 linux/arm64... (version: $(VERSION))"
-# 	@cd cmd/$(BINARY_NAME_CLI) && GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_CLI)-linux-arm64 .
-	@echo "编译 $(BINARY_NAME_BACKEND) 为 linux/arm64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-arm64 .
-	@echo "编译 $(BINARY_NAME_REPORTER) 为 linux/arm64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-arm64 .
-	@echo "编译 $(BINARY_NAME_FORWARDER) 为 linux/arm64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-arm64 .
+	@echo "[构建] Linux ARM64 (树莓派4/5, AWS Graviton, 苹果M系Linux虚拟机)"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-arm64 .
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-arm64 .
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-arm64 .
+
+build-linux-arm-v7:
+	@echo "[构建] Linux ARM v7 (32位, 旧款树莓派, 大部分NAS, 嵌入式盒子)"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-arm-v7 .
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-arm-v7 .
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-arm-v7 .
+
+build-linux-mipsle:
+	@echo "[构建] Linux MIPS LE (小端序, 常见于 OpenWrt 路由器/光猫)"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=mipsle GOMIPS=softfloat CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-mipsle .
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=mipsle GOMIPS=softfloat CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-mipsle .
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=mipsle GOMIPS=softfloat CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-mipsle .
+
+build-linux-riscv64:
+	@echo "[构建] Linux RISC-V 64位 (新兴开源指令集架构)"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=riscv64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-riscv64 .
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=riscv64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-riscv64 .
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=riscv64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-riscv64 .
 
 build-windows-amd64:
-# 	@echo "编译 $(BINARY_NAME_CLI) 为 windows/amd64... (version: $(VERSION))"
-# 	@cd cmd/$(BINARY_NAME_CLI) && GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_CLI)-windows-amd64.exe .
-	@echo "编译 $(BINARY_NAME_BACKEND) 为 windows/amd64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-amd64.exe .
-	@echo "编译 $(BINARY_NAME_REPORTER) 为 windows/amd64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-amd64.exe .
-	@echo "编译 $(BINARY_NAME_FORWARDER) 为 windows/amd64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-amd64.exe .
+	@echo "[构建] Windows AMD64 (主流 Windows PC/服务器)"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=windows GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-amd64.exe .
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=windows GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-amd64.exe .
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=windows GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-amd64.exe .
 
 build-windows-arm64:
-# 	@echo "编译 $(BINARY_NAME_CLI) 为 windows/arm64... (version: $(VERSION))"
-# 	@cd cmd/$(BINARY_NAME_CLI) && GOOS=windows GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_CLI)-windows-arm64.exe .
-	@echo "编译 $(BINARY_NAME_BACKEND) 为 windows/arm64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=windows GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-arm64.exe .
-	@echo "编译 $(BINARY_NAME_REPORTER) 为 windows/arm64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=windows GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-arm64.exe .
-	@echo "编译 $(BINARY_NAME_FORWARDER) 为 windows/arm64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=windows GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-arm64.exe .
+	@echo "[构建] Windows ARM64 (Surface Pro X, 骁龙笔记本等)"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=windows GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-arm64.exe .
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=windows GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-arm64.exe .
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=windows GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-arm64.exe .
 
 build-darwin-amd64:
-# 	@echo "编译 $(BINARY_NAME_CLI) 为 darwin/amd64... (version: $(VERSION))"
-# 	@cd cmd/$(BINARY_NAME_CLI) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_CLI)-darwin-amd64 .
-	@echo "编译 $(BINARY_NAME_BACKEND) 为 darwin/amd64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-amd64 .
-	@echo "编译 $(BINARY_NAME_REPORTER) 为 darwin/amd64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-amd64 .
-	@echo "编译 $(BINARY_NAME_FORWARDER) 为 darwin/amd64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-amd64 .
+	@echo "[构建] macOS Intel (旧款 Macbook/iMac)"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-amd64 .
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-amd64 .
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-amd64 .
 
 build-darwin-arm64:
-# 	@echo "编译 $(BINARY_NAME_CLI) 为 darwin/arm64... (version: $(VERSION))"
-# 	@cd cmd/$(BINARY_NAME_CLI) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_CLI)-darwin-arm64 .
-	@echo "编译 $(BINARY_NAME_BACKEND) 为 darwin/arm64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-arm64 .
-	@echo "编译 $(BINARY_NAME_REPORTER) 为 darwin/arm64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-arm64 .
-	@echo "编译 $(BINARY_NAME_FORWARDER) 为 darwin/arm64... (version: $(VERSION))"
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64 .
-
+	@echo "[构建] macOS Apple Silicon (M1/M2/M3 芯片)"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-arm64 .
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-arm64 .
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64 .
 
 check: 
 	golangci-lint fmt
 	golangci-lint run --build-tags goolm,stdjson
 	golangci-lint run --fix --build-tags goolm,stdjson
-

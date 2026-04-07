@@ -38,13 +38,11 @@
             echo "🔧 开始处理 web_trigger_build_go_project"
             echo "=============================="
 
-            # 1. 下载 依赖
-            echo "下载 依赖..."
+            # 1. 下载依赖
             make pnpm_update
             make mod
 
-            # 2. 清理并构建所有平台
-            echo "清理并构建所有平台..."
+            # 2. 清理并构建
             make clean
             VERSION=${INTERIOR_VERSION} make build-frontend
             VERSION=${INTERIOR_VERSION} make build-all
