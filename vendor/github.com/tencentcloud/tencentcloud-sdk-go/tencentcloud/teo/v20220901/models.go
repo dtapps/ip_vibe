@@ -1860,7 +1860,8 @@ type ClientAttester struct {
 
 	// 认证方法。取值有：
 	// <li>TC-RCE: 使用风险识别 RCE 进行认证；</li>
-	// <li>TC-CAPTCHA: 使用天御验证码进行认证。</li>
+	// <li>TC-CAPTCHA: 使用天御验证码进行认证；</li>
+	// <li>TC-EO-CAPTCHA: 使用 EdgeOne 人机校验进行认证。</li>
 	AttesterSource *string `json:"AttesterSource,omitnil,omitempty" name:"AttesterSource"`
 
 	// 认证有效时间。默认为 60s，支持的单位有：
@@ -1876,6 +1877,10 @@ type ClientAttester struct {
 	// TC-CAPTCHA 认证的配置信息。
 	// <li>当 AttesterSource 参数值为 TC-CAPTCHA 时，此字段必填。</li>
 	TCCaptchaOption *TCCaptchaOption `json:"TCCaptchaOption,omitnil,omitempty" name:"TCCaptchaOption"`
+
+	// TC-EO-CAPTCHA 认证的配置信息。
+	// <li>当 AttesterSource 参数值为 TC-EO-CAPTCHA 时，此字段必填。</li>
+	TCEOCaptchaOption *TCEOCaptchaOption `json:"TCEOCaptchaOption,omitnil,omitempty" name:"TCEOCaptchaOption"`
 }
 
 type ClientBehaviorDetection struct {
@@ -2029,9 +2034,7 @@ type ConfigGroupVersionInfo struct {
 	// 配置组 ID。
 	GroupId *string `json:"GroupId,omitnil,omitempty" name:"GroupId"`
 
-	// 配置组类型。取值有：
-	// <li>l7_acceleration ：七层加速配置组。</li>
-	// <li>edge_functions ：边缘函数配置组。</li>
+	// 配置组类型，可选项如下：<li>l7_acceleration: 七层加速配置组；</li><li>edge_functions: 边缘函数配置组；</li><li>web_security: Web 防护配置组。</li>
 	GroupType *string `json:"GroupType,omitnil,omitempty" name:"GroupType"`
 
 	// 版本描述。
@@ -2048,7 +2051,7 @@ type ConfigGroupVersionInfo struct {
 }
 
 type ConfigGroupWorkModeInfo struct {
-	// 配置组类型，可选项如下：<li>l7_acceleration: 七层加速配置组；</li><li>edge_functions: 边缘函数配置组。</li>
+	// 配置组类型，可选项如下：<li>l7_acceleration: 七层加速配置组；</li><li>edge_functions: 边缘函数配置组。</li><li>web_security: Web 防护配置组。</li>
 	ConfigGroupType *string `json:"ConfigGroupType,omitnil,omitempty" name:"ConfigGroupType"`
 
 	// 工作模式，可选项如下：<li>immediate_effect: 即时生效模式；</li><li>version_control: 版本管理模式。</li>
@@ -15081,8 +15084,7 @@ type ExportZoneConfigRequestParams struct {
 	// 站点 ID。
 	ZoneId *string `json:"ZoneId,omitnil,omitempty" name:"ZoneId"`
 
-	// 导出配置项的类型列表，不填表示导出所有类型的配置，当前支持的取值有：<li>L7AccelerationConfig：表示导出七层加速配置，对应控制台「站点加速-全局加速配置」和「站点加速-规则引擎」。</li>
-	// 需注意：后续支持导出的类型会随着迭代增加，导出所有类型时需要注意导出文件大小，建议使用时指定需要导出的配置类型，以便控制请求响应包负载大小。
+	// 导出配置项的类型列表，不填表示导出所有类型的配置，当前支持的取值有：<li>L7AccelerationConfig：表示导出七层加速配置，对应控制台「站点加速-全局加速配置」和「站点加速-规则引擎」。</li><li>WebSecurity：表示导出 Web 防护配置。</li> 需注意：后续支持导出的类型会随着迭代增加，导出所有类型时需要注意导出文件大小，建议使用时指定需要导出的配置类型，以便控制请求响应包负载大小。
 	Types []*string `json:"Types,omitnil,omitempty" name:"Types"`
 }
 
@@ -15092,8 +15094,7 @@ type ExportZoneConfigRequest struct {
 	// 站点 ID。
 	ZoneId *string `json:"ZoneId,omitnil,omitempty" name:"ZoneId"`
 
-	// 导出配置项的类型列表，不填表示导出所有类型的配置，当前支持的取值有：<li>L7AccelerationConfig：表示导出七层加速配置，对应控制台「站点加速-全局加速配置」和「站点加速-规则引擎」。</li>
-	// 需注意：后续支持导出的类型会随着迭代增加，导出所有类型时需要注意导出文件大小，建议使用时指定需要导出的配置类型，以便控制请求响应包负载大小。
+	// 导出配置项的类型列表，不填表示导出所有类型的配置，当前支持的取值有：<li>L7AccelerationConfig：表示导出七层加速配置，对应控制台「站点加速-全局加速配置」和「站点加速-规则引擎」。</li><li>WebSecurity：表示导出 Web 防护配置。</li> 需注意：后续支持导出的类型会随着迭代增加，导出所有类型时需要注意导出文件大小，建议使用时指定需要导出的配置类型，以便控制请求响应包负载大小。
 	Types []*string `json:"Types,omitnil,omitempty" name:"Types"`
 }
 
@@ -23167,6 +23168,11 @@ type TCCaptchaOption struct {
 
 	// AppSecretKey 信息。
 	AppSecretKey *string `json:"AppSecretKey,omitnil,omitempty" name:"AppSecretKey"`
+}
+
+type TCEOCaptchaOption struct {
+	// EdgeOne 人机校验模式，取值有：<li> Invisible：无感验证；</li><li>Adaptive：自适应交互验证。</li>
+	CaptchaMode *string `json:"CaptchaMode,omitnil,omitempty" name:"CaptchaMode"`
 }
 
 type TCRCEOption struct {
