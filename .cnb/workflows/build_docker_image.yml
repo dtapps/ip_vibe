@@ -46,7 +46,6 @@
             make mod
 
             # 2. 清理并构建
-            make clean
             VERSION=${INTERIOR_VERSION} make build-frontend
             VERSION=${INTERIOR_VERSION} make build-linux-amd64
 
