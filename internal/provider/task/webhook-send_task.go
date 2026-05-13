@@ -146,17 +146,18 @@ func (p *WebhookSendTaskProvider) Process(ctx context.Context, args json.RawMess
 	}
 
 	var objType webhooksubscription.ObjType
-	if meta.BusinessType == cronjob.BusinessTypeCdn {
+	switch meta.BusinessType {
+	case cronjob.BusinessTypeCdn:
 		objType = webhooksubscription.ObjTypeCdnRecord
-	} else if meta.BusinessType == cronjob.BusinessTypeDNS {
+	case cronjob.BusinessTypeDNS:
 		objType = webhooksubscription.ObjTypeDNSRecord
-	} else if meta.BusinessType == cronjob.BusinessTypeDevice {
+	case cronjob.BusinessTypeDevice:
 		objType = webhooksubscription.ObjTypeDevice
-	} else if meta.BusinessType == cronjob.BusinessTypeDomain {
+	case cronjob.BusinessTypeDomain:
 		objType = webhooksubscription.ObjTypeDomainMonitor
-	} else if meta.BusinessType == cronjob.BusinessTypeSsl {
+	case cronjob.BusinessTypeSsl:
 		objType = webhooksubscription.ObjTypeDomainMonitor
-	} else if meta.BusinessType == cronjob.BusinessTypeTun {
+	case cronjob.BusinessTypeTun:
 		objType = webhooksubscription.ObjTypeTunRecord
 	}
 
@@ -306,7 +307,7 @@ func (p *WebhookSendTaskProvider) Process(ctx context.Context, args json.RawMess
 
 	}
 
-	return fmt.Sprintf("发送成功"), nil
+	return "发送成功", nil
 }
 
 // RenderTemplate 使用 Go Template 渲染标题和内容

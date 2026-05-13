@@ -22,7 +22,7 @@ type JdcloudCDNConfig struct {
 // DefaultValidate 验证配置
 func (cfg *JdcloudCDNConfig) DefaultValidate() error {
 	if cfg.Region == "" {
-		return fmt.Errorf("Region 不能为空")
+		return fmt.Errorf("region 不能为空")
 	}
 	if cfg.AccessKey == "" {
 		return fmt.Errorf("AccessKey 不能为空")

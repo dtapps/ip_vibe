@@ -79,7 +79,7 @@ func (s *SSLImportServiceImpl) ImportSSLImport(ctx context.Context, request *typ
 	}
 
 	// 证书状态
-	status := sslimport.StatusUnknown
+	var status sslimport.Status
 	if parsedCert.NotAfter.After(time.Now()) {
 		status = sslimport.StatusValid
 	} else {
@@ -131,7 +131,7 @@ func (s *SSLImportServiceImpl) CreateSSLImport(ctx context.Context, request *typ
 	}
 
 	// 证书状态
-	status := sslimport.StatusUnknown
+	var status sslimport.Status
 	if parsedCert.NotAfter.After(time.Now()) {
 		status = sslimport.StatusValid
 	} else {
@@ -203,11 +203,11 @@ func (s *SSLImportServiceImpl) BatchDeleteSSLImport(ctx context.Context, ids []i
 		Where(sslimport.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 	if len(allSSLImport) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询SSL记录失败: 数量 %d 与请求数量 %d 不匹配", len(allSSLImport), len(ids))
 	}
 
@@ -216,7 +216,7 @@ func (s *SSLImportServiceImpl) BatchDeleteSSLImport(ctx context.Context, ids []i
 		Where(sslimport.IDIn(ids...)).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("删除SSL记录失败: %w", err)
 	}
 

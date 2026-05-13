@@ -68,7 +68,7 @@ func (s *RemoteLogService) StartTunnel(ctx context.Context, deviceID string) {
 		}
 
 		// 4. 收到服务端传来的文件名
-		lines := make([]string, 0, 200)
+		var lines []string
 		if req.FileName != "" {
 			// 强制提取纯文件名，防止 ../.. 攻击
 			safeFileName := filepath.Base(req.FileName)
@@ -82,22 +82,21 @@ func (s *RemoteLogService) StartTunnel(ctx context.Context, deviceID string) {
 			// 二次检查：确保最终生成的路径依然在 logs 目录下
 			if !strings.HasPrefix(targetPath, absLogDir) {
 				lines = []string{"[Security] 拒绝跨目录访问"}
-				continue
-			}
+			} else {
+				// 日志存储在项目根目录的 logs 文件夹下
+				// targetPath := filepath.Join("logs", requestParams.FileName)
 
-			// 日志存储在项目根目录的 logs 文件夹下
-			// targetPath := filepath.Join("logs", requestParams.FileName)
-
-			// 读取文件末尾行 (例如读取最后 200 行)
-			lines, err = utils.ReadLastLines(targetPath, 200)
-			if err != nil {
-				// 如果文件不存在或读取失败，返回空列表或错误提示
-				lines = []string{"[System] 暂无日志文件或读取失败: " + err.Error()}
-				continue
+				// 读取文件末尾行 (例如读取最后 200 行)
+				readLines, err := utils.ReadLastLines(targetPath, 200)
+				if err != nil {
+					// 如果文件不存在或读取失败，返回空列表或错误提示
+					lines = []string{"[System] 暂无日志文件或读取失败: " + err.Error()}
+				} else {
+					lines = readLines
+				}
 			}
 		} else {
 			lines = []string{"[System] 请输入日志文件名"}
-			continue
 		}
 
 		// 5. 将结果塞回流里发给服务端

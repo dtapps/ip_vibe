@@ -17,13 +17,13 @@ func errorResponseErr(err error) (*mcp.GetPromptResult, error) {
 	return nil, err
 }
 
-// successResponse 成功响应（自动处理多种数据类型）
-func successResponse(format string, args ...any) (*mcp.GetPromptResult, error) {
+// successResponse 成功响应
+func successResponse(text string) (*mcp.GetPromptResult, error) {
 	return &mcp.GetPromptResult{
 		Messages: []*mcp.PromptMessage{
 			{
 				Role:    "user",
-				Content: &mcp.TextContent{Text: fmt.Sprintf(format, args...)},
+				Content: &mcp.TextContent{Text: text},
 			},
 		},
 	}, nil

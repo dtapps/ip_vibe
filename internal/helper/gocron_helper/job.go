@@ -40,7 +40,7 @@ func (j *JobHelper) GetJobsData(nextRunsLimit int) (jobs []*types.GocronJob) {
 
 	for _, job := range j.Scheduler.Jobs() {
 		nextRun, _ := job.NextRun()
-		lastRun, _ := job.LastRun()
+		lastRun, _ := job.LastRunStartedAt()
 		nextRuns, _ := job.NextRuns(nextRunsLimit)
 
 		// 确保 NextRun 是未来时间

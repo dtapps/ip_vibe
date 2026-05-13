@@ -15,11 +15,8 @@ func (s *Schema) Validate(instance any) *EvaluationResult {
 	case map[string]any:
 		return s.ValidateMap(data)
 	default:
-		// Check if it's a []byte type definition (like json.RawMessage)
-		if isByteSlice(instance) {
-			if bytes, ok := convertToByteSlice(instance); ok {
-				return s.ValidateJSON(bytes)
-			}
+		if bytes, ok := convertToByteSlice(instance); ok {
+			return s.ValidateJSON(bytes)
 		}
 		return s.ValidateStruct(instance)
 	}
@@ -28,10 +25,10 @@ func (s *Schema) Validate(instance any) *EvaluationResult {
 // ValidateJSON validates JSON data provided as []byte.
 // The input is guaranteed to be treated as JSON data and parsed accordingly.
 func (s *Schema) ValidateJSON(data []byte) *EvaluationResult {
-	parsed, err := s.parseJSONData(data)
+	var parsed any
+	err := s.Compiler().jsonDecoder(data, &parsed)
 	if err != nil {
 		result := NewEvaluationResult(s)
-		//nolint:errcheck
 		result.AddError(NewEvaluationError("format", "invalid_json", "Invalid JSON format"))
 		return result
 	}
@@ -55,12 +52,6 @@ func (s *Schema) ValidateMap(data map[string]any) *EvaluationResult {
 	dynamicScope := NewDynamicScope()
 	result, _, _ := s.evaluate(data, dynamicScope)
 	return result
-}
-
-// parseJSONData safely parses []byte data as JSON
-func (s *Schema) parseJSONData(data []byte) (any, error) {
-	var parsed any
-	return parsed, s.Compiler().jsonDecoder(data, &parsed)
 }
 
 // processJSONBytes handles []byte input with smart JSON parsing
@@ -103,7 +94,6 @@ func (s *Schema) evaluate(instance any, dynamicScope *DynamicScope) (*Evaluation
 	// Handle boolean schema
 	if s.Boolean != nil {
 		if err := s.evaluateBoolean(instance, evaluatedProps, evaluatedItems); err != nil {
-			//nolint:errcheck
 			result.AddError(err)
 		}
 		return result, evaluatedProps, evaluatedItems
@@ -150,7 +140,6 @@ type jsonParseError struct {
 func (s *Schema) processReferences(instance any, dynamicScope *DynamicScope, result *EvaluationResult, evaluatedProps map[string]bool, evaluatedItems map[int]bool) {
 	// Handle JSON parse errors
 	if _, ok := instance.(*jsonParseError); ok {
-		//nolint:errcheck
 		result.AddError(NewEvaluationError("format", "invalid_json", "Invalid JSON format in byte array"))
 		return
 	}
@@ -159,10 +148,8 @@ func (s *Schema) processReferences(instance any, dynamicScope *DynamicScope, res
 	if s.ResolvedRef != nil {
 		refResult, props, items := s.ResolvedRef.evaluate(instance, dynamicScope)
 		if refResult != nil {
-			//nolint:errcheck
 			result.AddDetail(refResult)
 			if !refResult.IsValid() {
-				//nolint:errcheck
 				result.AddError(NewEvaluationError("$ref", "ref_mismatch", "Value does not match the reference schema"))
 			}
 		}
@@ -191,10 +178,8 @@ func (s *Schema) processDynamicRef(instance any, dynamicScope *DynamicScope, res
 
 	dynamicRefResult, props, items := anchorSchema.evaluate(instance, dynamicScope)
 	if dynamicRefResult != nil {
-		//nolint:errcheck
 		result.AddDetail(dynamicRefResult)
 		if !dynamicRefResult.IsValid() {
-			//nolint:errcheck
 			result.AddError(NewEvaluationError("$dynamicRef", "dynamic_ref_mismatch", "Value does not match the dynamic reference schema"))
 		}
 	}
@@ -239,7 +224,6 @@ func (s *Schema) processBasicValidationWithoutRefs(instance any, result *Evaluat
 
 	if s.Format != nil {
 		if err := evaluateFormat(s, instance); err != nil {
-			//nolint:errcheck
 			result.AddError(err)
 		}
 	}
@@ -259,21 +243,18 @@ func (s *Schema) processBasicValidationWithoutRefs(instance any, result *Evaluat
 func (s *Schema) processBasicValidation(instance any, result *EvaluationResult) {
 	if s.Type != nil {
 		if err := evaluateType(s, instance); err != nil {
-			//nolint:errcheck
 			result.AddError(err)
 		}
 	}
 
 	if s.Enum != nil {
 		if err := evaluateEnum(s, instance); err != nil {
-			//nolint:errcheck
 			result.AddError(err)
 		}
 	}
 
 	if s.Const != nil {
 		if err := evaluateConst(s, instance); err != nil {
-			//nolint:errcheck
 			result.AddError(err)
 		}
 	}
@@ -299,11 +280,9 @@ func (s *Schema) processLogicalOperations(instance any, dynamicScope *DynamicSco
 	if s.Not != nil {
 		evalResult, err := evaluateNot(s, instance, evaluatedProps, evaluatedItems, dynamicScope)
 		if evalResult != nil {
-			//nolint:errcheck
 			result.AddDetail(evalResult)
 		}
 		if err != nil {
-			//nolint:errcheck
 			result.AddError(err)
 		}
 	}
@@ -339,7 +318,6 @@ func (s *Schema) processTypeSpecificValidation(instance any, dynamicScope *Dynam
 
 	if s.Format != nil {
 		if err := evaluateFormat(s, instance); err != nil {
-			//nolint:errcheck
 			result.AddError(err)
 		}
 	}
@@ -365,11 +343,9 @@ func (s *Schema) processContentValidation(instance any, dynamicScope *DynamicSco
 	if s.ContentEncoding != nil || s.ContentMediaType != nil || s.ContentSchema != nil {
 		contentResult, err := evaluateContent(s, instance, evaluatedProps, evaluatedItems, dynamicScope)
 		if contentResult != nil {
-			//nolint:errcheck
 			result.AddDetail(contentResult)
 		}
 		if err != nil {
-			//nolint:errcheck
 			result.AddError(err)
 		}
 	}
@@ -413,18 +389,15 @@ func (s *Schema) hasObjectValidation() bool {
 // Helper methods for adding results and errors.
 func (s *Schema) addResultsAndError(result *EvaluationResult, results []*EvaluationResult, err *EvaluationError) {
 	for _, res := range results {
-		//nolint:errcheck
 		result.AddDetail(res)
 	}
 	if err != nil {
-		//nolint:errcheck
 		result.AddError(err)
 	}
 }
 
 func (s *Schema) addResultsAndErrors(result *EvaluationResult, results []*EvaluationResult, errors []*EvaluationError) {
 	for _, res := range results {
-		//nolint:errcheck
 		result.AddDetail(res)
 	}
 	s.addErrors(result, errors)
@@ -432,7 +405,6 @@ func (s *Schema) addResultsAndErrors(result *EvaluationResult, results []*Evalua
 
 func (s *Schema) addErrors(result *EvaluationResult, errors []*EvaluationError) {
 	for _, err := range errors {
-		//nolint:errcheck
 		result.AddError(err)
 	}
 }
@@ -495,7 +467,6 @@ func evaluateObject(schema *Schema, data any, evaluatedProps map[string]bool, ev
 		rv = rv.Elem()
 	}
 
-	//nolint:exhaustive,nolintlint // Only handling Struct and Map kinds - other types use default fallback
 	switch rv.Kind() {
 	case reflect.Struct:
 		return evaluateObjectStruct(schema, rv, evaluatedProps, evaluatedItems, dynamicScope)
@@ -811,13 +782,6 @@ func (ds *DynamicScope) Contains(schema *Schema) bool {
 	return slices.Contains(ds.schemas, schema)
 }
 
-// isByteSlice checks if the given value is a []byte type definition (like json.RawMessage)
-func isByteSlice(v any) bool {
-	rv := reflect.ValueOf(v)
-	return rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() == reflect.Uint8
-}
-
-// convertToByteSlice converts a []byte type definition to []byte
 func convertToByteSlice(v any) ([]byte, bool) {
 	rv := reflect.ValueOf(v)
 	if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() == reflect.Uint8 {
@@ -851,17 +815,12 @@ func (s *Schema) processObjectValidationWithoutRefs(instance any, result *Evalua
 
 	// Convert struct to map for constraint validation
 	objectMap := make(map[string]any, rv.NumField())
-	structType := rv.Type()
-	for i := range rv.NumField() {
-		field := structType.Field(i)
-		if !field.IsExported() {
+	for field, fieldValue := range rv.Fields() {
+		if !field.IsExported() || !fieldValue.CanInterface() {
 			continue
 		}
-		fieldValue := rv.Field(i)
-		if fieldValue.CanInterface() {
-			objectMap[field.Name] = fieldValue.Interface()
-			evaluatedProps[field.Name] = true
-		}
+		objectMap[field.Name] = fieldValue.Interface()
+		evaluatedProps[field.Name] = true
 	}
 
 	errors := validateObjectConstraints(s, objectMap)
@@ -916,7 +875,6 @@ func (s *Schema) checkAdditionalPropertiesForCircular(object map[string]any, res
 			if allowedProps[prop] {
 				evaluatedProps[prop] = true
 			} else {
-				//nolint:errcheck
 				result.AddError(NewEvaluationError("additionalProperties", "additional_property_false",
 					"Additional property '{property}' not allowed", map[string]any{
 						"property": prop,

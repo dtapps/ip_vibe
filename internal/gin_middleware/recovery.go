@@ -35,7 +35,9 @@ func RecoveryMiddleware(logger *slog.Logger, stack bool) gin.HandlerFunc {
 						slog.Any("err", err),
 						// slog.String("request", string(httpRequest)),
 					)
-					c.Error(err.(error))
+					if errVal, ok := err.(error); ok {
+						_ = c.Error(errVal)
+					}
 					c.Abort()
 					return
 				}

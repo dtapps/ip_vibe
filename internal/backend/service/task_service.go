@@ -250,14 +250,14 @@ func (s *TaskServiceImpl) BatchUpdateTaskStatus(ctx context.Context, ids []int64
 		Where(cronjob.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		if ent.IsNotFound(err) {
 			return fmt.Errorf("查询任务失败: 记录不存在或 %w", err)
 		}
 		return fmt.Errorf("查询任务失败: %w", err)
 	}
 	if len(allTask) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询任务失败: 数量 %d 与请求数量 %d 不匹配", len(allTask), len(ids))
 	}
 
@@ -265,10 +265,10 @@ func (s *TaskServiceImpl) BatchUpdateTaskStatus(ctx context.Context, ids []int64
 	for _, item := range allTask {
 		switch item.Status {
 		case cronjob.StatusFinished:
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("任务状态为已完成, 不能更新")
 		case cronjob.StatusFailed:
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("任务状态为失败, 不能更新")
 		}
 	}
@@ -279,7 +279,7 @@ func (s *TaskServiceImpl) BatchUpdateTaskStatus(ctx context.Context, ids []int64
 		SetStatus(cronjob.Status(status)).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("更新任务状态失败: %w", err)
 	}
 
@@ -329,18 +329,18 @@ func (s *TaskServiceImpl) BatchDeleteTask(ctx context.Context, ids []int64) erro
 		Where(cronjob.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询任务失败: %w", err)
 	}
 	if len(allTask) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询任务失败: 数量 %d 与请求数量 %d 不匹配", len(allTask), len(ids))
 	}
 
 	// 检查是否存在启用的任务
 	for _, item := range allTask {
 		if item.Status == cronjob.StatusRunning {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除任务失败: 存在启用的任务")
 		}
 	}
@@ -350,7 +350,7 @@ func (s *TaskServiceImpl) BatchDeleteTask(ctx context.Context, ids []int64) erro
 		Where(cronjob.IDIn(ids...)).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("删除任务失败: %w", err)
 	}
 

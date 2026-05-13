@@ -1,13 +1,21 @@
 package i18n
 
-import "net/http"
+import (
+	"net/http"
+	"slices"
+)
 
+// DetectorSource identifies a request input that can supply a locale.
 type DetectorSource string
 
 const (
-	DetectorSourceQuery  DetectorSource = "query"
+	// DetectorSourceQuery reads the locale from the request query string.
+	DetectorSourceQuery DetectorSource = "query"
+	// DetectorSourceCookie reads the locale from a request cookie.
 	DetectorSourceCookie DetectorSource = "cookie"
+	// DetectorSourceHeader reads the locale from a request header.
 	DetectorSourceHeader DetectorSource = "header"
+	// DetectorSourceAccept reads the locale from the Accept-Language header.
 	DetectorSourceAccept DetectorSource = "accept-language"
 )
 
@@ -45,12 +53,9 @@ func WithDetectorPriority(priority ...DetectorSource) DetectorOption {
 			return
 		}
 
-		sanitized := make([]DetectorSource, 0, len(priority))
-		for _, source := range priority {
-			if source.isValid() {
-				sanitized = append(sanitized, source)
-			}
-		}
+		sanitized := slices.DeleteFunc(slices.Clone(priority), func(source DetectorSource) bool {
+			return !source.isValid()
+		})
 		if len(sanitized) == 0 {
 			return
 		}

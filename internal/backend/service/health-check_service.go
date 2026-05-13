@@ -272,7 +272,7 @@ func checkHTTP(ctx context.Context, url string, timeout time.Duration) (int, int
 	if err != nil {
 		return 0, duration, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	return resp.StatusCode, duration, nil
 }
@@ -286,7 +286,7 @@ func checkTCP(ctx context.Context, address string, timeout time.Duration) (bool,
 	if err != nil {
 		return false, 0, err
 	}
-	conn.Close()
+	_ = conn.Close()
 
 	return true, duration, nil
 }
@@ -307,11 +307,11 @@ func checkUDP(ctx context.Context, address string, timeout time.Duration) (bool,
 	if err != nil {
 		return false, 0, err
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	// 设置读写超时
 	writeDeadline := time.Now().Add(timeout)
-	conn.SetWriteDeadline(writeDeadline)
+	_ = conn.SetWriteDeadline(writeDeadline)
 
 	// 发送探测包（1 字节）
 	testData := []byte{0x00}

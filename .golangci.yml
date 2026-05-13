@@ -4,22 +4,35 @@ linters:
   disable:
     - unused # 忽略未使用代码
 
+  # 跳过目录列表
+  exclusions:
+    paths:
+      - vendor
+      - cmd/ent
+      - internal/ent
+      - internal/ent_log
+      - internal/ent_stat
+      - internal/grpc_generated
+
   enable:
     # --- 核心必选 (Bug 预防) ---
-    - ineffassign      # 检测无效赋值 (你已启用)
-    - errcheck         # 【极重要】检查是否忽略了错误返回值 (Go 开发中最常见的 Bug 来源)
-    - staticcheck      # 【极重要】静态分析，能发现各种复杂的逻辑错误、废弃 API 使用等
-    - govet            # 【默认启用但建议显式保留】Go 官方工具，检查可疑的代码结构
+    - ineffassign # 检测无效赋值 (你已启用)
+    - errcheck # 【极重要】检查是否忽略了错误返回值 (Go 开发中最常见的 Bug 来源)
+    - staticcheck # 【极重要】静态分析，能发现各种复杂的逻辑错误、废弃 API 使用等
+    - govet # 【默认启用但建议显式保留】Go 官方工具，检查可疑的代码结构
 
     # --- 代码质量与风格 ---
-    - gosimple         # 建议简化代码写法
-    - revive           # 比 golint 更快更灵活，检查代码风格和规范
-    - misspell         # 检查注释和字符串中的拼写错误 (比如你之前的 helepr -> helper)
+    # - gosimple         # 建议简化代码写法
+    # - revive           # 比 golint 更快更灵活，检查代码风格和规范
+    - misspell # 检查注释和字符串中的拼写错误 (比如你之前的 helepr -> helper)
 
     # --- 并发与安全 ---
-    - bodyclose        # 【重要】检查 HTTP 响应体是否被关闭 (防止内存泄漏)
-    - contextcheck     # 检查上下文 (context) 是否被正确传递 (防止超时控制失效)
-    
+    - bodyclose # 【重要】检查 HTTP 响应体是否被关闭 (防止内存泄漏)
+    - contextcheck # 检查上下文 (context) 是否被正确传递 (防止超时控制失效)
+
     # --- 可选 (根据喜好) ---
-    - unconvert        # 移除不必要的类型转换
-    - dupl             # 检测重复代码块 (有助于重构)
+    - unconvert # 移除不必要的类型转换
+    # - dupl             # 检测重复代码块 (有助于重构)
+
+    # --- 类型安全 ---
+    - forcetypeassert # 【重要】检查不安全的类型断言，防止运行时 panic

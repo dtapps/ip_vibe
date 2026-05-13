@@ -311,7 +311,7 @@ func (s *DeviceGroupServiceImpl) BatchDeleteDeviceGroup(ctx context.Context, ids
 		return fmt.Errorf("查询设备组失败: %w", err)
 	}
 	if len(allDeviceGroup) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询设备组失败: 数量 %d 与请求数量 %d 不匹配", len(allDeviceGroup), len(ids))
 	}
 
@@ -349,7 +349,7 @@ func (s *DeviceGroupServiceImpl) BatchDeleteDeviceGroup(ctx context.Context, ids
 	for _, item := range allDeviceGroup {
 		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeDeviceGroup, item.ID)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)
 		}
 	}

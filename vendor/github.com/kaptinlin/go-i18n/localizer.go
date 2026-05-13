@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	mf "github.com/kaptinlin/messageformat-go/v1"
-	"golang.org/x/text/language"
 )
 
 // Localizer provides translation methods for a specific locale. Create one
@@ -37,22 +36,23 @@ func (l *Localizer) GetX(name, context string, data ...Vars) string {
 // Use [Localizer.Get] for the common case where only the text is needed.
 func (l *Localizer) Lookup(name string, data ...Vars) TranslationResult {
 	pt, found := l.resolve(name)
-	source := TranslationSourceMissing
-	if found {
-		source = TranslationSourceFallback
-		if pt.locale == l.locale {
-			source = TranslationSourceDirect
-		}
-	}
 	return TranslationResult{
 		Text:   l.localize(pt, data...),
 		Locale: pt.locale,
-		Source: source,
+		Source: l.translationSource(pt, found),
 	}
 }
 
-// resolve finds the parsedTranslation for name.
-// Returns (pt, true) if found in loaded translations, (pt, false) for runtime fallback.
+func (l *Localizer) translationSource(pt *parsedTranslation, found bool) TranslationSource {
+	if !found {
+		return TranslationSourceMissing
+	}
+	if pt.locale == l.locale {
+		return TranslationSourceDirect
+	}
+	return TranslationSourceFallback
+}
+
 func (l *Localizer) resolve(name string) (*parsedTranslation, bool) {
 	if pt, ok := l.bundle.parsedTranslations[l.locale][name]; ok {
 		return pt, true
@@ -60,17 +60,12 @@ func (l *Localizer) resolve(name string) (*parsedTranslation, bool) {
 	return l.bundle.getRuntimeParsedTranslation(name), false
 }
 
-// localize formats a parsed translation with the given variables.
-// Without variables the raw text is returned. With variables and a
-// compiled MessageFormat function, the formatted result is returned.
 func (l *Localizer) localize(pt *parsedTranslation, data ...Vars) string {
-	if pt.format == nil {
-		return pt.text
-	}
 	params := varsToParams(data)
-	if params == nil {
+	if pt.format == nil || params == nil {
 		return pt.text
 	}
+
 	result, err := pt.format(params)
 	if err != nil {
 		return pt.text
@@ -87,16 +82,19 @@ func (l *Localizer) localize(pt *parsedTranslation, data ...Vars) string {
 // so it is intended for dynamic, non-hot-path messages that are not stored in
 // translation files. Prefer [Localizer.Get] for normal translated content.
 func (l *Localizer) Format(message string, data ...Vars) (string, error) {
-	base, _ := language.MustParse(l.locale).Base()
+	base, err := messageFormatBase(l.locale)
+	if err != nil {
+		return "", err
+	}
 
-	formatter, err := mf.New(base.String(), l.bundle.mfOptions)
+	formatter, err := mf.New(base, l.bundle.mfOptions)
 	if err != nil {
 		return "", fmt.Errorf("create formatter: %w", err)
 	}
 
 	compiled, err := formatter.Compile(message)
 	if err != nil {
-		return "", fmt.Errorf("compile message: %w", err)
+		return "", fmt.Errorf("%w: compile message: %w", ErrMessageFormatCompilation, err)
 	}
 
 	params := varsToParams(data)
@@ -113,12 +111,9 @@ func (l *Localizer) Format(message string, data ...Vars) (string, error) {
 	return str, nil
 }
 
-// varsToParams converts optional Vars arguments to a params value
-// suitable for a compiled MessageFormat function. Returns nil when
-// no variables are provided. Only the first Vars argument is used.
-func varsToParams(data []Vars) any {
-	if len(data) == 0 {
+func varsToParams(vars []Vars) any {
+	if len(vars) == 0 {
 		return nil
 	}
-	return map[string]any(data[0])
+	return map[string]any(vars[0])
 }

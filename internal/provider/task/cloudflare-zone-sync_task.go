@@ -117,7 +117,7 @@ func (p *CloudflareZoneSyncTaskProvider) Process(ctx context.Context, args json.
 		return "", fmt.Errorf("参数错误")
 	}
 
-	return fmt.Sprintf("同步成功"), nil
+	return "同步成功", nil
 }
 
 // LoadTask 加载 Cloudflare站点同步 周期任务

@@ -270,14 +270,14 @@ func (s *CDNRecordServiceImpl) BatchUpdateCdnRecordActive(ctx context.Context, i
 		Where(cdnrecord.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		if ent.IsNotFound(err) {
 			return fmt.Errorf("查询CDN记录失败: 记录不存在或 %w", err)
 		}
 		return fmt.Errorf("查询CDN记录失败: %w", err)
 	}
 	if len(allCdnRecord) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询CDN记录失败: 数量 %d 与请求数量 %d 不匹配", len(allCdnRecord), len(ids))
 	}
 
@@ -287,7 +287,7 @@ func (s *CDNRecordServiceImpl) BatchUpdateCdnRecordActive(ctx context.Context, i
 		SetIsActive(isActive).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("更新CDN记录状态失败: %w", err)
 	}
 
@@ -295,7 +295,7 @@ func (s *CDNRecordServiceImpl) BatchUpdateCdnRecordActive(ctx context.Context, i
 	for _, record := range allCdnRecord {
 		err = s.cdnSyncHandler.LoadTask(ctx, tx.Client(), record, isActive)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("加载CDN同步周期任务失败: %w", err)
 		}
 	}
@@ -353,18 +353,18 @@ func (s *CDNRecordServiceImpl) BatchDeleteCdnRecord(ctx context.Context, ids []i
 		Where(cdnrecord.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询CDN记录失败: %w", err)
 	}
 	if len(allCdnRecord) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询CDN记录失败: 数量 %d 与请求数量 %d 不匹配", len(allCdnRecord), len(ids))
 	}
 
 	// 检查是否存在启用的CDN记录
 	for _, item := range allCdnRecord {
 		if item.IsActive {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除CDN记录失败: 存在启用的CDN记录")
 		}
 	}
@@ -374,7 +374,7 @@ func (s *CDNRecordServiceImpl) BatchDeleteCdnRecord(ctx context.Context, ids []i
 		Where(cdnrecord.IDIn(ids...)).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("删除CDN记录失败: %w", err)
 	}
 
@@ -382,7 +382,7 @@ func (s *CDNRecordServiceImpl) BatchDeleteCdnRecord(ctx context.Context, ids []i
 	for _, item := range allCdnRecord {
 		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeCdnRecord, item.ID)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)
 		}
 	}

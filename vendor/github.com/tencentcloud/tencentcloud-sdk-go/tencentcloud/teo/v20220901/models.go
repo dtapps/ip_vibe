@@ -363,6 +363,9 @@ type AdaptiveFrequencyControl struct {
 	// 自适应频控是否开启。取值有：<li>on：开启；</li><li>off：关闭。</li>
 	Enabled *string `json:"Enabled,omitnil,omitempty" name:"Enabled"`
 
+	// 自适应频控的规则 ID，仅作为出参返回。
+	Id *string `json:"Id,omitnil,omitempty" name:"Id"`
+
 	// 自适应频控的限制等级，当 Enabled 为 on 时，此字段必填。取值有：<li>Loose：宽松；</li><li>Moderate：适中；</li><li>Strict：严格。</li>
 	Sensitivity *string `json:"Sensitivity,omitnil,omitempty" name:"Sensitivity"`
 
@@ -570,7 +573,7 @@ type ApplicationProxy struct {
 	// <li>1：开启加速。</li>
 	AccelerateType *int64 `json:"AccelerateType,omitnil,omitempty" name:"AccelerateType"`
 
-	// 会话保持时间。
+	// 会话保持时间，单位为秒。
 	SessionPersistTime *uint64 `json:"SessionPersistTime,omitnil,omitempty" name:"SessionPersistTime"`
 
 	// 状态，取值有：
@@ -628,7 +631,7 @@ type ApplicationProxyRule struct {
 
 	// 源站信息：
 	// <li>当 OriginType 为 custom 时，表示一个或多个源站，如`["8.8.8.8","9.9.9.9"]` 或 `OriginValue=["test.com"]`；</li>
-	// <li>当 OriginType 为 loadbalancer 时，表示一个负载均衡，如`["lb-xdffsfasdfs"]`；</li>
+	// <li>当 OriginType 为 loadbalancer 时，表示一个负载均衡，如`["lb-3pbiw4d9iqz0"]`；</li>
 	// <li>当 OriginType 为 origins 时，要求有且仅有一个元素，表示源站组ID，如`["origin-537f5b41-162a-11ed-abaa-525400c5da15"]`。</li>
 	OriginValue []*string `json:"OriginValue,omitnil,omitempty" name:"OriginValue"`
 
@@ -655,7 +658,7 @@ type ApplicationProxyRule struct {
 	// <li>false：关闭。</li>默认值：false。
 	SessionPersist *bool `json:"SessionPersist,omitnil,omitempty" name:"SessionPersist"`
 
-	// 会话保持的时间，只有当SessionPersist为true时，该值才会生效。
+	// 会话保持的时间，单位为秒，只有当SessionPersist为true时，该值才会生效。
 	SessionPersistTime *uint64 `json:"SessionPersistTime,omitnil,omitempty" name:"SessionPersistTime"`
 
 	// 源站端口，支持格式：
@@ -803,6 +806,9 @@ type AuthenticationParameters struct {
 type BandwidthAbuseDefense struct {
 	// 流量防盗刷（仅适用中国大陆地区）是否开启。取值有：<li>on：开启；</li><li>off：关闭。</li>
 	Enabled *string `json:"Enabled,omitnil,omitempty" name:"Enabled"`
+
+	// 流量防盗刷的规则 ID，仅作为出参返回。
+	Id *string `json:"Id,omitnil,omitempty" name:"Id"`
 
 	// 流量防盗刷（仅适用中国大陆地区）的处置方式，当 Enabled 为 on 时，此字段必填。SecurityAction 的 Name 取值支持：<li>Monitor：观察；</li><li>Deny：拦截；</li><li>Challenge：挑战，其中ChallengeActionParameters.Name仅支持JSChallenge。</li>
 	Action *SecurityAction `json:"Action,omitnil,omitempty" name:"Action"`
@@ -1150,14 +1156,17 @@ type BotExtendAction struct {
 }
 
 type BotIntelligence struct {
-	// 基于客户端和请求特征，将请求来源分为人类来源请求、合法 Bot 请求、疑似 Bot 请求和高风险 Bot 请求，并提供请求处置选项。
-	BotRatings *BotRatings `json:"BotRatings,omitnil,omitempty" name:"BotRatings"`
-
 	// Bot 智能分析的具体配置开关。取值有：
 	// 
 	// on：开启；
 	// off：关闭。
 	Enabled *string `json:"Enabled,omitnil,omitempty" name:"Enabled"`
+
+	// Bot 智能分析的规则 ID，仅作为出参返回。
+	Id *string `json:"Id,omitnil,omitempty" name:"Id"`
+
+	// 基于客户端和请求特征，将请求来源分为人类来源请求、合法 Bot 请求、疑似 Bot 请求和高风险 Bot 请求，并提供请求处置选项。
+	BotRatings *BotRatings `json:"BotRatings,omitnil,omitempty" name:"BotRatings"`
 }
 
 type BotManagedRule struct {
@@ -1910,6 +1919,9 @@ type ClientFiltering struct {
 	// 智能客户端过滤是否开启。取值有：<li>on：开启；</li><li>off：关闭。</li>
 	Enabled *string `json:"Enabled,omitnil,omitempty" name:"Enabled"`
 
+	// 智能客户端过滤的规则 ID，仅作为出参返回。
+	Id *string `json:"Id,omitnil,omitempty" name:"Id"`
+
 	// 智能客户端过滤的处置方式，当 Enabled 为 on 时，此字段必填。SecurityAction 的 Name 取值支持：<li>Monitor：观察；</li><li>Deny：拦截；</li><li>Challenge：挑战，其中ChallengeActionParameters.Name仅支持JSChallenge。</li>
 	Action *SecurityAction `json:"Action,omitnil,omitempty" name:"Action"`
 }
@@ -2623,7 +2635,7 @@ type CreateApplicationProxyRuleRequestParams struct {
 	// <li>false：关闭。</li>默认值：false。
 	SessionPersist *bool `json:"SessionPersist,omitnil,omitempty" name:"SessionPersist"`
 
-	// 会话保持的时间，只有当SessionPersist为true时，该值才会生效。
+	// 会话保持的时间，单位为秒，只有当SessionPersist为true时，该值才会生效。
 	SessionPersistTime *uint64 `json:"SessionPersistTime,omitnil,omitempty" name:"SessionPersistTime"`
 
 	// 源站端口，支持格式：
@@ -2678,7 +2690,7 @@ type CreateApplicationProxyRuleRequest struct {
 	// <li>false：关闭。</li>默认值：false。
 	SessionPersist *bool `json:"SessionPersist,omitnil,omitempty" name:"SessionPersist"`
 
-	// 会话保持的时间，只有当SessionPersist为true时，该值才会生效。
+	// 会话保持的时间，单位为秒，只有当SessionPersist为true时，该值才会生效。
 	SessionPersistTime *uint64 `json:"SessionPersistTime,omitnil,omitempty" name:"SessionPersistTime"`
 
 	// 源站端口，支持格式：
@@ -4557,7 +4569,7 @@ type CreatePurgeTaskRequestParams struct {
 	// Deprecated: EncodeUrl is deprecated.
 	EncodeUrl *bool `json:"EncodeUrl,omitnil,omitempty" name:"EncodeUrl"`
 
-	// 节点缓存清除类型取值为 purge_cache_tag 时附带的信息。
+	// 节点缓存清除类型取值为 purge_cache_tag 时，该参数必填，入参值为域名。
 	CacheTag *CacheTag `json:"CacheTag,omitnil,omitempty" name:"CacheTag"`
 }
 
@@ -4586,7 +4598,7 @@ type CreatePurgeTaskRequest struct {
 	// 若内容含有非 ASCII 字符集的字符，请开启此开关进行编码转换（编码规则遵循 RFC3986）。
 	EncodeUrl *bool `json:"EncodeUrl,omitnil,omitempty" name:"EncodeUrl"`
 
-	// 节点缓存清除类型取值为 purge_cache_tag 时附带的信息。
+	// 节点缓存清除类型取值为 purge_cache_tag 时，该参数必填，入参值为域名。
 	CacheTag *CacheTag `json:"CacheTag,omitnil,omitempty" name:"CacheTag"`
 }
 
@@ -4648,41 +4660,22 @@ type CreateRealtimeLogDeliveryTaskRequestParams struct {
 	// 站点 ID。
 	ZoneId *string `json:"ZoneId,omitnil,omitempty" name:"ZoneId"`
 
+	// 数据投递区域，可选值：<ul><li>mainland：中国大陆境内；</li><li>overseas：全球（不含中国大陆）。</li></ul>
+	Area *string `json:"Area,omitnil,omitempty" name:"Area"`
+
+	// 数据投递类型，可选值：<ul><li>domain：站点加速日志；</li><li>application：四层代理日志；</li><li>function：边缘函数运行日志；</li><li>web-rateLiming：速率限制和 CC 攻击防护日志；</li><li>web-attack：托管规则日志；</li><li>web-rule：自定义规则日志；</li><li>web-bot：Bot管理日志。</li></ul>
+	LogType *string `json:"LogType,omitnil,omitempty" name:"LogType"`
+
 	// 实时日志投递任务的名称，格式为数字、英文、-和_组合，最多 200 个字符。
 	TaskName *string `json:"TaskName,omitnil,omitempty" name:"TaskName"`
 
-	// 实时日志投递任务类型，取值有：
-	// <li>cls: 推送到腾讯云 CLS；</li>
-	// <li>custom_endpoint：推送到自定义 HTTP(S) 地址；</li>
-	// <li>s3：推送到 AWS S3 兼容存储桶地址；</li>
-	// <li>log_analysis：推送到 EdgeOne 日志分析，该任务类型仅支持“站点加速日志”这一数据投递类型。</li>
+	// 实时日志投递任务类型，取值有：<ul><li>cls: 推送到腾讯云 CLS；</li><li>custom_endpoint：推送到自定义 HTTP(S) 地址；</li><li>s3：推送到 AWS S3 兼容存储桶地址；</li><li>log_analysis：推送到 EdgeOne 日志分析，仅当 LogType = domain 或 web-attack 时支持。</li></ul>
 	TaskType *string `json:"TaskType,omitnil,omitempty" name:"TaskType"`
 
-	// 实时日志投递任务对应的实体列表。取值示例如下：
-	// <li>七层域名：domain.example.com</li>
-	// <li>四层代理实例：sid-2s69eb5wcms7</li>
-	// <li>边缘函数实例：test-zone-2mxigizoh9l9-1257626257</li>
+	// 实时日志投递任务对应的实体列表。取值示例如下：<ul><li>七层域名：domain.example.com</li><li>四层代理实例：sid-2s69eb5wcms7</li><li>边缘函数实例：test-zone-2mxigizoh9l9-1257626257</li></ul>
 	EntityList []*string `json:"EntityList,omitnil,omitempty" name:"EntityList"`
 
-	// 数据投递类型，取值有：
-	// <li>domain：站点加速日志；</li>
-	// <li>application：四层代理日志；</li>
-	// <li>function：边缘函数运行日志；</li>
-	// <li>web-rateLiming：速率限制和 CC 攻击防护日志；</li>
-	// <li>web-attack：托管规则日志；</li>
-	// <li>web-rule：自定义规则日志；</li>
-	// <li>web-bot：Bot管理日志。</li>
-	LogType *string `json:"LogType,omitnil,omitempty" name:"LogType"`
-
-	// 数据投递区域，取值有：
-	// <li>mainland：中国大陆境内；</li>
-	// <li>overseas：全球（不含中国大陆）。</li>
-	Area *string `json:"Area,omitnil,omitempty" name:"Area"`
-
-	// 投递的预设字段列表。取值参考：
-	// <li>[站点加速日志（七层访问日志）](https://cloud.tencent.com/document/product/1552/105791)</li>
-	// <li>[四层代理日志](https://cloud.tencent.com/document/product/1552/105792)</li>
-	// <li>[边缘函数运行日志](https://cloud.tencent.com/document/product/1552/115585)</li>
+	// 投递的预设字段列表。取值参考：<ul><li>[站点加速日志（七层访问日志）](https://cloud.tencent.com/document/product/1552/105791)</li><li>[四层代理日志](https://cloud.tencent.com/document/product/1552/105792)</li><li>[边缘函数运行日志](https://cloud.tencent.com/document/product/1552/115585)</li></ul>
 	Fields []*string `json:"Fields,omitnil,omitempty" name:"Fields"`
 
 	// 投递的自定义字段列表，支持在 HTTP 请求头、响应头、Cookie、请求正文中提取指定内容。自定义字段名称不能重复，且最多不能超过 200 个字段。单个实时日志推送任务最多添加 5 个请求正文类型的自定义字段。目前仅站点加速日志（LogType=domain）支持添加自定义字段。
@@ -4694,9 +4687,7 @@ type CreateRealtimeLogDeliveryTaskRequestParams struct {
 	// 采样比例，采用千分制，取值范围为1-1000，例如：填写 605 表示采样比例为 60.5%。不填表示采样比例为 100%。
 	Sample *uint64 `json:"Sample,omitnil,omitempty" name:"Sample"`
 
-	// 日志投递的输出格式。不填表示为默认格式，默认格式逻辑如下：
-	// <li>当 TaskType 取值为 custom_endpoint 时，默认格式为多个 JSON 对象组成的数组，每个 JSON 对象为一条日志；</li>
-	// <li>当 TaskType 取值为 s3 时，默认格式为 JSON Lines；</li>特别地，当 TaskType 取值为 cls 或 log_analysis 时，LogFormat.FormatType 的值只能为 json，且 LogFormat 中其他参数将被忽略，建议不传 LogFormat。
+	// 日志投递的输出格式。不填表示为默认格式，默认格式逻辑如下：<ul><li>当 TaskType 取值为 custom_endpoint 时，默认格式为多个 JSON 对象组成的数组，每个 JSON 对象为一条日志；</li><li>当 TaskType 取值为 s3 时，默认格式为 JSON Lines；</li></ul>特别地，当 TaskType 取值为 cls 或 log_analysis 时，LogFormat.FormatType 的值只能为 json，且 LogFormat 中其他参数将被忽略，建议不传 LogFormat。
 	LogFormat *LogFormat `json:"LogFormat,omitnil,omitempty" name:"LogFormat"`
 
 	// CLS 的配置信息。当 TaskType 取值为 cls 时，该参数必填。
@@ -4715,41 +4706,22 @@ type CreateRealtimeLogDeliveryTaskRequest struct {
 	// 站点 ID。
 	ZoneId *string `json:"ZoneId,omitnil,omitempty" name:"ZoneId"`
 
+	// 数据投递区域，可选值：<ul><li>mainland：中国大陆境内；</li><li>overseas：全球（不含中国大陆）。</li></ul>
+	Area *string `json:"Area,omitnil,omitempty" name:"Area"`
+
+	// 数据投递类型，可选值：<ul><li>domain：站点加速日志；</li><li>application：四层代理日志；</li><li>function：边缘函数运行日志；</li><li>web-rateLiming：速率限制和 CC 攻击防护日志；</li><li>web-attack：托管规则日志；</li><li>web-rule：自定义规则日志；</li><li>web-bot：Bot管理日志。</li></ul>
+	LogType *string `json:"LogType,omitnil,omitempty" name:"LogType"`
+
 	// 实时日志投递任务的名称，格式为数字、英文、-和_组合，最多 200 个字符。
 	TaskName *string `json:"TaskName,omitnil,omitempty" name:"TaskName"`
 
-	// 实时日志投递任务类型，取值有：
-	// <li>cls: 推送到腾讯云 CLS；</li>
-	// <li>custom_endpoint：推送到自定义 HTTP(S) 地址；</li>
-	// <li>s3：推送到 AWS S3 兼容存储桶地址；</li>
-	// <li>log_analysis：推送到 EdgeOne 日志分析，该任务类型仅支持“站点加速日志”这一数据投递类型。</li>
+	// 实时日志投递任务类型，取值有：<ul><li>cls: 推送到腾讯云 CLS；</li><li>custom_endpoint：推送到自定义 HTTP(S) 地址；</li><li>s3：推送到 AWS S3 兼容存储桶地址；</li><li>log_analysis：推送到 EdgeOne 日志分析，仅当 LogType = domain 或 web-attack 时支持。</li></ul>
 	TaskType *string `json:"TaskType,omitnil,omitempty" name:"TaskType"`
 
-	// 实时日志投递任务对应的实体列表。取值示例如下：
-	// <li>七层域名：domain.example.com</li>
-	// <li>四层代理实例：sid-2s69eb5wcms7</li>
-	// <li>边缘函数实例：test-zone-2mxigizoh9l9-1257626257</li>
+	// 实时日志投递任务对应的实体列表。取值示例如下：<ul><li>七层域名：domain.example.com</li><li>四层代理实例：sid-2s69eb5wcms7</li><li>边缘函数实例：test-zone-2mxigizoh9l9-1257626257</li></ul>
 	EntityList []*string `json:"EntityList,omitnil,omitempty" name:"EntityList"`
 
-	// 数据投递类型，取值有：
-	// <li>domain：站点加速日志；</li>
-	// <li>application：四层代理日志；</li>
-	// <li>function：边缘函数运行日志；</li>
-	// <li>web-rateLiming：速率限制和 CC 攻击防护日志；</li>
-	// <li>web-attack：托管规则日志；</li>
-	// <li>web-rule：自定义规则日志；</li>
-	// <li>web-bot：Bot管理日志。</li>
-	LogType *string `json:"LogType,omitnil,omitempty" name:"LogType"`
-
-	// 数据投递区域，取值有：
-	// <li>mainland：中国大陆境内；</li>
-	// <li>overseas：全球（不含中国大陆）。</li>
-	Area *string `json:"Area,omitnil,omitempty" name:"Area"`
-
-	// 投递的预设字段列表。取值参考：
-	// <li>[站点加速日志（七层访问日志）](https://cloud.tencent.com/document/product/1552/105791)</li>
-	// <li>[四层代理日志](https://cloud.tencent.com/document/product/1552/105792)</li>
-	// <li>[边缘函数运行日志](https://cloud.tencent.com/document/product/1552/115585)</li>
+	// 投递的预设字段列表。取值参考：<ul><li>[站点加速日志（七层访问日志）](https://cloud.tencent.com/document/product/1552/105791)</li><li>[四层代理日志](https://cloud.tencent.com/document/product/1552/105792)</li><li>[边缘函数运行日志](https://cloud.tencent.com/document/product/1552/115585)</li></ul>
 	Fields []*string `json:"Fields,omitnil,omitempty" name:"Fields"`
 
 	// 投递的自定义字段列表，支持在 HTTP 请求头、响应头、Cookie、请求正文中提取指定内容。自定义字段名称不能重复，且最多不能超过 200 个字段。单个实时日志推送任务最多添加 5 个请求正文类型的自定义字段。目前仅站点加速日志（LogType=domain）支持添加自定义字段。
@@ -4761,9 +4733,7 @@ type CreateRealtimeLogDeliveryTaskRequest struct {
 	// 采样比例，采用千分制，取值范围为1-1000，例如：填写 605 表示采样比例为 60.5%。不填表示采样比例为 100%。
 	Sample *uint64 `json:"Sample,omitnil,omitempty" name:"Sample"`
 
-	// 日志投递的输出格式。不填表示为默认格式，默认格式逻辑如下：
-	// <li>当 TaskType 取值为 custom_endpoint 时，默认格式为多个 JSON 对象组成的数组，每个 JSON 对象为一条日志；</li>
-	// <li>当 TaskType 取值为 s3 时，默认格式为 JSON Lines；</li>特别地，当 TaskType 取值为 cls 或 log_analysis 时，LogFormat.FormatType 的值只能为 json，且 LogFormat 中其他参数将被忽略，建议不传 LogFormat。
+	// 日志投递的输出格式。不填表示为默认格式，默认格式逻辑如下：<ul><li>当 TaskType 取值为 custom_endpoint 时，默认格式为多个 JSON 对象组成的数组，每个 JSON 对象为一条日志；</li><li>当 TaskType 取值为 s3 时，默认格式为 JSON Lines；</li></ul>特别地，当 TaskType 取值为 cls 或 log_analysis 时，LogFormat.FormatType 的值只能为 json，且 LogFormat 中其他参数将被忽略，建议不传 LogFormat。
 	LogFormat *LogFormat `json:"LogFormat,omitnil,omitempty" name:"LogFormat"`
 
 	// CLS 的配置信息。当 TaskType 取值为 cls 时，该参数必填。
@@ -4789,11 +4759,11 @@ func (r *CreateRealtimeLogDeliveryTaskRequest) FromJsonString(s string) error {
 		return err
 	}
 	delete(f, "ZoneId")
+	delete(f, "Area")
+	delete(f, "LogType")
 	delete(f, "TaskName")
 	delete(f, "TaskType")
 	delete(f, "EntityList")
-	delete(f, "LogType")
-	delete(f, "Area")
 	delete(f, "Fields")
 	delete(f, "CustomFields")
 	delete(f, "DeliveryConditions")
@@ -5686,10 +5656,10 @@ type DDoSAttackEvent struct {
 	// 攻击状态。
 	AttackStatus *int64 `json:"AttackStatus,omitnil,omitempty" name:"AttackStatus"`
 
-	// 攻击最大带宽。
+	// 攻击最大带宽，单位为 bps。
 	AttackMaxBandWidth *int64 `json:"AttackMaxBandWidth,omitnil,omitempty" name:"AttackMaxBandWidth"`
 
-	// 攻击包速率峰值。
+	// 攻击包速率峰值，单位为 pps。
 	AttackPacketMaxRate *int64 `json:"AttackPacketMaxRate,omitnil,omitempty" name:"AttackPacketMaxRate"`
 
 	// 攻击开始时间，单位为s。
@@ -14694,10 +14664,10 @@ type EdgeKVPutRequestParams struct {
 	// 键值。不能为空，最大支持 1 MB。支持存储字符串数据。
 	Value *string `json:"Value,omitnil,omitempty" name:"Value"`
 
-	// 过期时间，绝对时间。表示从 1970 年 1 月 1 日（UTC/GMT 的午夜）开始所经过的秒数，不能小于当前时间。若 Expiration 和 ExpirationTTL 都填写，以 ExpirationTTL 为准。若 Expiration 和 ExpirationTTL 都不填写，则该键值对永不过期。
+	// 键值对的过期时间，绝对时间，单位为秒，表示从 1970 年 1 月 1 日 00:00:00（UTC）起经过的秒数（即 Unix 时间戳）。取值必须大于等于当前时间 + 60，即过期时间距当前至少 60 秒。当 Expiration 与 ExpirationTTL 同时填写时，以 ExpirationTTL 为准；当两者均不填写时，键值对永不过期。
 	Expiration *int64 `json:"Expiration,omitnil,omitempty" name:"Expiration"`
 
-	// 过期时间，相对时间，单位为秒。表示数据将在指定秒数后过期，必须大于 0。若 Expiration 和 ExpirationTTL 都填写，以 ExpirationTTL 为准。若 Expiration 和 ExpirationTTL 都不填写，则该键值对永不过期。
+	// 键值对的存活时长，相对时间，单位为秒，表示数据将在写入后经过指定秒数过期。取值范围：大于等于 60。当 Expiration 与 ExpirationTTL 同时填写时，以 ExpirationTTL 为准；当两者均不填写时，键值对永不过期。
 	ExpirationTTL *int64 `json:"ExpirationTTL,omitnil,omitempty" name:"ExpirationTTL"`
 }
 
@@ -14716,10 +14686,10 @@ type EdgeKVPutRequest struct {
 	// 键值。不能为空，最大支持 1 MB。支持存储字符串数据。
 	Value *string `json:"Value,omitnil,omitempty" name:"Value"`
 
-	// 过期时间，绝对时间。表示从 1970 年 1 月 1 日（UTC/GMT 的午夜）开始所经过的秒数，不能小于当前时间。若 Expiration 和 ExpirationTTL 都填写，以 ExpirationTTL 为准。若 Expiration 和 ExpirationTTL 都不填写，则该键值对永不过期。
+	// 键值对的过期时间，绝对时间，单位为秒，表示从 1970 年 1 月 1 日 00:00:00（UTC）起经过的秒数（即 Unix 时间戳）。取值必须大于等于当前时间 + 60，即过期时间距当前至少 60 秒。当 Expiration 与 ExpirationTTL 同时填写时，以 ExpirationTTL 为准；当两者均不填写时，键值对永不过期。
 	Expiration *int64 `json:"Expiration,omitnil,omitempty" name:"Expiration"`
 
-	// 过期时间，相对时间，单位为秒。表示数据将在指定秒数后过期，必须大于 0。若 Expiration 和 ExpirationTTL 都填写，以 ExpirationTTL 为准。若 Expiration 和 ExpirationTTL 都不填写，则该键值对永不过期。
+	// 键值对的存活时长，相对时间，单位为秒，表示数据将在写入后经过指定秒数过期。取值范围：大于等于 60。当 Expiration 与 ExpirationTTL 同时填写时，以 ExpirationTTL 为准；当两者均不填写时，键值对永不过期。
 	ExpirationTTL *int64 `json:"ExpirationTTL,omitnil,omitempty" name:"ExpirationTTL"`
 }
 
@@ -15257,6 +15227,9 @@ type ForceRedirectHTTPSParameters struct {
 type FrequentScanningProtection struct {
 	// 高频扫描防护规则是否开启。取值有：<li>on：开启，高频扫描防护规则生效；</li><li>off：关闭，高频扫描防护规则不生效。</li>	
 	Enabled *string `json:"Enabled,omitnil,omitempty" name:"Enabled"`
+
+	// 高频扫描防护的规则 ID，仅作为出参返回。
+	Id *string `json:"Id,omitnil,omitempty" name:"Id"`
 
 	// 高频扫描防护的处置动作。 当 Enabled 为 on 时，此字段必填。SecurityAction 的 Name 取值支持：<li>Deny：拦截，响应拦截页面；</li><li>Monitor：观察，不处理请求记录安全事件到日志中；</li><li>JSChallenge：JavaScript 挑战，响应 JavaScript 挑战页面。</li>
 	Action *SecurityAction `json:"Action,omitnil,omitempty" name:"Action"`
@@ -17133,7 +17106,7 @@ type ModifyApplicationProxyRuleRequestParams struct {
 	// <li>false：关闭。</li>不填为false。
 	SessionPersist *bool `json:"SessionPersist,omitnil,omitempty" name:"SessionPersist"`
 
-	// 会话保持的时间，只有当SessionPersist为true时，该值才会生效。
+	// 会话保持的时间，单位为秒，只有当SessionPersist为true时，该值才会生效。
 	SessionPersistTime *uint64 `json:"SessionPersistTime,omitnil,omitempty" name:"SessionPersistTime"`
 
 	// 源站端口，支持格式：
@@ -17191,7 +17164,7 @@ type ModifyApplicationProxyRuleRequest struct {
 	// <li>false：关闭。</li>不填为false。
 	SessionPersist *bool `json:"SessionPersist,omitnil,omitempty" name:"SessionPersist"`
 
-	// 会话保持的时间，只有当SessionPersist为true时，该值才会生效。
+	// 会话保持的时间，单位为秒，只有当SessionPersist为true时，该值才会生效。
 	SessionPersistTime *uint64 `json:"SessionPersistTime,omitnil,omitempty" name:"SessionPersistTime"`
 
 	// 源站端口，支持格式：
@@ -19358,8 +19331,8 @@ type ModifyOriginParameters struct {
 	// <li>当 OriginType = IPDomain 时，该参数请填写 IPV4、IPV6 地址或域名；</li>
 	// <li>当 OriginType = COS 时，该参数请填写 COS 桶的访问域名；</li>
 	// <li>当 OriginType = AWSS3，该参数请填写 S3 桶的访问域名；</li>
-	// <li>当 OriginType = OriginGroup 时，该参数请填写源站组 ID；</li>
-	// <li>当 OriginType = LoadBalance 时，该参数请填写负载均衡实例 ID，该功能当前仅白名单开放。</li>
+	// <li>当 OriginType = OriginGroup 时，该参数请填写源站组 ID；当为出参的时候，如果引用了其它站点的源站组，格式为{源站组 ID}@{ZoneID}。例如：og-testorigin@zone-38moq1z10wwwy；</li>
+	// <li>当 OriginType = LoadBalance 时，该参数请填写负载均衡实例 ID，该功能当前仅白名单开放；当为出参的时候，如果引用了其它站点的负载均衡，格式为{负载均衡 ID}@{ZoneID}。例如：lb-2rxpamcyqfzg@zone-38moq1z10wwwy。</li>
 	Origin *string `json:"Origin,omitnil,omitempty" name:"Origin"`
 
 	// 回源协议配置。当 OriginType 取值为 IPDomain、OriginGroup、LoadBalance 时该参数必填。取值有：
@@ -22386,6 +22359,7 @@ type RuleEngineAction struct {
 	// <li>ClientIPCountry：回源时携带客户端 IP 所属地域信息；</li>
 	// <li>UpstreamFollowRedirect：回源跟随重定向参数配置；</li>
 	// <li>UpstreamRequest：回源请求参数；</li>
+	// <li>Shield：源站卸载配置；</li>
 	// <li>TLSConfig：SSL/TLS 安全；</li>
 	// <li>ModifyOrigin：修改源站；</li>
 	// <li>HTTPUpstreamTimeout：七层回源超时配置；</li>
@@ -22503,6 +22477,10 @@ type RuleEngineAction struct {
 	// 回源请求参数配置参数，当 Name 取值为 UpstreamRequest 时，该参数必填。
 	// 注意：此字段可能返回 null，表示取不到有效值。
 	UpstreamRequestParameters *UpstreamRequestParameters `json:"UpstreamRequestParameters,omitnil,omitempty" name:"UpstreamRequestParameters"`
+
+	// 源站卸载配置参数，当 Name 取值为 Shield 时，该参数必填。
+	// 注意：此字段可能返回 null，表示取不到有效值。
+	ShieldParameters *ShieldParameters `json:"ShieldParameters,omitnil,omitempty" name:"ShieldParameters"`
 
 	// SSL/TLS 安全配置参数，当 Name 取值为 TLSConfig 时，该参数必填。
 	// 注意：此字段可能返回 null，表示取不到有效值。
@@ -22966,6 +22944,11 @@ type SharedCNAMEInfo struct {
 	AccelerationDomains []*ReferenceHolder `json:"AccelerationDomains,omitnil,omitempty" name:"AccelerationDomains"`
 }
 
+type ShieldParameters struct {
+	// 源站卸载空间 ID。
+	ShieldSpaceId *string `json:"ShieldSpaceId,omitnil,omitempty" name:"ShieldSpaceId"`
+}
+
 type SkipCondition struct {
 	// 例外跳过类型，取值为：
 	// <li>header_fields：HTTP请求Header；</li>
@@ -23006,6 +22989,9 @@ type SkipCondition struct {
 type SlowAttackDefense struct {
 	// 慢速攻击防护是否开启。取值有：<li>on：开启；</li><li>off：关闭。</li>
 	Enabled *string `json:"Enabled,omitnil,omitempty" name:"Enabled"`
+
+	// 慢速攻击防护的规则 ID，仅作为出参返回。
+	Id *string `json:"Id,omitnil,omitempty" name:"Id"`
 
 	// 慢速攻击防护的处置方式，当 Enabled 为 on 时，此字段必填。SecurityAction 的 Name 取值支持：<li>Monitor：观察；</li><li>Deny：拦截；</li>
 	Action *SecurityAction `json:"Action,omitnil,omitempty" name:"Action"`

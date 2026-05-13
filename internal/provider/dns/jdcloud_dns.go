@@ -25,7 +25,7 @@ type JdcloudDNSConfig struct {
 // DefaultValidate 验证配置
 func (cfg *JdcloudDNSConfig) DefaultValidate() error {
 	if cfg.Region == "" {
-		return fmt.Errorf("Region 不能为空")
+		return fmt.Errorf("region 不能为空")
 	}
 	if cfg.AccessKey == "" {
 		return fmt.Errorf("AccessKey 不能为空")
@@ -117,8 +117,6 @@ func NewJdcloudDNSProviderRaw(ctx context.Context, logger *slog.Logger, cfg *Jdc
 	// 如果提供了日志传输器，则设置HTTP客户端
 	if p.opts.httpTransport == nil {
 		p.opts.httpTransport = dnsHttpTransport
-	}
-	if p.opts.httpTransport != nil {
 	}
 
 	return p, nil

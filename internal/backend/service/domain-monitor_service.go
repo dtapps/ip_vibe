@@ -248,14 +248,14 @@ func (s *DomainMonitorServiceImpl) BatchUpdateDomainMonitorActive(ctx context.Co
 		Where(domainmonitor.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		if ent.IsNotFound(err) {
 			return fmt.Errorf("查询域名监控失败: 记录不存在或 %w", err)
 		}
 		return fmt.Errorf("查询域名监控失败: %w", err)
 	}
 	if len(allDomainMonitor) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询域名监控失败: 数量 %d 与请求数量 %d 不匹配", len(allDomainMonitor), len(ids))
 	}
 
@@ -265,7 +265,7 @@ func (s *DomainMonitorServiceImpl) BatchUpdateDomainMonitorActive(ctx context.Co
 		SetIsActive(isActive).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("更新域名监控启用状态失败: %w", err)
 	}
 
@@ -273,7 +273,7 @@ func (s *DomainMonitorServiceImpl) BatchUpdateDomainMonitorActive(ctx context.Co
 	for _, record := range allDomainMonitor {
 		err = s.domainMonitorHandler.LoadTask(ctx, tx.Client(), record, isActive)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("添加域名监控同步周期任务失败: %w", err)
 		}
 	}
@@ -334,14 +334,14 @@ func (s *DomainMonitorServiceImpl) BatchDeleteDomainMonitor(ctx context.Context,
 		return fmt.Errorf("查询域名监控失败: %w", err)
 	}
 	if len(allDomainMonitor) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询域名监控失败: 数量 %d 与请求数量 %d 不匹配", len(allDomainMonitor), len(ids))
 	}
 
 	// 检查是否存在启用的域名监控
 	for _, item := range allDomainMonitor {
 		if item.IsActive {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除域名监控失败: 存在启用的域名监控")
 		}
 	}
@@ -359,7 +359,7 @@ func (s *DomainMonitorServiceImpl) BatchDeleteDomainMonitor(ctx context.Context,
 	for _, domainMonitor := range allDomainMonitor {
 		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeDomainMonitor, domainMonitor.ID)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)
 		}
 	}

@@ -142,9 +142,7 @@ func (s *DomainCheck) Check(ctx context.Context, protocol string, domain string,
 
 	// ---------- DNS 解析 ----------
 	if ips, err := core.GetDNSResultList(ctx, domain, net.JoinHostPort("119.29.29.29", "53")); err == nil {
-		for _, ip := range ips {
-			result.IPResolved = append(result.IPResolved, ip)
-		}
+		result.IPResolved = append(result.IPResolved, ips...)
 	} else {
 		result.StatusMsg = "DNS解析失败"
 		result.ErrorLog = err.Error()
@@ -188,7 +186,7 @@ func (s *DomainCheck) fetchSSLInfo(ctx context.Context, domain string, result *C
 	if err != nil {
 		return err
 	}
-	defer conn.Close()
+	defer func() { _ = conn.Close() }()
 
 	state := conn.ConnectionState()
 	if len(state.PeerCertificates) == 0 {
@@ -250,7 +248,7 @@ func (s *DomainCheck) fetchHTTPWithStandard(ctx context.Context, u *url.URL, htt
 		result.ErrorLog = err.Error()
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	result.HTTPStatus = resp.StatusCode
 
@@ -288,7 +286,7 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, httpHe
 		result.ErrorLog = err.Error()
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	result.HTTPStatus = resp.StatusCode()
 
@@ -343,7 +341,7 @@ func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, httpHead
 		result.ErrorLog = err.Error()
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	result.HTTPStatus = resp.StatusCode
 

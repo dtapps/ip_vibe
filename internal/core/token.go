@@ -34,9 +34,7 @@ func ParseBasicAuthToken(token string) (string, string, error) {
 		return "", "", errors.New("无效的基本认证令牌")
 	}
 	// 判断是否存在 Basic 前缀，如有则去掉
-	if strings.HasPrefix(token, "Basic ") {
-		token = token[6:]
-	}
+	token = strings.TrimPrefix(token, "Basic ")
 	// 解码 token
 	decoded, err := base64.StdEncoding.DecodeString(token)
 	if err != nil {

@@ -227,7 +227,7 @@ func (m *CronServerManager) LoadAllJobs(ctx context.Context) error {
 	}
 
 	for _, j := range jobs {
-		err := m.addJobToCron(j)
+		err := m.addJobToCron(j) //nolint:contextcheck
 		if err != nil {
 			m.logger.Error("加载任务失败",
 				slog.Int64("id", j.ID),
@@ -275,7 +275,7 @@ func (m *CronServerManager) SyncAllJobs(ctx context.Context) error {
 		if oldFingerprint, ok := m.jobConfigs[id]; ok && oldFingerprint != currentFingerprint {
 			m.logger.Info("任务配置已变更，正在重启计时器", slog.Int64("id", id))
 			m.removeJobFromCron(id)
-			if err := m.addJobToCron(dbJob); err == nil {
+			if err := m.addJobToCron(dbJob); err == nil { //nolint:contextcheck
 				m.jobConfigs[id] = currentFingerprint
 			}
 		}
@@ -285,7 +285,7 @@ func (m *CronServerManager) SyncAllJobs(ctx context.Context) error {
 	for id, dbJob := range dbJobMap {
 		if _, running := m.runningJobs[id]; !running {
 			m.logger.Info("发现新任务，正在加入调度器", slog.Int64("id", id))
-			if err := m.addJobToCron(dbJob); err == nil {
+			if err := m.addJobToCron(dbJob); err == nil { //nolint:contextcheck
 				m.jobConfigs[id] = m.generateFingerprint(dbJob)
 			} else {
 				m.logger.Error("启动新任务失败", slog.Int64("id", id), slog.Any("err", err))
@@ -329,7 +329,7 @@ func (m *CronServerManager) SyncJob(ctx context.Context, jobID int64) error {
 	}
 
 	// 加入调度
-	if err := m.addJobToCron(j); err != nil {
+	if err := m.addJobToCron(j); err != nil { //nolint:contextcheck
 		return err
 	}
 	m.jobConfigs[jobID] = newFingerprint

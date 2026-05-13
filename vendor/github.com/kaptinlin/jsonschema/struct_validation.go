@@ -28,8 +28,9 @@ package jsonschema
 // - `omitzero` provides strict zero-value checking
 
 import (
+	"fmt"
 	"reflect"
-	"regexp"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -73,9 +74,7 @@ func parseStructType(structType reflect.Type) *FieldCache {
 		FieldsByName: make(map[string]FieldInfo),
 	}
 
-	for i := range structType.NumField() {
-		field := structType.Field(i)
-
+	for field := range structType.Fields() {
 		// Skip unexported fields
 		if !field.IsExported() {
 			continue
@@ -87,7 +86,7 @@ func parseStructType(structType reflect.Type) *FieldCache {
 		}
 
 		cache.FieldsByName[jsonName] = FieldInfo{
-			Index:     i,
+			Index:     field.Index[0],
 			JSONName:  jsonName,
 			Omitempty: omitempty,
 			Omitzero:  omitzero,
@@ -162,13 +161,7 @@ func isEmptyValue(rv reflect.Value) bool {
 	case reflect.Interface, reflect.Pointer:
 		return rv.IsNil()
 	case reflect.Struct:
-		// Use IsZero method if available (time.Time, custom types)
-		if rv.CanInterface() {
-			if zeroChecker, ok := rv.Interface().(interface{ IsZero() bool }); ok {
-				return zeroChecker.IsZero()
-			}
-		}
-		return rv.IsZero()
+		return isZeroValue(rv)
 	case reflect.Uintptr, reflect.Complex64, reflect.Complex128, reflect.Chan, reflect.Func, reflect.UnsafePointer:
 		return false
 	default:
@@ -184,13 +177,7 @@ func isMissingValue(rv reflect.Value) bool {
 	case reflect.Interface, reflect.Pointer:
 		return rv.IsNil()
 	case reflect.Struct:
-		// Use IsZero method if available (time.Time, custom types)
-		if rv.CanInterface() {
-			if zeroChecker, ok := rv.Interface().(interface{ IsZero() bool }); ok {
-				return zeroChecker.IsZero()
-			}
-		}
-		return rv.IsZero()
+		return isZeroValue(rv)
 	case reflect.String:
 		// For required fields, empty string is considered missing
 		return rv.String() == ""
@@ -338,7 +325,7 @@ func evaluateObjectStruct(schema *Schema, structValue reflect.Value, evaluatedPr
 // evaluateObjectReflectMap handles validation for reflect map types
 func evaluateObjectReflectMap(schema *Schema, mapValue reflect.Value, evaluatedProps map[string]bool, evaluatedItems map[int]bool, dynamicScope *DynamicScope) ([]*EvaluationResult, []*EvaluationError) {
 	// Convert reflect map to map[string]any and use existing logic
-	object := make(map[string]any)
+	object := make(map[string]any, mapValue.Len())
 
 	for _, key := range mapValue.MapKeys() {
 		if key.Kind() == reflect.String {
@@ -364,7 +351,7 @@ func evaluatePropertiesStruct(schema *Schema, structValue reflect.Value, fieldCa
 		fieldInfo, exists := fieldCache.FieldsByName[propName]
 		if !exists {
 			// Field doesn't exist in struct, only validate as nil if required and no default
-			if isRequired(schema, propName) && !defaultIsSpecified(propSchema) {
+			if slices.Contains(schema.Required, propName) && (propSchema == nil || propSchema.Default == nil) {
 				result, _, _ := propSchema.evaluate(nil, dynamicScope)
 				appendValidationResult(&results, &invalidProperties, propName, result)
 			}
@@ -447,6 +434,7 @@ func evaluatePropertyCountStruct(schema *Schema, structValue reflect.Value, fiel
 // evaluatePatternPropertiesStruct validates struct properties against pattern properties
 func evaluatePatternPropertiesStruct(schema *Schema, structValue reflect.Value, fieldCache *FieldCache, evaluatedProps map[string]bool, dynamicScope *DynamicScope) ([]*EvaluationResult, *EvaluationError) {
 	var results []*EvaluationResult
+	var invalidProperties []string
 
 	for jsonName, fieldInfo := range fieldCache.FieldsByName {
 		if evaluatedProps[jsonName] {
@@ -459,26 +447,44 @@ func evaluatePatternPropertiesStruct(schema *Schema, structValue reflect.Value, 
 		}
 
 		for pattern, patternSchema := range *schema.PatternProperties {
-			// Use pre-compiled regex from schema; fall back to compile on demand.
 			re, ok := schema.compiledPatterns[pattern]
 			if !ok {
-				var err error
-				if re, err = regexp.Compile(pattern); err != nil {
-					continue // skip invalid pattern
-				}
+				continue
 			}
 			if re.MatchString(jsonName) {
 				evaluatedProps[jsonName] = true
-				value := extractValue(fieldValue)
-
-				// Reuse existing validation logic directly
-				result, _, _ := patternSchema.evaluate(value, dynamicScope)
+				result, _, _ := patternSchema.evaluate(extractValue(fieldValue), dynamicScope)
 				if result != nil {
+					result.SetEvaluationPath(fmt.Sprintf("/patternProperties/%s", jsonName)).
+						SetSchemaLocation(schema.SchemaLocation(fmt.Sprintf("/patternProperties/%s", jsonName))).
+						SetInstanceLocation(fmt.Sprintf("/%s", jsonName))
 					results = append(results, result)
+					if !result.IsValid() && !slices.Contains(invalidProperties, jsonName) {
+						invalidProperties = append(invalidProperties, jsonName)
+					}
 				}
 				break
 			}
 		}
+	}
+
+	if len(invalidProperties) == 1 {
+		return results, NewEvaluationError(
+			"properties", "pattern_property_mismatch",
+			"Property {property} does not match the pattern schema",
+			map[string]any{"property": fmt.Sprintf("'%s'", invalidProperties[0])},
+		)
+	}
+	if len(invalidProperties) > 1 {
+		quotedProperties := make([]string, len(invalidProperties))
+		for i, prop := range invalidProperties {
+			quotedProperties[i] = fmt.Sprintf("'%s'", prop)
+		}
+		return results, NewEvaluationError(
+			"properties", "pattern_properties_mismatch",
+			"Properties {properties} do not match their pattern schemas",
+			map[string]any{"properties": strings.Join(quotedProperties, ", ")},
+		)
 	}
 
 	return results, nil
@@ -505,6 +511,9 @@ func evaluateAdditionalPropertiesStruct(schema *Schema, structValue reflect.Valu
 			value := extractValue(fieldValue)
 			result, _, _ := schema.AdditionalProperties.evaluate(value, dynamicScope)
 			if result != nil {
+				result.SetEvaluationPath(fmt.Sprintf("/additionalProperties/%s", jsonName)).
+					SetSchemaLocation(schema.SchemaLocation(fmt.Sprintf("/additionalProperties/%s", jsonName))).
+					SetInstanceLocation(fmt.Sprintf("/%s", jsonName))
 				results = append(results, result)
 				if !result.IsValid() {
 					invalidProperties = append(invalidProperties, jsonName)
@@ -547,6 +556,9 @@ func evaluatePropertyNamesStruct(schema *Schema, structValue reflect.Value, fiel
 		// Validate the property name itself
 		result, _, _ := schema.PropertyNames.evaluate(jsonName, dynamicScope)
 		if result != nil {
+			result.SetEvaluationPath(fmt.Sprintf("/propertyNames/%s", jsonName)).
+				SetSchemaLocation(schema.SchemaLocation(fmt.Sprintf("/propertyNames/%s", jsonName))).
+				SetInstanceLocation(fmt.Sprintf("/%s", jsonName))
 			results = append(results, result)
 			if !result.IsValid() {
 				invalidProperties = append(invalidProperties, jsonName)

@@ -10,7 +10,7 @@ ENV GO111MODULE=on
 ENV GOPROXY=https://mirrors.cloud.tencent.com/go/,direct
 
 # 3. 安装 Node.js 及工具
-RUN apt-get update && apt-get install -y curl gnupg && \
+RUN apt-get update && apt-get install -y curl gnupg yamllint && \
     # 获取 Node.js 最新版
     export NODEJS_ORG_MIRROR=https://mirrors.cloud.tencent.com/nodejs-release/ && \
     curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && \

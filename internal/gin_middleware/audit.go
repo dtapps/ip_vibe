@@ -9,11 +9,6 @@ import (
 
 // AuditContextMiddleware 审计上下文 中间件
 func AuditContextMiddleware(source operationlog.Source) gin.HandlerFunc {
-
-	if source == operationlog.SourceUnknown {
-		source = operationlog.SourceGin
-	}
-
 	// 返回包装后的中间件，添加时间统计
 	return func(c *gin.Context) {
 

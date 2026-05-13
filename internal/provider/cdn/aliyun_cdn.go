@@ -29,7 +29,7 @@ type AliyunCDNConfig struct {
 // DefaultValidate 验证配置
 func (cfg *AliyunCDNConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
-		return fmt.Errorf("Endpoint 不能为空")
+		return fmt.Errorf("endpoint 不能为空")
 	}
 	if cfg.AccessKeyID == "" {
 		return fmt.Errorf("AccessKeyID 不能为空")

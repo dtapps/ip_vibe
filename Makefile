@@ -60,7 +60,7 @@ tidy:
 vendor:
 	go mod vendor
 
-mod: 
+deps: 
 	go version
 	go get -u ./...
 	go mod tidy
@@ -228,6 +228,13 @@ ENV_BACKEND_ENDPOINT=localhost:9999
 ENV_BASIC_AUTH_USERNAME=admin
 ENV_BASIC_AUTH_PASSWORD=123456
 
+# ENV_BACKEND_ENDPOINT=192.168.101.4:9998
+# ENV_BACKEND_ENDPOINT=100.113.15.21:9998
+# ENV_BACKEND_ENDPOINT=asw-ddns.dtapp.net
+
+# ENV_BASIC_AUTH_USERNAME=asw
+# ENV_BASIC_AUTH_PASSWORD=235235235
+
 # dev_cli:
 # 	export DEBUG=$(ENV_DEBUG) && \
 # 	go run cmd/$(BINARY_NAME_CLI)/main.go
@@ -297,8 +304,8 @@ LDFLAGS = -s -w \
 	-X '$(PKG_PATH).GitCommit=$(COMMIT)' \
 	-X '$(PKG_PATH).BuildTime=$(BUILDTIME)'
 
-# 已应用的优化：
-CGO_ENABLED=0 - 禁用CGO，实现完全静态链接
+# 禁用CGO，实现完全静态链接
+CGO_ENABLED=0
 
 # 构建所有平台
 build-all: clean \
@@ -376,6 +383,12 @@ build-darwin-arm64:
 	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64 .
 
 check: 
+	@echo "[Check] 校验 YAML 格式..."
+	yamllint -c ./.yamllint . 
+	@echo "[Check] 自动语法转换与格式化..."
+	find . -type f -name "*.go" ! -path "./vendor/*" ! -path "./internal/ent/*" ! -path "./internal/ent_log/*" ! -path "./internal/ent_stat/*" ! -path "./internal/grpc_generated/*" -exec dirname {} \; | sort -u | xargs -I {} go fix {}
+	find . -type f -name "*.go" ! -path "./vendor/*" ! -path "./internal/ent/*" ! -path "./internal/ent_log/*" ! -path "./internal/ent_stat/*" ! -path "./internal/grpc_generated/*" -exec gofmt -w {} +
+	@echo "[Check] 深度扫描 (Tags: $(LINT_TAGS))..."
 	golangci-lint fmt
 	golangci-lint run --build-tags goolm,stdjson
 	golangci-lint run --fix --build-tags goolm,stdjson

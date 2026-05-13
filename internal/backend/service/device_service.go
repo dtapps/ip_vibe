@@ -274,11 +274,11 @@ func (s *DeviceServiceImpl) BatchDeleteDevice(ctx context.Context, ids []int64) 
 		Where(device.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询设备失败: %w", err)
 	}
 	if len(allDevice) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询设备失败: 数量 %d 与请求数量 %d 不匹配", len(allDevice), len(ids))
 	}
 
@@ -287,7 +287,7 @@ func (s *DeviceServiceImpl) BatchDeleteDevice(ctx context.Context, ids []int64) 
 		Where(device.IDIn(ids...)).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("删除设备失败: %w", err)
 	}
 
@@ -295,7 +295,7 @@ func (s *DeviceServiceImpl) BatchDeleteDevice(ctx context.Context, ids []int64) 
 	for _, item := range allDevice {
 		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeDevice, item.ID)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)
 		}
 	}
@@ -406,7 +406,7 @@ func (s *DeviceServiceImpl) GetDevicePortForwardStats(ctx context.Context, id in
 	portIDs := make([]int64, 0, len(firstDevice.Edges.PortForwards))
 	if portForwards, err := firstDevice.Edges.PortForwardsOrErr(); err == nil {
 		for _, item := range portForwards {
-			portIDs = append(portIDs, int64(item.ID))
+			portIDs = append(portIDs, item.ID)
 		}
 	}
 

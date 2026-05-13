@@ -26,7 +26,7 @@ func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context, log
 			atomic.AddInt64(&stats.TotalConn, 1)
 
 			go func(c net.Conn) {
-				defer c.Close()
+				defer func() { _ = c.Close() }()
 				defer atomic.AddInt64(&stats.ActiveConn, -1)
 
 				rc, err := net.Dial(proto, raddr)
@@ -40,7 +40,7 @@ func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context, log
 					)
 					return
 				}
-				defer rc.Close()
+				defer func() { _ = rc.Close() }()
 
 				go proxyTCP(c, rc, &stats.BytesIn, logger, ruleID, proto)
 				proxyTCP(rc, c, &stats.BytesOut, logger, ruleID, proto)
@@ -50,7 +50,7 @@ func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context, log
 
 	go func() {
 		<-ctx.Done()
-		ln.Close()
+		_ = ln.Close()
 	}()
 
 	return ln, nil
@@ -109,7 +109,7 @@ func handleUDPWithLog(conn *net.UDPConn, raddr *net.UDPAddr, stats *Stats, logge
 	for {
 		select {
 		case <-ctx.Done():
-			conn.Close()
+			_ = conn.Close()
 			return
 		default:
 		}

@@ -330,18 +330,18 @@ func (s *TUNRecordServiceImpl) BatchDeleteTUNRecord(ctx context.Context, ids []i
 		Where(tunrecord.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询TUN记录失败: %w", err)
 	}
 	if len(allTUNRecord) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询TUN记录失败: 数量 %d 与请求数量 %d 不匹配", len(allTUNRecord), len(ids))
 	}
 
 	// 检查是否存在启用的TUN记录
 	for _, item := range allTUNRecord {
 		if item.IsActive {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除TUN记录失败: 存在启用的TUN记录")
 		}
 	}
@@ -351,7 +351,7 @@ func (s *TUNRecordServiceImpl) BatchDeleteTUNRecord(ctx context.Context, ids []i
 		Where(tunrecord.IDIn(ids...)).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("删除TUN记录失败: %w", err)
 	}
 
@@ -359,7 +359,7 @@ func (s *TUNRecordServiceImpl) BatchDeleteTUNRecord(ctx context.Context, ids []i
 	for _, item := range allTUNRecord {
 		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeTunRecord, item.ID)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)
 		}
 	}

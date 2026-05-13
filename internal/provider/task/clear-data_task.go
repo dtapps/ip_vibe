@@ -263,7 +263,7 @@ func (p *ClearDataTaskProvider) Process(ctx context.Context, args json.RawMessag
 // LoadTask 加载 数据清理 周期任务
 func (p *ClearDataTaskProvider) LoadTask(ctx context.Context, db *ent.Client, table string) error {
 
-	var day = 7
+	var day int
 	switch table {
 	case ent_log.TypeHttpLog:
 		day = 90

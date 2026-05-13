@@ -294,14 +294,14 @@ func (s *DNSRecordServiceImpl) BatchUpdateDnsRecordActive(ctx context.Context, i
 		Where(dnsrecord.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		if ent.IsNotFound(err) {
 			return fmt.Errorf("查询DNS记录失败: 记录不存在或 %w", err)
 		}
 		return fmt.Errorf("查询DNS记录失败: %w", err)
 	}
 	if len(allDnsRecord) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询DNS记录失败: 数量 %d 与请求数量 %d 不匹配", len(allDnsRecord), len(ids))
 	}
 
@@ -311,7 +311,7 @@ func (s *DNSRecordServiceImpl) BatchUpdateDnsRecordActive(ctx context.Context, i
 		SetIsActive(isActive).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("更新DNS记录状态失败: %w", err)
 	}
 
@@ -319,7 +319,7 @@ func (s *DNSRecordServiceImpl) BatchUpdateDnsRecordActive(ctx context.Context, i
 	for _, record := range allDnsRecord {
 		err = s.dnsSyncHandler.LoadTask(ctx, tx.Client(), record, isActive)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("加载DNS同步周期任务失败: %w", err)
 		}
 	}
@@ -376,18 +376,18 @@ func (s *DNSRecordServiceImpl) BatchDeleteDnsRecord(ctx context.Context, ids []i
 		Where(dnsrecord.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询DNS记录失败: %w", err)
 	}
 	if len(allDnsRecord) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询DNS记录失败: 数量 %d 与请求数量 %d 不匹配", len(allDnsRecord), len(ids))
 	}
 
 	// 检查是否存在启用的DNS记录
 	for _, item := range allDnsRecord {
 		if item.IsActive {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除DNS记录失败: 存在启用的DNS记录")
 		}
 	}
@@ -397,7 +397,7 @@ func (s *DNSRecordServiceImpl) BatchDeleteDnsRecord(ctx context.Context, ids []i
 		Where(dnsrecord.IDIn(ids...)).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("删除DNS记录失败: %w", err)
 	}
 
@@ -405,7 +405,7 @@ func (s *DNSRecordServiceImpl) BatchDeleteDnsRecord(ctx context.Context, ids []i
 	for _, item := range allDnsRecord {
 		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeDNSRecord, item.ID)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)
 		}
 	}

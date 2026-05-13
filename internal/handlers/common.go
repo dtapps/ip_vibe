@@ -130,7 +130,9 @@ func getBaseData[T any](c *gin.Context) types.BasePageData[T] {
 func getActiveMenu(c *gin.Context) string {
 	// 先看是否手动设置了
 	if menu, exists := c.Get("activeMenu"); exists {
-		return menu.(string)
+		if menuStr, ok := menu.(string); ok {
+			return menuStr
+		}
 	}
 	// 根据路径自动判断
 	return getMenuByPath(c.Request.URL.Path)

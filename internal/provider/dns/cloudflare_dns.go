@@ -159,7 +159,7 @@ func (p *CloudfareDNSProvider) Check(ctx context.Context, domain_name string, su
 		return nil, fmt.Errorf("接口 DNS.Records.List 失败 %w", err)
 	}
 	// 响应参数
-	if responseDnsQuery.Result == nil || len(responseDnsQuery.Result) == 0 {
+	if len(responseDnsQuery.Result) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}

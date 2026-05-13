@@ -177,7 +177,7 @@ func (s *SSLRecordServiceImpl) ImportSSLRecord(ctx context.Context, request *typ
 	}
 
 	// 证书状态
-	status := sslrecord.StatusUnknown
+	var status sslrecord.Status
 	if parsedCert.NotAfter.After(time.Now()) {
 		status = sslrecord.StatusValid
 	} else {
@@ -336,20 +336,20 @@ func (s *SSLRecordServiceImpl) BatchUpdateSSLRecordActive(ctx context.Context, i
 		Where(sslrecord.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		if ent.IsNotFound(err) {
 			return fmt.Errorf("查询SSL记录失败: 记录不存在或 %w", err)
 		}
 		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 	if len(allSSLRecord) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询SSL记录失败: 数量 %d 与请求数量 %d 不匹配", len(allSSLRecord), len(ids))
 	}
 
 	for _, item := range allSSLRecord {
 		if item.Provider == sslrecord.ProviderUnknown {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("未配置提供方, 无法更新启用状态")
 		}
 	}
@@ -360,7 +360,7 @@ func (s *SSLRecordServiceImpl) BatchUpdateSSLRecordActive(ctx context.Context, i
 		SetIsActive(isActive).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("更新SSL记录状态失败: %w", err)
 	}
 
@@ -368,7 +368,7 @@ func (s *SSLRecordServiceImpl) BatchUpdateSSLRecordActive(ctx context.Context, i
 	for _, record := range allSSLRecord {
 		err = s.sslApplyHandler.LoadTask(ctx, tx.Client(), record, isActive)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("加载SSL申请周期任务状态失败: %w", err)
 		}
 	}
@@ -426,18 +426,18 @@ func (s *SSLRecordServiceImpl) BatchDeleteSSLRecord(ctx context.Context, ids []i
 		Where(sslrecord.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询SSL记录失败: %w", err)
 	}
 	if len(allSSLRecord) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询SSL记录失败: 数量 %d 与请求数量 %d 不匹配", len(allSSLRecord), len(ids))
 	}
 
 	// 检查是否存在启用的SSL记录
 	for _, item := range allSSLRecord {
 		if item.IsActive {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除SSL记录失败: 存在启用的SSL记录")
 		}
 	}
@@ -447,7 +447,7 @@ func (s *SSLRecordServiceImpl) BatchDeleteSSLRecord(ctx context.Context, ids []i
 		Where(sslrecord.IDIn(ids...)).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("删除SSL记录失败: %w", err)
 	}
 
@@ -455,7 +455,7 @@ func (s *SSLRecordServiceImpl) BatchDeleteSSLRecord(ctx context.Context, ids []i
 	for _, sslRecord := range allSSLRecord {
 		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeSslRecord, sslRecord.ID)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)
 		}
 	}

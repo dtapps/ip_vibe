@@ -98,7 +98,7 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 				}
 
 				// 证书状态
-				status := sslrecord.StatusUnknown
+				var status sslrecord.Status
 				if parsedCert.NotAfter.After(time.Now()) {
 					status = sslrecord.StatusValid
 				} else {
@@ -153,7 +153,7 @@ func (p *SSLRefreshTaskProvider) Process(ctx context.Context, args json.RawMessa
 				}
 
 				// 证书状态
-				status := sslimport.StatusUnknown
+				var status sslimport.Status
 				if parsedCert.NotAfter.After(time.Now()) {
 					status = sslimport.StatusValid
 				} else {

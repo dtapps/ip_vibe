@@ -297,14 +297,14 @@ func (s *PortForwardServiceImpl) BatchDeletePortForward(ctx context.Context, ids
 		return fmt.Errorf("查询端口转发失败: %w", err)
 	}
 	if len(allPortForward) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询端口转发失败: 数量 %d 与请求数量 %d 不匹配", len(allPortForward), len(ids))
 	}
 
 	// 检查是否存在启用的端口转发
 	for _, item := range allPortForward {
 		if item.IsActive {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除端口转发失败: 存在启用的端口转发")
 		}
 	}

@@ -202,7 +202,7 @@ func (s *PlatformConfigServiceImpl) BatchDeleteConfig(ctx context.Context, ids [
 		return fmt.Errorf("查询配置失败: %w", err)
 	}
 	if len(allConfig) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询配置失败: 数量 %d 与请求数量 %d 不匹配", len(allConfig), len(ids))
 	}
 

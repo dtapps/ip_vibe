@@ -133,13 +133,15 @@ func processFieldWithPath(fieldInfo fieldInfo, schema map[string]any) {
 	}
 
 	// 添加到 properties
-	props := schema["properties"].(map[string]any)
-	props[jsonFieldName] = property
+	if props, ok := schema["properties"].(map[string]any); ok {
+		props[jsonFieldName] = property
+	}
 
 	// 判断是否为必需字段
 	if isRequiredField(field.Tag.Get("json"), field.Tag.Get("binding"), field.Type) {
-		required := schema["required"].([]string)
-		schema["required"] = append(required, jsonFieldName)
+		if required, ok := schema["required"].([]string); ok {
+			schema["required"] = append(required, jsonFieldName)
+		}
 	}
 }
 

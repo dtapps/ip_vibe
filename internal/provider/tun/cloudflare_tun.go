@@ -177,7 +177,7 @@ func (p *CloudfareTUNProvider) Check(ctx context.Context, sub_domain string, dom
 		return nil, fmt.Errorf("接口 ZeroTrust.Tunnels.Cloudflared.Configurations.Get 失败 %w", err)
 	}
 	// 响应参数
-	if responseTunQuery.Config.Ingress == nil || len(responseTunQuery.Config.Ingress) == 0 {
+	if len(responseTunQuery.Config.Ingress) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}

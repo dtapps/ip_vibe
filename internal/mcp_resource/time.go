@@ -37,7 +37,7 @@ func currentTime(ctx context.Context, req *mcp.ReadResourceRequest) (*mcp.ReadRe
 		Date:      now.Format("2006-01-02"),
 		Time:      now.Format("15:04:05"),
 		Timezone:  global.DefaultTimezone,
-		IsToday:   now.Format("2006-01-02") == now.Format("2006-01-02"),
+		IsToday:   true,
 	}
 
 	return successResponse(req.Params.URI, response)

@@ -128,7 +128,7 @@ func ParseCertificateFull(certPEM []byte) (*types.UtilsParsedCertificateFull, er
 	}
 
 	// 解析证书数据
-	certBlock, _ := pem.Decode([]byte(certPEM))
+	certBlock, _ := pem.Decode(certPEM)
 	if certBlock == nil || certBlock.Type != "CERTIFICATE" {
 		return nil, fmt.Errorf("无效的证书格式")
 	}

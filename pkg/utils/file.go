@@ -16,7 +16,7 @@ func ReadLastLines(filePath string, maxLines int) ([]string, error) {
 		)
 		return nil, err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	var lines []string
 	scanner := bufio.NewScanner(file)

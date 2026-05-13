@@ -91,7 +91,7 @@ func (p *SSLApplyTaskProvider) Process(ctx context.Context, args json.RawMessage
 	// 如果存在过期时间，判断是否需要续期
 	if !record.NotAfter.IsZero() {
 		// 计算距离过期时间还有多少天
-		daysUntilExpire := record.NotAfter.Sub(time.Now()).Hours() / 24
+		daysUntilExpire := time.Until(record.NotAfter).Hours() / 24
 		// 如果大于过期时间就跳过
 		if daysUntilExpire > float64(record.RenewalDays) {
 			return fmt.Sprintf("距离过期时间还有%.0f天，不需要续期", daysUntilExpire), nil

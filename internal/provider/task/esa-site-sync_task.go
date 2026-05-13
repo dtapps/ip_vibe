@@ -138,7 +138,7 @@ func (p *ESASiteSyncTaskProvider) Process(ctx context.Context, args json.RawMess
 		return "", fmt.Errorf("参数错误")
 	}
 
-	return fmt.Sprintf("同步成功"), nil
+	return "同步成功", nil
 }
 
 // LoadTask 加载 ESA站点同步 周期任务

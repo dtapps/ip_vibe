@@ -305,10 +305,7 @@ func (m *GinServerManager) getTemplateFuncMap() template.FuncMap {
 		},
 		// 设备离线开启状态
 		"deviceOfflineEnabled": func() bool {
-			if db_cache.GvaSetting.DeviceOfflineInvalidTime <= 0 {
-				return false
-			}
-			return true
+			return db_cache.GvaSetting.DeviceOfflineInvalidTime > 0
 		},
 		// 格式化时间为字符串，若为空则返回 "—"
 		"formatTimeOrNil": func(t time.Time) string {
@@ -637,7 +634,7 @@ func (m *GinServerManager) loadTemplates(logger *slog.Logger, templatePath strin
 	}
 
 	// 检查文件是否存在
-	var fileExists func(string) bool = func(path string) bool {
+	fileExists := func(path string) bool {
 		_, err := os.Stat(path)
 		// if err != nil {
 		// 	logger.Error("开发环境",
@@ -739,7 +736,7 @@ func (m *GinServerManager) loadTemplatesFS(logger *slog.Logger, efs embed.FS, fu
 	}
 
 	// 检查文件是否存在
-	var fileExists func(string) bool = func(path string) bool {
+	fileExists := func(path string) bool {
 		_, err := efs.Open(path)
 		// if err != nil {
 		// 	logger.Error("生产环境",

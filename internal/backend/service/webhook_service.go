@@ -272,14 +272,14 @@ func (s *WebhookServiceImpl) BatchDeleteWebhook(ctx context.Context, ids []int64
 		return fmt.Errorf("查询通知失败: %w", err)
 	}
 	if len(allWebhook) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询通知失败: 数量 %d 与请求数量 %d 不匹配", len(allWebhook), len(ids))
 	}
 
 	// 检查是否存在启用的通知
 	for _, item := range allWebhook {
 		if item.IsActive {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除通知失败: 存在启用的通知")
 		}
 	}

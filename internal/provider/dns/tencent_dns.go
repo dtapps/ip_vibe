@@ -26,7 +26,7 @@ type TencentDNSConfig struct {
 // DefaultValidate 验证配置
 func (cfg *TencentDNSConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
-		return fmt.Errorf("Endpoint 不能为空")
+		return fmt.Errorf("endpoint 不能为空")
 	}
 	if cfg.SecretID == "" {
 		return fmt.Errorf("SecretID 不能为空")
@@ -160,7 +160,7 @@ func (p *TencentDNSProvider) Check(ctx context.Context, domain_name string, sub_
 		return nil, fmt.Errorf("接口 DescribeRecordListWithContext 失败 %w", err)
 	}
 	// 响应参数
-	if responseDnsQuery.Response.RecordList == nil || len(responseDnsQuery.Response.RecordList) == 0 {
+	if len(responseDnsQuery.Response.RecordList) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}

@@ -13,7 +13,7 @@ import (
 	"vibe_ip/internal/grpc_server"
 
 	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
+	"golang.org/x/net/http2/h2c" //nolint:staticcheck // SA1019: h2c is deprecated but still needed for our use case
 )
 
 type MixedServerManager struct {
@@ -54,7 +54,7 @@ func GetMixedServerInstance() *MixedServerManager {
 func (m *MixedServerManager) Run(ctx context.Context) {
 	// 1. 获取两个实例
 	ginEngine := m.ginMgr.GetServer()
-	grpcServer := m.grpcMgr.GetServer()
+	grpcServer := m.grpcMgr.GetServer() //nolint:contextcheck
 
 	// 2. 构造分流处理器
 	mixedHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -70,6 +70,7 @@ func (m *MixedServerManager) Run(ctx context.Context) {
 	// h2c.NewHandler 会自动根据请求升降级协议
 	m.server = &http.Server{
 		Addr: m.addr,
+		//nolint:staticcheck // SA1019: h2c.NewHandler is deprecated but still needed
 		Handler: h2c.NewHandler(mixedHandler, &http2.Server{
 			// 保活核心：30秒无数据则发PING探测
 			ReadIdleTimeout: 30 * time.Second,

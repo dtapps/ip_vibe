@@ -24,7 +24,7 @@ type BaiduDNSConfig struct {
 // DefaultValidate 验证配置
 func (cfg *BaiduDNSConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
-		return fmt.Errorf("Endpoint 不能为空")
+		return fmt.Errorf("endpoint 不能为空")
 	}
 	if cfg.AccessKeyID == "" {
 		return fmt.Errorf("AccessKeyID 不能为空")
@@ -148,7 +148,7 @@ func (p *BaiduDNSProvider) Check(ctx context.Context, domain_name string, sub_do
 		return nil, fmt.Errorf("接口 ListRecord 失败 %w", err)
 	}
 	// 响应参数
-	if responseDnsQuery.Records == nil || len(responseDnsQuery.Records) == 0 {
+	if len(responseDnsQuery.Records) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}

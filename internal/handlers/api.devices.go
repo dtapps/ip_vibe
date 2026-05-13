@@ -385,7 +385,7 @@ func GetDeviceStatus(c *gin.Context) {
 	deviceService := grpcMgr.GetDeviceService()
 
 	// 请求全部设备状态
-	deviceService.RequestFullReportToDevice(device.Code)
+	_ = deviceService.RequestFullReportToDevice(device.Code)
 
 	// 查询全部设备状态
 	clientStates := deviceService.GetClients()

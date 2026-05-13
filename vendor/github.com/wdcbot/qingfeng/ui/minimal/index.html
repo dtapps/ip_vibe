@@ -55,6 +55,8 @@
         .method-put { background: var(--warning); }
         .method-delete { background: var(--danger); }
         .method-patch { background: #8b5cf6; }
+        .method-options { background: #06b6d4; }
+        .method-head { background: #ec4899; }
         .api-item:hover { background: var(--bg-tertiary); }
         .api-item.active { background: var(--bg-tertiary); border-left: 2px solid var(--primary); }
         /* Fix hover text visibility for tag group headers */
@@ -227,7 +229,7 @@
                             <span id="detail-deprecated" class="hidden text-red-500 text-xs">废弃</span>
                         </div>
                         <h3 id="detail-summary" class="font-medium">接口名称</h3>
-                        <p id="detail-description" class="text-sm mt-1" style="color: var(--text-secondary)">描述</p>
+                        <pre id="detail-description" class="text-sm mt-1" style="color: var(--text-secondary)">描述</pre>
                     </div>
 
                     <div class="card rounded-lg p-4">

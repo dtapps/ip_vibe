@@ -282,7 +282,7 @@ func (s *CloudflareTunnelServiceImpl) DeleteCloudflareTunnelIngress(ctx context.
 		WithConfig().
 		First(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询Cloudflare隧道及关联配置失败: %w", err)
 	}
 
@@ -291,21 +291,21 @@ func (s *CloudflareTunnelServiceImpl) DeleteCloudflareTunnelIngress(ctx context.
 		Where(cloudflaretunnelingress.IDEQ(ingress_id)).
 		First(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询Cloudflare隧道入站规则失败: %w", err)
 	}
 
 	// 获取Cloudflare Tunnel提供程序
 	tunProvider, err := s.cloudflareTunnelSync.GetApiClient(ctx, firstPlatformCofing.Edges.Config.ConfigJSON)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("获取Cloudflare Tunnel提供程序失败: %w", err)
 	}
 
 	// 获取远程隧道入站规则列表
 	remoteIngresses, err := tunProvider.IngresssRaw(ctx, firstPlatformCofing.TunnelID)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("获取远程隧道入站规则列表失败: %w", err)
 	}
 
@@ -333,7 +333,7 @@ func (s *CloudflareTunnelServiceImpl) DeleteCloudflareTunnelIngress(ctx context.
 
 	// 没有找到删除的入站规则
 	if !foundInRemote {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("删除失败，请先同步入站规则再确认是否存在")
 	}
 
@@ -341,14 +341,14 @@ func (s *CloudflareTunnelServiceImpl) DeleteCloudflareTunnelIngress(ctx context.
 	err = tx.CloudflareTunnelIngress.DeleteOne(firstCloudflareTunnelIngress).
 		Exec(ctx)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("删除Cloudflare隧道入站规则失败: %w", err)
 	}
 
 	// 调用 API 更新 Cloudflare 远程配置
 	err = tunProvider.UpdateIngress(ctx, firstPlatformCofing.TunnelID, updatedIngresses)
 	if err != nil {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("同步到 Cloudflare 远程失败: %w", err)
 	}
 

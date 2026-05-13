@@ -25,7 +25,7 @@ type QiniuCDNConfig struct {
 // DefaultValidate 验证配置
 func (cfg *QiniuCDNConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
-		return fmt.Errorf("Endpoint 不能为空")
+		return fmt.Errorf("endpoint 不能为空")
 	}
 	if cfg.AccessKey == "" {
 		return fmt.Errorf("AccessKey 不能为空")
@@ -169,7 +169,7 @@ func (p *QiniuCDNProvider) Check(ctx context.Context, domain_name string, sub_do
 		return nil, fmt.Errorf("接口 get domain 失败 %w", err)
 	}
 	// 响应参数
-	if responseCdnList.Domains == nil || len(responseCdnList.Domains) == 0 {
+	if len(responseCdnList.Domains) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}

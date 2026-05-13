@@ -26,7 +26,7 @@ type VolcengineDNSConfig struct {
 // DefaultValidate 验证配置
 func (cfg *VolcengineDNSConfig) DefaultValidate() error {
 	if cfg.Region == "" {
-		return fmt.Errorf("Region 不能为空")
+		return fmt.Errorf("region 不能为空")
 	}
 	if cfg.AccessKey == "" {
 		return fmt.Errorf("AccessKey 不能为空")
@@ -169,7 +169,7 @@ func (p *VolcengineDNSProvider) Check(ctx context.Context, domain_name string, s
 		return nil, fmt.Errorf("接口 ListRecordsWithContext 失败 %w", err)
 	}
 	// 响应参数
-	if responseDnsQuery.Records == nil || len(responseDnsQuery.Records) == 0 {
+	if len(responseDnsQuery.Records) == 0 {
 		p.InternalData.IsContinue = true
 		return p.InternalData, nil
 	}

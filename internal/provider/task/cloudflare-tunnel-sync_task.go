@@ -111,7 +111,7 @@ func (p *CloudflareTunnelSyncTaskProvider) Process(ctx context.Context, args jso
 		return "", fmt.Errorf("参数错误")
 	}
 
-	return fmt.Sprintf("同步成功"), nil
+	return "同步成功", nil
 }
 
 // LoadTask 加载 Cloudflare隧道同步 周期任务

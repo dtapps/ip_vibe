@@ -1,0 +1,35 @@
+# 继承 yamllint 内置的 relaxed（宽松）预设
+# 该预设默认关闭了大部分严格的排版规则，仅保留语法与核心结构校验
+extends: relaxed
+
+# 忽略指定目录/文件，跳过检查
+# 作用：提升扫描速度，避免第三方依赖或自动生成文件产生误报
+ignore: |
+  .git/
+  .idea/
+  .vscode/
+  vendor/
+  node_modules/
+  docs_2/
+  docs_3/
+
+rules:
+  # 禁用行尾空格检查（防止 IDE 自动保存/粘贴时引入不可见空格导致 CI 失败）
+  trailing-spaces: disable
+
+  # 禁用空行数量检查（允许配置或数据文件中存在连续空行，保持可读性）
+  empty-lines: disable
+
+  # 禁用文档起始符检查（不强制要求 YAML 文件首行必须为 `---`）
+  document-start: disable
+
+  # 禁用文件末尾换行检查（允许最后一行末尾无换行符，兼容部分编辑器）
+  new-line-at-end-of-file: disable
+
+  # 缩进规则配置（保留此项，防止致命的缩进错乱导致解析失败）
+  indentation:
+    spaces: 2               # 统一使用 2 个空格作为缩进单位
+    indent-sequences: true  # 列表项（以 `-` 开头）必须缩进并与父级键对齐
+
+  # 禁用行长度检查（解决你看到的 line too long 警告）
+  line-length: disable

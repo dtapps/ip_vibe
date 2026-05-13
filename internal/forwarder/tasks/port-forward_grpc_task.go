@@ -157,10 +157,7 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 	for _, item := range list {
 
 		// 构建监听地址
-		listenAddr := ":" + string(rune(item.LocalPort))
-
-		// 更准确的构建方式：
-		listenAddr = net.JoinHostPort("", fmt.Sprintf("%d", item.LocalPort))
+		listenAddr := net.JoinHostPort("", fmt.Sprintf("%d", item.LocalPort))
 
 		// 构建目标地址
 		targetAddr := net.JoinHostPort(item.RemoteHost, fmt.Sprintf("%d", item.RemotePort))

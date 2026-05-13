@@ -311,7 +311,7 @@ func (s *IPGroupServiceImpl) BatchDeleteIPGroup(ctx context.Context, ids []int64
 		return fmt.Errorf("查询IP组失败: %w", err)
 	}
 	if len(allIpGroup) != len(ids) {
-		tx.Rollback()
+		_ = tx.Rollback()
 		return fmt.Errorf("查询IP组失败: 数量 %d 与请求数量 %d 不匹配", len(allIpGroup), len(ids))
 	}
 
@@ -349,7 +349,7 @@ func (s *IPGroupServiceImpl) BatchDeleteIPGroup(ctx context.Context, ids []int64
 	for _, item := range allIpGroup {
 		err = webhook_sub_helper.NewWebhookSubscription(s.db, s.logger).DeleteTx(ctx, tx, webhooksubscription.ObjTypeIPGroup, item.ID)
 		if err != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			return fmt.Errorf("删除通知订阅失败: %w", err)
 		}
 	}

@@ -31,7 +31,7 @@ func CorazaMiddleware(logger *slog.Logger, waf coraza.WAF) gin.HandlerFunc {
 		// 手动为该请求创建事务
 		tx := waf.NewTransaction()
 		defer tx.ProcessLogging()
-		defer tx.Close()
+		defer func() { _ = tx.Close() }()
 
 		// 将 Gin 请求桥接到 Coraza（用请求数据填充 tx）
 		if err := populateTransaction(tx, c.Request); err != nil {
@@ -86,7 +86,7 @@ func CorazaMiddleware(logger *slog.Logger, waf coraza.WAF) gin.HandlerFunc {
 				})
 				return
 			}
-			c.Request.Body.Close()
+			_ = c.Request.Body.Close()
 			c.Request.Body = io.NopCloser(bytes.NewReader(body)) // 为下游处理程序恢复
 
 			interruption, _, werr := tx.WriteRequestBody(body)

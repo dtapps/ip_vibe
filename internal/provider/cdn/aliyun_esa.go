@@ -35,7 +35,7 @@ type AliyunESAConfig struct {
 // DefaultValidate 验证配置
 func (cfg *AliyunESAConfig) DefaultValidate() error {
 	if cfg.Endpoint == "" {
-		return fmt.Errorf("Endpoint 不能为空")
+		return fmt.Errorf("endpoint 不能为空")
 	}
 	if cfg.RegionType == "" {
 		return fmt.Errorf("RegionType 不能为空")
