@@ -65,7 +65,10 @@ deps:
 	go get -u ./...
 	go mod tidy
 	go mod vendor
-	go fix ./...
+
+pnpm_update:
+	cd cmd/$(BINARY_NAME_FRONTEND) && \
+	pnpm update --latest
 
 # generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
 generate: swag_v1_all swag_v2_all grpc_generate_all
@@ -112,14 +115,6 @@ swag2op_version:
 
 swag2op_init:
 	swag2op init -g cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_2_to_3
-
-pnpm_outdated:
-	cd cmd/$(BINARY_NAME_FRONTEND) && \
-	pnpm outdated
-
-pnpm_update:
-	cd cmd/$(BINARY_NAME_FRONTEND) && \
-	pnpm update --latest
 
 # 	make grpc_generate_connect
 # 	make grpc_generate_openapi
