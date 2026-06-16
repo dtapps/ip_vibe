@@ -1,6 +1,6 @@
 # JSON Pointer
 
-[![Go Version](https://img.shields.io/badge/go-1.26.2-blue.svg)](https://golang.org/)
+[![Go Module](https://img.shields.io/badge/go-module-blue.svg)](https://golang.org/)
 [![Go Reference](https://pkg.go.dev/badge/github.com/kaptinlin/jsonpointer.svg)](https://pkg.go.dev/github.com/kaptinlin/jsonpointer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -9,7 +9,7 @@ A read-only JSON Pointer (RFC 6901) library for Go that traverses maps, slices, 
 ## Features
 
 - **RFC 6901 semantics**: Parse, format, escape, unescape, and validate JSON Pointer strings with the expected token rules
-- **Go-native traversal**: Read `map[string]any`, slices, arrays, structs, and pointers without converting everything to generic JSON first
+- **Go-native traversal**: Read `map[string]any`, slices, arrays, structs, pointers, and interface-wrapped values without converting everything to generic JSON first
 - **Explicit errors**: Distinguish missing keys, missing struct fields, invalid indexes, nil pointers, and generic traversal failures
 - **Small API**: Learn `Get`, `Find`, `GetByPointer`, `FindByPointer`, and a handful of path helpers
 - **Fast common paths**: Optimize `map[string]any` and `[]any` reads while keeping reflective fallbacks for typed Go values
@@ -21,7 +21,7 @@ A read-only JSON Pointer (RFC 6901) library for Go that traverses maps, slices, 
 go get github.com/kaptinlin/jsonpointer
 ```
 
-Requires **Go 1.26.2**.
+Requires the Go version declared in `go.mod`.
 
 ## Quick Start
 
@@ -78,7 +78,7 @@ func main() {
 | `Obj` | The parent container when one exists |
 | `Key` | The final path token used to reach `Val` |
 
-Use `IsArrayReference` and `IsObjectReference` when you need to inspect the returned parent context.
+Use `IsArrayReference` and `IsObjectReference` when you need to inspect the returned parent context. Array references require a canonical non-negative index key such as `"0"` or `"1"`; `"-"`, signed, negative, and leading-zero keys are not treated as array references.
 
 ## Examples
 

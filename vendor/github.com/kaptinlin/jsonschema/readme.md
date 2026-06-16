@@ -1,20 +1,19 @@
 # jsonschema
 
-[![Go Version](https://img.shields.io/badge/go-1.26%2B-00ADD8?logo=go)](https://go.dev/)
+[![Go Module](https://img.shields.io/badge/go-module-00ADD8?logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 A high-performance JSON Schema Draft 2020-12 validator for Go with direct struct validation, default-aware unmarshaling, and a fluent constructor API
 
 ## Features
 
-- **Draft 2020-12**: Validate schemas and instances against the current JSON Schema specification used by the package.
-- **Multiple input paths**: Validate raw JSON, decoded maps, or Go structs with entry points tuned for each input type.
-- **Separated workflow**: Validate first, then unmarshal with defaults when the payload is safe to consume.
+- **Draft 2020-12**: Validate schemas and instances against the current JSON Schema specification.
+- **One main entry point**: `schema.Validate(input)` accepts raw JSON, maps, or Go structs.
+- **Defaults without surprises**: `schema.Unmarshal` applies schema defaults; validation stays a separate step.
 - **Constructor API**: Build schemas in Go with `Object`, `Prop`, `String`, `Required`, and composition helpers.
-- **Struct tags**: Generate schemas from Go types with `FromStruct` and customize generation with `StructTagOptions`.
-- **Custom formats and defaults**: Register format validators and dynamic default functions on a compiler.
-- **Reference support**: Resolve `$ref`, `$dynamicRef`, anchors, and batch-compiled schema graphs.
-- **Localized errors**: Render validation output through `go-i18n` localizers.
+- **Struct tags**: Generate schemas from Go types with `FromStruct`.
+- **Extensible**: Register custom formats, default functions, media types, decoders, and reference loaders on a compiler.
+- **Localized errors**: Pure validation has zero Intl dependencies; opt into localization by importing the `i18n` subpackage, or implement the one-method `Translator` interface yourself.
 
 ## Installation
 
@@ -22,7 +21,7 @@ A high-performance JSON Schema Draft 2020-12 validator for Go with direct struct
 go get github.com/kaptinlin/jsonschema
 ```
 
-Requires **Go 1.26+**.
+Requires the Go version declared in `go.mod`.
 
 ## Quick Start
 
@@ -69,23 +68,25 @@ func main() {
 }
 ```
 
-## Validation Workflows
+## Validation
 
-Choose the validation method that matches your input:
-
-| Input | Method | When to Use |
-|-------|--------|-------------|
-| `[]byte` | `ValidateJSON` | Raw request payloads or stored JSON documents |
-| `map[string]any` | `ValidateMap` | Already-decoded JSON objects |
-| Go struct | `ValidateStruct` | Validate Go values without a JSON round-trip |
-| mixed | `Validate` | Convenience path that auto-detects the input type |
+`schema.Validate` is the main entry point. Pass raw JSON, a decoded map, or a Go struct — it dispatches internally.
 
 ```go
-result := schema.ValidateJSON([]byte(`{"name":"Alice"}`))
-result = schema.ValidateMap(map[string]any{"name": "Alice"})
-result = schema.ValidateStruct(User{Name: "Alice"})
-result = schema.Validate(anyInput)
+result := schema.Validate([]byte(`{"name":"Alice"}`))
+result = schema.Validate(map[string]any{"name": "Alice"})
+result = schema.Validate(User{Name: "Alice"})
 ```
+
+### Fast paths
+
+When the input type is known and you want to skip the dispatch and any extra conversion, call the type-specific method directly. They share semantics with `Validate`.
+
+| Method | Use When |
+|--------|----------|
+| `ValidateJSON([]byte)` | Hot paths handling raw JSON request bodies or stored documents |
+| `ValidateMap(map[string]any)` | Already-decoded JSON objects you do not want re-encoded |
+| `ValidateStruct(any)` | Go values, when you want to avoid a JSON round-trip |
 
 ## Constructor API
 
@@ -166,28 +167,39 @@ compiler.RegisterDefaultFunc("now", jsonschema.DefaultNowFunc)
 
 ### References, Extras, and Batch Compilation
 
-- Use `RegisterLoader` to resolve external references by scheme.
 - Use `CompileBatch` to compile related schemas before resolving cross-references.
 - Use `SetPreserveExtra(true)` when tools need to keep non-standard extension keywords in `Schema.Extra`.
+- Reference loaders are pluggable per scheme via `RegisterLoader`. `http` and `https` ship pre-registered with a 10s timeout. If your schemas come from untrusted sources, replace or remove those loaders so external `$ref` resolution is gated by your own host/size/timeout policy.
 
 ### Localized Results
 
+The root package knows nothing about translation frameworks — pure validation users pay zero Intl compile, link, and binary cost. Localization lives in the optional `i18n` subpackage:
+
 ```go
-i18nBundle, err := jsonschema.I18n()
+import "github.com/kaptinlin/jsonschema/i18n"
+
+zh, err := i18n.New("zh-Hans") // one translator per locale
 if err != nil {
 	log.Fatal(err)
 }
 
-localizer := i18nBundle.NewLocalizer("zh-Hans")
-localized := result.ToLocalizeList(localizer)
+localized := result.ToLocalizedList(zh)
 fmt.Println(localized.Valid)
+
+for path, message := range result.LocalizedDetailedErrors(zh) {
+	fmt.Printf("%s: %s\n", path, message)
+}
 ```
+
+Built-in locales: `en`, `de-DE`, `es-ES`, `fr-FR`, `ja-JP`, `ko-KR`, `pt-BR`, `zh-Hans`, `zh-Hant`. Missing translations fall back to the built-in English message; localization never fails.
+
+Don't want `go-i18n`? Implement the one-method `jsonschema.Translator` interface with any backend — a database, gettext, or a hardcoded map.
 
 ## Error Handling
 
 - Compilation failures return regular Go errors, including sentinel errors such as `ErrRegexValidation`.
 - Structured error types such as `RegexPatternError`, `StructTagError`, and `UnmarshalError` work with `errors.As`.
-- Validation failures are returned in `*EvaluationResult`; use `IsValid`, `Errors`, `ToFlag`, `ToList`, or `ToLocalizeList` depending on how much detail you need.
+- Validation failures are returned in `*EvaluationResult`; use `IsValid`, `Errors`, `ToFlag`, `ToList`, or `ToLocalizedList` depending on how much detail you need.
 
 ## Documentation
 
@@ -209,7 +221,7 @@ task bench   # Run benchmarks
 task verify  # Run deps, fmt, vet, lint, test, and govulncheck
 ```
 
-For development conventions and agent-facing project rules, see [AGENTS.md](AGENTS.md).
+For development conventions and agent-facing project rules, see [CLAUDE.md](CLAUDE.md).
 
 ## Contributing
 

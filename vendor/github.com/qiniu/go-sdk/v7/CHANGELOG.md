@@ -1,4 +1,24 @@
 # Changelog
+## 7.26.13
+
+* 新增
+  * sandbox: 支持创建沙箱时挂载 Kodo bucket 资源
+* 完善
+  * examples: 优化 sandbox resources 示例，支持 Git 仓库与 Kodo bucket 资源独立验证，并提供环境变量示例
+
+## 7.26.12
+
+* 修复
+  * sandbox: 修正 GitRepositoryResource 的必填字段说明，并在 SDK 侧校验 URL、MountPath 和 AuthorizationToken 非空
+
+## 7.26.11
+
+* 新增
+  * sandbox: 添加 Git 操作 API 支持
+  * sandbox: 添加 GitHub 凭证注入与 Git 仓库资源挂载配置支持
+* 修复
+  * sandbox: 修复 Commands.Connect 因重复关闭 pidCh 导致 panic
+
 ## 7.26.10
 
 * 新增

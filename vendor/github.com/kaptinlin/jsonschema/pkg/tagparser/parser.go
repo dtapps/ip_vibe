@@ -62,21 +62,17 @@ func (p *TagParser) parseFields(structType reflect.Type, seenTypes map[string]in
 		return nil, nil
 	}
 
-	// Handle pointer to struct
 	for structType.Kind() == reflect.Pointer {
 		structType = structType.Elem()
 	}
 
-	// Ensure it's a struct
 	if structType.Kind() != reflect.Struct {
 		return nil, nil
 	}
 
 	var allFields []FieldInfo
 
-	// Iterate through all exported fields
 	for field := range structType.Fields() {
-		// Skip unexported fields
 		if !field.IsExported() {
 			continue
 		}
@@ -103,12 +99,10 @@ func (p *TagParser) parseFields(structType reflect.Type, seenTypes map[string]in
 func (p *TagParser) parseEmbeddedField(field *reflect.StructField, seenTypes map[string]int, depth int) ([]FieldInfo, error) {
 	fieldType := field.Type
 
-	// Handle pointer to struct
 	for fieldType.Kind() == reflect.Pointer {
 		fieldType = fieldType.Elem()
 	}
 
-	// Only process struct types
 	if fieldType.Kind() != reflect.Struct {
 		return nil, nil
 	}
@@ -144,7 +138,6 @@ func (p *TagParser) parseRegularField(field *reflect.StructField, depth int) *Fi
 		return nil
 	}
 
-	// Parse field information
 	fieldInfo := FieldInfo{
 		Name:           field.Name,
 		Type:           field.Type,
@@ -156,7 +149,6 @@ func (p *TagParser) parseRegularField(field *reflect.StructField, depth int) *Fi
 		Optional:       field.Type.Kind() == reflect.Pointer,
 	}
 
-	// Parse validation rules from tag
 	if jsonschemaTag != "" {
 		rules, err := p.ParseTagString(jsonschemaTag)
 		if err != nil {
@@ -321,7 +313,6 @@ func parseTagParts(tag string) []string {
 		}
 	}
 
-	// Add final part
 	if current.Len() > 0 {
 		parts = append(parts, current.String())
 	}
@@ -335,25 +326,19 @@ func parseTagRule(part string) TagRule {
 		return TagRule{}
 	}
 
-	// Check if rule has parameters (contains =)
 	if before, after, ok := strings.Cut(part, "="); ok {
 		name := strings.TrimSpace(before)
 		paramStr := strings.TrimSpace(after)
 
-		// Parse parameters
 		var params []string
 		if paramStr != "" {
-			// Handle quoted parameters
 			switch {
 			case strings.HasPrefix(paramStr, "'") && strings.HasSuffix(paramStr, "'"):
-				// Single quoted parameter
 				unquoted := paramStr[1 : len(paramStr)-1]
 				params = []string{unescapeString(unquoted)}
 			case needsCommaSeparation(name):
-				// Comma-separated parameters for specific rules (allOf, anyOf, oneOf)
-				params = strings.Split(paramStr, ",")
-				for i := range params {
-					params[i] = strings.TrimSpace(params[i])
+				for param := range strings.SplitSeq(paramStr, ",") {
+					params = append(params, strings.TrimSpace(param))
 				}
 			case strings.Contains(paramStr, " ") && needsSpaceSeparation(name):
 				// Space-separated parameters for specific rules (enum, examples)

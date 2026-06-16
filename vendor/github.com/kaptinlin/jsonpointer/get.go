@@ -48,86 +48,20 @@ func fastSliceGet(values []any, step string) (any, bool) {
 	return values[index], true
 }
 
-func tryArrayAccess(current any, key string) (any, bool, error) {
-	switch arr := current.(type) {
-	case []any:
-		index, err := validateAndAccessArray(key, len(arr))
-		if err != nil {
-			return nil, true, err
-		}
-		return arr[index], true, nil
-
-	case *[]any:
-		if arr == nil {
-			return nil, true, ErrNilPointer
-		}
-		index, err := validateAndAccessArray(key, len(*arr))
-		if err != nil {
-			return nil, true, err
-		}
-		return (*arr)[index], true, nil
-
-	default:
-		arrayVal, err := derefValue(reflect.ValueOf(current))
-		if err != nil {
-			return nil, true, err
-		}
-
-		if arrayVal.Kind() != reflect.Slice && arrayVal.Kind() != reflect.Array {
-			return nil, false, nil
-		}
-
-		index, err := validateAndAccessArray(key, arrayVal.Len())
-		if err != nil {
-			return nil, true, err
-		}
-		return arrayVal.Index(index).Interface(), true, nil
+func sliceValue(values []any, step string) (any, error) {
+	index, err := validateAndAccessArray(step, len(values))
+	if err != nil {
+		return nil, err
 	}
+	return values[index], nil
 }
 
-func tryObjectAccess(current any, key string) (any, bool, error) {
-	switch obj := current.(type) {
-	case map[string]any:
-		result, exists := obj[key]
-		if !exists {
-			return nil, true, ErrKeyNotFound
-		}
-		return result, true, nil
-
-	case *map[string]any:
-		if obj == nil {
-			return nil, true, ErrNilPointer
-		}
-		result, exists := (*obj)[key]
-		if !exists {
-			return nil, true, ErrKeyNotFound
-		}
-		return result, true, nil
-
-	default:
-		objVal, err := derefValue(reflect.ValueOf(current))
-		if err != nil {
-			return nil, false, err
-		}
-
-		switch objVal.Kind() {
-		case reflect.Map:
-			mapEntry, err := mapValueByPathKey(objVal, key)
-			if err != nil {
-				return nil, true, err
-			}
-			return mapEntry.Interface(), true, nil
-
-		case reflect.Struct:
-			if !structField(key, &objVal) {
-				return nil, true, ErrFieldNotFound
-			}
-			return objVal.Interface(), true, nil
-
-		default:
-			return nil, false, nil
-		}
+func stringMapValue(values map[string]any, step string) (any, error) {
+	result, ok := values[step]
+	if !ok {
+		return nil, ErrKeyNotFound
 	}
+	return result, nil
 }
 
 func get(val any, path Path) (any, error) {
@@ -166,21 +100,53 @@ func traverseStep(current any, step string) (any, error) {
 		return nil, ErrNotFound
 	}
 
-	result, handled, err := tryArrayAccess(current, step)
+	switch value := current.(type) {
+	case []any:
+		return sliceValue(value, step)
+
+	case *[]any:
+		if value == nil {
+			return nil, ErrNilPointer
+		}
+		return sliceValue(*value, step)
+
+	case map[string]any:
+		return stringMapValue(value, step)
+
+	case *map[string]any:
+		if value == nil {
+			return nil, ErrNilPointer
+		}
+		return stringMapValue(*value, step)
+	}
+
+	value, err := derefValue(reflect.ValueOf(current))
 	if err != nil {
 		return nil, err
 	}
-	if handled {
-		return result, nil
-	}
 
-	result, handled, err = tryObjectAccess(current, step)
-	if err != nil {
-		return nil, err
-	}
-	if handled {
-		return result, nil
-	}
+	switch value.Kind() {
+	case reflect.Slice, reflect.Array:
+		index, err := validateAndAccessArray(step, value.Len())
+		if err != nil {
+			return nil, err
+		}
+		return value.Index(index).Interface(), nil
 
-	return nil, ErrNotFound
+	case reflect.Map:
+		result, err := mapValueByPathKey(value, step)
+		if err != nil {
+			return nil, err
+		}
+		return result.Interface(), nil
+
+	case reflect.Struct:
+		if !structField(step, &value) {
+			return nil, ErrFieldNotFound
+		}
+		return value.Interface(), nil
+
+	default:
+		return nil, ErrNotFound
+	}
 }

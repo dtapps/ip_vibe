@@ -36,22 +36,36 @@ func fastAtoi(s string) int {
 }
 
 func derefValue(v reflect.Value) (reflect.Value, error) {
-	for v.Kind() == reflect.Pointer {
-		if v.IsNil() {
-			return reflect.Value{}, ErrNilPointer
+	for {
+		if !v.IsValid() {
+			return reflect.Value{}, ErrNotFound
 		}
-		v = v.Elem()
+
+		switch v.Kind() {
+		case reflect.Pointer:
+			if v.IsNil() {
+				return reflect.Value{}, ErrNilPointer
+			}
+			v = v.Elem()
+		case reflect.Interface:
+			if v.IsNil() {
+				return reflect.Value{}, ErrNotFound
+			}
+			v = v.Elem()
+		default:
+			return v, nil
+		}
 	}
-	return v, nil
 }
 
 func mapValueByPathKey(mapVal reflect.Value, key string) (reflect.Value, error) {
 	mapKey := reflect.ValueOf(key)
 	mapKeyType := mapVal.Type().Key()
+	stringType := reflect.TypeFor[string]()
 
 	switch {
-	case mapKey.Type().AssignableTo(mapKeyType):
-	case mapKey.Type().ConvertibleTo(mapKeyType):
+	case stringType.AssignableTo(mapKeyType):
+	case stringType.ConvertibleTo(mapKeyType):
 		mapKey = mapKey.Convert(mapKeyType)
 	default:
 		return reflect.Value{}, ErrNotFound
@@ -162,8 +176,8 @@ func formatJSONPointer(path Path) string {
 	}
 
 	capacity := len(path)
-	for _, comp := range path {
-		capacity += len(comp) + 2
+	for _, component := range path {
+		capacity += len(component)
 	}
 
 	var b strings.Builder
@@ -227,7 +241,10 @@ func Parent(path Path) (Path, error) {
 	if len(path) < 1 {
 		return nil, ErrNoParent
 	}
-	return path[:len(path)-1], nil
+
+	parent := make(Path, len(path)-1)
+	copy(parent, path[:len(path)-1])
+	return parent, nil
 }
 
 // IsValidIndex checks if path component can be a valid array index.

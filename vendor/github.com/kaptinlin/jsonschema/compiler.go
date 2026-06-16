@@ -150,8 +150,7 @@ func (c *Compiler) Compile(jsonSchema []byte, uris ...string) (*Schema, error) {
 // trackUnresolvedReferences tracks which schemas have unresolved references to which URIs.
 // This method should be called with mutex locked.
 func (c *Compiler) trackUnresolvedReferences(schema *Schema) {
-	unresolvedURIs := schema.UnresolvedReferenceURIs()
-	for _, uri := range unresolvedURIs {
+	for _, uri := range schema.unresolvedReferenceTargetURIs() {
 		if !slices.Contains(c.unresolvedRefs[uri], schema) {
 			c.unresolvedRefs[uri] = append(c.unresolvedRefs[uri], schema)
 		}
@@ -231,12 +230,22 @@ func (c *Compiler) SetDefaultBaseURI(baseURI string) *Compiler {
 }
 
 // SetAssertFormat enables or disables format assertion.
+//
+// Disabled by default to match JSON Schema Draft 2020-12 semantics, where
+// "format" is annotation-only. Most applications want assertion: pass true
+// once on the compiler if validation should fail on bad emails, dates, UUIDs,
+// and the like.
 func (c *Compiler) SetAssertFormat(assert bool) *Compiler {
 	c.AssertFormat = assert
 	return c
 }
 
 // SetPreserveExtra sets whether to preserve unknown keywords in the schema.
+//
+// Disabled by default so unknown keywords are stripped during compilation,
+// matching strict spec behavior. Enable when round-tripping schemas through
+// tooling, when extension vocabularies (custom "x-" keywords, OpenAPI
+// extras, internal annotations) must survive on Schema.Extra.
 func (c *Compiler) SetPreserveExtra(preserve bool) *Compiler {
 	c.PreserveExtra = preserve
 	return c
@@ -255,6 +264,11 @@ func (c *Compiler) RegisterMediaType(mediaTypeName string, unmarshalFunc func([]
 }
 
 // RegisterLoader adds a new loader function for a specific URI scheme.
+//
+// "http" and "https" are pre-registered with a 10s timeout client. When
+// schemas come from untrusted sources, replace those loaders or remove them
+// (delete from c.Loaders) so external $ref resolution is gated by your own
+// host, size, and timeout policy.
 func (c *Compiler) RegisterLoader(scheme string, loaderFunc func(url string) (io.ReadCloser, error)) *Compiler {
 	c.Loaders[scheme] = loaderFunc
 	return c

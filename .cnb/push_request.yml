@@ -1,5 +1,5 @@
 "**":
-  push_request:
+  push:
     - runner:
         tags: cnb:arch:amd64 # 指定 Runner 必须有这个标签
         cpus: 64 # 如有需要，可根据实际情况调整

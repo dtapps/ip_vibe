@@ -1,9 +1,6 @@
 package jsonpointer
 
-import (
-	"reflect"
-	"strconv"
-)
+import "reflect"
 
 // Path represents a JSON Pointer path as array of string tokens.
 type Path []string
@@ -49,17 +46,12 @@ type ObjectReference[T any] struct {
 //
 //	isArray(ref.obj) && typeof ref.key === 'number';
 func IsArrayReference(ref Reference) bool {
-	if ref.Obj == nil || ref.Key == "" {
+	objType, ok := referenceObjectType(ref)
+	if !ok || (objType.Kind() != reflect.Slice && objType.Kind() != reflect.Array) {
 		return false
 	}
 
-	objType := reflect.TypeOf(ref.Obj)
-	if objType.Kind() != reflect.Slice {
-		return false
-	}
-
-	_, err := strconv.Atoi(ref.Key)
-	return err == nil
+	return fastAtoi(ref.Key) >= 0
 }
 
 // IsObjectReference checks if a Reference points to an object property.
@@ -68,10 +60,25 @@ func IsArrayReference(ref Reference) bool {
 //
 //	typeof ref.obj === 'object' && typeof ref.key === 'string';
 func IsObjectReference(ref Reference) bool {
-	if ref.Obj == nil || ref.Key == "" {
-		return false
+	objType, ok := referenceObjectType(ref)
+	return ok && objType.Kind() == reflect.Map && objType.Key().Kind() == reflect.String
+}
+
+func referenceObjectType(ref Reference) (reflect.Type, bool) {
+	if ref.Obj == nil {
+		return nil, false
 	}
 
-	objType := reflect.TypeOf(ref.Obj)
-	return objType.Kind() == reflect.Map && objType.Key().Kind() == reflect.String
+	obj := reflect.ValueOf(ref.Obj)
+	for {
+		switch obj.Kind() {
+		case reflect.Pointer, reflect.Interface:
+			if obj.IsNil() {
+				return nil, false
+			}
+			obj = obj.Elem()
+		default:
+			return obj.Type(), true
+		}
+	}
 }

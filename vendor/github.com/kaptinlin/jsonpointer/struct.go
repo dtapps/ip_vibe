@@ -39,17 +39,17 @@ func getStructFields(t reflect.Type) structFields {
 	}
 
 	fields := make(structFields)
-	for structFieldInfo := range t.Fields() {
-		if !structFieldInfo.IsExported() {
+	for field := range t.Fields() {
+		if !field.IsExported() {
 			continue
 		}
 
-		name := getFieldName(&structFieldInfo)
-		if name == "-" {
+		if field.Tag.Get("json") == "-" {
 			continue
 		}
 
-		fields[name] = structFieldInfo.Index[0]
+		name := getFieldName(&field)
+		fields[name] = field.Index[0]
 	}
 
 	cached, _ := structFieldsCache.LoadOrStore(t, fields)
