@@ -1,19 +1,39 @@
 "**":
   push:
-    - runner:
-        tags: cnb:arch:amd64 # 指定 Runner 必须有这个标签
-        cpus: 64 # 如有需要，可根据实际情况调整
-      services:
-        - docker # 启用 Docker 服务（用于 docker build/push）
-      docker:
-        build: .cnb/Dockerfile # 使用自定义 Dockerfile
-        volumes:
-          - /root/.cache/go-build:copy-on-write # 挂载 Go
-          - /root/.local/share/pnpm/store:copy-on-write # 缓存 pnpm
-          - /go:copy-on-write # 挂载项目依赖目录（可选，根据需要）
-      stages:
-        - name: 验证 make 工具
-          script: make --version
+    # main 分支的 push 事件包含两条流水线
+    push-backend:
+      - runner:
+          tags: cnb:arch:amd64 # 指定 Runner 必须有这个标签
+          cpus: 64 # 如有需要，可根据实际情况调整
+        services:
+          - docker # 启用 Docker 服务（用于 docker build/push）
+        docker:
+          build: .cnb/Dockerfile # 使用自定义 Dockerfile
+          volumes:
+            - /root/.cache/go-build:copy-on-write # 挂载 Go
+            - /root/.local/share/pnpm/store:copy-on-write # 缓存 pnpm
+            - /go:copy-on-write # 挂载项目依赖目录（可选，根据需要）
+        stages:
+          - name: 验证 make 工具
+            script: make --version
 
-        - name: 检查项目
-          script: make check-all
+          - name: 检查项目
+            script: make check-backend
+    push-frontend:
+      - runner:
+          tags: cnb:arch:amd64 # 指定 Runner 必须有这个标签
+          cpus: 64 # 如有需要，可根据实际情况调整
+        services:
+          - docker # 启用 Docker 服务（用于 docker build/push）
+        docker:
+          build: .cnb/Dockerfile # 使用自定义 Dockerfile
+          volumes:
+            - /root/.cache/go-build:copy-on-write # 挂载 Go
+            - /root/.local/share/pnpm/store:copy-on-write # 缓存 pnpm
+            - /go:copy-on-write # 挂载项目依赖目录（可选，根据需要）
+        stages:
+          - name: 验证 make 工具
+            script: make --version
+
+          - name: 检查项目
+            script: make check-frontend

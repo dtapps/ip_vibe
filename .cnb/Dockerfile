@@ -116,12 +116,17 @@ RUN ARCH=$(uname -m) && \
     echo "--- nfpm installed ---" && \
     nfpm --version
 
-# 8. 安装 wixl (用于编译 Windows MSI)
+# 8. 安装 yamllint (用于 YAML 文件检查)
+RUN apt-get update && apt-get install -y --no-install-recommends yamllint && \
+    echo "--- yamllint installed ---" && \
+    yamllint --version
+
+# 9. 安装 wixl (用于编译 Windows MSI)
 RUN apt-get update && apt-get install -y --no-install-recommends wixl wixl-data && \
     echo "--- wixl installed ---" && \
     wixl --version
 
-# 9. 卸载不需要的工具，并清空所有 apt 缓存
+# 10. 卸载不需要的工具，并清空所有 apt 缓存
 RUN apt-get purge -y wget xz-utils && \
     apt-get autoremove -y && \
     apt-get clean && \
