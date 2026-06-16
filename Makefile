@@ -382,13 +382,53 @@ build-darwin-arm64:
 	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-arm64 .
 	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64 .
 
-check: 
-	@echo "[Check] 校验 YAML 格式..."
+#####################
+## 检查相关
+#####################
+
+check-backend:
+	@echo "[Check]检查后端代码语法转换与格式化..."
+	@echo "  -> 校验 YAML 格式..."
 	yamllint -c ./.yamllint . 
-	@echo "[Check] 自动语法转换与格式化..."
+	@echo "  -> 自动语法转换..."
 	find . -type f -name "*.go" ! -path "./vendor/*" ! -path "./internal/ent/*" ! -path "./internal/ent_log/*" ! -path "./internal/ent_stat/*" ! -path "./internal/grpc_generated/*" -exec dirname {} \; | sort -u | xargs -I {} go fix {}
+	@echo "  -> 格式化..."
 	find . -type f -name "*.go" ! -path "./vendor/*" ! -path "./internal/ent/*" ! -path "./internal/ent_log/*" ! -path "./internal/ent_stat/*" ! -path "./internal/grpc_generated/*" -exec gofmt -w {} +
-	@echo "[Check] 深度扫描 (Tags: $(LINT_TAGS))..."
-	golangci-lint fmt
-	golangci-lint run --build-tags goolm,stdjson
-	golangci-lint run --fix --build-tags goolm,stdjson
+	@echo "[Check] 运行 golangci-lint 深度扫描 (Tags: $(LINT_TAGS))..."
+	@echo "  -> Linux 平台 (amd64)"
+	$(LINT_CMD) GOOS=linux GOARCH=amd64 golangci-lint fmt
+	$(LINT_CMD) GOOS=linux GOARCH=amd64 golangci-lint run --build-tags $(LINT_TAGS)
+	$(LINT_CMD) GOOS=linux GOARCH=amd64 golangci-lint run --fix --build-tags $(LINT_TAGS)
+
+	@echo "  -> Linux 平台 (arm64)"
+	$(LINT_CMD) GOOS=linux GOARCH=arm64 golangci-lint fmt
+	$(LINT_CMD) GOOS=linux GOARCH=arm64 golangci-lint run --build-tags $(LINT_TAGS)
+	$(LINT_CMD) GOOS=linux GOARCH=arm64 golangci-lint run --fix --build-tags $(LINT_TAGS)
+
+	@echo "  -> macOS 平台 (amd64)"
+	$(LINT_CMD) GOOS=darwin GOARCH=amd64 golangci-lint fmt
+	$(LINT_CMD) GOOS=darwin GOARCH=amd64 golangci-lint run --build-tags $(LINT_TAGS)
+	$(LINT_CMD) GOOS=darwin GOARCH=amd64 golangci-lint run --fix --build-tags $(LINT_TAGS)
+
+	@echo "  -> macOS 平台 (arm64)"
+	$(LINT_CMD) GOOS=darwin GOARCH=arm64 golangci-lint fmt
+	$(LINT_CMD) GOOS=darwin GOARCH=arm64 golangci-lint run --build-tags $(LINT_TAGS)
+	$(LINT_CMD) GOOS=darwin GOARCH=arm64 golangci-lint run --fix --build-tags $(LINT_TAGS)
+
+	@echo "  -> Windows 平台 (amd64)"
+	$(LINT_CMD) GOOS=windows GOARCH=amd64 golangci-lint fmt
+	$(LINT_CMD) GOOS=windows GOARCH=amd64 golangci-lint run --build-tags $(LINT_TAGS)
+	$(LINT_CMD) GOOS=windows GOARCH=amd64 golangci-lint run --fix --build-tags $(LINT_TAGS)
+
+	@echo "  -> Windows 平台 (arm64)"
+	$(LINT_CMD) GOOS=windows GOARCH=arm64 golangci-lint fmt
+	$(LINT_CMD) GOOS=windows GOARCH=arm64 golangci-lint run --build-tags $(LINT_TAGS)
+	$(LINT_CMD) GOOS=windows GOARCH=arm64 golangci-lint run --fix --build-tags $(LINT_TAGS)
+check-frontend:
+	@echo "[Check] 检查前端依赖..."
+	@echo "  -> 检查安全漏洞 (audit)"
+	-cd cmd/$(BINARY_NAME_FRONTEND) && pnpm audit || echo "  ⚠️  audit 检查失败，可能镜像源不支持"
+	@echo "  -> 检查过时依赖 (outdated)"
+	-cd cmd/$(BINARY_NAME_FRONTEND) && pnpm outdated || true
+
+check-all: check-backend check-frontend

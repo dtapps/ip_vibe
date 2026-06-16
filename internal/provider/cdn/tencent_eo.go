@@ -329,8 +329,8 @@ func (p *TencentEOProvider) Update(ctx context.Context, domain_name string, sub_
 		requestCdnUpdate.DomainName = new(full_domain)                            // 加速域名
 		requestCdnUpdate.OriginInfo = originInfo                                  // 源站信息
 		requestCdnUpdate.OriginProtocol = new(p.CustomConfig.OriginProtocolValue) // 回源协议
-		requestCdnUpdate.HttpOriginPort = new(p.CustomConfig.HttpPort)            // HTTP回源端口
-		requestCdnUpdate.HttpsOriginPort = new(p.CustomConfig.HttpsPort)          // HTTPS回源端口
+		requestCdnUpdate.HttpOriginPort = new(p.CustomConfig.HttpPort)    // HTTP回源端口
+		requestCdnUpdate.HttpsOriginPort = new(p.CustomConfig.HttpsPort)  // HTTPS回源端口
 		requestCdnUpdate.IPv6Status = new(p.CustomConfig.IPv6StatusValue)         // IPv6状态
 		_, err = p.Provider.Client.ModifyAccelerationDomainWithContext(ctx, requestCdnUpdate)
 		if err != nil {

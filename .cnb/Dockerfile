@@ -1,33 +1,130 @@
 # 使用 golang 镜像作为基础
 FROM golang:1.26.3-trixie
 
-# 1. 替换 Debian APT 加速源
+# ==========================================
+# 定义版本变量
+# https://github.com/upx/upx/releases
+# https://github.com/golangci/golangci-lint/releases
+# https://github.com/nodejs/node/releases
+# https://github.com/goreleaser/nfpm/releases
+# ==========================================
+ARG UPX_VERSION=5.2.0
+ARG GOLANGCI_LINT_VERSION=2.12.2
+ARG NODE_VERSION=26.3.0
+ARG NFPM_VERSION=2.46.3
+
+# 1. 设置 Go 环境变量
+ENV GO111MODULE=on
+ENV GOPROXY=https://mirrors.cloud.tencent.com/go/,direct
+ENV GOINSECURE=go.dtapp.net
+ENV GOPATH=/go
+ENV PATH="$GOPATH/bin:$PATH"
+
+# 2. 替换 Debian APT 加速源
 RUN sed -i 's|deb.debian.org|mirrors.cloud.tencent.com|g' /etc/apt/sources.list.d/debian.sources 2>/dev/null || \
     sed -i 's|deb.debian.org|mirrors.cloud.tencent.com|g' /etc/apt/sources.list
 
-# 2. 设置 Go 环境变量
-ENV GO111MODULE=on
-ENV GOPROXY=https://mirrors.cloud.tencent.com/go/,direct
+# 3. 安装基础构建工具
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
+    xz-utils \
+    ca-certificates \
+    curl \
+    gnupg \
+    zip \
+    unzip
 
-# 3. 安装 Node.js 及工具
-RUN apt-get update && apt-get install -y curl gnupg yamllint && \
-    # 获取 Node.js 最新版
-    export NODEJS_ORG_MIRROR=https://mirrors.cloud.tencent.com/nodejs-release/ && \
-    curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && \
-    apt-get install -y nodejs && \
+# 4. 安装 Node.js 工具
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then NODE_ARCH="x64"; \
+    elif [ "$ARCH" = "aarch64" ]; then NODE_ARCH="arm64"; \
+    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
     \
-    # 4. 安装 pnpm 最新版并配置加速
+    # 构建下载地址
+    NODE_DIR="node-v${NODE_VERSION}-linux-${NODE_ARCH}" && \
+    NODE_URL="https://mirrors.cloud.tencent.com/nodejs-release/v${NODE_VERSION}/${NODE_DIR}.tar.xz" && \
+    \
+    cd /tmp && \
+    wget -q -O node.tar.xz "${NODE_URL}" && \
+    tar -xJf node.tar.xz -C /usr/local --strip-components=1 && \
+    \
+    # 配置 npm/pnpm 使用腾讯云源
     npm config set registry https://mirrors.cloud.tencent.com/npm/ && \
     npm install -g pnpm && \
     pnpm config set registry https://mirrors.cloud.tencent.com/npm/ && \
-    \
-    # 5. 解决 pnpm v10 脚本拦截问题 (在构建镜像时就允许脚本)
     pnpm config set ignore-scripts false && \
     \
     # 清理
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    rm -rf node.tar.xz && \
+    echo "--- Node.js installed ---" && \
+    node -v && npm -v && pnpm -v
 
-# 确保路径全局可用
-ENV PATH="/usr/local/bin:$PATH"
+# 5. 安装 UPX 压缩工具
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then UPX_ARCH="amd64"; \
+    elif [ "$ARCH" = "aarch64" ]; then UPX_ARCH="arm64"; \
+    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
+    \
+    # 构建下载地址
+    UPX_DIR="upx-${UPX_VERSION}-${UPX_ARCH}_linux" && \
+    UPX_URL="https://files.m.daocloud.io/github.com/upx/upx/releases/download/v${UPX_VERSION}/${UPX_DIR}.tar.xz" && \
+    \
+    cd /tmp && \
+    wget -q -O upx.tar.xz "${UPX_URL}" && \
+    tar -xf upx.tar.xz && \
+    mv ${UPX_DIR}/upx /usr/local/bin/upx && \
+    chmod +x /usr/local/bin/upx && \
+    # 清理
+    rm -rf upx.tar.xz ${UPX_DIR} && \
+    echo "--- UPX installed ---" && \
+    upx --version
+
+# 6. 安装 golangci-lint 工具
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then LINT_ARCH="amd64"; \
+    elif [ "$ARCH" = "aarch64" ]; then LINT_ARCH="arm64"; \
+    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
+    \
+    # 构建下载地址
+    LINT_DIR="golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${LINT_ARCH}" && \
+    LINT_URL="https://files.m.daocloud.io/github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}/${LINT_DIR}.tar.gz" && \
+    \
+    cd /tmp && \
+    wget -q -O lint.tar.gz "${LINT_URL}" && \
+    tar -xf lint.tar.gz && \
+    mv ${LINT_DIR}/golangci-lint /usr/local/bin/golangci-lint && \
+    chmod +x /usr/local/bin/golangci-lint && \
+    rm -rf lint.tar.gz ${LINT_DIR} && \
+    # 清理
+    echo "--- golangci-lint installed ---" && \
+    golangci-lint --version
+
+# 7. 安装 nfpm (用于打包 deb/rpm)
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then NFPM_ARCH="x86_64"; \
+    elif [ "$ARCH" = "aarch64" ]; then NFPM_ARCH="arm64"; \
+    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
+    \
+    NFPM_URL="https://files.m.daocloud.io/github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_Linux_${NFPM_ARCH}.tar.gz" && \
+    \
+    cd /tmp && \
+    wget -q -O nfpm.tar.gz "${NFPM_URL}" && \
+    tar -xf nfpm.tar.gz && \
+    mv nfpm /usr/local/bin/nfpm && \
+    chmod +x /usr/local/bin/nfpm && \
+    rm -rf nfpm.tar.gz && \
+    echo "--- nfpm installed ---" && \
+    nfpm --version
+
+# 8. 安装 wixl (用于编译 Windows MSI)
+RUN apt-get update && apt-get install -y --no-install-recommends wixl wixl-data && \
+    echo "--- wixl installed ---" && \
+    wixl --version
+
+# 9. 卸载不需要的工具，并清空所有 apt 缓存
+RUN apt-get purge -y wget xz-utils && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /root/.npm
 
 CMD ["bash"]

@@ -8,6 +8,7 @@ ignore: |
   .git/
   .idea/
   .vscode/
+  .github/
   vendor/
   node_modules/
   docs_2/

@@ -1,3 +1,5 @@
 include:
   - .cnb/workflows/build_go_project.yml
   - .cnb/workflows/build_docker_image.yml
+  - .cnb/pull_request.yml
+  - .cnb/push_request.yml
