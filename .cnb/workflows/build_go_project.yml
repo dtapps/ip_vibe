@@ -44,6 +44,9 @@
         - name: 构建所有平台二进制文件
           script: VERSION=${INTERIOR_VERSION} make build-all
 
+        - name: 清理二进制文件
+          script: make clean-binaries
+
         # https://docs.cnb.cool/zh/plugin/public/cnbcool/changelog.html
         - name: 生成 Release 日志
           image: cnbcool/changelog

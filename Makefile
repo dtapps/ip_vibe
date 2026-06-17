@@ -283,100 +283,6 @@ dev_forwarder_basic_auth:
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
 
-# 版本信息（支持外部传入）
-VERSION ?= dev
-COMMIT  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-BUILDTIME ?= $(shell date -u '+%Y-%m-%d %H:%M:%S UTC')
-
-# 路径
-PKG_PATH = vibe_ip/internal/global
-
-# ldflags 模板（注意：单引号在 Make 中需转义或使用双引号包裹）
-# -ldflags="-s -w" - 移除符号表和调试信息
-# -gcflags="-m" - 启用内联优化分析
-LDFLAGS = -s -w \
-	-X '$(PKG_PATH).Version=$(VERSION)' \
-	-X '$(PKG_PATH).GitCommit=$(COMMIT)' \
-	-X '$(PKG_PATH).BuildTime=$(BUILDTIME)'
-
-# 禁用CGO，实现完全静态链接
-CGO_ENABLED=0
-
-# 构建所有平台
-build-all: clean \
-	build-linux-amd64 \
-	build-linux-arm64 \
-	build-linux-arm-v7 \
-	build-linux-riscv64 \
-	build-windows-amd64 \
-	build-windows-arm64 \
-	build-darwin-amd64 \
-	build-darwin-arm64
-
-clean:
-	@echo "[Clean] 清理构建目录..."
-	@rm -rf $(BUILD_DIR)
-	@mkdir -p $(BUILD_DIR)
-
-build-frontend:
-	@echo "[构建] 前端静态文件..."
-	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm build
-
-build-linux-amd64:
-	@echo "[构建] Linux AMD64 (通用服务器/PC x86_64)"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-amd64 .
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-amd64 .
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-amd64 .
-
-build-linux-arm64:
-	@echo "[构建] Linux ARM64 (树莓派4/5, AWS Graviton, 苹果M系Linux虚拟机)"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-arm64 .
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-arm64 .
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-arm64 .
-
-build-linux-arm-v7:
-	@echo "[构建] Linux ARM v7 (32位, 旧款树莓派, 大部分NAS, 嵌入式盒子)"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-arm-v7 .
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-arm-v7 .
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-arm-v7 .
-
-# 注意: build-linux-mipsle 已从 build-all 中移除，因为 modernc.org/libc 不支持 GOARCH=mipsle（仅支持 mips64le）。
-# 如需构建 mipsle，需替换 SQLite 驱动或使用 CGO 交叉编译。
-build-linux-mipsle:
-	@echo "[构建] Linux MIPS LE (小端序, 常见于 OpenWrt 路由器/光猫)"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=mipsle GOMIPS=softfloat CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-mipsle .
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=mipsle GOMIPS=softfloat CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-mipsle .
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=mipsle GOMIPS=softfloat CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-mipsle .
-
-build-linux-riscv64:
-	@echo "[构建] Linux RISC-V 64位 (新兴开源指令集架构)"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=riscv64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-riscv64 .
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=riscv64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-riscv64 .
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=riscv64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-riscv64 .
-
-build-windows-amd64:
-	@echo "[构建] Windows AMD64 (主流 Windows PC/服务器)"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=windows GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-amd64.exe .
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=windows GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-amd64.exe .
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=windows GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-amd64.exe .
-
-build-windows-arm64:
-	@echo "[构建] Windows ARM64 (Surface Pro X, 骁龙笔记本等)"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=windows GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-arm64.exe .
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=windows GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-arm64.exe .
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=windows GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-arm64.exe .
-
-build-darwin-amd64:
-	@echo "[构建] macOS Intel (旧款 Macbook/iMac)"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-amd64 .
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-amd64 .
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=amd64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-amd64 .
-
-build-darwin-arm64:
-	@echo "[构建] macOS Apple Silicon (M1/M2/M3 芯片)"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-arm64 .
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-arm64 .
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64 .
 
 #####################
 ## 检查相关
@@ -424,3 +330,245 @@ check-frontend:
 	@echo "[Check] 前端检查完成。"
 
 check-all: check-backend check-frontend
+
+
+#####################
+## 构建相关
+#####################
+
+# 功能开关（设置为 1 开启，0 关闭）
+ENABLE_UPX ?= 1
+ENABLE_ARCHIVE ?= 1
+
+# 检测是否存在 upx 压缩工具
+UPX = $(shell command -v upx 2> /dev/null)
+# 检测是否存在 tar 和 zip
+TAR = $(shell command -v tar 2> /dev/null)
+ZIP = $(shell command -v zip 2> /dev/null)
+
+# 定义压缩逻辑：参数 $(1) 为文件路径
+define compress_file
+	@if [ "$(ENABLE_UPX)" = "1" ] && [ "$(UPX)" ]; then \
+		FILE_SIZE=$$(stat -c%s "$(1)" 2>/dev/null || stat -f%z "$(1)"); \
+		ORIG_SIZE_H=$$(du -h "$(1)" | cut -f1); \
+		\
+		if [ $$FILE_SIZE -lt 10485760 ]; then \
+			LEVEL="--best"; \
+			DESC="小文件-极限压缩"; \
+		elif [ $$FILE_SIZE -lt 52428800 ]; then \
+			LEVEL="-6"; \
+			DESC="中等文件-平衡模式"; \
+		else \
+			LEVEL="-1"; \
+			DESC="大文件-极速模式"; \
+		fi; \
+		\
+		echo "  📦 正在以 [$$DESC ($$LEVEL)] 压缩..."; \
+		ERR_MSG=$$($(UPX) $$LEVEL "$(1)" 2>&1); \
+		\
+		if [ $$? -eq 0 ]; then \
+			NEW_SIZE_H=$$(du -h "$(1)" | cut -f1); \
+			echo "  ⚡ UPX 压缩完成: $(1) [ $${ORIG_SIZE_H} -> $${NEW_SIZE_H} ]"; \
+		else \
+			echo "  ⚠️  UPX 压缩跳过: $(1) ($$ERR_MSG)"; \
+		fi \
+	elif [ "$(ENABLE_UPX)" = "1" ] && [ ! "$(UPX)" ]; then \
+		echo "  ⏭️  UPX 未安装，跳过压缩"; \
+	elif [ "$(ENABLE_UPX)" = "0" ]; then \
+		echo "  ⏭️  UPX 已禁用"; \
+	fi
+endef
+
+# 定义打包压缩逻辑：参数 $(1) 为源文件路径, $(2) 为目标平台 (如 linux-amd64)
+# Linux/macOS 使用 tar.gz, Windows 使用 zip
+define archive_binary
+	@if [ "$(ENABLE_ARCHIVE)" = "1" ]; then \
+		SOURCE_FILE=$(1); \
+		PLATFORM=$(2); \
+		ARCHIVE_NAME="$(BUILD_DIR)/$(BINARY_NAME)-$${PLATFORM}"; \
+		\
+		if echo "$${PLATFORM}" | grep -q "windows"; then \
+			if [ "$(ZIP)" ]; then \
+				ARCHIVE_NAME="$${ARCHIVE_NAME}.zip"; \
+				echo "  📦 正在打包 Windows 压缩包: $${ARCHIVE_NAME}..."; \
+				cd $(BUILD_DIR) && zip -q "$$(basename $${ARCHIVE_NAME})" "$$(basename $${SOURCE_FILE})"; \
+				cd ..; \
+				ARCHIVE_SIZE=$$(du -h "$${ARCHIVE_NAME}" | cut -f1); \
+				BIN_SIZE=$$(du -h "$${SOURCE_FILE}" | cut -f1); \
+				echo "  ✓ 打包完成: $${ARCHIVE_NAME} [ 二进制: $${BIN_SIZE} -> 压缩包: $${ARCHIVE_SIZE} ]"; \
+			else \
+				echo "  ⚠️  zip 未安装，无法打包 Windows 压缩包"; \
+			fi \
+		else \
+			if [ "$(TAR)" ]; then \
+				ARCHIVE_NAME="$${ARCHIVE_NAME}.tar.gz"; \
+				echo "  📦 正在打包 Unix 压缩包: $${ARCHIVE_NAME}..."; \
+				tar -czf "$${ARCHIVE_NAME}" -C $(BUILD_DIR) "$$(basename $${SOURCE_FILE})"; \
+				ARCHIVE_SIZE=$$(du -h "$${ARCHIVE_NAME}" | cut -f1); \
+				BIN_SIZE=$$(du -h "$${SOURCE_FILE}" | cut -f1); \
+				echo "  ✓ 打包完成: $${ARCHIVE_NAME} [ 二进制: $${BIN_SIZE} -> 压缩包: $${ARCHIVE_SIZE} ]"; \
+			else \
+				echo "  ⚠️  tar 未安装，无法打包 Unix 压缩包"; \
+			fi \
+		fi; \
+	elif [ "$(ENABLE_ARCHIVE)" = "0" ]; then \
+		echo "  ⏭️  压缩包已禁用"; \
+	fi
+endef
+
+# 定义清理二进制文件逻辑：如果存在对应压缩包则删除二进制
+# 参数 $(1) 为二进制文件路径, $(2) 为目标平台 (如 linux-amd64)
+define clean_binary
+	@SOURCE_FILE=$(1); \
+	PLATFORM=$(2); \
+	if echo "$${PLATFORM}" | grep -q "windows"; then \
+		ARCHIVE_NAME="$(BUILD_DIR)/$(BINARY_NAME)-$${PLATFORM}.zip"; \
+	else \
+		ARCHIVE_NAME="$(BUILD_DIR)/$(BINARY_NAME)-$${PLATFORM}.tar.gz"; \
+	fi; \
+	if [ -f "$${ARCHIVE_NAME}" ] && [ -f "$${SOURCE_FILE}" ]; then \
+		rm -f "$${SOURCE_FILE}"; \
+		echo "  🗑️  已清理二进制: $${SOURCE_FILE} (存在 $${ARCHIVE_NAME})"; \
+	else \
+		echo "  ⏭️  未找到压缩包或二进制，跳过: $${SOURCE_FILE}"; \
+	fi
+endef
+
+# 版本信息（支持外部传入）
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+COMMIT  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+BUILDTIME ?= $(shell date -u '+%Y-%m-%d %H:%M:%S UTC')
+
+# 路径
+PKG_PATH = vibe_ip/internal/global
+
+# ldflags 模板
+# -s -w: 移除符号表和调试信息，减小体积
+# -buildid=: 移除构建指纹
+LDFLAGS = -s -w \
+	-X '$(PKG_PATH).Version=$(VERSION)' \
+	-X '$(PKG_PATH).GitCommit=$(COMMIT)' \
+	-X '$(PKG_PATH).BuildTime=$(BUILDTIME)'
+
+# 统一定义构建命令
+# CGO_ENABLED=0: 禁用 CGO，实现完全静态链接
+# CGO_ENABLED=1: 启用 CGO，实现动态链接
+# -trimpath: 移除本地路径，保护隐私
+BUILD_CMD = CGO_ENABLED=0 go build -trimpath -ldflags="$(LDFLAGS)"
+
+# 构建所有平台
+build-all: clean \
+	build-linux-amd64 \
+	build-linux-arm64 \
+	build-windows-amd64 \
+	build-windows-arm64 \
+	build-darwin-amd64 \
+	build-darwin-arm64
+
+clean:
+	@echo "[Clean] 清理构建目录..."
+	@rm -rf $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)
+
+build-frontend:
+	@echo ""
+	@echo "┌────────────────────────────────────────────────────────────"
+	@echo "│ [构建] 前端静态文件..."
+	@echo "└────────────────────────────────────────────────────────────"
+	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm build
+
+build-linux-amd64:
+	@echo ""
+	@echo "┌────────────────────────────────────────────────────────────"
+	@echo "│ [构建] Linux AMD64 (通用服务器/PC x86_64)"
+	@echo "└────────────────────────────────────────────────────────────"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=amd64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-amd64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-amd64,linux-amd64)
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=amd64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-amd64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-amd64,linux-amd64)
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=amd64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-amd64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-amd64,linux-amd64)
+
+build-linux-arm64:
+	@echo ""
+	@echo "┌────────────────────────────────────────────────────────────"
+	@echo "│ [构建] Linux ARM64 (树莓派4/5, AWS Graviton, 苹果M系Linux虚拟机)"
+	@echo "└────────────────────────────────────────────────────────────"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=arm64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-arm64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-arm64,linux-arm64)
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=arm64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-arm64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-arm64,linux-arm64)
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=arm64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-arm64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-arm64,linux-arm64)
+
+build-windows-amd64:
+	@echo ""
+	@echo "┌────────────────────────────────────────────────────────────"
+	@echo "│ [构建] Windows AMD64 (主流 Windows PC/服务器)"
+	@echo "└────────────────────────────────────────────────────────────"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=windows GOARCH=amd64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-amd64.exe .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-amd64.exe,windows-amd64)
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=windows GOARCH=amd64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-amd64.exe .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-amd64.exe,windows-amd64)
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=windows GOARCH=amd64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-amd64.exe .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-amd64.exe,windows-amd64)
+
+build-windows-arm64:
+	@echo ""
+	@echo "┌────────────────────────────────────────────────────────────"
+	@echo "│ [构建] Windows ARM64 (Surface Pro X, 骁龙笔记本等)"
+	@echo "└────────────────────────────────────────────────────────────"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=windows GOARCH=arm64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-arm64.exe .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-arm64.exe,windows-arm64)
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=windows GOARCH=arm64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-arm64.exe .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-arm64.exe,windows-arm64)
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=windows GOARCH=arm64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-arm64.exe .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-arm64.exe,windows-arm64)
+
+build-darwin-amd64:
+	@echo ""
+	@echo "┌────────────────────────────────────────────────────────────"
+	@echo "│ [构建] macOS Intel (旧款 Macbook/iMac)"
+	@echo "└────────────────────────────────────────────────────────────"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=darwin GOARCH=amd64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-amd64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-amd64,darwin-amd64)
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=amd64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-amd64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-amd64,darwin-amd64)
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=amd64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-amd64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-amd64,darwin-amd64)
+
+build-darwin-arm64:
+	@echo ""
+	@echo "┌────────────────────────────────────────────────────────────"
+	@echo "│ [构建] macOS Apple Silicon (M1/M2/M3 芯片)"
+	@echo "└────────────────────────────────────────────────────────────"
+	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=darwin GOARCH=arm64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-arm64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-arm64,darwin-arm64)
+	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=darwin GOARCH=arm64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-arm64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-arm64,darwin-arm64)
+	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=darwin GOARCH=arm64 $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64 .
+	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64,darwin-arm64)
+
+# 清理所有已压缩的二进制文件（上传前执行）
+.PHONY: clean-binaries
+clean-binaries:
+	@echo "[清理] 删除已压缩的二进制文件..."
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-amd64,linux-amd64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-amd64,linux-amd64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-amd64,linux-amd64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-arm64,linux-arm64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-arm64,linux-arm64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-arm64,linux-arm64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-amd64.exe,windows-amd64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-amd64.exe,windows-amd64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-amd64.exe,windows-amd64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-arm64.exe,windows-arm64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-arm64.exe,windows-arm64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-arm64.exe,windows-arm64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-amd64,darwin-amd64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-amd64,darwin-amd64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-amd64,darwin-amd64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-arm64,darwin-arm64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-arm64,darwin-arm64)
+	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64,darwin-arm64)
+	@echo "✓ 清理完成"
