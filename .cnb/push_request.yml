@@ -15,5 +15,11 @@
         - name: 验证 make 工具
           script: make --version
 
+        - name: 更新 Go 依赖
+          script: make deps
+
+        - name: 更新 pnpm 依赖
+          script: make update-pnpm
+
         - name: 检查项目
           script: make check-all

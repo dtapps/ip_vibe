@@ -42,7 +42,7 @@
             echo "=============================="
 
             # 1. 下载依赖
-            make pnpm_update
+            make update-pnpm
             make deps
 
             # 2. 清理并构建

@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := setup
 
 # 一键设置项目（默认执行）
-setup: install-tools verify-tools mod pnpm_update
+setup: install-tools verify-tools mod update-pnpm
 	@echo "🎉 Project setup completed!"
 
 # 安装
@@ -66,7 +66,7 @@ deps:
 	go mod tidy
 	go mod vendor
 
-pnpm_update:
+update-pnpm:
 	cd cmd/$(BINARY_NAME_FRONTEND) && \
 	pnpm update --latest
 
