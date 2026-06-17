@@ -17,6 +17,27 @@
         - name: 验证 make 工具
           script: make --version
 
+        - name: 验证 node 工具
+          script: node -v
+
+        - name: 验证 npm 工具
+          script: npm -v
+
+        - name: 验证 pnpm 工具
+          script: pnpm -v
+
+        - name: 验证 upx 工具
+          script: upx --version
+
+        - name: 验证 golangci-lint 工具
+          script: golangci-lint --version
+
+        - name: 验证 nfpm 工具
+          script: nfpm --version
+
+        - name: 验证 wixl 工具
+          script: wixl --version
+
         - name: 输出基本信息
           script: |
             echo "原始 version: $version"
