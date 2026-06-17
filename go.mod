@@ -62,7 +62,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.78
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.113
 	github.com/tidwall/gjson v1.19.0
-	github.com/volcengine/volcengine-go-sdk v1.2.35
+	github.com/volcengine/volcengine-go-sdk v1.2.36
 	github.com/wdcbot/qingfeng v1.6.8
 	go.dtapp.net/library/contrib/http_log v1.0.12
 	go.dtapp.net/library/contrib/req_log v1.0.5
@@ -73,7 +73,7 @@ require (
 	go.dtapp.net/library/service/ft07 v1.0.12
 	go.dtapp.net/library/service/pushdeer v1.0.12
 	go.dtapp.net/library/service/qiniu v1.0.0
-	go.dtapp.net/library/service/wechatqy v1.0.41
+	go.dtapp.net/library/service/wechatqy v1.0.42
 	go.dtapp.net/library/utils/gojson v1.0.13
 	go.dtapp.net/library/utils/golog v1.0.180
 	go.dtapp.net/library/utils/gomd5 v1.0.3

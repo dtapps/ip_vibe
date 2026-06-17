@@ -954,7 +954,7 @@ github.com/valllabh/ocsf-schema-golang/ocsf/v1_2_0/objects/enums
 github.com/volcengine/volc-sdk-golang/base
 github.com/volcengine/volc-sdk-golang/service/dns
 github.com/volcengine/volc-sdk-golang/service/sts
-# github.com/volcengine/volcengine-go-sdk v1.2.35
+# github.com/volcengine/volcengine-go-sdk v1.2.36
 ## explicit; go 1.14
 github.com/volcengine/volcengine-go-sdk/internal/ini
 github.com/volcengine/volcengine-go-sdk/internal/sdkio
@@ -1036,8 +1036,8 @@ go.dtapp.net/library/service/pushdeer
 # go.dtapp.net/library/service/qiniu v1.0.0
 ## explicit; go 1.25.1
 go.dtapp.net/library/service/qiniu
-# go.dtapp.net/library/service/wechatqy v1.0.41
-## explicit; go 1.25.1
+# go.dtapp.net/library/service/wechatqy v1.0.42
+## explicit; go 1.26.0
 go.dtapp.net/library/service/wechatqy
 # go.dtapp.net/library/utils/gojson v1.0.13
 ## explicit; go 1.24.1

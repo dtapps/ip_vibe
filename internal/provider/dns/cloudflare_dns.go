@@ -419,7 +419,7 @@ query StatsByDay {
 	}
 
 	// 检查 HTTP 状态码
-	if !resp.IsSuccess() {
+	if !resp.IsStatusSuccess() {
 		return nil, fmt.Errorf("GraphQL 请求返回非成功状态 [%d]: %s",
 			resp.StatusCode(),
 			resp.String(),

@@ -89,7 +89,7 @@ func (c *IPHelper) initHttpClient() {
 
 	// 开启日志
 	if c.debug {
-		restyClient.EnableDebug()
+		restyClient.SetDebug(c.debug)
 		reqClient.DevMode()
 	}
 
@@ -296,8 +296,8 @@ func (c *IPHelper) fetchIPWithResty(ctx context.Context, url string, ipType IPTy
 		return
 	}
 
-	// IsError 检查状态码是否为 4xx 或 5xx
-	if resp.IsError() {
+	// IsStatusFailure 检查状态码是否为 4xx 或 5xx
+	if resp.IsStatusFailure() {
 		result.Error = fmt.Errorf("请求返回错误状态码: %s", resp.Status())
 		resultChan <- result
 		return

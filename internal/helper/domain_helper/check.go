@@ -54,7 +54,7 @@ func (s *DomainCheck) initHttpClient() {
 
 	// 开启日志
 	if s.debug {
-		restyClient.EnableDebug()
+		restyClient.SetDebug(s.debug)
 		reqClient.DevMode()
 	}
 

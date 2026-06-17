@@ -793,8 +793,8 @@ github.com/valllabh/ocsf-schema-golang v1.0.3/go.mod h1:sZ3as9xqm1SSK5feFWIR2CuG
 github.com/volcengine/volc-sdk-golang v1.0.23/go.mod h1:AfG/PZRUkHJ9inETvbjNifTDgut25Wbkm2QoYBTbvyU=
 github.com/volcengine/volc-sdk-golang v1.0.250 h1:2/RLIahTgZ57OkNgDV0FpAkvk/4QFMGIuVFTnU26GDs=
 github.com/volcengine/volc-sdk-golang v1.0.250/go.mod h1:zHJlaqiMbIB+0mcrsZPTwOb3FB7S/0MCfqlnO8R7hlM=
-github.com/volcengine/volcengine-go-sdk v1.2.35 h1:QJH2P+LrysoiVv5LuOMMMTPlTX5jEimdIY3bvF7uCn8=
-github.com/volcengine/volcengine-go-sdk v1.2.35/go.mod h1:oxoVo+A17kvkwPkIeIHPVLjSw7EQAm+l/Vau1YGHN+A=
+github.com/volcengine/volcengine-go-sdk v1.2.36 h1:rUH7t3bOzaGVJ9ys8L2Jizb+9AZkhu2qCjJwWtF+weo=
+github.com/volcengine/volcengine-go-sdk v1.2.36/go.mod h1:oxoVo+A17kvkwPkIeIHPVLjSw7EQAm+l/Vau1YGHN+A=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.0.2/go.mod h1:1WAq6h33pAW+iRreB34OORO2Nf7qel3VV3fjBj+hCSs=
 github.com/xdg-go/scram v1.1.2/go.mod h1:RT/sEzTbU5y00aCK8UOx6R7YryM0iF1N2MOmC3kKLN4=
@@ -838,8 +838,8 @@ go.dtapp.net/library/service/pushdeer v1.0.12 h1:JVwkTclZhjs648SSs3BY8b9sYCb8Ofo
 go.dtapp.net/library/service/pushdeer v1.0.12/go.mod h1:c9jF8skgz8+WAfsv8A/2HmWHEbDqLMlEvBaaCeLZVxs=
 go.dtapp.net/library/service/qiniu v1.0.0 h1:c78UZ1IPNhikZ4+WgyrkOChzMwezF4SjzoY4YhRRMG0=
 go.dtapp.net/library/service/qiniu v1.0.0/go.mod h1:E9unDw/BzUVrflRIvbwkI7LlsegGwUeROB9B1ZloMXM=
-go.dtapp.net/library/service/wechatqy v1.0.41 h1:IujaEwBvpE7s3B32U4kpmN1PAma74RWS9wWV834Wyy8=
-go.dtapp.net/library/service/wechatqy v1.0.41/go.mod h1:v3vGut1QFgdLVCJKcqsfCsuz+tuytgakkV0K9q8uPCQ=
+go.dtapp.net/library/service/wechatqy v1.0.42 h1:phouK1SmAs4f68SAPgBl83FF7rpAIXsDNeiBLKG5Hg0=
+go.dtapp.net/library/service/wechatqy v1.0.42/go.mod h1:BAsWq/6Oar4NW8rciD1L7rpdasxnAppcqWqGHb6Q+RY=
 go.dtapp.net/library/utils/gojson v1.0.13 h1:XU3uO+Z/aRUSz+fGCEK1lpuEOfNz8RKxbQiSlA92xlM=
 go.dtapp.net/library/utils/gojson v1.0.13/go.mod h1:Cob0wtnXWWj6JH3O8CJeh64pIQn5ggfncR8tPPTk2+U=
 go.dtapp.net/library/utils/golog v1.0.180 h1:9jeS/cA4/eYrbVUzO7lQsbe9kybqgxnq1jPWD+YrrE4=
