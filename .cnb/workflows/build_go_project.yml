@@ -9,9 +9,10 @@
       docker:
         build: .cnb/Dockerfile # 使用自定义 Dockerfile
         volumes:
-          - /root/.cache/go-build:copy-on-write # 挂载 Go
-          - /root/.local/share/pnpm/store:copy-on-write # 缓存 pnpm
-          - /go:copy-on-write # 挂载项目依赖目录（可选，根据需要）
+          - /go:copy-on-write # 缓存整个 GOPATH（包含 mod、bin 等）
+          - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
+          - /go/pkg/mod:copy-on-write # Go 模块缓存 - 加速依赖下载
+          - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
       stages:
         - name: 验证 make 工具
           script: make --version
