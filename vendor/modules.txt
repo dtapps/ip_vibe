@@ -769,10 +769,10 @@ github.com/ncruces/go-strftime
 # github.com/nrdcg/dnspod-go v0.4.0
 ## explicit; go 1.13
 github.com/nrdcg/dnspod-go
-# github.com/pelletier/go-toml/v2 v2.3.1
+# github.com/pelletier/go-toml/v2 v2.4.0
 ## explicit; go 1.21.0
 github.com/pelletier/go-toml/v2
-github.com/pelletier/go-toml/v2/internal/characters
+github.com/pelletier/go-toml/v2/internal/parserbridge
 github.com/pelletier/go-toml/v2/internal/tracker
 github.com/pelletier/go-toml/v2/unstable
 # github.com/petar-dambovaliev/aho-corasick v0.0.0-20250424160509-463d218d4745
@@ -885,7 +885,7 @@ github.com/swaggo/swag/v2/gen
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.116
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.117
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.118
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -986,7 +986,7 @@ github.com/volcengine/volcengine-go-sdk/volcengine/volcenginebody
 github.com/volcengine/volcengine-go-sdk/volcengine/volcengineerr
 github.com/volcengine/volcengine-go-sdk/volcengine/volcenginequery
 github.com/volcengine/volcengine-go-sdk/volcengine/volcengineutil
-# github.com/wdcbot/qingfeng v1.6.8
+# github.com/wdcbot/qingfeng v1.6.8 => gitee.com/xiaowan1997/qingfeng v1.6.7
 ## explicit; go 1.20
 github.com/wdcbot/qingfeng
 # github.com/yosida95/uritemplate/v3 v3.0.2
@@ -1372,3 +1372,4 @@ sigs.k8s.io/yaml
 # github.com/quic-go/qpack => github.com/quic-go/qpack v0.6.0
 # github.com/quic-go/quic-go => github.com/quic-go/quic-go v0.58.0
 # github.com/imroc/req/v3 => github.com/imroc/req/v3 v3.57.0
+# github.com/wdcbot/qingfeng => gitee.com/xiaowan1997/qingfeng v1.6.7

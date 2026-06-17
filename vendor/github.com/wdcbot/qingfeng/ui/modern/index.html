@@ -67,8 +67,6 @@
         .method-put { background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); }
         .method-delete { background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); }
         .method-patch { background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%); }
-        .method-options { background: linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%); }
-        .method-head { background: linear-gradient(135deg, #ec4899 0%, #f472b6 100%); }
         .api-item { border-radius: 12px; transition: all 0.2s; }
         .api-item:hover { background: var(--bg-tertiary); transform: translateX(4px); }
         .api-item.active { background: var(--bg-tertiary); border-left: 3px solid var(--primary); }
@@ -291,7 +289,7 @@
                             <span id="detail-deprecated" class="hidden bg-red-100 text-red-600 px-2 py-1 rounded-lg text-xs">已废弃</span>
                         </div>
                         <h3 id="detail-summary" class="text-xl font-bold mb-2">接口名称</h3>
-                        <pre id="detail-description" style="color: var(--text-secondary)">接口描述</pre>
+                        <p id="detail-description" style="color: var(--text-secondary)">接口描述</p>
                     </div>
 
                     <div class="card p-6">
