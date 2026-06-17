@@ -32,26 +32,20 @@
           exports:
             interior_version: INTERIOR_VERSION
 
-        - name: 构建并打包 Go 项目
-          script: |
-            echo "=============================="
-            echo "🔧 开始处理 web_trigger_build_go_project"
-            echo "=============================="
+        - name: 安装 Go 依赖
+          script: make deps
 
-            # 1. 下载依赖
-            make update-pnpm
-            make deps
+        - name: 更新 pnpm 依赖
+          script: make update-pnpm
 
-            # 2. 清理并构建
-            VERSION=${INTERIOR_VERSION} make build-frontend
-            VERSION=${INTERIOR_VERSION} make build-all
+        - name: 构建前端静态文件
+          script: VERSION=${INTERIOR_VERSION} make build-frontend
 
-            echo "=============================="
-            echo "🎉 处理结束 web_trigger_build_go_project"
-            echo "=============================="
+        - name: 构建所有平台二进制文件
+          script: VERSION=${INTERIOR_VERSION} make build-all
 
-        # https://cnb.cool/cnb/plugins/cnbcool/changelog
-        - name: 生成 changelog
+        # https://docs.cnb.cool/zh/plugin/public/cnbcool/changelog.html
+        - name: 生成 Release 日志
           image: cnbcool/changelog
           exports:
             latestChangeLog: LATEST_CHANGE_LOG
@@ -64,16 +58,14 @@
             title: "${INTERIOR_VERSION}"
             description: ${LATEST_CHANGE_LOG}
 
-        # https://cnb.cool/cnb/plugins/cnbcool/attachments
+        # https://docs.cnb.cool/zh/plugin/public/cnbcool/attachments.html
         - name: 上传 Release 附件
           image: cnbcool/attachments:latest
           settings:
             type: UPLOAD
             tag: ${INTERIOR_VERSION}
             attachments:
-              - "bin/backend-*"
-              - "bin/reporter-*"
-              - "bin/forwarder-*"
+              - "bin/*"
           exports:
             FILES: FILES
 

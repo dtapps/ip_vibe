@@ -35,66 +35,84 @@
           exports:
             interior_version: INTERIOR_VERSION
 
-        - name: 构建并推送 Docker 镜像
+        - name: 更新 Go 依赖
+          script: make deps
+
+        - name: 更新 pnpm 依赖
+          script: make update-pnpm
+
+        - name: 构建前端静态文件
+          script: VERSION=${INTERIOR_VERSION} make build-frontend
+
+        - name: 构建后端二进制文件
+          script: VERSION=${INTERIOR_VERSION} make build-linux-amd64
+
+        - name: 登录 Docker Registry
           script: |
-            echo "=============================="
-            echo "🔧 开始处理 web_trigger_build_docker_image"
-            echo "=============================="
-
-            # 1. 下载依赖
-            make update-pnpm
-            make deps
-
-            # 2. 清理并构建
-            VERSION=${INTERIOR_VERSION} make build-frontend
-            VERSION=${INTERIOR_VERSION} make build-linux-amd64
-
-            # 3. 登录 Docker Registry
-            echo "登录 Docker Registry: ${CNB_DOCKER_REGISTRY}"
             docker login -u "${CNB_TOKEN_USER_NAME}" -p "${CNB_TOKEN}" "${CNB_DOCKER_REGISTRY}"
 
+        - name: 构建 Docker Backend 镜像
+          script: |
             BACKEND_IMAGE_NAME="${CNB_REPO_SLUG_LOWERCASE}/backend"  # 镜像名
             BACKEND_DOCKER_IMAGE_FULL="${CNB_DOCKER_REGISTRY}/${BACKEND_IMAGE_NAME}:${INTERIOR_VERSION}" # 版本镜像地址
             BACKEND_DOCKER_IMAGE_LATEST="${CNB_DOCKER_REGISTRY}/${BACKEND_IMAGE_NAME}:latest" # latest镜像地址
 
-            REPORTER_IMAGE_NAME="${CNB_REPO_SLUG_LOWERCASE}/reporter"  # 镜像名
-            REPORTER_DOCKER_IMAGE_FULL="${CNB_DOCKER_REGISTRY}/${REPORTER_IMAGE_NAME}:${INTERIOR_VERSION}" # 版本镜像地址
-            REPORTER_DOCKER_IMAGE_LATEST="${CNB_DOCKER_REGISTRY}/${REPORTER_IMAGE_NAME}:latest" # latest镜像地址
-
-            FORWARDER_IMAGE_NAME="${CNB_REPO_SLUG_LOWERCASE}/forwarder"  # 镜像名
-            FORWARDER_DOCKER_IMAGE_FULL="${CNB_DOCKER_REGISTRY}/${FORWARDER_IMAGE_NAME}:${INTERIOR_VERSION}" # 版本镜像地址
-            FORWARDER_DOCKER_IMAGE_LATEST="${CNB_DOCKER_REGISTRY}/${FORWARDER_IMAGE_NAME}:latest" # latest镜像地址
-
-            # 4. 构建 Docker 镜像
-            echo "构建 Docker 镜像: ${BACKEND_DOCKER_IMAGE_FULL} ${BACKEND_DOCKER_IMAGE_LATEST} ${REPORTER_DOCKER_IMAGE_FULL} ${REPORTER_DOCKER_IMAGE_LATEST} ${FORWARDER_DOCKER_IMAGE_FULL} ${FORWARDER_DOCKER_IMAGE_LATEST}"
             docker build \
               -f "./cmd/backend/Dockerfile" \
               -t "${BACKEND_DOCKER_IMAGE_FULL}" \
               -t "${BACKEND_DOCKER_IMAGE_LATEST}" .
+
+        - name: 构建 Docker Reporter 镜像
+          script: |
+            REPORTER_IMAGE_NAME="${CNB_REPO_SLUG_LOWERCASE}/reporter"  # 镜像名
+            REPORTER_DOCKER_IMAGE_FULL="${CNB_DOCKER_REGISTRY}/${REPORTER_IMAGE_NAME}:${INTERIOR_VERSION}" # 版本镜像地址
+            REPORTER_DOCKER_IMAGE_LATEST="${CNB_DOCKER_REGISTRY}/${REPORTER_IMAGE_NAME}:latest" # latest镜像地址
+
             docker build \
               -f "./cmd/reporter/Dockerfile" \
               -t "${REPORTER_DOCKER_IMAGE_FULL}" \
               -t "${REPORTER_DOCKER_IMAGE_LATEST}" .
+
+        - name: 构建 Docker Forwarder 镜像
+          script: |
+            FORWARDER_IMAGE_NAME="${CNB_REPO_SLUG_LOWERCASE}/forwarder"  # 镜像名
+            FORWARDER_DOCKER_IMAGE_FULL="${CNB_DOCKER_REGISTRY}/${FORWARDER_IMAGE_NAME}:${INTERIOR_VERSION}" # 版本镜像地址
+            FORWARDER_DOCKER_IMAGE_LATEST="${CNB_DOCKER_REGISTRY}/${FORWARDER_IMAGE_NAME}:latest" # latest镜像地址
+
             docker build \
               -f "./cmd/forwarder/Dockerfile" \
               -t "${FORWARDER_DOCKER_IMAGE_FULL}" \
               -t "${FORWARDER_DOCKER_IMAGE_LATEST}" .
 
-            # 5. 推送 Docker 镜像
-            echo "推送 Docker 镜像: ${BACKEND_DOCKER_IMAGE_FULL} ${BACKEND_DOCKER_IMAGE_LATEST} ${REPORTER_DOCKER_IMAGE_FULL} ${REPORTER_DOCKER_IMAGE_LATEST} ${FORWARDER_DOCKER_IMAGE_FULL} ${FORWARDER_DOCKER_IMAGE_LATEST}"
+        - name: 推送 Docker Backend 镜像
+          script: |
+            BACKEND_IMAGE_NAME="${CNB_REPO_SLUG_LOWERCASE}/backend"  # 镜像名
+            BACKEND_DOCKER_IMAGE_FULL="${CNB_DOCKER_REGISTRY}/${BACKEND_IMAGE_NAME}:${INTERIOR_VERSION}" # 版本镜像地址
+            BACKEND_DOCKER_IMAGE_LATEST="${CNB_DOCKER_REGISTRY}/${BACKEND_IMAGE_NAME}:latest" # latest镜像地址
+
             docker push "${BACKEND_DOCKER_IMAGE_FULL}"
             docker push "${BACKEND_DOCKER_IMAGE_LATEST}"
+
+        - name: 推送 Docker Reporter 镜像
+          script: |
+            REPORTER_IMAGE_NAME="${CNB_REPO_SLUG_LOWERCASE}/reporter"  # 镜像名
+            REPORTER_DOCKER_IMAGE_FULL="${CNB_DOCKER_REGISTRY}/${REPORTER_IMAGE_NAME}:${INTERIOR_VERSION}" # 版本镜像地址
+            REPORTER_DOCKER_IMAGE_LATEST="${CNB_DOCKER_REGISTRY}/${REPORTER_IMAGE_NAME}:latest" # latest镜像地址
+
             docker push "${REPORTER_DOCKER_IMAGE_FULL}"
             docker push "${REPORTER_DOCKER_IMAGE_LATEST}"
+
+        - name: 推送 Docker Forwarder 镜像
+          script: |
+            FORWARDER_IMAGE_NAME="${CNB_REPO_SLUG_LOWERCASE}/forwarder"  # 镜像名
+            FORWARDER_DOCKER_IMAGE_FULL="${CNB_DOCKER_REGISTRY}/${FORWARDER_IMAGE_NAME}:${INTERIOR_VERSION}" # 版本镜像地址
+            FORWARDER_DOCKER_IMAGE_LATEST="${CNB_DOCKER_REGISTRY}/${FORWARDER_IMAGE_NAME}:latest" # latest镜像地址
+
             docker push "${FORWARDER_DOCKER_IMAGE_FULL}"
             docker push "${FORWARDER_DOCKER_IMAGE_LATEST}"
 
-            echo "=============================="
-            echo "🎉 处理结束 web_trigger_build_docker_image"
-            echo "=============================="
-
-        # https://cnb.cool/cnb/plugins/cnbcool/changelog
-        - name: 生成 changelog
+        # https://docs.cnb.cool/zh/plugin/public/cnbcool/changelog.html
+        - name: 生成 Release 日志
           image: cnbcool/changelog
           exports:
             latestChangeLog: LATEST_CHANGE_LOG
@@ -103,17 +121,6 @@
         - name: 创建 Release
           type: git:release
           options:
-            tag: docker-${INTERIOR_VERSION}
-            title: "docker-${INTERIOR_VERSION}"
+            tag: ${INTERIOR_VERSION}
+            title: "${INTERIOR_VERSION}"
             description: ${LATEST_CHANGE_LOG}
-
-        # https://docs.cnb.cool/zh/plugin/#public/cnbcool/ai-review
-        - name: 变更总结
-          image: cnbcool/ai-review:latest
-          settings:
-            type: diff-summary
-          exports:
-            summary: SUMMARY
-
-        - name: 输出变更总结
-          script: echo $SUMMARY
