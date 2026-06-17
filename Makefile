@@ -381,6 +381,14 @@ build-darwin-arm64:
 ## 检查相关
 #####################
 
+# 统一定义构建命令
+# CGO_ENABLED=0: 禁用 CGO，实现完全静态链接
+# CGO_ENABLED=1: 启用 CGO，实现动态链接
+LINT_CMD = CGO_ENABLED=0
+
+# 定义 Lint 过程中需要激活的 Go Build Tags
+LINT_TAGS = goolm,stdjson
+
 check-backend:
 	@echo "[Check]检查后端代码语法转换与格式化..."
 	@echo "  -> 校验 YAML 格式..."

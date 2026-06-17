@@ -3,6 +3,7 @@
 .svn
 .idea
 .vscode
+.trae
 .log
 *_test.go
 /bin
