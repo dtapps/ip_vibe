@@ -409,16 +409,16 @@ check-backend:
 check-frontend:
 	@echo "[Check] 检查前端依赖与质量..."
 	@echo "  -> 同步依赖 (确保环境一致)..."
-	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm install --frozen-lockfile --prefer-offline || true
+	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm install --frozen-lockfile --prefer-offline
 	
 	@echo "  -> 检查安全漏洞 (仅高危阻断)..."
-	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm audit --production --audit-level high || echo "  ⚠️  发现非高危漏洞或审计失败，建议手动审查"
+	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm audit --production --audit-level high --registry=https://registry.npmjs.org
 	
 	@echo "  -> 检查过时依赖..."
-	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm outdated || true
+	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm outdated
 	
 	@echo "  -> 检查代码风格 (Lint)..."
-	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm run lint || echo "  ⚠️  Lint 检查未通过，请修复格式问题"
+	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm run lint
 	
 	@echo "[Check] 前端检查完成。"
 

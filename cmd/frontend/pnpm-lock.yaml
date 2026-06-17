@@ -35,12 +35,15 @@ importers:
       loadjs:
         specifier: ^4.3.0
         version: 4.3.0
+      prettier:
+        specifier: ^3.8.4
+        version: 3.8.4
       select2:
         specifier: 4.1.0
         version: 4.1.0
       select2-tailwindcss-v4-theme:
-        specifier: ^1.2.1
-        version: 1.2.1
+        specifier: ^1.2.5
+        version: 1.2.5
       tailwindcss:
         specifier: ^4.3.1
         version: 4.3.1
@@ -426,8 +429,13 @@ packages:
     resolution: {integrity: sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA==}
     engines: {node: '>=8.6'}
 
-  select2-tailwindcss-v4-theme@1.2.1:
-    resolution: {integrity: sha512-QppCZcBJwtpbKohbEqZCANnf6CQJi1mFb4DUboybNBgLt7GOC38I4vo/ZOwUqsMaMGpRdkrEWWMjJZu48AmLIA==}
+  prettier@3.8.4:
+    resolution: {integrity: sha512-N2MylSdi48+5N/6S5j+maeHbUSIzzZ5uOcX5Hm4QpV8Dkb1HFjfAKTKX6yNPJQD9AhcT3ifHNB66tWTTJDi11Q==}
+    engines: {node: '>=14'}
+    hasBin: true
+
+  select2-tailwindcss-v4-theme@1.2.5:
+    resolution: {integrity: sha512-EqXspn4gsmkwSpIJpsrgqqCDVRcRcAjkSg63ehRD9ftbvQq3jA7CHaVz6r26RKThrUntINcTMEJyNJO6/Ub9rQ==}
 
   select2@4.1.0:
     resolution: {integrity: sha512-i9KalWOP4/LRRGc8+rj2krNm0ZqP14cV+j1TRCEBSsOhCPkKH8rYZ2MCRXcgvqIqN+llqGci0hj9aVkCMvL0+g==}
@@ -762,7 +770,9 @@ snapshots:
 
   picomatch@2.3.2: {}
 
-  select2-tailwindcss-v4-theme@1.2.1: {}
+  prettier@3.8.4: {}
+
+  select2-tailwindcss-v4-theme@1.2.5: {}
 
   select2@4.1.0: {}
 

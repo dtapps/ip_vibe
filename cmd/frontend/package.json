@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "sh ./dev.sh",
-    "build": "sh ./build.sh"
+    "build": "sh ./build.sh",
+    "lint": "prettier --check \"**/*.{html,js,css,json}\"",
+    "format": "prettier --write \"**/*.{html,js,css,json}\""
   },
   "keywords": [],
   "author": "",
@@ -21,8 +23,9 @@
     "echarts": "^6.1.0",
     "jquery": "^4.0.0",
     "loadjs": "^4.3.0",
+    "prettier": "^3.8.4",
     "select2": "4.1.0",
-    "select2-tailwindcss-v4-theme": "^1.2.1",
+    "select2-tailwindcss-v4-theme": "^1.2.5",
     "tailwindcss": "^4.3.1"
   }
 }
