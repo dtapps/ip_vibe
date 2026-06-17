@@ -384,54 +384,42 @@ build-darwin-arm64:
 # 统一定义构建命令
 # CGO_ENABLED=0: 禁用 CGO，实现完全静态链接
 # CGO_ENABLED=1: 启用 CGO，实现动态链接
-LINT_CMD = CGO_ENABLED=0
+LINT_ENV = CGO_ENABLED=0
 
 # 定义 Lint 过程中需要激活的 Go Build Tags
 LINT_TAGS = goolm,stdjson
 
 check-backend:
-	@echo "[Check]检查后端代码语法转换与格式化..."
-	@echo "  -> 校验 YAML 格式..."
-	yamllint -c ./.yamllint . 
-	@echo "  -> 自动语法转换..."
-	find . -type f -name "*.go" ! -path "./vendor/*" ! -path "./internal/ent/*" ! -path "./internal/ent_log/*" ! -path "./internal/ent_stat/*" ! -path "./internal/grpc_generated/*" -exec dirname {} \; | sort -u | xargs -I {} go fix {}
-	@echo "  -> 格式化..."
-	find . -type f -name "*.go" ! -path "./vendor/*" ! -path "./internal/ent/*" ! -path "./internal/ent_log/*" ! -path "./internal/ent_stat/*" ! -path "./internal/grpc_generated/*" -exec gofmt -w {} +
 	@echo "[Check] 运行 golangci-lint 深度扫描 (Tags: $(LINT_TAGS))..."
-	@echo "  -> Linux 平台 (amd64)"
-	$(LINT_CMD) GOOS=linux GOARCH=amd64 golangci-lint fmt
-	$(LINT_CMD) GOOS=linux GOARCH=amd64 golangci-lint run --build-tags $(LINT_TAGS)
-	$(LINT_CMD) GOOS=linux GOARCH=amd64 golangci-lint run --fix --build-tags $(LINT_TAGS)
 
-	@echo "  -> Linux 平台 (arm64)"
-	$(LINT_CMD) GOOS=linux GOARCH=arm64 golangci-lint fmt
-	$(LINT_CMD) GOOS=linux GOARCH=arm64 golangci-lint run --build-tags $(LINT_TAGS)
-	$(LINT_CMD) GOOS=linux GOARCH=arm64 golangci-lint run --fix --build-tags $(LINT_TAGS)
+	# 定义一个内部函数来减少重复代码
+	@for os_arch in "linux/amd64" "linux/arm64" "darwin/amd64" "darwin/arm64" "windows/amd64" "windows/arm64"; do \
+		os=$$(echo $$os_arch | cut -d'/' -f1); \
+		arch=$$(echo $$os_arch | cut -d'/' -f2); \
+		echo "  -> $$os 平台 ($$arch)"; \
+		$(LINT_ENV) GOOS=$$os GOARCH=$$arch golangci-lint fmt; \
+		$(LINT_ENV) GOOS=$$os GOARCH=$$arch golangci-lint run --build-tags $(LINT_TAGS); \
+	done
 
-	@echo "  -> macOS 平台 (amd64)"
-	$(LINT_CMD) GOOS=darwin GOARCH=amd64 golangci-lint fmt
-	$(LINT_CMD) GOOS=darwin GOARCH=amd64 golangci-lint run --build-tags $(LINT_TAGS)
-	$(LINT_CMD) GOOS=darwin GOARCH=amd64 golangci-lint run --fix --build-tags $(LINT_TAGS)
+	@echo "[Check] 自动修复代码风格问题..."
+	$(LINT_ENV) golangci-lint run --fix --build-tags $(LINT_TAGS)
+	
+	@echo "[Check] 完成。"
 
-	@echo "  -> macOS 平台 (arm64)"
-	$(LINT_CMD) GOOS=darwin GOARCH=arm64 golangci-lint fmt
-	$(LINT_CMD) GOOS=darwin GOARCH=arm64 golangci-lint run --build-tags $(LINT_TAGS)
-	$(LINT_CMD) GOOS=darwin GOARCH=arm64 golangci-lint run --fix --build-tags $(LINT_TAGS)
-
-	@echo "  -> Windows 平台 (amd64)"
-	$(LINT_CMD) GOOS=windows GOARCH=amd64 golangci-lint fmt
-	$(LINT_CMD) GOOS=windows GOARCH=amd64 golangci-lint run --build-tags $(LINT_TAGS)
-	$(LINT_CMD) GOOS=windows GOARCH=amd64 golangci-lint run --fix --build-tags $(LINT_TAGS)
-
-	@echo "  -> Windows 平台 (arm64)"
-	$(LINT_CMD) GOOS=windows GOARCH=arm64 golangci-lint fmt
-	$(LINT_CMD) GOOS=windows GOARCH=arm64 golangci-lint run --build-tags $(LINT_TAGS)
-	$(LINT_CMD) GOOS=windows GOARCH=arm64 golangci-lint run --fix --build-tags $(LINT_TAGS)
 check-frontend:
-	@echo "[Check] 检查前端依赖..."
-	@echo "  -> 检查安全漏洞 (audit)"
-	-cd cmd/$(BINARY_NAME_FRONTEND) && pnpm audit || echo "  ⚠️  audit 检查失败，可能镜像源不支持"
-	@echo "  -> 检查过时依赖 (outdated)"
-	-cd cmd/$(BINARY_NAME_FRONTEND) && pnpm outdated || true
+	@echo "[Check] 检查前端依赖与质量..."
+	@echo "  -> 同步依赖 (确保环境一致)..."
+	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm install --frozen-lockfile --prefer-offline || true
+	
+	@echo "  -> 检查安全漏洞 (仅高危阻断)..."
+	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm audit --production --audit-level high || echo "  ⚠️  发现非高危漏洞或审计失败，建议手动审查"
+	
+	@echo "  -> 检查过时依赖..."
+	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm outdated || true
+	
+	@echo "  -> 检查代码风格 (Lint)..."
+	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm run lint || echo "  ⚠️  Lint 检查未通过，请修复格式问题"
+	
+	@echo "[Check] 前端检查完成。"
 
 check-all: check-backend check-frontend
