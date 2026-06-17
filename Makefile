@@ -307,7 +307,6 @@ build-all: clean \
 	build-linux-amd64 \
 	build-linux-arm64 \
 	build-linux-arm-v7 \
-	build-linux-mipsle \
 	build-linux-riscv64 \
 	build-windows-amd64 \
 	build-windows-arm64 \
@@ -341,6 +340,8 @@ build-linux-arm-v7:
 	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-arm-v7 .
 	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-arm-v7 .
 
+# 注意: build-linux-mipsle 已从 build-all 中移除，因为 modernc.org/libc 不支持 GOARCH=mipsle（仅支持 mips64le）。
+# 如需构建 mipsle，需替换 SQLite 驱动或使用 CGO 交叉编译。
 build-linux-mipsle:
 	@echo "[构建] Linux MIPS LE (小端序, 常见于 OpenWrt 路由器/光猫)"
 	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=linux GOARCH=mipsle GOMIPS=softfloat CGO_ENABLED=$(CGO_ENABLED) go build -ldflags="$(LDFLAGS)" -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-mipsle .
