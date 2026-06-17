@@ -86,7 +86,6 @@ func (a *Agent) Sync(ctx context.Context, rules []Rule) {
 func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 	startTime := time.Now().UTC()
 	ctxCancel, cancel := context.WithCancel(ctx)
-	defer cancel()
 	stats := &Stats{
 		StartTime: startTime,
 	}
