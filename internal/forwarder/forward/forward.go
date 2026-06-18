@@ -108,8 +108,8 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 
 	for _, proto := range rule.Protocols {
 		if !isProtoMatchIP(proto, rule.TargetAddr) {
-			atomic.AddInt64(&stats.Errors, 1)
-			a.logger.Warn("跳过协议，因为 IP 与协议不匹配",
+			a.logger.Info("跳过协议，因为 IP 与协议不匹配",
+				slog.String("规则ID", rule.ID),
 				slog.String("协议", proto),
 				slog.String("目标", rule.TargetAddr),
 			)
@@ -126,18 +126,42 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 		laddr := rule.ListenAddr
 		raddr := rule.TargetAddr
 
-		// 自动双栈逻辑
+		// 自动双栈逻辑：同时开启 v4/v6 时合并为双栈监听，并跳过冗余迭代
+		// 由匹配目标 IP 版本的协议负责合并，另一个跳过
+		skipProto := false
+		targetIPv4 := net.ParseIP(strings.Split(rule.TargetAddr, ":")[0]).To4() != nil
 		switch proto {
-		case "tcp4", "tcp6":
-			if hasTCP4 && hasTCP6 {
+		case "tcp4":
+			if hasTCP6 && !targetIPv4 {
+				skipProto = true // IPv6 目标，tcp6 负责合并
+			} else if hasTCP6 {
 				a.logger.Info("检测到 TCP4/TCP6 同时开启，使用自动双栈监听 TCP", slog.String("规则ID", rule.ID))
 				proto = "tcp"
 			}
-		case "udp4", "udp6":
-			if hasUDP4 && hasUDP6 {
+		case "tcp6":
+			if hasTCP4 && targetIPv4 {
+				skipProto = true // IPv4 目标，tcp4 负责合并
+			} else if hasTCP4 {
+				a.logger.Info("检测到 TCP4/TCP6 同时开启，使用自动双栈监听 TCP", slog.String("规则ID", rule.ID))
+				proto = "tcp"
+			}
+		case "udp4":
+			if hasUDP6 && !targetIPv4 {
+				skipProto = true
+			} else if hasUDP6 {
 				a.logger.Info("检测到 UDP4/UDP6 同时开启，使用自动双栈监听 UDP", slog.String("规则ID", rule.ID))
 				proto = "udp"
 			}
+		case "udp6":
+			if hasUDP4 && targetIPv4 {
+				skipProto = true
+			} else if hasUDP4 {
+				a.logger.Info("检测到 UDP4/UDP6 同时开启，使用自动双栈监听 UDP", slog.String("规则ID", rule.ID))
+				proto = "udp"
+			}
+		}
+		if skipProto {
+			continue
 		}
 
 		switch proto {

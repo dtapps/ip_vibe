@@ -60,8 +60,23 @@ func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context, log
 }
 
 func handleTCPConn(c net.Conn, proto, raddr string, stats *Stats, logger *slog.Logger, ruleID string, ctx context.Context) {
+	clientAddr := c.RemoteAddr().String()
+	logger.Info("TCP 新连接",
+		slog.String("规则ID", ruleID),
+		slog.String("客户端", clientAddr),
+		slog.String("目标", raddr),
+	)
+
 	defer func() { _ = c.Close() }()
-	defer atomic.AddInt64(&stats.ActiveConn, -1)
+	defer func() {
+		atomic.AddInt64(&stats.ActiveConn, -1)
+		logger.Info("TCP 连接关闭",
+			slog.String("规则ID", ruleID),
+			slog.String("客户端", clientAddr),
+			slog.Int64("接收字节", atomic.LoadInt64(&stats.BytesIn)),
+			slog.Int64("发送字节", atomic.LoadInt64(&stats.BytesOut)),
+		)
+	}()
 
 	rc, err := net.Dial(proto, raddr)
 	if err != nil {
@@ -213,6 +228,12 @@ func handleUDPWithLog(conn *net.UDPConn, raddr *net.UDPAddr, stats *Stats, logge
 				continue
 			}
 			sessions.Store(key, rc)
+
+			logger.Info("UDP 新会话",
+				slog.String("规则ID", ruleID),
+				slog.String("客户端", src.String()),
+				slog.String("目标", raddr.String()),
+			)
 
 			// 后台 goroutine：将远端响应回传给客户端
 			go func(clientAddr *net.UDPAddr, remoteConn *net.UDPConn) {
