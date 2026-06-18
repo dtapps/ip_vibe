@@ -17,12 +17,33 @@
       stages:
         - name: 验证 make 工具
           script: make --version
+        
+        - name: 验证 go 工具
+          script: go version
 
-        - name: 更新 Go 依赖
+        - name: 验证 node 工具
+          script: node --version
+
+        - name: 验证 npm 工具
+          script: npm --version
+
+        - name: 验证 pnpm 工具
+          script: pnpm --version
+
+        - name: 验证 upx 工具
+          script: upx --version
+
+        - name: 验证 golangci-lint 工具
+          script: golangci-lint --version
+
+        - name: 验证 nfpm 工具
+          script: nfpm --version
+
+        - name: 验证 wixl 工具
+          script: wixl --version
+
+        - name: 安装依赖
           script: make deps
-
-        - name: 更新 pnpm 依赖
-          script: make update-pnpm
 
         - name: 检查项目
           script: make check-all

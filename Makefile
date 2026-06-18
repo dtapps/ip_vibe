@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := setup
 
 # 一键设置项目（默认执行）
-setup: install-tools verify-tools mod update-pnpm
+setup: install-tools verify-tools mod deps
 	@echo "🎉 Project setup completed!"
 
 # 安装
@@ -60,15 +60,21 @@ tidy:
 vendor:
 	go mod vendor
 
-deps: 
-	go version
+deps:
+	@echo "[Deps] 安装 Go 模块依赖..."
+	go mod download
+	@echo "[Deps] 安装前端依赖..."
+	cd cmd/$(BINARY_NAME_FRONTEND) && pnpm install --frozen-lockfile --prefer-offline
+	@echo "[Deps] 完成。"
+
+update-deps:
+	@echo "[Deps] 更新 Go 模块依赖..."
 	go get -u ./...
 	go mod tidy
 	go mod vendor
-
-update-pnpm:
-	cd cmd/$(BINARY_NAME_FRONTEND) && \
-	pnpm update --latest
+	@echo "[Deps] 更新前端依赖..."
+	cd cmd/$(BINARY_NAME_FRONTEND) && pnpm update --latest
+	@echo "[Deps] 完成。"
 
 # generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
 generate: swag_v1_all swag_v2_all grpc_generate_all
