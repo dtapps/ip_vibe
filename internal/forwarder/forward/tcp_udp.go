@@ -246,7 +246,14 @@ func handleUDPWithLog(conn *net.UDPConn, raddr *net.UDPAddr, stats *Stats, logge
 			}(src, rc)
 		}
 
-		rc := val.(*net.UDPConn)
+		rc, ok := val.(*net.UDPConn)
+		if !ok {
+			logger.Warn("UDP 会话类型异常",
+				slog.String("规则ID", ruleID),
+				slog.String("协议", proto),
+			)
+			continue
+		}
 
 		_, werr := rc.Write(buf[:n])
 		if werr != nil {

@@ -86,10 +86,16 @@ func (a *Agent) Sync(ctx context.Context, rules []Rule) {
 func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 	startTime := time.Now().UTC()
 	ctxCancel, cancel := context.WithCancel(ctx)
+	var instances []*ForwardInstance
+	// 如果没有成功创建任何实例，确保 cancel 被调用以避免 context 泄漏
+	defer func() {
+		if len(instances) == 0 {
+			cancel()
+		}
+	}()
 	stats := &Stats{
 		StartTime: startTime,
 	}
-	var instances []*ForwardInstance
 
 	hasTCP4, hasTCP6 := false, false
 	hasUDP4, hasUDP6 := false, false
