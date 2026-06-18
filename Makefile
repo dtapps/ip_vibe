@@ -45,24 +45,11 @@ verify-tools:
 # 项目目录
 PROJECT_ROOT := $(CURDIR)
 
-version:
-	go version
-
-fix:
-	go fix ./...
-
-download:
-	go get -u ./...
-
-tidy:
-	go mod tidy
-
-vendor:
-	go mod vendor
-
 deps:
 	@echo "[Deps] 安装 Go 模块依赖..."
+	go mod tidy
 	go mod download
+	go mod vendor
 	@echo "[Deps] 安装前端依赖..."
 	cd cmd/$(BINARY_NAME_FRONTEND) && pnpm install --frozen-lockfile --prefer-offline
 	@echo "[Deps] 完成。"
