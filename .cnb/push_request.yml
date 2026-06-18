@@ -12,6 +12,8 @@
           - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
           - /go/pkg/mod:copy-on-write # Go 模块缓存 - 加速依赖下载
           - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
+      env:
+        LINT_PLATFORMS: linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64
       stages:
         - name: 验证 make 工具
           script: make --version

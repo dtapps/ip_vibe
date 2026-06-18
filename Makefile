@@ -296,11 +296,13 @@ LINT_ENV = CGO_ENABLED=0
 # 定义 Lint 过程中需要激活的 Go Build Tags
 LINT_TAGS = goolm,stdjson
 
-check-backend:
-	@echo "[Check] 运行 golangci-lint 深度扫描 (Tags: $(LINT_TAGS))..."
+# Lint 扫描的目标平台，默认当前平台；CI 通过 LINT_PLATFORMS=... 覆盖为全平台
+LINT_PLATFORMS ?= $(shell go env GOOS)/$(shell go env GOARCH)
 
-	# 定义一个内部函数来减少重复代码
-	@for os_arch in "linux/amd64" "linux/arm64" "darwin/amd64" "darwin/arm64" "windows/amd64" "windows/arm64"; do \
+check-backend:
+	@echo "[Check] 运行 golangci-lint 扫描 (平台: $(LINT_PLATFORMS), Tags: $(LINT_TAGS))..."
+
+	@for os_arch in $(LINT_PLATFORMS); do \
 		os=$$(echo $$os_arch | cut -d'/' -f1); \
 		arch=$$(echo $$os_arch | cut -d'/' -f2); \
 		echo "  -> $$os 平台 ($$arch)"; \
@@ -310,7 +312,7 @@ check-backend:
 
 	@echo "[Check] 自动修复代码风格问题..."
 	$(LINT_ENV) golangci-lint run --fix --build-tags $(LINT_TAGS)
-	
+
 	@echo "[Check] 完成。"
 
 check-frontend:
