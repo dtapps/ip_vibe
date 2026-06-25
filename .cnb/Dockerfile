@@ -1,5 +1,5 @@
 # 使用 golang 镜像作为基础
-FROM golang:1.26.4-trixie
+FROM golang:1.27-trixie
 
 # ==========================================
 # 定义版本变量
@@ -10,8 +10,8 @@ FROM golang:1.26.4-trixie
 # ==========================================
 ARG UPX_VERSION=5.2.0
 ARG GOLANGCI_LINT_VERSION=2.12.2
-ARG NODE_VERSION=26.3.0
-ARG NFPM_VERSION=2.46.3
+ARG NODE_VERSION=26.4.0
+ARG NFPM_VERSION=2.47.0
 
 # 1. 设置 Go 环境变量
 ENV GO111MODULE=on

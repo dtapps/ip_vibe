@@ -1,6 +1,6 @@
 module vibe_ip
 
-go 1.26.4
+go 1.27
 
 ignore ./cmd/backend/static
 
@@ -20,12 +20,12 @@ require (
 	entgo.io/ent v0.14.6
 	github.com/alibabacloud-go/alidns-20150109/v5 v5.4.1
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
-	github.com/alibabacloud-go/darabonba-openapi/v2 v2.2.1
+	github.com/alibabacloud-go/darabonba-openapi/v2 v2.2.2
 	github.com/alibabacloud-go/esa-20240910/v2 v2.48.0
 	github.com/alibabacloud-go/tea v1.5.1
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/aliyun/credentials-go v1.4.12
-	github.com/baidubce/bce-sdk-go v0.9.269
+	github.com/baidubce/bce-sdk-go v0.9.270
 	github.com/chenyahui/gin-cache v1.10.0
 	github.com/cloudflare/cloudflare-go/v6 v6.10.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
@@ -44,7 +44,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.200
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.201
 	github.com/imroc/req/v3 v3.57.0
 	github.com/jdcloud-api/jdcloud-sdk-go v1.67.0
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.109
@@ -58,9 +58,9 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.116
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.118
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.121
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.78
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.113
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.121
 	github.com/tidwall/gjson v1.19.0
 	github.com/volcengine/volcengine-go-sdk v1.2.36
 	github.com/wdcbot/qingfeng v1.6.8
@@ -83,12 +83,12 @@ require (
 	go.dtapp.net/library/utils/gotime v1.0.19
 	golang.org/x/net v0.56.0
 	golang.org/x/sync v0.21.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20260615183401-62b3387ff324
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260615183401-62b3387ff324
+	google.golang.org/genproto/googleapis/api v0.0.0-20260622175928-b703f567277d
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260622175928-b703f567277d
 	google.golang.org/grpc v1.81.1
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	modernc.org/sqlite v1.52.0
+	modernc.org/sqlite v1.53.0
 	resty.dev/v3 v3.0.0-rc.2
 )
 
@@ -122,7 +122,7 @@ require (
 	github.com/go-acme/tencentclouddnspod v1.3.24 // indirect
 	github.com/go-acme/tencentedgdeone v1.3.38 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
-	github.com/go-json-experiment/json v0.0.0-20260601182631-00ed12fed2a6 // indirect
+	github.com/go-json-experiment/json v0.0.0-20260623181947-01eb4420fa68 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-openapi/inflect v0.21.6 // indirect
 	github.com/go-openapi/jsonpointer v0.23.1 // indirect
@@ -154,7 +154,7 @@ require (
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12 // indirect
 	github.com/kaptinlin/jsonpointer v0.4.26 // indirect
-	github.com/kaptinlin/jsonschema v0.8.0 // indirect
+	github.com/kaptinlin/jsonschema v0.9.2 // indirect
 	github.com/klauspost/compress v1.18.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
@@ -166,7 +166,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/nrdcg/dnspod-go v0.4.0 // indirect
-	github.com/pelletier/go-toml/v2 v2.4.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.4.2 // indirect
 	github.com/petar-dambovaliev/aho-corasick v0.0.0-20250424160509-463d218d4745 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
@@ -194,7 +194,7 @@ require (
 	github.com/zclconf/go-cty v1.18.1 // indirect
 	github.com/zclconf/go-cty-yaml v1.2.0 // indirect
 	go.mongodb.org/mongo-driver v1.17.9 // indirect
-	go.mongodb.org/mongo-driver/v2 v2.6.1 // indirect
+	go.mongodb.org/mongo-driver/v2 v2.7.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/arch v0.28.0 // indirect

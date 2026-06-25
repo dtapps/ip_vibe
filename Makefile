@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := setup
 
 # 一键设置项目（默认执行）
-setup: install-tools verify-tools mod deps
+setup: install-tools verify-tools deps
 	@echo "🎉 Project setup completed!"
 
 # 安装
@@ -45,6 +45,7 @@ verify-tools:
 # 项目目录
 PROJECT_ROOT := $(CURDIR)
 
+# 安装依赖
 deps:
 	@echo "[Deps] 安装 Go 模块依赖..."
 	go mod tidy
@@ -54,6 +55,7 @@ deps:
 	cd cmd/$(BINARY_NAME_FRONTEND) && pnpm install --frozen-lockfile --prefer-offline
 	@echo "[Deps] 完成。"
 
+# 更新依赖
 update-deps:
 	@echo "[Deps] 更新 Go 模块依赖..."
 	go get -u ./...

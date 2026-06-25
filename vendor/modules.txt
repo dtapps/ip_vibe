@@ -55,7 +55,7 @@ github.com/alibabacloud-go/alidns-20150109/v5/client
 # github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 ## explicit; go 1.14
 github.com/alibabacloud-go/cdn-20180510/v9/client
-# github.com/alibabacloud-go/darabonba-openapi/v2 v2.2.1
+# github.com/alibabacloud-go/darabonba-openapi/v2 v2.2.2
 ## explicit; go 1.14
 github.com/alibabacloud-go/darabonba-openapi/v2/client
 github.com/alibabacloud-go/darabonba-openapi/v2/models
@@ -137,7 +137,7 @@ github.com/aws/aws-sdk-go/service/sso/ssoiface
 github.com/aws/aws-sdk-go/service/ssooidc
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
-# github.com/baidubce/bce-sdk-go v0.9.269
+# github.com/baidubce/bce-sdk-go v0.9.270
 ## explicit; go 1.11
 github.com/baidubce/bce-sdk-go/auth
 github.com/baidubce/bce-sdk-go/bce
@@ -486,7 +486,7 @@ github.com/go-co-op/gocron/v2
 github.com/go-jose/go-jose/v4
 github.com/go-jose/go-jose/v4/cipher
 github.com/go-jose/go-jose/v4/json
-# github.com/go-json-experiment/json v0.0.0-20260601182631-00ed12fed2a6
+# github.com/go-json-experiment/json v0.0.0-20260623181947-01eb4420fa68
 ## explicit; go 1.26
 github.com/go-json-experiment/json
 github.com/go-json-experiment/json/internal
@@ -620,7 +620,7 @@ github.com/hashicorp/hcl/v2/hclparse
 github.com/hashicorp/hcl/v2/hclsyntax
 github.com/hashicorp/hcl/v2/hclwrite
 github.com/hashicorp/hcl/v2/json
-# github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.200
+# github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.201
 ## explicit; go 1.14
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core
 github.com/huaweicloud/huaweicloud-sdk-go-v3/core/auth
@@ -702,7 +702,7 @@ github.com/json-iterator/go
 # github.com/kaptinlin/jsonpointer v0.4.26
 ## explicit; go 1.26.3
 github.com/kaptinlin/jsonpointer
-# github.com/kaptinlin/jsonschema v0.8.0
+# github.com/kaptinlin/jsonschema v0.9.2
 ## explicit; go 1.26.4
 github.com/kaptinlin/jsonschema
 github.com/kaptinlin/jsonschema/pkg/tagparser
@@ -769,7 +769,7 @@ github.com/ncruces/go-strftime
 # github.com/nrdcg/dnspod-go v0.4.0
 ## explicit; go 1.13
 github.com/nrdcg/dnspod-go
-# github.com/pelletier/go-toml/v2 v2.4.0
+# github.com/pelletier/go-toml/v2 v2.4.2
 ## explicit; go 1.21.0
 github.com/pelletier/go-toml/v2
 github.com/pelletier/go-toml/v2/internal/parserbridge
@@ -885,7 +885,7 @@ github.com/swaggo/swag/v2/gen
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.116
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn/v20180606
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.118
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.121
 ## explicit; go 1.11
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/errors
@@ -896,7 +896,7 @@ github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/regions
 # github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.78
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323
-# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.113
+# github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.121
 ## explicit; go 1.14
 github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo/v20220901
 # github.com/tidwall/gjson v1.19.0
@@ -1069,7 +1069,7 @@ go.mongodb.org/mongo-driver/bson/bsonrw
 go.mongodb.org/mongo-driver/bson/bsontype
 go.mongodb.org/mongo-driver/bson/primitive
 go.mongodb.org/mongo-driver/x/bsonx/bsoncore
-# go.mongodb.org/mongo-driver/v2 v2.6.1
+# go.mongodb.org/mongo-driver/v2 v2.7.0
 ## explicit; go 1.19
 go.mongodb.org/mongo-driver/v2/bson
 go.mongodb.org/mongo-driver/v2/internal/binaryutil
@@ -1194,12 +1194,12 @@ golang.org/x/tools/internal/stdlib
 golang.org/x/tools/internal/typeparams
 golang.org/x/tools/internal/typesinternal
 golang.org/x/tools/internal/versions
-# google.golang.org/genproto/googleapis/api v0.0.0-20260615183401-62b3387ff324
+# google.golang.org/genproto/googleapis/api v0.0.0-20260622175928-b703f567277d
 ## explicit; go 1.25.0
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/api/httpbody
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20260615183401-62b3387ff324
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20260622175928-b703f567277d
 ## explicit; go 1.25.0
 google.golang.org/genproto/googleapis/rpc/status
 # google.golang.org/grpc v1.81.1
@@ -1354,7 +1354,7 @@ modernc.org/mathutil
 # modernc.org/memory v1.11.0
 ## explicit; go 1.23.0
 modernc.org/memory
-# modernc.org/sqlite v1.52.0
+# modernc.org/sqlite v1.53.0
 ## explicit; go 1.25.0
 modernc.org/sqlite
 modernc.org/sqlite/lib
