@@ -2,7 +2,7 @@
 FROM docker.cnb.cool/dtapp/alpine:latest
 
 # 拷贝文件到容器中
-COPY ../../bin/forwarder-linux-amd64 /app/ip_vibe_forwarder
+COPY ../../bin/forwarder-linux-amd64 /app/ip_vibe
 
 # 工作区
 WORKDIR /app
@@ -11,7 +11,7 @@ WORKDIR /app
 RUN mkdir -p /app/logs/
 
 # 设置权限
-RUN chmod +x /app/ip_vibe_forwarder
+RUN chmod +x /app/ip_vibe
 
 # 设置时区为上海
 ENV TZ=Asia/Shanghai
@@ -34,4 +34,4 @@ ENV BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD}
 ENV DEVICE_CODE=${DEVICE_CODE}
 
 # 启动服务
-ENTRYPOINT ["/app/ip_vibe_forwarder"]
+ENTRYPOINT ["/app/ip_vibe"]

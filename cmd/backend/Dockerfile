@@ -2,7 +2,7 @@
 FROM docker.cnb.cool/dtapp/alpine:latest
 
 # 拷贝文件到容器中
-COPY ../../bin/backend-linux-amd64  /app/ip_vibe_backend
+COPY ../../bin/backend-linux-amd64  /app/ip_vibe
 
 # 工作区
 WORKDIR /app
@@ -12,7 +12,7 @@ RUN mkdir -p /app/data/
 RUN mkdir -p /app/logs/
 
 # 设置权限
-RUN chmod +x /app/ip_vibe_backend 
+RUN chmod +x /app/ip_vibe 
 
 # 设置时区为上海
 ENV TZ=Asia/Shanghai
@@ -37,4 +37,4 @@ ENV DEVICE_CODE=${DEVICE_CODE}
 ENV DEVICE_NAME=${DEVICE_NAME}
 
 # 启动服务
-ENTRYPOINT ["/app/ip_vibe_backend"]
+ENTRYPOINT ["/app/ip_vibe"]
