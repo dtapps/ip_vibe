@@ -99,9 +99,6 @@ func (e *errCloseForRecreating) Error() string {
 
 var deadlineSendImmediately = monotime.Time(42 * time.Millisecond) // any value > time.Time{} and before time.Now() is fine
 
-var connTracingID atomic.Uint64              // to be accessed atomically
-func nextConnTracingID() ConnectionTracingID { return ConnectionTracingID(connTracingID.Add(1)) }
-
 type blockMode uint8
 
 const (
@@ -168,7 +165,7 @@ type Conn struct {
 	packer        packer
 	mtuDiscoverer mtuDiscoverer // initialized when the transport parameters are received
 
-	currentMTUEstimate atomic.Uint32
+	maxPayloadSizeEstimate atomic.Uint32
 
 	initialStream       *initialCryptoStream
 	handshakeStream     *cryptoStream
@@ -325,7 +322,7 @@ var newConnection = func(
 		s.qlogger,
 		s.logger,
 	)
-	s.currentMTUEstimate.Store(uint32(estimateMaxPayloadSize(protocol.ByteCount(s.config.InitialPacketSize))))
+	s.maxPayloadSizeEstimate.Store(uint32(estimateMaxPayloadSize(protocol.ByteCount(s.config.InitialPacketSize))))
 	statelessResetToken := statelessResetter.GetStatelessResetToken(srcConnID)
 	params := &wire.TransportParameters{
 		InitialMaxStreamDataBidiLocal:   protocol.ByteCount(s.config.InitialStreamReceiveWindow),
@@ -454,7 +451,7 @@ var newClientConnection = func(
 		s.qlogger,
 		s.logger,
 	)
-	s.currentMTUEstimate.Store(uint32(estimateMaxPayloadSize(protocol.ByteCount(s.config.InitialPacketSize))))
+	s.maxPayloadSizeEstimate.Store(uint32(estimateMaxPayloadSize(protocol.ByteCount(s.config.InitialPacketSize))))
 	oneRTTStream := newCryptoStream()
 	params := &wire.TransportParameters{
 		InitialMaxStreamDataBidiRemote: protocol.ByteCount(s.config.InitialStreamReceiveWindow),
@@ -777,10 +774,16 @@ func (c *Conn) supportsDatagrams() bool {
 func (c *Conn) ConnectionState() ConnectionState {
 	c.connStateMutex.Lock()
 	defer c.connStateMutex.Unlock()
+
 	cs := c.cryptoStreamHandler.ConnectionState()
 	c.connState.TLS = cs.ConnectionState
 	c.connState.Used0RTT = cs.Used0RTT
-	c.connState.SupportsStreamResetPartialDelivery = c.peerParams.EnableResetStreamAt
+	if c.peerParams != nil {
+		c.connState.SupportsDatagrams.Remote = c.supportsDatagrams()
+		c.connState.SupportsStreamResetPartialDelivery.Remote = c.peerParams.EnableResetStreamAt
+	}
+	c.connState.SupportsDatagrams.Local = c.config.EnableDatagrams
+	c.connState.SupportsStreamResetPartialDelivery.Local = c.config.EnableStreamResetPartialDelivery
 	c.connState.GSO = c.conn.capabilities().GSO
 	return c.connState
 }
@@ -1280,7 +1283,7 @@ func (c *Conn) handleShortHeaderPacket(
 		c.logger.Debugf("sending path probe packet to %s", p.remoteAddr)
 		c.logShortHeaderPacketWithDatagramID(probe, protocol.ECNNon, buf.Len(), false, datagramID)
 		c.registerPackedShortHeaderPacket(probe, protocol.ECNNon, p.rcvTime)
-		c.sendQueue.SendProbe(buf, p.remoteAddr)
+		c.sendQueue.SendProbe(buf, p.remoteAddr, p.info)
 	}
 	// We only switch paths in response to the highest-numbered non-probing packet,
 	// see section 9.3 of RFC 9000.
@@ -2125,8 +2128,10 @@ func (c *Conn) handleAckFrame(frame *wire.AckFrame, encLevel protocol.Encryption
 	}
 	// If one of the acknowledged packets was a Path MTU probe packet, this might have increased the Path MTU estimate.
 	if c.mtuDiscoverer != nil {
-		if mtu := c.mtuDiscoverer.CurrentSize(); mtu > protocol.ByteCount(c.currentMTUEstimate.Load()) {
-			c.currentMTUEstimate.Store(uint32(mtu))
+		mtu := c.mtuDiscoverer.CurrentSize()
+		maxPayloadSize := estimateMaxPayloadSize(mtu)
+		if maxPayloadSize > protocol.ByteCount(c.maxPayloadSizeEstimate.Load()) {
+			c.maxPayloadSizeEstimate.Store(uint32(maxPayloadSize))
 			c.sentPacketHandler.SetMaxDatagramSize(mtu)
 		}
 	}
@@ -2345,9 +2350,6 @@ func (c *Conn) restoreTransportParameters(params *wire.TransportParameters) {
 	c.connIDGenerator.SetMaxActiveConnIDs(params.ActiveConnectionIDLimit)
 	c.connFlowController.UpdateSendWindow(params.InitialMaxData)
 	c.streamsMap.HandleTransportParameters(params)
-	c.connStateMutex.Lock()
-	c.connState.SupportsDatagrams = c.supportsDatagrams()
-	c.connStateMutex.Unlock()
 }
 
 func (c *Conn) handleTransportParameters(params *wire.TransportParameters) error {
@@ -2377,10 +2379,6 @@ func (c *Conn) handleTransportParameters(params *wire.TransportParameters) error
 		// the client's transport parameters.
 		close(c.earlyConnReadyChan)
 	}
-
-	c.connStateMutex.Lock()
-	c.connState.SupportsDatagrams = c.supportsDatagrams()
-	c.connStateMutex.Unlock()
 	return nil
 }
 
@@ -3035,7 +3033,7 @@ func (c *Conn) SendDatagram(p []byte) error {
 	// Under many circumstances we could send a few more bytes.
 	maxDataLen := min(
 		f.MaxDataLen(c.peerParams.MaxDatagramFrameSize, c.version),
-		protocol.ByteCount(c.currentMTUEstimate.Load()),
+		protocol.ByteCount(c.maxPayloadSizeEstimate.Load()),
 	)
 	if protocol.ByteCount(len(p)) > maxDataLen {
 		return &DatagramTooLargeError{MaxDatagramPayloadSize: int64(maxDataLen)}

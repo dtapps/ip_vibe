@@ -85,11 +85,6 @@ github.com/aliyun/credentials-go/credentials/providers
 github.com/aliyun/credentials-go/credentials/request
 github.com/aliyun/credentials-go/credentials/response
 github.com/aliyun/credentials-go/credentials/utils
-# github.com/andybalholm/brotli v1.2.1
-## explicit; go 1.22
-github.com/andybalholm/brotli
-github.com/andybalholm/brotli/flate
-github.com/andybalholm/brotli/matchfinder
 # github.com/apparentlymart/go-textseg/v15 v15.0.0
 ## explicit; go 1.16
 github.com/apparentlymart/go-textseg/v15/textseg
@@ -651,33 +646,6 @@ github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/region
 github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2
 github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/model
 github.com/huaweicloud/huaweicloud-sdk-go-v3/services/dns/v2/region
-# github.com/icholy/digest v1.1.0
-## explicit; go 1.20
-github.com/icholy/digest
-github.com/icholy/digest/internal/param
-# github.com/imroc/req/v3 v3.57.0 => github.com/imroc/req/v3 v3.57.0
-## explicit; go 1.24.0
-github.com/imroc/req/v3
-github.com/imroc/req/v3/http2
-github.com/imroc/req/v3/internal
-github.com/imroc/req/v3/internal/altsvcutil
-github.com/imroc/req/v3/internal/ascii
-github.com/imroc/req/v3/internal/bisect
-github.com/imroc/req/v3/internal/charsets
-github.com/imroc/req/v3/internal/common
-github.com/imroc/req/v3/internal/compress
-github.com/imroc/req/v3/internal/dump
-github.com/imroc/req/v3/internal/godebug
-github.com/imroc/req/v3/internal/godebugs
-github.com/imroc/req/v3/internal/header
-github.com/imroc/req/v3/internal/http2
-github.com/imroc/req/v3/internal/http3
-github.com/imroc/req/v3/internal/netutil
-github.com/imroc/req/v3/internal/socks
-github.com/imroc/req/v3/internal/transport
-github.com/imroc/req/v3/internal/util
-github.com/imroc/req/v3/pkg/altsvc
-github.com/imroc/req/v3/pkg/tls
 # github.com/jdcloud-api/jdcloud-sdk-go v1.67.0
 ## explicit
 github.com/jdcloud-api/jdcloud-sdk-go/core
@@ -713,16 +681,6 @@ github.com/kingsoftcloud/sdk-go/v2/ksyun/common
 github.com/kingsoftcloud/sdk-go/v2/ksyun/common/errors
 github.com/kingsoftcloud/sdk-go/v2/ksyun/common/http
 github.com/kingsoftcloud/sdk-go/v2/ksyun/common/profile
-# github.com/klauspost/compress v1.18.6
-## explicit; go 1.24
-github.com/klauspost/compress
-github.com/klauspost/compress/fse
-github.com/klauspost/compress/huff0
-github.com/klauspost/compress/internal/cpuinfo
-github.com/klauspost/compress/internal/le
-github.com/klauspost/compress/internal/snapref
-github.com/klauspost/compress/zstd
-github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/klauspost/cpuid/v2 v2.3.0
 ## explicit; go 1.22
 github.com/klauspost/cpuid/v2
@@ -794,11 +752,11 @@ github.com/qiniu/go-sdk/v7/internal/configfile
 github.com/qiniu/go-sdk/v7/internal/env
 github.com/qiniu/go-sdk/v7/internal/io
 github.com/qiniu/go-sdk/v7/storagev2/defaults
-# github.com/quic-go/qpack v0.6.0 => github.com/quic-go/qpack v0.6.0
+# github.com/quic-go/qpack v0.6.0
 ## explicit; go 1.24
 github.com/quic-go/qpack
-# github.com/quic-go/quic-go v0.60.0 => github.com/quic-go/quic-go v0.58.0
-## explicit; go 1.24
+# github.com/quic-go/quic-go v0.60.0
+## explicit; go 1.25.0
 github.com/quic-go/quic-go
 github.com/quic-go/quic-go/http3
 github.com/quic-go/quic-go/http3/qlog
@@ -817,20 +775,6 @@ github.com/quic-go/quic-go/qlog
 github.com/quic-go/quic-go/qlogwriter
 github.com/quic-go/quic-go/qlogwriter/jsontext
 github.com/quic-go/quic-go/quicvarint
-# github.com/refraction-networking/utls v1.8.2
-## explicit; go 1.24
-github.com/refraction-networking/utls
-github.com/refraction-networking/utls/dicttls
-github.com/refraction-networking/utls/internal/boring
-github.com/refraction-networking/utls/internal/byteorder
-github.com/refraction-networking/utls/internal/fips140tls
-github.com/refraction-networking/utls/internal/helper
-github.com/refraction-networking/utls/internal/hkdf
-github.com/refraction-networking/utls/internal/hpke
-github.com/refraction-networking/utls/internal/quicvarint
-github.com/refraction-networking/utls/internal/quicvarint/protocol
-github.com/refraction-networking/utls/internal/tls12
-github.com/refraction-networking/utls/internal/tls13
 # github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec
 ## explicit; go 1.12
 github.com/remyoudompheng/bigfft
@@ -1012,9 +956,6 @@ github.com/zclconf/go-cty-yaml
 # go.dtapp.net/library/contrib/http_log v1.0.12
 ## explicit; go 1.26.0
 go.dtapp.net/library/contrib/http_log
-# go.dtapp.net/library/contrib/req_log v1.0.5
-## explicit; go 1.26.0
-go.dtapp.net/library/contrib/req_log
 # go.dtapp.net/library/contrib/resty_log v1.0.16
 ## explicit; go 1.26.0
 go.dtapp.net/library/contrib/resty_log
@@ -1089,9 +1030,6 @@ golang.org/x/arch/x86/x86asm
 ## explicit; go 1.25.0
 golang.org/x/crypto/chacha20
 golang.org/x/crypto/chacha20poly1305
-golang.org/x/crypto/cryptobyte
-golang.org/x/crypto/cryptobyte/asn1
-golang.org/x/crypto/hkdf
 golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
 golang.org/x/crypto/ocsp
@@ -1146,7 +1084,6 @@ golang.org/x/text/cases
 golang.org/x/text/encoding
 golang.org/x/text/encoding/charmap
 golang.org/x/text/encoding/htmlindex
-golang.org/x/text/encoding/ianaindex
 golang.org/x/text/encoding/internal
 golang.org/x/text/encoding/internal/identifier
 golang.org/x/text/encoding/japanese
@@ -1369,7 +1306,4 @@ rsc.io/binaryregexp/syntax
 # sigs.k8s.io/yaml v1.6.0
 ## explicit; go 1.22
 sigs.k8s.io/yaml
-# github.com/quic-go/qpack => github.com/quic-go/qpack v0.6.0
-# github.com/quic-go/quic-go => github.com/quic-go/quic-go v0.58.0
-# github.com/imroc/req/v3 => github.com/imroc/req/v3 v3.57.0
 # github.com/wdcbot/qingfeng => gitee.com/xiaowan1997/qingfeng v1.6.7
