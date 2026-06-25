@@ -11,6 +11,7 @@ FROM golang:1.27rc1-trixie
 ARG UPX_VERSION=5.2.0
 ARG GOLANGCI_LINT_VERSION=2.12.2
 ARG NODE_VERSION=26.4.0
+ARG NODE_BACKUP_VERSION=26.3.1
 ARG NFPM_VERSION=2.47.0
 
 # 1. 设置 Go 环境变量
@@ -43,9 +44,10 @@ RUN ARCH=$(uname -m) && \
     # 构建下载地址
     NODE_DIR="node-v${NODE_VERSION}-linux-${NODE_ARCH}" && \
     NODE_URL="https://mirrors.cloud.tencent.com/nodejs-release/v${NODE_VERSION}/${NODE_DIR}.tar.xz" && \
+    NODE_BACKUP_URL="https://mirrors.cloud.tencent.com/nodejs-release/v${NODE_BACKUP_VERSION}/${NODE_DIR}.tar.xz" && \
     \
     cd /tmp && \
-    wget -q -O node.tar.xz "${NODE_URL}" && \
+    (wget -q -O node.tar.xz "${NODE_URL}" || echo "主版本下载失败，尝试备用版本..." && wget -q -O node.tar.xz "${NODE_BACKUP_URL}") && \
     tar -xJf node.tar.xz -C /usr/local --strip-components=1 && \
     \
     # 配置 npm/pnpm 使用腾讯云源
