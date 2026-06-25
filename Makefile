@@ -492,19 +492,19 @@ define build_binary
 endef
 
 build-linux-amd64:
-	$(call build_binary,linux,amd64,Linux AMD64,)
+	$(call build_binary,linux,amd64,Linux x86_64,)
 
 build-linux-arm64:
 	$(call build_binary,linux,arm64,Linux ARM64,)
 
 build-windows-amd64:
-	$(call build_binary,windows,amd64,Windows AMD64,.exe)
+	$(call build_binary,windows,amd64,Windows x86_64,.exe)
 
 build-windows-arm64:
 	$(call build_binary,windows,arm64,Windows ARM64,.exe)
 
 build-darwin-amd64:
-	$(call build_binary,darwin,amd64,macOS Intel,)
+	$(call build_binary,darwin,amd64,macOS x86_64,)
 
 build-darwin-arm64:
 	$(call build_binary,darwin,arm64,macOS Apple Silicon,)
