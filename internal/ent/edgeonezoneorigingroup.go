@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -37,9 +38,9 @@ type EdgeOneZoneOriginGroup struct {
 	// 源站组类型
 	Type edgeonezoneorigingroup.Type `json:"type,omitempty"`
 	// 源站记录信息
-	Records json.RawMessage `json:"records,omitempty"`
+	Records jsontext.Value `json:"records,omitempty"`
 	// 源站组被引用实例列表
-	References json.RawMessage `json:"references,omitempty"`
+	References jsontext.Value `json:"references,omitempty"`
 	// 回源Host Header
 	HostHeader string `json:"host_header,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.

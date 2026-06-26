@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -101,7 +101,7 @@ func (_c *EsaSiteRecordCreate) SetNillableBizName(v *esasiterecord.BizName) *Esa
 }
 
 // SetData sets the "data" field.
-func (_c *EsaSiteRecordCreate) SetData(v json.RawMessage) *EsaSiteRecordCreate {
+func (_c *EsaSiteRecordCreate) SetData(v jsontext.Value) *EsaSiteRecordCreate {
 	_c.mutation.SetData(v)
 	return _c
 }
@@ -211,7 +211,7 @@ func (_c *EsaSiteRecordCreate) SetNillableComment(v *string) *EsaSiteRecordCreat
 }
 
 // SetAuthConf sets the "auth_conf" field.
-func (_c *EsaSiteRecordCreate) SetAuthConf(v json.RawMessage) *EsaSiteRecordCreate {
+func (_c *EsaSiteRecordCreate) SetAuthConf(v jsontext.Value) *EsaSiteRecordCreate {
 	_c.mutation.SetAuthConf(v)
 	return _c
 }
@@ -545,7 +545,7 @@ func (u *EsaSiteRecordUpsert) ClearBizName() *EsaSiteRecordUpsert {
 }
 
 // SetData sets the "data" field.
-func (u *EsaSiteRecordUpsert) SetData(v json.RawMessage) *EsaSiteRecordUpsert {
+func (u *EsaSiteRecordUpsert) SetData(v jsontext.Value) *EsaSiteRecordUpsert {
 	u.Set(esasiterecord.FieldData, v)
 	return u
 }
@@ -695,7 +695,7 @@ func (u *EsaSiteRecordUpsert) ClearComment() *EsaSiteRecordUpsert {
 }
 
 // SetAuthConf sets the "auth_conf" field.
-func (u *EsaSiteRecordUpsert) SetAuthConf(v json.RawMessage) *EsaSiteRecordUpsert {
+func (u *EsaSiteRecordUpsert) SetAuthConf(v jsontext.Value) *EsaSiteRecordUpsert {
 	u.Set(esasiterecord.FieldAuthConf, v)
 	return u
 }
@@ -836,7 +836,7 @@ func (u *EsaSiteRecordUpsertOne) ClearBizName() *EsaSiteRecordUpsertOne {
 }
 
 // SetData sets the "data" field.
-func (u *EsaSiteRecordUpsertOne) SetData(v json.RawMessage) *EsaSiteRecordUpsertOne {
+func (u *EsaSiteRecordUpsertOne) SetData(v jsontext.Value) *EsaSiteRecordUpsertOne {
 	return u.Update(func(s *EsaSiteRecordUpsert) {
 		s.SetData(v)
 	})
@@ -1011,7 +1011,7 @@ func (u *EsaSiteRecordUpsertOne) ClearComment() *EsaSiteRecordUpsertOne {
 }
 
 // SetAuthConf sets the "auth_conf" field.
-func (u *EsaSiteRecordUpsertOne) SetAuthConf(v json.RawMessage) *EsaSiteRecordUpsertOne {
+func (u *EsaSiteRecordUpsertOne) SetAuthConf(v jsontext.Value) *EsaSiteRecordUpsertOne {
 	return u.Update(func(s *EsaSiteRecordUpsert) {
 		s.SetAuthConf(v)
 	})
@@ -1324,7 +1324,7 @@ func (u *EsaSiteRecordUpsertBulk) ClearBizName() *EsaSiteRecordUpsertBulk {
 }
 
 // SetData sets the "data" field.
-func (u *EsaSiteRecordUpsertBulk) SetData(v json.RawMessage) *EsaSiteRecordUpsertBulk {
+func (u *EsaSiteRecordUpsertBulk) SetData(v jsontext.Value) *EsaSiteRecordUpsertBulk {
 	return u.Update(func(s *EsaSiteRecordUpsert) {
 		s.SetData(v)
 	})
@@ -1499,7 +1499,7 @@ func (u *EsaSiteRecordUpsertBulk) ClearComment() *EsaSiteRecordUpsertBulk {
 }
 
 // SetAuthConf sets the "auth_conf" field.
-func (u *EsaSiteRecordUpsertBulk) SetAuthConf(v json.RawMessage) *EsaSiteRecordUpsertBulk {
+func (u *EsaSiteRecordUpsertBulk) SetAuthConf(v jsontext.Value) *EsaSiteRecordUpsertBulk {
 	return u.Update(func(s *EsaSiteRecordUpsert) {
 		s.SetAuthConf(v)
 	})

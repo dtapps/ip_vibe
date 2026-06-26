@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -37,7 +38,7 @@ type TUNRecord struct {
 	// 服务URI（例如 127.0.0.1:8080）
 	ServeURI string `json:"serve_uri,omitempty"`
 	// TUN记录配置（JSON）
-	ConfigJSON json.RawMessage `json:"config_json,omitempty"`
+	ConfigJSON jsontext.Value `json:"config_json,omitempty"`
 	// 是否活跃
 	IsActive bool `json:"is_active,omitempty"`
 	// 最后一次刷新成功时间

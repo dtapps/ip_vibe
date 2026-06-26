@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -33,7 +34,7 @@ type CloudflareZone struct {
 	// 站点 ID
 	ZoneID string `json:"zone_id,omitempty"`
 	// 区域所属的帐户
-	Account json.RawMessage `json:"account,omitempty"`
+	Account jsontext.Value `json:"account,omitempty"`
 	// 域名
 	Name string `json:"name,omitempty"`
 	// Cloudflare分配给区域的名称服务器

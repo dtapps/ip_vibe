@@ -501,6 +501,10 @@ func init() {
 	deviceportforwardDescIsActive := deviceportforwardFields[8].Descriptor()
 	// deviceportforward.DefaultIsActive holds the default value on creation for the is_active field.
 	deviceportforward.DefaultIsActive = deviceportforwardDescIsActive.Default.(bool)
+	// deviceportforwardDescImplementationType is the schema descriptor for implementation_type field.
+	deviceportforwardDescImplementationType := deviceportforwardFields[9].Descriptor()
+	// deviceportforward.DefaultImplementationType holds the default value on creation for the implementation_type field.
+	deviceportforward.DefaultImplementationType = deviceportforwardDescImplementationType.Default.(string)
 	// deviceportforwardDescID is the schema descriptor for id field.
 	deviceportforwardDescID := deviceportforwardFields[0].Descriptor()
 	// deviceportforward.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -1028,5 +1032,5 @@ func init() {
 }
 
 const (
-	Version = "v0.14.5" // Version of ent codegen.
+	Version = "v0.14.6" // Version of ent codegen.
 )

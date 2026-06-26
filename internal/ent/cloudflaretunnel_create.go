@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -94,7 +94,7 @@ func (_c *CloudflareTunnelCreate) SetTunnelID(v string) *CloudflareTunnelCreate 
 }
 
 // SetConnections sets the "connections" field.
-func (_c *CloudflareTunnelCreate) SetConnections(v json.RawMessage) *CloudflareTunnelCreate {
+func (_c *CloudflareTunnelCreate) SetConnections(v jsontext.Value) *CloudflareTunnelCreate {
 	_c.mutation.SetConnections(v)
 	return _c
 }
@@ -467,7 +467,7 @@ func (u *CloudflareTunnelUpsert) ClearSyncAt() *CloudflareTunnelUpsert {
 }
 
 // SetConnections sets the "connections" field.
-func (u *CloudflareTunnelUpsert) SetConnections(v json.RawMessage) *CloudflareTunnelUpsert {
+func (u *CloudflareTunnelUpsert) SetConnections(v jsontext.Value) *CloudflareTunnelUpsert {
 	u.Set(cloudflaretunnel.FieldConnections, v)
 	return u
 }
@@ -659,7 +659,7 @@ func (u *CloudflareTunnelUpsertOne) ClearSyncAt() *CloudflareTunnelUpsertOne {
 }
 
 // SetConnections sets the "connections" field.
-func (u *CloudflareTunnelUpsertOne) SetConnections(v json.RawMessage) *CloudflareTunnelUpsertOne {
+func (u *CloudflareTunnelUpsertOne) SetConnections(v jsontext.Value) *CloudflareTunnelUpsertOne {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.SetConnections(v)
 	})
@@ -1035,7 +1035,7 @@ func (u *CloudflareTunnelUpsertBulk) ClearSyncAt() *CloudflareTunnelUpsertBulk {
 }
 
 // SetConnections sets the "connections" field.
-func (u *CloudflareTunnelUpsertBulk) SetConnections(v json.RawMessage) *CloudflareTunnelUpsertBulk {
+func (u *CloudflareTunnelUpsertBulk) SetConnections(v jsontext.Value) *CloudflareTunnelUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelUpsert) {
 		s.SetConnections(v)
 	})

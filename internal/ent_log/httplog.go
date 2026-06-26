@@ -4,6 +4,7 @@ package ent_log
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -28,13 +29,13 @@ type HttpLog struct {
 	// 请求头
 	RequestHeaders map[string][]string `json:"request_headers,omitempty"`
 	// 请求体
-	RequestBody json.RawMessage `json:"request_body,omitempty"`
+	RequestBody jsontext.Value `json:"request_body,omitempty"`
 	// 状态码
 	StatusCode int `json:"status_code,omitempty"`
 	// 响应头
 	ResponseHeaders map[string][]string `json:"response_headers,omitempty"`
 	// 响应体
-	ResponseBody json.RawMessage `json:"response_body,omitempty"`
+	ResponseBody jsontext.Value `json:"response_body,omitempty"`
 	// 耗时, 单位:毫秒
 	ElapseTime int64 `json:"elapse_time,omitempty"`
 	// 是否出错（如 5xx、4xx）

@@ -12,10 +12,11 @@ import (
 
 // Rule 定义转发规则
 type Rule struct {
-	ID         string   // 唯一标识
-	ListenAddr string   // 本地监听地址
-	TargetAddr string   // 目标地址
-	Protocols  []string // tcp4 / tcp6 / udp4 / udp6
+	ID                 string   // 唯一标识
+	ListenAddr         string   // 本地监听地址
+	TargetAddr         string   // 目标地址
+	Protocols          []string // tcp4 / tcp6 / udp4 / udp6
+	ImplementationType string   // 实现类型: "standard" / "tcpproxy"
 }
 
 // Stats 统计信息
@@ -36,6 +37,7 @@ type ForwardInstance struct {
 	proto    string
 	listener net.Listener
 	udpConn  *net.UDPConn
+	tcpProxy *tcpProxyHandler // tcpproxy 实现（仅 ImplementationType=tcpproxy 时使用）
 	stats    *Stats
 	cancel   context.CancelFunc
 }
@@ -172,19 +174,57 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 
 		switch proto {
 		case "tcp", "tcp4", "tcp6":
-			ln, err := startTCP(proto, laddr, raddr, stats, ctxCancel, a.logger, rule.ID)
-			if err != nil {
-				atomic.AddInt64(&stats.Errors, 1)
-				a.logger.Warn("TCP 监听启动失败",
-					slog.String("协议", proto),
-					slog.String("本地地址", laddr),
-					slog.String("目标地址", raddr),
-					slog.Any("错误", err),
-				)
-				continue
+			if rule.ImplementationType == "tcpproxy" {
+				// tcpproxy 实现：所有 TCP 协议共用一个 proxy 实例
+				// 仅在第一个 TCP 协议时创建，后续复用
+				var existing *tcpProxyHandler
+				for _, inst := range instances {
+					if inst.tcpProxy != nil {
+						existing = inst.tcpProxy
+						break
+					}
+				}
+				if existing != nil {
+					fi.tcpProxy = existing
+					fi.listener = existing // 复用，确保 Close 正常工作
+				} else {
+					tp, err := startTCPProxy(laddr, raddr, stats, ctxCancel, a.logger, rule.ID)
+					if err != nil {
+						atomic.AddInt64(&stats.Errors, 1)
+						a.logger.Warn("TCPProxy 监听启动失败",
+							slog.String("协议", proto),
+							slog.String("本地地址", laddr),
+							slog.String("目标地址", raddr),
+							slog.Any("错误", err),
+						)
+						continue
+					}
+					fi.tcpProxy = tp
+					fi.listener = tp
+				}
+			} else {
+				// standard 实现
+				ln, err := startTCP(proto, laddr, raddr, stats, ctxCancel, a.logger, rule.ID)
+				if err != nil {
+					atomic.AddInt64(&stats.Errors, 1)
+					a.logger.Warn("TCP 监听启动失败",
+						slog.String("协议", proto),
+						slog.String("本地地址", laddr),
+						slog.String("目标地址", raddr),
+						slog.Any("错误", err),
+					)
+					continue
+				}
+				fi.listener = ln
 			}
-			fi.listener = ln
 		case "udp", "udp4", "udp6":
+			if rule.ImplementationType == "tcpproxy" {
+				// tcpproxy 不支持 UDP，回退到 standard 实现
+				a.logger.Info("TCPProxy 不支持 UDP，回退到 standard 实现",
+					slog.String("规则ID", rule.ID),
+					slog.String("协议", proto),
+				)
+			}
 			c, err := startUDP(proto, laddr, raddr, stats, ctxCancel, a.logger, rule.ID)
 			if err != nil {
 				atomic.AddInt64(&stats.Errors, 1)

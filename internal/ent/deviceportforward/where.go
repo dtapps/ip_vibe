@@ -100,6 +100,11 @@ func IsActive(v bool) predicate.DevicePortForward {
 	return predicate.DevicePortForward(sql.FieldEQ(FieldIsActive, v))
 }
 
+// ImplementationType applies equality check predicate on the "implementation_type" field. It's identical to ImplementationTypeEQ.
+func ImplementationType(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEQ(FieldImplementationType, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.DevicePortForward {
 	return predicate.DevicePortForward(sql.FieldEQ(FieldCreatedAt, v))
@@ -483,6 +488,71 @@ func IsActiveEQ(v bool) predicate.DevicePortForward {
 // IsActiveNEQ applies the NEQ predicate on the "is_active" field.
 func IsActiveNEQ(v bool) predicate.DevicePortForward {
 	return predicate.DevicePortForward(sql.FieldNEQ(FieldIsActive, v))
+}
+
+// ImplementationTypeEQ applies the EQ predicate on the "implementation_type" field.
+func ImplementationTypeEQ(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEQ(FieldImplementationType, v))
+}
+
+// ImplementationTypeNEQ applies the NEQ predicate on the "implementation_type" field.
+func ImplementationTypeNEQ(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldNEQ(FieldImplementationType, v))
+}
+
+// ImplementationTypeIn applies the In predicate on the "implementation_type" field.
+func ImplementationTypeIn(vs ...string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldIn(FieldImplementationType, vs...))
+}
+
+// ImplementationTypeNotIn applies the NotIn predicate on the "implementation_type" field.
+func ImplementationTypeNotIn(vs ...string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldNotIn(FieldImplementationType, vs...))
+}
+
+// ImplementationTypeGT applies the GT predicate on the "implementation_type" field.
+func ImplementationTypeGT(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldGT(FieldImplementationType, v))
+}
+
+// ImplementationTypeGTE applies the GTE predicate on the "implementation_type" field.
+func ImplementationTypeGTE(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldGTE(FieldImplementationType, v))
+}
+
+// ImplementationTypeLT applies the LT predicate on the "implementation_type" field.
+func ImplementationTypeLT(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldLT(FieldImplementationType, v))
+}
+
+// ImplementationTypeLTE applies the LTE predicate on the "implementation_type" field.
+func ImplementationTypeLTE(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldLTE(FieldImplementationType, v))
+}
+
+// ImplementationTypeContains applies the Contains predicate on the "implementation_type" field.
+func ImplementationTypeContains(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldContains(FieldImplementationType, v))
+}
+
+// ImplementationTypeHasPrefix applies the HasPrefix predicate on the "implementation_type" field.
+func ImplementationTypeHasPrefix(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldHasPrefix(FieldImplementationType, v))
+}
+
+// ImplementationTypeHasSuffix applies the HasSuffix predicate on the "implementation_type" field.
+func ImplementationTypeHasSuffix(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldHasSuffix(FieldImplementationType, v))
+}
+
+// ImplementationTypeEqualFold applies the EqualFold predicate on the "implementation_type" field.
+func ImplementationTypeEqualFold(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldEqualFold(FieldImplementationType, v))
+}
+
+// ImplementationTypeContainsFold applies the ContainsFold predicate on the "implementation_type" field.
+func ImplementationTypeContainsFold(v string) predicate.DevicePortForward {
+	return predicate.DevicePortForward(sql.FieldContainsFold(FieldImplementationType, v))
 }
 
 // HasDevice applies the HasEdge predicate on the "device" edge.

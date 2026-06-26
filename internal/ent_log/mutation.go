@@ -4,7 +4,7 @@ package ent_log
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"sync"
@@ -3433,13 +3433,13 @@ type HttpLogMutation struct {
 	method              *string
 	url                 *string
 	request_headers     *map[string][]string
-	request_body        *json.RawMessage
-	appendrequest_body  json.RawMessage
+	request_body        *jsontext.Value
+	appendrequest_body  jsontext.Value
 	status_code         *int
 	addstatus_code      *int
 	response_headers    *map[string][]string
-	response_body       *json.RawMessage
-	appendresponse_body json.RawMessage
+	response_body       *jsontext.Value
+	appendresponse_body jsontext.Value
 	elapse_time         *int64
 	addelapse_time      *int64
 	is_error            *bool
@@ -3753,13 +3753,13 @@ func (m *HttpLogMutation) ResetRequestHeaders() {
 }
 
 // SetRequestBody sets the "request_body" field.
-func (m *HttpLogMutation) SetRequestBody(jm json.RawMessage) {
-	m.request_body = &jm
+func (m *HttpLogMutation) SetRequestBody(j jsontext.Value) {
+	m.request_body = &j
 	m.appendrequest_body = nil
 }
 
 // RequestBody returns the value of the "request_body" field in the mutation.
-func (m *HttpLogMutation) RequestBody() (r json.RawMessage, exists bool) {
+func (m *HttpLogMutation) RequestBody() (r jsontext.Value, exists bool) {
 	v := m.request_body
 	if v == nil {
 		return
@@ -3770,7 +3770,7 @@ func (m *HttpLogMutation) RequestBody() (r json.RawMessage, exists bool) {
 // OldRequestBody returns the old "request_body" field's value of the HttpLog entity.
 // If the HttpLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *HttpLogMutation) OldRequestBody(ctx context.Context) (v json.RawMessage, err error) {
+func (m *HttpLogMutation) OldRequestBody(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRequestBody is only allowed on UpdateOne operations")
 	}
@@ -3784,13 +3784,13 @@ func (m *HttpLogMutation) OldRequestBody(ctx context.Context) (v json.RawMessage
 	return oldValue.RequestBody, nil
 }
 
-// AppendRequestBody adds jm to the "request_body" field.
-func (m *HttpLogMutation) AppendRequestBody(jm json.RawMessage) {
-	m.appendrequest_body = append(m.appendrequest_body, jm...)
+// AppendRequestBody adds j to the "request_body" field.
+func (m *HttpLogMutation) AppendRequestBody(j jsontext.Value) {
+	m.appendrequest_body = append(m.appendrequest_body, j...)
 }
 
 // AppendedRequestBody returns the list of values that were appended to the "request_body" field in this mutation.
-func (m *HttpLogMutation) AppendedRequestBody() (json.RawMessage, bool) {
+func (m *HttpLogMutation) AppendedRequestBody() (jsontext.Value, bool) {
 	if len(m.appendrequest_body) == 0 {
 		return nil, false
 	}
@@ -3937,13 +3937,13 @@ func (m *HttpLogMutation) ResetResponseHeaders() {
 }
 
 // SetResponseBody sets the "response_body" field.
-func (m *HttpLogMutation) SetResponseBody(jm json.RawMessage) {
-	m.response_body = &jm
+func (m *HttpLogMutation) SetResponseBody(j jsontext.Value) {
+	m.response_body = &j
 	m.appendresponse_body = nil
 }
 
 // ResponseBody returns the value of the "response_body" field in the mutation.
-func (m *HttpLogMutation) ResponseBody() (r json.RawMessage, exists bool) {
+func (m *HttpLogMutation) ResponseBody() (r jsontext.Value, exists bool) {
 	v := m.response_body
 	if v == nil {
 		return
@@ -3954,7 +3954,7 @@ func (m *HttpLogMutation) ResponseBody() (r json.RawMessage, exists bool) {
 // OldResponseBody returns the old "response_body" field's value of the HttpLog entity.
 // If the HttpLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *HttpLogMutation) OldResponseBody(ctx context.Context) (v json.RawMessage, err error) {
+func (m *HttpLogMutation) OldResponseBody(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldResponseBody is only allowed on UpdateOne operations")
 	}
@@ -3968,13 +3968,13 @@ func (m *HttpLogMutation) OldResponseBody(ctx context.Context) (v json.RawMessag
 	return oldValue.ResponseBody, nil
 }
 
-// AppendResponseBody adds jm to the "response_body" field.
-func (m *HttpLogMutation) AppendResponseBody(jm json.RawMessage) {
-	m.appendresponse_body = append(m.appendresponse_body, jm...)
+// AppendResponseBody adds j to the "response_body" field.
+func (m *HttpLogMutation) AppendResponseBody(j jsontext.Value) {
+	m.appendresponse_body = append(m.appendresponse_body, j...)
 }
 
 // AppendedResponseBody returns the list of values that were appended to the "response_body" field in this mutation.
-func (m *HttpLogMutation) AppendedResponseBody() (json.RawMessage, bool) {
+func (m *HttpLogMutation) AppendedResponseBody() (jsontext.Value, bool) {
 	if len(m.appendresponse_body) == 0 {
 		return nil, false
 	}
@@ -4435,7 +4435,7 @@ func (m *HttpLogMutation) SetField(name string, value ent.Value) error {
 		m.SetRequestHeaders(v)
 		return nil
 	case httplog.FieldRequestBody:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -4456,7 +4456,7 @@ func (m *HttpLogMutation) SetField(name string, value ent.Value) error {
 		m.SetResponseHeaders(v)
 		return nil
 	case httplog.FieldResponseBody:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -7073,16 +7073,16 @@ type ReqLogMutation struct {
 	method               *string
 	url                  *string
 	request_headers      *map[string][]string
-	request_body         *json.RawMessage
-	appendrequest_body   json.RawMessage
+	request_body         *jsontext.Value
+	appendrequest_body   jsontext.Value
 	request_query_params *map[string][]string
 	request_form_data    *map[string][]string
 	request_path_params  *map[string]string
 	status_code          *int
 	addstatus_code       *int
 	response_headers     *map[string][]string
-	response_body        *json.RawMessage
-	appendresponse_body  json.RawMessage
+	response_body        *jsontext.Value
+	appendresponse_body  jsontext.Value
 	elapse_time          *int64
 	addelapse_time       *int64
 	is_error             *bool
@@ -7396,13 +7396,13 @@ func (m *ReqLogMutation) ResetRequestHeaders() {
 }
 
 // SetRequestBody sets the "request_body" field.
-func (m *ReqLogMutation) SetRequestBody(jm json.RawMessage) {
-	m.request_body = &jm
+func (m *ReqLogMutation) SetRequestBody(j jsontext.Value) {
+	m.request_body = &j
 	m.appendrequest_body = nil
 }
 
 // RequestBody returns the value of the "request_body" field in the mutation.
-func (m *ReqLogMutation) RequestBody() (r json.RawMessage, exists bool) {
+func (m *ReqLogMutation) RequestBody() (r jsontext.Value, exists bool) {
 	v := m.request_body
 	if v == nil {
 		return
@@ -7413,7 +7413,7 @@ func (m *ReqLogMutation) RequestBody() (r json.RawMessage, exists bool) {
 // OldRequestBody returns the old "request_body" field's value of the ReqLog entity.
 // If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ReqLogMutation) OldRequestBody(ctx context.Context) (v json.RawMessage, err error) {
+func (m *ReqLogMutation) OldRequestBody(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRequestBody is only allowed on UpdateOne operations")
 	}
@@ -7427,13 +7427,13 @@ func (m *ReqLogMutation) OldRequestBody(ctx context.Context) (v json.RawMessage,
 	return oldValue.RequestBody, nil
 }
 
-// AppendRequestBody adds jm to the "request_body" field.
-func (m *ReqLogMutation) AppendRequestBody(jm json.RawMessage) {
-	m.appendrequest_body = append(m.appendrequest_body, jm...)
+// AppendRequestBody adds j to the "request_body" field.
+func (m *ReqLogMutation) AppendRequestBody(j jsontext.Value) {
+	m.appendrequest_body = append(m.appendrequest_body, j...)
 }
 
 // AppendedRequestBody returns the list of values that were appended to the "request_body" field in this mutation.
-func (m *ReqLogMutation) AppendedRequestBody() (json.RawMessage, bool) {
+func (m *ReqLogMutation) AppendedRequestBody() (jsontext.Value, bool) {
 	if len(m.appendrequest_body) == 0 {
 		return nil, false
 	}
@@ -7727,13 +7727,13 @@ func (m *ReqLogMutation) ResetResponseHeaders() {
 }
 
 // SetResponseBody sets the "response_body" field.
-func (m *ReqLogMutation) SetResponseBody(jm json.RawMessage) {
-	m.response_body = &jm
+func (m *ReqLogMutation) SetResponseBody(j jsontext.Value) {
+	m.response_body = &j
 	m.appendresponse_body = nil
 }
 
 // ResponseBody returns the value of the "response_body" field in the mutation.
-func (m *ReqLogMutation) ResponseBody() (r json.RawMessage, exists bool) {
+func (m *ReqLogMutation) ResponseBody() (r jsontext.Value, exists bool) {
 	v := m.response_body
 	if v == nil {
 		return
@@ -7744,7 +7744,7 @@ func (m *ReqLogMutation) ResponseBody() (r json.RawMessage, exists bool) {
 // OldResponseBody returns the old "response_body" field's value of the ReqLog entity.
 // If the ReqLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ReqLogMutation) OldResponseBody(ctx context.Context) (v json.RawMessage, err error) {
+func (m *ReqLogMutation) OldResponseBody(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldResponseBody is only allowed on UpdateOne operations")
 	}
@@ -7758,13 +7758,13 @@ func (m *ReqLogMutation) OldResponseBody(ctx context.Context) (v json.RawMessage
 	return oldValue.ResponseBody, nil
 }
 
-// AppendResponseBody adds jm to the "response_body" field.
-func (m *ReqLogMutation) AppendResponseBody(jm json.RawMessage) {
-	m.appendresponse_body = append(m.appendresponse_body, jm...)
+// AppendResponseBody adds j to the "response_body" field.
+func (m *ReqLogMutation) AppendResponseBody(j jsontext.Value) {
+	m.appendresponse_body = append(m.appendresponse_body, j...)
 }
 
 // AppendedResponseBody returns the list of values that were appended to the "response_body" field in this mutation.
-func (m *ReqLogMutation) AppendedResponseBody() (json.RawMessage, bool) {
+func (m *ReqLogMutation) AppendedResponseBody() (jsontext.Value, bool) {
 	if len(m.appendresponse_body) == 0 {
 		return nil, false
 	}
@@ -8246,7 +8246,7 @@ func (m *ReqLogMutation) SetField(name string, value ent.Value) error {
 		m.SetRequestHeaders(v)
 		return nil
 	case reqlog.FieldRequestBody:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -8288,7 +8288,7 @@ func (m *ReqLogMutation) SetField(name string, value ent.Value) error {
 		m.SetResponseHeaders(v)
 		return nil
 	case reqlog.FieldResponseBody:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -8608,16 +8608,16 @@ type RestyLogMutation struct {
 	method               *string
 	url                  *string
 	request_headers      *map[string][]string
-	request_body         *json.RawMessage
-	appendrequest_body   json.RawMessage
+	request_body         *jsontext.Value
+	appendrequest_body   jsontext.Value
 	request_query_params *map[string][]string
 	request_form_data    *map[string][]string
 	request_path_params  *map[string]string
 	status_code          *int
 	addstatus_code       *int
 	response_headers     *map[string][]string
-	response_body        *json.RawMessage
-	appendresponse_body  json.RawMessage
+	response_body        *jsontext.Value
+	appendresponse_body  jsontext.Value
 	elapse_time          *int64
 	addelapse_time       *int64
 	is_error             *bool
@@ -8932,13 +8932,13 @@ func (m *RestyLogMutation) ResetRequestHeaders() {
 }
 
 // SetRequestBody sets the "request_body" field.
-func (m *RestyLogMutation) SetRequestBody(jm json.RawMessage) {
-	m.request_body = &jm
+func (m *RestyLogMutation) SetRequestBody(j jsontext.Value) {
+	m.request_body = &j
 	m.appendrequest_body = nil
 }
 
 // RequestBody returns the value of the "request_body" field in the mutation.
-func (m *RestyLogMutation) RequestBody() (r json.RawMessage, exists bool) {
+func (m *RestyLogMutation) RequestBody() (r jsontext.Value, exists bool) {
 	v := m.request_body
 	if v == nil {
 		return
@@ -8949,7 +8949,7 @@ func (m *RestyLogMutation) RequestBody() (r json.RawMessage, exists bool) {
 // OldRequestBody returns the old "request_body" field's value of the RestyLog entity.
 // If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RestyLogMutation) OldRequestBody(ctx context.Context) (v json.RawMessage, err error) {
+func (m *RestyLogMutation) OldRequestBody(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRequestBody is only allowed on UpdateOne operations")
 	}
@@ -8963,13 +8963,13 @@ func (m *RestyLogMutation) OldRequestBody(ctx context.Context) (v json.RawMessag
 	return oldValue.RequestBody, nil
 }
 
-// AppendRequestBody adds jm to the "request_body" field.
-func (m *RestyLogMutation) AppendRequestBody(jm json.RawMessage) {
-	m.appendrequest_body = append(m.appendrequest_body, jm...)
+// AppendRequestBody adds j to the "request_body" field.
+func (m *RestyLogMutation) AppendRequestBody(j jsontext.Value) {
+	m.appendrequest_body = append(m.appendrequest_body, j...)
 }
 
 // AppendedRequestBody returns the list of values that were appended to the "request_body" field in this mutation.
-func (m *RestyLogMutation) AppendedRequestBody() (json.RawMessage, bool) {
+func (m *RestyLogMutation) AppendedRequestBody() (jsontext.Value, bool) {
 	if len(m.appendrequest_body) == 0 {
 		return nil, false
 	}
@@ -9263,13 +9263,13 @@ func (m *RestyLogMutation) ResetResponseHeaders() {
 }
 
 // SetResponseBody sets the "response_body" field.
-func (m *RestyLogMutation) SetResponseBody(jm json.RawMessage) {
-	m.response_body = &jm
+func (m *RestyLogMutation) SetResponseBody(j jsontext.Value) {
+	m.response_body = &j
 	m.appendresponse_body = nil
 }
 
 // ResponseBody returns the value of the "response_body" field in the mutation.
-func (m *RestyLogMutation) ResponseBody() (r json.RawMessage, exists bool) {
+func (m *RestyLogMutation) ResponseBody() (r jsontext.Value, exists bool) {
 	v := m.response_body
 	if v == nil {
 		return
@@ -9280,7 +9280,7 @@ func (m *RestyLogMutation) ResponseBody() (r json.RawMessage, exists bool) {
 // OldResponseBody returns the old "response_body" field's value of the RestyLog entity.
 // If the RestyLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RestyLogMutation) OldResponseBody(ctx context.Context) (v json.RawMessage, err error) {
+func (m *RestyLogMutation) OldResponseBody(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldResponseBody is only allowed on UpdateOne operations")
 	}
@@ -9294,13 +9294,13 @@ func (m *RestyLogMutation) OldResponseBody(ctx context.Context) (v json.RawMessa
 	return oldValue.ResponseBody, nil
 }
 
-// AppendResponseBody adds jm to the "response_body" field.
-func (m *RestyLogMutation) AppendResponseBody(jm json.RawMessage) {
-	m.appendresponse_body = append(m.appendresponse_body, jm...)
+// AppendResponseBody adds j to the "response_body" field.
+func (m *RestyLogMutation) AppendResponseBody(j jsontext.Value) {
+	m.appendresponse_body = append(m.appendresponse_body, j...)
 }
 
 // AppendedResponseBody returns the list of values that were appended to the "response_body" field in this mutation.
-func (m *RestyLogMutation) AppendedResponseBody() (json.RawMessage, bool) {
+func (m *RestyLogMutation) AppendedResponseBody() (jsontext.Value, bool) {
 	if len(m.appendresponse_body) == 0 {
 		return nil, false
 	}
@@ -9838,7 +9838,7 @@ func (m *RestyLogMutation) SetField(name string, value ent.Value) error {
 		m.SetRequestHeaders(v)
 		return nil
 	case restylog.FieldRequestBody:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -9880,7 +9880,7 @@ func (m *RestyLogMutation) SetField(name string, value ent.Value) error {
 		m.SetResponseHeaders(v)
 		return nil
 	case restylog.FieldResponseBody:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -11318,8 +11318,8 @@ type WebhookHistoryMutation struct {
 	url                *string
 	title              *string
 	content            *string
-	response           *json.RawMessage
-	appendresponse     json.RawMessage
+	response           *jsontext.Value
+	appendresponse     jsontext.Value
 	success            *bool
 	error_message      *string
 	clearedFields      map[string]struct{}
@@ -11729,13 +11729,13 @@ func (m *WebhookHistoryMutation) ResetContent() {
 }
 
 // SetResponse sets the "response" field.
-func (m *WebhookHistoryMutation) SetResponse(jm json.RawMessage) {
-	m.response = &jm
+func (m *WebhookHistoryMutation) SetResponse(j jsontext.Value) {
+	m.response = &j
 	m.appendresponse = nil
 }
 
 // Response returns the value of the "response" field in the mutation.
-func (m *WebhookHistoryMutation) Response() (r json.RawMessage, exists bool) {
+func (m *WebhookHistoryMutation) Response() (r jsontext.Value, exists bool) {
 	v := m.response
 	if v == nil {
 		return
@@ -11746,7 +11746,7 @@ func (m *WebhookHistoryMutation) Response() (r json.RawMessage, exists bool) {
 // OldResponse returns the old "response" field's value of the WebhookHistory entity.
 // If the WebhookHistory object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WebhookHistoryMutation) OldResponse(ctx context.Context) (v json.RawMessage, err error) {
+func (m *WebhookHistoryMutation) OldResponse(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldResponse is only allowed on UpdateOne operations")
 	}
@@ -11760,13 +11760,13 @@ func (m *WebhookHistoryMutation) OldResponse(ctx context.Context) (v json.RawMes
 	return oldValue.Response, nil
 }
 
-// AppendResponse adds jm to the "response" field.
-func (m *WebhookHistoryMutation) AppendResponse(jm json.RawMessage) {
-	m.appendresponse = append(m.appendresponse, jm...)
+// AppendResponse adds j to the "response" field.
+func (m *WebhookHistoryMutation) AppendResponse(j jsontext.Value) {
+	m.appendresponse = append(m.appendresponse, j...)
 }
 
 // AppendedResponse returns the list of values that were appended to the "response" field in this mutation.
-func (m *WebhookHistoryMutation) AppendedResponse() (json.RawMessage, bool) {
+func (m *WebhookHistoryMutation) AppendedResponse() (jsontext.Value, bool) {
 	if len(m.appendresponse) == 0 {
 		return nil, false
 	}
@@ -12045,7 +12045,7 @@ func (m *WebhookHistoryMutation) SetField(name string, value ent.Value) error {
 		m.SetContent(v)
 		return nil
 	case webhookhistory.FieldResponse:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

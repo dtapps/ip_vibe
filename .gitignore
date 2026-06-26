@@ -4,6 +4,7 @@
 .idea
 .vscode
 .trae
+.codebuddy
 .log
 *_test.go
 /bin

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -33,7 +34,7 @@ type EsaSiteRecord struct {
 	// 记录加速时的业务场景
 	BizName esasiterecord.BizName `json:"biz_name,omitempty"`
 	// 记录的具体 DNS 信息
-	Data json.RawMessage `json:"data,omitempty"`
+	Data jsontext.Value `json:"data,omitempty"`
 	// 记录是否开启代理加速
 	Proxied bool `json:"proxied,omitempty"`
 	// 记录 ID
@@ -51,7 +52,7 @@ type EsaSiteRecord struct {
 	// 记录的备注
 	Comment string `json:"comment,omitempty"`
 	// CNAME 记录的源站鉴权信息
-	AuthConf json.RawMessage `json:"auth_conf,omitempty"`
+	AuthConf jsontext.Value `json:"auth_conf,omitempty"`
 	// 回源 HOST 策略
 	HostPolicy esasiterecord.HostPolicy `json:"host_policy,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.

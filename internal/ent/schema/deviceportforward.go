@@ -82,6 +82,11 @@ func (DevicePortForward) Fields() []ent.Field {
 			Default(false).
 			Comment("是否活跃").
 			Annotations(entsql.WithComments(true)),
+
+		field.String("implementation_type").
+			Default("standard").
+			Comment("实现类型: standard(标准库) / tcpproxy(inet.af/tcpproxy)").
+			Annotations(entsql.WithComments(true)),
 	}
 }
 

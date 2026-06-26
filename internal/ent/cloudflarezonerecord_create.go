@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -163,7 +163,7 @@ func (_c *CloudflareZoneRecordCreate) SetNillableProxied(v *bool) *CloudflareZon
 }
 
 // SetSettings sets the "settings" field.
-func (_c *CloudflareZoneRecordCreate) SetSettings(v json.RawMessage) *CloudflareZoneRecordCreate {
+func (_c *CloudflareZoneRecordCreate) SetSettings(v jsontext.Value) *CloudflareZoneRecordCreate {
 	_c.mutation.SetSettings(v)
 	return _c
 }
@@ -556,7 +556,7 @@ func (u *CloudflareZoneRecordUpsert) ClearProxied() *CloudflareZoneRecordUpsert 
 }
 
 // SetSettings sets the "settings" field.
-func (u *CloudflareZoneRecordUpsert) SetSettings(v json.RawMessage) *CloudflareZoneRecordUpsert {
+func (u *CloudflareZoneRecordUpsert) SetSettings(v jsontext.Value) *CloudflareZoneRecordUpsert {
 	u.Set(cloudflarezonerecord.FieldSettings, v)
 	return u
 }
@@ -805,7 +805,7 @@ func (u *CloudflareZoneRecordUpsertOne) ClearProxied() *CloudflareZoneRecordUpse
 }
 
 // SetSettings sets the "settings" field.
-func (u *CloudflareZoneRecordUpsertOne) SetSettings(v json.RawMessage) *CloudflareZoneRecordUpsertOne {
+func (u *CloudflareZoneRecordUpsertOne) SetSettings(v jsontext.Value) *CloudflareZoneRecordUpsertOne {
 	return u.Update(func(s *CloudflareZoneRecordUpsert) {
 		s.SetSettings(v)
 	})
@@ -1230,7 +1230,7 @@ func (u *CloudflareZoneRecordUpsertBulk) ClearProxied() *CloudflareZoneRecordUps
 }
 
 // SetSettings sets the "settings" field.
-func (u *CloudflareZoneRecordUpsertBulk) SetSettings(v json.RawMessage) *CloudflareZoneRecordUpsertBulk {
+func (u *CloudflareZoneRecordUpsertBulk) SetSettings(v jsontext.Value) *CloudflareZoneRecordUpsertBulk {
 	return u.Update(func(s *CloudflareZoneRecordUpsert) {
 		s.SetSettings(v)
 	})

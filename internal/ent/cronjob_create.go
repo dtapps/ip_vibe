@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -79,7 +79,7 @@ func (_c *CronJobCreate) SetHandlerName(v string) *CronJobCreate {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (_c *CronJobCreate) SetHandlerArgs(v json.RawMessage) *CronJobCreate {
+func (_c *CronJobCreate) SetHandlerArgs(v jsontext.Value) *CronJobCreate {
 	_c.mutation.SetHandlerArgs(v)
 	return _c
 }
@@ -623,7 +623,7 @@ func (u *CronJobUpsert) UpdateHandlerName() *CronJobUpsert {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (u *CronJobUpsert) SetHandlerArgs(v json.RawMessage) *CronJobUpsert {
+func (u *CronJobUpsert) SetHandlerArgs(v jsontext.Value) *CronJobUpsert {
 	u.Set(cronjob.FieldHandlerArgs, v)
 	return u
 }
@@ -978,7 +978,7 @@ func (u *CronJobUpsertOne) UpdateHandlerName() *CronJobUpsertOne {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (u *CronJobUpsertOne) SetHandlerArgs(v json.RawMessage) *CronJobUpsertOne {
+func (u *CronJobUpsertOne) SetHandlerArgs(v jsontext.Value) *CronJobUpsertOne {
 	return u.Update(func(s *CronJobUpsert) {
 		s.SetHandlerArgs(v)
 	})
@@ -1544,7 +1544,7 @@ func (u *CronJobUpsertBulk) UpdateHandlerName() *CronJobUpsertBulk {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (u *CronJobUpsertBulk) SetHandlerArgs(v json.RawMessage) *CronJobUpsertBulk {
+func (u *CronJobUpsertBulk) SetHandlerArgs(v jsontext.Value) *CronJobUpsertBulk {
 	return u.Update(func(s *CronJobUpsert) {
 		s.SetHandlerArgs(v)
 	})

@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -53,13 +53,13 @@ func (_u *CloudflareZoneUpdate) ClearSyncAt() *CloudflareZoneUpdate {
 }
 
 // SetAccount sets the "account" field.
-func (_u *CloudflareZoneUpdate) SetAccount(v json.RawMessage) *CloudflareZoneUpdate {
+func (_u *CloudflareZoneUpdate) SetAccount(v jsontext.Value) *CloudflareZoneUpdate {
 	_u.mutation.SetAccount(v)
 	return _u
 }
 
 // AppendAccount appends value to the "account" field.
-func (_u *CloudflareZoneUpdate) AppendAccount(v json.RawMessage) *CloudflareZoneUpdate {
+func (_u *CloudflareZoneUpdate) AppendAccount(v jsontext.Value) *CloudflareZoneUpdate {
 	_u.mutation.AppendAccount(v)
 	return _u
 }
@@ -514,13 +514,13 @@ func (_u *CloudflareZoneUpdateOne) ClearSyncAt() *CloudflareZoneUpdateOne {
 }
 
 // SetAccount sets the "account" field.
-func (_u *CloudflareZoneUpdateOne) SetAccount(v json.RawMessage) *CloudflareZoneUpdateOne {
+func (_u *CloudflareZoneUpdateOne) SetAccount(v jsontext.Value) *CloudflareZoneUpdateOne {
 	_u.mutation.SetAccount(v)
 	return _u
 }
 
 // AppendAccount appends value to the "account" field.
-func (_u *CloudflareZoneUpdateOne) AppendAccount(v json.RawMessage) *CloudflareZoneUpdateOne {
+func (_u *CloudflareZoneUpdateOne) AppendAccount(v jsontext.Value) *CloudflareZoneUpdateOne {
 	_u.mutation.AppendAccount(v)
 	return _u
 }

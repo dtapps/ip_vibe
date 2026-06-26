@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -112,13 +112,13 @@ func (_u *CloudflareTunnelIngressUpdate) ClearPath() *CloudflareTunnelIngressUpd
 }
 
 // SetOriginRequest sets the "origin_request" field.
-func (_u *CloudflareTunnelIngressUpdate) SetOriginRequest(v json.RawMessage) *CloudflareTunnelIngressUpdate {
+func (_u *CloudflareTunnelIngressUpdate) SetOriginRequest(v jsontext.Value) *CloudflareTunnelIngressUpdate {
 	_u.mutation.SetOriginRequest(v)
 	return _u
 }
 
 // AppendOriginRequest appends value to the "origin_request" field.
-func (_u *CloudflareTunnelIngressUpdate) AppendOriginRequest(v json.RawMessage) *CloudflareTunnelIngressUpdate {
+func (_u *CloudflareTunnelIngressUpdate) AppendOriginRequest(v jsontext.Value) *CloudflareTunnelIngressUpdate {
 	_u.mutation.AppendOriginRequest(v)
 	return _u
 }
@@ -346,13 +346,13 @@ func (_u *CloudflareTunnelIngressUpdateOne) ClearPath() *CloudflareTunnelIngress
 }
 
 // SetOriginRequest sets the "origin_request" field.
-func (_u *CloudflareTunnelIngressUpdateOne) SetOriginRequest(v json.RawMessage) *CloudflareTunnelIngressUpdateOne {
+func (_u *CloudflareTunnelIngressUpdateOne) SetOriginRequest(v jsontext.Value) *CloudflareTunnelIngressUpdateOne {
 	_u.mutation.SetOriginRequest(v)
 	return _u
 }
 
 // AppendOriginRequest appends value to the "origin_request" field.
-func (_u *CloudflareTunnelIngressUpdateOne) AppendOriginRequest(v json.RawMessage) *CloudflareTunnelIngressUpdateOne {
+func (_u *CloudflareTunnelIngressUpdateOne) AppendOriginRequest(v jsontext.Value) *CloudflareTunnelIngressUpdateOne {
 	_u.mutation.AppendOriginRequest(v)
 	return _u
 }

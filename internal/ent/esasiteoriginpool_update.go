@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -112,13 +112,13 @@ func (_u *EsaSiteOriginPoolUpdate) ClearEnabled() *EsaSiteOriginPoolUpdate {
 }
 
 // SetReferences sets the "references" field.
-func (_u *EsaSiteOriginPoolUpdate) SetReferences(v json.RawMessage) *EsaSiteOriginPoolUpdate {
+func (_u *EsaSiteOriginPoolUpdate) SetReferences(v jsontext.Value) *EsaSiteOriginPoolUpdate {
 	_u.mutation.SetReferences(v)
 	return _u
 }
 
 // AppendReferences appends value to the "references" field.
-func (_u *EsaSiteOriginPoolUpdate) AppendReferences(v json.RawMessage) *EsaSiteOriginPoolUpdate {
+func (_u *EsaSiteOriginPoolUpdate) AppendReferences(v jsontext.Value) *EsaSiteOriginPoolUpdate {
 	_u.mutation.AppendReferences(v)
 	return _u
 }
@@ -157,13 +157,13 @@ func (_u *EsaSiteOriginPoolUpdate) ClearReferenceLBCount() *EsaSiteOriginPoolUpd
 }
 
 // SetOrigins sets the "origins" field.
-func (_u *EsaSiteOriginPoolUpdate) SetOrigins(v json.RawMessage) *EsaSiteOriginPoolUpdate {
+func (_u *EsaSiteOriginPoolUpdate) SetOrigins(v jsontext.Value) *EsaSiteOriginPoolUpdate {
 	_u.mutation.SetOrigins(v)
 	return _u
 }
 
 // AppendOrigins appends value to the "origins" field.
-func (_u *EsaSiteOriginPoolUpdate) AppendOrigins(v json.RawMessage) *EsaSiteOriginPoolUpdate {
+func (_u *EsaSiteOriginPoolUpdate) AppendOrigins(v jsontext.Value) *EsaSiteOriginPoolUpdate {
 	_u.mutation.AppendOrigins(v)
 	return _u
 }
@@ -411,13 +411,13 @@ func (_u *EsaSiteOriginPoolUpdateOne) ClearEnabled() *EsaSiteOriginPoolUpdateOne
 }
 
 // SetReferences sets the "references" field.
-func (_u *EsaSiteOriginPoolUpdateOne) SetReferences(v json.RawMessage) *EsaSiteOriginPoolUpdateOne {
+func (_u *EsaSiteOriginPoolUpdateOne) SetReferences(v jsontext.Value) *EsaSiteOriginPoolUpdateOne {
 	_u.mutation.SetReferences(v)
 	return _u
 }
 
 // AppendReferences appends value to the "references" field.
-func (_u *EsaSiteOriginPoolUpdateOne) AppendReferences(v json.RawMessage) *EsaSiteOriginPoolUpdateOne {
+func (_u *EsaSiteOriginPoolUpdateOne) AppendReferences(v jsontext.Value) *EsaSiteOriginPoolUpdateOne {
 	_u.mutation.AppendReferences(v)
 	return _u
 }
@@ -456,13 +456,13 @@ func (_u *EsaSiteOriginPoolUpdateOne) ClearReferenceLBCount() *EsaSiteOriginPool
 }
 
 // SetOrigins sets the "origins" field.
-func (_u *EsaSiteOriginPoolUpdateOne) SetOrigins(v json.RawMessage) *EsaSiteOriginPoolUpdateOne {
+func (_u *EsaSiteOriginPoolUpdateOne) SetOrigins(v jsontext.Value) *EsaSiteOriginPoolUpdateOne {
 	_u.mutation.SetOrigins(v)
 	return _u
 }
 
 // AppendOrigins appends value to the "origins" field.
-func (_u *EsaSiteOriginPoolUpdateOne) AppendOrigins(v json.RawMessage) *EsaSiteOriginPoolUpdateOne {
+func (_u *EsaSiteOriginPoolUpdateOne) AppendOrigins(v jsontext.Value) *EsaSiteOriginPoolUpdateOne {
 	_u.mutation.AppendOrigins(v)
 	return _u
 }

@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -100,7 +100,7 @@ func (_c *CDNRecordCreate) SetType(v cdnrecord.Type) *CDNRecordCreate {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (_c *CDNRecordCreate) SetConfigJSON(v json.RawMessage) *CDNRecordCreate {
+func (_c *CDNRecordCreate) SetConfigJSON(v jsontext.Value) *CDNRecordCreate {
 	_c.mutation.SetConfigJSON(v)
 	return _c
 }
@@ -537,7 +537,7 @@ func (u *CDNRecordUpsert) UpdateType() *CDNRecordUpsert {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *CDNRecordUpsert) SetConfigJSON(v json.RawMessage) *CDNRecordUpsert {
+func (u *CDNRecordUpsert) SetConfigJSON(v jsontext.Value) *CDNRecordUpsert {
 	u.Set(cdnrecord.FieldConfigJSON, v)
 	return u
 }
@@ -722,7 +722,7 @@ func (u *CDNRecordUpsertOne) UpdateType() *CDNRecordUpsertOne {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *CDNRecordUpsertOne) SetConfigJSON(v json.RawMessage) *CDNRecordUpsertOne {
+func (u *CDNRecordUpsertOne) SetConfigJSON(v jsontext.Value) *CDNRecordUpsertOne {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.SetConfigJSON(v)
 	})
@@ -1087,7 +1087,7 @@ func (u *CDNRecordUpsertBulk) UpdateType() *CDNRecordUpsertBulk {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *CDNRecordUpsertBulk) SetConfigJSON(v json.RawMessage) *CDNRecordUpsertBulk {
+func (u *CDNRecordUpsertBulk) SetConfigJSON(v jsontext.Value) *CDNRecordUpsertBulk {
 	return u.Update(func(s *CDNRecordUpsert) {
 		s.SetConfigJSON(v)
 	})

@@ -4,7 +4,7 @@ package ent_log
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -72,7 +72,7 @@ func (_c *HttpLogCreate) SetRequestHeaders(v map[string][]string) *HttpLogCreate
 }
 
 // SetRequestBody sets the "request_body" field.
-func (_c *HttpLogCreate) SetRequestBody(v json.RawMessage) *HttpLogCreate {
+func (_c *HttpLogCreate) SetRequestBody(v jsontext.Value) *HttpLogCreate {
 	_c.mutation.SetRequestBody(v)
 	return _c
 }
@@ -98,7 +98,7 @@ func (_c *HttpLogCreate) SetResponseHeaders(v map[string][]string) *HttpLogCreat
 }
 
 // SetResponseBody sets the "response_body" field.
-func (_c *HttpLogCreate) SetResponseBody(v json.RawMessage) *HttpLogCreate {
+func (_c *HttpLogCreate) SetResponseBody(v jsontext.Value) *HttpLogCreate {
 	_c.mutation.SetResponseBody(v)
 	return _c
 }

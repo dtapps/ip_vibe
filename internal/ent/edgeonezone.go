@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -41,13 +42,13 @@ type EdgeOneZone struct {
 	// 站点接入类型
 	Type edgeonezone.Type `json:"type,omitempty"`
 	// 计费资源列表
-	Resources json.RawMessage `json:"resources,omitempty"`
+	Resources jsontext.Value `json:"resources,omitempty"`
 	// NS 类型站点详情
-	NsDetail json.RawMessage `json:"ns_detail,omitempty"`
+	NsDetail jsontext.Value `json:"ns_detail,omitempty"`
 	// CNAME 类型站点详情
-	CnameDetail json.RawMessage `json:"cname_detail,omitempty"`
+	CnameDetail jsontext.Value `json:"cname_detail,omitempty"`
 	// DNSPod 托管类型站点详情
-	DnspodDetail json.RawMessage `json:"dnspod_detail,omitempty"`
+	DnspodDetail jsontext.Value `json:"dnspod_detail,omitempty"`
 	// 状态
 	Status edgeonezone.Status `json:"status,omitempty"`
 	// CNAME 接入状态

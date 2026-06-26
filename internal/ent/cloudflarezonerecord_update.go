@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -152,13 +152,13 @@ func (_u *CloudflareZoneRecordUpdate) ClearProxied() *CloudflareZoneRecordUpdate
 }
 
 // SetSettings sets the "settings" field.
-func (_u *CloudflareZoneRecordUpdate) SetSettings(v json.RawMessage) *CloudflareZoneRecordUpdate {
+func (_u *CloudflareZoneRecordUpdate) SetSettings(v jsontext.Value) *CloudflareZoneRecordUpdate {
 	_u.mutation.SetSettings(v)
 	return _u
 }
 
 // AppendSettings appends value to the "settings" field.
-func (_u *CloudflareZoneRecordUpdate) AppendSettings(v json.RawMessage) *CloudflareZoneRecordUpdate {
+func (_u *CloudflareZoneRecordUpdate) AppendSettings(v jsontext.Value) *CloudflareZoneRecordUpdate {
 	_u.mutation.AppendSettings(v)
 	return _u
 }
@@ -505,13 +505,13 @@ func (_u *CloudflareZoneRecordUpdateOne) ClearProxied() *CloudflareZoneRecordUpd
 }
 
 // SetSettings sets the "settings" field.
-func (_u *CloudflareZoneRecordUpdateOne) SetSettings(v json.RawMessage) *CloudflareZoneRecordUpdateOne {
+func (_u *CloudflareZoneRecordUpdateOne) SetSettings(v jsontext.Value) *CloudflareZoneRecordUpdateOne {
 	_u.mutation.SetSettings(v)
 	return _u
 }
 
 // AppendSettings appends value to the "settings" field.
-func (_u *CloudflareZoneRecordUpdateOne) AppendSettings(v json.RawMessage) *CloudflareZoneRecordUpdateOne {
+func (_u *CloudflareZoneRecordUpdateOne) AppendSettings(v jsontext.Value) *CloudflareZoneRecordUpdateOne {
 	_u.mutation.AppendSettings(v)
 	return _u
 }

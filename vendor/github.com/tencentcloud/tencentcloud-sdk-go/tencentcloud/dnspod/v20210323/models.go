@@ -327,7 +327,7 @@ type CreateAndPayDealRequestParams struct {
 	// <p>商品类型，1 域名套餐 2 增值服务</p>
 	GoodsType *uint64 `json:"GoodsType,omitnil,omitempty" name:"GoodsType"`
 
-	// <p>套餐类型：<br>DP_PLUS：专业版<br>DP_EXPERT：企业版<br>DP_ULTRA：尊享版</p><p>增值服务类型<br>LB：负载均衡<br>URL：URL转发<br>DMONITOR_TASKS：D监控任务数<br>DMONITOR_IP：D监控备用 IP 数<br>CUSTOMLINE：自定义线路数</p>
+	// <p>套餐类型 或 增值服务类型</p><p>枚举值：</p><ul><li>DP_PLUS： 专业版</li><li>DP_EXPERT： 企业版</li><li>DP_ULTRA： 尊享版</li><li>LB： 负载均衡</li><li>URL： URL转发</li><li>DMONITOR_TASKS： D监控任务数</li><li>DMONITOR_IP： D监控备用 IP 数</li><li>CUSTOMLINE： 自定义线路数</li></ul><p>升级场景，需传入当前域名绑定的套餐类型</p>
 	GoodsChildType *string `json:"GoodsChildType,omitnil,omitempty" name:"GoodsChildType"`
 
 	// <p>增值服务购买数量，如果是域名套餐固定为1，如果是增值服务则按以下规则：<br>负载均衡、D监控任务数、D监控备用 IP 数、自定义线路数、URL 转发（必须是5的正整数倍，如 5、10、15 等）</p>
@@ -358,7 +358,7 @@ type CreateAndPayDealRequest struct {
 	// <p>商品类型，1 域名套餐 2 增值服务</p>
 	GoodsType *uint64 `json:"GoodsType,omitnil,omitempty" name:"GoodsType"`
 
-	// <p>套餐类型：<br>DP_PLUS：专业版<br>DP_EXPERT：企业版<br>DP_ULTRA：尊享版</p><p>增值服务类型<br>LB：负载均衡<br>URL：URL转发<br>DMONITOR_TASKS：D监控任务数<br>DMONITOR_IP：D监控备用 IP 数<br>CUSTOMLINE：自定义线路数</p>
+	// <p>套餐类型 或 增值服务类型</p><p>枚举值：</p><ul><li>DP_PLUS： 专业版</li><li>DP_EXPERT： 企业版</li><li>DP_ULTRA： 尊享版</li><li>LB： 负载均衡</li><li>URL： URL转发</li><li>DMONITOR_TASKS： D监控任务数</li><li>DMONITOR_IP： D监控备用 IP 数</li><li>CUSTOMLINE： 自定义线路数</li></ul><p>升级场景，需传入当前域名绑定的套餐类型</p>
 	GoodsChildType *string `json:"GoodsChildType,omitnil,omitempty" name:"GoodsChildType"`
 
 	// <p>增值服务购买数量，如果是域名套餐固定为1，如果是增值服务则按以下规则：<br>负载均衡、D监控任务数、D监控备用 IP 数、自定义线路数、URL 转发（必须是5的正整数倍，如 5、10、15 等）</p>
@@ -3386,6 +3386,112 @@ func (r *DescribeDomainListResponse) ToJsonString() string {
 // FromJsonString It is highly **NOT** recommended to use this function
 // because it has no param check, nor strict type check
 func (r *DescribeDomainListResponse) FromJsonString(s string) error {
+	return json.Unmarshal([]byte(s), &r)
+}
+
+// Predefined struct for user
+type DescribeDomainLogFilterFileRequestParams struct {
+	// 要获取操作日志的域名
+	Domain *string `json:"Domain,omitnil,omitempty" name:"Domain"`
+
+	// 要获取操作日志的域名 Id，如果传了 DomainId，系统将会忽略 Domain 参数。 可以通过接口 DescribeDomainList 查到所有的 Domain 以及 DomainId
+	DomainId *uint64 `json:"DomainId,omitnil,omitempty" name:"DomainId"`
+
+	// 通过关键字搜索，支持搜索字段：账户 UIN、操作 IP、操作内容
+	Keyword *string `json:"Keyword,omitnil,omitempty" name:"Keyword"`
+
+	// 操作时间范围起始时间(仅支持近6个月的日志查询)
+	OperateBegin *string `json:"OperateBegin,omitnil,omitempty" name:"OperateBegin"`
+
+	// 操作时间范围截止时间(仅支持近6个月的日志查询)
+	OperateEnd *string `json:"OperateEnd,omitnil,omitempty" name:"OperateEnd"`
+
+	// 操作账号 UIN 精确匹配
+	OperateUin *uint64 `json:"OperateUin,omitnil,omitempty" name:"OperateUin"`
+
+	// 操作 IP 精确匹配
+	OperateClientIP *string `json:"OperateClientIP,omitnil,omitempty" name:"OperateClientIP"`
+
+	// 操作内容 模糊匹配
+	OperateContent *string `json:"OperateContent,omitnil,omitempty" name:"OperateContent"`
+}
+
+type DescribeDomainLogFilterFileRequest struct {
+	*tchttp.BaseRequest
+	
+	// 要获取操作日志的域名
+	Domain *string `json:"Domain,omitnil,omitempty" name:"Domain"`
+
+	// 要获取操作日志的域名 Id，如果传了 DomainId，系统将会忽略 Domain 参数。 可以通过接口 DescribeDomainList 查到所有的 Domain 以及 DomainId
+	DomainId *uint64 `json:"DomainId,omitnil,omitempty" name:"DomainId"`
+
+	// 通过关键字搜索，支持搜索字段：账户 UIN、操作 IP、操作内容
+	Keyword *string `json:"Keyword,omitnil,omitempty" name:"Keyword"`
+
+	// 操作时间范围起始时间(仅支持近6个月的日志查询)
+	OperateBegin *string `json:"OperateBegin,omitnil,omitempty" name:"OperateBegin"`
+
+	// 操作时间范围截止时间(仅支持近6个月的日志查询)
+	OperateEnd *string `json:"OperateEnd,omitnil,omitempty" name:"OperateEnd"`
+
+	// 操作账号 UIN 精确匹配
+	OperateUin *uint64 `json:"OperateUin,omitnil,omitempty" name:"OperateUin"`
+
+	// 操作 IP 精确匹配
+	OperateClientIP *string `json:"OperateClientIP,omitnil,omitempty" name:"OperateClientIP"`
+
+	// 操作内容 模糊匹配
+	OperateContent *string `json:"OperateContent,omitnil,omitempty" name:"OperateContent"`
+}
+
+func (r *DescribeDomainLogFilterFileRequest) ToJsonString() string {
+    b, _ := json.Marshal(r)
+    return string(b)
+}
+
+// FromJsonString It is highly **NOT** recommended to use this function
+// because it has no param check, nor strict type check
+func (r *DescribeDomainLogFilterFileRequest) FromJsonString(s string) error {
+	f := make(map[string]interface{})
+	if err := json.Unmarshal([]byte(s), &f); err != nil {
+		return err
+	}
+	delete(f, "Domain")
+	delete(f, "DomainId")
+	delete(f, "Keyword")
+	delete(f, "OperateBegin")
+	delete(f, "OperateEnd")
+	delete(f, "OperateUin")
+	delete(f, "OperateClientIP")
+	delete(f, "OperateContent")
+	if len(f) > 0 {
+		return tcerr.NewTencentCloudSDKError("ClientError.BuildRequestError", "DescribeDomainLogFilterFileRequest has unknown keys!", "")
+	}
+	return json.Unmarshal([]byte(s), &r)
+}
+
+// Predefined struct for user
+type DescribeDomainLogFilterFileResponseParams struct {
+	// 文件下载地址。
+	DownloadURL *string `json:"DownloadURL,omitnil,omitempty" name:"DownloadURL"`
+
+	// 唯一请求 ID，由服务端生成，每次请求都会返回（若请求因其他原因未能抵达服务端，则该次请求不会获得 RequestId）。定位问题时需要提供该次请求的 RequestId。
+	RequestId *string `json:"RequestId,omitnil,omitempty" name:"RequestId"`
+}
+
+type DescribeDomainLogFilterFileResponse struct {
+	*tchttp.BaseResponse
+	Response *DescribeDomainLogFilterFileResponseParams `json:"Response"`
+}
+
+func (r *DescribeDomainLogFilterFileResponse) ToJsonString() string {
+    b, _ := json.Marshal(r)
+    return string(b)
+}
+
+// FromJsonString It is highly **NOT** recommended to use this function
+// because it has no param check, nor strict type check
+func (r *DescribeDomainLogFilterFileResponse) FromJsonString(s string) error {
 	return json.Unmarshal([]byte(s), &r)
 }
 

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -37,7 +38,7 @@ type CloudflareTunnelIngress struct {
 	// 路径
 	Path string `json:"path,omitempty"`
 	// 入站请求配置
-	OriginRequest json.RawMessage `json:"origin_request,omitempty"`
+	OriginRequest jsontext.Value `json:"origin_request,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CloudflareTunnelIngressQuery when eager-loading is set.
 	Edges        CloudflareTunnelIngressEdges `json:"edges"`

@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -120,13 +120,13 @@ func (_u *TUNRecordUpdate) ClearServeURI() *TUNRecordUpdate {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (_u *TUNRecordUpdate) SetConfigJSON(v json.RawMessage) *TUNRecordUpdate {
+func (_u *TUNRecordUpdate) SetConfigJSON(v jsontext.Value) *TUNRecordUpdate {
 	_u.mutation.SetConfigJSON(v)
 	return _u
 }
 
 // AppendConfigJSON appends value to the "config_json" field.
-func (_u *TUNRecordUpdate) AppendConfigJSON(v json.RawMessage) *TUNRecordUpdate {
+func (_u *TUNRecordUpdate) AppendConfigJSON(v jsontext.Value) *TUNRecordUpdate {
 	_u.mutation.AppendConfigJSON(v)
 	return _u
 }
@@ -464,13 +464,13 @@ func (_u *TUNRecordUpdateOne) ClearServeURI() *TUNRecordUpdateOne {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (_u *TUNRecordUpdateOne) SetConfigJSON(v json.RawMessage) *TUNRecordUpdateOne {
+func (_u *TUNRecordUpdateOne) SetConfigJSON(v jsontext.Value) *TUNRecordUpdateOne {
 	_u.mutation.SetConfigJSON(v)
 	return _u
 }
 
 // AppendConfigJSON appends value to the "config_json" field.
-func (_u *TUNRecordUpdateOne) AppendConfigJSON(v json.RawMessage) *TUNRecordUpdateOne {
+func (_u *TUNRecordUpdateOne) AppendConfigJSON(v jsontext.Value) *TUNRecordUpdateOne {
 	_u.mutation.AppendConfigJSON(v)
 	return _u
 }

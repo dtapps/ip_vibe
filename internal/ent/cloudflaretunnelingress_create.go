@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -129,7 +129,7 @@ func (_c *CloudflareTunnelIngressCreate) SetNillablePath(v *string) *CloudflareT
 }
 
 // SetOriginRequest sets the "origin_request" field.
-func (_c *CloudflareTunnelIngressCreate) SetOriginRequest(v json.RawMessage) *CloudflareTunnelIngressCreate {
+func (_c *CloudflareTunnelIngressCreate) SetOriginRequest(v jsontext.Value) *CloudflareTunnelIngressCreate {
 	_c.mutation.SetOriginRequest(v)
 	return _c
 }
@@ -430,7 +430,7 @@ func (u *CloudflareTunnelIngressUpsert) ClearPath() *CloudflareTunnelIngressUpse
 }
 
 // SetOriginRequest sets the "origin_request" field.
-func (u *CloudflareTunnelIngressUpsert) SetOriginRequest(v json.RawMessage) *CloudflareTunnelIngressUpsert {
+func (u *CloudflareTunnelIngressUpsert) SetOriginRequest(v jsontext.Value) *CloudflareTunnelIngressUpsert {
 	u.Set(cloudflaretunnelingress.FieldOriginRequest, v)
 	return u
 }
@@ -592,7 +592,7 @@ func (u *CloudflareTunnelIngressUpsertOne) ClearPath() *CloudflareTunnelIngressU
 }
 
 // SetOriginRequest sets the "origin_request" field.
-func (u *CloudflareTunnelIngressUpsertOne) SetOriginRequest(v json.RawMessage) *CloudflareTunnelIngressUpsertOne {
+func (u *CloudflareTunnelIngressUpsertOne) SetOriginRequest(v jsontext.Value) *CloudflareTunnelIngressUpsertOne {
 	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
 		s.SetOriginRequest(v)
 	})
@@ -923,7 +923,7 @@ func (u *CloudflareTunnelIngressUpsertBulk) ClearPath() *CloudflareTunnelIngress
 }
 
 // SetOriginRequest sets the "origin_request" field.
-func (u *CloudflareTunnelIngressUpsertBulk) SetOriginRequest(v json.RawMessage) *CloudflareTunnelIngressUpsertBulk {
+func (u *CloudflareTunnelIngressUpsertBulk) SetOriginRequest(v jsontext.Value) *CloudflareTunnelIngressUpsertBulk {
 	return u.Update(func(s *CloudflareTunnelIngressUpsert) {
 		s.SetOriginRequest(v)
 	})

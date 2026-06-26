@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -121,13 +121,13 @@ func (_c *EdgeOneZoneOriginGroupCreate) SetNillableType(v *edgeonezoneorigingrou
 }
 
 // SetRecords sets the "records" field.
-func (_c *EdgeOneZoneOriginGroupCreate) SetRecords(v json.RawMessage) *EdgeOneZoneOriginGroupCreate {
+func (_c *EdgeOneZoneOriginGroupCreate) SetRecords(v jsontext.Value) *EdgeOneZoneOriginGroupCreate {
 	_c.mutation.SetRecords(v)
 	return _c
 }
 
 // SetReferences sets the "references" field.
-func (_c *EdgeOneZoneOriginGroupCreate) SetReferences(v json.RawMessage) *EdgeOneZoneOriginGroupCreate {
+func (_c *EdgeOneZoneOriginGroupCreate) SetReferences(v jsontext.Value) *EdgeOneZoneOriginGroupCreate {
 	_c.mutation.SetReferences(v)
 	return _c
 }
@@ -440,7 +440,7 @@ func (u *EdgeOneZoneOriginGroupUpsert) ClearType() *EdgeOneZoneOriginGroupUpsert
 }
 
 // SetRecords sets the "records" field.
-func (u *EdgeOneZoneOriginGroupUpsert) SetRecords(v json.RawMessage) *EdgeOneZoneOriginGroupUpsert {
+func (u *EdgeOneZoneOriginGroupUpsert) SetRecords(v jsontext.Value) *EdgeOneZoneOriginGroupUpsert {
 	u.Set(edgeonezoneorigingroup.FieldRecords, v)
 	return u
 }
@@ -458,7 +458,7 @@ func (u *EdgeOneZoneOriginGroupUpsert) ClearRecords() *EdgeOneZoneOriginGroupUps
 }
 
 // SetReferences sets the "references" field.
-func (u *EdgeOneZoneOriginGroupUpsert) SetReferences(v json.RawMessage) *EdgeOneZoneOriginGroupUpsert {
+func (u *EdgeOneZoneOriginGroupUpsert) SetReferences(v jsontext.Value) *EdgeOneZoneOriginGroupUpsert {
 	u.Set(edgeonezoneorigingroup.FieldReferences, v)
 	return u
 }
@@ -620,7 +620,7 @@ func (u *EdgeOneZoneOriginGroupUpsertOne) ClearType() *EdgeOneZoneOriginGroupUps
 }
 
 // SetRecords sets the "records" field.
-func (u *EdgeOneZoneOriginGroupUpsertOne) SetRecords(v json.RawMessage) *EdgeOneZoneOriginGroupUpsertOne {
+func (u *EdgeOneZoneOriginGroupUpsertOne) SetRecords(v jsontext.Value) *EdgeOneZoneOriginGroupUpsertOne {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.SetRecords(v)
 	})
@@ -641,7 +641,7 @@ func (u *EdgeOneZoneOriginGroupUpsertOne) ClearRecords() *EdgeOneZoneOriginGroup
 }
 
 // SetReferences sets the "references" field.
-func (u *EdgeOneZoneOriginGroupUpsertOne) SetReferences(v json.RawMessage) *EdgeOneZoneOriginGroupUpsertOne {
+func (u *EdgeOneZoneOriginGroupUpsertOne) SetReferences(v jsontext.Value) *EdgeOneZoneOriginGroupUpsertOne {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.SetReferences(v)
 	})
@@ -975,7 +975,7 @@ func (u *EdgeOneZoneOriginGroupUpsertBulk) ClearType() *EdgeOneZoneOriginGroupUp
 }
 
 // SetRecords sets the "records" field.
-func (u *EdgeOneZoneOriginGroupUpsertBulk) SetRecords(v json.RawMessage) *EdgeOneZoneOriginGroupUpsertBulk {
+func (u *EdgeOneZoneOriginGroupUpsertBulk) SetRecords(v jsontext.Value) *EdgeOneZoneOriginGroupUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.SetRecords(v)
 	})
@@ -996,7 +996,7 @@ func (u *EdgeOneZoneOriginGroupUpsertBulk) ClearRecords() *EdgeOneZoneOriginGrou
 }
 
 // SetReferences sets the "references" field.
-func (u *EdgeOneZoneOriginGroupUpsertBulk) SetReferences(v json.RawMessage) *EdgeOneZoneOriginGroupUpsertBulk {
+func (u *EdgeOneZoneOriginGroupUpsertBulk) SetReferences(v jsontext.Value) *EdgeOneZoneOriginGroupUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneOriginGroupUpsert) {
 		s.SetReferences(v)
 	})

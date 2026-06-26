@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -100,7 +100,7 @@ func (_c *DNSRecordCreate) SetType(v dnsrecord.Type) *DNSRecordCreate {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (_c *DNSRecordCreate) SetConfigJSON(v json.RawMessage) *DNSRecordCreate {
+func (_c *DNSRecordCreate) SetConfigJSON(v jsontext.Value) *DNSRecordCreate {
 	_c.mutation.SetConfigJSON(v)
 	return _c
 }
@@ -524,7 +524,7 @@ func (u *DNSRecordUpsert) UpdateType() *DNSRecordUpsert {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *DNSRecordUpsert) SetConfigJSON(v json.RawMessage) *DNSRecordUpsert {
+func (u *DNSRecordUpsert) SetConfigJSON(v jsontext.Value) *DNSRecordUpsert {
 	u.Set(dnsrecord.FieldConfigJSON, v)
 	return u
 }
@@ -709,7 +709,7 @@ func (u *DNSRecordUpsertOne) UpdateType() *DNSRecordUpsertOne {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *DNSRecordUpsertOne) SetConfigJSON(v json.RawMessage) *DNSRecordUpsertOne {
+func (u *DNSRecordUpsertOne) SetConfigJSON(v jsontext.Value) *DNSRecordUpsertOne {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.SetConfigJSON(v)
 	})
@@ -1074,7 +1074,7 @@ func (u *DNSRecordUpsertBulk) UpdateType() *DNSRecordUpsertBulk {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *DNSRecordUpsertBulk) SetConfigJSON(v json.RawMessage) *DNSRecordUpsertBulk {
+func (u *DNSRecordUpsertBulk) SetConfigJSON(v jsontext.Value) *DNSRecordUpsertBulk {
 	return u.Update(func(s *DNSRecordUpsert) {
 		s.SetConfigJSON(v)
 	})

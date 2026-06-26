@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -32,7 +33,7 @@ type PlatformConfig struct {
 	// 平台类型
 	Platform platformconfig.Platform `json:"platform,omitempty"`
 	// 平台密钥等敏感信息（JSON）
-	ConfigJSON json.RawMessage `json:"-"`
+	ConfigJSON jsontext.Value `json:"-"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlatformConfigQuery when eager-loading is set.
 	Edges        PlatformConfigEdges `json:"edges"`

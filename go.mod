@@ -16,7 +16,7 @@ require (
 	github.com/alibabacloud-go/cdn-20180510/v9 v9.0.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.2.2
 	github.com/alibabacloud-go/esa-20240910/v2 v2.48.0
-	github.com/alibabacloud-go/tea v1.5.1
+	github.com/alibabacloud-go/tea v1.5.2
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/aliyun/credentials-go v1.4.12
 	github.com/baidubce/bce-sdk-go v0.9.270
@@ -38,7 +38,8 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.201
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.202
+	github.com/inetaf/tcpproxy v0.0.0-20260515195445-c159a6051109
 	github.com/jdcloud-api/jdcloud-sdk-go v1.67.0
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.109
 	github.com/miekg/dns v1.1.72
@@ -51,11 +52,11 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.116
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.121
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.78
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.123
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.123
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.121
 	github.com/tidwall/gjson v1.19.0
-	github.com/volcengine/volcengine-go-sdk v1.2.36
+	github.com/volcengine/volcengine-go-sdk v1.2.37
 	github.com/wdcbot/qingfeng v1.6.8
 	go.dtapp.net/library/contrib/http_log v1.0.12
 	go.dtapp.net/library/contrib/resty_log v1.0.16
@@ -85,7 +86,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v1.2.2 // indirect
+	ariga.io/atlas v1.2.3 // indirect
 	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/MercuryEngineering/CookieMonster v0.0.0-20180304172713-1584578b3403 // indirect
@@ -191,11 +192,11 @@ require (
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
-	golang.org/x/tools v0.46.0 // indirect
+	golang.org/x/tools v0.47.0 // indirect
 	gopkg.in/ini.v1 v1.67.3 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.73.4 // indirect
+	modernc.org/libc v1.73.5 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
 	rsc.io/binaryregexp v0.2.0 // indirect

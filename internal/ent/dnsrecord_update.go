@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"vibe_ip/internal/ent/cdnrecord"
@@ -68,13 +68,13 @@ func (_u *DNSRecordUpdate) SetNillableType(v *dnsrecord.Type) *DNSRecordUpdate {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (_u *DNSRecordUpdate) SetConfigJSON(v json.RawMessage) *DNSRecordUpdate {
+func (_u *DNSRecordUpdate) SetConfigJSON(v jsontext.Value) *DNSRecordUpdate {
 	_u.mutation.SetConfigJSON(v)
 	return _u
 }
 
 // AppendConfigJSON appends value to the "config_json" field.
-func (_u *DNSRecordUpdate) AppendConfigJSON(v json.RawMessage) *DNSRecordUpdate {
+func (_u *DNSRecordUpdate) AppendConfigJSON(v jsontext.Value) *DNSRecordUpdate {
 	_u.mutation.AppendConfigJSON(v)
 	return _u
 }
@@ -440,13 +440,13 @@ func (_u *DNSRecordUpdateOne) SetNillableType(v *dnsrecord.Type) *DNSRecordUpdat
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (_u *DNSRecordUpdateOne) SetConfigJSON(v json.RawMessage) *DNSRecordUpdateOne {
+func (_u *DNSRecordUpdateOne) SetConfigJSON(v jsontext.Value) *DNSRecordUpdateOne {
 	_u.mutation.SetConfigJSON(v)
 	return _u
 }
 
 // AppendConfigJSON appends value to the "config_json" field.
-func (_u *DNSRecordUpdateOne) AppendConfigJSON(v json.RawMessage) *DNSRecordUpdateOne {
+func (_u *DNSRecordUpdateOne) AppendConfigJSON(v jsontext.Value) *DNSRecordUpdateOne {
 	_u.mutation.AppendConfigJSON(v)
 	return _u
 }

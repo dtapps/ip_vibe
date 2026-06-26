@@ -657,6 +657,7 @@ var (
 		{Name: "protocols", Type: field.TypeJSON, Comment: "协议列表，支持 tcp4, tcp6, udp4, udp6"},
 		{Name: "auto_forward", Type: field.TypeBool, Comment: "防火墙自动放行", Default: false},
 		{Name: "is_active", Type: field.TypeBool, Comment: "是否活跃", Default: false},
+		{Name: "implementation_type", Type: field.TypeString, Comment: "实现类型: standard(标准库) / tcpproxy(inet.af/tcpproxy)", Default: "standard"},
 		{Name: "device_port_forwards", Type: field.TypeInt64},
 	}
 	// DevicePortForwardTable holds the schema information for the "device_port_forward" table.
@@ -668,7 +669,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "device_port_forward_device_port_forwards",
-				Columns:    []*schema.Column{DevicePortForwardColumns[11]},
+				Columns:    []*schema.Column{DevicePortForwardColumns[12]},
 				RefColumns: []*schema.Column{DeviceColumns[0]},
 				OnDelete:   schema.Cascade,
 			},

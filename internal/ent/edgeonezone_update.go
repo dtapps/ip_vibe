@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -135,13 +135,13 @@ func (_u *EdgeOneZoneUpdate) ClearType() *EdgeOneZoneUpdate {
 }
 
 // SetResources sets the "resources" field.
-func (_u *EdgeOneZoneUpdate) SetResources(v json.RawMessage) *EdgeOneZoneUpdate {
+func (_u *EdgeOneZoneUpdate) SetResources(v jsontext.Value) *EdgeOneZoneUpdate {
 	_u.mutation.SetResources(v)
 	return _u
 }
 
 // AppendResources appends value to the "resources" field.
-func (_u *EdgeOneZoneUpdate) AppendResources(v json.RawMessage) *EdgeOneZoneUpdate {
+func (_u *EdgeOneZoneUpdate) AppendResources(v jsontext.Value) *EdgeOneZoneUpdate {
 	_u.mutation.AppendResources(v)
 	return _u
 }
@@ -153,13 +153,13 @@ func (_u *EdgeOneZoneUpdate) ClearResources() *EdgeOneZoneUpdate {
 }
 
 // SetNsDetail sets the "ns_detail" field.
-func (_u *EdgeOneZoneUpdate) SetNsDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+func (_u *EdgeOneZoneUpdate) SetNsDetail(v jsontext.Value) *EdgeOneZoneUpdate {
 	_u.mutation.SetNsDetail(v)
 	return _u
 }
 
 // AppendNsDetail appends value to the "ns_detail" field.
-func (_u *EdgeOneZoneUpdate) AppendNsDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+func (_u *EdgeOneZoneUpdate) AppendNsDetail(v jsontext.Value) *EdgeOneZoneUpdate {
 	_u.mutation.AppendNsDetail(v)
 	return _u
 }
@@ -171,13 +171,13 @@ func (_u *EdgeOneZoneUpdate) ClearNsDetail() *EdgeOneZoneUpdate {
 }
 
 // SetCnameDetail sets the "cname_detail" field.
-func (_u *EdgeOneZoneUpdate) SetCnameDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+func (_u *EdgeOneZoneUpdate) SetCnameDetail(v jsontext.Value) *EdgeOneZoneUpdate {
 	_u.mutation.SetCnameDetail(v)
 	return _u
 }
 
 // AppendCnameDetail appends value to the "cname_detail" field.
-func (_u *EdgeOneZoneUpdate) AppendCnameDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+func (_u *EdgeOneZoneUpdate) AppendCnameDetail(v jsontext.Value) *EdgeOneZoneUpdate {
 	_u.mutation.AppendCnameDetail(v)
 	return _u
 }
@@ -189,13 +189,13 @@ func (_u *EdgeOneZoneUpdate) ClearCnameDetail() *EdgeOneZoneUpdate {
 }
 
 // SetDnspodDetail sets the "dnspod_detail" field.
-func (_u *EdgeOneZoneUpdate) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+func (_u *EdgeOneZoneUpdate) SetDnspodDetail(v jsontext.Value) *EdgeOneZoneUpdate {
 	_u.mutation.SetDnspodDetail(v)
 	return _u
 }
 
 // AppendDnspodDetail appends value to the "dnspod_detail" field.
-func (_u *EdgeOneZoneUpdate) AppendDnspodDetail(v json.RawMessage) *EdgeOneZoneUpdate {
+func (_u *EdgeOneZoneUpdate) AppendDnspodDetail(v jsontext.Value) *EdgeOneZoneUpdate {
 	_u.mutation.AppendDnspodDetail(v)
 	return _u
 }
@@ -885,13 +885,13 @@ func (_u *EdgeOneZoneUpdateOne) ClearType() *EdgeOneZoneUpdateOne {
 }
 
 // SetResources sets the "resources" field.
-func (_u *EdgeOneZoneUpdateOne) SetResources(v json.RawMessage) *EdgeOneZoneUpdateOne {
+func (_u *EdgeOneZoneUpdateOne) SetResources(v jsontext.Value) *EdgeOneZoneUpdateOne {
 	_u.mutation.SetResources(v)
 	return _u
 }
 
 // AppendResources appends value to the "resources" field.
-func (_u *EdgeOneZoneUpdateOne) AppendResources(v json.RawMessage) *EdgeOneZoneUpdateOne {
+func (_u *EdgeOneZoneUpdateOne) AppendResources(v jsontext.Value) *EdgeOneZoneUpdateOne {
 	_u.mutation.AppendResources(v)
 	return _u
 }
@@ -903,13 +903,13 @@ func (_u *EdgeOneZoneUpdateOne) ClearResources() *EdgeOneZoneUpdateOne {
 }
 
 // SetNsDetail sets the "ns_detail" field.
-func (_u *EdgeOneZoneUpdateOne) SetNsDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+func (_u *EdgeOneZoneUpdateOne) SetNsDetail(v jsontext.Value) *EdgeOneZoneUpdateOne {
 	_u.mutation.SetNsDetail(v)
 	return _u
 }
 
 // AppendNsDetail appends value to the "ns_detail" field.
-func (_u *EdgeOneZoneUpdateOne) AppendNsDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+func (_u *EdgeOneZoneUpdateOne) AppendNsDetail(v jsontext.Value) *EdgeOneZoneUpdateOne {
 	_u.mutation.AppendNsDetail(v)
 	return _u
 }
@@ -921,13 +921,13 @@ func (_u *EdgeOneZoneUpdateOne) ClearNsDetail() *EdgeOneZoneUpdateOne {
 }
 
 // SetCnameDetail sets the "cname_detail" field.
-func (_u *EdgeOneZoneUpdateOne) SetCnameDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+func (_u *EdgeOneZoneUpdateOne) SetCnameDetail(v jsontext.Value) *EdgeOneZoneUpdateOne {
 	_u.mutation.SetCnameDetail(v)
 	return _u
 }
 
 // AppendCnameDetail appends value to the "cname_detail" field.
-func (_u *EdgeOneZoneUpdateOne) AppendCnameDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+func (_u *EdgeOneZoneUpdateOne) AppendCnameDetail(v jsontext.Value) *EdgeOneZoneUpdateOne {
 	_u.mutation.AppendCnameDetail(v)
 	return _u
 }
@@ -939,13 +939,13 @@ func (_u *EdgeOneZoneUpdateOne) ClearCnameDetail() *EdgeOneZoneUpdateOne {
 }
 
 // SetDnspodDetail sets the "dnspod_detail" field.
-func (_u *EdgeOneZoneUpdateOne) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+func (_u *EdgeOneZoneUpdateOne) SetDnspodDetail(v jsontext.Value) *EdgeOneZoneUpdateOne {
 	_u.mutation.SetDnspodDetail(v)
 	return _u
 }
 
 // AppendDnspodDetail appends value to the "dnspod_detail" field.
-func (_u *EdgeOneZoneUpdateOne) AppendDnspodDetail(v json.RawMessage) *EdgeOneZoneUpdateOne {
+func (_u *EdgeOneZoneUpdateOne) AppendDnspodDetail(v jsontext.Value) *EdgeOneZoneUpdateOne {
 	_u.mutation.AppendDnspodDetail(v)
 	return _u
 }

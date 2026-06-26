@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -40,7 +41,7 @@ type DNSRecord struct {
 	// 记录类型（A、AAAA、CNAME）
 	Type dnsrecord.Type `json:"type,omitempty"`
 	// DNS记录配置（JSON）
-	ConfigJSON json.RawMessage `json:"config_json,omitempty"`
+	ConfigJSON jsontext.Value `json:"config_json,omitempty"`
 	// IP组序号（三选一）
 	IPGroupID int64 `json:"ip_group_id,omitempty"`
 	// 设备组序号（三选一）

@@ -4,6 +4,7 @@ package ent_log
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -32,7 +33,7 @@ type WebhookHistory struct {
 	// 发送的内容
 	Content string `json:"content,omitempty"`
 	// 响应内容
-	Response json.RawMessage `json:"response,omitempty"`
+	Response jsontext.Value `json:"response,omitempty"`
 	// 是否发送成功
 	Success bool `json:"success,omitempty"`
 	// 错误信息

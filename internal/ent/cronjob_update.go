@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"vibe_ip/internal/ent/cronjob"
@@ -59,13 +59,13 @@ func (_u *CronJobUpdate) SetNillableHandlerName(v *string) *CronJobUpdate {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (_u *CronJobUpdate) SetHandlerArgs(v json.RawMessage) *CronJobUpdate {
+func (_u *CronJobUpdate) SetHandlerArgs(v jsontext.Value) *CronJobUpdate {
 	_u.mutation.SetHandlerArgs(v)
 	return _u
 }
 
 // AppendHandlerArgs appends value to the "handler_args" field.
-func (_u *CronJobUpdate) AppendHandlerArgs(v json.RawMessage) *CronJobUpdate {
+func (_u *CronJobUpdate) AppendHandlerArgs(v jsontext.Value) *CronJobUpdate {
 	_u.mutation.AppendHandlerArgs(v)
 	return _u
 }
@@ -629,13 +629,13 @@ func (_u *CronJobUpdateOne) SetNillableHandlerName(v *string) *CronJobUpdateOne 
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (_u *CronJobUpdateOne) SetHandlerArgs(v json.RawMessage) *CronJobUpdateOne {
+func (_u *CronJobUpdateOne) SetHandlerArgs(v jsontext.Value) *CronJobUpdateOne {
 	_u.mutation.SetHandlerArgs(v)
 	return _u
 }
 
 // AppendHandlerArgs appends value to the "handler_args" field.
-func (_u *CronJobUpdateOne) AppendHandlerArgs(v json.RawMessage) *CronJobUpdateOne {
+func (_u *CronJobUpdateOne) AppendHandlerArgs(v jsontext.Value) *CronJobUpdateOne {
 	_u.mutation.AppendHandlerArgs(v)
 	return _u
 }

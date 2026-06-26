@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"sync"
@@ -100,8 +100,8 @@ type CDNRecordMutation struct {
 	domain_name         *string
 	full_domain         *string
 	_type               *cdnrecord.Type
-	config_json         *json.RawMessage
-	appendconfig_json   json.RawMessage
+	config_json         *jsontext.Value
+	appendconfig_json   jsontext.Value
 	cdn_domain          *string
 	is_active           *bool
 	clearedFields       map[string]struct{}
@@ -525,13 +525,13 @@ func (m *CDNRecordMutation) ResetType() {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (m *CDNRecordMutation) SetConfigJSON(jm json.RawMessage) {
-	m.config_json = &jm
+func (m *CDNRecordMutation) SetConfigJSON(j jsontext.Value) {
+	m.config_json = &j
 	m.appendconfig_json = nil
 }
 
 // ConfigJSON returns the value of the "config_json" field in the mutation.
-func (m *CDNRecordMutation) ConfigJSON() (r json.RawMessage, exists bool) {
+func (m *CDNRecordMutation) ConfigJSON() (r jsontext.Value, exists bool) {
 	v := m.config_json
 	if v == nil {
 		return
@@ -542,7 +542,7 @@ func (m *CDNRecordMutation) ConfigJSON() (r json.RawMessage, exists bool) {
 // OldConfigJSON returns the old "config_json" field's value of the CDNRecord entity.
 // If the CDNRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CDNRecordMutation) OldConfigJSON(ctx context.Context) (v json.RawMessage, err error) {
+func (m *CDNRecordMutation) OldConfigJSON(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldConfigJSON is only allowed on UpdateOne operations")
 	}
@@ -556,13 +556,13 @@ func (m *CDNRecordMutation) OldConfigJSON(ctx context.Context) (v json.RawMessag
 	return oldValue.ConfigJSON, nil
 }
 
-// AppendConfigJSON adds jm to the "config_json" field.
-func (m *CDNRecordMutation) AppendConfigJSON(jm json.RawMessage) {
-	m.appendconfig_json = append(m.appendconfig_json, jm...)
+// AppendConfigJSON adds j to the "config_json" field.
+func (m *CDNRecordMutation) AppendConfigJSON(j jsontext.Value) {
+	m.appendconfig_json = append(m.appendconfig_json, j...)
 }
 
 // AppendedConfigJSON returns the list of values that were appended to the "config_json" field in this mutation.
-func (m *CDNRecordMutation) AppendedConfigJSON() (json.RawMessage, bool) {
+func (m *CDNRecordMutation) AppendedConfigJSON() (jsontext.Value, bool) {
 	if len(m.appendconfig_json) == 0 {
 		return nil, false
 	}
@@ -1116,7 +1116,7 @@ func (m *CDNRecordMutation) SetField(name string, value ent.Value) error {
 		m.SetType(v)
 		return nil
 	case cdnrecord.FieldConfigJSON:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1835,8 +1835,8 @@ type CloudflareTunnelMutation struct {
 	remote_created_at *time.Time
 	sync_at           *time.Time
 	tunnel_id         *string
-	connections       *json.RawMessage
-	appendconnections json.RawMessage
+	connections       *jsontext.Value
+	appendconnections jsontext.Value
 	conns_active_at   *time.Time
 	conns_inactive_at *time.Time
 	name              *string
@@ -2200,13 +2200,13 @@ func (m *CloudflareTunnelMutation) ResetTunnelID() {
 }
 
 // SetConnections sets the "connections" field.
-func (m *CloudflareTunnelMutation) SetConnections(jm json.RawMessage) {
-	m.connections = &jm
+func (m *CloudflareTunnelMutation) SetConnections(j jsontext.Value) {
+	m.connections = &j
 	m.appendconnections = nil
 }
 
 // Connections returns the value of the "connections" field in the mutation.
-func (m *CloudflareTunnelMutation) Connections() (r json.RawMessage, exists bool) {
+func (m *CloudflareTunnelMutation) Connections() (r jsontext.Value, exists bool) {
 	v := m.connections
 	if v == nil {
 		return
@@ -2217,7 +2217,7 @@ func (m *CloudflareTunnelMutation) Connections() (r json.RawMessage, exists bool
 // OldConnections returns the old "connections" field's value of the CloudflareTunnel entity.
 // If the CloudflareTunnel object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareTunnelMutation) OldConnections(ctx context.Context) (v json.RawMessage, err error) {
+func (m *CloudflareTunnelMutation) OldConnections(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldConnections is only allowed on UpdateOne operations")
 	}
@@ -2231,13 +2231,13 @@ func (m *CloudflareTunnelMutation) OldConnections(ctx context.Context) (v json.R
 	return oldValue.Connections, nil
 }
 
-// AppendConnections adds jm to the "connections" field.
-func (m *CloudflareTunnelMutation) AppendConnections(jm json.RawMessage) {
-	m.appendconnections = append(m.appendconnections, jm...)
+// AppendConnections adds j to the "connections" field.
+func (m *CloudflareTunnelMutation) AppendConnections(j jsontext.Value) {
+	m.appendconnections = append(m.appendconnections, j...)
 }
 
 // AppendedConnections returns the list of values that were appended to the "connections" field in this mutation.
-func (m *CloudflareTunnelMutation) AppendedConnections() (json.RawMessage, bool) {
+func (m *CloudflareTunnelMutation) AppendedConnections() (jsontext.Value, bool) {
 	if len(m.appendconnections) == 0 {
 		return nil, false
 	}
@@ -2778,7 +2778,7 @@ func (m *CloudflareTunnelMutation) SetField(name string, value ent.Value) error 
 		m.SetTunnelID(v)
 		return nil
 	case cloudflaretunnel.FieldConnections:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -3077,8 +3077,8 @@ type CloudflareTunnelIngressMutation struct {
 	hostname                 *string
 	service                  *string
 	_path                    *string
-	origin_request           *json.RawMessage
-	appendorigin_request     json.RawMessage
+	origin_request           *jsontext.Value
+	appendorigin_request     jsontext.Value
 	clearedFields            map[string]struct{}
 	cloudflare_tunnel        *int64
 	clearedcloudflare_tunnel bool
@@ -3545,13 +3545,13 @@ func (m *CloudflareTunnelIngressMutation) ResetPath() {
 }
 
 // SetOriginRequest sets the "origin_request" field.
-func (m *CloudflareTunnelIngressMutation) SetOriginRequest(jm json.RawMessage) {
-	m.origin_request = &jm
+func (m *CloudflareTunnelIngressMutation) SetOriginRequest(j jsontext.Value) {
+	m.origin_request = &j
 	m.appendorigin_request = nil
 }
 
 // OriginRequest returns the value of the "origin_request" field in the mutation.
-func (m *CloudflareTunnelIngressMutation) OriginRequest() (r json.RawMessage, exists bool) {
+func (m *CloudflareTunnelIngressMutation) OriginRequest() (r jsontext.Value, exists bool) {
 	v := m.origin_request
 	if v == nil {
 		return
@@ -3562,7 +3562,7 @@ func (m *CloudflareTunnelIngressMutation) OriginRequest() (r json.RawMessage, ex
 // OldOriginRequest returns the old "origin_request" field's value of the CloudflareTunnelIngress entity.
 // If the CloudflareTunnelIngress object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareTunnelIngressMutation) OldOriginRequest(ctx context.Context) (v json.RawMessage, err error) {
+func (m *CloudflareTunnelIngressMutation) OldOriginRequest(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOriginRequest is only allowed on UpdateOne operations")
 	}
@@ -3576,13 +3576,13 @@ func (m *CloudflareTunnelIngressMutation) OldOriginRequest(ctx context.Context) 
 	return oldValue.OriginRequest, nil
 }
 
-// AppendOriginRequest adds jm to the "origin_request" field.
-func (m *CloudflareTunnelIngressMutation) AppendOriginRequest(jm json.RawMessage) {
-	m.appendorigin_request = append(m.appendorigin_request, jm...)
+// AppendOriginRequest adds j to the "origin_request" field.
+func (m *CloudflareTunnelIngressMutation) AppendOriginRequest(j jsontext.Value) {
+	m.appendorigin_request = append(m.appendorigin_request, j...)
 }
 
 // AppendedOriginRequest returns the list of values that were appended to the "origin_request" field in this mutation.
-func (m *CloudflareTunnelIngressMutation) AppendedOriginRequest() (json.RawMessage, bool) {
+func (m *CloudflareTunnelIngressMutation) AppendedOriginRequest() (jsontext.Value, bool) {
 	if len(m.appendorigin_request) == 0 {
 		return nil, false
 	}
@@ -3817,7 +3817,7 @@ func (m *CloudflareTunnelIngressMutation) SetField(name string, value ent.Value)
 		m.SetPath(v)
 		return nil
 	case cloudflaretunnelingress.FieldOriginRequest:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -4030,8 +4030,8 @@ type CloudflareZoneMutation struct {
 	remote_created_at           *time.Time
 	sync_at                     *time.Time
 	zone_id                     *string
-	account                     *json.RawMessage
-	appendaccount               json.RawMessage
+	account                     *jsontext.Value
+	appendaccount               jsontext.Value
 	name                        *string
 	name_servers                *[]string
 	appendname_servers          []string
@@ -4400,13 +4400,13 @@ func (m *CloudflareZoneMutation) ResetZoneID() {
 }
 
 // SetAccount sets the "account" field.
-func (m *CloudflareZoneMutation) SetAccount(jm json.RawMessage) {
-	m.account = &jm
+func (m *CloudflareZoneMutation) SetAccount(j jsontext.Value) {
+	m.account = &j
 	m.appendaccount = nil
 }
 
 // Account returns the value of the "account" field in the mutation.
-func (m *CloudflareZoneMutation) Account() (r json.RawMessage, exists bool) {
+func (m *CloudflareZoneMutation) Account() (r jsontext.Value, exists bool) {
 	v := m.account
 	if v == nil {
 		return
@@ -4417,7 +4417,7 @@ func (m *CloudflareZoneMutation) Account() (r json.RawMessage, exists bool) {
 // OldAccount returns the old "account" field's value of the CloudflareZone entity.
 // If the CloudflareZone object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareZoneMutation) OldAccount(ctx context.Context) (v json.RawMessage, err error) {
+func (m *CloudflareZoneMutation) OldAccount(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAccount is only allowed on UpdateOne operations")
 	}
@@ -4431,13 +4431,13 @@ func (m *CloudflareZoneMutation) OldAccount(ctx context.Context) (v json.RawMess
 	return oldValue.Account, nil
 }
 
-// AppendAccount adds jm to the "account" field.
-func (m *CloudflareZoneMutation) AppendAccount(jm json.RawMessage) {
-	m.appendaccount = append(m.appendaccount, jm...)
+// AppendAccount adds j to the "account" field.
+func (m *CloudflareZoneMutation) AppendAccount(j jsontext.Value) {
+	m.appendaccount = append(m.appendaccount, j...)
 }
 
 // AppendedAccount returns the list of values that were appended to the "account" field in this mutation.
-func (m *CloudflareZoneMutation) AppendedAccount() (json.RawMessage, bool) {
+func (m *CloudflareZoneMutation) AppendedAccount() (jsontext.Value, bool) {
 	if len(m.appendaccount) == 0 {
 		return nil, false
 	}
@@ -5178,7 +5178,7 @@ func (m *CloudflareZoneMutation) SetField(name string, value ent.Value) error {
 		m.SetZoneID(v)
 		return nil
 	case cloudflarezone.FieldAccount:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5528,8 +5528,8 @@ type CloudflareZoneRecordMutation struct {
 	name                   *string
 	proxiable              *bool
 	proxied                *bool
-	settings               *json.RawMessage
-	appendsettings         json.RawMessage
+	settings               *jsontext.Value
+	appendsettings         jsontext.Value
 	ttl                    *float64
 	addttl                 *float64
 	_type                  *cloudflarezonerecord.Type
@@ -6133,13 +6133,13 @@ func (m *CloudflareZoneRecordMutation) ResetProxied() {
 }
 
 // SetSettings sets the "settings" field.
-func (m *CloudflareZoneRecordMutation) SetSettings(jm json.RawMessage) {
-	m.settings = &jm
+func (m *CloudflareZoneRecordMutation) SetSettings(j jsontext.Value) {
+	m.settings = &j
 	m.appendsettings = nil
 }
 
 // Settings returns the value of the "settings" field in the mutation.
-func (m *CloudflareZoneRecordMutation) Settings() (r json.RawMessage, exists bool) {
+func (m *CloudflareZoneRecordMutation) Settings() (r jsontext.Value, exists bool) {
 	v := m.settings
 	if v == nil {
 		return
@@ -6150,7 +6150,7 @@ func (m *CloudflareZoneRecordMutation) Settings() (r json.RawMessage, exists boo
 // OldSettings returns the old "settings" field's value of the CloudflareZoneRecord entity.
 // If the CloudflareZoneRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CloudflareZoneRecordMutation) OldSettings(ctx context.Context) (v json.RawMessage, err error) {
+func (m *CloudflareZoneRecordMutation) OldSettings(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldSettings is only allowed on UpdateOne operations")
 	}
@@ -6164,13 +6164,13 @@ func (m *CloudflareZoneRecordMutation) OldSettings(ctx context.Context) (v json.
 	return oldValue.Settings, nil
 }
 
-// AppendSettings adds jm to the "settings" field.
-func (m *CloudflareZoneRecordMutation) AppendSettings(jm json.RawMessage) {
-	m.appendsettings = append(m.appendsettings, jm...)
+// AppendSettings adds j to the "settings" field.
+func (m *CloudflareZoneRecordMutation) AppendSettings(j jsontext.Value) {
+	m.appendsettings = append(m.appendsettings, j...)
 }
 
 // AppendedSettings returns the list of values that were appended to the "settings" field in this mutation.
-func (m *CloudflareZoneRecordMutation) AppendedSettings() (json.RawMessage, bool) {
+func (m *CloudflareZoneRecordMutation) AppendedSettings() (jsontext.Value, bool) {
 	if len(m.appendsettings) == 0 {
 		return nil, false
 	}
@@ -6580,7 +6580,7 @@ func (m *CloudflareZoneRecordMutation) SetField(name string, value ent.Value) er
 		m.SetProxied(v)
 		return nil
 	case cloudflarezonerecord.FieldSettings:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -6858,8 +6858,8 @@ type CronJobMutation struct {
 	entry_id           *uuid.UUID
 	name               *string
 	handler_name       *string
-	handler_args       *json.RawMessage
-	appendhandler_args json.RawMessage
+	handler_args       *jsontext.Value
+	appendhandler_args jsontext.Value
 	task_type          *cronjob.TaskType
 	job_type           *cronjob.JobType
 	job_category       *cronjob.JobCategory
@@ -7170,13 +7170,13 @@ func (m *CronJobMutation) ResetHandlerName() {
 }
 
 // SetHandlerArgs sets the "handler_args" field.
-func (m *CronJobMutation) SetHandlerArgs(jm json.RawMessage) {
-	m.handler_args = &jm
+func (m *CronJobMutation) SetHandlerArgs(j jsontext.Value) {
+	m.handler_args = &j
 	m.appendhandler_args = nil
 }
 
 // HandlerArgs returns the value of the "handler_args" field in the mutation.
-func (m *CronJobMutation) HandlerArgs() (r json.RawMessage, exists bool) {
+func (m *CronJobMutation) HandlerArgs() (r jsontext.Value, exists bool) {
 	v := m.handler_args
 	if v == nil {
 		return
@@ -7187,7 +7187,7 @@ func (m *CronJobMutation) HandlerArgs() (r json.RawMessage, exists bool) {
 // OldHandlerArgs returns the old "handler_args" field's value of the CronJob entity.
 // If the CronJob object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CronJobMutation) OldHandlerArgs(ctx context.Context) (v json.RawMessage, err error) {
+func (m *CronJobMutation) OldHandlerArgs(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldHandlerArgs is only allowed on UpdateOne operations")
 	}
@@ -7201,13 +7201,13 @@ func (m *CronJobMutation) OldHandlerArgs(ctx context.Context) (v json.RawMessage
 	return oldValue.HandlerArgs, nil
 }
 
-// AppendHandlerArgs adds jm to the "handler_args" field.
-func (m *CronJobMutation) AppendHandlerArgs(jm json.RawMessage) {
-	m.appendhandler_args = append(m.appendhandler_args, jm...)
+// AppendHandlerArgs adds j to the "handler_args" field.
+func (m *CronJobMutation) AppendHandlerArgs(j jsontext.Value) {
+	m.appendhandler_args = append(m.appendhandler_args, j...)
 }
 
 // AppendedHandlerArgs returns the list of values that were appended to the "handler_args" field in this mutation.
-func (m *CronJobMutation) AppendedHandlerArgs() (json.RawMessage, bool) {
+func (m *CronJobMutation) AppendedHandlerArgs() (jsontext.Value, bool) {
 	if len(m.appendhandler_args) == 0 {
 		return nil, false
 	}
@@ -8206,7 +8206,7 @@ func (m *CronJobMutation) SetField(name string, value ent.Value) error {
 		m.SetHandlerName(v)
 		return nil
 	case cronjob.FieldHandlerArgs:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -8602,8 +8602,8 @@ type DNSRecordMutation struct {
 	domain_name         *string
 	full_domain         *string
 	_type               *dnsrecord.Type
-	config_json         *json.RawMessage
-	appendconfig_json   json.RawMessage
+	config_json         *jsontext.Value
+	appendconfig_json   jsontext.Value
 	is_active           *bool
 	clearedFields       map[string]struct{}
 	_config             *int64
@@ -9025,13 +9025,13 @@ func (m *DNSRecordMutation) ResetType() {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (m *DNSRecordMutation) SetConfigJSON(jm json.RawMessage) {
-	m.config_json = &jm
+func (m *DNSRecordMutation) SetConfigJSON(j jsontext.Value) {
+	m.config_json = &j
 	m.appendconfig_json = nil
 }
 
 // ConfigJSON returns the value of the "config_json" field in the mutation.
-func (m *DNSRecordMutation) ConfigJSON() (r json.RawMessage, exists bool) {
+func (m *DNSRecordMutation) ConfigJSON() (r jsontext.Value, exists bool) {
 	v := m.config_json
 	if v == nil {
 		return
@@ -9042,7 +9042,7 @@ func (m *DNSRecordMutation) ConfigJSON() (r json.RawMessage, exists bool) {
 // OldConfigJSON returns the old "config_json" field's value of the DNSRecord entity.
 // If the DNSRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DNSRecordMutation) OldConfigJSON(ctx context.Context) (v json.RawMessage, err error) {
+func (m *DNSRecordMutation) OldConfigJSON(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldConfigJSON is only allowed on UpdateOne operations")
 	}
@@ -9056,13 +9056,13 @@ func (m *DNSRecordMutation) OldConfigJSON(ctx context.Context) (v json.RawMessag
 	return oldValue.ConfigJSON, nil
 }
 
-// AppendConfigJSON adds jm to the "config_json" field.
-func (m *DNSRecordMutation) AppendConfigJSON(jm json.RawMessage) {
-	m.appendconfig_json = append(m.appendconfig_json, jm...)
+// AppendConfigJSON adds j to the "config_json" field.
+func (m *DNSRecordMutation) AppendConfigJSON(j jsontext.Value) {
+	m.appendconfig_json = append(m.appendconfig_json, j...)
 }
 
 // AppendedConfigJSON returns the list of values that were appended to the "config_json" field in this mutation.
-func (m *DNSRecordMutation) AppendedConfigJSON() (json.RawMessage, bool) {
+func (m *DNSRecordMutation) AppendedConfigJSON() (jsontext.Value, bool) {
 	if len(m.appendconfig_json) == 0 {
 		return nil, false
 	}
@@ -9589,7 +9589,7 @@ func (m *DNSRecordMutation) SetField(name string, value ent.Value) error {
 		m.SetType(v)
 		return nil
 	case dnsrecord.FieldConfigJSON:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -12249,28 +12249,29 @@ func (m *DeviceGroupDeviceMutation) ResetEdge(name string) error {
 // DevicePortForwardMutation represents an operation that mutates the DevicePortForward nodes in the graph.
 type DevicePortForwardMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *int64
-	created_at      *time.Time
-	updated_at      *time.Time
-	name            *string
-	description     *string
-	local_port      *int
-	addlocal_port   *int
-	remote_host     *string
-	remote_port     *int
-	addremote_port  *int
-	protocols       *[]string
-	appendprotocols []string
-	auto_forward    *bool
-	is_active       *bool
-	clearedFields   map[string]struct{}
-	device          *int64
-	cleareddevice   bool
-	done            bool
-	oldValue        func(context.Context) (*DevicePortForward, error)
-	predicates      []predicate.DevicePortForward
+	op                  Op
+	typ                 string
+	id                  *int64
+	created_at          *time.Time
+	updated_at          *time.Time
+	name                *string
+	description         *string
+	local_port          *int
+	addlocal_port       *int
+	remote_host         *string
+	remote_port         *int
+	addremote_port      *int
+	protocols           *[]string
+	appendprotocols     []string
+	auto_forward        *bool
+	is_active           *bool
+	implementation_type *string
+	clearedFields       map[string]struct{}
+	device              *int64
+	cleareddevice       bool
+	done                bool
+	oldValue            func(context.Context) (*DevicePortForward, error)
+	predicates          []predicate.DevicePortForward
 }
 
 var _ ent.Mutation = (*DevicePortForwardMutation)(nil)
@@ -12805,6 +12806,42 @@ func (m *DevicePortForwardMutation) ResetIsActive() {
 	m.is_active = nil
 }
 
+// SetImplementationType sets the "implementation_type" field.
+func (m *DevicePortForwardMutation) SetImplementationType(s string) {
+	m.implementation_type = &s
+}
+
+// ImplementationType returns the value of the "implementation_type" field in the mutation.
+func (m *DevicePortForwardMutation) ImplementationType() (r string, exists bool) {
+	v := m.implementation_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImplementationType returns the old "implementation_type" field's value of the DevicePortForward entity.
+// If the DevicePortForward object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DevicePortForwardMutation) OldImplementationType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImplementationType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImplementationType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImplementationType: %w", err)
+	}
+	return oldValue.ImplementationType, nil
+}
+
+// ResetImplementationType resets all changes to the "implementation_type" field.
+func (m *DevicePortForwardMutation) ResetImplementationType() {
+	m.implementation_type = nil
+}
+
 // SetDeviceID sets the "device" edge to the Device entity by id.
 func (m *DevicePortForwardMutation) SetDeviceID(id int64) {
 	m.device = &id
@@ -12878,7 +12915,7 @@ func (m *DevicePortForwardMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DevicePortForwardMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, deviceportforward.FieldCreatedAt)
 	}
@@ -12909,6 +12946,9 @@ func (m *DevicePortForwardMutation) Fields() []string {
 	if m.is_active != nil {
 		fields = append(fields, deviceportforward.FieldIsActive)
 	}
+	if m.implementation_type != nil {
+		fields = append(fields, deviceportforward.FieldImplementationType)
+	}
 	return fields
 }
 
@@ -12937,6 +12977,8 @@ func (m *DevicePortForwardMutation) Field(name string) (ent.Value, bool) {
 		return m.AutoForward()
 	case deviceportforward.FieldIsActive:
 		return m.IsActive()
+	case deviceportforward.FieldImplementationType:
+		return m.ImplementationType()
 	}
 	return nil, false
 }
@@ -12966,6 +13008,8 @@ func (m *DevicePortForwardMutation) OldField(ctx context.Context, name string) (
 		return m.OldAutoForward(ctx)
 	case deviceportforward.FieldIsActive:
 		return m.OldIsActive(ctx)
+	case deviceportforward.FieldImplementationType:
+		return m.OldImplementationType(ctx)
 	}
 	return nil, fmt.Errorf("unknown DevicePortForward field %s", name)
 }
@@ -13044,6 +13088,13 @@ func (m *DevicePortForwardMutation) SetField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsActive(v)
+		return nil
+	case deviceportforward.FieldImplementationType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImplementationType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown DevicePortForward field %s", name)
@@ -13159,6 +13210,9 @@ func (m *DevicePortForwardMutation) ResetField(name string) error {
 		return nil
 	case deviceportforward.FieldIsActive:
 		m.ResetIsActive()
+		return nil
+	case deviceportforward.FieldImplementationType:
+		m.ResetImplementationType()
 		return nil
 	}
 	return fmt.Errorf("unknown DevicePortForward field %s", name)
@@ -14311,14 +14365,14 @@ type EdgeOneZoneMutation struct {
 	alias_zone_name             *string
 	area                        *edgeonezone.Area
 	_type                       *edgeonezone.Type
-	resources                   *json.RawMessage
-	appendresources             json.RawMessage
-	ns_detail                   *json.RawMessage
-	appendns_detail             json.RawMessage
-	cname_detail                *json.RawMessage
-	appendcname_detail          json.RawMessage
-	dnspod_detail               *json.RawMessage
-	appenddnspod_detail         json.RawMessage
+	resources                   *jsontext.Value
+	appendresources             jsontext.Value
+	ns_detail                   *jsontext.Value
+	appendns_detail             jsontext.Value
+	cname_detail                *jsontext.Value
+	appendcname_detail          jsontext.Value
+	dnspod_detail               *jsontext.Value
+	appenddnspod_detail         jsontext.Value
 	status                      *edgeonezone.Status
 	cname_status                *edgeonezone.CnameStatus
 	active_status               *edgeonezone.ActiveStatus
@@ -14884,13 +14938,13 @@ func (m *EdgeOneZoneMutation) ResetType() {
 }
 
 // SetResources sets the "resources" field.
-func (m *EdgeOneZoneMutation) SetResources(jm json.RawMessage) {
-	m.resources = &jm
+func (m *EdgeOneZoneMutation) SetResources(j jsontext.Value) {
+	m.resources = &j
 	m.appendresources = nil
 }
 
 // Resources returns the value of the "resources" field in the mutation.
-func (m *EdgeOneZoneMutation) Resources() (r json.RawMessage, exists bool) {
+func (m *EdgeOneZoneMutation) Resources() (r jsontext.Value, exists bool) {
 	v := m.resources
 	if v == nil {
 		return
@@ -14901,7 +14955,7 @@ func (m *EdgeOneZoneMutation) Resources() (r json.RawMessage, exists bool) {
 // OldResources returns the old "resources" field's value of the EdgeOneZone entity.
 // If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneMutation) OldResources(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EdgeOneZoneMutation) OldResources(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldResources is only allowed on UpdateOne operations")
 	}
@@ -14915,13 +14969,13 @@ func (m *EdgeOneZoneMutation) OldResources(ctx context.Context) (v json.RawMessa
 	return oldValue.Resources, nil
 }
 
-// AppendResources adds jm to the "resources" field.
-func (m *EdgeOneZoneMutation) AppendResources(jm json.RawMessage) {
-	m.appendresources = append(m.appendresources, jm...)
+// AppendResources adds j to the "resources" field.
+func (m *EdgeOneZoneMutation) AppendResources(j jsontext.Value) {
+	m.appendresources = append(m.appendresources, j...)
 }
 
 // AppendedResources returns the list of values that were appended to the "resources" field in this mutation.
-func (m *EdgeOneZoneMutation) AppendedResources() (json.RawMessage, bool) {
+func (m *EdgeOneZoneMutation) AppendedResources() (jsontext.Value, bool) {
 	if len(m.appendresources) == 0 {
 		return nil, false
 	}
@@ -14949,13 +15003,13 @@ func (m *EdgeOneZoneMutation) ResetResources() {
 }
 
 // SetNsDetail sets the "ns_detail" field.
-func (m *EdgeOneZoneMutation) SetNsDetail(jm json.RawMessage) {
-	m.ns_detail = &jm
+func (m *EdgeOneZoneMutation) SetNsDetail(j jsontext.Value) {
+	m.ns_detail = &j
 	m.appendns_detail = nil
 }
 
 // NsDetail returns the value of the "ns_detail" field in the mutation.
-func (m *EdgeOneZoneMutation) NsDetail() (r json.RawMessage, exists bool) {
+func (m *EdgeOneZoneMutation) NsDetail() (r jsontext.Value, exists bool) {
 	v := m.ns_detail
 	if v == nil {
 		return
@@ -14966,7 +15020,7 @@ func (m *EdgeOneZoneMutation) NsDetail() (r json.RawMessage, exists bool) {
 // OldNsDetail returns the old "ns_detail" field's value of the EdgeOneZone entity.
 // If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneMutation) OldNsDetail(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EdgeOneZoneMutation) OldNsDetail(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldNsDetail is only allowed on UpdateOne operations")
 	}
@@ -14980,13 +15034,13 @@ func (m *EdgeOneZoneMutation) OldNsDetail(ctx context.Context) (v json.RawMessag
 	return oldValue.NsDetail, nil
 }
 
-// AppendNsDetail adds jm to the "ns_detail" field.
-func (m *EdgeOneZoneMutation) AppendNsDetail(jm json.RawMessage) {
-	m.appendns_detail = append(m.appendns_detail, jm...)
+// AppendNsDetail adds j to the "ns_detail" field.
+func (m *EdgeOneZoneMutation) AppendNsDetail(j jsontext.Value) {
+	m.appendns_detail = append(m.appendns_detail, j...)
 }
 
 // AppendedNsDetail returns the list of values that were appended to the "ns_detail" field in this mutation.
-func (m *EdgeOneZoneMutation) AppendedNsDetail() (json.RawMessage, bool) {
+func (m *EdgeOneZoneMutation) AppendedNsDetail() (jsontext.Value, bool) {
 	if len(m.appendns_detail) == 0 {
 		return nil, false
 	}
@@ -15014,13 +15068,13 @@ func (m *EdgeOneZoneMutation) ResetNsDetail() {
 }
 
 // SetCnameDetail sets the "cname_detail" field.
-func (m *EdgeOneZoneMutation) SetCnameDetail(jm json.RawMessage) {
-	m.cname_detail = &jm
+func (m *EdgeOneZoneMutation) SetCnameDetail(j jsontext.Value) {
+	m.cname_detail = &j
 	m.appendcname_detail = nil
 }
 
 // CnameDetail returns the value of the "cname_detail" field in the mutation.
-func (m *EdgeOneZoneMutation) CnameDetail() (r json.RawMessage, exists bool) {
+func (m *EdgeOneZoneMutation) CnameDetail() (r jsontext.Value, exists bool) {
 	v := m.cname_detail
 	if v == nil {
 		return
@@ -15031,7 +15085,7 @@ func (m *EdgeOneZoneMutation) CnameDetail() (r json.RawMessage, exists bool) {
 // OldCnameDetail returns the old "cname_detail" field's value of the EdgeOneZone entity.
 // If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneMutation) OldCnameDetail(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EdgeOneZoneMutation) OldCnameDetail(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCnameDetail is only allowed on UpdateOne operations")
 	}
@@ -15045,13 +15099,13 @@ func (m *EdgeOneZoneMutation) OldCnameDetail(ctx context.Context) (v json.RawMes
 	return oldValue.CnameDetail, nil
 }
 
-// AppendCnameDetail adds jm to the "cname_detail" field.
-func (m *EdgeOneZoneMutation) AppendCnameDetail(jm json.RawMessage) {
-	m.appendcname_detail = append(m.appendcname_detail, jm...)
+// AppendCnameDetail adds j to the "cname_detail" field.
+func (m *EdgeOneZoneMutation) AppendCnameDetail(j jsontext.Value) {
+	m.appendcname_detail = append(m.appendcname_detail, j...)
 }
 
 // AppendedCnameDetail returns the list of values that were appended to the "cname_detail" field in this mutation.
-func (m *EdgeOneZoneMutation) AppendedCnameDetail() (json.RawMessage, bool) {
+func (m *EdgeOneZoneMutation) AppendedCnameDetail() (jsontext.Value, bool) {
 	if len(m.appendcname_detail) == 0 {
 		return nil, false
 	}
@@ -15079,13 +15133,13 @@ func (m *EdgeOneZoneMutation) ResetCnameDetail() {
 }
 
 // SetDnspodDetail sets the "dnspod_detail" field.
-func (m *EdgeOneZoneMutation) SetDnspodDetail(jm json.RawMessage) {
-	m.dnspod_detail = &jm
+func (m *EdgeOneZoneMutation) SetDnspodDetail(j jsontext.Value) {
+	m.dnspod_detail = &j
 	m.appenddnspod_detail = nil
 }
 
 // DnspodDetail returns the value of the "dnspod_detail" field in the mutation.
-func (m *EdgeOneZoneMutation) DnspodDetail() (r json.RawMessage, exists bool) {
+func (m *EdgeOneZoneMutation) DnspodDetail() (r jsontext.Value, exists bool) {
 	v := m.dnspod_detail
 	if v == nil {
 		return
@@ -15096,7 +15150,7 @@ func (m *EdgeOneZoneMutation) DnspodDetail() (r json.RawMessage, exists bool) {
 // OldDnspodDetail returns the old "dnspod_detail" field's value of the EdgeOneZone entity.
 // If the EdgeOneZone object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneMutation) OldDnspodDetail(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EdgeOneZoneMutation) OldDnspodDetail(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDnspodDetail is only allowed on UpdateOne operations")
 	}
@@ -15110,13 +15164,13 @@ func (m *EdgeOneZoneMutation) OldDnspodDetail(ctx context.Context) (v json.RawMe
 	return oldValue.DnspodDetail, nil
 }
 
-// AppendDnspodDetail adds jm to the "dnspod_detail" field.
-func (m *EdgeOneZoneMutation) AppendDnspodDetail(jm json.RawMessage) {
-	m.appenddnspod_detail = append(m.appenddnspod_detail, jm...)
+// AppendDnspodDetail adds j to the "dnspod_detail" field.
+func (m *EdgeOneZoneMutation) AppendDnspodDetail(j jsontext.Value) {
+	m.appenddnspod_detail = append(m.appenddnspod_detail, j...)
 }
 
 // AppendedDnspodDetail returns the list of values that were appended to the "dnspod_detail" field in this mutation.
-func (m *EdgeOneZoneMutation) AppendedDnspodDetail() (json.RawMessage, bool) {
+func (m *EdgeOneZoneMutation) AppendedDnspodDetail() (jsontext.Value, bool) {
 	if len(m.appenddnspod_detail) == 0 {
 		return nil, false
 	}
@@ -15842,28 +15896,28 @@ func (m *EdgeOneZoneMutation) SetField(name string, value ent.Value) error {
 		m.SetType(v)
 		return nil
 	case edgeonezone.FieldResources:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetResources(v)
 		return nil
 	case edgeonezone.FieldNsDetail:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNsDetail(v)
 		return nil
 	case edgeonezone.FieldCnameDetail:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCnameDetail(v)
 		return nil
 	case edgeonezone.FieldDnspodDetail:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -16279,17 +16333,17 @@ type EdgeOneZoneAccelerationDomainMutation struct {
 	cname                        *string
 	ipv6_status                  *edgeonezoneaccelerationdomain.Ipv6Status
 	identification_status        *edgeonezoneaccelerationdomain.IdentificationStatus
-	ownership_verification       *json.RawMessage
-	appendownership_verification json.RawMessage
-	origin_detail                *json.RawMessage
-	appendorigin_detail          json.RawMessage
+	ownership_verification       *jsontext.Value
+	appendownership_verification jsontext.Value
+	origin_detail                *jsontext.Value
+	appendorigin_detail          jsontext.Value
 	origin_protocol              *edgeonezoneaccelerationdomain.OriginProtocol
 	http_origin_port             *uint64
 	addhttp_origin_port          *int64
 	https_origin_port            *uint64
 	addhttps_origin_port         *int64
-	certificate                  *json.RawMessage
-	appendcertificate            json.RawMessage
+	certificate                  *jsontext.Value
+	appendcertificate            jsontext.Value
 	clearedFields                map[string]struct{}
 	edgeone_zone                 *int64
 	clearededgeone_zone          bool
@@ -16841,13 +16895,13 @@ func (m *EdgeOneZoneAccelerationDomainMutation) ResetIdentificationStatus() {
 }
 
 // SetOwnershipVerification sets the "ownership_verification" field.
-func (m *EdgeOneZoneAccelerationDomainMutation) SetOwnershipVerification(jm json.RawMessage) {
-	m.ownership_verification = &jm
+func (m *EdgeOneZoneAccelerationDomainMutation) SetOwnershipVerification(j jsontext.Value) {
+	m.ownership_verification = &j
 	m.appendownership_verification = nil
 }
 
 // OwnershipVerification returns the value of the "ownership_verification" field in the mutation.
-func (m *EdgeOneZoneAccelerationDomainMutation) OwnershipVerification() (r json.RawMessage, exists bool) {
+func (m *EdgeOneZoneAccelerationDomainMutation) OwnershipVerification() (r jsontext.Value, exists bool) {
 	v := m.ownership_verification
 	if v == nil {
 		return
@@ -16858,7 +16912,7 @@ func (m *EdgeOneZoneAccelerationDomainMutation) OwnershipVerification() (r json.
 // OldOwnershipVerification returns the old "ownership_verification" field's value of the EdgeOneZoneAccelerationDomain entity.
 // If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneAccelerationDomainMutation) OldOwnershipVerification(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EdgeOneZoneAccelerationDomainMutation) OldOwnershipVerification(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOwnershipVerification is only allowed on UpdateOne operations")
 	}
@@ -16872,13 +16926,13 @@ func (m *EdgeOneZoneAccelerationDomainMutation) OldOwnershipVerification(ctx con
 	return oldValue.OwnershipVerification, nil
 }
 
-// AppendOwnershipVerification adds jm to the "ownership_verification" field.
-func (m *EdgeOneZoneAccelerationDomainMutation) AppendOwnershipVerification(jm json.RawMessage) {
-	m.appendownership_verification = append(m.appendownership_verification, jm...)
+// AppendOwnershipVerification adds j to the "ownership_verification" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendOwnershipVerification(j jsontext.Value) {
+	m.appendownership_verification = append(m.appendownership_verification, j...)
 }
 
 // AppendedOwnershipVerification returns the list of values that were appended to the "ownership_verification" field in this mutation.
-func (m *EdgeOneZoneAccelerationDomainMutation) AppendedOwnershipVerification() (json.RawMessage, bool) {
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendedOwnershipVerification() (jsontext.Value, bool) {
 	if len(m.appendownership_verification) == 0 {
 		return nil, false
 	}
@@ -16906,13 +16960,13 @@ func (m *EdgeOneZoneAccelerationDomainMutation) ResetOwnershipVerification() {
 }
 
 // SetOriginDetail sets the "origin_detail" field.
-func (m *EdgeOneZoneAccelerationDomainMutation) SetOriginDetail(jm json.RawMessage) {
-	m.origin_detail = &jm
+func (m *EdgeOneZoneAccelerationDomainMutation) SetOriginDetail(j jsontext.Value) {
+	m.origin_detail = &j
 	m.appendorigin_detail = nil
 }
 
 // OriginDetail returns the value of the "origin_detail" field in the mutation.
-func (m *EdgeOneZoneAccelerationDomainMutation) OriginDetail() (r json.RawMessage, exists bool) {
+func (m *EdgeOneZoneAccelerationDomainMutation) OriginDetail() (r jsontext.Value, exists bool) {
 	v := m.origin_detail
 	if v == nil {
 		return
@@ -16923,7 +16977,7 @@ func (m *EdgeOneZoneAccelerationDomainMutation) OriginDetail() (r json.RawMessag
 // OldOriginDetail returns the old "origin_detail" field's value of the EdgeOneZoneAccelerationDomain entity.
 // If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneAccelerationDomainMutation) OldOriginDetail(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EdgeOneZoneAccelerationDomainMutation) OldOriginDetail(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOriginDetail is only allowed on UpdateOne operations")
 	}
@@ -16937,13 +16991,13 @@ func (m *EdgeOneZoneAccelerationDomainMutation) OldOriginDetail(ctx context.Cont
 	return oldValue.OriginDetail, nil
 }
 
-// AppendOriginDetail adds jm to the "origin_detail" field.
-func (m *EdgeOneZoneAccelerationDomainMutation) AppendOriginDetail(jm json.RawMessage) {
-	m.appendorigin_detail = append(m.appendorigin_detail, jm...)
+// AppendOriginDetail adds j to the "origin_detail" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendOriginDetail(j jsontext.Value) {
+	m.appendorigin_detail = append(m.appendorigin_detail, j...)
 }
 
 // AppendedOriginDetail returns the list of values that were appended to the "origin_detail" field in this mutation.
-func (m *EdgeOneZoneAccelerationDomainMutation) AppendedOriginDetail() (json.RawMessage, bool) {
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendedOriginDetail() (jsontext.Value, bool) {
 	if len(m.appendorigin_detail) == 0 {
 		return nil, false
 	}
@@ -17160,13 +17214,13 @@ func (m *EdgeOneZoneAccelerationDomainMutation) ResetHTTPSOriginPort() {
 }
 
 // SetCertificate sets the "certificate" field.
-func (m *EdgeOneZoneAccelerationDomainMutation) SetCertificate(jm json.RawMessage) {
-	m.certificate = &jm
+func (m *EdgeOneZoneAccelerationDomainMutation) SetCertificate(j jsontext.Value) {
+	m.certificate = &j
 	m.appendcertificate = nil
 }
 
 // Certificate returns the value of the "certificate" field in the mutation.
-func (m *EdgeOneZoneAccelerationDomainMutation) Certificate() (r json.RawMessage, exists bool) {
+func (m *EdgeOneZoneAccelerationDomainMutation) Certificate() (r jsontext.Value, exists bool) {
 	v := m.certificate
 	if v == nil {
 		return
@@ -17177,7 +17231,7 @@ func (m *EdgeOneZoneAccelerationDomainMutation) Certificate() (r json.RawMessage
 // OldCertificate returns the old "certificate" field's value of the EdgeOneZoneAccelerationDomain entity.
 // If the EdgeOneZoneAccelerationDomain object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneAccelerationDomainMutation) OldCertificate(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EdgeOneZoneAccelerationDomainMutation) OldCertificate(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCertificate is only allowed on UpdateOne operations")
 	}
@@ -17191,13 +17245,13 @@ func (m *EdgeOneZoneAccelerationDomainMutation) OldCertificate(ctx context.Conte
 	return oldValue.Certificate, nil
 }
 
-// AppendCertificate adds jm to the "certificate" field.
-func (m *EdgeOneZoneAccelerationDomainMutation) AppendCertificate(jm json.RawMessage) {
-	m.appendcertificate = append(m.appendcertificate, jm...)
+// AppendCertificate adds j to the "certificate" field.
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendCertificate(j jsontext.Value) {
+	m.appendcertificate = append(m.appendcertificate, j...)
 }
 
 // AppendedCertificate returns the list of values that were appended to the "certificate" field in this mutation.
-func (m *EdgeOneZoneAccelerationDomainMutation) AppendedCertificate() (json.RawMessage, bool) {
+func (m *EdgeOneZoneAccelerationDomainMutation) AppendedCertificate() (jsontext.Value, bool) {
 	if len(m.appendcertificate) == 0 {
 		return nil, false
 	}
@@ -17495,14 +17549,14 @@ func (m *EdgeOneZoneAccelerationDomainMutation) SetField(name string, value ent.
 		m.SetIdentificationStatus(v)
 		return nil
 	case edgeonezoneaccelerationdomain.FieldOwnershipVerification:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetOwnershipVerification(v)
 		return nil
 	case edgeonezoneaccelerationdomain.FieldOriginDetail:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -17530,7 +17584,7 @@ func (m *EdgeOneZoneAccelerationDomainMutation) SetField(name string, value ent.
 		m.SetHTTPSOriginPort(v)
 		return nil
 	case edgeonezoneaccelerationdomain.FieldCertificate:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -19212,10 +19266,10 @@ type EdgeOneZoneOriginGroupMutation struct {
 	group_id            *string
 	name                *string
 	_type               *edgeonezoneorigingroup.Type
-	records             *json.RawMessage
-	appendrecords       json.RawMessage
-	references          *json.RawMessage
-	appendreferences    json.RawMessage
+	records             *jsontext.Value
+	appendrecords       jsontext.Value
+	references          *jsontext.Value
+	appendreferences    jsontext.Value
 	host_header         *string
 	clearedFields       map[string]struct{}
 	edgeone_zone        *int64
@@ -19670,13 +19724,13 @@ func (m *EdgeOneZoneOriginGroupMutation) ResetType() {
 }
 
 // SetRecords sets the "records" field.
-func (m *EdgeOneZoneOriginGroupMutation) SetRecords(jm json.RawMessage) {
-	m.records = &jm
+func (m *EdgeOneZoneOriginGroupMutation) SetRecords(j jsontext.Value) {
+	m.records = &j
 	m.appendrecords = nil
 }
 
 // Records returns the value of the "records" field in the mutation.
-func (m *EdgeOneZoneOriginGroupMutation) Records() (r json.RawMessage, exists bool) {
+func (m *EdgeOneZoneOriginGroupMutation) Records() (r jsontext.Value, exists bool) {
 	v := m.records
 	if v == nil {
 		return
@@ -19687,7 +19741,7 @@ func (m *EdgeOneZoneOriginGroupMutation) Records() (r json.RawMessage, exists bo
 // OldRecords returns the old "records" field's value of the EdgeOneZoneOriginGroup entity.
 // If the EdgeOneZoneOriginGroup object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneOriginGroupMutation) OldRecords(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EdgeOneZoneOriginGroupMutation) OldRecords(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRecords is only allowed on UpdateOne operations")
 	}
@@ -19701,13 +19755,13 @@ func (m *EdgeOneZoneOriginGroupMutation) OldRecords(ctx context.Context) (v json
 	return oldValue.Records, nil
 }
 
-// AppendRecords adds jm to the "records" field.
-func (m *EdgeOneZoneOriginGroupMutation) AppendRecords(jm json.RawMessage) {
-	m.appendrecords = append(m.appendrecords, jm...)
+// AppendRecords adds j to the "records" field.
+func (m *EdgeOneZoneOriginGroupMutation) AppendRecords(j jsontext.Value) {
+	m.appendrecords = append(m.appendrecords, j...)
 }
 
 // AppendedRecords returns the list of values that were appended to the "records" field in this mutation.
-func (m *EdgeOneZoneOriginGroupMutation) AppendedRecords() (json.RawMessage, bool) {
+func (m *EdgeOneZoneOriginGroupMutation) AppendedRecords() (jsontext.Value, bool) {
 	if len(m.appendrecords) == 0 {
 		return nil, false
 	}
@@ -19735,13 +19789,13 @@ func (m *EdgeOneZoneOriginGroupMutation) ResetRecords() {
 }
 
 // SetReferences sets the "references" field.
-func (m *EdgeOneZoneOriginGroupMutation) SetReferences(jm json.RawMessage) {
-	m.references = &jm
+func (m *EdgeOneZoneOriginGroupMutation) SetReferences(j jsontext.Value) {
+	m.references = &j
 	m.appendreferences = nil
 }
 
 // References returns the value of the "references" field in the mutation.
-func (m *EdgeOneZoneOriginGroupMutation) References() (r json.RawMessage, exists bool) {
+func (m *EdgeOneZoneOriginGroupMutation) References() (r jsontext.Value, exists bool) {
 	v := m.references
 	if v == nil {
 		return
@@ -19752,7 +19806,7 @@ func (m *EdgeOneZoneOriginGroupMutation) References() (r json.RawMessage, exists
 // OldReferences returns the old "references" field's value of the EdgeOneZoneOriginGroup entity.
 // If the EdgeOneZoneOriginGroup object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EdgeOneZoneOriginGroupMutation) OldReferences(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EdgeOneZoneOriginGroupMutation) OldReferences(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldReferences is only allowed on UpdateOne operations")
 	}
@@ -19766,13 +19820,13 @@ func (m *EdgeOneZoneOriginGroupMutation) OldReferences(ctx context.Context) (v j
 	return oldValue.References, nil
 }
 
-// AppendReferences adds jm to the "references" field.
-func (m *EdgeOneZoneOriginGroupMutation) AppendReferences(jm json.RawMessage) {
-	m.appendreferences = append(m.appendreferences, jm...)
+// AppendReferences adds j to the "references" field.
+func (m *EdgeOneZoneOriginGroupMutation) AppendReferences(j jsontext.Value) {
+	m.appendreferences = append(m.appendreferences, j...)
 }
 
 // AppendedReferences returns the list of values that were appended to the "references" field in this mutation.
-func (m *EdgeOneZoneOriginGroupMutation) AppendedReferences() (json.RawMessage, bool) {
+func (m *EdgeOneZoneOriginGroupMutation) AppendedReferences() (jsontext.Value, bool) {
 	if len(m.appendreferences) == 0 {
 		return nil, false
 	}
@@ -20070,14 +20124,14 @@ func (m *EdgeOneZoneOriginGroupMutation) SetField(name string, value ent.Value) 
 		m.SetType(v)
 		return nil
 	case edgeonezoneorigingroup.FieldRecords:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRecords(v)
 		return nil
 	case edgeonezoneorigingroup.FieldReferences:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -23656,12 +23710,12 @@ type EsaSiteOriginPoolMutation struct {
 	name                   *string
 	record_name            *string
 	enabled                *bool
-	references             *json.RawMessage
-	appendreferences       json.RawMessage
+	references             *jsontext.Value
+	appendreferences       jsontext.Value
 	reference_l_b_count    *int32
 	addreference_l_b_count *int32
-	origins                *json.RawMessage
-	appendorigins          json.RawMessage
+	origins                *jsontext.Value
+	appendorigins          jsontext.Value
 	clearedFields          map[string]struct{}
 	esa_site               *int64
 	clearedesa_site        bool
@@ -24184,13 +24238,13 @@ func (m *EsaSiteOriginPoolMutation) ResetEnabled() {
 }
 
 // SetReferences sets the "references" field.
-func (m *EsaSiteOriginPoolMutation) SetReferences(jm json.RawMessage) {
-	m.references = &jm
+func (m *EsaSiteOriginPoolMutation) SetReferences(j jsontext.Value) {
+	m.references = &j
 	m.appendreferences = nil
 }
 
 // References returns the value of the "references" field in the mutation.
-func (m *EsaSiteOriginPoolMutation) References() (r json.RawMessage, exists bool) {
+func (m *EsaSiteOriginPoolMutation) References() (r jsontext.Value, exists bool) {
 	v := m.references
 	if v == nil {
 		return
@@ -24201,7 +24255,7 @@ func (m *EsaSiteOriginPoolMutation) References() (r json.RawMessage, exists bool
 // OldReferences returns the old "references" field's value of the EsaSiteOriginPool entity.
 // If the EsaSiteOriginPool object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EsaSiteOriginPoolMutation) OldReferences(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EsaSiteOriginPoolMutation) OldReferences(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldReferences is only allowed on UpdateOne operations")
 	}
@@ -24215,13 +24269,13 @@ func (m *EsaSiteOriginPoolMutation) OldReferences(ctx context.Context) (v json.R
 	return oldValue.References, nil
 }
 
-// AppendReferences adds jm to the "references" field.
-func (m *EsaSiteOriginPoolMutation) AppendReferences(jm json.RawMessage) {
-	m.appendreferences = append(m.appendreferences, jm...)
+// AppendReferences adds j to the "references" field.
+func (m *EsaSiteOriginPoolMutation) AppendReferences(j jsontext.Value) {
+	m.appendreferences = append(m.appendreferences, j...)
 }
 
 // AppendedReferences returns the list of values that were appended to the "references" field in this mutation.
-func (m *EsaSiteOriginPoolMutation) AppendedReferences() (json.RawMessage, bool) {
+func (m *EsaSiteOriginPoolMutation) AppendedReferences() (jsontext.Value, bool) {
 	if len(m.appendreferences) == 0 {
 		return nil, false
 	}
@@ -24319,13 +24373,13 @@ func (m *EsaSiteOriginPoolMutation) ResetReferenceLBCount() {
 }
 
 // SetOrigins sets the "origins" field.
-func (m *EsaSiteOriginPoolMutation) SetOrigins(jm json.RawMessage) {
-	m.origins = &jm
+func (m *EsaSiteOriginPoolMutation) SetOrigins(j jsontext.Value) {
+	m.origins = &j
 	m.appendorigins = nil
 }
 
 // Origins returns the value of the "origins" field in the mutation.
-func (m *EsaSiteOriginPoolMutation) Origins() (r json.RawMessage, exists bool) {
+func (m *EsaSiteOriginPoolMutation) Origins() (r jsontext.Value, exists bool) {
 	v := m.origins
 	if v == nil {
 		return
@@ -24336,7 +24390,7 @@ func (m *EsaSiteOriginPoolMutation) Origins() (r json.RawMessage, exists bool) {
 // OldOrigins returns the old "origins" field's value of the EsaSiteOriginPool entity.
 // If the EsaSiteOriginPool object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EsaSiteOriginPoolMutation) OldOrigins(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EsaSiteOriginPoolMutation) OldOrigins(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOrigins is only allowed on UpdateOne operations")
 	}
@@ -24350,13 +24404,13 @@ func (m *EsaSiteOriginPoolMutation) OldOrigins(ctx context.Context) (v json.RawM
 	return oldValue.Origins, nil
 }
 
-// AppendOrigins adds jm to the "origins" field.
-func (m *EsaSiteOriginPoolMutation) AppendOrigins(jm json.RawMessage) {
-	m.appendorigins = append(m.appendorigins, jm...)
+// AppendOrigins adds j to the "origins" field.
+func (m *EsaSiteOriginPoolMutation) AppendOrigins(j jsontext.Value) {
+	m.appendorigins = append(m.appendorigins, j...)
 }
 
 // AppendedOrigins returns the list of values that were appended to the "origins" field in this mutation.
-func (m *EsaSiteOriginPoolMutation) AppendedOrigins() (json.RawMessage, bool) {
+func (m *EsaSiteOriginPoolMutation) AppendedOrigins() (jsontext.Value, bool) {
 	if len(m.appendorigins) == 0 {
 		return nil, false
 	}
@@ -24619,7 +24673,7 @@ func (m *EsaSiteOriginPoolMutation) SetField(name string, value ent.Value) error
 		m.SetEnabled(v)
 		return nil
 	case esasiteoriginpool.FieldReferences:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -24633,7 +24687,7 @@ func (m *EsaSiteOriginPoolMutation) SetField(name string, value ent.Value) error
 		m.SetReferenceLBCount(v)
 		return nil
 	case esasiteoriginpool.FieldOrigins:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -24891,8 +24945,8 @@ type EsaSiteRecordMutation struct {
 	remote_created_at  *time.Time
 	sync_at            *time.Time
 	biz_name           *esasiterecord.BizName
-	data               *json.RawMessage
-	appenddata         json.RawMessage
+	data               *jsontext.Value
+	appenddata         jsontext.Value
 	proxied            *bool
 	record_id          *int64
 	addrecord_id       *int64
@@ -24903,8 +24957,8 @@ type EsaSiteRecordMutation struct {
 	addttl             *int64
 	record_cname       *string
 	comment            *string
-	auth_conf          *json.RawMessage
-	appendauth_conf    json.RawMessage
+	auth_conf          *jsontext.Value
+	appendauth_conf    jsontext.Value
 	host_policy        *esasiterecord.HostPolicy
 	clearedFields      map[string]struct{}
 	esa_site           *int64
@@ -25274,13 +25328,13 @@ func (m *EsaSiteRecordMutation) ResetBizName() {
 }
 
 // SetData sets the "data" field.
-func (m *EsaSiteRecordMutation) SetData(jm json.RawMessage) {
-	m.data = &jm
+func (m *EsaSiteRecordMutation) SetData(j jsontext.Value) {
+	m.data = &j
 	m.appenddata = nil
 }
 
 // Data returns the value of the "data" field in the mutation.
-func (m *EsaSiteRecordMutation) Data() (r json.RawMessage, exists bool) {
+func (m *EsaSiteRecordMutation) Data() (r jsontext.Value, exists bool) {
 	v := m.data
 	if v == nil {
 		return
@@ -25291,7 +25345,7 @@ func (m *EsaSiteRecordMutation) Data() (r json.RawMessage, exists bool) {
 // OldData returns the old "data" field's value of the EsaSiteRecord entity.
 // If the EsaSiteRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EsaSiteRecordMutation) OldData(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EsaSiteRecordMutation) OldData(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldData is only allowed on UpdateOne operations")
 	}
@@ -25305,13 +25359,13 @@ func (m *EsaSiteRecordMutation) OldData(ctx context.Context) (v json.RawMessage,
 	return oldValue.Data, nil
 }
 
-// AppendData adds jm to the "data" field.
-func (m *EsaSiteRecordMutation) AppendData(jm json.RawMessage) {
-	m.appenddata = append(m.appenddata, jm...)
+// AppendData adds j to the "data" field.
+func (m *EsaSiteRecordMutation) AppendData(j jsontext.Value) {
+	m.appenddata = append(m.appenddata, j...)
 }
 
 // AppendedData returns the list of values that were appended to the "data" field in this mutation.
-func (m *EsaSiteRecordMutation) AppendedData() (json.RawMessage, bool) {
+func (m *EsaSiteRecordMutation) AppendedData() (jsontext.Value, bool) {
 	if len(m.appenddata) == 0 {
 		return nil, false
 	}
@@ -25759,13 +25813,13 @@ func (m *EsaSiteRecordMutation) ResetComment() {
 }
 
 // SetAuthConf sets the "auth_conf" field.
-func (m *EsaSiteRecordMutation) SetAuthConf(jm json.RawMessage) {
-	m.auth_conf = &jm
+func (m *EsaSiteRecordMutation) SetAuthConf(j jsontext.Value) {
+	m.auth_conf = &j
 	m.appendauth_conf = nil
 }
 
 // AuthConf returns the value of the "auth_conf" field in the mutation.
-func (m *EsaSiteRecordMutation) AuthConf() (r json.RawMessage, exists bool) {
+func (m *EsaSiteRecordMutation) AuthConf() (r jsontext.Value, exists bool) {
 	v := m.auth_conf
 	if v == nil {
 		return
@@ -25776,7 +25830,7 @@ func (m *EsaSiteRecordMutation) AuthConf() (r json.RawMessage, exists bool) {
 // OldAuthConf returns the old "auth_conf" field's value of the EsaSiteRecord entity.
 // If the EsaSiteRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EsaSiteRecordMutation) OldAuthConf(ctx context.Context) (v json.RawMessage, err error) {
+func (m *EsaSiteRecordMutation) OldAuthConf(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAuthConf is only allowed on UpdateOne operations")
 	}
@@ -25790,13 +25844,13 @@ func (m *EsaSiteRecordMutation) OldAuthConf(ctx context.Context) (v json.RawMess
 	return oldValue.AuthConf, nil
 }
 
-// AppendAuthConf adds jm to the "auth_conf" field.
-func (m *EsaSiteRecordMutation) AppendAuthConf(jm json.RawMessage) {
-	m.appendauth_conf = append(m.appendauth_conf, jm...)
+// AppendAuthConf adds j to the "auth_conf" field.
+func (m *EsaSiteRecordMutation) AppendAuthConf(j jsontext.Value) {
+	m.appendauth_conf = append(m.appendauth_conf, j...)
 }
 
 // AppendedAuthConf returns the list of values that were appended to the "auth_conf" field in this mutation.
-func (m *EsaSiteRecordMutation) AppendedAuthConf() (json.RawMessage, bool) {
+func (m *EsaSiteRecordMutation) AppendedAuthConf() (jsontext.Value, bool) {
 	if len(m.appendauth_conf) == 0 {
 		return nil, false
 	}
@@ -26122,7 +26176,7 @@ func (m *EsaSiteRecordMutation) SetField(name string, value ent.Value) error {
 		m.SetBizName(v)
 		return nil
 	case esasiterecord.FieldData:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -26185,7 +26239,7 @@ func (m *EsaSiteRecordMutation) SetField(name string, value ent.Value) error {
 		m.SetComment(v)
 		return nil
 	case esasiterecord.FieldAuthConf:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -27742,8 +27796,8 @@ type PlatformConfigMutation struct {
 	description               *string
 	capability                *platformconfig.Capability
 	platform                  *platformconfig.Platform
-	config_json               *json.RawMessage
-	appendconfig_json         json.RawMessage
+	config_json               *jsontext.Value
+	appendconfig_json         jsontext.Value
 	clearedFields             map[string]struct{}
 	dns_records               map[int64]struct{}
 	removeddns_records        map[int64]struct{}
@@ -28108,13 +28162,13 @@ func (m *PlatformConfigMutation) ResetPlatform() {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (m *PlatformConfigMutation) SetConfigJSON(jm json.RawMessage) {
-	m.config_json = &jm
+func (m *PlatformConfigMutation) SetConfigJSON(j jsontext.Value) {
+	m.config_json = &j
 	m.appendconfig_json = nil
 }
 
 // ConfigJSON returns the value of the "config_json" field in the mutation.
-func (m *PlatformConfigMutation) ConfigJSON() (r json.RawMessage, exists bool) {
+func (m *PlatformConfigMutation) ConfigJSON() (r jsontext.Value, exists bool) {
 	v := m.config_json
 	if v == nil {
 		return
@@ -28125,7 +28179,7 @@ func (m *PlatformConfigMutation) ConfigJSON() (r json.RawMessage, exists bool) {
 // OldConfigJSON returns the old "config_json" field's value of the PlatformConfig entity.
 // If the PlatformConfig object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PlatformConfigMutation) OldConfigJSON(ctx context.Context) (v json.RawMessage, err error) {
+func (m *PlatformConfigMutation) OldConfigJSON(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldConfigJSON is only allowed on UpdateOne operations")
 	}
@@ -28139,13 +28193,13 @@ func (m *PlatformConfigMutation) OldConfigJSON(ctx context.Context) (v json.RawM
 	return oldValue.ConfigJSON, nil
 }
 
-// AppendConfigJSON adds jm to the "config_json" field.
-func (m *PlatformConfigMutation) AppendConfigJSON(jm json.RawMessage) {
-	m.appendconfig_json = append(m.appendconfig_json, jm...)
+// AppendConfigJSON adds j to the "config_json" field.
+func (m *PlatformConfigMutation) AppendConfigJSON(j jsontext.Value) {
+	m.appendconfig_json = append(m.appendconfig_json, j...)
 }
 
 // AppendedConfigJSON returns the list of values that were appended to the "config_json" field in this mutation.
-func (m *PlatformConfigMutation) AppendedConfigJSON() (json.RawMessage, bool) {
+func (m *PlatformConfigMutation) AppendedConfigJSON() (jsontext.Value, bool) {
 	if len(m.appendconfig_json) == 0 {
 		return nil, false
 	}
@@ -28757,7 +28811,7 @@ func (m *PlatformConfigMutation) SetField(name string, value ent.Value) error {
 		m.SetPlatform(v)
 		return nil
 	case platformconfig.FieldConfigJSON:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -31721,8 +31775,8 @@ type TUNRecordMutation struct {
 	domain_path          *string
 	serve_type           *tunrecord.ServeType
 	serve_uri            *string
-	config_json          *json.RawMessage
-	appendconfig_json    json.RawMessage
+	config_json          *jsontext.Value
+	appendconfig_json    jsontext.Value
 	is_active            *bool
 	last_refresh_at      *time.Time
 	last_api_response    *string
@@ -32167,13 +32221,13 @@ func (m *TUNRecordMutation) ResetServeURI() {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (m *TUNRecordMutation) SetConfigJSON(jm json.RawMessage) {
-	m.config_json = &jm
+func (m *TUNRecordMutation) SetConfigJSON(j jsontext.Value) {
+	m.config_json = &j
 	m.appendconfig_json = nil
 }
 
 // ConfigJSON returns the value of the "config_json" field in the mutation.
-func (m *TUNRecordMutation) ConfigJSON() (r json.RawMessage, exists bool) {
+func (m *TUNRecordMutation) ConfigJSON() (r jsontext.Value, exists bool) {
 	v := m.config_json
 	if v == nil {
 		return
@@ -32184,7 +32238,7 @@ func (m *TUNRecordMutation) ConfigJSON() (r json.RawMessage, exists bool) {
 // OldConfigJSON returns the old "config_json" field's value of the TUNRecord entity.
 // If the TUNRecord object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TUNRecordMutation) OldConfigJSON(ctx context.Context) (v json.RawMessage, err error) {
+func (m *TUNRecordMutation) OldConfigJSON(ctx context.Context) (v jsontext.Value, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldConfigJSON is only allowed on UpdateOne operations")
 	}
@@ -32198,13 +32252,13 @@ func (m *TUNRecordMutation) OldConfigJSON(ctx context.Context) (v json.RawMessag
 	return oldValue.ConfigJSON, nil
 }
 
-// AppendConfigJSON adds jm to the "config_json" field.
-func (m *TUNRecordMutation) AppendConfigJSON(jm json.RawMessage) {
-	m.appendconfig_json = append(m.appendconfig_json, jm...)
+// AppendConfigJSON adds j to the "config_json" field.
+func (m *TUNRecordMutation) AppendConfigJSON(j jsontext.Value) {
+	m.appendconfig_json = append(m.appendconfig_json, j...)
 }
 
 // AppendedConfigJSON returns the list of values that were appended to the "config_json" field in this mutation.
-func (m *TUNRecordMutation) AppendedConfigJSON() (json.RawMessage, bool) {
+func (m *TUNRecordMutation) AppendedConfigJSON() (jsontext.Value, bool) {
 	if len(m.appendconfig_json) == 0 {
 		return nil, false
 	}
@@ -32650,7 +32704,7 @@ func (m *TUNRecordMutation) SetField(name string, value ent.Value) error {
 		m.SetServeURI(v)
 		return nil
 	case tunrecord.FieldConfigJSON:
-		v, ok := value.(json.RawMessage)
+		v, ok := value.(jsontext.Value)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -41,9 +42,9 @@ type EdgeOneZoneAccelerationDomain struct {
 	// 加速域名归属权验证状态
 	IdentificationStatus edgeonezoneaccelerationdomain.IdentificationStatus `json:"identification_status,omitempty"`
 	// 加速域名需进行归属权验证才能继续提供服务时，该对象会携带对应验证方式所需要的信息
-	OwnershipVerification json.RawMessage `json:"ownership_verification,omitempty"`
+	OwnershipVerification jsontext.Value `json:"ownership_verification,omitempty"`
 	// 源站信息
-	OriginDetail json.RawMessage `json:"origin_detail,omitempty"`
+	OriginDetail jsontext.Value `json:"origin_detail,omitempty"`
 	// 回源协议
 	OriginProtocol edgeonezoneaccelerationdomain.OriginProtocol `json:"origin_protocol,omitempty"`
 	// HTTP 回源端口
@@ -51,7 +52,7 @@ type EdgeOneZoneAccelerationDomain struct {
 	// HTTPS 回源端口
 	HTTPSOriginPort uint64 `json:"https_origin_port,omitempty"`
 	// 加速域名证书信息
-	Certificate json.RawMessage `json:"certificate,omitempty"`
+	Certificate jsontext.Value `json:"certificate,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EdgeOneZoneAccelerationDomainQuery when eager-loading is set.
 	Edges        EdgeOneZoneAccelerationDomainEdges `json:"edges"`

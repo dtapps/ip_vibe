@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -39,7 +40,7 @@ type CDNRecord struct {
 	// 记录类型（A、AAAA）
 	Type cdnrecord.Type `json:"type,omitempty"`
 	// CDN记录配置（JSON）
-	ConfigJSON json.RawMessage `json:"config_json,omitempty"`
+	ConfigJSON jsontext.Value `json:"config_json,omitempty"`
 	// CDN边缘域名（平台提供）
 	CdnDomain string `json:"cdn_domain,omitempty"`
 	// IP组序号（二选一）

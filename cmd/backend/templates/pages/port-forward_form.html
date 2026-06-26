@@ -50,6 +50,14 @@
         <select name="device_id" id="device_id" class="ui-select" required onchange="onDeviceIdSelect(this)"></select>
       </div>
 
+      <div class="ui-form-control">
+        <label class="ui-label-text">实现类型 <span class="text-error">*</span></label>
+        <select name="implementation_type" id="implementation_type" class="ui-select" required>
+          <option value="standard">Standard (Go 标准库，支持 TCP/UDP)</option>
+          <option value="tcpproxy">TCPProxy (inet.af/tcpproxy，仅 TCP)</option>
+        </select>
+      </div>
+
       <input type="hidden" name="id" id="id" />
 
       <div class="modal-action gap-3">

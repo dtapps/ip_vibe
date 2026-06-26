@@ -7,9 +7,10 @@ type Config struct {
 }
 
 type PortForwardTaskApiList struct {
-	ID         string   // 设备端口转发序号
-	LocalPort  int      // 本地监听端口
-	RemoteHost string   // 远程目标地址
-	RemotePort int      // 远程目标端口
-	Protocols  []string // 协议列表，支持 tcp4, tcp6, udp4, udp6
+	ID                 string   // 设备端口转发序号
+	LocalPort          int      // 本地监听端口
+	RemoteHost         string   // 远程目标地址
+	RemotePort         int      // 远程目标端口
+	Protocols          []string // 协议列表，支持 tcp4, tcp6, udp4, udp6
+	ImplementationType string   // 实现类型: standard / tcpproxy
 }

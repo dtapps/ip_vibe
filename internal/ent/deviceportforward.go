@@ -40,6 +40,8 @@ type DevicePortForward struct {
 	AutoForward bool `json:"auto_forward,omitempty"`
 	// 是否活跃
 	IsActive bool `json:"is_active,omitempty"`
+	// 实现类型: standard(标准库) / tcpproxy(inet.af/tcpproxy)
+	ImplementationType string `json:"implementation_type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DevicePortForwardQuery when eager-loading is set.
 	Edges                DevicePortForwardEdges `json:"edges"`
@@ -78,7 +80,7 @@ func (*DevicePortForward) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case deviceportforward.FieldID, deviceportforward.FieldLocalPort, deviceportforward.FieldRemotePort:
 			values[i] = new(sql.NullInt64)
-		case deviceportforward.FieldName, deviceportforward.FieldDescription, deviceportforward.FieldRemoteHost:
+		case deviceportforward.FieldName, deviceportforward.FieldDescription, deviceportforward.FieldRemoteHost, deviceportforward.FieldImplementationType:
 			values[i] = new(sql.NullString)
 		case deviceportforward.FieldCreatedAt, deviceportforward.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -167,6 +169,12 @@ func (_m *DevicePortForward) assignValues(columns []string, values []any) error 
 			} else if value.Valid {
 				_m.IsActive = value.Bool
 			}
+		case deviceportforward.FieldImplementationType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field implementation_type", values[i])
+			} else if value.Valid {
+				_m.ImplementationType = value.String
+			}
 		case deviceportforward.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field device_port_forwards", value)
@@ -244,6 +252,9 @@ func (_m *DevicePortForward) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_active=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsActive))
+	builder.WriteString(", ")
+	builder.WriteString("implementation_type=")
+	builder.WriteString(_m.ImplementationType)
 	builder.WriteByte(')')
 	return builder.String()
 }

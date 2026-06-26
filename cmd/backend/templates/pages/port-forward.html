@@ -60,6 +60,7 @@
           <th class="ui-th">设备</th>
           <th class="ui-th">本地监听</th>
           <th class="ui-th">远程目标</th>
+          <th class="ui-th text-center">实现类型</th>
           <th class="ui-th text-center">防火墙</th>
           <th class="ui-th text-center">启用</th>
           <th class="ui-th text-center">操作</th>
@@ -104,6 +105,14 @@
                 {{.RemoteHost}}:{{.RemotePort}}
               </span>
             </div>
+          </td>
+
+          <td class="ui-td text-center">
+            {{ if eq .ImplementationType "tcpproxy" }}
+            <span class="badge badge-info badge-sm">TCPProxy</span>
+            {{ else }}
+            <span class="badge badge-ghost badge-sm">Standard</span>
+            {{ end }}
           </td>
 
           <td class="ui-td text-center">

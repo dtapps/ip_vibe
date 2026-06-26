@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -43,7 +44,7 @@ type CloudflareZoneRecord struct {
 	// 记录是否获得Cloudflare的性能和安全优势
 	Proxied bool `json:"proxied,omitempty"`
 	// DNS记录的设置
-	Settings json.RawMessage `json:"settings,omitempty"`
+	Settings jsontext.Value `json:"settings,omitempty"`
 	// DNS记录的生存时间（TTL），以秒为单位。 设置为1表示“自动”。 值必须介于60和86400之间，对于企业区域，最小值减少到30
 	TTL float64 `json:"ttl,omitempty"`
 	// 数据录类型

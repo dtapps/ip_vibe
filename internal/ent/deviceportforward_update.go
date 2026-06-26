@@ -160,6 +160,20 @@ func (_u *DevicePortForwardUpdate) SetNillableIsActive(v *bool) *DevicePortForwa
 	return _u
 }
 
+// SetImplementationType sets the "implementation_type" field.
+func (_u *DevicePortForwardUpdate) SetImplementationType(v string) *DevicePortForwardUpdate {
+	_u.mutation.SetImplementationType(v)
+	return _u
+}
+
+// SetNillableImplementationType sets the "implementation_type" field if the given value is not nil.
+func (_u *DevicePortForwardUpdate) SetNillableImplementationType(v *string) *DevicePortForwardUpdate {
+	if v != nil {
+		_u.SetImplementationType(*v)
+	}
+	return _u
+}
+
 // SetDeviceID sets the "device" edge to the Device entity by ID.
 func (_u *DevicePortForwardUpdate) SetDeviceID(id int64) *DevicePortForwardUpdate {
 	_u.mutation.SetDeviceID(id)
@@ -310,6 +324,9 @@ func (_u *DevicePortForwardUpdate) sqlSave(ctx context.Context) (_node int, err 
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(deviceportforward.FieldIsActive, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.ImplementationType(); ok {
+		_spec.SetField(deviceportforward.FieldImplementationType, field.TypeString, value)
 	}
 	if _u.mutation.DeviceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -488,6 +505,20 @@ func (_u *DevicePortForwardUpdateOne) SetIsActive(v bool) *DevicePortForwardUpda
 func (_u *DevicePortForwardUpdateOne) SetNillableIsActive(v *bool) *DevicePortForwardUpdateOne {
 	if v != nil {
 		_u.SetIsActive(*v)
+	}
+	return _u
+}
+
+// SetImplementationType sets the "implementation_type" field.
+func (_u *DevicePortForwardUpdateOne) SetImplementationType(v string) *DevicePortForwardUpdateOne {
+	_u.mutation.SetImplementationType(v)
+	return _u
+}
+
+// SetNillableImplementationType sets the "implementation_type" field if the given value is not nil.
+func (_u *DevicePortForwardUpdateOne) SetNillableImplementationType(v *string) *DevicePortForwardUpdateOne {
+	if v != nil {
+		_u.SetImplementationType(*v)
 	}
 	return _u
 }
@@ -672,6 +703,9 @@ func (_u *DevicePortForwardUpdateOne) sqlSave(ctx context.Context) (_node *Devic
 	}
 	if value, ok := _u.mutation.IsActive(); ok {
 		_spec.SetField(deviceportforward.FieldIsActive, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.ImplementationType(); ok {
+		_spec.SetField(deviceportforward.FieldImplementationType, field.TypeString, value)
 	}
 	if _u.mutation.DeviceCleared() {
 		edge := &sqlgraph.EdgeSpec{

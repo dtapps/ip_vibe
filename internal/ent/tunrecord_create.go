@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -113,7 +113,7 @@ func (_c *TUNRecordCreate) SetNillableServeURI(v *string) *TUNRecordCreate {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (_c *TUNRecordCreate) SetConfigJSON(v json.RawMessage) *TUNRecordCreate {
+func (_c *TUNRecordCreate) SetConfigJSON(v jsontext.Value) *TUNRecordCreate {
 	_c.mutation.SetConfigJSON(v)
 	return _c
 }
@@ -515,7 +515,7 @@ func (u *TUNRecordUpsert) ClearServeURI() *TUNRecordUpsert {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *TUNRecordUpsert) SetConfigJSON(v json.RawMessage) *TUNRecordUpsert {
+func (u *TUNRecordUpsert) SetConfigJSON(v jsontext.Value) *TUNRecordUpsert {
 	u.Set(tunrecord.FieldConfigJSON, v)
 	return u
 }
@@ -747,7 +747,7 @@ func (u *TUNRecordUpsertOne) ClearServeURI() *TUNRecordUpsertOne {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *TUNRecordUpsertOne) SetConfigJSON(v json.RawMessage) *TUNRecordUpsertOne {
+func (u *TUNRecordUpsertOne) SetConfigJSON(v jsontext.Value) *TUNRecordUpsertOne {
 	return u.Update(func(s *TUNRecordUpsert) {
 		s.SetConfigJSON(v)
 	})
@@ -1159,7 +1159,7 @@ func (u *TUNRecordUpsertBulk) ClearServeURI() *TUNRecordUpsertBulk {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *TUNRecordUpsertBulk) SetConfigJSON(v json.RawMessage) *TUNRecordUpsertBulk {
+func (u *TUNRecordUpsertBulk) SetConfigJSON(v jsontext.Value) *TUNRecordUpsertBulk {
 	return u.Update(func(s *TUNRecordUpsert) {
 		s.SetConfigJSON(v)
 	})

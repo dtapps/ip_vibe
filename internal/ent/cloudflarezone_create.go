@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -94,7 +94,7 @@ func (_c *CloudflareZoneCreate) SetZoneID(v string) *CloudflareZoneCreate {
 }
 
 // SetAccount sets the "account" field.
-func (_c *CloudflareZoneCreate) SetAccount(v json.RawMessage) *CloudflareZoneCreate {
+func (_c *CloudflareZoneCreate) SetAccount(v jsontext.Value) *CloudflareZoneCreate {
 	_c.mutation.SetAccount(v)
 	return _c
 }
@@ -505,7 +505,7 @@ func (u *CloudflareZoneUpsert) ClearSyncAt() *CloudflareZoneUpsert {
 }
 
 // SetAccount sets the "account" field.
-func (u *CloudflareZoneUpsert) SetAccount(v json.RawMessage) *CloudflareZoneUpsert {
+func (u *CloudflareZoneUpsert) SetAccount(v jsontext.Value) *CloudflareZoneUpsert {
 	u.Set(cloudflarezone.FieldAccount, v)
 	return u
 }
@@ -751,7 +751,7 @@ func (u *CloudflareZoneUpsertOne) ClearSyncAt() *CloudflareZoneUpsertOne {
 }
 
 // SetAccount sets the "account" field.
-func (u *CloudflareZoneUpsertOne) SetAccount(v json.RawMessage) *CloudflareZoneUpsertOne {
+func (u *CloudflareZoneUpsertOne) SetAccount(v jsontext.Value) *CloudflareZoneUpsertOne {
 	return u.Update(func(s *CloudflareZoneUpsert) {
 		s.SetAccount(v)
 	})
@@ -1190,7 +1190,7 @@ func (u *CloudflareZoneUpsertBulk) ClearSyncAt() *CloudflareZoneUpsertBulk {
 }
 
 // SetAccount sets the "account" field.
-func (u *CloudflareZoneUpsertBulk) SetAccount(v json.RawMessage) *CloudflareZoneUpsertBulk {
+func (u *CloudflareZoneUpsertBulk) SetAccount(v jsontext.Value) *CloudflareZoneUpsertBulk {
 	return u.Update(func(s *CloudflareZoneUpsert) {
 		s.SetAccount(v)
 	})

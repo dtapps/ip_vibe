@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -149,13 +149,13 @@ func (_c *EdgeOneZoneAccelerationDomainCreate) SetNillableIdentificationStatus(v
 }
 
 // SetOwnershipVerification sets the "ownership_verification" field.
-func (_c *EdgeOneZoneAccelerationDomainCreate) SetOwnershipVerification(v json.RawMessage) *EdgeOneZoneAccelerationDomainCreate {
+func (_c *EdgeOneZoneAccelerationDomainCreate) SetOwnershipVerification(v jsontext.Value) *EdgeOneZoneAccelerationDomainCreate {
 	_c.mutation.SetOwnershipVerification(v)
 	return _c
 }
 
 // SetOriginDetail sets the "origin_detail" field.
-func (_c *EdgeOneZoneAccelerationDomainCreate) SetOriginDetail(v json.RawMessage) *EdgeOneZoneAccelerationDomainCreate {
+func (_c *EdgeOneZoneAccelerationDomainCreate) SetOriginDetail(v jsontext.Value) *EdgeOneZoneAccelerationDomainCreate {
 	_c.mutation.SetOriginDetail(v)
 	return _c
 }
@@ -203,7 +203,7 @@ func (_c *EdgeOneZoneAccelerationDomainCreate) SetNillableHTTPSOriginPort(v *uin
 }
 
 // SetCertificate sets the "certificate" field.
-func (_c *EdgeOneZoneAccelerationDomainCreate) SetCertificate(v json.RawMessage) *EdgeOneZoneAccelerationDomainCreate {
+func (_c *EdgeOneZoneAccelerationDomainCreate) SetCertificate(v jsontext.Value) *EdgeOneZoneAccelerationDomainCreate {
 	_c.mutation.SetCertificate(v)
 	return _c
 }
@@ -573,7 +573,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsert) ClearIdentificationStatus() *EdgeO
 }
 
 // SetOwnershipVerification sets the "ownership_verification" field.
-func (u *EdgeOneZoneAccelerationDomainUpsert) SetOwnershipVerification(v json.RawMessage) *EdgeOneZoneAccelerationDomainUpsert {
+func (u *EdgeOneZoneAccelerationDomainUpsert) SetOwnershipVerification(v jsontext.Value) *EdgeOneZoneAccelerationDomainUpsert {
 	u.Set(edgeonezoneaccelerationdomain.FieldOwnershipVerification, v)
 	return u
 }
@@ -591,7 +591,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsert) ClearOwnershipVerification() *Edge
 }
 
 // SetOriginDetail sets the "origin_detail" field.
-func (u *EdgeOneZoneAccelerationDomainUpsert) SetOriginDetail(v json.RawMessage) *EdgeOneZoneAccelerationDomainUpsert {
+func (u *EdgeOneZoneAccelerationDomainUpsert) SetOriginDetail(v jsontext.Value) *EdgeOneZoneAccelerationDomainUpsert {
 	u.Set(edgeonezoneaccelerationdomain.FieldOriginDetail, v)
 	return u
 }
@@ -675,7 +675,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsert) ClearHTTPSOriginPort() *EdgeOneZon
 }
 
 // SetCertificate sets the "certificate" field.
-func (u *EdgeOneZoneAccelerationDomainUpsert) SetCertificate(v json.RawMessage) *EdgeOneZoneAccelerationDomainUpsert {
+func (u *EdgeOneZoneAccelerationDomainUpsert) SetCertificate(v jsontext.Value) *EdgeOneZoneAccelerationDomainUpsert {
 	u.Set(edgeonezoneaccelerationdomain.FieldCertificate, v)
 	return u
 }
@@ -861,7 +861,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsertOne) ClearIdentificationStatus() *Ed
 }
 
 // SetOwnershipVerification sets the "ownership_verification" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertOne) SetOwnershipVerification(v json.RawMessage) *EdgeOneZoneAccelerationDomainUpsertOne {
+func (u *EdgeOneZoneAccelerationDomainUpsertOne) SetOwnershipVerification(v jsontext.Value) *EdgeOneZoneAccelerationDomainUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.SetOwnershipVerification(v)
 	})
@@ -882,7 +882,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsertOne) ClearOwnershipVerification() *E
 }
 
 // SetOriginDetail sets the "origin_detail" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertOne) SetOriginDetail(v json.RawMessage) *EdgeOneZoneAccelerationDomainUpsertOne {
+func (u *EdgeOneZoneAccelerationDomainUpsertOne) SetOriginDetail(v jsontext.Value) *EdgeOneZoneAccelerationDomainUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.SetOriginDetail(v)
 	})
@@ -980,7 +980,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsertOne) ClearHTTPSOriginPort() *EdgeOne
 }
 
 // SetCertificate sets the "certificate" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertOne) SetCertificate(v json.RawMessage) *EdgeOneZoneAccelerationDomainUpsertOne {
+func (u *EdgeOneZoneAccelerationDomainUpsertOne) SetCertificate(v jsontext.Value) *EdgeOneZoneAccelerationDomainUpsertOne {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.SetCertificate(v)
 	})
@@ -1335,7 +1335,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsertBulk) ClearIdentificationStatus() *E
 }
 
 // SetOwnershipVerification sets the "ownership_verification" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertBulk) SetOwnershipVerification(v json.RawMessage) *EdgeOneZoneAccelerationDomainUpsertBulk {
+func (u *EdgeOneZoneAccelerationDomainUpsertBulk) SetOwnershipVerification(v jsontext.Value) *EdgeOneZoneAccelerationDomainUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.SetOwnershipVerification(v)
 	})
@@ -1356,7 +1356,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsertBulk) ClearOwnershipVerification() *
 }
 
 // SetOriginDetail sets the "origin_detail" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertBulk) SetOriginDetail(v json.RawMessage) *EdgeOneZoneAccelerationDomainUpsertBulk {
+func (u *EdgeOneZoneAccelerationDomainUpsertBulk) SetOriginDetail(v jsontext.Value) *EdgeOneZoneAccelerationDomainUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.SetOriginDetail(v)
 	})
@@ -1454,7 +1454,7 @@ func (u *EdgeOneZoneAccelerationDomainUpsertBulk) ClearHTTPSOriginPort() *EdgeOn
 }
 
 // SetCertificate sets the "certificate" field.
-func (u *EdgeOneZoneAccelerationDomainUpsertBulk) SetCertificate(v json.RawMessage) *EdgeOneZoneAccelerationDomainUpsertBulk {
+func (u *EdgeOneZoneAccelerationDomainUpsertBulk) SetCertificate(v jsontext.Value) *EdgeOneZoneAccelerationDomainUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneAccelerationDomainUpsert) {
 		s.SetCertificate(v)
 	})

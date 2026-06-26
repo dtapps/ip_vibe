@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -53,13 +53,13 @@ func (_u *CloudflareTunnelUpdate) ClearSyncAt() *CloudflareTunnelUpdate {
 }
 
 // SetConnections sets the "connections" field.
-func (_u *CloudflareTunnelUpdate) SetConnections(v json.RawMessage) *CloudflareTunnelUpdate {
+func (_u *CloudflareTunnelUpdate) SetConnections(v jsontext.Value) *CloudflareTunnelUpdate {
 	_u.mutation.SetConnections(v)
 	return _u
 }
 
 // AppendConnections appends value to the "connections" field.
-func (_u *CloudflareTunnelUpdate) AppendConnections(v json.RawMessage) *CloudflareTunnelUpdate {
+func (_u *CloudflareTunnelUpdate) AppendConnections(v jsontext.Value) *CloudflareTunnelUpdate {
 	_u.mutation.AppendConnections(v)
 	return _u
 }
@@ -430,13 +430,13 @@ func (_u *CloudflareTunnelUpdateOne) ClearSyncAt() *CloudflareTunnelUpdateOne {
 }
 
 // SetConnections sets the "connections" field.
-func (_u *CloudflareTunnelUpdateOne) SetConnections(v json.RawMessage) *CloudflareTunnelUpdateOne {
+func (_u *CloudflareTunnelUpdateOne) SetConnections(v jsontext.Value) *CloudflareTunnelUpdateOne {
 	_u.mutation.SetConnections(v)
 	return _u
 }
 
 // AppendConnections appends value to the "connections" field.
-func (_u *CloudflareTunnelUpdateOne) AppendConnections(v json.RawMessage) *CloudflareTunnelUpdateOne {
+func (_u *CloudflareTunnelUpdateOne) AppendConnections(v jsontext.Value) *CloudflareTunnelUpdateOne {
 	_u.mutation.AppendConnections(v)
 	return _u
 }

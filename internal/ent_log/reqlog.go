@@ -4,6 +4,7 @@ package ent_log
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -28,7 +29,7 @@ type ReqLog struct {
 	// 请求头
 	RequestHeaders map[string][]string `json:"request_headers,omitempty"`
 	// 请求体
-	RequestBody json.RawMessage `json:"request_body,omitempty"`
+	RequestBody jsontext.Value `json:"request_body,omitempty"`
 	// 请求参数
 	RequestQueryParams map[string][]string `json:"request_query_params,omitempty"`
 	// 请求表单数据
@@ -40,7 +41,7 @@ type ReqLog struct {
 	// 响应头
 	ResponseHeaders map[string][]string `json:"response_headers,omitempty"`
 	// 响应体
-	ResponseBody json.RawMessage `json:"response_body,omitempty"`
+	ResponseBody jsontext.Value `json:"response_body,omitempty"`
 	// 耗时, 单位:毫秒
 	ElapseTime int64 `json:"elapse_time,omitempty"`
 	// 是否错误（如 5xx、4xx）

@@ -4,7 +4,7 @@ package ent_log
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -92,7 +92,7 @@ func (_c *WebhookHistoryCreate) SetNillableContent(v *string) *WebhookHistoryCre
 }
 
 // SetResponse sets the "response" field.
-func (_c *WebhookHistoryCreate) SetResponse(v json.RawMessage) *WebhookHistoryCreate {
+func (_c *WebhookHistoryCreate) SetResponse(v jsontext.Value) *WebhookHistoryCreate {
 	_c.mutation.SetResponse(v)
 	return _c
 }

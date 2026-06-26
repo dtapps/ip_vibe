@@ -35,6 +35,8 @@ const (
 	FieldAutoForward = "auto_forward"
 	// FieldIsActive holds the string denoting the is_active field in the database.
 	FieldIsActive = "is_active"
+	// FieldImplementationType holds the string denoting the implementation_type field in the database.
+	FieldImplementationType = "implementation_type"
 	// EdgeDevice holds the string denoting the device edge name in mutations.
 	EdgeDevice = "device"
 	// Table holds the table name of the deviceportforward in the database.
@@ -61,6 +63,7 @@ var Columns = []string{
 	FieldProtocols,
 	FieldAutoForward,
 	FieldIsActive,
+	FieldImplementationType,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "device_port_forward"
@@ -111,6 +114,8 @@ var (
 	DefaultAutoForward bool
 	// DefaultIsActive holds the default value on creation for the "is_active" field.
 	DefaultIsActive bool
+	// DefaultImplementationType holds the default value on creation for the "implementation_type" field.
+	DefaultImplementationType string
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(int64) error
 )
@@ -166,6 +171,11 @@ func ByAutoForward(opts ...sql.OrderTermOption) OrderOption {
 // ByIsActive orders the results by the is_active field.
 func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
+}
+
+// ByImplementationType orders the results by the implementation_type field.
+func ByImplementationType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldImplementationType, opts...).ToFunc()
 }
 
 // ByDeviceField orders the results by device field.

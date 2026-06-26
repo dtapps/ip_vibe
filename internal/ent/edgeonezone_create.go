@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -152,25 +152,25 @@ func (_c *EdgeOneZoneCreate) SetNillableType(v *edgeonezone.Type) *EdgeOneZoneCr
 }
 
 // SetResources sets the "resources" field.
-func (_c *EdgeOneZoneCreate) SetResources(v json.RawMessage) *EdgeOneZoneCreate {
+func (_c *EdgeOneZoneCreate) SetResources(v jsontext.Value) *EdgeOneZoneCreate {
 	_c.mutation.SetResources(v)
 	return _c
 }
 
 // SetNsDetail sets the "ns_detail" field.
-func (_c *EdgeOneZoneCreate) SetNsDetail(v json.RawMessage) *EdgeOneZoneCreate {
+func (_c *EdgeOneZoneCreate) SetNsDetail(v jsontext.Value) *EdgeOneZoneCreate {
 	_c.mutation.SetNsDetail(v)
 	return _c
 }
 
 // SetCnameDetail sets the "cname_detail" field.
-func (_c *EdgeOneZoneCreate) SetCnameDetail(v json.RawMessage) *EdgeOneZoneCreate {
+func (_c *EdgeOneZoneCreate) SetCnameDetail(v jsontext.Value) *EdgeOneZoneCreate {
 	_c.mutation.SetCnameDetail(v)
 	return _c
 }
 
 // SetDnspodDetail sets the "dnspod_detail" field.
-func (_c *EdgeOneZoneCreate) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneCreate {
+func (_c *EdgeOneZoneCreate) SetDnspodDetail(v jsontext.Value) *EdgeOneZoneCreate {
 	_c.mutation.SetDnspodDetail(v)
 	return _c
 }
@@ -725,7 +725,7 @@ func (u *EdgeOneZoneUpsert) ClearType() *EdgeOneZoneUpsert {
 }
 
 // SetResources sets the "resources" field.
-func (u *EdgeOneZoneUpsert) SetResources(v json.RawMessage) *EdgeOneZoneUpsert {
+func (u *EdgeOneZoneUpsert) SetResources(v jsontext.Value) *EdgeOneZoneUpsert {
 	u.Set(edgeonezone.FieldResources, v)
 	return u
 }
@@ -743,7 +743,7 @@ func (u *EdgeOneZoneUpsert) ClearResources() *EdgeOneZoneUpsert {
 }
 
 // SetNsDetail sets the "ns_detail" field.
-func (u *EdgeOneZoneUpsert) SetNsDetail(v json.RawMessage) *EdgeOneZoneUpsert {
+func (u *EdgeOneZoneUpsert) SetNsDetail(v jsontext.Value) *EdgeOneZoneUpsert {
 	u.Set(edgeonezone.FieldNsDetail, v)
 	return u
 }
@@ -761,7 +761,7 @@ func (u *EdgeOneZoneUpsert) ClearNsDetail() *EdgeOneZoneUpsert {
 }
 
 // SetCnameDetail sets the "cname_detail" field.
-func (u *EdgeOneZoneUpsert) SetCnameDetail(v json.RawMessage) *EdgeOneZoneUpsert {
+func (u *EdgeOneZoneUpsert) SetCnameDetail(v jsontext.Value) *EdgeOneZoneUpsert {
 	u.Set(edgeonezone.FieldCnameDetail, v)
 	return u
 }
@@ -779,7 +779,7 @@ func (u *EdgeOneZoneUpsert) ClearCnameDetail() *EdgeOneZoneUpsert {
 }
 
 // SetDnspodDetail sets the "dnspod_detail" field.
-func (u *EdgeOneZoneUpsert) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneUpsert {
+func (u *EdgeOneZoneUpsert) SetDnspodDetail(v jsontext.Value) *EdgeOneZoneUpsert {
 	u.Set(edgeonezone.FieldDnspodDetail, v)
 	return u
 }
@@ -1055,7 +1055,7 @@ func (u *EdgeOneZoneUpsertOne) ClearType() *EdgeOneZoneUpsertOne {
 }
 
 // SetResources sets the "resources" field.
-func (u *EdgeOneZoneUpsertOne) SetResources(v json.RawMessage) *EdgeOneZoneUpsertOne {
+func (u *EdgeOneZoneUpsertOne) SetResources(v jsontext.Value) *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.SetResources(v)
 	})
@@ -1076,7 +1076,7 @@ func (u *EdgeOneZoneUpsertOne) ClearResources() *EdgeOneZoneUpsertOne {
 }
 
 // SetNsDetail sets the "ns_detail" field.
-func (u *EdgeOneZoneUpsertOne) SetNsDetail(v json.RawMessage) *EdgeOneZoneUpsertOne {
+func (u *EdgeOneZoneUpsertOne) SetNsDetail(v jsontext.Value) *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.SetNsDetail(v)
 	})
@@ -1097,7 +1097,7 @@ func (u *EdgeOneZoneUpsertOne) ClearNsDetail() *EdgeOneZoneUpsertOne {
 }
 
 // SetCnameDetail sets the "cname_detail" field.
-func (u *EdgeOneZoneUpsertOne) SetCnameDetail(v json.RawMessage) *EdgeOneZoneUpsertOne {
+func (u *EdgeOneZoneUpsertOne) SetCnameDetail(v jsontext.Value) *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.SetCnameDetail(v)
 	})
@@ -1118,7 +1118,7 @@ func (u *EdgeOneZoneUpsertOne) ClearCnameDetail() *EdgeOneZoneUpsertOne {
 }
 
 // SetDnspodDetail sets the "dnspod_detail" field.
-func (u *EdgeOneZoneUpsertOne) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneUpsertOne {
+func (u *EdgeOneZoneUpsertOne) SetDnspodDetail(v jsontext.Value) *EdgeOneZoneUpsertOne {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.SetDnspodDetail(v)
 	})
@@ -1578,7 +1578,7 @@ func (u *EdgeOneZoneUpsertBulk) ClearType() *EdgeOneZoneUpsertBulk {
 }
 
 // SetResources sets the "resources" field.
-func (u *EdgeOneZoneUpsertBulk) SetResources(v json.RawMessage) *EdgeOneZoneUpsertBulk {
+func (u *EdgeOneZoneUpsertBulk) SetResources(v jsontext.Value) *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.SetResources(v)
 	})
@@ -1599,7 +1599,7 @@ func (u *EdgeOneZoneUpsertBulk) ClearResources() *EdgeOneZoneUpsertBulk {
 }
 
 // SetNsDetail sets the "ns_detail" field.
-func (u *EdgeOneZoneUpsertBulk) SetNsDetail(v json.RawMessage) *EdgeOneZoneUpsertBulk {
+func (u *EdgeOneZoneUpsertBulk) SetNsDetail(v jsontext.Value) *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.SetNsDetail(v)
 	})
@@ -1620,7 +1620,7 @@ func (u *EdgeOneZoneUpsertBulk) ClearNsDetail() *EdgeOneZoneUpsertBulk {
 }
 
 // SetCnameDetail sets the "cname_detail" field.
-func (u *EdgeOneZoneUpsertBulk) SetCnameDetail(v json.RawMessage) *EdgeOneZoneUpsertBulk {
+func (u *EdgeOneZoneUpsertBulk) SetCnameDetail(v jsontext.Value) *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.SetCnameDetail(v)
 	})
@@ -1641,7 +1641,7 @@ func (u *EdgeOneZoneUpsertBulk) ClearCnameDetail() *EdgeOneZoneUpsertBulk {
 }
 
 // SetDnspodDetail sets the "dnspod_detail" field.
-func (u *EdgeOneZoneUpsertBulk) SetDnspodDetail(v json.RawMessage) *EdgeOneZoneUpsertBulk {
+func (u *EdgeOneZoneUpsertBulk) SetDnspodDetail(v jsontext.Value) *EdgeOneZoneUpsertBulk {
 	return u.Update(func(s *EdgeOneZoneUpsert) {
 		s.SetDnspodDetail(v)
 	})

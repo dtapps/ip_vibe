@@ -63,15 +63,16 @@ func (s *PortForwardServiceImpl) SetDebug(debug bool) {
 // BuildResponse 将实体转换为响应
 func (s *PortForwardServiceImpl) BuildResponse(ctx context.Context, item *ent.DevicePortForward) (*types.GetPortForwardResponse, error) {
 	resp := &types.GetPortForwardResponse{
-		ID:          item.ID,
-		Name:        item.Name,
-		Description: item.Description,
-		LocalPort:   item.LocalPort,
-		RemoteHost:  item.RemoteHost,
-		RemotePort:  item.RemotePort,
-		Protocols:   item.Protocols,
-		AutoForward: item.AutoForward,
-		IsActive:    item.IsActive,
+		ID:                 item.ID,
+		Name:               item.Name,
+		Description:        item.Description,
+		LocalPort:          item.LocalPort,
+		RemoteHost:         item.RemoteHost,
+		RemotePort:         item.RemotePort,
+		Protocols:          item.Protocols,
+		AutoForward:        item.AutoForward,
+		IsActive:           item.IsActive,
+		ImplementationType: item.ImplementationType,
 
 		CreatedAt: item.CreatedAt,
 		UpdatedAt: item.UpdatedAt,
@@ -92,6 +93,7 @@ func (s *PortForwardServiceImpl) GetPortForwards(ctx context.Context, request *t
 	// 查询全部端口转发
 	allPortForward, err := s.db.DevicePortForward.Query().
 		WhereIf(request.IsActive != nil, deviceportforward.IsActiveEQ(cast.ToBool(request.IsActive))).
+		WhereIf(request.ImplementationType != "", deviceportforward.ImplementationTypeEQ(request.ImplementationType)).
 		WithDevice().
 		OrderByCreatedAtDesc().
 		All(ctx)
@@ -135,6 +137,12 @@ func (s *PortForwardServiceImpl) GetPortForward(ctx context.Context, id int64) (
 
 // CreatePortForward 创建端口转发
 func (s *PortForwardServiceImpl) CreatePortForward(ctx context.Context, request *types.CreatePortForwardRequest) error {
+	// 默认实现类型
+	implType := request.ImplementationType
+	if implType == "" {
+		implType = "standard"
+	}
+
 	// 创建端口转发
 	err := s.db.DevicePortForward.Create().
 		SetName(request.Name).
@@ -144,6 +152,7 @@ func (s *PortForwardServiceImpl) CreatePortForward(ctx context.Context, request 
 		SetRemotePort(request.RemotePort).
 		SetProtocols(request.Protocols).
 		SetDeviceID(request.DeviceID).
+		SetImplementationType(implType).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("创建端口转发失败: %w", err)
@@ -174,6 +183,7 @@ func (s *PortForwardServiceImpl) UpdatePortForward(ctx context.Context, request 
 		SetRemotePort(request.RemotePort).
 		SetProtocols(request.Protocols).
 		SetDeviceID(request.DeviceID).
+		SetImplementationType(request.ImplementationType).
 		Exec(ctx)
 	if err != nil {
 		return fmt.Errorf("更新端口转发失败: %w", err)

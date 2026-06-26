@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -31,7 +32,7 @@ type CronJob struct {
 	// 任务处理函数
 	HandlerName string `json:"handler_name,omitempty"`
 	// 任务处理函数参数
-	HandlerArgs json.RawMessage `json:"handler_args,omitempty"`
+	HandlerArgs jsontext.Value `json:"handler_args,omitempty"`
 	// 任务类型: one_off 一次性, recurring 周期性
 	TaskType cronjob.TaskType `json:"task_type,omitempty"`
 	// 运行类型: cron cron 表达式, duration 固定间隔, random 随机间隔

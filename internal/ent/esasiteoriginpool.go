@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -39,11 +40,11 @@ type EsaSiteOriginPool struct {
 	// 源地址池是否启用
 	Enabled bool `json:"enabled,omitempty"`
 	// 源地址池被引用信息
-	References json.RawMessage `json:"references,omitempty"`
+	References jsontext.Value `json:"references,omitempty"`
 	// 被多少个负载均衡器引用
 	ReferenceLBCount int32 `json:"reference_l_b_count,omitempty"`
 	// 源地址池里添加的源站信息
-	Origins json.RawMessage `json:"origins,omitempty"`
+	Origins jsontext.Value `json:"origins,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EsaSiteOriginPoolQuery when eager-loading is set.
 	Edges        EsaSiteOriginPoolEdges `json:"edges"`

@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -135,7 +135,7 @@ func (_c *EsaSiteOriginPoolCreate) SetNillableEnabled(v *bool) *EsaSiteOriginPoo
 }
 
 // SetReferences sets the "references" field.
-func (_c *EsaSiteOriginPoolCreate) SetReferences(v json.RawMessage) *EsaSiteOriginPoolCreate {
+func (_c *EsaSiteOriginPoolCreate) SetReferences(v jsontext.Value) *EsaSiteOriginPoolCreate {
 	_c.mutation.SetReferences(v)
 	return _c
 }
@@ -155,7 +155,7 @@ func (_c *EsaSiteOriginPoolCreate) SetNillableReferenceLBCount(v *int32) *EsaSit
 }
 
 // SetOrigins sets the "origins" field.
-func (_c *EsaSiteOriginPoolCreate) SetOrigins(v json.RawMessage) *EsaSiteOriginPoolCreate {
+func (_c *EsaSiteOriginPoolCreate) SetOrigins(v jsontext.Value) *EsaSiteOriginPoolCreate {
 	_c.mutation.SetOrigins(v)
 	return _c
 }
@@ -471,7 +471,7 @@ func (u *EsaSiteOriginPoolUpsert) ClearEnabled() *EsaSiteOriginPoolUpsert {
 }
 
 // SetReferences sets the "references" field.
-func (u *EsaSiteOriginPoolUpsert) SetReferences(v json.RawMessage) *EsaSiteOriginPoolUpsert {
+func (u *EsaSiteOriginPoolUpsert) SetReferences(v jsontext.Value) *EsaSiteOriginPoolUpsert {
 	u.Set(esasiteoriginpool.FieldReferences, v)
 	return u
 }
@@ -513,7 +513,7 @@ func (u *EsaSiteOriginPoolUpsert) ClearReferenceLBCount() *EsaSiteOriginPoolUpse
 }
 
 // SetOrigins sets the "origins" field.
-func (u *EsaSiteOriginPoolUpsert) SetOrigins(v json.RawMessage) *EsaSiteOriginPoolUpsert {
+func (u *EsaSiteOriginPoolUpsert) SetOrigins(v jsontext.Value) *EsaSiteOriginPoolUpsert {
 	u.Set(esasiteoriginpool.FieldOrigins, v)
 	return u
 }
@@ -678,7 +678,7 @@ func (u *EsaSiteOriginPoolUpsertOne) ClearEnabled() *EsaSiteOriginPoolUpsertOne 
 }
 
 // SetReferences sets the "references" field.
-func (u *EsaSiteOriginPoolUpsertOne) SetReferences(v json.RawMessage) *EsaSiteOriginPoolUpsertOne {
+func (u *EsaSiteOriginPoolUpsertOne) SetReferences(v jsontext.Value) *EsaSiteOriginPoolUpsertOne {
 	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
 		s.SetReferences(v)
 	})
@@ -727,7 +727,7 @@ func (u *EsaSiteOriginPoolUpsertOne) ClearReferenceLBCount() *EsaSiteOriginPoolU
 }
 
 // SetOrigins sets the "origins" field.
-func (u *EsaSiteOriginPoolUpsertOne) SetOrigins(v json.RawMessage) *EsaSiteOriginPoolUpsertOne {
+func (u *EsaSiteOriginPoolUpsertOne) SetOrigins(v jsontext.Value) *EsaSiteOriginPoolUpsertOne {
 	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
 		s.SetOrigins(v)
 	})
@@ -1061,7 +1061,7 @@ func (u *EsaSiteOriginPoolUpsertBulk) ClearEnabled() *EsaSiteOriginPoolUpsertBul
 }
 
 // SetReferences sets the "references" field.
-func (u *EsaSiteOriginPoolUpsertBulk) SetReferences(v json.RawMessage) *EsaSiteOriginPoolUpsertBulk {
+func (u *EsaSiteOriginPoolUpsertBulk) SetReferences(v jsontext.Value) *EsaSiteOriginPoolUpsertBulk {
 	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
 		s.SetReferences(v)
 	})
@@ -1110,7 +1110,7 @@ func (u *EsaSiteOriginPoolUpsertBulk) ClearReferenceLBCount() *EsaSiteOriginPool
 }
 
 // SetOrigins sets the "origins" field.
-func (u *EsaSiteOriginPoolUpsertBulk) SetOrigins(v json.RawMessage) *EsaSiteOriginPoolUpsertBulk {
+func (u *EsaSiteOriginPoolUpsertBulk) SetOrigins(v jsontext.Value) *EsaSiteOriginPoolUpsertBulk {
 	return u.Update(func(s *EsaSiteOriginPoolUpsert) {
 		s.SetOrigins(v)
 	})

@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -72,13 +72,13 @@ func (_u *EsaSiteRecordUpdate) ClearBizName() *EsaSiteRecordUpdate {
 }
 
 // SetData sets the "data" field.
-func (_u *EsaSiteRecordUpdate) SetData(v json.RawMessage) *EsaSiteRecordUpdate {
+func (_u *EsaSiteRecordUpdate) SetData(v jsontext.Value) *EsaSiteRecordUpdate {
 	_u.mutation.SetData(v)
 	return _u
 }
 
 // AppendData appends value to the "data" field.
-func (_u *EsaSiteRecordUpdate) AppendData(v json.RawMessage) *EsaSiteRecordUpdate {
+func (_u *EsaSiteRecordUpdate) AppendData(v jsontext.Value) *EsaSiteRecordUpdate {
 	_u.mutation.AppendData(v)
 	return _u
 }
@@ -237,13 +237,13 @@ func (_u *EsaSiteRecordUpdate) ClearComment() *EsaSiteRecordUpdate {
 }
 
 // SetAuthConf sets the "auth_conf" field.
-func (_u *EsaSiteRecordUpdate) SetAuthConf(v json.RawMessage) *EsaSiteRecordUpdate {
+func (_u *EsaSiteRecordUpdate) SetAuthConf(v jsontext.Value) *EsaSiteRecordUpdate {
 	_u.mutation.SetAuthConf(v)
 	return _u
 }
 
 // AppendAuthConf appends value to the "auth_conf" field.
-func (_u *EsaSiteRecordUpdate) AppendAuthConf(v json.RawMessage) *EsaSiteRecordUpdate {
+func (_u *EsaSiteRecordUpdate) AppendAuthConf(v jsontext.Value) *EsaSiteRecordUpdate {
 	_u.mutation.AppendAuthConf(v)
 	return _u
 }
@@ -521,13 +521,13 @@ func (_u *EsaSiteRecordUpdateOne) ClearBizName() *EsaSiteRecordUpdateOne {
 }
 
 // SetData sets the "data" field.
-func (_u *EsaSiteRecordUpdateOne) SetData(v json.RawMessage) *EsaSiteRecordUpdateOne {
+func (_u *EsaSiteRecordUpdateOne) SetData(v jsontext.Value) *EsaSiteRecordUpdateOne {
 	_u.mutation.SetData(v)
 	return _u
 }
 
 // AppendData appends value to the "data" field.
-func (_u *EsaSiteRecordUpdateOne) AppendData(v json.RawMessage) *EsaSiteRecordUpdateOne {
+func (_u *EsaSiteRecordUpdateOne) AppendData(v jsontext.Value) *EsaSiteRecordUpdateOne {
 	_u.mutation.AppendData(v)
 	return _u
 }
@@ -686,13 +686,13 @@ func (_u *EsaSiteRecordUpdateOne) ClearComment() *EsaSiteRecordUpdateOne {
 }
 
 // SetAuthConf sets the "auth_conf" field.
-func (_u *EsaSiteRecordUpdateOne) SetAuthConf(v json.RawMessage) *EsaSiteRecordUpdateOne {
+func (_u *EsaSiteRecordUpdateOne) SetAuthConf(v jsontext.Value) *EsaSiteRecordUpdateOne {
 	_u.mutation.SetAuthConf(v)
 	return _u
 }
 
 // AppendAuthConf appends value to the "auth_conf" field.
-func (_u *EsaSiteRecordUpdateOne) AppendAuthConf(v json.RawMessage) *EsaSiteRecordUpdateOne {
+func (_u *EsaSiteRecordUpdateOne) AppendAuthConf(v jsontext.Value) *EsaSiteRecordUpdateOne {
 	_u.mutation.AppendAuthConf(v)
 	return _u
 }

@@ -64,6 +64,8 @@ async function openFormModal(id, action = "") {
       document.getElementById("remote_host").value = portForward.remote_host;
       document.getElementById("remote_port").value = portForward.remote_port;
       document.getElementById("device_id").value = portForward.device_id;
+      document.getElementById("implementation_type").value =
+        portForward.implementation_type || "standard";
 
       // 高亮已选
       if (portForward.protocols && portForward.protocols.length > 0) {
@@ -91,6 +93,11 @@ async function openFormModal(id, action = "") {
           id: "id",
           value: 0,
           disabled: true,
+        },
+        {
+          id: "implementation_type",
+          value: "standard",
+          disabled: false,
         },
       ]);
 
@@ -120,6 +127,7 @@ if (form) {
         document.getElementById("protocols").selectedOptions,
       ).map((opt) => opt.value.trim()),
       device_id: Number(document.getElementById("device_id").value.trim()),
+      implementation_type: document.getElementById("implementation_type").value.trim(),
     };
     console.log("form_id, form_data", form_id, form_data);
 
@@ -141,6 +149,9 @@ if (form) {
     }
     if (!form_data.device_id) {
       return alert("请选择设备");
+    }
+    if (!form_data.implementation_type) {
+      return alert("请选择实现类型");
     }
 
     try {

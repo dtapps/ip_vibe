@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -92,13 +92,13 @@ func (_u *EdgeOneZoneOriginGroupUpdate) ClearType() *EdgeOneZoneOriginGroupUpdat
 }
 
 // SetRecords sets the "records" field.
-func (_u *EdgeOneZoneOriginGroupUpdate) SetRecords(v json.RawMessage) *EdgeOneZoneOriginGroupUpdate {
+func (_u *EdgeOneZoneOriginGroupUpdate) SetRecords(v jsontext.Value) *EdgeOneZoneOriginGroupUpdate {
 	_u.mutation.SetRecords(v)
 	return _u
 }
 
 // AppendRecords appends value to the "records" field.
-func (_u *EdgeOneZoneOriginGroupUpdate) AppendRecords(v json.RawMessage) *EdgeOneZoneOriginGroupUpdate {
+func (_u *EdgeOneZoneOriginGroupUpdate) AppendRecords(v jsontext.Value) *EdgeOneZoneOriginGroupUpdate {
 	_u.mutation.AppendRecords(v)
 	return _u
 }
@@ -110,13 +110,13 @@ func (_u *EdgeOneZoneOriginGroupUpdate) ClearRecords() *EdgeOneZoneOriginGroupUp
 }
 
 // SetReferences sets the "references" field.
-func (_u *EdgeOneZoneOriginGroupUpdate) SetReferences(v json.RawMessage) *EdgeOneZoneOriginGroupUpdate {
+func (_u *EdgeOneZoneOriginGroupUpdate) SetReferences(v jsontext.Value) *EdgeOneZoneOriginGroupUpdate {
 	_u.mutation.SetReferences(v)
 	return _u
 }
 
 // AppendReferences appends value to the "references" field.
-func (_u *EdgeOneZoneOriginGroupUpdate) AppendReferences(v json.RawMessage) *EdgeOneZoneOriginGroupUpdate {
+func (_u *EdgeOneZoneOriginGroupUpdate) AppendReferences(v jsontext.Value) *EdgeOneZoneOriginGroupUpdate {
 	_u.mutation.AppendReferences(v)
 	return _u
 }
@@ -360,13 +360,13 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) ClearType() *EdgeOneZoneOriginGroupUp
 }
 
 // SetRecords sets the "records" field.
-func (_u *EdgeOneZoneOriginGroupUpdateOne) SetRecords(v json.RawMessage) *EdgeOneZoneOriginGroupUpdateOne {
+func (_u *EdgeOneZoneOriginGroupUpdateOne) SetRecords(v jsontext.Value) *EdgeOneZoneOriginGroupUpdateOne {
 	_u.mutation.SetRecords(v)
 	return _u
 }
 
 // AppendRecords appends value to the "records" field.
-func (_u *EdgeOneZoneOriginGroupUpdateOne) AppendRecords(v json.RawMessage) *EdgeOneZoneOriginGroupUpdateOne {
+func (_u *EdgeOneZoneOriginGroupUpdateOne) AppendRecords(v jsontext.Value) *EdgeOneZoneOriginGroupUpdateOne {
 	_u.mutation.AppendRecords(v)
 	return _u
 }
@@ -378,13 +378,13 @@ func (_u *EdgeOneZoneOriginGroupUpdateOne) ClearRecords() *EdgeOneZoneOriginGrou
 }
 
 // SetReferences sets the "references" field.
-func (_u *EdgeOneZoneOriginGroupUpdateOne) SetReferences(v json.RawMessage) *EdgeOneZoneOriginGroupUpdateOne {
+func (_u *EdgeOneZoneOriginGroupUpdateOne) SetReferences(v jsontext.Value) *EdgeOneZoneOriginGroupUpdateOne {
 	_u.mutation.SetReferences(v)
 	return _u
 }
 
 // AppendReferences appends value to the "references" field.
-func (_u *EdgeOneZoneOriginGroupUpdateOne) AppendReferences(v json.RawMessage) *EdgeOneZoneOriginGroupUpdateOne {
+func (_u *EdgeOneZoneOriginGroupUpdateOne) AppendReferences(v jsontext.Value) *EdgeOneZoneOriginGroupUpdateOne {
 	_u.mutation.AppendReferences(v)
 	return _u
 }

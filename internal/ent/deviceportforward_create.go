@@ -123,6 +123,20 @@ func (_c *DevicePortForwardCreate) SetNillableIsActive(v *bool) *DevicePortForwa
 	return _c
 }
 
+// SetImplementationType sets the "implementation_type" field.
+func (_c *DevicePortForwardCreate) SetImplementationType(v string) *DevicePortForwardCreate {
+	_c.mutation.SetImplementationType(v)
+	return _c
+}
+
+// SetNillableImplementationType sets the "implementation_type" field if the given value is not nil.
+func (_c *DevicePortForwardCreate) SetNillableImplementationType(v *string) *DevicePortForwardCreate {
+	if v != nil {
+		_c.SetImplementationType(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *DevicePortForwardCreate) SetID(v int64) *DevicePortForwardCreate {
 	_c.mutation.SetID(v)
@@ -203,6 +217,10 @@ func (_c *DevicePortForwardCreate) defaults() error {
 		v := deviceportforward.DefaultIsActive
 		_c.mutation.SetIsActive(v)
 	}
+	if _, ok := _c.mutation.ImplementationType(); !ok {
+		v := deviceportforward.DefaultImplementationType
+		_c.mutation.SetImplementationType(v)
+	}
 	return nil
 }
 
@@ -254,6 +272,9 @@ func (_c *DevicePortForwardCreate) check() error {
 	}
 	if _, ok := _c.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "DevicePortForward.is_active"`)}
+	}
+	if _, ok := _c.mutation.ImplementationType(); !ok {
+		return &ValidationError{Name: "implementation_type", err: errors.New(`ent: missing required field "DevicePortForward.implementation_type"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := deviceportforward.IDValidator(v); err != nil {
@@ -335,6 +356,10 @@ func (_c *DevicePortForwardCreate) createSpec() (*DevicePortForward, *sqlgraph.C
 	if value, ok := _c.mutation.IsActive(); ok {
 		_spec.SetField(deviceportforward.FieldIsActive, field.TypeBool, value)
 		_node.IsActive = value
+	}
+	if value, ok := _c.mutation.ImplementationType(); ok {
+		_spec.SetField(deviceportforward.FieldImplementationType, field.TypeString, value)
+		_node.ImplementationType = value
 	}
 	if nodes := _c.mutation.DeviceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -516,6 +541,18 @@ func (u *DevicePortForwardUpsert) SetIsActive(v bool) *DevicePortForwardUpsert {
 // UpdateIsActive sets the "is_active" field to the value that was provided on create.
 func (u *DevicePortForwardUpsert) UpdateIsActive() *DevicePortForwardUpsert {
 	u.SetExcluded(deviceportforward.FieldIsActive)
+	return u
+}
+
+// SetImplementationType sets the "implementation_type" field.
+func (u *DevicePortForwardUpsert) SetImplementationType(v string) *DevicePortForwardUpsert {
+	u.Set(deviceportforward.FieldImplementationType, v)
+	return u
+}
+
+// UpdateImplementationType sets the "implementation_type" field to the value that was provided on create.
+func (u *DevicePortForwardUpsert) UpdateImplementationType() *DevicePortForwardUpsert {
+	u.SetExcluded(deviceportforward.FieldImplementationType)
 	return u
 }
 
@@ -703,6 +740,20 @@ func (u *DevicePortForwardUpsertOne) SetIsActive(v bool) *DevicePortForwardUpser
 func (u *DevicePortForwardUpsertOne) UpdateIsActive() *DevicePortForwardUpsertOne {
 	return u.Update(func(s *DevicePortForwardUpsert) {
 		s.UpdateIsActive()
+	})
+}
+
+// SetImplementationType sets the "implementation_type" field.
+func (u *DevicePortForwardUpsertOne) SetImplementationType(v string) *DevicePortForwardUpsertOne {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.SetImplementationType(v)
+	})
+}
+
+// UpdateImplementationType sets the "implementation_type" field to the value that was provided on create.
+func (u *DevicePortForwardUpsertOne) UpdateImplementationType() *DevicePortForwardUpsertOne {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.UpdateImplementationType()
 	})
 }
 
@@ -1056,6 +1107,20 @@ func (u *DevicePortForwardUpsertBulk) SetIsActive(v bool) *DevicePortForwardUpse
 func (u *DevicePortForwardUpsertBulk) UpdateIsActive() *DevicePortForwardUpsertBulk {
 	return u.Update(func(s *DevicePortForwardUpsert) {
 		s.UpdateIsActive()
+	})
+}
+
+// SetImplementationType sets the "implementation_type" field.
+func (u *DevicePortForwardUpsertBulk) SetImplementationType(v string) *DevicePortForwardUpsertBulk {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.SetImplementationType(v)
+	})
+}
+
+// UpdateImplementationType sets the "implementation_type" field to the value that was provided on create.
+func (u *DevicePortForwardUpsertBulk) UpdateImplementationType() *DevicePortForwardUpsertBulk {
+	return u.Update(func(s *DevicePortForwardUpsert) {
+		s.UpdateImplementationType()
 	})
 }
 

@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -100,7 +100,7 @@ func (_c *PlatformConfigCreate) SetPlatform(v platformconfig.Platform) *Platform
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (_c *PlatformConfigCreate) SetConfigJSON(v json.RawMessage) *PlatformConfigCreate {
+func (_c *PlatformConfigCreate) SetConfigJSON(v jsontext.Value) *PlatformConfigCreate {
 	_c.mutation.SetConfigJSON(v)
 	return _c
 }
@@ -610,7 +610,7 @@ func (u *PlatformConfigUpsert) UpdateCapability() *PlatformConfigUpsert {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *PlatformConfigUpsert) SetConfigJSON(v json.RawMessage) *PlatformConfigUpsert {
+func (u *PlatformConfigUpsert) SetConfigJSON(v jsontext.Value) *PlatformConfigUpsert {
 	u.Set(platformconfig.FieldConfigJSON, v)
 	return u
 }
@@ -734,7 +734,7 @@ func (u *PlatformConfigUpsertOne) UpdateCapability() *PlatformConfigUpsertOne {
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *PlatformConfigUpsertOne) SetConfigJSON(v json.RawMessage) *PlatformConfigUpsertOne {
+func (u *PlatformConfigUpsertOne) SetConfigJSON(v jsontext.Value) *PlatformConfigUpsertOne {
 	return u.Update(func(s *PlatformConfigUpsert) {
 		s.SetConfigJSON(v)
 	})
@@ -1027,7 +1027,7 @@ func (u *PlatformConfigUpsertBulk) UpdateCapability() *PlatformConfigUpsertBulk 
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (u *PlatformConfigUpsertBulk) SetConfigJSON(v json.RawMessage) *PlatformConfigUpsertBulk {
+func (u *PlatformConfigUpsertBulk) SetConfigJSON(v jsontext.Value) *PlatformConfigUpsertBulk {
 	return u.Update(func(s *PlatformConfigUpsert) {
 		s.SetConfigJSON(v)
 	})

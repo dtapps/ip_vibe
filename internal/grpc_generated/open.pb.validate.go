@@ -538,6 +538,8 @@ func (m *PortForwardRule) validate(all bool) error {
 
 	// no validation rules for AutoForward
 
+	// no validation rules for ImplementationType
+
 	if len(errors) > 0 {
 		return PortForwardRuleMultiError(errors)
 	}

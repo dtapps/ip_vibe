@@ -4,7 +4,7 @@ package ent
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"vibe_ip/internal/ent/cdnrecord"
@@ -87,13 +87,13 @@ func (_u *PlatformConfigUpdate) SetNillableCapability(v *platformconfig.Capabili
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (_u *PlatformConfigUpdate) SetConfigJSON(v json.RawMessage) *PlatformConfigUpdate {
+func (_u *PlatformConfigUpdate) SetConfigJSON(v jsontext.Value) *PlatformConfigUpdate {
 	_u.mutation.SetConfigJSON(v)
 	return _u
 }
 
 // AppendConfigJSON appends value to the "config_json" field.
-func (_u *PlatformConfigUpdate) AppendConfigJSON(v json.RawMessage) *PlatformConfigUpdate {
+func (_u *PlatformConfigUpdate) AppendConfigJSON(v jsontext.Value) *PlatformConfigUpdate {
 	_u.mutation.AppendConfigJSON(v)
 	return _u
 }
@@ -929,13 +929,13 @@ func (_u *PlatformConfigUpdateOne) SetNillableCapability(v *platformconfig.Capab
 }
 
 // SetConfigJSON sets the "config_json" field.
-func (_u *PlatformConfigUpdateOne) SetConfigJSON(v json.RawMessage) *PlatformConfigUpdateOne {
+func (_u *PlatformConfigUpdateOne) SetConfigJSON(v jsontext.Value) *PlatformConfigUpdateOne {
 	_u.mutation.SetConfigJSON(v)
 	return _u
 }
 
 // AppendConfigJSON appends value to the "config_json" field.
-func (_u *PlatformConfigUpdateOne) AppendConfigJSON(v json.RawMessage) *PlatformConfigUpdateOne {
+func (_u *PlatformConfigUpdateOne) AppendConfigJSON(v jsontext.Value) *PlatformConfigUpdateOne {
 	_u.mutation.AppendConfigJSON(v)
 	return _u
 }

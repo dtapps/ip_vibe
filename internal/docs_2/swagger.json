@@ -3836,6 +3836,12 @@
                 "summary": "获取全部端口转发",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "实现类型",
+                        "name": "implementation_type",
+                        "in": "query"
+                    },
+                    {
                         "type": "boolean",
                         "description": "是否活跃",
                         "name": "is_active",
@@ -7517,6 +7523,10 @@
                     "description": "设备ID",
                     "type": "integer"
                 },
+                "implementation_type": {
+                    "description": "实现类型",
+                    "type": "string"
+                },
                 "local_port": {
                     "description": "本地监听端口",
                     "type": "integer"
@@ -8401,6 +8411,10 @@
                     "description": "设备端口转发序号",
                     "type": "integer"
                 },
+                "implementation_type": {
+                    "description": "实现类型",
+                    "type": "string"
+                },
                 "is_active": {
                     "description": "是否活跃",
                     "type": "boolean"
@@ -9240,6 +9254,10 @@
                 "id": {
                     "description": "设备端口转发序号",
                     "type": "integer"
+                },
+                "implementation_type": {
+                    "description": "实现类型",
+                    "type": "string"
                 },
                 "local_port": {
                     "description": "本地监听端口",

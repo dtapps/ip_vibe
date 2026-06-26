@@ -4,6 +4,7 @@ package ent
 
 import (
 	"encoding/json"
+	"encoding/json/jsontext"
 	"fmt"
 	"strings"
 	"time"
@@ -33,7 +34,7 @@ type CloudflareTunnel struct {
 	// Cloudflare 隧道ID
 	TunnelID string `json:"tunnel_id,omitempty"`
 	// 隧道连接配置
-	Connections json.RawMessage `json:"connections,omitempty"`
+	Connections jsontext.Value `json:"connections,omitempty"`
 	// 隧道连接活跃时间
 	ConnsActiveAt time.Time `json:"conns_active_at,omitempty"`
 	// 隧道连接不活跃时间

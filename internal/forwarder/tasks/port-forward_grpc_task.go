@@ -162,11 +162,18 @@ func (s *PortForwardGRPCTask) RunPeriodicTask() {
 		// 构建目标地址
 		targetAddr := net.JoinHostPort(item.RemoteHost, fmt.Sprintf("%d", item.RemotePort))
 
+		// 实现类型：默认 standard
+		implType := item.ImplementationType
+		if implType == "" {
+			implType = "standard"
+		}
+
 		rule := forward.Rule{
-			ID:         item.ID,    // 唯一标识
-			ListenAddr: listenAddr, // 本地监听地址
-			TargetAddr: targetAddr, // 目标地址
-			Protocols:  item.Protocols,
+			ID:                 item.ID,    // 唯一标识
+			ListenAddr:         listenAddr, // 本地监听地址
+			TargetAddr:         targetAddr, // 目标地址
+			Protocols:          item.Protocols,
+			ImplementationType: implType,
 		}
 		forwardRules = append(forwardRules, rule)
 	}
@@ -198,11 +205,12 @@ func (s *PortForwardGRPCTask) getApi(ctx context.Context, logger *slog.Logger) (
 	// 转换响应
 	for _, rule := range resp.Rules {
 		list = append(list, &PortForwardTaskApiList{
-			ID:         cast.ToString(rule.Id),
-			LocalPort:  cast.ToInt(rule.LocalPort),
-			RemoteHost: rule.RemoteHost,
-			RemotePort: cast.ToInt(rule.RemotePort),
-			Protocols:  rule.Protocols,
+			ID:                 cast.ToString(rule.Id),
+			LocalPort:          cast.ToInt(rule.LocalPort),
+			RemoteHost:         rule.RemoteHost,
+			RemotePort:         cast.ToInt(rule.RemotePort),
+			Protocols:          rule.Protocols,
+			ImplementationType: rule.ImplementationType,
 		})
 	}
 
