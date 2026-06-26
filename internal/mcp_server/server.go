@@ -69,8 +69,9 @@ func (m *MCPServerManager) Run(ctx context.Context) {
 		Title:   m.config.Title,
 		Version: m.config.Version,
 	}
-	options := mcp.ServerOptions{}
-	options.Logger = m.logger
+	options := mcp.ServerOptions{
+		Logger: m.logger,
+	}
 	m.server = mcp.NewServer(&impl, &options)
 
 	m.logger.InfoContext(ctx, "MCP 服务启动成功")

@@ -149,11 +149,12 @@ func (p *CloudfareDNSProvider) Name() string {
 func (p *CloudfareDNSProvider) Check(ctx context.Context, domain_name string, sub_domain string, full_domain string, record_type string, origin_value string) (data *provider.DNSProviderInternalData, err error) {
 
 	// 查询域名记录
-	requestDnsQuery := dns.RecordListParams{}
-	requestDnsQuery.ZoneID = cloudflare.String(p.CustomConfig.ZoneValue)
-	requestDnsQuery.Name = cloudflare.F(dns.RecordListParamsName{
-		Exact: cloudflare.String(full_domain),
-	})
+	requestDnsQuery := dns.RecordListParams{
+		ZoneID: cloudflare.String(p.CustomConfig.ZoneValue),
+		Name: cloudflare.F(dns.RecordListParamsName{
+			Exact: cloudflare.String(full_domain),
+		}),
+	}
 	responseDnsQuery, err := p.Provider.Client.DNS.Records.List(ctx, requestDnsQuery)
 	if err != nil {
 		return nil, fmt.Errorf("接口 DNS.Records.List 失败 %w", err)
@@ -222,11 +223,12 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, domain_name string, s
 	if p.InternalData.RecordID == "" {
 
 		// 创建域名记录
-		requestDnsCreateBody := dns.ARecordParam{}
-		requestDnsCreateBody.Name = cloudflare.String(full_domain)
-		requestDnsCreateBody.Type = cloudflare.F(dns.ARecordType(record_type))
-		requestDnsCreateBody.Content = cloudflare.String(origin_value)
-		requestDnsCreateBody.Comment = cloudflare.String(p.CustomConfig.Comment)
+		requestDnsCreateBody := dns.ARecordParam{
+			Name:    cloudflare.String(full_domain),
+			Type:    cloudflare.F(dns.ARecordType(record_type)),
+			Content: cloudflare.String(origin_value),
+			Comment: cloudflare.String(p.CustomConfig.Comment),
+		}
 		requestDnsCreate := dns.RecordNewParams{
 			ZoneID: cloudflare.String(p.CustomConfig.ZoneValue),
 			Body:   requestDnsCreateBody,
@@ -245,11 +247,12 @@ func (p *CloudfareDNSProvider) Update(ctx context.Context, domain_name string, s
 	} else if p.InternalData.RecordID != "" {
 
 		// 更新域名记录
-		requestDnsUpdateBody := dns.ARecordParam{}
-		requestDnsUpdateBody.Name = cloudflare.String(full_domain)
-		requestDnsUpdateBody.Type = cloudflare.F(dns.ARecordType(record_type))
-		requestDnsUpdateBody.Content = cloudflare.String(origin_value)
-		requestDnsUpdateBody.Comment = cloudflare.String(p.CustomConfig.Comment)
+		requestDnsUpdateBody := dns.ARecordParam{
+			Name:    cloudflare.String(full_domain),
+			Type:    cloudflare.F(dns.ARecordType(record_type)),
+			Content: cloudflare.String(origin_value),
+			Comment: cloudflare.String(p.CustomConfig.Comment),
+		}
 		requestDnsUpdate := dns.RecordEditParams{
 			ZoneID: cloudflare.String(p.CustomConfig.ZoneValue),
 			Body:   requestDnsUpdateBody,
@@ -293,9 +296,10 @@ func (p *CloudfareDNSProvider) ParseCustomConfig(config_json json.RawMessage) (e
 // https://developers.cloudflare.com/api/go/resources/zones/methods/list/
 func (p *CloudfareDNSProvider) ZonesRaw(ctx context.Context) (lines []zones.Zone, err error) {
 	// 查询域名列表
-	requestQueryList := zones.ZoneListParams{}
-	requestQueryList.Page = cloudflare.F(float64(1))
-	requestQueryList.PerPage = cloudflare.F(float64(50))
+	requestQueryList := zones.ZoneListParams{
+		Page:    cloudflare.F(float64(1)),
+		PerPage: cloudflare.F(float64(50)),
+	}
 	responseQueryList, err := p.Provider.Client.Zones.List(ctx, requestQueryList)
 	if err != nil {
 		return nil, fmt.Errorf("接口 Zones.List 失败 %w", err)
@@ -307,10 +311,11 @@ func (p *CloudfareDNSProvider) ZonesRaw(ctx context.Context) (lines []zones.Zone
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/list/
 func (p *CloudfareDNSProvider) RecordsRaw(ctx context.Context, zone_id string) (lines []dns.RecordResponse, err error) {
 	// 查询域名列表
-	requestQueryList := dns.RecordListParams{}
-	requestQueryList.ZoneID = cloudflare.String(zone_id)
-	requestQueryList.Page = cloudflare.F(float64(1))
-	requestQueryList.PerPage = cloudflare.F(float64(5000000))
+	requestQueryList := dns.RecordListParams{
+		ZoneID:  cloudflare.String(zone_id),
+		Page:    cloudflare.F(float64(1)),
+		PerPage: cloudflare.F(float64(5000000)),
+	}
 	responseQueryList, err := p.Provider.Client.DNS.Records.List(ctx, requestQueryList)
 	if err != nil {
 		return nil, fmt.Errorf("接口 DNS.Records.List 失败 %w", err)
@@ -461,11 +466,12 @@ query StatsByDay {
 // CreateRecord 创建 DNS 记录
 // https://developers.cloudflare.com/api/go/resources/dns/subresources/records/methods/create/
 func (p *CloudfareDNSProvider) CreateRecord(ctx context.Context, zone_id string, full_domain string, record_type string, origin_value string, proxied bool) (err error) {
-	requestBody := dns.ARecordParam{}
-	requestBody.Name = cloudflare.String(full_domain)
-	requestBody.Type = cloudflare.F(dns.ARecordType(record_type))
-	requestBody.Content = cloudflare.String(origin_value)
-	requestBody.Proxied = cloudflare.Bool(proxied)
+	requestBody := dns.ARecordParam{
+		Name:    cloudflare.String(full_domain),
+		Type:    cloudflare.F(dns.ARecordType(record_type)),
+		Content: cloudflare.String(origin_value),
+		Proxied: cloudflare.Bool(proxied),
+	}
 	request := dns.RecordNewParams{
 		ZoneID: cloudflare.String(zone_id),
 		Body:   requestBody,

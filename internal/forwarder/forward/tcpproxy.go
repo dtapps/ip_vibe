@@ -51,7 +51,7 @@ func startTCPProxy(laddr, raddr string, stats *Stats, ctx context.Context, logge
 		return nil, err
 	}
 
-	logger.Info("TCPProxy 转发已启动",
+	logger.Info("[TCPProxy] TCP 转发已启动",
 		slog.String("规则ID", ruleID),
 		slog.String("监听", laddr),
 		slog.String("目标", raddr),
@@ -62,7 +62,7 @@ func startTCPProxy(laddr, raddr string, stats *Stats, ctx context.Context, logge
 		<-ctx.Done()
 		proxy.Close()
 		atomic.AddInt64(&stats.Errors, 1)
-		logger.Info("TCPProxy 监听已关闭",
+		logger.Info("[TCPProxy] 监听已关闭",
 			slog.String("规则ID", ruleID),
 		)
 	}()

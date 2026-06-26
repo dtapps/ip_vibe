@@ -66,9 +66,7 @@ func (s *OpenService) GetSetting(ctx context.Context, req *emptypb.Empty) (*grpc
 func (s *OpenService) ReportDeviceIP(ctx context.Context, req *grpc_generated.ReportDeviceIPRequest) (*grpc_generated.ReportDeviceIPResponse, error) {
 	// 将 gRPC 请求转换为你的 types 结构
 	request := &types.DeviceReportDeviceIpRequest{
-		DevicePortForwardsRequest: types.DevicePortForwardsRequest{
-			DeviceCode: req.DeviceCode,
-		},
+		DeviceCode: req.DeviceCode,
 		DeviceName: req.DeviceName,
 		IPV4Addr:   req.Ipv4Addr,
 		IPV6Addr:   req.Ipv6Addr,
@@ -99,12 +97,13 @@ func (s *OpenService) GetDevicePortForwards(ctx context.Context, req *grpc_gener
 	var rules []*grpc_generated.PortForwardRule
 	for _, rule := range response {
 		rules = append(rules, &grpc_generated.PortForwardRule{
-			Id:          rule.ID,
-			LocalPort:   int32(rule.LocalPort),
-			RemoteHost:  rule.RemoteHost,
-			RemotePort:  int32(rule.RemotePort),
-			Protocols:   rule.Protocols,
-			AutoForward: rule.AutoForward,
+			Id:                 rule.ID,
+			LocalPort:          int32(rule.LocalPort),
+			RemoteHost:         rule.RemoteHost,
+			RemotePort:         int32(rule.RemotePort),
+			Protocols:          rule.Protocols,
+			AutoForward:        rule.AutoForward,
+			ImplementationType: rule.ImplementationType,
 		})
 	}
 
@@ -118,9 +117,7 @@ func (s *OpenService) GetDevicePortForwards(ctx context.Context, req *grpc_gener
 func (s *OpenService) CreatePortForwardStats(ctx context.Context, req *grpc_generated.CreatePortForwardStatsRequest) (*emptypb.Empty, error) {
 	// 将 gRPC 请求转换为你的 types 结构
 	request := &types.CreatePortForwardStatsRequest{
-		DevicePortForwardsRequest: types.DevicePortForwardsRequest{
-			DeviceCode: req.DeviceCode,
-		},
+		DeviceCode:    req.DeviceCode,
 		PortForwardID: req.PortForwardId,
 		StartTime:     req.StartTime,
 		ActiveConn:    req.ActiveConn,

@@ -18,7 +18,7 @@ func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context, log
 		return nil, err
 	}
 
-	logger.Info("TCP 转发已启动",
+	logger.Info("[Standard] TCP 转发已启动",
 		slog.String("规则ID", ruleID),
 		slog.String("协议", proto),
 		slog.String("监听", laddr),
@@ -30,13 +30,13 @@ func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context, log
 			conn, err := ln.Accept()
 			if err != nil {
 				if ctx.Err() != nil {
-					logger.Info("TCP 监听已关闭",
+					logger.Info("[Standard] TCP 监听已关闭",
 						slog.String("规则ID", ruleID),
 						slog.String("协议", proto),
 					)
 					return
 				}
-				logger.Warn("TCP Accept 错误",
+				logger.Warn("[Standard] TCP Accept 错误",
 					slog.String("规则ID", ruleID),
 					slog.String("协议", proto),
 					slog.Any("错误", err),
@@ -61,7 +61,7 @@ func startTCP(proto, laddr, raddr string, stats *Stats, ctx context.Context, log
 
 func handleTCPConn(c net.Conn, proto, raddr string, stats *Stats, logger *slog.Logger, ruleID string, ctx context.Context) {
 	clientAddr := c.RemoteAddr().String()
-	logger.Info("TCP 新连接",
+	logger.Info("[Standard] TCP 新连接",
 		slog.String("规则ID", ruleID),
 		slog.String("客户端", clientAddr),
 		slog.String("目标", raddr),
@@ -70,7 +70,7 @@ func handleTCPConn(c net.Conn, proto, raddr string, stats *Stats, logger *slog.L
 	defer func() { _ = c.Close() }()
 	defer func() {
 		atomic.AddInt64(&stats.ActiveConn, -1)
-		logger.Info("TCP 连接关闭",
+		logger.Info("[Standard] TCP 连接关闭",
 			slog.String("规则ID", ruleID),
 			slog.String("客户端", clientAddr),
 			slog.Int64("接收字节", atomic.LoadInt64(&stats.BytesIn)),
@@ -81,7 +81,7 @@ func handleTCPConn(c net.Conn, proto, raddr string, stats *Stats, logger *slog.L
 	rc, err := net.Dial(proto, raddr)
 	if err != nil {
 		atomic.AddInt64(&stats.Errors, 1)
-		logger.Warn("TCP 连接目标失败",
+		logger.Warn("[Standard] TCP 连接目标失败",
 			slog.String("规则ID", ruleID),
 			slog.String("协议", proto),
 			slog.String("目标", raddr),
@@ -125,7 +125,7 @@ func proxyTCP(src, dst net.Conn, counter *int64, logger *slog.Logger, ruleID, pr
 				atomic.AddInt64(counter, int64(wn))
 			}
 			if werr != nil {
-				logger.Warn("TCP 写入错误",
+				logger.Warn("[Standard] TCP 写入错误",
 					slog.String("规则ID", ruleID),
 					slog.String("协议", proto),
 					slog.Any("错误", werr),
@@ -140,7 +140,7 @@ func proxyTCP(src, dst net.Conn, counter *int64, logger *slog.Logger, ruleID, pr
 		}
 		if err != nil {
 			if err != io.EOF && !errors.Is(err, net.ErrClosed) {
-				logger.Warn("TCP 转发错误",
+				logger.Warn("[Standard] TCP 转发错误",
 					slog.String("规则ID", ruleID),
 					slog.String("协议", proto),
 					slog.Any("错误", err),
@@ -168,7 +168,7 @@ func startUDP(proto, laddr, raddr string, stats *Stats, ctx context.Context, log
 		return nil, err
 	}
 
-	logger.Info("UDP 转发已启动",
+	logger.Info("[Standard] UDP 转发已启动",
 		slog.String("规则ID", ruleID),
 		slog.String("协议", proto),
 		slog.String("监听", laddr),
@@ -194,12 +194,12 @@ func handleUDPWithLog(conn *net.UDPConn, raddr *net.UDPAddr, stats *Stats, logge
 		n, src, err := conn.ReadFromUDP(buf)
 		if err != nil {
 			if ctx.Err() != nil {
-				logger.Info("UDP 监听已关闭",
+				logger.Info("[Standard] UDP 监听已关闭",
 					slog.String("规则ID", ruleID),
 					slog.String("协议", proto),
 				)
 			} else {
-				logger.Warn("UDP 读取错误",
+				logger.Warn("[Standard] UDP 读取错误",
 					slog.String("规则ID", ruleID),
 					slog.String("协议", proto),
 					slog.Any("错误", err),
@@ -219,7 +219,7 @@ func handleUDPWithLog(conn *net.UDPConn, raddr *net.UDPAddr, stats *Stats, logge
 			rc, dialErr := net.DialUDP(proto, nil, raddr)
 			if dialErr != nil {
 				atomic.AddInt64(&stats.Errors, 1)
-				logger.Warn("UDP 连接远端失败",
+				logger.Warn("[Standard] UDP 连接远端失败",
 					slog.String("规则ID", ruleID),
 					slog.String("协议", proto),
 					slog.String("目标", raddr.String()),
@@ -229,7 +229,7 @@ func handleUDPWithLog(conn *net.UDPConn, raddr *net.UDPAddr, stats *Stats, logge
 			}
 			sessions.Store(key, rc)
 
-			logger.Info("UDP 新会话",
+			logger.Info("[Standard] UDP 新会话",
 				slog.String("规则ID", ruleID),
 				slog.String("客户端", src.String()),
 				slog.String("目标", raddr.String()),
@@ -248,7 +248,7 @@ func handleUDPWithLog(conn *net.UDPConn, raddr *net.UDPAddr, stats *Stats, logge
 
 		rc, ok := val.(*net.UDPConn)
 		if !ok {
-			logger.Warn("UDP 会话类型异常",
+			logger.Warn("[Standard] UDP 会话类型异常",
 				slog.String("规则ID", ruleID),
 				slog.String("协议", proto),
 			)
@@ -257,7 +257,7 @@ func handleUDPWithLog(conn *net.UDPConn, raddr *net.UDPAddr, stats *Stats, logge
 
 		_, werr := rc.Write(buf[:n])
 		if werr != nil {
-			logger.Warn("UDP 写入远端错误",
+			logger.Warn("[Standard] UDP 写入远端错误",
 				slog.String("规则ID", ruleID),
 				slog.String("协议", proto),
 				slog.Any("错误", werr),
@@ -284,7 +284,7 @@ func relayUDPResponse(rc *net.UDPConn, listener *net.UDPConn, clientAddr *net.UD
 		if n > 0 {
 			_, werr := listener.WriteToUDP(buf[:n], clientAddr)
 			if werr != nil {
-				logger.Warn("UDP 回传客户端错误",
+				logger.Warn("[Standard] UDP 回传客户端错误",
 					slog.String("规则ID", ruleID),
 					slog.String("协议", proto),
 					slog.Any("错误", werr),
@@ -296,7 +296,7 @@ func relayUDPResponse(rc *net.UDPConn, listener *net.UDPConn, clientAddr *net.UD
 		}
 		if err != nil {
 			if !errors.Is(err, net.ErrClosed) {
-				logger.Warn("UDP 读取远端响应错误",
+				logger.Warn("[Standard] UDP 读取远端响应错误",
 					slog.String("规则ID", ruleID),
 					slog.String("协议", proto),
 					slog.Any("错误", err),

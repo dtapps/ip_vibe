@@ -170,8 +170,9 @@ func (p *CloudfareTUNProvider) Check(ctx context.Context, sub_domain string, dom
 	hostname, service := p.HandleHostnameAndService(sub_domain, p.CustomConfig.ZoneName, serve_type, serve_uri)
 
 	// 查询记录
-	requestTunQuery := zero_trust.TunnelCloudflaredConfigurationGetParams{}
-	requestTunQuery.AccountID = cloudflare.String(p.cfg.AccountID)
+	requestTunQuery := zero_trust.TunnelCloudflaredConfigurationGetParams{
+		AccountID: cloudflare.String(p.cfg.AccountID),
+	}
 	responseTunQuery, err := p.Provider.Client.ZeroTrust.Tunnels.Cloudflared.Configurations.Get(ctx, p.CustomConfig.TunnelID, requestTunQuery)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ZeroTrust.Tunnels.Cloudflared.Configurations.Get 失败 %w", err)
@@ -260,11 +261,12 @@ func (p *CloudfareTUNProvider) Update(ctx context.Context, sub_domain string, do
 	configIngress = p.moveCatchAllRulesToLast(configIngress)
 
 	// 更新记录
-	requestTunUpdate := zero_trust.TunnelCloudflaredConfigurationUpdateParams{}
-	requestTunUpdate.AccountID = cloudflare.String(p.cfg.AccountID)
-	requestTunUpdate.Config = cloudflare.F(zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfig{
-		Ingress: cloudflare.F(configIngress),
-	})
+	requestTunUpdate := zero_trust.TunnelCloudflaredConfigurationUpdateParams{
+		AccountID: cloudflare.String(p.cfg.AccountID),
+		Config: cloudflare.F(zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfig{
+			Ingress: cloudflare.F(configIngress),
+		}),
+	}
 	_, err = p.Provider.Client.ZeroTrust.Tunnels.Cloudflared.Configurations.Update(ctx, p.CustomConfig.TunnelID, requestTunUpdate)
 	if err != nil {
 		return fmt.Errorf("接口 ZeroTrust.Tunnels.Cloudflared.Configurations.Update 失败 %w", err)
@@ -403,10 +405,11 @@ func (p *CloudfareTUNProvider) Connectors(ctx context.Context) (lines []*Cloudfa
 // https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/methods/list/
 func (p *CloudfareTUNProvider) ConnectorsRaw(ctx context.Context) (lines []zero_trust.TunnelListResponse, err error) {
 	// 查询隧道列表
-	requestQueryList := zero_trust.TunnelListParams{}
-	requestQueryList.AccountID = cloudflare.F(p.cfg.AccountID)
-	requestQueryList.Page = cloudflare.F(float64(1))
-	requestQueryList.PerPage = cloudflare.F(float64(1000))
+	requestQueryList := zero_trust.TunnelListParams{
+		AccountID: cloudflare.F(p.cfg.AccountID),
+		Page:      cloudflare.F(float64(1)),
+		PerPage:   cloudflare.F(float64(1000)),
+	}
 	responseQueryList, err := p.Provider.Client.ZeroTrust.Tunnels.List(ctx, requestQueryList)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ZeroTrust.Tunnels.List 失败 %w", err)
@@ -417,8 +420,9 @@ func (p *CloudfareTUNProvider) ConnectorsRaw(ctx context.Context) (lines []zero_
 // 获取 Cloudfare TUN 隧道入站规则列表
 // https://developers.cloudflare.com/api/go/resources/zero_trust/subresources/tunnels/subresources/cloudflared/subresources/configurations/methods/get/
 func (p *CloudfareTUNProvider) IngresssRaw(ctx context.Context, tunnelID string) (lines []zero_trust.TunnelCloudflaredConfigurationGetResponseConfigIngress, err error) {
-	requestQueryList := zero_trust.TunnelCloudflaredConfigurationGetParams{}
-	requestQueryList.AccountID = cloudflare.F(p.cfg.AccountID)
+	requestQueryList := zero_trust.TunnelCloudflaredConfigurationGetParams{
+		AccountID: cloudflare.F(p.cfg.AccountID),
+	}
 	responseQueryList, err := p.Provider.Client.ZeroTrust.Tunnels.Cloudflared.Configurations.Get(ctx, tunnelID, requestQueryList)
 	if err != nil {
 		return nil, fmt.Errorf("接口 ZeroTrust.Tunnels.Cloudflared.Configurations.Get 失败 %w", err)
@@ -452,9 +456,10 @@ func (p *CloudfareTUNProvider) Zones(ctx context.Context) (lines []*CloudfareTUN
 // https://developers.cloudflare.com/api/go/resources/zones/methods/list/
 func (p *CloudfareTUNProvider) ZonesRaw(ctx context.Context) (lines []zones.Zone, err error) {
 	// 查询域名列表
-	requestQueryList := zones.ZoneListParams{}
-	requestQueryList.Page = cloudflare.F(float64(1))
-	requestQueryList.PerPage = cloudflare.F(float64(50))
+	requestQueryList := zones.ZoneListParams{
+		Page:    cloudflare.F(float64(1)),
+		PerPage: cloudflare.F(float64(50)),
+	}
 	responseQueryList, err := p.Provider.Client.Zones.List(ctx, requestQueryList)
 	if err != nil {
 		return nil, fmt.Errorf("接口 Zones.List 失败 %w", err)
@@ -473,11 +478,12 @@ func (p *CloudfareTUNProvider) UpdateIngress(ctx context.Context, tunnelID strin
 	configIngress = p.moveCatchAllRulesToLast(configIngress)
 
 	// 更新记录
-	requestTunUpdate := zero_trust.TunnelCloudflaredConfigurationUpdateParams{}
-	requestTunUpdate.AccountID = cloudflare.String(p.cfg.AccountID)
-	requestTunUpdate.Config = cloudflare.F(zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfig{
-		Ingress: cloudflare.F(configIngress),
-	})
+	requestTunUpdate := zero_trust.TunnelCloudflaredConfigurationUpdateParams{
+		AccountID: cloudflare.String(p.cfg.AccountID),
+		Config: cloudflare.F(zero_trust.TunnelCloudflaredConfigurationUpdateParamsConfig{
+			Ingress: cloudflare.F(configIngress),
+		}),
+	}
 	_, err = p.Provider.Client.ZeroTrust.Tunnels.Cloudflared.Configurations.Update(ctx, tunnelID, requestTunUpdate)
 	if err != nil {
 		return fmt.Errorf("接口 ZeroTrust.Tunnels.Cloudflared.Configurations.Update 失败 %w", err)

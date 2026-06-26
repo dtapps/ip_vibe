@@ -273,15 +273,16 @@ func (s *DeviceOpenServiceImpl) DevicePortForwards(ctx context.Context, deviceCo
 	portForwards := make([]types.GetPortForwardResponse, 0, len(allPortForward))
 	for _, item := range allPortForward {
 		portForwards = append(portForwards, types.GetPortForwardResponse{
-			ID:          item.ID,
-			Name:        item.Name,
-			Description: item.Description,
-			LocalPort:   item.LocalPort,
-			RemoteHost:  item.RemoteHost,
-			RemotePort:  item.RemotePort,
-			Protocols:   item.Protocols,
-			AutoForward: item.AutoForward,
-			IsActive:    item.IsActive,
+			ID:                 item.ID,
+			Name:               item.Name,
+			Description:        item.Description,
+			LocalPort:          item.LocalPort,
+			RemoteHost:         item.RemoteHost,
+			RemotePort:         item.RemotePort,
+			Protocols:          item.Protocols,
+			AutoForward:        item.AutoForward,
+			IsActive:           item.IsActive,
+			ImplementationType: item.ImplementationType,
 		})
 	}
 

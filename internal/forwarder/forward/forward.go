@@ -120,6 +120,7 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 				slog.String("规则ID", rule.ID),
 				slog.String("协议", proto),
 				slog.String("目标", rule.TargetAddr),
+				slog.String("实现类型", rule.ImplementationType),
 			)
 			continue
 		}
@@ -143,28 +144,40 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 			if hasTCP6 && !targetIPv4 {
 				skipProto = true // IPv6 目标，tcp6 负责合并
 			} else if hasTCP6 {
-				a.logger.Info("检测到 TCP4/TCP6 同时开启，使用自动双栈监听 TCP", slog.String("规则ID", rule.ID))
+				a.logger.Info("检测到 TCP4/TCP6 同时开启，使用自动双栈监听 TCP",
+					slog.String("规则ID", rule.ID),
+					slog.String("实现类型", rule.ImplementationType),
+				)
 				proto = "tcp"
 			}
 		case "tcp6":
 			if hasTCP4 && targetIPv4 {
 				skipProto = true // IPv4 目标，tcp4 负责合并
 			} else if hasTCP4 {
-				a.logger.Info("检测到 TCP4/TCP6 同时开启，使用自动双栈监听 TCP", slog.String("规则ID", rule.ID))
+				a.logger.Info("检测到 TCP4/TCP6 同时开启，使用自动双栈监听 TCP",
+					slog.String("规则ID", rule.ID),
+					slog.String("实现类型", rule.ImplementationType),
+				)
 				proto = "tcp"
 			}
 		case "udp4":
 			if hasUDP6 && !targetIPv4 {
 				skipProto = true
 			} else if hasUDP6 {
-				a.logger.Info("检测到 UDP4/UDP6 同时开启，使用自动双栈监听 UDP", slog.String("规则ID", rule.ID))
+				a.logger.Info("检测到 UDP4/UDP6 同时开启，使用自动双栈监听 UDP",
+					slog.String("规则ID", rule.ID),
+					slog.String("实现类型", rule.ImplementationType),
+				)
 				proto = "udp"
 			}
 		case "udp6":
 			if hasUDP4 && targetIPv4 {
 				skipProto = true
 			} else if hasUDP4 {
-				a.logger.Info("检测到 UDP4/UDP6 同时开启，使用自动双栈监听 UDP", slog.String("规则ID", rule.ID))
+				a.logger.Info("检测到 UDP4/UDP6 同时开启，使用自动双栈监听 UDP",
+					slog.String("规则ID", rule.ID),
+					slog.String("实现类型", rule.ImplementationType),
+				)
 				proto = "udp"
 			}
 		}
@@ -191,7 +204,7 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 					tp, err := startTCPProxy(laddr, raddr, stats, ctxCancel, a.logger, rule.ID)
 					if err != nil {
 						atomic.AddInt64(&stats.Errors, 1)
-						a.logger.Warn("TCPProxy 监听启动失败",
+						a.logger.Warn("[TCPProxy] 监听启动失败",
 							slog.String("协议", proto),
 							slog.String("本地地址", laddr),
 							slog.String("目标地址", raddr),
@@ -207,7 +220,7 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 				ln, err := startTCP(proto, laddr, raddr, stats, ctxCancel, a.logger, rule.ID)
 				if err != nil {
 					atomic.AddInt64(&stats.Errors, 1)
-					a.logger.Warn("TCP 监听启动失败",
+					a.logger.Warn("[Standard] TCP 监听启动失败",
 						slog.String("协议", proto),
 						slog.String("本地地址", laddr),
 						slog.String("目标地址", raddr),
@@ -220,7 +233,7 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 		case "udp", "udp4", "udp6":
 			if rule.ImplementationType == "tcpproxy" {
 				// tcpproxy 不支持 UDP，回退到 standard 实现
-				a.logger.Info("TCPProxy 不支持 UDP，回退到 standard 实现",
+				a.logger.Info("[TCPProxy] 不支持 UDP，回退到 standard 实现",
 					slog.String("规则ID", rule.ID),
 					slog.String("协议", proto),
 				)
@@ -232,6 +245,7 @@ func (a *Agent) addRule(ctx context.Context, rule *Rule) {
 					slog.String("协议", proto),
 					slog.String("本地地址", laddr),
 					slog.String("目标地址", raddr),
+					slog.String("实现类型", rule.ImplementationType),
 					slog.Any("错误", err),
 				)
 				continue
