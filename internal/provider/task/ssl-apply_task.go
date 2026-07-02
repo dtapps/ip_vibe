@@ -185,7 +185,7 @@ func (p *SSLApplyTaskProvider) Process(ctx context.Context, args json.RawMessage
 	createLogOne := p.logDb.SSLCertificateHistory.Create()
 
 	// 更新SSL记录
-	updateOne.SetCertDomain(resApply.Domain)
+	updateOne.SetCertDomain(resApply.Domains[0])
 	updateOne.SetCertURL(resApply.CertURL)
 	updateOne.SetCertStableURL(resApply.CertStableURL)
 	updateOne.SetCertPrivateKey(string(resApply.PrivateKey))
@@ -205,7 +205,7 @@ func (p *SSLApplyTaskProvider) Process(ctx context.Context, args json.RawMessage
 
 	// 保存到SSL证书申请历史记录
 	createLogOne.SetSslRecordID(record.ID)
-	createLogOne.SetCertDomain(resApply.Domain)
+	createLogOne.SetCertDomain(resApply.Domains[0])
 	createLogOne.SetCertURL(resApply.CertURL)
 	createLogOne.SetCertStableURL(resApply.CertStableURL)
 	createLogOne.SetCertPrivateKey(string(resApply.PrivateKey))

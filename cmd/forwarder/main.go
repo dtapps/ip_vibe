@@ -58,6 +58,7 @@ func main() {
 	initialize.InitGocronSLog("forwarder") // 初始化 gocron 日志
 	initialize.InitHttpSLog("forwarder")   // 初始化 http 日志
 	initialize.InitRestySLog("forwarder")  // 初始化 resty 日志
+	initialize.InitReqSLog("forwarder")    // 初始化 req 日志
 	initialize.EnsureDefaultSLog()         // 确保日志不为 nil
 
 	initialize.InitGoCron(ctx, global.GvaGocronSlog) // 初始化 GoCron 调度器

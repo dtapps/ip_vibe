@@ -9,11 +9,11 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/go-acme/lego/v4/certcrypto"
-	"github.com/go-acme/lego/v4/certificate"
-	"github.com/go-acme/lego/v4/lego"
-	"github.com/go-acme/lego/v4/providers/dns/rainyun"
-	"github.com/go-acme/lego/v4/registration"
+	"github.com/go-acme/lego/v5/certcrypto"
+	"github.com/go-acme/lego/v5/certificate"
+	"github.com/go-acme/lego/v5/lego"
+	"github.com/go-acme/lego/v5/providers/dns/rainyun"
+	"github.com/go-acme/lego/v5/registration"
 	"go.dtapp.net/library/contrib/http_log"
 )
 
@@ -70,10 +70,10 @@ func (d *SSLProcessRainyunImpl) Configure(ctx context.Context, params *SSLProces
 	// 配置 ACME 客户端
 	config := lego.NewConfig(d.legoConfig)
 	// 使用 Let's Encrypt 生产环境
-	config.CADirURL = lego.LEDirectoryProduction
+	config.CADirURL = lego.DirectoryURLLetsEncrypt
 	// 使用 Let's Encrypt 测试环境 (推荐初次运行时使用，无请求频率限制)
 	// config.CADirURL = lego.LEDirectoryStaging
-	config.Certificate.KeyType = certcrypto.RSA2048
+	// KeyType is now set per-obtain request
 
 	// 设置 HTTP 客户端传输 (用于记录日志)
 	if d.httpTransport != nil {
@@ -113,7 +113,7 @@ func (d *SSLProcessRainyunImpl) Apply(ctx context.Context, domains []string) (re
 
 	// 向 CA 注册账户
 	// TermsOfServiceAgreed: true 表示自动同意服务条款
-	reg, err := d.client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: true})
+	reg, err := d.client.Registration.Register(ctx, registration.RegisterOptions{TermsOfServiceAgreed: true})
 	if err != nil {
 		return nil, fmt.Errorf("无法注册 ACME 账户: %w", err)
 	}
@@ -122,9 +122,10 @@ func (d *SSLProcessRainyunImpl) Apply(ctx context.Context, domains []string) (re
 	d.logger.InfoContext(ctx, "获取 SSL 证书")
 
 	// 获取 SSL 证书
-	res, err = d.client.Certificate.Obtain(certificate.ObtainRequest{
+	res, err = d.client.Certificate.Obtain(ctx, certificate.ObtainRequest{
 		Domains: domains,
 		Bundle:  true, // 是否将中间证书一起返回
+		KeyType: certcrypto.RSA2048,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("无法获取证书: %w", err)

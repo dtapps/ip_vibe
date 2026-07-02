@@ -3,10 +3,11 @@ package ssl_helper
 import (
 	"context"
 	"crypto"
+	"crypto/ecdsa"
 	"encoding/json"
 
-	"github.com/go-acme/lego/v4/certificate"
-	"github.com/go-acme/lego/v4/registration"
+	"github.com/go-acme/lego/v5/acme"
+	"github.com/go-acme/lego/v5/certificate"
 )
 
 // 参数
@@ -26,18 +27,18 @@ type SSLProcess interface {
 
 type LegoConfig struct {
 	Email        string
-	Registration *registration.Resource
-	key          crypto.PrivateKey
+	Registration *acme.ExtendedAccount
+	key          *ecdsa.PrivateKey
 }
 
 func (u *LegoConfig) GetEmail() string {
 	return u.Email
 }
 
-func (u *LegoConfig) GetRegistration() *registration.Resource {
+func (u *LegoConfig) GetRegistration() *acme.ExtendedAccount {
 	return u.Registration
 }
 
-func (u *LegoConfig) GetPrivateKey() crypto.PrivateKey {
+func (u *LegoConfig) GetPrivateKey() crypto.Signer {
 	return u.key
 }

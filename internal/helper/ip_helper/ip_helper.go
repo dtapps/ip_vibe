@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/imroc/req/v3"
 	"golang.org/x/sync/errgroup"
 	"resty.dev/v3"
 )
@@ -28,6 +29,7 @@ type IPHelper struct {
 	debug       bool          // 是否开启调试模式
 	timeout     time.Duration // 请求超时时间
 	restyClient *resty.Client // Resty 客户端
+	reqClient   *req.Client   // Req 客户端
 }
 
 // NewIPHelper 创建一个新的 IPHelper 实例
@@ -83,20 +85,25 @@ func (c *IPHelper) initHttpClient() {
 
 	// 创建客户端
 	restyClient := resty.New()
+	reqClient := req.NewClient()
 
 	// 开启日志
 	if c.debug {
 		restyClient.SetDebug(c.debug)
+		reqClient.DevMode()
 	}
 
 	// 设置超时
 	restyClient.SetTimeout(c.timeout)
+	reqClient.SetTimeout(c.timeout)
 
 	// 跳过证书验证
 	restyClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	reqClient.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
 
 	// 设置 HTTP 客户端
 	c.restyClient = restyClient
+	c.reqClient = reqClient
 
 }
 
@@ -140,6 +147,7 @@ func (c *IPHelper) GetIP(ctx context.Context, ipType IPType) (*IPResult, error) 
 	// 随机选一个
 	fetchIPs := []fetchIPFunc{
 		c.fetchIPWithResty, // 第三方 Resty 库
+		c.fetchIPWithReq,   // 第三方 Req 库
 	}
 	fetchIP := fetchIPs[rand.Intn(len(fetchIPs))]
 
@@ -219,6 +227,7 @@ func (c *IPHelper) GetAllIP(ctx context.Context, ipType IPType) ([]*IPResult, er
 	// 随机选一个
 	fetchIPs := []fetchIPFunc{
 		c.fetchIPWithResty, // 第三方 Resty 库
+		c.fetchIPWithReq,   // 第三方 Req 库
 	}
 	fetchIP := fetchIPs[rand.Intn(len(fetchIPs))]
 
@@ -309,6 +318,44 @@ func (c *IPHelper) fetchIPWithResty(ctx context.Context, url string, ipType IPTy
 		return
 	}
 
+	result.IP = ip
+	resultChan <- result
+}
+
+// fetchIP 从指定的 URL 获取 IP 地址，并根据 ipType 验证 IP 类型
+func (c *IPHelper) fetchIPWithReq(ctx context.Context, url string, ipType IPType, resultChan chan<- *IPResult) {
+	result := &IPResult{
+		Source: url,
+	}
+	// 使用 Resty 发送请求
+	resp, err := c.reqClient.R().
+		SetContext(ctx).
+		Get(url)
+	// err != nil 意味着请求失败 (例如，DNS 查找失败，连接被拒绝等)
+	if err != nil {
+		result.Error = err
+		resultChan <- result
+		return
+	}
+	// IsErrorState 检查状态码是否为 4xx 或 5xx
+	if resp.IsErrorState() {
+		result.Error = fmt.Errorf("请求返回错误状态码: %s", resp.Status)
+		resultChan <- result
+		return
+	}
+	// resp.String() 返回响应体作为字符串
+	ip := c.extractIP(resp.String())
+	if ip == "" {
+		result.Error = fmt.Errorf("无法从响应体中提取 IP 地址")
+		resultChan <- result
+		return
+	}
+	// 验证提取的 IP 地址是否符合请求的 IP 类型
+	if !c.validateIPType(ip, ipType) {
+		result.Error = fmt.Errorf("提取的 IP 地址类型与请求的类型不匹配: %s", ipType)
+		resultChan <- result
+		return
+	}
 	result.IP = ip
 	resultChan <- result
 }

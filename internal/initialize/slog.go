@@ -159,6 +159,16 @@ func InitRestySLog(name string) {
 	).WithLogger()
 }
 
+// InitReqSLog 初始化 req 日志
+func InitReqSLog(name string) {
+	prefix := "req"
+	global.GvaReqSlog = golog.NewSlog(
+		golog.WithSLogLumberjack(getLumberjack(prefix, name)),
+		golog.WithSLogSetLevel(getLevel()),
+		golog.WithSLogShowLine(getShowLine()),
+	).WithLogger()
+}
+
 var setDefaultSlogOnce sync.Once
 
 // EnsureDefaultSLog 若全局日志器为 nil，则统一设置为  global.GvaSlog
