@@ -69,7 +69,6 @@ func main() {
 	initialize.InitMcpSLog("backend")    // 初始化 mcp 日志
 	initialize.InitHttpSLog("backend")   // 初始化 http 日志
 	initialize.InitRestySLog("backend")  // 初始化 resty 日志
-	initialize.InitReqSLog("backend")    // 初始化 req 日志
 	initialize.EnsureDefaultSLog()       // 确保日志不为 nil
 
 	initialize.InitEntDb(ctx, global.GvaEntSlog)         // 初始化 业务数据库
@@ -80,7 +79,6 @@ func main() {
 
 	initialize.InitEntHttpLog(global.GvaHttpSlog)   // 初始化 HTTP 日志
 	initialize.InitEntRestyLog(global.GvaRestySlog) // 初始化 Resty 日志
-	initialize.InitEntReqLog(global.GvaReqSlog)     // 初始化 Req 日志
 
 	// initialize.MigrateOldData(ctx, global.GvaEntSlog, global.GvaEntDb) // 迁移旧数据
 

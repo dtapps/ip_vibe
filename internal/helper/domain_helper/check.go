@@ -16,7 +16,6 @@ import (
 	"vibe_ip/internal/ent/schema/schematype"
 	"vibe_ip/internal/helper/sys_env"
 
-	"github.com/imroc/req/v3"
 	"go.dtapp.net/library/contrib/http_log"
 	"resty.dev/v3"
 )
@@ -28,7 +27,6 @@ type DomainCheck struct {
 	timeout       time.Duration                 // 请求超时时间
 	httpClient    *http.Client                  // HTTP 客户端
 	restyClient   *resty.Client                 // Resty 客户端
-	reqClient     *req.Client                   // Req 客户端
 }
 
 // NewDomainCheck 创建一个新的 DomainCheck 实例
@@ -50,39 +48,29 @@ func (s *DomainCheck) initHttpClient() {
 	// 创建客户端
 	httpClient := &http.Client{}
 	restyClient := resty.New()
-	reqClient := req.NewClient()
 
 	// 开启日志
 	if s.debug {
 		restyClient.SetDebug(s.debug)
-		reqClient.DevMode()
 	}
 
 	// 添加 HTTP 日志记录器
 	if s.httpTransport != nil {
 		// 	httpClient.Transport = s.httpTransport.Instance(nil)
 		// 	restyClient.SetTransport(s.httpTransport.Instance(restyClient.Transport()))
-		// 	reqClient.GetTransport().WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
-		// 		return s.httpTransport.Instance(rt)
-		// 	})
 		// }
 		// if !s.debug && s.httpTransport != nil {
 		httpClient.Transport = s.httpTransport.InstanceNoBody(nil)
 		restyClient.SetTransport(s.httpTransport.InstanceNoBody(restyClient.Transport()))
-		reqClient.GetTransport().WrapRoundTrip(func(rt http.RoundTripper) http.RoundTripper {
-			return s.httpTransport.InstanceNoBody(rt)
-		})
 	}
 
 	// 设置超时
 	httpClient.Timeout = s.timeout
 	restyClient.SetTimeout(s.timeout)
-	reqClient.SetTimeout(s.timeout)
 
 	// 设置 HTTP 客户端
 	s.httpClient = httpClient
 	s.restyClient = restyClient
-	s.reqClient = reqClient
 }
 
 // CheckResult 包含本次检查的所有结果
@@ -164,7 +152,6 @@ func (s *DomainCheck) Check(ctx context.Context, protocol string, domain string,
 	fetchHttps := []fetchHttpFunc{
 		s.fetchHTTPWithStandard, // 官方 标准 库
 		s.fetchHTTPWithResty,    // 第三方 Resty 库
-		s.fetchHTTPWithReq,      // 第三方 Req 库
 	}
 	// 随机选一个
 	fetchHttp := fetchHttps[rand.Intn(len(fetchHttps))]
@@ -297,48 +284,5 @@ func (s *DomainCheck) fetchHTTPWithResty(ctx context.Context, u *url.URL, httpHe
 		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode())
 	}
 
-	return nil
-}
-
-// type fetchImpersonateFunc func() *req.Client
-// 发起 HTTP 请求，使用第三方 Req 库
-// https://req.cool/
-func (s *DomainCheck) fetchHTTPWithReq(ctx context.Context, u *url.URL, httpHeaders map[string]string, start time.Time, result *CheckResult) error {
-	// 设置检查类型
-	result.CheckType = schematype.DomainMonitorHistoryCheckTypeReq
-	// 复制 Req 客户端
-	client := s.reqClient.Clone()
-	// 伪装 HTTP 指纹
-	// fetchImpersonates := []fetchImpersonateFunc{
-	// 	client.ImpersonateChrome,
-	// 	client.ImpersonateFirefox,
-	// 	client.ImpersonateSafari,
-	// }
-	// 随机选一个
-	// selectedImpersonateIndex := rand.Intn(len(fetchImpersonates))
-	// selectedImpersonateMethod := fetchImpersonates[selectedImpersonateIndex]
-	// selectedImpersonateMethod()
-	// 创建 Req 请求
-	req := client.R().SetContext(ctx)
-	// 添加自定义 HTTP 请求头
-	for k, v := range httpHeaders {
-		req.SetHeader(k, v)
-	}
-	// 发起 GET 请求
-	resp, err := req.Get(u.String())
-	result.Duration = time.Since(start)
-	if err != nil {
-		result.StatusMsg = "HTTP(Req) 请求失败 " + u.String()
-		result.ErrorLog = err.Error()
-		return err
-	}
-	defer func() { _ = resp.Body.Close() }()
-	result.HTTPStatus = resp.StatusCode
-	if resp.StatusCode >= 200 && resp.StatusCode < 400 {
-		result.IsSuccess = true
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码: %d OK", resp.StatusCode)
-	} else {
-		result.StatusMsg = fmt.Sprintf("HTTP 状态码错误: %d", resp.StatusCode)
-	}
 	return nil
 }

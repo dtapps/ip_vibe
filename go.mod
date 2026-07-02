@@ -39,7 +39,6 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.202
-	github.com/imroc/req/v3 v3.58.0
 	github.com/inetaf/tcpproxy v0.0.0-20260515195445-c159a6051109
 	github.com/jdcloud-api/jdcloud-sdk-go v1.67.0
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.109
@@ -60,7 +59,6 @@ require (
 	github.com/volcengine/volcengine-go-sdk v1.2.37
 	github.com/wdcbot/qingfeng v1.6.8
 	go.dtapp.net/library/contrib/http_log v1.0.12
-	go.dtapp.net/library/contrib/req_log v1.0.6
 	go.dtapp.net/library/contrib/resty_log v1.0.17
 	go.dtapp.net/library/service/bark v1.0.11
 	go.dtapp.net/library/service/dingtalk v1.0.43
@@ -95,7 +93,6 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5 // indirect
 	github.com/alibabacloud-go/debug v1.0.1 // indirect
-	github.com/andybalholm/brotli v1.2.2 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.55.8 // indirect
 	github.com/basgys/goxml2json v1.1.0 // indirect
@@ -143,14 +140,12 @@ require (
 	github.com/google/pprof v0.0.0-20251213031049-b05bdaca462f // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/hashicorp/hcl/v2 v2.24.0 // indirect
-	github.com/icholy/digest v1.1.0 // indirect
 	github.com/jellydator/ttlcache/v2 v2.11.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12 // indirect
 	github.com/kaptinlin/jsonpointer v0.4.26 // indirect
 	github.com/kaptinlin/jsonschema v0.9.2 // indirect
-	github.com/klauspost/compress v1.19.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20260627054121-477a66015f15 // indirect
@@ -167,7 +162,6 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.60.0 // indirect
-	github.com/refraction-networking/utls v1.8.2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect

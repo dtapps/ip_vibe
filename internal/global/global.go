@@ -9,7 +9,6 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	"go.dtapp.net/library/contrib/http_log"
-	"go.dtapp.net/library/contrib/req_log"
 	"go.dtapp.net/library/contrib/resty_log"
 )
 
@@ -40,7 +39,6 @@ var (
 	GvaMcpSlog     *slog.Logger // mcp 日志
 	GvaHttpSlog    *slog.Logger // http 日志
 	GvaRestySlog   *slog.Logger // resty 日志
-	GvaReqSlog     *slog.Logger // req 日志
 
 	GvaEntDb     *ent.Client      // 业务数据库
 	GvaEntLogDb  *ent_log.Client  // 日志数据库
@@ -53,12 +51,9 @@ var (
 	// GvaHttpClientWithLogNoBody  *http.Client  // HTTP 客户端，并带日志记录不包含请求体/响应体
 	// GvaRestyClientWithLog       *resty.Client // Resty 客户端，并带日志记录
 	// GvaRestyClientWithLogNoBody *resty.Client // Resty 客户端，并带日志记录不包含请求体/响应体
-	// GvaReqClientWithLog         *req.Client   // Req 客户端，并带日志记录
-	// GvaReqClientWithLogNoBody   *req.Client   // Req 客户端，并带日志记录不包含请求体/响应体
 
 	GvaHttpLog  *http_log.LoggingRoundTripper // HTTP框架日志
 	GvaRestyLog *resty_log.LoggerMiddleware   // Resty框架日志
-	GvaReqLog   *req_log.LoggerMiddleware     // Req框架日志
 )
 
 func init() {
