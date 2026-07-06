@@ -38,7 +38,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.202
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.203
 	github.com/inetaf/tcpproxy v0.0.0-20260515195445-c159a6051109
 	github.com/jdcloud-api/jdcloud-sdk-go v1.67.0
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.109
@@ -56,7 +56,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.124
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.121
 	github.com/tidwall/gjson v1.19.0
-	github.com/volcengine/volcengine-go-sdk v1.2.37
+	github.com/volcengine/volcengine-go-sdk v1.2.39
 	github.com/wdcbot/qingfeng v1.6.8
 	go.dtapp.net/library/contrib/http_log v1.0.12
 	go.dtapp.net/library/contrib/resty_log v1.0.17
@@ -144,8 +144,8 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12 // indirect
-	github.com/kaptinlin/jsonpointer v0.4.26 // indirect
-	github.com/kaptinlin/jsonschema v0.9.2 // indirect
+	github.com/kaptinlin/jsonpointer v0.4.27 // indirect
+	github.com/kaptinlin/jsonschema v0.9.3 // indirect
 	github.com/klauspost/cpuid/v2 v2.4.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20260627054121-477a66015f15 // indirect
@@ -156,7 +156,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/onsi/gomega v1.37.0 // indirect
-	github.com/pelletier/go-toml/v2 v2.4.2 // indirect
+	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/petar-dambovaliev/aho-corasick v0.0.0-20250424160509-463d218d4745 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
