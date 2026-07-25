@@ -13,6 +13,8 @@ type iListUserRatePlanInstancesRequest interface {
 	GetCheckRemainingSiteQuota() *string
 	SetInstanceId(v string) *ListUserRatePlanInstancesRequest
 	GetInstanceId() *string
+	SetIsShared(v bool) *ListUserRatePlanInstancesRequest
+	GetIsShared() *bool
 	SetPageNumber(v int32) *ListUserRatePlanInstancesRequest
 	GetPageNumber() *int32
 	SetPageSize(v int32) *ListUserRatePlanInstancesRequest
@@ -23,6 +25,8 @@ type iListUserRatePlanInstancesRequest interface {
 	GetPlanType() *string
 	SetRemainingExpireDays(v int32) *ListUserRatePlanInstancesRequest
 	GetRemainingExpireDays() *int32
+	SetResourceOwner(v int64) *ListUserRatePlanInstancesRequest
+	GetResourceOwner() *int64
 	SetSortBy(v string) *ListUserRatePlanInstancesRequest
 	GetSortBy() *string
 	SetSortOrder(v string) *ListUserRatePlanInstancesRequest
@@ -34,66 +38,87 @@ type iListUserRatePlanInstancesRequest interface {
 }
 
 type ListUserRatePlanInstancesRequest struct {
-	// Specifies whether to filter for rate plan instances that have a remaining site quota. Valid values:
+	// Specifies whether to filter plan instances that have remaining site quota. Valid values:
 	//
-	// - **true**: Returns only rate plan instances that have a remaining site quota.
+	// - **true**: Filters plan instances that have remaining site quota.
 	//
-	// - **false**: Returns all rate plan instances for the user.
+	// - **false**: Queries all plan instances under the user.
 	//
 	// example:
 	//
 	// true
 	CheckRemainingSiteQuota *string `json:"CheckRemainingSiteQuota,omitempty" xml:"CheckRemainingSiteQuota,omitempty"`
-	// The ID of the rate plan instance to query.
+	// The plan instance ID. You can obtain this value by calling the [ListSites](https://help.aliyun.com/document_detail/2850189.html) operation.
 	//
 	// example:
 	//
 	// sp-xcdn-96wblslz****
 	InstanceId *string `json:"InstanceId,omitempty" xml:"InstanceId,omitempty"`
-	// The page number. The default value is **1**. The value must be in the range of **1 to 100,000**.
+	IsShared   *bool   `json:"IsShared,omitempty" xml:"IsShared,omitempty"`
+	// The page number settings for paging. Default value: **1**. Valid values: **1 to 100000**.
 	//
 	// example:
 	//
 	// 1
 	PageNumber *int32 `json:"PageNumber,omitempty" xml:"PageNumber,omitempty"`
-	// The number of entries to return on each page.
+	// The number of entries per page for paging. Valid values: 1 to 500.
 	//
 	// example:
 	//
 	// 500
-	PageSize            *int32  `json:"PageSize,omitempty" xml:"PageSize,omitempty"`
-	PlanNameEn          *string `json:"PlanNameEn,omitempty" xml:"PlanNameEn,omitempty"`
-	PlanType            *string `json:"PlanType,omitempty" xml:"PlanType,omitempty"`
-	RemainingExpireDays *int32  `json:"RemainingExpireDays,omitempty" xml:"RemainingExpireDays,omitempty"`
-	// The sort field. By default, results are sorted by creation time. Valid values:
+	PageSize *int32 `json:"PageSize,omitempty" xml:"PageSize,omitempty"`
+	// The plan name (English).
 	//
-	// - **CreateTime**: Sorts by creation time.
+	// example:
 	//
-	// - **ExpireTime**: Sorts by expiration time.
+	// entranceplan
+	PlanNameEn *string `json:"PlanNameEn,omitempty" xml:"PlanNameEn,omitempty"`
+	// The plan type. Valid values:
+	//
+	// - normal: fixed edition plan
+	//
+	// - enterprise: enterprise edition plan
+	//
+	// example:
+	//
+	// enterprise
+	PlanType *string `json:"PlanType,omitempty" xml:"PlanType,omitempty"`
+	// Queries plan instances whose remaining validity period is within the specified number of days. The value must be a positive integer. Unit: days.
+	//
+	// example:
+	//
+	// 30
+	RemainingExpireDays *int32 `json:"RemainingExpireDays,omitempty" xml:"RemainingExpireDays,omitempty"`
+	ResourceOwner       *int64 `json:"ResourceOwner,omitempty" xml:"ResourceOwner,omitempty"`
+	// The sort field. By default, results are sorted by purchase time. Valid values:
+	//
+	// - **CreateTime**: Purchase time.
+	//
+	// - **ExpireTime**: Expiration time.
 	//
 	// example:
 	//
 	// CreateTime
 	SortBy *string `json:"SortBy,omitempty" xml:"SortBy,omitempty"`
-	// The sort order. The default is descending. Valid values:
+	// The sort order. Default value: desc. Valid values:
 	//
-	// - **asc**: Sorts in ascending order.
+	// - **asc**: Ascending order.
 	//
-	// - **desc**: Sorts in descending order.
+	// - **desc**: Descending order.
 	//
 	// example:
 	//
 	// asc
 	SortOrder *string `json:"SortOrder,omitempty" xml:"SortOrder,omitempty"`
-	// The status of the rate plan instance. Valid values:
+	// The instance status. Valid values:
 	//
-	// - **online**: The instance is in service.
+	// - **online**: Normal service status.
 	//
-	// - **offline**: The instance has expired and is unavailable.
+	// - **offline**: Expired but not overdue, in an inactive state.
 	//
-	// - **disable**: The instance is released.
+	// - **disable**: Released.
 	//
-	// - **overdue**: The instance is overdue.
+	// - **overdue**: Overdue payment.
 	//
 	// if can be null:
 	// false
@@ -101,7 +126,24 @@ type ListUserRatePlanInstancesRequest struct {
 	// example:
 	//
 	// online
-	Status        *string `json:"Status,omitempty" xml:"Status,omitempty"`
+	Status *string `json:"Status,omitempty" xml:"Status,omitempty"`
+	// The plan subscription type. Valid values:
+	//
+	// - Free Edition (Chinese mainland): entranceplan
+	//
+	// - Free Edition (International): entranceplan_intl
+	//
+	// - Basic Edition: basicplan
+	//
+	// - Standard Edition: standardplan
+	//
+	// - Premium Edition: advancedplan
+	//
+	// - Enterprise Edition: enterpriseplan
+	//
+	// example:
+	//
+	// basicplan
 	SubscribeType *string `json:"SubscribeType,omitempty" xml:"SubscribeType,omitempty"`
 }
 
@@ -119,6 +161,10 @@ func (s *ListUserRatePlanInstancesRequest) GetCheckRemainingSiteQuota() *string 
 
 func (s *ListUserRatePlanInstancesRequest) GetInstanceId() *string {
 	return s.InstanceId
+}
+
+func (s *ListUserRatePlanInstancesRequest) GetIsShared() *bool {
+	return s.IsShared
 }
 
 func (s *ListUserRatePlanInstancesRequest) GetPageNumber() *int32 {
@@ -139,6 +185,10 @@ func (s *ListUserRatePlanInstancesRequest) GetPlanType() *string {
 
 func (s *ListUserRatePlanInstancesRequest) GetRemainingExpireDays() *int32 {
 	return s.RemainingExpireDays
+}
+
+func (s *ListUserRatePlanInstancesRequest) GetResourceOwner() *int64 {
+	return s.ResourceOwner
 }
 
 func (s *ListUserRatePlanInstancesRequest) GetSortBy() *string {
@@ -167,6 +217,11 @@ func (s *ListUserRatePlanInstancesRequest) SetInstanceId(v string) *ListUserRate
 	return s
 }
 
+func (s *ListUserRatePlanInstancesRequest) SetIsShared(v bool) *ListUserRatePlanInstancesRequest {
+	s.IsShared = &v
+	return s
+}
+
 func (s *ListUserRatePlanInstancesRequest) SetPageNumber(v int32) *ListUserRatePlanInstancesRequest {
 	s.PageNumber = &v
 	return s
@@ -189,6 +244,11 @@ func (s *ListUserRatePlanInstancesRequest) SetPlanType(v string) *ListUserRatePl
 
 func (s *ListUserRatePlanInstancesRequest) SetRemainingExpireDays(v int32) *ListUserRatePlanInstancesRequest {
 	s.RemainingExpireDays = &v
+	return s
+}
+
+func (s *ListUserRatePlanInstancesRequest) SetResourceOwner(v int64) *ListUserRatePlanInstancesRequest {
+	s.ResourceOwner = &v
 	return s
 }
 

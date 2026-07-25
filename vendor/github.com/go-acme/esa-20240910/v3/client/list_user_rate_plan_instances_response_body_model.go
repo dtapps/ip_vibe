@@ -24,15 +24,15 @@ type iListUserRatePlanInstancesResponseBody interface {
 }
 
 type ListUserRatePlanInstancesResponseBody struct {
-	// An array of plan instances that meet the specified criteria.
+	// The plan instances that match the specified conditions under the user.
 	InstanceInfo []*ListUserRatePlanInstancesResponseBodyInstanceInfo `json:"InstanceInfo,omitempty" xml:"InstanceInfo,omitempty" type:"Repeated"`
-	// The page number.
+	// The current page number, same as the PageNumber request parameter.
 	//
 	// example:
 	//
 	// 1
 	PageNumber *int32 `json:"PageNumber,omitempty" xml:"PageNumber,omitempty"`
-	// The page size.
+	// The number of entries per page.
 	//
 	// example:
 	//
@@ -44,7 +44,7 @@ type ListUserRatePlanInstancesResponseBody struct {
 	//
 	// CB1A380B-09F0-41BB-3C82-72F8FD6DA2FE
 	RequestId *string `json:"RequestId,omitempty" xml:"RequestId,omitempty"`
-	// The total count of entries.
+	// The total number of entries.
 	//
 	// example:
 	//
@@ -136,107 +136,206 @@ func (s *ListUserRatePlanInstancesResponseBody) Validate() error {
 type ListUserRatePlanInstancesResponseBodyInstanceInfo struct {
 	// The billing method. Valid values:
 	//
-	// - **PREPAY**: subscription.
+	// - **PREPAY**: Subscription.
 	//
-	// - **POSTPAY**: pay-as-you-go.
+	// - **POSTPAY**: Pay-as-you-go.
 	//
 	// example:
 	//
 	// PREPAY
-	BillingMode      *string `json:"BillingMode,omitempty" xml:"BillingMode,omitempty"`
+	BillingMode *string `json:"BillingMode,omitempty" xml:"BillingMode,omitempty"`
+	// If empty, the plan does not include a bot protection instance. If a value is returned, the plan includes a bot protection instance. Valid values:
+	//
+	// - enterprise_bot: Web edition.
+	//
+	// - enterprise_bot_with_app: App edition.
+	//
+	// example:
+	//
+	// enterprise_bot
 	BotInstanceLevel *string `json:"BotInstanceLevel,omitempty" xml:"BotInstanceLevel,omitempty"`
-	BotRequest       *string `json:"BotRequest,omitempty" xml:"BotRequest,omitempty"`
-	// The acceleration regions covered by the plan instance. Multiple values are separated by commas (,). Valid values:
+	// The prepaid bot protection requests included in the plan (in units of 10,000).
 	//
-	// - **domestic**: The Chinese mainland.
+	// example:
 	//
-	// - **overseas**: Regions outside the Chinese mainland.
+	// 100
+	BotRequest *string `json:"BotRequest,omitempty" xml:"BotRequest,omitempty"`
+	// The acceleration coverage areas for sites that can be bound to this plan instance. Multiple values are separated by commas (,). Valid values:
 	//
-	// - **global**: Global (including the Chinese mainland).
+	// - **domestic**: China or the Chinese mainland.
+	//
+	// - **overseas**: Global (excluding China or the Chinese mainland).
+	//
+	// - **global**: Global (including China or the Chinese mainland).
 	//
 	// example:
 	//
 	// domestic,overseas
 	Coverages *string `json:"Coverages,omitempty" xml:"Coverages,omitempty"`
-	// The creation time.
+	// The purchase time of the plan instance. The time is in ISO 8601 format and displayed in UTC. Format: yyyy-MM-ddTHH:mm:ssZ.
 	//
 	// example:
 	//
-	// YYYY-MM-DDThh:mm:ssZ
-	CreateTime                      *string `json:"CreateTime,omitempty" xml:"CreateTime,omitempty"`
-	CrossborderTraffic              *string `json:"CrossborderTraffic,omitempty" xml:"CrossborderTraffic,omitempty"`
+	// 2026-04-19T11:15:20Z
+	CreateTime *string `json:"CreateTime,omitempty" xml:"CreateTime,omitempty"`
+	// The prepaid China network acceleration traffic (GB) included in the plan.
+	//
+	// example:
+	//
+	// 100
+	CrossborderTraffic *string `json:"CrossborderTraffic,omitempty" xml:"CrossborderTraffic,omitempty"`
+	// The Anti-DDoS instance specification for the Chinese mainland included in the plan.
+	//
+	// example:
+	//
+	// cn_300
 	DdosBurstableDomesticProtection *string `json:"DdosBurstableDomesticProtection,omitempty" xml:"DdosBurstableDomesticProtection,omitempty"`
+	// The Anti-DDoS instance specification outside the Chinese mainland included in the plan.
+	//
+	// example:
+	//
+	// overseas_300
 	DdosBurstableOverseasProtection *string `json:"DdosBurstableOverseasProtection,omitempty" xml:"DdosBurstableOverseasProtection,omitempty"`
-	DdosInstanceLevel               *string `json:"DdosInstanceLevel,omitempty" xml:"DdosInstanceLevel,omitempty"`
-	// The duration in months.
+	// If empty, the plan does not include an Anti-DDoS instance. If a value is returned, the plan includes an Anti-DDoS instance. The value is `esa_ddos_instance`.
+	//
+	// example:
+	//
+	// esa_ddos_instance
+	DdosInstanceLevel *string `json:"DdosInstanceLevel,omitempty" xml:"DdosInstanceLevel,omitempty"`
+	// The subscription duration of the plan instance. Unit: months.
 	//
 	// example:
 	//
 	// 3
-	Duration          *int32  `json:"Duration,omitempty" xml:"Duration,omitempty"`
-	EdgeRoutineRquest *string `json:"EdgeRoutineRquest,omitempty" xml:"EdgeRoutineRquest,omitempty"`
-	EdgeWafRequest    *string `json:"EdgeWafRequest,omitempty" xml:"EdgeWafRequest,omitempty"`
-	// The expiration time.
+	Duration *int32 `json:"Duration,omitempty" xml:"Duration,omitempty"`
+	// The prepaid Edge Routine (ER) requests included in the plan (in units of 10,000).
 	//
 	// example:
 	//
-	// YYYY-MM-DDThh:mm:ssZ
+	// 100
+	EdgeRoutineRquest *string `json:"EdgeRoutineRquest,omitempty" xml:"EdgeRoutineRquest,omitempty"`
+	// The prepaid WAF requests included in the plan (in units of 10,000).
+	//
+	// example:
+	//
+	// 100
+	EdgeWafRequest *string `json:"EdgeWafRequest,omitempty" xml:"EdgeWafRequest,omitempty"`
+	// The expiration time of the plan instance. The time is in ISO 8601 format and displayed in UTC. Format: yyyy-MM-ddTHH:mm:ssZ.
+	//
+	// example:
+	//
+	// 2026-04-19T11:15:20Z
 	ExpireTime *string `json:"ExpireTime,omitempty" xml:"ExpireTime,omitempty"`
 	// The plan instance ID.
 	//
 	// example:
 	//
 	// sp-xcdn-96wblslz****
-	InstanceId        *string `json:"InstanceId,omitempty" xml:"InstanceId,omitempty"`
-	Layer4Traffic     *string `json:"Layer4Traffic,omitempty" xml:"Layer4Traffic,omitempty"`
+	InstanceId *string `json:"InstanceId,omitempty" xml:"InstanceId,omitempty"`
+	// The prepaid Layer 4 proxy traffic (GB) included in the plan - Chinese mainland.
+	//
+	// example:
+	//
+	// 100
+	Layer4Traffic *string `json:"Layer4Traffic,omitempty" xml:"Layer4Traffic,omitempty"`
+	// The prepaid Layer 4 proxy traffic (GB) included in the plan - outside the Chinese mainland.
+	//
+	// example:
+	//
+	// 100
 	Layer4TrafficIntl *string `json:"Layer4TrafficIntl,omitempty" xml:"Layer4TrafficIntl,omitempty"`
-	// The plan name.
+	OwnerId           *string `json:"OwnerId,omitempty" xml:"OwnerId,omitempty"`
+	// The plan name associated with the plan instance.
 	//
 	// example:
 	//
 	// basic
-	PlanName    *string `json:"PlanName,omitempty" xml:"PlanName,omitempty"`
+	PlanName *string `json:"PlanName,omitempty" xml:"PlanName,omitempty"`
+	// The prepaid Layer 7 acceleration traffic (GB) included in the plan.
+	//
+	// example:
+	//
+	// 100
 	PlanTraffic *string `json:"PlanTraffic,omitempty" xml:"PlanTraffic,omitempty"`
-	// The plan type. Valid values:
+	// The plan type associated with the plan instance. Valid values:
 	//
-	// - **normal**: The normal plan.
+	// - **normal**: Fixed edition plan.
 	//
-	// - **enterprise**: The enterprise plan.
+	// - **enterprise**: Enterprise edition plan.
 	//
 	// example:
 	//
 	// normal
 	PlanType *string `json:"PlanType,omitempty" xml:"PlanType,omitempty"`
+	// The auto-renewal cycle. Unit: months.
+	//
 	// example:
 	//
 	// 6
 	RenewalDuration *int64 `json:"RenewalDuration,omitempty" xml:"RenewalDuration,omitempty"`
+	// The auto-renewal status. Valid values:
+	//
+	// - nomal: Normal.
+	//
+	// - auto_renewal: Auto-renewal enabled.
+	//
+	// - not_renewal: Auto-renewal disabled.
+	//
 	// example:
 	//
 	// nomal
 	RenewalStatus *string `json:"RenewalStatus,omitempty" xml:"RenewalStatus,omitempty"`
-	// The site quota.
+	ResourceOwner *int64  `json:"ResourceOwner,omitempty" xml:"ResourceOwner,omitempty"`
+	ShareType     *string `json:"ShareType,omitempty" xml:"ShareType,omitempty"`
+	// The site quota for the plan instance.
 	//
 	// example:
 	//
 	// 1
 	SiteQuota *string `json:"SiteQuota,omitempty" xml:"SiteQuota,omitempty"`
-	// The sites associated with this plan instance.
-	Sites               []*ListUserRatePlanInstancesResponseBodyInstanceInfoSites `json:"Sites,omitempty" xml:"Sites,omitempty" type:"Repeated"`
-	SmartRoutingRequest *string                                                   `json:"SmartRoutingRequest,omitempty" xml:"SmartRoutingRequest,omitempty"`
-	StaticRequest       *string                                                   `json:"StaticRequest,omitempty" xml:"StaticRequest,omitempty"`
+	// The list of sites bound to the current plan instance.
+	Sites []*ListUserRatePlanInstancesResponseBodyInstanceInfoSites `json:"Sites,omitempty" xml:"Sites,omitempty" type:"Repeated"`
+	// The prepaid smart routing requests included in the plan (in units of 10,000).
+	//
+	// example:
+	//
+	// 100
+	SmartRoutingRequest *string `json:"SmartRoutingRequest,omitempty" xml:"SmartRoutingRequest,omitempty"`
+	// The prepaid HTTP requests included in the plan (in units of 10,000).
+	//
+	// example:
+	//
+	// 100
+	StaticRequest *string `json:"StaticRequest,omitempty" xml:"StaticRequest,omitempty"`
 	// The instance status. Valid values:
 	//
-	// - **online**: The plan instance is active.
+	// - **online**: Normal service status.
 	//
-	// - **offline**: The plan instance is unavailable because it has expired but is still within the grace period.
+	// - **offline**: Expired but not overdue, in an inactive state.
 	//
-	// - **disable**: The plan instance is released.
+	// - **disable**: Released.
 	//
 	// example:
 	//
 	// online
-	Status        *string `json:"Status,omitempty" xml:"Status,omitempty"`
+	Status *string `json:"Status,omitempty" xml:"Status,omitempty"`
+	// The plan subscription type. Valid values:
+	//
+	// - Free Edition (Chinese mainland): entranceplan
+	//
+	// - Free Edition (International): entranceplan_intl
+	//
+	// - Basic Edition: basicplan
+	//
+	// - Standard Edition: standardplan
+	//
+	// - Premium Edition: advancedplan
+	//
+	// - Enterprise Edition: enterpriseplan
+	//
+	// example:
+	//
+	// basicplan
 	SubscribeType *string `json:"SubscribeType,omitempty" xml:"SubscribeType,omitempty"`
 }
 
@@ -312,6 +411,10 @@ func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) GetLayer4TrafficIntl
 	return s.Layer4TrafficIntl
 }
 
+func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) GetOwnerId() *string {
+	return s.OwnerId
+}
+
 func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) GetPlanName() *string {
 	return s.PlanName
 }
@@ -330,6 +433,14 @@ func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) GetRenewalDuration()
 
 func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) GetRenewalStatus() *string {
 	return s.RenewalStatus
+}
+
+func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) GetResourceOwner() *int64 {
+	return s.ResourceOwner
+}
+
+func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) GetShareType() *string {
+	return s.ShareType
 }
 
 func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) GetSiteQuota() *string {
@@ -436,6 +547,11 @@ func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) SetLayer4TrafficIntl
 	return s
 }
 
+func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) SetOwnerId(v string) *ListUserRatePlanInstancesResponseBodyInstanceInfo {
+	s.OwnerId = &v
+	return s
+}
+
 func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) SetPlanName(v string) *ListUserRatePlanInstancesResponseBodyInstanceInfo {
 	s.PlanName = &v
 	return s
@@ -458,6 +574,16 @@ func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) SetRenewalDuration(v
 
 func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) SetRenewalStatus(v string) *ListUserRatePlanInstancesResponseBodyInstanceInfo {
 	s.RenewalStatus = &v
+	return s
+}
+
+func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) SetResourceOwner(v int64) *ListUserRatePlanInstancesResponseBodyInstanceInfo {
+	s.ResourceOwner = &v
+	return s
+}
+
+func (s *ListUserRatePlanInstancesResponseBodyInstanceInfo) SetShareType(v string) *ListUserRatePlanInstancesResponseBodyInstanceInfo {
+	s.ShareType = &v
 	return s
 }
 
@@ -521,11 +647,11 @@ type ListUserRatePlanInstancesResponseBodyInstanceInfoSites struct {
 	//
 	// - **pending**: The site is pending configuration.
 	//
-	// - **active**: The site is active.
+	// - **active**: The site is activated.
 	//
 	// - **offline**: The site is offline.
 	//
-	// - **moved**: The site has been replaced.
+	// - **moved**: The site has been superseded.
 	//
 	// example:
 	//

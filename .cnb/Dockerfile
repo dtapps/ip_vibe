@@ -10,7 +10,7 @@ FROM golang:1.27rc1-trixie
 # ==========================================
 ARG UPX_VERSION=5.2.0
 ARG GOLANGCI_LINT_VERSION=2.12.2
-ARG NODE_VERSION=26.4.0
+ARG NODE_VERSION=26.5.0
 ARG NFPM_VERSION=2.47.0
 
 # 1. 设置 Go 环境变量

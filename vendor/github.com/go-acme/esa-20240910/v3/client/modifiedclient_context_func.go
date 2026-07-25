@@ -99,6 +99,74 @@ func ActivateVersionManagementWithContext(ctx context.Context, client *Client, r
 
 // Summary:
 //
+// Creates a user opportunity order.
+//
+// @param request - AddUserBusinessFormRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return AddUserBusinessFormResponse
+func AddUserBusinessFormWithContext(ctx context.Context, client *Client, request *AddUserBusinessFormRequest, runtime *dara.RuntimeOptions) (_result *AddUserBusinessFormResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.Company) {
+		query["Company"] = request.Company
+	}
+
+	if !dara.IsNil(request.Email) {
+		query["Email"] = request.Email
+	}
+
+	if !dara.IsNil(request.PhoneNumber) {
+		query["PhoneNumber"] = request.PhoneNumber
+	}
+
+	if !dara.IsNil(request.Position) {
+		query["Position"] = request.Position
+	}
+
+	if !dara.IsNil(request.Remark) {
+		query["Remark"] = request.Remark
+	}
+
+	if !dara.IsNil(request.UserName) {
+		query["UserName"] = request.UserName
+	}
+
+	if !dara.IsNil(request.Website) {
+		query["Website"] = request.Website
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("AddUserBusinessForm"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &AddUserBusinessFormResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
 // Applies for a free certificate.
 //
 // @param request - ApplyCertificateRequest
@@ -195,13 +263,13 @@ func ApplyCustomHostnameCertificateWithContext(ctx context.Context, client *Clie
 
 // Summary:
 //
-// Add multiple types of DNS records in batches.
+// Creates multiple DNS records in a batch. Multiple record types are supported.
 //
 // Description:
 //
-// This API lets you create or update multiple DNS records in a single request, ideal for managing large-scale DNS configurations. It supports various record types, including A/AAAA, CNAME, NS, MX, TXT, CAA, SRV, and URI, and provides detailed settings such as priority, flag, tag, and weight. For specific record types like CERT, SSHFP, SMIMEA, and TLSA, the API supports advanced settings, including certificate information and encryption algorithm.
+// This API operation allows you to create or update multiple DNS records at a time. It is suitable for scenarios that require managing a large number of DNS configurations. Supported record types include but are not limited to A/AAAA, CNAME, NS, MX, TXT, CAA, SRV, and URI. Detailed configuration items are provided to meet specific requirements, such as Priority, Flag, Tag, and Weight. In addition, for specific record types such as CERT, SSHFP, SMIMEA, and TLSA, advanced settings such as certificate information and encryption algorithms are supported.
 //
-// The response separates successful and failed operations, allowing you to identify which records failed and why.
+// Successfully and unsuccessfully processed records are listed separately in the response, so that you can identify which records are processed, which records failed, and the failure reasons.
 //
 // @param tmpReq - BatchCreateRecordsRequest
 //
@@ -255,7 +323,7 @@ func BatchCreateRecordsWithContext(ctx context.Context, client *Client, tmpReq *
 
 // Summary:
 //
-// This operation creates multiple WAF rules and configures their shared settings in a single request.
+// Batch creates rules in a specified WAF phase. You can create multiple rules at a time and configure shared settings for these rules.
 //
 // @param tmpReq - BatchCreateWafRulesRequest
 //
@@ -513,7 +581,7 @@ func BatchDeleteKvWithHighCapacityWithContext(ctx context.Context, client *Clien
 
 // Summary:
 //
-// Retrieves match fields for a batch of expressions.
+// Retrieves matching items for expressions in batches.
 //
 // @param tmpReq - BatchGetExpressionFieldsRequest
 //
@@ -779,7 +847,7 @@ func BatchPutKvWithHighCapacityWithContext(ctx context.Context, client *Client, 
 
 // Summary:
 //
-// Updates the configurations of multiple rules in a specified WAF ruleset.
+// Batch updates rules in a specified WAF ruleset. You can use this operation to update the configurations of multiple rules at a time.
 //
 // @param tmpReq - BatchUpdateWafRulesRequest
 //
@@ -917,6 +985,54 @@ func BlockObjectWithContext(ctx context.Context, client *Client, tmpReq *BlockOb
 
 // Summary:
 //
+// Validates whether a site is compatible with the target plan during site plan migration.
+//
+// @param request - CheckSiteFeaturesMatchPlanRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return CheckSiteFeaturesMatchPlanResponse
+func CheckSiteFeaturesMatchPlanWithContext(ctx context.Context, client *Client, request *CheckSiteFeaturesMatchPlanRequest, runtime *dara.RuntimeOptions) (_result *CheckSiteFeaturesMatchPlanResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.NewInstanceId) {
+		query["NewInstanceId"] = request.NewInstanceId
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("CheckSiteFeaturesMatchPlan"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &CheckSiteFeaturesMatchPlanResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
 // Checks whether a specified website name is available.
 //
 // @param request - CheckSiteNameRequest
@@ -1041,7 +1157,57 @@ func CheckUserProjectNameWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
-// Submits the test version (unstable) code of an Edge Routine and generates a production version.
+// Clones a new site version based on a specified site version.
+//
+// @param request - CloneVersionRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return CloneVersionResponse
+func CloneVersionWithContext(ctx context.Context, client *Client, request *CloneVersionRequest, runtime *dara.RuntimeOptions) (_result *CloneVersionResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	if !dara.IsNil(request.SiteVersion) {
+		query["SiteVersion"] = request.SiteVersion
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("CloneVersion"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &CloneVersionResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Submits the staging (unstable) code of an Edge Routine and generates a production version.
+//
+// Prerequisite: Before calling this API operation, call GetRoutineStagingCodeUploadInfo to obtain OSS upload credentials. Upload the code file through OSS POST. After the upload callback succeeds, call this API operation to submit the code.
 //
 // @param request - CommitRoutineStagingCodeRequest
 //
@@ -1249,7 +1415,7 @@ func CreateCacheRuleWithContext(ctx context.Context, client *Client, request *Cr
 
 // Summary:
 //
-// Uses the ESA-managed certificate authority (CA) to issue client certificates.
+// Issues a client certificate by using the ESA certificate authority (CA).
 //
 // @param request - CreateClientCertificateRequest
 //
@@ -1601,7 +1767,9 @@ func CreateCustomScenePolicyWithContext(ctx context.Context, client *Client, req
 
 // Summary:
 //
-// Creates a containerized application. You can deploy and release a version of the application across points of presence (POPs).
+// Creates an edge container application. You can deploy and release the application by version to containerize edge services.
+//
+// Note: Activate the EdgeContainer service in the console before calling this operation. Calls from accounts that have not activated the service will return a service activation error.
 //
 // @param request - CreateEdgeContainerAppRequest
 //
@@ -1753,7 +1921,7 @@ func CreateEdgeContainerAppImageSecretWithContext(ctx context.Context, client *C
 
 // Summary:
 //
-// Associates a domain name with a containerized application. This way, requests destined for the associated domain name are forwarded to the application.
+// Creates an associated domain name for an edge container application. When a user sends a request from a client to access the associated domain name, the request is forwarded to the edge application deployed by the user.
 //
 // @param request - CreateEdgeContainerAppRecordRequest
 //
@@ -1805,7 +1973,15 @@ func CreateEdgeContainerAppRecordWithContext(ctx context.Context, client *Client
 
 // Summary:
 //
-// Creates a version for a containerized application. You can iterate the application based on the version.
+// Creates an edge container application version. You can iteratively release applications by version.
+//
+// Note:
+//
+// 1) Your account must have an ESA plan with the Edge Container feature enabled.
+//
+// 2) Call CreateEdgeContainerApp first to create an application and obtain the AppId.
+//
+// 3) Complete call chain example: CreateEdgeContainerApp → ListEdgeContainerApps → CreateEdgeContainerAppVersion.
 //
 // @param tmpReq - CreateEdgeContainerAppVersionRequest
 //
@@ -1857,6 +2033,62 @@ func CreateEdgeContainerAppVersionWithContext(ctx context.Context, client *Clien
 		BodyType:    dara.String("json"),
 	}
 	_result = &CreateEdgeContainerAppVersionResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Creates a site environment.
+//
+// @param request - CreateEnvironmentRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return CreateEnvironmentResponse
+func CreateEnvironmentWithContext(ctx context.Context, client *Client, request *CreateEnvironmentRequest, runtime *dara.RuntimeOptions) (_result *CreateEnvironmentResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.EnvironmentName) {
+		query["EnvironmentName"] = request.EnvironmentName
+	}
+
+	if !dara.IsNil(request.NextEnvironmentName) {
+		query["NextEnvironmentName"] = request.NextEnvironmentName
+	}
+
+	if !dara.IsNil(request.Rule) {
+		query["Rule"] = request.Rule
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("CreateEnvironment"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &CreateEnvironmentResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -2015,7 +2247,7 @@ func CreateHttpIncomingResponseHeaderModificationRuleWithContext(ctx context.Con
 
 // Summary:
 //
-// Adds a Configuration for modifying a Site\\"s HTTP Request Headers.
+// Creates an HTTP request header modification configuration for a site.
 //
 // @param tmpReq - CreateHttpRequestHeaderModificationRuleRequest
 //
@@ -2089,7 +2321,7 @@ func CreateHttpRequestHeaderModificationRuleWithContext(ctx context.Context, cli
 
 // Summary:
 //
-// Creates a rule to modify HTTP response headers.
+// Creates an HTTP response header modification configuration.
 //
 // @param tmpReq - CreateHttpResponseHeaderModificationRuleRequest
 //
@@ -2507,7 +2739,7 @@ func CreateKvNamespaceWithContext(ctx context.Context, client *Client, request *
 
 // Summary:
 //
-// Creates a list. Lists are used for the referencing of values in the rules engine to implement complex logic and control in security policies.
+// Creates a custom list. Custom lists are typically referenced by the rule matching engine for values used in various security policies to implement complex logic and control.
 //
 // @param tmpReq - CreateListRequest
 //
@@ -2569,11 +2801,13 @@ func CreateListWithContext(ctx context.Context, client *Client, tmpReq *CreateLi
 
 // Summary:
 //
-// Creates a new Server Load Balancer instance with advanced features, including custom routing, session persistence, and health check configuration.
+// Creates a load balancer instance that supports custom routing policies, session persistence, monitoring configurations, and other advanced features.
 //
 // Description:
 //
-// Use this API to configure Server Load Balancer features for effective traffic management and optimization, such as adaptive routing, weighted round-robin, rule matching, and health checks.
+// Creates a load balancing service based on your business requirements. You can configure settings such as adaptive routing, weighted polling, rule matching, and health checks to effectively manage and optimize traffic.
+//
+// Only Enterprise plans support the load balancing service. To use this feature, contact Alibaba Cloud sales to apply for an Enterprise plan.
 //
 // @param tmpReq - CreateLoadBalancerRequest
 //
@@ -3025,7 +3259,7 @@ func CreateOriginRuleWithContext(ctx context.Context, client *Client, request *C
 
 // Summary:
 //
-// Creates a custom error page. This page appears when the web application firewall (WAF) blocks a user request. You can configure the page\\"s HTML content, content type, and description, and submit the page content using BASE64 encoding.
+// Creates a custom error response page. When a user request is blocked by Web Application Firewall (WAF), these custom error pages can be displayed. You can configure the page HTML content, page type, description, and other information, and submit the page content in BASE64 encoding.
 //
 // @param tmpReq - CreatePageRequest
 //
@@ -3091,7 +3325,7 @@ func CreatePageWithContext(ctx context.Context, client *Client, tmpReq *CreatePa
 
 // Summary:
 //
-// Creates a DNS record for a specific website.
+// Create a DNS record under a site.
 //
 // @param tmpReq - CreateRecordRequest
 //
@@ -3193,7 +3427,7 @@ func CreateRecordWithContext(ctx context.Context, client *Client, tmpReq *Create
 
 // Summary:
 //
-// Configure site redirection.
+// Creates a redirect configuration for a site.
 //
 // @param request - CreateRedirectRuleRequest
 //
@@ -3273,7 +3507,7 @@ func CreateRedirectRuleWithContext(ctx context.Context, client *Client, request 
 
 // Summary:
 //
-// Adds a URL rewrite configuration to a site.
+// Create a rewrite URL rule configuration for a site.
 //
 // @param request - CreateRewriteUrlRuleRequest
 //
@@ -3405,15 +3639,173 @@ func CreateRoutineWithContext(ctx context.Context, client *Client, request *Crea
 
 // Summary:
 //
-// Release the version of the function code in proportion to the specified environment.
+// Creates an ER build task.
+//
+// @param request - CreateRoutineBuildRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return CreateRoutineBuildResponse
+func CreateRoutineBuildWithContext(ctx context.Context, client *Client, request *CreateRoutineBuildRequest, runtime *dara.RuntimeOptions) (_result *CreateRoutineBuildResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.ArtifactUrl) {
+		query["ArtifactUrl"] = request.ArtifactUrl
+	}
+
+	if !dara.IsNil(request.Branch) {
+		query["Branch"] = request.Branch
+	}
+
+	if !dara.IsNil(request.RoutineName) {
+		query["RoutineName"] = request.RoutineName
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("CreateRoutineBuild"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &CreateRoutineBuildResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Creates an Edge Routine (ER) build configuration.
+//
+// @param tmpReq - CreateRoutineBuildConfigurationRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return CreateRoutineBuildConfigurationResponse
+func CreateRoutineBuildConfigurationWithContext(ctx context.Context, client *Client, tmpReq *CreateRoutineBuildConfigurationRequest, runtime *dara.RuntimeOptions) (_result *CreateRoutineBuildConfigurationResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = tmpReq.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	request := &CreateRoutineBuildConfigurationShrinkRequest{}
+	openapiutil.Convert(tmpReq, request)
+	if !dara.IsNil(tmpReq.EnvironmentVariables) {
+		request.EnvironmentVariablesShrink = openapiutil.ArrayToStringWithSpecifiedStyle(tmpReq.EnvironmentVariables, dara.String("EnvironmentVariables"), dara.String("json"))
+	}
+
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.AssetsDirectory) {
+		query["AssetsDirectory"] = request.AssetsDirectory
+	}
+
+	if !dara.IsNil(request.BuildBranches) {
+		query["BuildBranches"] = request.BuildBranches
+	}
+
+	if !dara.IsNil(request.BuildCommand) {
+		query["BuildCommand"] = request.BuildCommand
+	}
+
+	if !dara.IsNil(request.EnvironmentVariablesShrink) {
+		query["EnvironmentVariables"] = request.EnvironmentVariablesShrink
+	}
+
+	if !dara.IsNil(request.GitAccountId) {
+		query["GitAccountId"] = request.GitAccountId
+	}
+
+	if !dara.IsNil(request.GitPlatform) {
+		query["GitPlatform"] = request.GitPlatform
+	}
+
+	if !dara.IsNil(request.InstallCommand) {
+		query["InstallCommand"] = request.InstallCommand
+	}
+
+	if !dara.IsNil(request.IsPrivate) {
+		query["IsPrivate"] = request.IsPrivate
+	}
+
+	if !dara.IsNil(request.NodeVersion) {
+		query["NodeVersion"] = request.NodeVersion
+	}
+
+	if !dara.IsNil(request.ProductionBranch) {
+		query["ProductionBranch"] = request.ProductionBranch
+	}
+
+	if !dara.IsNil(request.Repository) {
+		query["Repository"] = request.Repository
+	}
+
+	if !dara.IsNil(request.RootDirectory) {
+		query["RootDirectory"] = request.RootDirectory
+	}
+
+	if !dara.IsNil(request.RoutineEntry) {
+		query["RoutineEntry"] = request.RoutineEntry
+	}
+
+	if !dara.IsNil(request.RoutineName) {
+		query["RoutineName"] = request.RoutineName
+	}
+
+	if !dara.IsNil(request.TemplateName) {
+		query["TemplateName"] = request.TemplateName
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("CreateRoutineBuildConfiguration"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &CreateRoutineBuildConfigurationResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Creates a percentage-based canary deployment for a Routine code version in a specified environment.
 //
 // Description:
 //
-// ## Request description
+// ## Usage notes
 //
-// - When creating a routine code version deployment, the environment name `Env` supports only the staging environment `staging` or the production environment `production`.
+// - When creating a Routine code version deployment, the `Env` parameter only supports `staging` for the staging environment or `production` for the production environment.
 //
-// - The `CodeVersions` parameter supports canary release of up to two versions, and the sum of the traffic percentages for these versions must equal 100%.
+// - The `CodeVersions` parameter supports a maximum of two versions for canary release, and the total percentage of these versions must equal 100%.
 //
 // @param tmpReq - CreateRoutineCodeDeploymentRequest
 //
@@ -3475,7 +3867,7 @@ func CreateRoutineCodeDeploymentWithContext(ctx context.Context, client *Client,
 
 // Summary:
 //
-// Adds a new record to a site that triggers a specified edge function Routine.
+// Adds an associated site record for an Edge Routine function. This creates a new record under the site to trigger the execution of the Edge Routine function code.
 //
 // @param request - CreateRoutineRelatedRecordRequest
 //
@@ -3527,7 +3919,7 @@ func CreateRoutineRelatedRecordWithContext(ctx context.Context, client *Client, 
 
 // Summary:
 //
-// Create an edge function route configuration.
+// Creates an Edge Routine route configuration.
 //
 // @param request - CreateRoutineRouteRequest
 //
@@ -3789,15 +4181,15 @@ func CreateScheduledPreloadJobWithContext(ctx context.Context, client *Client, r
 
 // Summary:
 //
-// Creates a new site.
+// Creates a site.
 //
 // Description:
 //
-// - You must have an active plan instance to create a site.
+// - Before creating a site, you must have an active plan instance.
 //
-// - If the selected acceleration region includes the Chinese mainland, your domain must have a valid ICP filing.
+// - If the acceleration area is set to the Chinese mainland only or global, the site domain name must have a valid Internet Content Provider (ICP) filing.
 //
-// - This operation is rate-limited to 100 calls per user per hour.
+// - Each user can invoke this operation up to 100 times per hour.
 //
 // @param request - CreateSiteRequest
 //
@@ -3826,6 +4218,10 @@ func CreateSiteWithContext(ctx context.Context, client *Client, request *CreateS
 
 	if !dara.IsNil(request.ResourceGroupId) {
 		query["ResourceGroupId"] = request.ResourceGroupId
+	}
+
+	if !dara.IsNil(request.ResourceOwner) {
+		query["ResourceOwner"] = request.ResourceOwner
 	}
 
 	if !dara.IsNil(request.SiteName) {
@@ -3935,7 +4331,7 @@ func CreateSiteCustomLogWithContext(ctx context.Context, client *Client, tmpReq 
 
 // Summary:
 //
-// Create a real-time log shipping task.
+// Creates a real-time log delivery task.
 //
 // @param tmpReq - CreateSiteDeliveryTaskRequest
 //
@@ -4049,7 +4445,11 @@ func CreateSiteDeliveryTaskWithContext(ctx context.Context, client *Client, tmpR
 
 // Summary:
 //
-// Creating a layer 4 acceleration application.
+// Creates a Layer 4 acceleration application.
+//
+// Description:
+//
+// The selected site must be activated. After you create a site, call the VerifySite operation to verify the site. A site that passes verification is automatically activated, which means the Passed response parameter is set to true.
 //
 // @param tmpReq - CreateTransportLayerApplicationRequest
 //
@@ -4127,7 +4527,7 @@ func CreateTransportLayerApplicationWithContext(ctx context.Context, client *Cli
 
 // Summary:
 //
-// Create a web page monitoring configuration.
+// Creates a web monitoring configuration.
 //
 // @param request - CreateUrlObservationRequest
 //
@@ -4179,27 +4579,27 @@ func CreateUrlObservationWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
-// Creates a custom log shipping task to SLS, HTTP, OSS, S3, or Kafka.
+// Creates a custom log delivery task for the user to destinations such as Simple Log Service (SLS), HTTP, Object Storage Service (OSS), S3, or Kafka.
 //
 // Description:
 //
-// Use this API to create a delivery task for specific log data. It supports multiple delivery destinations, including SLS, HTTP services, Alibaba Cloud OSS, S3-compatible storage, and Kafka message queues. You can set a custom task name, select log fields, specify a data center, set the discard rate, choose a delivery type, and configure delivery details for the selected type.
+// This operation allows you to create a delivery task for specific log data. Multiple delivery destinations and detailed configuration options are supported, including but not limited to SLS storage, HTTP services, Alibaba Cloud OSS, S3-compatible storage, and Kafka message queues. You can customize the task name, select log fields, specify the data center, set the discard rate, choose the delivery type, and configure the delivery details based on the selected type.
 //
-// - **Field Filtering**: Use `FieldName` to specify the log fields to deliver.
+// - **Field selection**: Use `FieldName` to specify the log fields to be delivered.
 //
-// - **Filter Rules**: Use `FilterRules` to filter log data before delivery.
+// - **Filter rules**: Use `FilterRules` to preprocess and filter log data.
 //
-// - **Supported delivery destinations**: Deliver logs to various destinations, including SLS, HTTP(S), Alibaba Cloud OSS, S3-compatible storage, and Kafka. Each method has specific configuration parameters.
+// - **Diverse delivery**: Supports SLS, HTTP(S), Alibaba Cloud OSS, S3-compatible storage, and Kafka, each with its specific configuration parameters.
 //
-// ## Notes
+// ## Usage notes
 //
-// - Ensure that your AccessKey and SecretKey have the required permissions for the delivery operation.
+// - Ensure that the authentication information (such as AccessKey and SecretKey) has sufficient permissions to perform the delivery operation.
 //
-// - If a delivery method requires encryption or authentication, configure its security parameters accordingly.
+// - When you select an encrypted or authenticated delivery method, correctly configure the related security parameters.
 //
-// - Verify that the `FilterRules` syntax is correct.
+// - Verify the syntax correctness of `FilterRules` to ensure that the filtering logic meets expectations.
 //
-// - Adjust advanced parameters, such as the number of retries and timeout, to optimize delivery efficiency and stability.
+// - Adjust advanced parameters such as retries and timeout based on actual requirements to optimize delivery efficiency and stability.
 //
 // @param tmpReq - CreateUserDeliveryTaskRequest
 //
@@ -4313,27 +4713,27 @@ func CreateUserDeliveryTaskWithContext(ctx context.Context, client *Client, tmpR
 
 // Summary:
 //
-// Creates an instance-level Web Application Firewall (WAF) ruleset that supports various types of protection rules.
+// Creates an instance-level Web Application Firewall (WAF) ruleset that supports multiple types of protection rules.
 //
 // Description:
 //
-// ## Description
+// ## Operation description
 //
-// - You can use this API to create a Web Application Firewall (WAF) ruleset for a specific instance.
+// - This API operation allows you to create a WAF ruleset for a specified instance.
 //
-// - The required `InstanceId` parameter specifies the instance for which to create the ruleset.
+// - InstanceId is a required parameter that specifies the instance for which you want to create the ruleset.
 //
-// - The `Phase` parameter defines the execution phase of the ruleset, such as a custom rule or rate limiting.
+// - The Phase parameter defines the phase in which the ruleset is applied, such as custom rules or rate limiting.
 //
-// - The required `Name` and `Expression` parameters specify the ruleset\\"s name and match expression.
+// - Name and Expression are required parameters that specify the ruleset name and the match expression.
 //
-// - The optional `Description` parameter describes the purpose of the ruleset.
+// - The optional Description parameter provides a text description of the ruleset function or purpose.
 //
-// - The `Status` parameter controls whether the ruleset is immediately enabled (`on`) or disabled (`off`).
+// - Status controls whether the ruleset takes effect immediately (`on`) or is disabled (`off`).
 //
-// - Use the `Rules` parameter to configure a detailed rule list. Each rule includes properties such as name, position, expression, and action.
+// - Use the Rules parameter to configure a detailed list of rules. Each rule contains properties such as name, position, expression, and action.
 //
-// - A successful response returns the unique ID of the new ruleset in `Id` and a list of associated rule IDs in `RuleIds`.
+// - A successful response returns the unique identifier Id of the newly created ruleset and the RuleIds list of all associated rule IDs.
 //
 // @param tmpReq - CreateUserWafRulesetRequest
 //
@@ -4417,7 +4817,7 @@ func CreateUserWafRulesetWithContext(ctx context.Context, client *Client, tmpReq
 
 // Summary:
 //
-// Add video processing configurations for a website.
+// Create a site video processing configuration.
 //
 // @param request - CreateVideoProcessingRequest
 //
@@ -4505,7 +4905,7 @@ func CreateVideoProcessingWithContext(ctx context.Context, client *Client, reque
 
 // Summary:
 //
-// Creates a new rule in the Web Application Firewall (WAF). Use this operation to fine-tune firewall behavior and improve the security of your site or application.
+// Creates a rule in Web Application Firewall (WAF). You can use this operation to refine firewall behavior and improve the security of your website or application.
 //
 // @param tmpReq - CreateWafRuleRequest
 //
@@ -4870,6 +5270,10 @@ func CreateWaitingRoomEventWithContext(ctx context.Context, client *Client, requ
 // Summary:
 //
 // Creates a waiting room bypass rule.
+//
+// Description:
+//
+// Your site plan must be Enterprise Edition or higher to use this feature, and the site plan must support this feature.
 //
 // @param request - CreateWaitingRoomRuleRequest
 //
@@ -5421,7 +5825,13 @@ func DeleteEdgeContainerAppImageSecretWithContext(ctx context.Context, client *C
 
 // Summary:
 //
-// Disassociates a domain name from a containerized application. After the dissociation, you can no longer use the domain name to access the containerized application.
+// Deletes an associated domain name from an edge container application. After deletion, the edge container service can no longer be accessed through this domain name.
+//
+// Note: 1) You must first call CreateEdgeContainerApp to create an edge container application and record the returned AppId.
+//
+// 2) You must first call CreateEdgeContainerAppRecord to bind a domain name record (RecordName) to the application.
+//
+// 3) A complete three-step call example of create, bind, and delete is provided.
 //
 // @param request - DeleteEdgeContainerAppRecordRequest
 //
@@ -5511,6 +5921,54 @@ func DeleteEdgeContainerAppVersionWithContext(ctx context.Context, client *Clien
 		BodyType:    dara.String("json"),
 	}
 	_result = &DeleteEdgeContainerAppVersionResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Deletes a site environment. The default environment cannot be deleted.
+//
+// @param request - DeleteEnvironmentRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DeleteEnvironmentResponse
+func DeleteEnvironmentWithContext(ctx context.Context, client *Client, request *DeleteEnvironmentRequest, runtime *dara.RuntimeOptions) (_result *DeleteEnvironmentResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.EnvironmentName) {
+		query["EnvironmentName"] = request.EnvironmentName
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DeleteEnvironment"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DeleteEnvironmentResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -6593,7 +7051,7 @@ func DeleteRewriteUrlRuleWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
-// Deletes a routine in Edge Routine.
+// Deletes an Edge Routine.
 //
 // @param request - DeleteRoutineRequest
 //
@@ -6627,6 +7085,50 @@ func DeleteRoutineWithContext(ctx context.Context, client *Client, request *Dele
 		BodyType:    dara.String("json"),
 	}
 	_result = &DeleteRoutineResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Deletes the ER build configuration.
+//
+// @param request - DeleteRoutineBuildConfigurationRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DeleteRoutineBuildConfigurationResponse
+func DeleteRoutineBuildConfigurationWithContext(ctx context.Context, client *Client, request *DeleteRoutineBuildConfigurationRequest, runtime *dara.RuntimeOptions) (_result *DeleteRoutineBuildConfigurationResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.RoutineName) {
+		query["RoutineName"] = request.RoutineName
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DeleteRoutineBuildConfiguration"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DeleteRoutineBuildConfigurationResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -6685,7 +7187,7 @@ func DeleteRoutineCodeVersionWithContext(ctx context.Context, client *Client, re
 
 // Summary:
 //
-// Deletes a record that is associated with a routine.
+// Deletes an association record of an Edge Routine.
 //
 // @param request - DeleteRoutineRelatedRecordRequest
 //
@@ -6927,7 +7429,7 @@ func DeleteSiteWithContext(ctx context.Context, client *Client, request *DeleteS
 
 // Summary:
 //
-// Deletes a real-time log delivery task.
+// Deletes an ongoing log delivery task.
 //
 // @param request - DeleteSiteDeliveryTaskRequest
 //
@@ -7111,17 +7613,19 @@ func DeleteUrlObservationWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
-// Deletes a log delivery task from your Alibaba Cloud account.
+// Deletes a user task delivery configuration based on the specified task name and Alibaba Cloud UID.
 //
 // Description:
 //
-// *****>
+// This operation allows you to delete an existing task delivery configuration based on the specified **task name*	- and **Alibaba Cloud UID**. Before proceeding, verify that the provided information is accurate to avoid disrupting the processing of related logs or data.
 //
-//   - Deleted tasks cannot be restored. Proceed with caution.
+// **Note:**
 //
-//   - To call this operation, you must have an account that has the required permissions.
+// - The deletion operation is irreversible. Proceed with caution.
 //
-//   - The returned `RequestId` value can be used to track the request processing progress and troubleshoot issues.
+// - Only accounts with the required permissions can call this operation.
+//
+// - You can use the returned `RequestId` to track the request progress and troubleshoot issues.
 //
 // @param request - DeleteUserDeliveryTaskRequest
 //
@@ -7211,6 +7715,54 @@ func DeleteUserWafRulesetWithContext(ctx context.Context, client *Client, reques
 		BodyType:    dara.String("json"),
 	}
 	_result = &DeleteUserWafRulesetResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Deletes a version of a site. Version 0 cannot be deleted.
+//
+// @param request - DeleteVersionRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DeleteVersionResponse
+func DeleteVersionWithContext(ctx context.Context, client *Client, request *DeleteVersionRequest, runtime *dara.RuntimeOptions) (_result *DeleteVersionResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	if !dara.IsNil(request.SiteVersion) {
+		query["SiteVersion"] = request.SiteVersion
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DeleteVersion"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DeleteVersionResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -7617,7 +8169,7 @@ func DescribeCacheReservePriceWithContext(ctx context.Context, client *Client, r
 
 // Summary:
 //
-// Queries the price for a configuration change of a cache reserve instance.
+// Queries the price for a cache-retained specification change.
 //
 // @param request - DescribeCacheReservePriceGapRequest
 //
@@ -7655,6 +8207,46 @@ func DescribeCacheReservePriceGapWithContext(ctx context.Context, client *Client
 		BodyType:    dara.String("json"),
 	}
 	_result = &DescribeCacheReservePriceGapResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the region information supported by the rules engine, including information in three dimensions: country, region, and ISP.
+//
+// @param request - DescribeConditionIPBInfoRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DescribeConditionIPBInfoResponse
+func DescribeConditionIPBInfoWithContext(ctx context.Context, client *Client, request *DescribeConditionIPBInfoRequest, runtime *dara.RuntimeOptions) (_result *DescribeConditionIPBInfoResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeConditionIPBInfo"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DescribeConditionIPBInfoResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -7963,6 +8555,98 @@ func DescribeDDoSL7QpsListWithContext(ctx context.Context, client *Client, reque
 		BodyType:    dara.String("json"),
 	}
 	_result = &DescribeDDoSL7QpsListResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the number of DDoS attacks outside China.
+//
+// @param request - DescribeDDoSOverseasAttackCountRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DescribeDDoSOverseasAttackCountResponse
+func DescribeDDoSOverseasAttackCountWithContext(ctx context.Context, client *Client, request *DescribeDDoSOverseasAttackCountRequest, runtime *dara.RuntimeOptions) (_result *DescribeDDoSOverseasAttackCountResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeDDoSOverseasAttackCount"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DescribeDDoSOverseasAttackCountResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the price of an Anti-DDoS Pro or Anti-DDoS Premium instance.
+//
+// @param request - DescribeDDoSPriceRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DescribeDDoSPriceResponse
+func DescribeDDoSPriceWithContext(ctx context.Context, client *Client, request *DescribeDDoSPriceRequest, runtime *dara.RuntimeOptions) (_result *DescribeDDoSPriceResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.DDoSBillingMode) {
+		query["DDoSBillingMode"] = request.DDoSBillingMode
+	}
+
+	if !dara.IsNil(request.DDoSBurstableDomesticProtection) {
+		query["DDoSBurstableDomesticProtection"] = request.DDoSBurstableDomesticProtection
+	}
+
+	if !dara.IsNil(request.DDoSBurstableOverseasProtection) {
+		query["DDoSBurstableOverseasProtection"] = request.DDoSBurstableOverseasProtection
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeDDoSPrice"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DescribeDDoSPriceResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -8345,7 +9029,7 @@ func DescribePreloadTasksWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
-// Queries the execution status of a refresh task.
+// Queries the execution status of refresh tasks.
 //
 // @param request - DescribePurgeTasksRequest
 //
@@ -8385,11 +9069,11 @@ func DescribePurgeTasksWithContext(ctx context.Context, client *Client, request 
 
 // Summary:
 //
-// Queries the status of an instance that uses a plan.
+// Queries the status of a plan instance.
 //
 // Description:
 //
-// You can query the status of an instance after you purchase a plan for the instance.
+// You can query the status of a plan instance only after you purchase and create the instance.
 //
 // @param request - DescribeRatePlanInstanceStatusRequest
 //
@@ -8406,6 +9090,10 @@ func DescribeRatePlanInstanceStatusWithContext(ctx context.Context, client *Clie
 	query := map[string]interface{}{}
 	if !dara.IsNil(request.InstanceId) {
 		query["InstanceId"] = request.InstanceId
+	}
+
+	if !dara.IsNil(request.ResourceOwner) {
+		query["ResourceOwner"] = request.ResourceOwner
 	}
 
 	req := &openapiutil.OpenApiRequest{
@@ -8493,7 +9181,7 @@ func DescribeRatePlanPriceWithContext(ctx context.Context, client *Client, reque
 //
 // Description:
 //
-// The plan name and plan code can be obtained from the DescribeRatePlanPrice operation.
+// The plan name and plan code can be obtained from the [DescribeRatePlanPrice](~~DescribeRatePlanPrice~~) operation.
 //
 // @param request - DescribeRatePlanPriceGapRequest
 //
@@ -8539,6 +9227,46 @@ func DescribeRatePlanPriceGapWithContext(ctx context.Context, client *Client, re
 		BodyType:    dara.String("json"),
 	}
 	_result = &DescribeRatePlanPriceGapResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Retrieves metadata related to the rules engine.
+//
+// @param request - DescribeRuleMetadataRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DescribeRuleMetadataResponse
+func DescribeRuleMetadataWithContext(ctx context.Context, client *Client, request *DescribeRuleMetadataRequest, runtime *dara.RuntimeOptions) (_result *DescribeRuleMetadataResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeRuleMetadata"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DescribeRuleMetadataResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -8619,25 +9347,25 @@ func DescribeSiteLogsWithContext(ctx context.Context, client *Client, request *D
 
 // Summary:
 //
-// # Query traffic analysis time series data
+// Queries network traffic analysis timing data at the account dimension or site dimension.
 //
 // Description:
 //
-// - If you do not specify `StartTime` and `EndTime`, the API returns data for the past 24 hours; if you specify `StartTime` and `EndTime`, the API returns data for the specified time period.
+// - If you do not specify StartTime and EndTime, this operation returns data from the past 24 hours. If you specify StartTime and EndTime, this operation returns data for the specified time range.
 //
-// - The API returns different time granularities based on the span between `StartTime` and `EndTime`.
+// - The time granularity of returned data varies based on the time span between StartTime and EndTime.
 //
-//   - For a span of 3 hours or less, it returns 1-minute granularity data.
+//   - Less than or equal to 3 hours: returns data at 1-minute granularity.
 //
-//   - For a span greater than 3 hours but no more than 12 hours, it returns 5-minute granularity data.
+//   - Greater than 3 hours and less than or equal to 12 hours: returns data at 5-minute granularity.
 //
-//   - For a span greater than 12 hours but no more than 1 day, it returns 15-minute granularity data.
+//   - Greater than 12 hours and less than or equal to 1 day: returns data at 15-minute granularity.
 //
-//   - For a span greater than 1 day but no more than 10 days, it returns hourly granularity data.
+//   - Greater than 1 day and less than or equal to 10 days: returns data at 1-hour granularity.
 //
-//   - For a span greater than 10 days but no more than 31 days, it returns daily granularity data.
+//   - Greater than 10 days and less than or equal to 31 days: returns data at 1-day granularity.
 //
-// - Due to the high number of accesses during the query period, the data analysis may be sampled.
+// - Due to the large number of access requests during the query time range, data analytics results may involve sampling.
 //
 // @param tmpReq - DescribeSiteTimeSeriesDataRequest
 //
@@ -8779,11 +9507,171 @@ func DescribeSiteTopDataWithContext(ctx context.Context, client *Client, tmpReq 
 
 // Summary:
 //
-// Get diagnostic report details. 1. Call GenerateTraceDiagnose to obtain the diagnostic link. 2. Open the link in a browser to complete client-side diagnosis. 3. Call ListTraceTasks to obtain the TaskId/TraceId. 4. Call this API to get the report.
+// Retrieves time series data for WAF event analysis of a website.
 //
 // Description:
 //
-//	Notice: Make sure you have activated the Layer 4 acceleration service before using this API.1. Call GenerateTraceDiagnose to obtain the diagnostic link. 2. Open the link in a browser to complete client-side diagnosis. 3. Call ListTraceTasks to obtain the TaskId/TraceId. 4. Call this API to get the report.
+// - If you do not specify StartTime and EndTime, this operation returns data from the past 24 hours. If you specify StartTime and EndTime, this operation returns data for the specified time range.
+//
+// - The time granularity of the returned data varies based on the time span between StartTime and EndTime.
+//
+//   - Less than or equal to 3 hours: returns data at a 1-minute granularity.
+//
+//   - Greater than 3 hours and less than or equal to 12 hours: returns data at a 5-minute granularity.
+//
+//   - Greater than 12 hours and less than or equal to 1 day: returns data at a 15-minute granularity.
+//
+//   - Greater than 1 day and less than or equal to 10 days: returns data at an hourly granularity.
+//
+//   - Greater than 10 days and less than or equal to 31 days: returns data at a daily granularity.
+//
+// - Because the number of access requests during the query period may be large, the data analytics results may undergo sampling.
+//
+// @param tmpReq - DescribeSiteWafTimeSeriesDataRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DescribeSiteWafTimeSeriesDataResponse
+func DescribeSiteWafTimeSeriesDataWithContext(ctx context.Context, client *Client, tmpReq *DescribeSiteWafTimeSeriesDataRequest, runtime *dara.RuntimeOptions) (_result *DescribeSiteWafTimeSeriesDataResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = tmpReq.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	request := &DescribeSiteWafTimeSeriesDataShrinkRequest{}
+	openapiutil.Convert(tmpReq, request)
+	if !dara.IsNil(tmpReq.Fields) {
+		request.FieldsShrink = openapiutil.ArrayToStringWithSpecifiedStyle(tmpReq.Fields, dara.String("Fields"), dara.String("json"))
+	}
+
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.EndTime) {
+		query["EndTime"] = request.EndTime
+	}
+
+	if !dara.IsNil(request.FieldsShrink) {
+		query["Fields"] = request.FieldsShrink
+	}
+
+	if !dara.IsNil(request.Interval) {
+		query["Interval"] = request.Interval
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	if !dara.IsNil(request.StartTime) {
+		query["StartTime"] = request.StartTime
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeSiteWafTimeSeriesData"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DescribeSiteWafTimeSeriesDataResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Retrieves the top data from WAF event analysis for a website.
+//
+// Description:
+//
+// - If you do not specify StartTime or EndTime, this operation returns data from the past 24 hours. If you specify StartTime and EndTime, this operation returns data for the specified time range.
+//
+// - Because of the high volume of access requests during the query period, data analytics may involve sampling.
+//
+// @param tmpReq - DescribeSiteWafTopDataRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DescribeSiteWafTopDataResponse
+func DescribeSiteWafTopDataWithContext(ctx context.Context, client *Client, tmpReq *DescribeSiteWafTopDataRequest, runtime *dara.RuntimeOptions) (_result *DescribeSiteWafTopDataResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = tmpReq.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	request := &DescribeSiteWafTopDataShrinkRequest{}
+	openapiutil.Convert(tmpReq, request)
+	if !dara.IsNil(tmpReq.Fields) {
+		request.FieldsShrink = openapiutil.ArrayToStringWithSpecifiedStyle(tmpReq.Fields, dara.String("Fields"), dara.String("json"))
+	}
+
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.EndTime) {
+		query["EndTime"] = request.EndTime
+	}
+
+	if !dara.IsNil(request.FieldsShrink) {
+		query["Fields"] = request.FieldsShrink
+	}
+
+	if !dara.IsNil(request.Interval) {
+		query["Interval"] = request.Interval
+	}
+
+	if !dara.IsNil(request.Limit) {
+		query["Limit"] = request.Limit
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	if !dara.IsNil(request.StartTime) {
+		query["StartTime"] = request.StartTime
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeSiteWafTopData"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DescribeSiteWafTopDataResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Retrieves the details of a diagnostic report. 1. Call GenerateTraceDiagnose to obtain a diagnostic link. 2. Open the link in a browser to complete client-side diagnostics. 3. Call ListTraceTasks to obtain the TaskId or TraceId. 4. Call this operation to retrieve the report.
+//
+// Description:
+//
+//	Notice: Make sure that you have activated the Layer 4 acceleration service before calling this operation.1. Call GenerateTraceDiagnose to obtain a diagnostic link. 2. Open the link in a browser to complete client-side diagnostics. 3. Call ListTraceTasks to obtain the TaskId or TraceId. 4. Call this operation to retrieve the report.
 //
 // @param request - DescribeTraceDiagnoseReportRequest
 //
@@ -8831,7 +9719,11 @@ func DescribeTraceDiagnoseReportWithContext(ctx context.Context, client *Client,
 
 // Summary:
 //
-// Queries the page monitoring data.
+// Queries web page observation quality data.
+//
+// Description:
+//
+// If you do not specify StartTime and EndTime, this operation returns data from the past 24 hours. If you specify StartTime and EndTime, this operation returns data for the specified time range.
 //
 // @param request - DescribeUrlObservationDataRequest
 //
@@ -8895,6 +9787,80 @@ func DescribeUrlObservationDataWithContext(ctx context.Context, client *Client, 
 
 // Summary:
 //
+// Queries the usage data of WAF by calling DescribeWafUsageData.
+//
+// Description:
+//
+// Maximum storage duration: 93 days.
+//
+//   - Maximum query time range: 31 days.
+//
+//   - Default time range: 24 hours.
+//
+// All times are expressed in UTC+0.
+//
+// @param request - DescribeWafUsageDataRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DescribeWafUsageDataResponse
+func DescribeWafUsageDataWithContext(ctx context.Context, client *Client, request *DescribeWafUsageDataRequest, runtime *dara.RuntimeOptions) (_result *DescribeWafUsageDataResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.EndTime) {
+		query["EndTime"] = request.EndTime
+	}
+
+	if !dara.IsNil(request.Interval) {
+		query["Interval"] = request.Interval
+	}
+
+	if !dara.IsNil(request.RecordName) {
+		query["RecordName"] = request.RecordName
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	if !dara.IsNil(request.SplitBy) {
+		query["SplitBy"] = request.SplitBy
+	}
+
+	if !dara.IsNil(request.StartTime) {
+		query["StartTime"] = request.StartTime
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeWafUsageData"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DescribeWafUsageDataResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
 // Disables a scenario-specific policy.
 //
 // @param request - DisableCustomScenePolicyRequest
@@ -8939,7 +9905,7 @@ func DisableCustomScenePolicyWithContext(ctx context.Context, client *Client, re
 
 // Summary:
 //
-// # Edit WAF Configuration for a Site
+// Modifies the Web Application Firewall (WAF) configuration of a site. You can call this operation to update WAF settings for a site, such as modifying the client IP address identified by WAF.
 //
 // @param tmpReq - EditSiteWafSettingsRequest
 //
@@ -9033,6 +9999,46 @@ func EnableCustomScenePolicyWithContext(ctx context.Context, client *Client, req
 		BodyType:    dara.String("json"),
 	}
 	_result = &EnableCustomScenePolicyResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Exports the CNAME values of all records under the current site. When the site access mode is switched to CNAME access, you can call this operation to retrieve pre-configured CNAME values to prevent service interruptions.
+//
+// @param request - ExportRecordCnamesRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ExportRecordCnamesResponse
+func ExportRecordCnamesWithContext(ctx context.Context, client *Client, request *ExportRecordCnamesRequest, runtime *dara.RuntimeOptions) (_result *ExportRecordCnamesResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ExportRecordCnames"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ExportRecordCnamesResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -9227,6 +10233,46 @@ func GetAutomaticFrequencyControlConfigWithContext(ctx context.Context, client *
 
 // Summary:
 //
+// Queries the cache reserve configuration of a site.
+//
+// @param request - GetCacheReserveRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return GetCacheReserveResponse
+func GetCacheReserveWithContext(ctx context.Context, client *Client, request *GetCacheReserveRequest, runtime *dara.RuntimeOptions) (_result *GetCacheReserveResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("GetCacheReserve"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &GetCacheReserveResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
 // Retrieves a single cache configuration.
 //
 // @param request - GetCacheRuleRequest
@@ -9307,7 +10353,7 @@ func GetCacheTagWithContext(ctx context.Context, client *Client, request *GetCac
 
 // Summary:
 //
-// Retrieves a specified certificate for a site.
+// Retrieves information about a specified certificate for a site.
 //
 // @param request - GetCertificateRequest
 //
@@ -9395,7 +10441,7 @@ func GetCertificateQuotaWithContext(ctx context.Context, client *Client, request
 
 // Summary:
 //
-// Gets the specified client CA certificate.
+// Retrieves a specified client CA certificate.
 //
 // @param request - GetClientCaCertificateRequest
 //
@@ -9483,7 +10529,7 @@ func GetClientCaCertificateHostnamesWithContext(ctx context.Context, client *Cli
 
 // Summary:
 //
-// Retrieves the details of a specified client certificate.
+// Retrieves information about a specified client certificate.
 //
 // @param request - GetClientCertificateRequest
 //
@@ -9775,6 +10821,46 @@ func GetCustomResponseCodeRuleWithContext(ctx context.Context, client *Client, r
 
 // Summary:
 //
+// Retrieves the delegated DCV information.
+//
+// @param request - GetDcvDelegationRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return GetDcvDelegationResponse
+func GetDcvDelegationWithContext(ctx context.Context, client *Client, request *GetDcvDelegationRequest, runtime *dara.RuntimeOptions) (_result *GetDcvDelegationResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("GetDcvDelegation"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &GetDcvDelegationResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
 // # Query Site Developer Mode Configuration
 //
 // @param request - GetDevelopmentModeRequest
@@ -9815,7 +10901,7 @@ func GetDevelopmentModeWithContext(ctx context.Context, client *Client, request 
 
 // Summary:
 //
-// # GetEdgeImage
+// Retrieves the details of an edge container plan instance.
 //
 // @param request - GetEdgeContainerRequest
 //
@@ -9859,7 +10945,7 @@ func GetEdgeContainerWithContext(ctx context.Context, client *Client, request *G
 
 // Summary:
 //
-// Queries the information about a containerized application, including basic application configurations and health check configurations.
+// Retrieves application information for an edge container, including basic application configurations and health check settings.
 //
 // @param request - GetEdgeContainerAppRequest
 //
@@ -10075,7 +11161,11 @@ func GetEdgeContainerAppResourceStatusWithContext(ctx context.Context, client *C
 
 // Summary:
 //
-// Queries the status information about a containerized application, including the deployment, release, and rollback of the application.
+// Retrieves the application status information of an edge container, including deployment, publishing, and rollback details.
+//
+// Description:
+//
+// You must first activate the edge container service by calling OpenEdgeContainer, and then confirm that an available application exists by calling ListEdgeContainerApps or create an application by calling CreateEdgeContainerApp.
 //
 // @param request - GetEdgeContainerAppStatusRequest
 //
@@ -10123,7 +11213,7 @@ func GetEdgeContainerAppStatusWithContext(ctx context.Context, client *Client, r
 
 // Summary:
 //
-// Queries the information about a version of a containerized application. You can select an application version to release based on the version information.
+// Retrieves the version information of an edge container application. You can use the version information to select a specific version for publishing.
 //
 // @param request - GetEdgeContainerAppVersionRequest
 //
@@ -10367,7 +11457,7 @@ func GetErServiceWithContext(ctx context.Context, client *Client, request *GetEr
 
 // Summary:
 //
-// Downloads a failed file.
+// Downloads the failed file for a specified upload task.
 //
 // @param request - GetFailFileRequest
 //
@@ -10687,7 +11777,7 @@ func GetIPv6WithContext(ctx context.Context, client *Client, request *GetIPv6Req
 
 // Summary:
 //
-// Retrieves a specific image transformation configuration for a site.
+// Queries a single site image transformation configuration.
 //
 // @param request - GetImageTransformRequest
 //
@@ -10727,7 +11817,7 @@ func GetImageTransformWithContext(ctx context.Context, client *Client, request *
 
 // Summary:
 //
-// Retrieves the configuration of a keyless server.
+// Retrieves the configuration of a Keyless server.
 //
 // @param request - GetKeylessServerRequest
 //
@@ -10903,7 +11993,7 @@ func GetKvNamespaceWithContext(ctx context.Context, client *Client, request *Get
 
 // Summary:
 //
-// Queries a custom list, such as the name, description, type, and content.
+// Retrieves the details of a specific custom list. You can use this operation to query the properties of a specific list, including the name, description, kind, and list items.
 //
 // @param request - GetListRequest
 //
@@ -10947,11 +12037,11 @@ func GetListWithContext(ctx context.Context, client *Client, request *GetListReq
 
 // Summary:
 //
-// Retrieves the details of a load balancer by its site ID and load balancer ID.
+// Retrieves the details of a specific load balancer based on the specified site ID and load balancer ID.
 //
 // Description:
 //
-// Use this API to query the configuration details of a load balancer, such as its name, session persistence policy, and routing policy, by providing its resource identifier and authentication information.
+// This API allows you to query the configuration details of a specific load balancer by providing the required authentication information and resource identity. The details include but are not limited to the name, session persistence policy, and load balancing policy.
 //
 // @param request - GetLoadBalancerRequest
 //
@@ -10981,6 +12071,46 @@ func GetLoadBalancerWithContext(ctx context.Context, client *Client, request *Ge
 		BodyType:    dara.String("json"),
 	}
 	_result = &GetLoadBalancerResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the root domain name of a website.
+//
+// @param request - GetMainDomainNameRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return GetMainDomainNameResponse
+func GetMainDomainNameWithContext(ctx context.Context, client *Client, request *GetMainDomainNameRequest, runtime *dara.RuntimeOptions) (_result *GetMainDomainNameResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("GetMainDomainName"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &GetMainDomainNameResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -11031,6 +12161,50 @@ func GetManagedTransformWithContext(ctx context.Context, client *Client, request
 
 // Summary:
 //
+// Retrieves the information of the longest-matching active site for a given record name under the current user. For example, if the input record name is www.test.example.com and the user has two active sites (test.example.com and example.com), the API returns the longest-matching active site test.example.com. If no matching active site is found, an error is returned.
+//
+// Description:
+//
+// Used with the Edge Routine (ER) feature to automatically match an active site.
+//
+// @param request - GetMatchSiteRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return GetMatchSiteResponse
+func GetMatchSiteWithContext(ctx context.Context, client *Client, request *GetMatchSiteRequest, runtime *dara.RuntimeOptions) (_result *GetMatchSiteResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("GetMatchSite"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &GetMatchSiteResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
 // # Query a single network optimization configuration
 //
 // @param request - GetNetworkOptimizationRequest
@@ -11071,7 +12245,7 @@ func GetNetworkOptimizationWithContext(ctx context.Context, client *Client, requ
 
 // Summary:
 //
-// Get the CA certificate of the source server.
+// Retrieves the CA certificate information of an origin server.
 //
 // @param request - GetOriginCaCertificateRequest
 //
@@ -11111,7 +12285,7 @@ func GetOriginCaCertificateWithContext(ctx context.Context, client *Client, requ
 
 // Summary:
 //
-// Retrieves origin-pull client certificate information for a domain.
+// Retrieves the back-to-origin client certificate information at the domain name granularity.
 //
 // @param request - GetOriginClientCertificateRequest
 //
@@ -11311,7 +12485,7 @@ func GetOriginRuleWithContext(ctx context.Context, client *Client, request *GetO
 
 // Summary:
 //
-// Gets the details of a custom response page by its ID.
+// Retrieves the details of a custom response page by its ID.
 //
 // @param request - GetPageRequest
 //
@@ -11345,6 +12519,54 @@ func GetPageWithContext(ctx context.Context, client *Client, request *GetPageReq
 		BodyType:    dara.String("json"),
 	}
 	_result = &GetPageResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the page protection configuration of a site.
+//
+// @param request - GetPageShieldRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return GetPageShieldResponse
+func GetPageShieldWithContext(ctx context.Context, client *Client, request *GetPageShieldRequest, runtime *dara.RuntimeOptions) (_result *GetPageShieldResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	if !dara.IsNil(request.SiteVersion) {
+		query["SiteVersion"] = request.SiteVersion
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("GetPageShield"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &GetPageShieldResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -11487,7 +12709,7 @@ func GetRealtimeDeliveryFieldWithContext(ctx context.Context, client *Client, re
 
 // Summary:
 //
-// Retrieves the detailed configuration of a single DNS record, including record value, priority, and back-to-source authentication configuration (for CNAME records only).
+// Retrieves the detailed configuration of a single DNS record, including the record value, priority, and back-to-origin authentication configuration (exclusive to CNAME records).
 //
 // @param request - GetRecordRequest
 //
@@ -11607,7 +12829,7 @@ func GetRewriteUrlRuleWithContext(ctx context.Context, client *Client, request *
 
 // Summary:
 //
-// Retrieves the configuration of an edge function Routine, including its code versions, environments, and associated domain names and routes.
+// Queries all configuration information of an Edge Routine, including the code version list, environment configuration list, associated domain name configuration list, and associated route configuration list.
 //
 // @param request - GetRoutineRequest
 //
@@ -11695,7 +12917,95 @@ func GetRoutineAccessTokenWithContext(ctx context.Context, client *Client, reque
 
 // Summary:
 //
-// Queries a code version of a routine.
+// Queries a single ER build task.
+//
+// @param request - GetRoutineBuildRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return GetRoutineBuildResponse
+func GetRoutineBuildWithContext(ctx context.Context, client *Client, request *GetRoutineBuildRequest, runtime *dara.RuntimeOptions) (_result *GetRoutineBuildResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.RoutineBuildId) {
+		query["RoutineBuildId"] = request.RoutineBuildId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("GetRoutineBuild"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &GetRoutineBuildResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Retrieves the build configuration.
+//
+// @param request - GetRoutineBuildConfigurationRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return GetRoutineBuildConfigurationResponse
+func GetRoutineBuildConfigurationWithContext(ctx context.Context, client *Client, request *GetRoutineBuildConfigurationRequest, runtime *dara.RuntimeOptions) (_result *GetRoutineBuildConfigurationResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.RoutineName) {
+		query["RoutineName"] = request.RoutineName
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("GetRoutineBuildConfiguration"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &GetRoutineBuildConfigurationResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the code information of a specific version of an Edge Routine.
 //
 // @param request - GetRoutineCodeVersionRequest
 //
@@ -11743,13 +13053,13 @@ func GetRoutineCodeVersionWithContext(ctx context.Context, client *Client, reque
 
 // Summary:
 //
-// Queries the status and other information of a specific code version of a specified Edge Routine.
+// Queries the status and other information of a specific code version of a specified Routine.
 //
 // Description:
 //
 // ## Operation description
 //
-// By calling this API operation, you can retrieve detailed information about a specific Edge Routine at a specified version, including but not limited to the version status, creation time, and whether the version contains asset resource files. You must provide the Edge Routine name and the specific code version number as request parameters.
+// By calling this API operation, you can retrieve detailed information about a specific code version of a Routine, including but not limited to the version status, creation time, and whether the version contains Assets resource files. You must specify the Routine name and the code version number as request parameters.
 //
 // @param request - GetRoutineCodeVersionInfoRequest
 //
@@ -11797,7 +13107,7 @@ func GetRoutineCodeVersionInfoWithContext(ctx context.Context, client *Client, r
 
 // Summary:
 //
-// Retrieves a specific edge function route configuration.
+// Queries the configuration of a single Edge Routine route.
 //
 // @param request - GetRoutineRouteRequest
 //
@@ -11845,13 +13155,13 @@ func GetRoutineRouteWithContext(ctx context.Context, client *Client, request *Ge
 
 // Summary:
 //
-// Obtains the release information about the routine code that is released to the staging environment. This information can be used to upload the test code to Object Storage Service (OSS).
+// Retrieves the upload information for uploading test version code of an Edge Routine to OSS.
 //
 // Description:
 //
-//	  Every time the code of a routine is released to the staging environment, a version number is generated. Such code is for tests only.
+// - Each upload of test code for an Edge Routine generates a version number, which occupies one CodeRev code version slot. This is used for testing purposes only.
 //
-//		- A routine can retain a maximum of 10 code versions. If the number of versions reaches the limit, you must call the DeleteRoutineCodeRevision operation to delete unwanted versions.
+// - An Edge Routine can retain a maximum of 10 version numbers. After the limit is exceeded, manually call DeleteRoutineCodeRevision to delete unused versions.
 //
 // @param request - GetRoutineStagingCodeUploadInfoRequest
 //
@@ -12147,23 +13457,21 @@ func GetSiteDeliveryTaskWithContext(ctx context.Context, client *Client, request
 
 // Summary:
 //
-// Queries the remaining quota for delivering a specific category of real-time logs in a website.
+// Queries the remaining real-time log delivery quota for a specified site and business type.
 //
 // Description:
 //
-// Use this operation to query the remaining quota for delivering a specific category of real-time logs in a website within an Alibaba Cloud account. This is essential for monitoring and managing your log delivery capacity to ensure that logs can be delivered to the destination and prevent data loss or latency caused by insufficient quota.
+// You can call this operation to query the remaining quota of the real-time log delivery service for a specific site and business type under a specified Alibaba Cloud account. This is important for monitoring and managing your log delivery capacity to ensure that logs can be smoothly pushed to the destination storage and to prevent data loss or delays caused by insufficient quota.
 //
-// **Take note of the following parameters:**
+// **Parameter notes:**
 //
-// - \\`\\`
+// - `BusinessType` is required. Specify the business type to obtain the corresponding quota information.
 //
-// - `BusinessType` is required. You must specify a log category to obtain the corresponding quota information.
-//
-// - `SiteId` specifies the ID of a website, which must be a valid integer that corresponds to a website that you configured on Alibaba Cloud.
+// - `SiteId` must be a valid site ID in integer format and must correspond to the site configured in Alibaba Cloud.
 //
 // **Response:**
 //
-// - If a request is successful, the system returns the remaining log delivery quota (`FreeQuota`), request ID (`RequestId`), website ID (`SiteId`), and log category (`BusinessType`). You can confirm and record the returned data.
+// - A successful response returns the delivery quota (`FreeQuota`), request ID (`RequestId`), site ID (`SiteId`), and business type (`BusinessType`) for confirmation and logging purposes.
 //
 // @param request - GetSiteLogDeliveryQuotaRequest
 //
@@ -12243,7 +13551,7 @@ func GetSiteNameExclusiveWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
-// Retrieves origin-pull client certificate information at the site level.
+// Retrieves the back-to-origin client certificate information at the site level.
 //
 // @param request - GetSiteOriginClientCertificateRequest
 //
@@ -12327,7 +13635,47 @@ func GetSitePauseWithContext(ctx context.Context, client *Client, request *GetSi
 
 // Summary:
 //
-// # Get WAF Configuration for a Site
+// Queries the traffic sequences and their details for the current site.
+//
+// @param request - GetSiteTrafficSequenceRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return GetSiteTrafficSequenceResponse
+func GetSiteTrafficSequenceWithContext(ctx context.Context, client *Client, request *GetSiteTrafficSequenceRequest, runtime *dara.RuntimeOptions) (_result *GetSiteTrafficSequenceResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("GetSiteTrafficSequence"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &GetSiteTrafficSequenceResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Retrieves the WAF configuration of a site.
 //
 // @param request - GetSiteWafSettingsRequest
 //
@@ -12419,7 +13767,7 @@ func GetTieredCacheWithContext(ctx context.Context, client *Client, request *Get
 
 // Summary:
 //
-// Gets the details of a layer 4 application.
+// Queries the details of a Layer 4 application.
 //
 // @param request - GetTransportLayerApplicationRequest
 //
@@ -12589,13 +13937,61 @@ func GetUserLogDeliveryQuotaWithContext(ctx context.Context, client *Client, req
 
 // Summary:
 //
-// This API retrieves the details of the WAF rule set for a specified instance.
+// Queries the maximum value of a numeric quota across all plans under a user account.
 //
 // Description:
 //
-// ## Request
+// This operation allows you to query the real-time log delivery quota for different business types in your Alibaba Cloud account. You must provide your Alibaba Cloud user ID (aliUid) and the business type (BusinessType). The system returns the remaining quota for the specified business type, helping you understand the current quota usage.
 //
-// `GetUserWafRuleset` retrieves the details of a specific Web Application Firewall (WAF) ruleset, identified by its instance ID and ruleset ID. The response includes details such as the ruleset\\"s location, name, description, status, and its rules. Specify all required parameters correctly to prevent request failures.
+// @param request - GetUserMaxPlanQuotaRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return GetUserMaxPlanQuotaResponse
+func GetUserMaxPlanQuotaWithContext(ctx context.Context, client *Client, request *GetUserMaxPlanQuotaRequest, runtime *dara.RuntimeOptions) (_result *GetUserMaxPlanQuotaResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.QuotaName) {
+		query["QuotaName"] = request.QuotaName
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("GetUserMaxPlanQuota"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &GetUserMaxPlanQuotaResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the details of a WAF ruleset for a specified instance.
+//
+// Description:
+//
+// ## Operation description
+//
+// By calling the `GetUserWafRuleset` operation, you can retrieve information about a specific Web Application Firewall (WAF) ruleset based on the instance ID and ruleset ID. The returned information includes but is not limited to the position, name, description, status, and specific rules of the ruleset. Make sure that you correctly specify the required parameters to avoid request failures.
 //
 // @param request - GetUserWafRulesetRequest
 //
@@ -12747,7 +14143,7 @@ func GetWafFilterWithContext(ctx context.Context, client *Client, request *GetWa
 
 // Summary:
 //
-// Web Application Firewall (WAF) quotas define the maximum number of resources a customer can use, including managed rule groups, custom lists, custom response pages, and scenario-based protection rules.
+// Retrieves quota details for Web Application Firewall (WAF) resources. These quotas define the quantity limits of corresponding resources that a customer can use, such as managed rule groups, custom lists, custom response pages, and scenario-specific protection rules.
 //
 // @param request - GetWafQuotaRequest
 //
@@ -12791,7 +14187,7 @@ func GetWafQuotaWithContext(ctx context.Context, client *Client, request *GetWaf
 
 // Summary:
 //
-// Retrieves the details of a specific WAF rule, including its configuration and status.
+// Retrieves the details of a single rule in Web Application Firewall (WAF). You can use this operation to query the configuration and status of a specific rule.
 //
 // @param request - GetWafRuleRequest
 //
@@ -12839,7 +14235,7 @@ func GetWafRuleWithContext(ctx context.Context, client *Client, request *GetWafR
 
 // Summary:
 //
-// Retrieves the details of a specified WAF ruleset, including its configuration and status.
+// Retrieves the details of a specified WAF ruleset. You can call this operation to query the configuration and status information of a specific ruleset.
 //
 // @param request - GetWafRulesetRequest
 //
@@ -12891,7 +14287,191 @@ func GetWafRulesetWithContext(ctx context.Context, client *Client, request *GetW
 
 // Summary:
 //
-// Queries the cache reserve instances for your account.
+// Queries the preview page URL of a waiting room.
+//
+// @param request - GetWaitingRoomPreviewPageRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return GetWaitingRoomPreviewPageResponse
+func GetWaitingRoomPreviewPageWithContext(ctx context.Context, client *Client, request *GetWaitingRoomPreviewPageRequest, runtime *dara.RuntimeOptions) (_result *GetWaitingRoomPreviewPageResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("GetWaitingRoomPreviewPage"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &GetWaitingRoomPreviewPageResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the list of regions supported by AWS S3.
+//
+// @param request - ListAWSRegionInfosRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListAWSRegionInfosResponse
+func ListAWSRegionInfosWithContext(ctx context.Context, client *Client, request *ListAWSRegionInfosRequest, runtime *dara.RuntimeOptions) (_result *ListAWSRegionInfosResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListAWSRegionInfos"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListAWSRegionInfosResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// 查询异步任务列表
+//
+// @param request - ListAsyncTasksRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListAsyncTasksResponse
+func ListAsyncTasksWithContext(ctx context.Context, client *Client, request *ListAsyncTasksRequest, runtime *dara.RuntimeOptions) (_result *ListAsyncTasksResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListAsyncTasks"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListAsyncTasksResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the list of Bot security instances.
+//
+// @param request - ListBotInstancesRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListBotInstancesResponse
+func ListBotInstancesWithContext(ctx context.Context, client *Client, request *ListBotInstancesRequest, runtime *dara.RuntimeOptions) (_result *ListBotInstancesResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.InstanceId) {
+		query["InstanceId"] = request.InstanceId
+	}
+
+	if !dara.IsNil(request.PageNumber) {
+		query["PageNumber"] = request.PageNumber
+	}
+
+	if !dara.IsNil(request.PageSize) {
+		query["PageSize"] = request.PageSize
+	}
+
+	if !dara.IsNil(request.SortBy) {
+		query["SortBy"] = request.SortBy
+	}
+
+	if !dara.IsNil(request.SortOrder) {
+		query["SortOrder"] = request.SortOrder
+	}
+
+	if !dara.IsNil(request.Status) {
+		query["Status"] = request.Status
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListBotInstances"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListBotInstancesResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the list of cache reserve instances for the current user.
 //
 // @param request - ListCacheReserveInstancesRequest
 //
@@ -12971,7 +14551,7 @@ func ListCacheRulesWithContext(ctx context.Context, client *Client, request *Lis
 
 // Summary:
 //
-// 查询证书列表，支持翻页
+// Queries the list of China Shield certificates.
 //
 // @param request - ListCasCertificatesRequest
 //
@@ -13027,7 +14607,7 @@ func ListCasCertificatesWithContext(ctx context.Context, client *Client, request
 
 // Summary:
 //
-// Lists the certificates for a given site.
+// Queries the certificate list for a specific site.
 //
 // @param request - ListCertificatesRequest
 //
@@ -13087,7 +14667,7 @@ func ListCertificatesWithContext(ctx context.Context, client *Client, request *L
 
 // Summary:
 //
-// Retrieves site certificates for multiple matching records.
+// Queries the list of site certificates that match records. Batch record matching is supported.
 //
 // @param request - ListCertificatesByRecordRequest
 //
@@ -13183,7 +14763,7 @@ func ListCiphersWithContext(ctx context.Context, client *Client, request *ListCi
 
 // Summary:
 //
-// Retrieves the client CA certificates for a specified site.
+// Retrieves the list of client CA certificates for a specified site.
 //
 // @param request - ListClientCaCertificatesRequest
 //
@@ -13223,7 +14803,7 @@ func ListClientCaCertificatesWithContext(ctx context.Context, client *Client, re
 
 // Summary:
 //
-// Retrieves a list of client certificates for a specified site.
+// Retrieves the list of client certificates for a specified site.
 //
 // @param request - ListClientCertificatesRequest
 //
@@ -13263,7 +14843,7 @@ func ListClientCertificatesWithContext(ctx context.Context, client *Client, requ
 
 // Summary:
 //
-// # Query the list of compression rules
+// Queries the list of compression rule configurations.
 //
 // @param request - ListCompressionRulesRequest
 //
@@ -13371,7 +14951,7 @@ func ListCustomHostnamesWithContext(ctx context.Context, client *Client, request
 
 // Summary:
 //
-// List the custom response code configurations for the site.
+// Query the list of custom response code configurations for a site.
 //
 // @param request - ListCustomResponseCodeRulesRequest
 //
@@ -13635,7 +15215,7 @@ func ListEdgeContainerAppRecordsWithContext(ctx context.Context, client *Client,
 
 // Summary:
 //
-// Lists versions of all containerized applications.
+// Retrieves the version list of an edge container application, including information about all successfully created applications.
 //
 // @param request - ListEdgeContainerAppVersionsRequest
 //
@@ -13675,7 +15255,7 @@ func ListEdgeContainerAppVersionsWithContext(ctx context.Context, client *Client
 
 // Summary:
 //
-// Queries all containerized applications in your Alibaba Cloud account.
+// Retrieves a list of edge container applications, including all edge applications created under the current account.
 //
 // @param request - ListEdgeContainerAppsRequest
 //
@@ -13779,11 +15359,11 @@ func ListEdgeContainerRecordsWithContext(ctx context.Context, client *Client, re
 
 // Summary:
 //
-// Queries the records that are associated with Edge Routine routes for a website.
+// Queries the list of edge routing records for a site.
 //
 // Description:
 //
-// > Each account can call this operation up to 100 times per second.
+// > API call frequency: 100 calls per second.
 //
 // @param request - ListEdgeRoutineRecordsRequest
 //
@@ -13823,7 +15403,47 @@ func ListEdgeRoutineRecordsWithContext(ctx context.Context, client *Client, requ
 
 // Summary:
 //
-// Queries the configuration details of an incoming HTTP request header modification rule for a website.
+// Queries the list of environments for a site.
+//
+// @param request - ListEnvironmentsRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListEnvironmentsResponse
+func ListEnvironmentsWithContext(ctx context.Context, client *Client, request *ListEnvironmentsRequest, runtime *dara.RuntimeOptions) (_result *ListEnvironmentsResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListEnvironments"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListEnvironmentsResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the list of HTTP incoming request header modification configurations for a site.
 //
 // @param request - ListHttpIncomingRequestHeaderModificationRulesRequest
 //
@@ -13863,7 +15483,7 @@ func ListHttpIncomingRequestHeaderModificationRulesWithContext(ctx context.Conte
 
 // Summary:
 //
-// Queries the configurations of an incoming HTTP response header modification rule for a website.
+// Queries the list of configurations for modifying HTTP incoming response headers of a site.
 //
 // @param request - ListHttpIncomingResponseHeaderModificationRulesRequest
 //
@@ -13903,7 +15523,7 @@ func ListHttpIncomingResponseHeaderModificationRulesWithContext(ctx context.Cont
 
 // Summary:
 //
-// Lists the HTTP request header configurations.
+// Queries the list of HTTP request header modification configurations.
 //
 // @param request - ListHttpRequestHeaderModificationRulesRequest
 //
@@ -13943,7 +15563,7 @@ func ListHttpRequestHeaderModificationRulesWithContext(ctx context.Context, clie
 
 // Summary:
 //
-// Gets the HTTP response header configurations for a site.
+// Queries the list of HTTP response header modification configurations for a site.
 //
 // @param request - ListHttpResponseHeaderModificationRulesRequest
 //
@@ -13983,7 +15603,7 @@ func ListHttpResponseHeaderModificationRulesWithContext(ctx context.Context, cli
 
 // Summary:
 //
-// Queries multiple HTTPS application configurations.
+// Query multiple HTTPS application configurations.
 //
 // @param request - ListHttpsApplicationConfigurationsRequest
 //
@@ -14023,7 +15643,7 @@ func ListHttpsApplicationConfigurationsWithContext(ctx context.Context, client *
 
 // Summary:
 //
-// # Query multiple HTTPS basic configurations
+// Queries multiple HTTPS basic configurations.
 //
 // @param request - ListHttpsBasicConfigurationsRequest
 //
@@ -14063,7 +15683,7 @@ func ListHttpsBasicConfigurationsWithContext(ctx context.Context, client *Client
 
 // Summary:
 //
-// Retrieves site image conversion configurations.
+// Queries the list of image transformation configurations for a site.
 //
 // @param request - ListImageTransformsRequest
 //
@@ -14103,7 +15723,7 @@ func ListImageTransformsWithContext(ctx context.Context, client *Client, request
 
 // Summary:
 //
-// Queries the quota details in a subscription plan.
+// Queries the quota details of the plan associated with a specific instance or site by quota name.
 //
 // @param request - ListInstanceQuotasRequest
 //
@@ -14183,7 +15803,57 @@ func ListInstanceQuotasWithUsageWithContext(ctx context.Context, client *Client,
 
 // Summary:
 //
-// Retrieves keyless server configurations for a site.
+// Queries the quota information of multiple instances.
+//
+// @param request - ListInstancesQuotaRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListInstancesQuotaResponse
+func ListInstancesQuotaWithContext(ctx context.Context, client *Client, request *ListInstancesQuotaRequest, runtime *dara.RuntimeOptions) (_result *ListInstancesQuotaResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.QuotaName) {
+		query["QuotaName"] = request.QuotaName
+	}
+
+	body := map[string]interface{}{}
+	if !dara.IsNil(request.InstanceIds) {
+		body["InstanceIds"] = request.InstanceIds
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+		Body:  openapiutil.ParseToMap(body),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListInstancesQuota"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListInstancesQuotaResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Retrieves the list of Keyless server configurations for a site.
 //
 // @param request - ListKeylessServersRequest
 //
@@ -14275,7 +15945,7 @@ func ListKvsWithContext(ctx context.Context, client *Client, request *ListKvsReq
 
 // Summary:
 //
-// Lists all custom lists and their details for an account. Use query parameters to filter the results and pagination to navigate the list collection.
+// Lists all custom lists under the account along with their details. You can use query parameters to filter results and paginate to retrieve a specific set of lists.
 //
 // @param tmpReq - ListListsRequest
 //
@@ -14385,11 +16055,11 @@ func ListLoadBalancerOriginStatusWithContext(ctx context.Context, client *Client
 
 // Summary:
 //
-// # Query Load Balancer Region List
+// Queries the primary and secondary region information of a load balancing instance to obtain geographic region codes, descriptions, and other basic information that are active and can be used to configure a country/region-based scheduling policy for the load balancing instance.
 //
 // Description:
 //
-// When creating a load balancer \\"based on country/region scheduling\\" strategy through OpenAPI, use the code of primary or secondary regions to represent traffic from this geographical area.
+// When you create a country/region-based scheduling policy for a load balancing instance by calling an OpenAPI operation, use the primary or secondary region code from the lookup table to represent traffic originating from the corresponding geographic region.
 //
 // @param request - ListLoadBalancerRegionsRequest
 //
@@ -14429,7 +16099,7 @@ func ListLoadBalancerRegionsWithContext(ctx context.Context, client *Client, req
 
 // Summary:
 //
-// Retrieves a paged list of load balancers in a specific site, returning their details. You can filter the list by load balancer name.
+// Queries the list of load balancers under a site and returns load balancing information. You can query by load balancer name. Paging is supported.
 //
 // @param request - ListLoadBalancersRequest
 //
@@ -14469,7 +16139,7 @@ func ListLoadBalancersWithContext(ctx context.Context, client *Client, request *
 
 // Summary:
 //
-// # List Custom Managed Rule Groups
+// Lists all WAF managed rule groups under the current account. You can call this operation to retrieve a list of all rule groups and their summary information.
 //
 // @param request - ListManagedRulesGroupsRequest
 //
@@ -14517,7 +16187,7 @@ func ListManagedRulesGroupsWithContext(ctx context.Context, client *Client, requ
 
 // Summary:
 //
-// # Query multiple network optimization configurations
+// Queries multiple network optimization configurations.
 //
 // @param request - ListNetworkOptimizationsRequest
 //
@@ -14557,7 +16227,7 @@ func ListNetworkOptimizationsWithContext(ctx context.Context, client *Client, re
 
 // Summary:
 //
-// Retrieves the CA certificates for the source server.
+// Queries the list of origin server CA certificates.
 //
 // @param request - ListOriginCaCertificatesRequest
 //
@@ -14597,7 +16267,7 @@ func ListOriginCaCertificatesWithContext(ctx context.Context, client *Client, re
 
 // Summary:
 //
-// Lists back-to-source client certificates for a domain name.
+// Queries the list of back-to-origin client certificates at the domain name granularity.
 //
 // @param request - ListOriginClientCertificatesRequest
 //
@@ -14677,7 +16347,7 @@ func ListOriginPoolsWithContext(ctx context.Context, client *Client, request *Li
 
 // Summary:
 //
-// Lists multiple back-to-origin rules.
+// Query multiple back-to-origin rule configurations.
 //
 // @param request - ListOriginRulesRequest
 //
@@ -14717,7 +16387,7 @@ func ListOriginRulesWithContext(ctx context.Context, client *Client, request *Li
 
 // Summary:
 //
-// Retrieves a list of your custom response pages. This operation supports pagination, allowing you to control the results by specifying a page number and a page size.
+// Lists all custom response pages created by the user. This operation supports pagination and allows you to retrieve the response page list based on page number and page size.
 //
 // @param tmpReq - ListPagesRequest
 //
@@ -14775,11 +16445,11 @@ func ListPagesWithContext(ctx context.Context, client *Client, tmpReq *ListPages
 
 // Summary:
 //
-// List of post-paid plan instances.
+// Queries the list of pay-as-you-go plan instances.
 //
 // Description:
 //
-// This API retrieves a list of pay-as-you-go plan instances from a user account and supports filtering and sorting by various criteria.
+// This operation queries the list of pay-as-you-go plan instances under your account. You can filter and sort results by multiple conditions.
 //
 // @param request - ListPostpaidRatePlanInstancesRequest
 //
@@ -14819,11 +16489,92 @@ func ListPostpaidRatePlanInstancesWithContext(ctx context.Context, client *Clien
 
 // Summary:
 //
-// Lists a site\\"s DNS records, including their record value, priority, and authentication configuration. Allows filtering by record name and record type.
+// Queries the list of pay-as-you-go site plans available for purchase by a user.
 //
 // Description:
 //
-// This API does not return DNS records for edge containers, edge functions, and layer 4 acceleration.
+// By specifying the AliUid of a user and the service region (China site or international site), the API returns all pay-as-you-go site plans applicable to the user, including plan names, billing methods, and pricing information.
+//
+// @param request - ListPostpaidSitePlansRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListPostpaidSitePlansResponse
+func ListPostpaidSitePlansWithContext(ctx context.Context, client *Client, request *ListPostpaidSitePlansRequest, runtime *dara.RuntimeOptions) (_result *ListPostpaidSitePlansResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	req := &openapiutil.OpenApiRequest{}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListPostpaidSitePlans"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListPostpaidSitePlansResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the minimum plan edition required for a site plan quota to take effect, that is, the minimum plan edition to which the quota must be upgraded for use.
+//
+// @param request - ListQuotasMinEffectPlanRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListQuotasMinEffectPlanResponse
+func ListQuotasMinEffectPlanWithContext(ctx context.Context, client *Client, request *ListQuotasMinEffectPlanRequest, runtime *dara.RuntimeOptions) (_result *ListQuotasMinEffectPlanResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListQuotasMinEffectPlan"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListQuotasMinEffectPlanResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the list of DNS records under a site, including record values, priorities, authentication configurations, etc. Supports filtering by conditions such as record name and record type.
+//
+// Description:
+//
+// DNS records corresponding to edge containers, edge functions, and Layer 4 acceleration will not be returned by this API.
 //
 // @param request - ListRecordsRequest
 //
@@ -14863,7 +16614,7 @@ func ListRecordsWithContext(ctx context.Context, client *Client, request *ListRe
 
 // Summary:
 //
-// # Query Redirect Rule List
+// Queries the redirect configuration list of a site.
 //
 // @param request - ListRedirectRulesRequest
 //
@@ -14903,7 +16654,7 @@ func ListRedirectRulesWithContext(ctx context.Context, client *Client, request *
 
 // Summary:
 //
-// # List of Rewrite URL Rules
+// Queries the list of URL rewrite configurations for a site.
 //
 // @param request - ListRewriteUrlRulesRequest
 //
@@ -14933,6 +16684,114 @@ func ListRewriteUrlRulesWithContext(ctx context.Context, client *Client, request
 		BodyType:    dara.String("json"),
 	}
 	_result = &ListRewriteUrlRulesResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Lists the build configurations for multiple routines by name.
+//
+// @param request - ListRoutineBuildConfigurationsRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListRoutineBuildConfigurationsResponse
+func ListRoutineBuildConfigurationsWithContext(ctx context.Context, client *Client, request *ListRoutineBuildConfigurationsRequest, runtime *dara.RuntimeOptions) (_result *ListRoutineBuildConfigurationsResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.RoutineNames) {
+		query["RoutineNames"] = request.RoutineNames
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListRoutineBuildConfigurations"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListRoutineBuildConfigurationsResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Retrieves the list of ER build tasks.
+//
+// @param request - ListRoutineBuildsRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListRoutineBuildsResponse
+func ListRoutineBuildsWithContext(ctx context.Context, client *Client, request *ListRoutineBuildsRequest, runtime *dara.RuntimeOptions) (_result *ListRoutineBuildsResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.PageIndex) {
+		query["PageIndex"] = request.PageIndex
+	}
+
+	if !dara.IsNil(request.PageSize) {
+		query["PageSize"] = request.PageSize
+	}
+
+	if !dara.IsNil(request.RoutineName) {
+		query["RoutineName"] = request.RoutineName
+	}
+
+	if !dara.IsNil(request.SortBy) {
+		query["SortBy"] = request.SortBy
+	}
+
+	if !dara.IsNil(request.SortOrder) {
+		query["SortOrder"] = request.SortOrder
+	}
+
+	if !dara.IsNil(request.Status) {
+		query["Status"] = request.Status
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListRoutineBuilds"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListRoutineBuildsResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -15065,7 +16924,7 @@ func ListRoutineRelatedRecordsWithContext(ctx context.Context, client *Client, r
 
 // Summary:
 //
-// Lists the function routes of a specified edge program.
+// Queries the function route list of an Edge Routine.
 //
 // @param request - ListRoutineRoutesRequest
 //
@@ -15237,7 +17096,47 @@ func ListSiteDeliveryTasksWithContext(ctx context.Context, client *Client, reque
 
 // Summary:
 //
-// Lists the back-to-origin client certificates for a site.
+// Queries the feature configurations of a site. You can query all feature configurations of a site or specify FunctionName to query a specific feature configuration.
+//
+// @param request - ListSiteFunctionsRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListSiteFunctionsResponse
+func ListSiteFunctionsWithContext(ctx context.Context, client *Client, request *ListSiteFunctionsRequest, runtime *dara.RuntimeOptions) (_result *ListSiteFunctionsResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListSiteFunctions"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListSiteFunctionsResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the list of back-to-origin client certificates at the site level.
 //
 // @param request - ListSiteOriginClientCertificatesRequest
 //
@@ -15277,7 +17176,7 @@ func ListSiteOriginClientCertificatesWithContext(ctx context.Context, client *Cl
 
 // Summary:
 //
-// Retrieves the function routes for a site.
+// Queries the list of Edge Routine routes for a site.
 //
 // @param request - ListSiteRoutesRequest
 //
@@ -15341,7 +17240,7 @@ func ListSiteRoutesWithContext(ctx context.Context, client *Client, request *Lis
 
 // Summary:
 //
-// Lists the current user\\"s sites, including their name, status, and configuration.
+// Queries the list of sites under the current user, including site names, statuses, and configurations.
 //
 // @param tmpReq - ListSitesRequest
 //
@@ -15531,7 +17430,7 @@ func ListTraceTasksWithContext(ctx context.Context, client *Client, request *Lis
 
 // Summary:
 //
-// Lists the layer 4 applications associated with the site.
+// Query the list of Layer 4 applications for a site.
 //
 // @param request - ListTransportLayerApplicationsRequest
 //
@@ -15611,7 +17510,7 @@ func ListUploadTasksWithContext(ctx context.Context, client *Client, request *Li
 
 // Summary:
 //
-// Queries the list of page monitoring configurations.
+// Queries the list of web page observation configurations.
 //
 // @param request - ListUrlObservationsRequest
 //
@@ -15707,7 +17606,7 @@ func ListUserDeliveryTasksWithContext(ctx context.Context, client *Client, reque
 
 // Summary:
 //
-// Retrieves a user\\"s purchased package instances and their details.
+// Queries the plan instances purchased by the user and their details.
 //
 // @param request - ListUserRatePlanInstancesRequest
 //
@@ -15747,11 +17646,11 @@ func ListUserRatePlanInstancesWithContext(ctx context.Context, client *Client, r
 
 // Summary:
 //
-// Queries the functions created in your account and the maximum number of functions supported by your plan.
+// Retrieves a paginated list of Edge Routines created by the user along with quota information.
 //
 // Description:
 //
-// Returns a paginated list of all edge functions (routines) in your account, along with the routine quota and usage for your current plan. You can use `PageNumber` and `PageSize` to control pagination, and `SearchKeyWord` to filter routines by name.
+// This operation allows you to perform a paged query for all Edge Routines created under your account. It also returns the Edge Routine quota for your current plan and the number of Edge Routines already in use. You can specify the PageNumber and PageSize paging parameters to control the number of results returned, and use SearchKeyWord to perform a fuzzy search to filter Routine names.
 //
 // @param request - ListUserRoutinesRequest
 //
@@ -15883,7 +17782,47 @@ func ListUserWafRulesetsWithContext(ctx context.Context, client *Client, tmpReq 
 
 // Summary:
 //
-// Queries the video processing configurations of a site.
+// Queries the version list of a site.
+//
+// @param request - ListVersionsRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListVersionsResponse
+func ListVersionsWithContext(ctx context.Context, client *Client, request *ListVersionsRequest, runtime *dara.RuntimeOptions) (_result *ListVersionsResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := openapiutil.Query(dara.ToMap(request))
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListVersions"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("GET"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListVersionsResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the list of video processing configurations for a site.
 //
 // @param request - ListVideoProcessingsRequest
 //
@@ -15951,7 +17890,7 @@ func ListVideoProcessingsWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
-// Retrieves a list of WAF managed rules, optionally filtered by specific criteria. The response is paginated.
+// Lists all managed rules under Web Application Firewall (WAF) or filters rules based on specific conditions. You can use this operation to query detailed information about WAF managed rules in a paginated manner.
 //
 // @param tmpReq - ListWafManagedRulesRequest
 //
@@ -16089,7 +18028,7 @@ func ListWafPhasesWithContext(ctx context.Context, client *Client, request *List
 
 // Summary:
 //
-// This API retrieves a paginated list of detailed WAF rules, which can be filtered by specific conditions.
+// Lists all rules or filters rules by specific conditions under Web Application Firewall (WAF). You can use this operation to query detailed information about WAF rules in a paged manner.
 //
 // @param tmpReq - ListWafRulesRequest
 //
@@ -16163,7 +18102,7 @@ func ListWafRulesWithContext(ctx context.Context, client *Client, tmpReq *ListWa
 
 // Summary:
 //
-// Retrieves a paginated list of rule sets in the current WAF runtime phase, returning their basic information and status.
+// Lists the rulesets under the current WAF execution phase. Queries basic information and status of rulesets with paging support.
 //
 // @param tmpReq - ListWafRulesetsRequest
 //
@@ -16435,11 +18374,11 @@ func ListWaitingRoomRulesWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
-// Queries all waiting rooms in a website.
+// Queries the details of all configured waiting rooms for a specified site.
 //
 // Description:
 //
-// Use this operation to query detailed configurations about all waiting rooms in a website, including the status, name, and queuing rules of each waiting room.
+// This API allows you to query the configuration details of all waiting rooms for a specified site, including the enabled status, name, and queuing rules.
 //
 // @param request - ListWaitingRoomsRequest
 //
@@ -16469,6 +18408,112 @@ func ListWaitingRoomsWithContext(ctx context.Context, client *Client, request *L
 		BodyType:    dara.String("json"),
 	}
 	_result = &ListWaitingRoomsResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Modifies the feature configurations of a plan instance.
+//
+// @param tmpReq - ModifyInstanceFeaturesRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ModifyInstanceFeaturesResponse
+func ModifyInstanceFeaturesWithContext(ctx context.Context, client *Client, tmpReq *ModifyInstanceFeaturesRequest, runtime *dara.RuntimeOptions) (_result *ModifyInstanceFeaturesResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = tmpReq.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	request := &ModifyInstanceFeaturesShrinkRequest{}
+	openapiutil.Convert(tmpReq, request)
+	if !dara.IsNil(tmpReq.SiteFeatures) {
+		request.SiteFeaturesShrink = openapiutil.ArrayToStringWithSpecifiedStyle(tmpReq.SiteFeatures, dara.String("SiteFeatures"), dara.String("json"))
+	}
+
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.InstanceId) {
+		query["InstanceId"] = request.InstanceId
+	}
+
+	if !dara.IsNil(request.SiteFeaturesShrink) {
+		query["SiteFeatures"] = request.SiteFeaturesShrink
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ModifyInstanceFeatures"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ModifyInstanceFeaturesResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Disables plan-related configurations with one click when changing the plan for a site.
+//
+// @param request - ModifySiteFeaturesRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ModifySiteFeaturesResponse
+func ModifySiteFeaturesWithContext(ctx context.Context, client *Client, request *ModifySiteFeaturesRequest, runtime *dara.RuntimeOptions) (_result *ModifySiteFeaturesResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.NewInstanceId) {
+		query["NewInstanceId"] = request.NewInstanceId
+	}
+
+	if !dara.IsNil(request.SiteFeatures) {
+		query["SiteFeatures"] = request.SiteFeatures
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ModifySiteFeatures"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ModifySiteFeaturesResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -16629,7 +18674,11 @@ func PreloadCachesWithContext(ctx context.Context, client *Client, tmpReq *Prelo
 
 // Summary:
 //
-// Releases a specific version of a containerized application.
+// Publishes a specified version of an edge container application, allowing users to iterate application versions through this operation.
+//
+// Description:
+//
+// Prerequisites: 1) Activate the edge container service (by calling the OpenEdgeContainer operation or using the console). 2) Create an application (by calling CreateEdgeContainerApp to obtain the AppId). 3) Create an application version (by calling CreateEdgeContainerAppVersion to obtain the VersionId).
 //
 // @param tmpReq - PublishEdgeContainerAppVersionRequest
 //
@@ -16713,7 +18762,7 @@ func PublishEdgeContainerAppVersionWithContext(ctx context.Context, client *Clie
 
 // Summary:
 //
-// Publishes a specific version of Edge Routine code to the staging or production environment. When publishing to the production environment, you can choose canary release to specific regions.
+// Publishes a specific version of Edge Routine code to a staging or production environment. When publishing to the production environment, you can perform a canary release to specific regions.
 //
 // @param request - PublishRoutineCodeVersionRequest
 //
@@ -16765,7 +18814,55 @@ func PublishRoutineCodeVersionWithContext(ctx context.Context, client *Client, r
 
 // Summary:
 //
-// # New Purchase of Cache Retention
+// Purchases a new bot instance.
+//
+// @param request - PurchaseBotInstanceRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return PurchaseBotInstanceResponse
+func PurchaseBotInstanceWithContext(ctx context.Context, client *Client, request *PurchaseBotInstanceRequest, runtime *dara.RuntimeOptions) (_result *PurchaseBotInstanceResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.BotInstanceLevel) {
+		query["BotInstanceLevel"] = request.BotInstanceLevel
+	}
+
+	if !dara.IsNil(request.SiteInstanceId) {
+		query["SiteInstanceId"] = request.SiteInstanceId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("PurchaseBotInstance"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &PurchaseBotInstanceResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Purchases a cache reserve instance.
 //
 // @param request - PurchaseCacheReserveRequest
 //
@@ -16829,13 +18926,69 @@ func PurchaseCacheReserveWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
-// Purchases a plan by calling PurchaseRatePlan.
+// 新购DDoS实例
+//
+// @param request - PurchaseDDoSInstanceRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return PurchaseDDoSInstanceResponse
+func PurchaseDDoSInstanceWithContext(ctx context.Context, client *Client, request *PurchaseDDoSInstanceRequest, runtime *dara.RuntimeOptions) (_result *PurchaseDDoSInstanceResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.DDoSBillingMode) {
+		query["DDoSBillingMode"] = request.DDoSBillingMode
+	}
+
+	if !dara.IsNil(request.DDoSBurstableDomesticProtection) {
+		query["DDoSBurstableDomesticProtection"] = request.DDoSBurstableDomesticProtection
+	}
+
+	if !dara.IsNil(request.DDoSBurstableOverseasProtection) {
+		query["DDoSBurstableOverseasProtection"] = request.DDoSBurstableOverseasProtection
+	}
+
+	if !dara.IsNil(request.SiteInstanceId) {
+		query["SiteInstanceId"] = request.SiteInstanceId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("PurchaseDDoSInstance"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &PurchaseDDoSInstanceResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Calls the PurchaseRatePlan operation to purchase a plan.
 //
 // Description:
 //
-// 1. Obtain the plan name and plan code by calling the DescribeRatePlanPrice operation.
+// 1. You can obtain the plan name and plan code by calling the DescribeRatePlanPrice operation.
 //
-// 2. If the acceleration region is not set to overseas, the site must have a valid China Internet Content Provider (ICP) filing.
+// 2. If the acceleration region is not set to overseas, the site must have a valid Internet Content Provider (ICP) filing.
 //
 // @param request - PurchaseRatePlanRequest
 //
@@ -16872,6 +19025,10 @@ func PurchaseRatePlanWithContext(ctx context.Context, client *Client, request *P
 
 	if !dara.IsNil(request.Coverage) {
 		query["Coverage"] = request.Coverage
+	}
+
+	if !dara.IsNil(request.OveragePolicy) {
+		query["OveragePolicy"] = request.OveragePolicy
 	}
 
 	if !dara.IsNil(request.Period) {
@@ -17179,6 +19336,50 @@ func PutKvWithHighCapacityWithContext(ctx context.Context, client *Client, reque
 
 // Summary:
 //
+// Retries a routine replication task.
+//
+// @param request - ReDoRoutineBuildRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ReDoRoutineBuildResponse
+func ReDoRoutineBuildWithContext(ctx context.Context, client *Client, request *ReDoRoutineBuildRequest, runtime *dara.RuntimeOptions) (_result *ReDoRoutineBuildResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.RoutineBuildId) {
+		query["RoutineBuildId"] = request.RoutineBuildId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ReDoRoutineBuild"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ReDoRoutineBuildResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
 // Rebuild the staging environment of an edge container application.
 //
 // @param request - RebuildEdgeContainerAppStagingEnvRequest
@@ -17213,6 +19414,50 @@ func RebuildEdgeContainerAppStagingEnvWithContext(ctx context.Context, client *C
 		BodyType:    dara.String("json"),
 	}
 	_result = &RebuildEdgeContainerAppStagingEnvResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Restores the status of a site that has been disabled.
+//
+// @param request - RecoverSiteRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return RecoverSiteResponse
+func RecoverSiteWithContext(ctx context.Context, client *Client, request *RecoverSiteRequest, runtime *dara.RuntimeOptions) (_result *RecoverSiteResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("RecoverSite"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &RecoverSiteResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -17267,9 +19512,9 @@ func ReleaseInstanceWithContext(ctx context.Context, client *Client, request *Re
 
 // Summary:
 //
-// Resets the progress of a scheduled preload job and restarts the preload from the beginning.
+// Resets the progress of a scheduled prefetch task and restarts the prefetch from the beginning.
 //
-// Prerequisite: You must first create a scheduled preload job by calling CreateScheduledPreloadJob to obtain a valid job ID, and then pass it to this API for resetting.
+// Before calling this operation, you must first create a scheduled prefetch task by calling CreateScheduledPreloadJob to obtain a valid task ID, and then pass the ID to this operation for resetting.
 //
 // @param request - ResetScheduledPreloadJobRequest
 //
@@ -17405,6 +19650,54 @@ func RollbackEdgeContainerAppVersionWithContext(ctx context.Context, client *Cli
 		BodyType:    dara.String("json"),
 	}
 	_result = &RollbackEdgeContainerAppVersionResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Rolls back the deployment version of an environment.
+//
+// @param request - RollbackEnvironmentVersionRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return RollbackEnvironmentVersionResponse
+func RollbackEnvironmentVersionWithContext(ctx context.Context, client *Client, request *RollbackEnvironmentVersionRequest, runtime *dara.RuntimeOptions) (_result *RollbackEnvironmentVersionResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.EnvironmentName) {
+		query["EnvironmentName"] = request.EnvironmentName
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("RollbackEnvironmentVersion"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &RollbackEnvironmentVersionResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -17617,7 +19910,7 @@ func SetClientCaCertificateHostnamesWithContext(ctx context.Context, client *Cli
 
 // Summary:
 //
-// Binds one or more hostnames to a specified client CA certificate. If you do not specify a certificate, the hostnames are bound to the ESA CA certificate.
+// Associates domain names with a specified client CA certificate. If no certificate is specified, the domain names are associated with the ESA CA certificate. This API is deprecated. Use SetClientCaCertificateHostnames instead.
 //
 // @param tmpReq - SetClientCertificateHostnamesRequest
 //
@@ -18109,9 +20402,53 @@ func StartScheduledPreloadExecutionWithContext(ctx context.Context, client *Clie
 
 // Summary:
 //
-// Stops a single scheduled prefetch plan by prefetch plan ID.
+// Stops a task.
 //
-// Prerequisites: (1) This operation takes effect only when the execution plan is in the running state. Execution plans in the waiting or failed state cannot be stopped. (2) Whether an execution plan can reach the running state depends on whether the associated site has passed the access verification (site Status=active).
+// @param request - StopRoutineBuildRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return StopRoutineBuildResponse
+func StopRoutineBuildWithContext(ctx context.Context, client *Client, request *StopRoutineBuildRequest, runtime *dara.RuntimeOptions) (_result *StopRoutineBuildResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.RoutineBuildId) {
+		query["RoutineBuildId"] = request.RoutineBuildId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("StopRoutineBuild"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &StopRoutineBuildResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Stops a single scheduled preload execution plan based on the preload plan ID.
+//
+// Prerequisites: (1) This API only takes effect when the execution plan status is running. Execution plans in the waiting or failed status cannot be stopped. (2) Whether an execution plan can reach the running status depends on whether the site it belongs to has completed access verification (site Status=active).
 //
 // @param request - StopScheduledPreloadExecutionRequest
 //
@@ -18145,6 +20482,50 @@ func StopScheduledPreloadExecutionWithContext(ctx context.Context, client *Clien
 		BodyType:    dara.String("json"),
 	}
 	_result = &StopScheduledPreloadExecutionResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Manually deactivates a site.
+//
+// @param request - StopSiteRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return StopSiteResponse
+func StopSiteWithContext(ctx context.Context, client *Client, request *StopSiteRequest, runtime *dara.RuntimeOptions) (_result *StopSiteResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("StopSite"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &StopSiteResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -18313,6 +20694,58 @@ func UntagResourcesWithContext(ctx context.Context, client *Client, request *Unt
 		BodyType:    dara.String("json"),
 	}
 	_result = &UntagResourcesResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Modifies the cache reserve configuration of a site.
+//
+// @param request - UpdateCacheReserveRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return UpdateCacheReserveResponse
+func UpdateCacheReserveWithContext(ctx context.Context, client *Client, request *UpdateCacheReserveRequest, runtime *dara.RuntimeOptions) (_result *UpdateCacheReserveResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.CacheReserveInstanceId) {
+		query["CacheReserveInstanceId"] = request.CacheReserveInstanceId
+	}
+
+	if !dara.IsNil(request.Enable) {
+		query["Enable"] = request.Enable
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("UpdateCacheReserve"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &UpdateCacheReserveResponse{}
 	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
 	if _err != nil {
 		return _result, _err
@@ -18639,7 +21072,7 @@ func UpdateCnameFlatteningWithContext(ctx context.Context, client *Client, reque
 
 // Summary:
 //
-// Modifies the compression rule configuration for a site.
+// Modifies the compression rule configuration of a site.
 //
 // @param request - UpdateCompressionRuleRequest
 //
@@ -18715,7 +21148,67 @@ func UpdateCompressionRuleWithContext(ctx context.Context, client *Client, reque
 
 // Summary:
 //
-// Modifies the configuration of the Chinese mainland network access optimization.
+// Modifies the priority of a single rule configuration.
+//
+// Description:
+//
+// You can only modify the priority of a rule configuration. You cannot modify global configurations.
+//
+// @param request - UpdateConfigSequenceRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return UpdateConfigSequenceResponse
+func UpdateConfigSequenceWithContext(ctx context.Context, client *Client, request *UpdateConfigSequenceRequest, runtime *dara.RuntimeOptions) (_result *UpdateConfigSequenceResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.ConfigId) {
+		query["ConfigId"] = request.ConfigId
+	}
+
+	if !dara.IsNil(request.Sequence) {
+		query["Sequence"] = request.Sequence
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("UpdateConfigSequence"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &UpdateConfigSequenceResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Modifies the China mainland network access optimization configuration for a site.
+//
+// Description:
+//
+// The site plan must be Enterprise Edition or higher to enable China mainland network access optimization.
 //
 // @param request - UpdateCrossBorderOptimizationRequest
 //
@@ -18763,7 +21256,7 @@ func UpdateCrossBorderOptimizationWithContext(ctx context.Context, client *Clien
 
 // Summary:
 //
-// Updates the parameters of a Software as a Service (SaaS) domain name, such as the attached record ID and the certificate type.
+// Updates a SaaS domain name. You can modify the bound record ID, certificate type, and other settings.
 //
 // @param request - UpdateCustomHostnameRequest
 //
@@ -18835,7 +21328,7 @@ func UpdateCustomHostnameWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
-// Modify the response code configuration for a site.
+// Modifies the response code rewrite configuration of a site.
 //
 // @param request - UpdateCustomResponseCodeRuleRequest
 //
@@ -19141,7 +21634,123 @@ func UpdateEdgeContainerAppResourceReserveWithContext(ctx context.Context, clien
 
 // Summary:
 //
-// Configure inbound HTTP request headers.
+// Updates an environment.
+//
+// @param request - UpdateEnvironmentRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return UpdateEnvironmentResponse
+func UpdateEnvironmentWithContext(ctx context.Context, client *Client, request *UpdateEnvironmentRequest, runtime *dara.RuntimeOptions) (_result *UpdateEnvironmentResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.EnvironmentName) {
+		query["EnvironmentName"] = request.EnvironmentName
+	}
+
+	if !dara.IsNil(request.NewName) {
+		query["NewName"] = request.NewName
+	}
+
+	if !dara.IsNil(request.ReadOnly) {
+		query["ReadOnly"] = request.ReadOnly
+	}
+
+	if !dara.IsNil(request.Rule) {
+		query["Rule"] = request.Rule
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	if !dara.IsNil(request.SiteVersion) {
+		query["SiteVersion"] = request.SiteVersion
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("UpdateEnvironment"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &UpdateEnvironmentResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Modifies the deployment version of an environment.
+//
+// @param request - UpdateEnvironmentVersionRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return UpdateEnvironmentVersionResponse
+func UpdateEnvironmentVersionWithContext(ctx context.Context, client *Client, request *UpdateEnvironmentVersionRequest, runtime *dara.RuntimeOptions) (_result *UpdateEnvironmentVersionResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.EnvironmentName) {
+		query["EnvironmentName"] = request.EnvironmentName
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	if !dara.IsNil(request.SiteVersion) {
+		query["SiteVersion"] = request.SiteVersion
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("UpdateEnvironmentVersion"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &UpdateEnvironmentVersionResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Modify HTTP incoming request header configuration.
 //
 // @param tmpReq - UpdateHttpIncomingRequestHeaderModificationRuleRequest
 //
@@ -19215,7 +21824,7 @@ func UpdateHttpIncomingRequestHeaderModificationRuleWithContext(ctx context.Cont
 
 // Summary:
 //
-// Update a Site\\"s HTTP Inbound Response Header configuration.
+// Updates the HTTP incoming response header modification configuration for a site.
 //
 // @param tmpReq - UpdateHttpIncomingResponseHeaderModificationRuleRequest
 //
@@ -19289,7 +21898,7 @@ func UpdateHttpIncomingResponseHeaderModificationRuleWithContext(ctx context.Con
 
 // Summary:
 //
-// Modify the HTTP request header rule.
+// Modify HTTP request header rules.
 //
 // @param tmpReq - UpdateHttpRequestHeaderModificationRuleRequest
 //
@@ -19363,7 +21972,7 @@ func UpdateHttpRequestHeaderModificationRuleWithContext(ctx context.Context, cli
 
 // Summary:
 //
-// Updates a site\\"s HTTP response header configuration.
+// Updates the HTTP response header modification configuration for a site.
 //
 // @param tmpReq - UpdateHttpResponseHeaderModificationRuleRequest
 //
@@ -19657,7 +22266,7 @@ func UpdateHttpsBasicConfigurationWithContext(ctx context.Context, client *Clien
 
 // Summary:
 //
-// Modify the site\\"s IPv6 configuration.
+// Modify IPv6 configuration for a website.
 //
 // @param request - UpdateIPv6Request
 //
@@ -19709,7 +22318,7 @@ func UpdateIPv6WithContext(ctx context.Context, client *Client, request *UpdateI
 
 // Summary:
 //
-// Modify the site\\"s image conversion configuration.
+// Modifies the image transformation configuration of a site.
 //
 // @param request - UpdateImageTransformRequest
 //
@@ -20117,7 +22726,7 @@ func UpdateNetworkOptimizationWithContext(ctx context.Context, client *Client, r
 
 // Summary:
 //
-// Modifies a source address pool, identified by its source address pool ID.
+// Modifies a single origin address pool specified by the origin address pool ID.
 //
 // @param tmpReq - UpdateOriginPoolRequest
 //
@@ -20403,7 +23012,7 @@ func UpdateOriginRuleWithContext(ctx context.Context, client *Client, request *U
 
 // Summary:
 //
-// Updates a user-created custom response page. Use this API to modify the page name, description, content type, and content.
+// Updates a custom response page that the user has created. You can use this operation to modify the page name, description, content type, and content.
 //
 // @param tmpReq - UpdatePageRequest
 //
@@ -20473,7 +23082,7 @@ func UpdatePageWithContext(ctx context.Context, client *Client, tmpReq *UpdatePa
 
 // Summary:
 //
-// Updates the Performance Data Collection configuration for a Site.
+// Modifies the web data quality collection configuration.
 //
 // @param request - UpdatePerformanceDataCollectionRequest
 //
@@ -20585,23 +23194,23 @@ func UpdateRatePlanSpecWithContext(ctx context.Context, client *Client, request 
 
 // Summary:
 //
-// Updates DNS records, supporting multiple record types and origin server authentication.
+// Updates a DNS record. Various record types and origin authentication configurations are supported.
 //
 // Description:
 //
-// This API lets you update various DNS records, including A/AAAA, CNAME, NS, MX, TXT, CAA, SRV, and URI. To modify a record, provide its corresponding fields, such as value, priority, and flag. For CNAME origins requiring authentication, such as OSS or S3, the API also lets you configure origin authentication information to secure access.
+// This API operation allows you to update a DNS record, including but not limited to A/AAAA, CNAME, NS, MX, TXT, CAA, SRV, and URI record types. You can modify the record content by specifying the corresponding record value, priority, flag, and other fields. For CNAME origin servers that require authentication, such as OSS and S3, this API operation also supports configuring origin authentication information to ensure secure access.
 //
-// ### Notes
+// ### Before you begin
 //
-// - The value must match the record type. For example, a CNAME record must point to a target domain.
+// - The record value (Value) must match the record type. For example, a CNAME record must correspond to a target domain name.
 //
-// - Some record types, such as MX and SRV, require a priority.
+// - Certain record types, such as MX and SRV, require a priority (Priority) value.
 //
-// - CAA records require specific fields, such as Flag and Tag.
+// - CAA records require specific fields such as Flag and Tag.
 //
-// - When updating security records such as CERT and SSHFP, correctly set the Type and Algorithm fields.
+// - When updating security records such as CERT and SSHFP, accurately set the Type, Algorithm, and other fields.
 //
-// - When using OSS or S3 as an origin, configure the authentication details in AuthConf according to your permission settings.
+// - When using OSS or S3 as the origin server, configure the authentication details in AuthConf based on the permission settings.
 //
 // @param tmpReq - UpdateRecordRequest
 //
@@ -20699,7 +23308,7 @@ func UpdateRecordWithContext(ctx context.Context, client *Client, tmpReq *Update
 
 // Summary:
 //
-// Updates the redirection configuration of a site.
+// Modifies the redirect configuration of a site.
 //
 // @param request - UpdateRedirectRuleRequest
 //
@@ -20779,7 +23388,7 @@ func UpdateRedirectRuleWithContext(ctx context.Context, client *Client, request 
 
 // Summary:
 //
-// Update a Site\\"s URL Rewrite Configuration
+// Modifies the URL rewrite configuration of a site.
 //
 // @param request - UpdateRewriteUrlRuleRequest
 //
@@ -20859,6 +23468,108 @@ func UpdateRewriteUrlRuleWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
+// Modifies the ER build configuration.
+//
+// @param tmpReq - UpdateRoutineBuildConfigurationRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return UpdateRoutineBuildConfigurationResponse
+func UpdateRoutineBuildConfigurationWithContext(ctx context.Context, client *Client, tmpReq *UpdateRoutineBuildConfigurationRequest, runtime *dara.RuntimeOptions) (_result *UpdateRoutineBuildConfigurationResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = tmpReq.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	request := &UpdateRoutineBuildConfigurationShrinkRequest{}
+	openapiutil.Convert(tmpReq, request)
+	if !dara.IsNil(tmpReq.EnvironmentVariables) {
+		request.EnvironmentVariablesShrink = openapiutil.ArrayToStringWithSpecifiedStyle(tmpReq.EnvironmentVariables, dara.String("EnvironmentVariables"), dara.String("json"))
+	}
+
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.AssetsDirectory) {
+		query["AssetsDirectory"] = request.AssetsDirectory
+	}
+
+	if !dara.IsNil(request.BuildBranches) {
+		query["BuildBranches"] = request.BuildBranches
+	}
+
+	if !dara.IsNil(request.BuildCommand) {
+		query["BuildCommand"] = request.BuildCommand
+	}
+
+	if !dara.IsNil(request.EnvironmentVariablesShrink) {
+		query["EnvironmentVariables"] = request.EnvironmentVariablesShrink
+	}
+
+	if !dara.IsNil(request.GitAccountId) {
+		query["GitAccountId"] = request.GitAccountId
+	}
+
+	if !dara.IsNil(request.GitPlatform) {
+		query["GitPlatform"] = request.GitPlatform
+	}
+
+	if !dara.IsNil(request.InstallCommand) {
+		query["InstallCommand"] = request.InstallCommand
+	}
+
+	if !dara.IsNil(request.IsPrivate) {
+		query["IsPrivate"] = request.IsPrivate
+	}
+
+	if !dara.IsNil(request.NodeVersion) {
+		query["NodeVersion"] = request.NodeVersion
+	}
+
+	if !dara.IsNil(request.ProductionBranch) {
+		query["ProductionBranch"] = request.ProductionBranch
+	}
+
+	if !dara.IsNil(request.Repository) {
+		query["Repository"] = request.Repository
+	}
+
+	if !dara.IsNil(request.RootDirectory) {
+		query["RootDirectory"] = request.RootDirectory
+	}
+
+	if !dara.IsNil(request.RoutineEntry) {
+		query["RoutineEntry"] = request.RoutineEntry
+	}
+
+	if !dara.IsNil(request.RoutineName) {
+		query["RoutineName"] = request.RoutineName
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("UpdateRoutineBuildConfiguration"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &UpdateRoutineBuildConfigurationResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
 // Modifies the description of a routine.
 //
 // @param request - UpdateRoutineConfigDescriptionRequest
@@ -20907,7 +23618,7 @@ func UpdateRoutineConfigDescriptionWithContext(ctx context.Context, client *Clie
 
 // Summary:
 //
-// Modify the routing configuration for the edge function.
+// Modifies the route configuration of an Edge Routine.
 //
 // @param request - UpdateRoutineRouteRequest
 //
@@ -21049,7 +23760,7 @@ func UpdateScheduledPreloadExecutionWithContext(ctx context.Context, client *Cli
 
 // Summary:
 //
-// Modifies the search engine crawler configuration for a website.
+// Modifies the search engine crawler allowlisting configuration for a site.
 //
 // @param request - UpdateSeoBypassRequest
 //
@@ -21153,7 +23864,7 @@ func UpdateSiteAccessTypeWithContext(ctx context.Context, client *Client, reques
 
 // Summary:
 //
-// Modify a site\\"s acceleration area. Update its acceleration configuration to adapt to traffic changes or improve user access in specific regions.
+// Modifies the acceleration region of a site. Updates the acceleration configuration of a site to adapt to traffic distribution changes or improve the access experience for users in specific regions.
 //
 // @param request - UpdateSiteCoverageRequest
 //
@@ -21375,7 +24086,59 @@ func UpdateSiteDeliveryTaskStatusWithContext(ctx context.Context, client *Client
 
 // Summary:
 //
-// Modifies the site hold configuration of a website. After you enable site hold, other accounts cannot add your website domain or its subdomains to ESA.
+// Changes the plan instance associated with a site.
+//
+// @param request - UpdateSiteInstanceRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return UpdateSiteInstanceResponse
+func UpdateSiteInstanceWithContext(ctx context.Context, client *Client, request *UpdateSiteInstanceRequest, runtime *dara.RuntimeOptions) (_result *UpdateSiteInstanceResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.NewInstanceId) {
+		query["NewInstanceId"] = request.NewInstanceId
+	}
+
+	if !dara.IsNil(request.ResourceOwner) {
+		query["ResourceOwner"] = request.ResourceOwner
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("UpdateSiteInstance"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &UpdateSiteInstanceResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Modifies the exclusive site name configuration. After this feature is enabled, other accounts can no longer create sites or subsites with the same name as the current site.
 //
 // @param request - UpdateSiteNameExclusiveRequest
 //
@@ -21423,11 +24186,11 @@ func UpdateSiteNameExclusiveWithContext(ctx context.Context, client *Client, req
 
 // Summary:
 //
-// Change the site\\"s pause settings.
+// Modifies the site pause configuration.
 //
 // Description:
 //
-// This API can only be called for sites configured in NS mode.
+// This API operation can be called only for sites that use the NS access mode.
 //
 // @param request - UpdateSitePauseRequest
 //
@@ -21475,7 +24238,11 @@ func UpdateSitePauseWithContext(ctx context.Context, client *Client, request *Up
 
 // Summary:
 //
-// Updates the custom nameserver names for a single website.
+// Modifies the custom nameserver (NS) names for a single site.
+//
+// Description:
+//
+// The site plan must be Enterprise Edition or higher to use the custom NS feature.
 //
 // @param request - UpdateSiteVanityNSRequest
 //
@@ -21523,7 +24290,7 @@ func UpdateSiteVanityNSWithContext(ctx context.Context, client *Client, request 
 
 // Summary:
 //
-// Updates the tiered cache configuration for a site.
+// Modifies the multi-level cache configuration of a site.
 //
 // @param request - UpdateTieredCacheRequest
 //
@@ -21571,7 +24338,13 @@ func UpdateTieredCacheWithContext(ctx context.Context, client *Client, request *
 
 // Summary:
 //
-// Modify Layer 4 application configurations, such as forwarding rules, for the specified site.
+// Modifies the forwarding rule configurations of a Layer 4 application under a specified site.
+//
+// Description:
+//
+// If ListTransportLayerApplications returns an empty Layer 4 acceleration application list, use CreateTransportLayerApplication to create a Layer 4 acceleration application, and then use this API to modify the configurations of the Layer 4 acceleration application.
+//
+// When creating a Layer 4 acceleration application, the selected site must be an activated site. After creating a site, call the VerifySite API to verify it. A site that passes verification is automatically activated, indicated by the response parameter Passed=true.
 //
 // @param tmpReq - UpdateTransportLayerApplicationRequest
 //
@@ -21649,7 +24422,7 @@ func UpdateTransportLayerApplicationWithContext(ctx context.Context, client *Cli
 
 // Summary:
 //
-// Updates the webpage monitoring configuration.
+// Updates the URL observation configuration.
 //
 // @param request - UpdateUrlObservationRequest
 //
@@ -21909,7 +24682,59 @@ func UpdateUserWafRulesetWithContext(ctx context.Context, client *Client, tmpReq
 
 // Summary:
 //
-// Modifies the video processing configuration of the site.
+// Updates the description of a version.
+//
+// @param request - UpdateVersionDescRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return UpdateVersionDescResponse
+func UpdateVersionDescWithContext(ctx context.Context, client *Client, request *UpdateVersionDescRequest, runtime *dara.RuntimeOptions) (_result *UpdateVersionDescResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.Description) {
+		query["Description"] = request.Description
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	if !dara.IsNil(request.SiteVersion) {
+		query["SiteVersion"] = request.SiteVersion
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("UpdateVersionDesc"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &UpdateVersionDescResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Modifies the video processing configuration of a website.
 //
 // @param request - UpdateVideoProcessingRequest
 //
@@ -22127,7 +24952,7 @@ func UpdateWafRulesetWithContext(ctx context.Context, client *Client, request *U
 
 // Summary:
 //
-// Updates a waiting room.
+// Updates the configuration of a specified waiting room.
 //
 // @param tmpReq - UpdateWaitingRoomRequest
 //
@@ -22245,7 +25070,7 @@ func UpdateWaitingRoomWithContext(ctx context.Context, client *Client, tmpReq *U
 
 // Summary:
 //
-// Updates a waiting room event.
+// Updates the configuration of a waiting room event.
 //
 // @param request - UpdateWaitingRoomEventRequest
 //
@@ -22365,11 +25190,11 @@ func UpdateWaitingRoomEventWithContext(ctx context.Context, client *Client, requ
 
 // Summary:
 //
-// # Modify Waiting Room Rule
+// Updates the waiting room bypass rule configuration for a specified site.
 //
 // Description:
 //
-// This interface allows you to modify the rule settings of a specific waiting room in a site, including the rule name, enable status, and rule content, etc.
+// Modifies the rule settings of a specific waiting room for a site, including the rule name, enabled status, and rule content.
 //
 // @param request - UpdateWaitingRoomRuleRequest
 //
@@ -22429,7 +25254,55 @@ func UpdateWaitingRoomRuleWithContext(ctx context.Context, client *Client, reque
 
 // Summary:
 //
-// Uploads a client certificate authority (CA) certificate.
+// Upgrades the deployment version of an environment.
+//
+// @param request - UpgradeEnvironmentVersionRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return UpgradeEnvironmentVersionResponse
+func UpgradeEnvironmentVersionWithContext(ctx context.Context, client *Client, request *UpgradeEnvironmentVersionRequest, runtime *dara.RuntimeOptions) (_result *UpgradeEnvironmentVersionResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.EnvironmentName) {
+		query["EnvironmentName"] = request.EnvironmentName
+	}
+
+	if !dara.IsNil(request.SiteId) {
+		query["SiteId"] = request.SiteId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("UpgradeEnvironmentVersion"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &UpgradeEnvironmentVersionResponse{}
+	_body, _err := client.CallApiWithCtx(ctx, params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Uploads a client CA certificate.
 //
 // @param request - UploadClientCaCertificateRequest
 //
@@ -22717,7 +25590,7 @@ func UploadSiteOriginClientCertificateWithContext(ctx context.Context, client *C
 
 // Summary:
 //
-// Verifies the ownership of a Software as a Service (SaaS) domain name. After a domain name is verified, the site is automatically activated.
+// Verifies the ownership of a SaaS domain name. Sites that pass the verification are automatically activated.
 //
 // @param request - VerifyCustomHostnameRequest
 //

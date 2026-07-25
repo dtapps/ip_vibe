@@ -1,4 +1,29 @@
 # Changelog
+## 7.26.18
+
+* 新增
+  * sandbox: 支持查询系统默认模板列表
+* 完善
+  * sandbox: 补充沙箱列表、请求注入与模板管理 API 的测试和示例
+
+## 7.26.17
+
+* 新增
+  * sandbox: 支持按模板 ID 或名称过滤沙箱列表，并暴露模板名称与归属信息
+  * sandbox: 支持查询和替换运行时请求注入规则，以及更新运行中沙箱的 GitHub 授权令牌
+* 完善
+  * sandbox: 查询注入规则时返回独立的脱敏类型，避免误用脱敏凭证覆盖真实配置
+
+## 7.26.16
+
+* 修复
+  * storagev2: 内置拓扑排序实现，避免 gammazero/toposort v0.1.1 与 v0.2.0 的模块版本冲突
+
+## 7.26.15
+
+* 修复
+  * storage: 兼容 CreatedAt 为空的 Bucket 信息响应，避免 time.Parse 失败导致 GetBucketInfo/BucketInfosInRegion 返回错误
+
 ## 7.26.14
 
 * 新增
