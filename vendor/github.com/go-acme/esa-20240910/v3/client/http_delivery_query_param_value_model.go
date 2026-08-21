@@ -14,6 +14,13 @@ type iHttpDeliveryQueryParamValue interface {
 }
 
 type HttpDeliveryQueryParamValue struct {
+	// The value of the custom HTTP delivery query string parameter.
+	//
+	// > Key-map. The value can be a static value, a dynamic function, or a dynamic value.
+	//
+	// example:
+	//
+	// auth_token: sk-***
 	StaticValue *string `json:"StaticValue,omitempty" xml:"StaticValue,omitempty"`
 }
 

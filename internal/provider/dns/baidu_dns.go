@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"uuid"
 	"vibe_ip/internal/provider"
 	"vibe_ip/internal/utils"
 
 	"github.com/baidubce/bce-sdk-go/bce"
 	"github.com/baidubce/bce-sdk-go/services/dns"
-	"github.com/baidubce/bce-sdk-go/util"
 )
 
 // BaiduDNSConfig 百度云 DNS 配置
@@ -221,7 +221,7 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, domain_name string, sub_d
 		requestDnsCreate.Value = origin_value                                        // 记录值
 		requestDnsCreate.Line = utils.StringToPtr(p.CustomConfig.LineValue)          // 解析线路
 		requestDnsCreate.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
-		err = p.Provider.Client.CreateRecord(domain_name, requestDnsCreate, util.NewUUID())
+		err = p.Provider.Client.CreateRecord(domain_name, requestDnsCreate, uuid.NewV7().String())
 		if err != nil {
 			return fmt.Errorf("接口 CreateRecord 失败 %w", err)
 		}
@@ -234,7 +234,7 @@ func (p *BaiduDNSProvider) Update(ctx context.Context, domain_name string, sub_d
 		requestDnsUpdate.Type = record_type                                          // 解析记录类型
 		requestDnsUpdate.Value = origin_value                                        // 记录值
 		requestDnsUpdate.Description = utils.StringToPtr(p.CustomConfig.Description) // 解析记录描述
-		err = p.Provider.Client.UpdateRecord(domain_name, p.InternalData.RecordID, requestDnsUpdate, util.NewUUID())
+		err = p.Provider.Client.UpdateRecord(domain_name, p.InternalData.RecordID, requestDnsUpdate, uuid.NewV7().String())
 		if err != nil {
 			return fmt.Errorf("接口 UpdateRecord 失败 %w", err)
 		}

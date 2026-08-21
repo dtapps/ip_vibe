@@ -26,8 +26,8 @@ func (client *Client) Init(config *openapiutil.Config) (_err error) {
 	}
 	client.EndpointRule = dara.String("regional")
 	client.EndpointMap = map[string]*string{
-		"cn-hangzhou":    dara.String("esa.cn-hangzhou.aliyuncs.com"),
 		"ap-southeast-1": dara.String("esa.ap-southeast-1.aliyuncs.com"),
+		"cn-hangzhou":    dara.String("esa.cn-hangzhou.aliyuncs.com"),
 	}
 	_err = client.CheckConfig(config)
 	if _err != nil {
@@ -671,7 +671,7 @@ func BatchCreateWafRules(client *Client, request *BatchCreateWafRulesRequest) (_
 
 // Summary:
 //
-// Delete key-value pairs in bulk from a specified namespace.
+// Batch deletes key-value pairs from a specified KV namespace based on a specified list of key names.
 //
 // @param tmpReq - BatchDeleteKvRequest
 //
@@ -727,7 +727,7 @@ func BatchDeleteKvWithOptions(client *Client, tmpReq *BatchDeleteKvRequest, runt
 
 // Summary:
 //
-// Delete key-value pairs in bulk from a specified namespace.
+// Batch deletes key-value pairs from a specified KV namespace based on a specified list of key names.
 //
 // @param request - BatchDeleteKvRequest
 //
@@ -745,21 +745,21 @@ func BatchDeleteKv(client *Client, request *BatchDeleteKvRequest) (_result *Batc
 
 // Summary:
 //
-// Batch deletes key-value pairs from a specified KV namespace based on a specified list of key names. The maximum request body size is 100 MB.
+// Batch deletes key-value pairs from a specified KV namespace based on a list of key names. The maximum request body size is 100 MB.
 //
 // Description:
 //
 //	Notice:
 //
-// Prerequisites for non-SDK calls: (1) You must have an OSS bucket with read and write permissions. (2) You must be able to generate a pre-signed HTTPS GET URL by using the OSS SDK or API. (3) The uploaded JSON file must use the same format as the BatchDeleteKv request body..
+// Prerequisites for non-SDK calls: (1) You must have an OSS bucket with read and write permissions. (2) You must be able to generate a pre-signed HTTPS GET URL by using the OSS SDK or API. (3) The uploaded JSON file format must be the same as the BatchDeleteKv request body.
 //
-// This operation provides the same functionality as [BatchDeleteKv](https://help.aliyun.com/document_detail/2850204.html), but allows a larger request body. If the request body is small, use the [BatchDeleteKv](https://help.aliyun.com/document_detail/2850204.html) operation to reduce server-side processing time. This operation must be called by using an SDK. For example, when using the Golang SDK, call the BatchDeleteKvWithHighCapacityAdvance function.
+// This operation provides the same functionality as [BatchDeleteKv](https://help.aliyun.com/document_detail/2850204.html), but allows a larger request body. If the request body is small, use the [BatchDeleteKv](https://help.aliyun.com/document_detail/2850204.html) operation directly to reduce server processing time. This operation must be called by using an SDK. For example, when using the Golang SDK, call the BatchDeleteKvWithHighCapacityAdvance function.
 //
 // ```
 //
 // func TestBatchDeleteWithHighCapacity() error {
 //
-//	// Initialize the configuration
+//	// Configuration initialization
 //
 //	cfg := new(openapi.Config)
 //
@@ -775,9 +775,9 @@ func BatchDeleteKv(client *Client, request *BatchDeleteKvRequest) (_result *Batc
 //
 //	}
 //
-//	runtime := &util.RuntimeOptions{}.
+//	runtime := &util.RuntimeOptions{}
 //
-//	// Construct the batch delete request for key-value pairs
+//	// Construct the batch delete key-value pair request
 //
 //	namespace := "test_batch_put"
 //
@@ -801,9 +801,9 @@ func BatchDeleteKv(client *Client, request *BatchDeleteKvRequest) (_result *Batc
 //
 //		return err
 //
-//	}.
+//	}
 //
-//	// If the payload is larger than 2 MB, call the high-capacity operation to delete the key-value pairs
+//	// If the payload is larger than 2 MB, call the high-capacity operation to delete
 //
 //	reqHighCapacity := BatchDeleteKvWithHighCapacityAdvanceRequest{
 //
@@ -823,7 +823,7 @@ func BatchDeleteKv(client *Client, request *BatchDeleteKvRequest) (_result *Batc
 //
 //	return nil
 //
-// }.
+// }
 //
 // @param request - BatchDeleteKvWithHighCapacityRequest
 //
@@ -871,21 +871,21 @@ func BatchDeleteKvWithHighCapacityWithOptions(client *Client, request *BatchDele
 
 // Summary:
 //
-// Batch deletes key-value pairs from a specified KV namespace based on a specified list of key names. The maximum request body size is 100 MB.
+// Batch deletes key-value pairs from a specified KV namespace based on a list of key names. The maximum request body size is 100 MB.
 //
 // Description:
 //
 //	Notice:
 //
-// Prerequisites for non-SDK calls: (1) You must have an OSS bucket with read and write permissions. (2) You must be able to generate a pre-signed HTTPS GET URL by using the OSS SDK or API. (3) The uploaded JSON file must use the same format as the BatchDeleteKv request body..
+// Prerequisites for non-SDK calls: (1) You must have an OSS bucket with read and write permissions. (2) You must be able to generate a pre-signed HTTPS GET URL by using the OSS SDK or API. (3) The uploaded JSON file format must be the same as the BatchDeleteKv request body.
 //
-// This operation provides the same functionality as [BatchDeleteKv](https://help.aliyun.com/document_detail/2850204.html), but allows a larger request body. If the request body is small, use the [BatchDeleteKv](https://help.aliyun.com/document_detail/2850204.html) operation to reduce server-side processing time. This operation must be called by using an SDK. For example, when using the Golang SDK, call the BatchDeleteKvWithHighCapacityAdvance function.
+// This operation provides the same functionality as [BatchDeleteKv](https://help.aliyun.com/document_detail/2850204.html), but allows a larger request body. If the request body is small, use the [BatchDeleteKv](https://help.aliyun.com/document_detail/2850204.html) operation directly to reduce server processing time. This operation must be called by using an SDK. For example, when using the Golang SDK, call the BatchDeleteKvWithHighCapacityAdvance function.
 //
 // ```
 //
 // func TestBatchDeleteWithHighCapacity() error {
 //
-//	// Initialize the configuration
+//	// Configuration initialization
 //
 //	cfg := new(openapi.Config)
 //
@@ -901,9 +901,9 @@ func BatchDeleteKvWithHighCapacityWithOptions(client *Client, request *BatchDele
 //
 //	}
 //
-//	runtime := &util.RuntimeOptions{}.
+//	runtime := &util.RuntimeOptions{}
 //
-//	// Construct the batch delete request for key-value pairs
+//	// Construct the batch delete key-value pair request
 //
 //	namespace := "test_batch_put"
 //
@@ -927,9 +927,9 @@ func BatchDeleteKvWithHighCapacityWithOptions(client *Client, request *BatchDele
 //
 //		return err
 //
-//	}.
+//	}
 //
-//	// If the payload is larger than 2 MB, call the high-capacity operation to delete the key-value pairs
+//	// If the payload is larger than 2 MB, call the high-capacity operation to delete
 //
 //	reqHighCapacity := BatchDeleteKvWithHighCapacityAdvanceRequest{
 //
@@ -949,7 +949,7 @@ func BatchDeleteKvWithHighCapacityWithOptions(client *Client, request *BatchDele
 //
 //	return nil
 //
-// }.
+// }
 //
 // @param request - BatchDeleteKvWithHighCapacityRequest
 //
@@ -1164,7 +1164,7 @@ func BatchGetExpressionFields(client *Client, request *BatchGetExpressionFieldsR
 
 // Summary:
 //
-// Sets multiple key-value pairs in a specified namespace.
+// Batch sets key-value pairs in a specified KV namespace based on a specified list of key names.
 //
 // @param tmpReq - BatchPutKvRequest
 //
@@ -1220,7 +1220,7 @@ func BatchPutKvWithOptions(client *Client, tmpReq *BatchPutKvRequest, runtime *d
 
 // Summary:
 //
-// Sets multiple key-value pairs in a specified namespace.
+// Batch sets key-value pairs in a specified KV namespace based on a specified list of key names.
 //
 // @param request - BatchPutKvRequest
 //
@@ -1242,13 +1242,13 @@ func BatchPutKv(client *Client, request *BatchPutKvRequest) (_result *BatchPutKv
 //
 // Description:
 //
-// This operation provides the same functionality as [BatchPutKv](https://help.aliyun.com/document_detail/2850203.html), but allows larger request bodies. If the request body is small, use the [BatchPutKv](https://help.aliyun.com/document_detail/2850203.html) operation to reduce server-side processing time. This operation must be called by using an SDK. For example, when using the Golang SDK, call the BatchPutKvWithHighCapacityAdvance function.
+// This operation provides the same functionality as [BatchPutKv](https://help.aliyun.com/document_detail/2850203.html), but allows you to upload a larger request body. If the request body is small, use the [BatchPutKv](https://help.aliyun.com/document_detail/2850203.html) operation directly to reduce server processing time. This operation must be called by using an SDK. Taking the Golang SDK as an example, call the BatchPutKvWithHighCapacityAdvance function.
 //
 // ```
 //
 // func TestBatchPutKvWithHighCapacity() error {
 //
-//	// Initialize the configuration
+//	// Configuration initialization
 //
 //	cfg := new(openapi.Config)
 //
@@ -1264,9 +1264,9 @@ func BatchPutKv(client *Client, request *BatchPutKvRequest) (_result *BatchPutKv
 //
 //	}
 //
-//	runtime := &util.RuntimeOptions{}.
+//	runtime := &util.RuntimeOptions{}
 //
-//	// Construct the key-value pairs for batch upload
+//	// Construct the key-value pairs request for batch upload
 //
 //	namespace := "test_batch_put"
 //
@@ -1298,7 +1298,7 @@ func BatchPutKv(client *Client, request *BatchPutKvRequest) (_result *BatchPutKv
 //
 //		KvList:    kvList,
 //
-//	}.
+//	}
 //
 //	payload, err := json.Marshal(rawReq)
 //
@@ -1306,9 +1306,9 @@ func BatchPutKv(client *Client, request *BatchPutKvRequest) (_result *BatchPutKv
 //
 //		return err
 //
-//	}.
+//	}
 //
-//	// If the payload is larger than 2 MB, call the high-capacity operation to upload it
+//	// If the payload is larger than 2 MB, call the high-capacity operation to upload
 //
 //	reqHighCapacity := BatchPutKvWithHighCapacityAdvanceRequest{
 //
@@ -1328,7 +1328,7 @@ func BatchPutKv(client *Client, request *BatchPutKvRequest) (_result *BatchPutKv
 //
 //	return nil
 //
-// }.
+// }
 //
 // @param request - BatchPutKvWithHighCapacityRequest
 //
@@ -1380,13 +1380,13 @@ func BatchPutKvWithHighCapacityWithOptions(client *Client, request *BatchPutKvWi
 //
 // Description:
 //
-// This operation provides the same functionality as [BatchPutKv](https://help.aliyun.com/document_detail/2850203.html), but allows larger request bodies. If the request body is small, use the [BatchPutKv](https://help.aliyun.com/document_detail/2850203.html) operation to reduce server-side processing time. This operation must be called by using an SDK. For example, when using the Golang SDK, call the BatchPutKvWithHighCapacityAdvance function.
+// This operation provides the same functionality as [BatchPutKv](https://help.aliyun.com/document_detail/2850203.html), but allows you to upload a larger request body. If the request body is small, use the [BatchPutKv](https://help.aliyun.com/document_detail/2850203.html) operation directly to reduce server processing time. This operation must be called by using an SDK. Taking the Golang SDK as an example, call the BatchPutKvWithHighCapacityAdvance function.
 //
 // ```
 //
 // func TestBatchPutKvWithHighCapacity() error {
 //
-//	// Initialize the configuration
+//	// Configuration initialization
 //
 //	cfg := new(openapi.Config)
 //
@@ -1402,9 +1402,9 @@ func BatchPutKvWithHighCapacityWithOptions(client *Client, request *BatchPutKvWi
 //
 //	}
 //
-//	runtime := &util.RuntimeOptions{}.
+//	runtime := &util.RuntimeOptions{}
 //
-//	// Construct the key-value pairs for batch upload
+//	// Construct the key-value pairs request for batch upload
 //
 //	namespace := "test_batch_put"
 //
@@ -1436,7 +1436,7 @@ func BatchPutKvWithHighCapacityWithOptions(client *Client, request *BatchPutKvWi
 //
 //		KvList:    kvList,
 //
-//	}.
+//	}
 //
 //	payload, err := json.Marshal(rawReq)
 //
@@ -1444,9 +1444,9 @@ func BatchPutKvWithHighCapacityWithOptions(client *Client, request *BatchPutKvWi
 //
 //		return err
 //
-//	}.
+//	}
 //
-//	// If the payload is larger than 2 MB, call the high-capacity operation to upload it
+//	// If the payload is larger than 2 MB, call the high-capacity operation to upload
 //
 //	reqHighCapacity := BatchPutKvWithHighCapacityAdvanceRequest{
 //
@@ -1466,7 +1466,7 @@ func BatchPutKvWithHighCapacityWithOptions(client *Client, request *BatchPutKvWi
 //
 //	return nil
 //
-// }.
+// }
 //
 // @param request - BatchPutKvWithHighCapacityRequest
 //
@@ -1685,7 +1685,7 @@ func BatchUpdateWafRules(client *Client, request *BatchUpdateWafRulesRequest) (_
 
 // Summary:
 //
-// Blocks access to specified URLs.
+// Blocks access to a specified URL.
 //
 // @param tmpReq - BlockObjectRequest
 //
@@ -1747,7 +1747,7 @@ func BlockObjectWithOptions(client *Client, tmpReq *BlockObjectRequest, runtime 
 
 // Summary:
 //
-// Blocks access to specified URLs.
+// Blocks access to a specified URL.
 //
 // @param request - BlockObjectRequest
 //
@@ -1938,7 +1938,7 @@ func CheckSiteName(client *Client, request *CheckSiteNameRequest) (_result *Chec
 
 // Summary:
 //
-// Checks the name of a real-time log delivery task.
+// Checks the project name of a real-time log delivery task.
 //
 // @param request - CheckSiteProjectNameRequest
 //
@@ -1978,7 +1978,7 @@ func CheckSiteProjectNameWithOptions(client *Client, request *CheckSiteProjectNa
 
 // Summary:
 //
-// Checks the name of a real-time log delivery task.
+// Checks the project name of a real-time log delivery task.
 //
 // @param request - CheckSiteProjectNameRequest
 //
@@ -3970,7 +3970,7 @@ func CreateImageTransform(client *Client, request *CreateImageTransformRequest) 
 
 // Summary:
 //
-// Creates a KV namespace in the current account.
+// Creates a key-value (KV) namespace under the current account.
 //
 // @param request - CreateKvNamespaceRequest
 //
@@ -4018,7 +4018,7 @@ func CreateKvNamespaceWithOptions(client *Client, request *CreateKvNamespaceRequ
 
 // Summary:
 //
-// Creates a KV namespace in the current account.
+// Creates a key-value (KV) namespace under the current account.
 //
 // @param request - CreateKvNamespaceRequest
 //
@@ -5764,7 +5764,7 @@ func CreateScheduledPreloadExecutions(client *Client, request *CreateScheduledPr
 
 // Summary:
 //
-// Add a scheduled prefetch task.
+// Adds a scheduled prefetch task.
 //
 // @param request - CreateScheduledPreloadJobRequest
 //
@@ -5824,7 +5824,7 @@ func CreateScheduledPreloadJobWithOptions(client *Client, request *CreateSchedul
 
 // Summary:
 //
-// Add a scheduled prefetch task.
+// Adds a scheduled prefetch task.
 //
 // @param request - CreateScheduledPreloadJobRequest
 //
@@ -6046,6 +6046,10 @@ func CreateSiteCustomLog(client *Client, request *CreateSiteCustomLogRequest) (_
 //
 // Creates a real-time log delivery task.
 //
+// Description:
+//
+// The site plan associated with SiteId must support real-time log delivery (such as the Standard plan). Call GetSiteLogDeliveryQuota to perform a pre-check, or verify the plan level by checking the PlanName field returned by ListSites.
+//
 // @param tmpReq - CreateSiteDeliveryTaskRequest
 //
 // @param runtime - runtime options for this request RuntimeOptions
@@ -6159,6 +6163,10 @@ func CreateSiteDeliveryTaskWithOptions(client *Client, tmpReq *CreateSiteDeliver
 // Summary:
 //
 // Creates a real-time log delivery task.
+//
+// Description:
+//
+// The site plan associated with SiteId must support real-time log delivery (such as the Standard plan). Call GetSiteLogDeliveryQuota to perform a pre-check, or verify the plan level by checking the PlanName field returned by ListSites.
 //
 // @param request - CreateSiteDeliveryTaskRequest
 //
@@ -6395,27 +6403,27 @@ func CreateUrlObservation(client *Client, request *CreateUrlObservationRequest) 
 
 // Summary:
 //
-// Creates a custom log delivery task for the user to destinations such as Simple Log Service (SLS), HTTP, Object Storage Service (OSS), S3, or Kafka.
+// Creates a custom log delivery task to deliver logs to destinations such as SLS, HTTP, OSS, S3, or Kafka.
 //
 // Description:
 //
-// This operation allows you to create a delivery task for specific log data. Multiple delivery destinations and detailed configuration options are supported, including but not limited to SLS storage, HTTP services, Alibaba Cloud OSS, S3-compatible storage, and Kafka message queues. You can customize the task name, select log fields, specify the data center, set the discard rate, choose the delivery type, and configure the delivery details based on the selected type.
+// This operation allows you to create a delivery node for specific log data. Multiple delivery destinations and detailed configuration options are supported, including but not limited to Simple Log Service (SLS), HTTP services, Alibaba Cloud Object Storage Service (OSS), S3-compatible storage, and Kafka MSMQ. You can customize the node name, select log fields, specify a data center, set the discard rate, select a delivery type, and configure the corresponding delivery details based on the selected type.
 //
-// - **Field selection**: Use `FieldName` to specify the log fields to be delivered.
+// - **Field selection**: Use `FieldName` to specify the log fields to deliver.
 //
-// - **Filter rules**: Use `FilterRules` to preprocess and filter log data.
+// - **Filter rules**: Use `FilterRules` to implement pre-processing and filtering of log data.
 //
-// - **Diverse delivery**: Supports SLS, HTTP(S), Alibaba Cloud OSS, S3-compatible storage, and Kafka, each with its specific configuration parameters.
+// - **Diverse delivery**: Supports SLS, HTTP(S), Alibaba Cloud OSS, S3-compatible storage, and Kafka delivery methods, each with its own specific configuration parameters.
 //
-// ## Usage notes
+// ## Before you begin
 //
-// - Ensure that the authentication information (such as AccessKey and SecretKey) has sufficient permissions to perform the delivery operation.
+// - Ensure that the provided credentials (such as AccessKey and SecretKey) have sufficient permissions to perform the delivery operation.
 //
-// - When you select an encrypted or authenticated delivery method, correctly configure the related security parameters.
+// - When you select a delivery method that requires encryption or authentication, correctly configure the related security parameters.
 //
-// - Verify the syntax correctness of `FilterRules` to ensure that the filtering logic meets expectations.
+// - Verify the syntax of `FilterRules` to ensure that the filtering logic meets your expectations.
 //
-// - Adjust advanced parameters such as retries and timeout based on actual requirements to optimize delivery efficiency and stability.
+// - Adjust advanced parameters such as the maximum number of retries and timeout period as needed to optimize delivery efficiency and stability.
 //
 // @param tmpReq - CreateUserDeliveryTaskRequest
 //
@@ -6529,27 +6537,27 @@ func CreateUserDeliveryTaskWithOptions(client *Client, tmpReq *CreateUserDeliver
 
 // Summary:
 //
-// Creates a custom log delivery task for the user to destinations such as Simple Log Service (SLS), HTTP, Object Storage Service (OSS), S3, or Kafka.
+// Creates a custom log delivery task to deliver logs to destinations such as SLS, HTTP, OSS, S3, or Kafka.
 //
 // Description:
 //
-// This operation allows you to create a delivery task for specific log data. Multiple delivery destinations and detailed configuration options are supported, including but not limited to SLS storage, HTTP services, Alibaba Cloud OSS, S3-compatible storage, and Kafka message queues. You can customize the task name, select log fields, specify the data center, set the discard rate, choose the delivery type, and configure the delivery details based on the selected type.
+// This operation allows you to create a delivery node for specific log data. Multiple delivery destinations and detailed configuration options are supported, including but not limited to Simple Log Service (SLS), HTTP services, Alibaba Cloud Object Storage Service (OSS), S3-compatible storage, and Kafka MSMQ. You can customize the node name, select log fields, specify a data center, set the discard rate, select a delivery type, and configure the corresponding delivery details based on the selected type.
 //
-// - **Field selection**: Use `FieldName` to specify the log fields to be delivered.
+// - **Field selection**: Use `FieldName` to specify the log fields to deliver.
 //
-// - **Filter rules**: Use `FilterRules` to preprocess and filter log data.
+// - **Filter rules**: Use `FilterRules` to implement pre-processing and filtering of log data.
 //
-// - **Diverse delivery**: Supports SLS, HTTP(S), Alibaba Cloud OSS, S3-compatible storage, and Kafka, each with its specific configuration parameters.
+// - **Diverse delivery**: Supports SLS, HTTP(S), Alibaba Cloud OSS, S3-compatible storage, and Kafka delivery methods, each with its own specific configuration parameters.
 //
-// ## Usage notes
+// ## Before you begin
 //
-// - Ensure that the authentication information (such as AccessKey and SecretKey) has sufficient permissions to perform the delivery operation.
+// - Ensure that the provided credentials (such as AccessKey and SecretKey) have sufficient permissions to perform the delivery operation.
 //
-// - When you select an encrypted or authenticated delivery method, correctly configure the related security parameters.
+// - When you select a delivery method that requires encryption or authentication, correctly configure the related security parameters.
 //
-// - Verify the syntax correctness of `FilterRules` to ensure that the filtering logic meets expectations.
+// - Verify the syntax of `FilterRules` to ensure that the filtering logic meets your expectations.
 //
-// - Adjust advanced parameters such as retries and timeout based on actual requirements to optimize delivery efficiency and stability.
+// - Adjust advanced parameters such as the maximum number of retries and timeout period as needed to optimize delivery efficiency and stability.
 //
 // @param request - CreateUserDeliveryTaskRequest
 //
@@ -8847,7 +8855,7 @@ func DeleteKeylessServer(client *Client, request *DeleteKeylessServerRequest) (_
 
 // Summary:
 //
-// Delete a specific key-value pair from a namespace.
+// Deletes a specific key-value pair from a KV namespace.
 //
 // @param request - DeleteKvRequest
 //
@@ -8887,7 +8895,7 @@ func DeleteKvWithOptions(client *Client, request *DeleteKvRequest, runtime *dara
 
 // Summary:
 //
-// Delete a specific key-value pair from a namespace.
+// Deletes a specific key-value pair from a KV namespace.
 //
 // @param request - DeleteKvRequest
 //
@@ -8905,7 +8913,7 @@ func DeleteKv(client *Client, request *DeleteKvRequest) (_result *DeleteKvRespon
 
 // Summary:
 //
-// Deletes a namespace from your account.
+// Deletes a single KV namespace owned by the account.
 //
 // @param request - DeleteKvNamespaceRequest
 //
@@ -8949,7 +8957,7 @@ func DeleteKvNamespaceWithOptions(client *Client, request *DeleteKvNamespaceRequ
 
 // Summary:
 //
-// Deletes a namespace from your account.
+// Deletes a single KV namespace owned by the account.
 //
 // @param request - DeleteKvNamespaceRequest
 //
@@ -9929,6 +9937,98 @@ func DeleteRoutineCodeVersion(client *Client, request *DeleteRoutineCodeVersionR
 
 // Summary:
 //
+// Deletes environment variables of a Routine.
+//
+// Description:
+//
+// ## Operation description
+//
+// - When you create a Routine code version for deployment, the environment name `Env` supports only the staging environment `staging` or the production environment `production`.
+//
+// - The `CodeVersions` parameter supports canary release of up to two versions, and the total proportion of these versions must equal 100%.
+//
+// @param tmpReq - DeleteRoutineEnvironmentVariablesRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DeleteRoutineEnvironmentVariablesResponse
+func DeleteRoutineEnvironmentVariablesWithOptions(client *Client, tmpReq *DeleteRoutineEnvironmentVariablesRequest, runtime *dara.RuntimeOptions) (_result *DeleteRoutineEnvironmentVariablesResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = tmpReq.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	request := &DeleteRoutineEnvironmentVariablesShrinkRequest{}
+	openapiutil.Convert(tmpReq, request)
+	if !dara.IsNil(tmpReq.EnvironmentVariableKeys) {
+		request.EnvironmentVariableKeysShrink = openapiutil.ArrayToStringWithSpecifiedStyle(tmpReq.EnvironmentVariableKeys, dara.String("EnvironmentVariableKeys"), dara.String("json"))
+	}
+
+	body := map[string]interface{}{}
+	if !dara.IsNil(request.Env) {
+		body["Env"] = request.Env
+	}
+
+	if !dara.IsNil(request.EnvironmentVariableKeysShrink) {
+		body["EnvironmentVariableKeys"] = request.EnvironmentVariableKeysShrink
+	}
+
+	if !dara.IsNil(request.Name) {
+		body["Name"] = request.Name
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Body: openapiutil.ParseToMap(body),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DeleteRoutineEnvironmentVariables"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DeleteRoutineEnvironmentVariablesResponse{}
+	_body, _err := client.CallApi(params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Deletes environment variables of a Routine.
+//
+// Description:
+//
+// ## Operation description
+//
+// - When you create a Routine code version for deployment, the environment name `Env` supports only the staging environment `staging` or the production environment `production`.
+//
+// - The `CodeVersions` parameter supports canary release of up to two versions, and the total proportion of these versions must equal 100%.
+//
+// @param request - DeleteRoutineEnvironmentVariablesRequest
+//
+// @return DeleteRoutineEnvironmentVariablesResponse
+func DeleteRoutineEnvironmentVariables(client *Client, request *DeleteRoutineEnvironmentVariablesRequest) (_result *DeleteRoutineEnvironmentVariablesResponse, _err error) {
+	runtime := &dara.RuntimeOptions{}
+	_result = &DeleteRoutineEnvironmentVariablesResponse{}
+	_body, _err := DeleteRoutineEnvironmentVariablesWithOptions(client,request, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_result = _body
+	return _result, _err
+}
+
+// Summary:
+//
 // Deletes an association record of an Edge Routine.
 //
 // @param request - DeleteRoutineRelatedRecordRequest
@@ -10071,7 +10171,7 @@ func DeleteRoutineRoute(client *Client, request *DeleteRoutineRouteRequest) (_re
 
 // Summary:
 //
-// Deletes a single scheduled preload plan.
+// Deletes a single scheduled prefetch plan by prefetch plan ID.
 //
 // @param request - DeleteScheduledPreloadExecutionRequest
 //
@@ -10115,7 +10215,7 @@ func DeleteScheduledPreloadExecutionWithOptions(client *Client, request *DeleteS
 
 // Summary:
 //
-// Deletes a single scheduled preload plan.
+// Deletes a single scheduled prefetch plan by prefetch plan ID.
 //
 // @param request - DeleteScheduledPreloadExecutionRequest
 //
@@ -10133,7 +10233,7 @@ func DeleteScheduledPreloadExecution(client *Client, request *DeleteScheduledPre
 
 // Summary:
 //
-// Deletes a specified scheduled preload job.
+// Deletes a specified scheduled prefetch task by task ID.
 //
 // @param request - DeleteScheduledPreloadJobRequest
 //
@@ -10177,7 +10277,7 @@ func DeleteScheduledPreloadJobWithOptions(client *Client, request *DeleteSchedul
 
 // Summary:
 //
-// Deletes a specified scheduled preload job.
+// Deletes a specified scheduled prefetch task by task ID.
 //
 // @param request - DeleteScheduledPreloadJobRequest
 //
@@ -11623,7 +11723,7 @@ func DescribeDDoSBpsList(client *Client, request *DescribeDDoSBpsListRequest) (_
 
 // Summary:
 //
-// Queries the peak bits per second (BPS) and packets per second (PPS) data of DDoS attacks at the network layer.
+// Queries the peak BPS and PPS data of DDoS network-layer attacks.
 //
 // @param request - DescribeDDoSBpsMaxRequest
 //
@@ -11663,7 +11763,7 @@ func DescribeDDoSBpsMaxWithOptions(client *Client, request *DescribeDDoSBpsMaxRe
 
 // Summary:
 //
-// Queries the peak bits per second (BPS) and packets per second (PPS) data of DDoS attacks at the network layer.
+// Queries the peak BPS and PPS data of DDoS network-layer attacks.
 //
 // @param request - DescribeDDoSBpsMaxRequest
 //
@@ -12415,7 +12515,7 @@ func DescribeHttpDDoSIntelligentRateLimitRules(client *Client, request *Describe
 
 // Summary:
 //
-// Queries the status of an account in the KV service.
+// Queries the status information of an account in the KV service.
 //
 // @param runtime - runtime options for this request RuntimeOptions
 //
@@ -12444,7 +12544,7 @@ func DescribeKvAccountStatusWithOptions(client *Client, runtime *dara.RuntimeOpt
 
 // Summary:
 //
-// Queries the status of an account in the KV service.
+// Queries the status information of an account in the KV service.
 //
 // @return DescribeKvAccountStatusResponse
 func DescribeKvAccountStatus(client *Client, ) (_result *DescribeKvAccountStatusResponse, _err error) {
@@ -12460,7 +12560,7 @@ func DescribeKvAccountStatus(client *Client, ) (_result *DescribeKvAccountStatus
 
 // Summary:
 //
-// Queries prefetch tasks by time, task status, or prefetch URL.
+// Queries the details of prefetch tasks. Supports paged query by time, task status, and prefetch URL.
 //
 // @param request - DescribePreloadTasksRequest
 //
@@ -12500,7 +12600,7 @@ func DescribePreloadTasksWithOptions(client *Client, request *DescribePreloadTas
 
 // Summary:
 //
-// Queries prefetch tasks by time, task status, or prefetch URL.
+// Queries the details of prefetch tasks. Supports paged query by time, task status, and prefetch URL.
 //
 // @param request - DescribePreloadTasksRequest
 //
@@ -12576,11 +12676,11 @@ func DescribePurgeTasks(client *Client, request *DescribePurgeTasksRequest) (_re
 
 // Summary:
 //
-// Queries the status of a plan instance.
+// Invokes DescribeRatePlanInstanceStatus to query the instance status of a plan.
 //
 // Description:
 //
-// You can query the status of a plan instance only after you purchase and create the instance.
+// You can query the instance status of a plan only after you purchase and create the plan instance.
 //
 // @param request - DescribeRatePlanInstanceStatusRequest
 //
@@ -12628,11 +12728,11 @@ func DescribeRatePlanInstanceStatusWithOptions(client *Client, request *Describe
 
 // Summary:
 //
-// Queries the status of a plan instance.
+// Invokes DescribeRatePlanInstanceStatus to query the instance status of a plan.
 //
 // Description:
 //
-// You can query the status of a plan instance only after you purchase and create the instance.
+// You can query the instance status of a plan only after you purchase and create the plan instance.
 //
 // @param request - DescribeRatePlanInstanceStatusRequest
 //
@@ -12868,15 +12968,15 @@ func DescribeRuleMetadata(client *Client, request *DescribeRuleMetadataRequest) 
 
 // Summary:
 //
-// Queries the URLs from which you can download the raw access logs of a website.
+// Queries the download URLs of raw access logs for a specified site.
 //
 // Description:
 //
-// - If you do not specify StartTime and EndTime, log data from the last 24 hours is returned by default. If you specify StartTime and EndTime, log data for the specified time range is returned.
+// - If you do not specify StartTime and EndTime, log data from the past 24 hours is returned by default. If you specify StartTime and EndTime, logs are queried based on the specified time range.
 //
-// - The time granularity for data queries is one hour.
+// - The time granularity for querying data is one hour.
 //
-// - The maximum number of calls per user: 50 calls per second.
+// - The maximum number of times that each user can call this operation per second: 50.
 //
 // - Only log records from the last month can be queried (the time span between the start time and the current time cannot exceed 31 days).
 //
@@ -12938,15 +13038,15 @@ func DescribeSiteLogsWithOptions(client *Client, request *DescribeSiteLogsReques
 
 // Summary:
 //
-// Queries the URLs from which you can download the raw access logs of a website.
+// Queries the download URLs of raw access logs for a specified site.
 //
 // Description:
 //
-// - If you do not specify StartTime and EndTime, log data from the last 24 hours is returned by default. If you specify StartTime and EndTime, log data for the specified time range is returned.
+// - If you do not specify StartTime and EndTime, log data from the past 24 hours is returned by default. If you specify StartTime and EndTime, logs are queried based on the specified time range.
 //
-// - The time granularity for data queries is one hour.
+// - The time granularity for querying data is one hour.
 //
-// - The maximum number of calls per user: 50 calls per second.
+// - The maximum number of times that each user can call this operation per second: 50.
 //
 // - Only log records from the last month can be queried (the time span between the start time and the current time cannot exceed 31 days).
 //
@@ -13186,25 +13286,25 @@ func DescribeSiteTopData(client *Client, request *DescribeSiteTopDataRequest) (_
 
 // Summary:
 //
-// Retrieves time series data for WAF event analysis of a website.
+// Retrieves time series data for WAF event analysis of a site.
 //
 // Description:
 //
 // - If you do not specify StartTime and EndTime, this operation returns data from the past 24 hours. If you specify StartTime and EndTime, this operation returns data for the specified time range.
 //
-// - The time granularity of the returned data varies based on the time span between StartTime and EndTime.
+// - The time granularity of returned data varies based on the time span between StartTime and EndTime.
 //
-//   - Less than or equal to 3 hours: returns data at a 1-minute granularity.
+//   - Less than or equal to 3 hours: returns data at 1-minute granularity.
 //
-//   - Greater than 3 hours and less than or equal to 12 hours: returns data at a 5-minute granularity.
+//   - Greater than 3 hours and less than or equal to 12 hours: returns data at 5-minute granularity.
 //
-//   - Greater than 12 hours and less than or equal to 1 day: returns data at a 15-minute granularity.
+//   - Greater than 12 hours and less than or equal to 1 day: returns data at 15-minute granularity.
 //
-//   - Greater than 1 day and less than or equal to 10 days: returns data at an hourly granularity.
+//   - Greater than 1 day and less than or equal to 10 days: returns data at 1-hour granularity.
 //
-//   - Greater than 10 days and less than or equal to 31 days: returns data at a daily granularity.
+//   - Greater than 10 days and less than or equal to 31 days: returns data at 1-day granularity.
 //
-// - Because the number of access requests during the query period may be large, the data analytics results may undergo sampling.
+// - Because the number of access requests during the query period may be large, the data analytics results may be based on sampling.
 //
 // @param tmpReq - DescribeSiteWafTimeSeriesDataRequest
 //
@@ -13270,25 +13370,25 @@ func DescribeSiteWafTimeSeriesDataWithOptions(client *Client, tmpReq *DescribeSi
 
 // Summary:
 //
-// Retrieves time series data for WAF event analysis of a website.
+// Retrieves time series data for WAF event analysis of a site.
 //
 // Description:
 //
 // - If you do not specify StartTime and EndTime, this operation returns data from the past 24 hours. If you specify StartTime and EndTime, this operation returns data for the specified time range.
 //
-// - The time granularity of the returned data varies based on the time span between StartTime and EndTime.
+// - The time granularity of returned data varies based on the time span between StartTime and EndTime.
 //
-//   - Less than or equal to 3 hours: returns data at a 1-minute granularity.
+//   - Less than or equal to 3 hours: returns data at 1-minute granularity.
 //
-//   - Greater than 3 hours and less than or equal to 12 hours: returns data at a 5-minute granularity.
+//   - Greater than 3 hours and less than or equal to 12 hours: returns data at 5-minute granularity.
 //
-//   - Greater than 12 hours and less than or equal to 1 day: returns data at a 15-minute granularity.
+//   - Greater than 12 hours and less than or equal to 1 day: returns data at 15-minute granularity.
 //
-//   - Greater than 1 day and less than or equal to 10 days: returns data at an hourly granularity.
+//   - Greater than 1 day and less than or equal to 10 days: returns data at 1-hour granularity.
 //
-//   - Greater than 10 days and less than or equal to 31 days: returns data at a daily granularity.
+//   - Greater than 10 days and less than or equal to 31 days: returns data at 1-day granularity.
 //
-// - Because the number of access requests during the query period may be large, the data analytics results may undergo sampling.
+// - Because the number of access requests during the query period may be large, the data analytics results may be based on sampling.
 //
 // @param request - DescribeSiteWafTimeSeriesDataRequest
 //
@@ -13561,6 +13661,92 @@ func DescribeUrlObservationData(client *Client, request *DescribeUrlObservationD
 	runtime := &dara.RuntimeOptions{}
 	_result = &DescribeUrlObservationDataResponse{}
 	_body, _err := DescribeUrlObservationDataWithOptions(client,request, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_result = _body
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the resource plan information of the current user.
+//
+// @param request - DescribeUserResourcePackageRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return DescribeUserResourcePackageResponse
+func DescribeUserResourcePackageWithOptions(client *Client, request *DescribeUserResourcePackageRequest, runtime *dara.RuntimeOptions) (_result *DescribeUserResourcePackageResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.InstanceId) {
+		query["InstanceId"] = request.InstanceId
+	}
+
+	if !dara.IsNil(request.PageNumber) {
+		query["PageNumber"] = request.PageNumber
+	}
+
+	if !dara.IsNil(request.PageSize) {
+		query["PageSize"] = request.PageSize
+	}
+
+	if !dara.IsNil(request.SecurityToken) {
+		query["SecurityToken"] = request.SecurityToken
+	}
+
+	if !dara.IsNil(request.SortField) {
+		query["SortField"] = request.SortField
+	}
+
+	if !dara.IsNil(request.SortRule) {
+		query["SortRule"] = request.SortRule
+	}
+
+	if !dara.IsNil(request.Status) {
+		query["Status"] = request.Status
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("DescribeUserResourcePackage"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &DescribeUserResourcePackageResponse{}
+	_body, _err := client.CallApi(params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the resource plan information of the current user.
+//
+// @param request - DescribeUserResourcePackageRequest
+//
+// @return DescribeUserResourcePackageResponse
+func DescribeUserResourcePackage(client *Client, request *DescribeUserResourcePackageRequest) (_result *DescribeUserResourcePackageResponse, _err error) {
+	runtime := &dara.RuntimeOptions{}
+	_result = &DescribeUserResourcePackageResponse{}
+	_body, _err := DescribeUserResourcePackageWithOptions(client,request, runtime)
 	if _err != nil {
 		return _result, _err
 	}
@@ -16674,7 +16860,7 @@ func GetKvAccount(client *Client, ) (_result *GetKvAccountResponse, _err error) 
 
 // Summary:
 //
-// Queries the value and time to live (TTL) of a key.
+// Queries the value and TTL information of a key-value pair.
 //
 // @param request - GetKvDetailRequest
 //
@@ -16722,7 +16908,7 @@ func GetKvDetailWithOptions(client *Client, request *GetKvDetailRequest, runtime
 
 // Summary:
 //
-// Queries the value and time to live (TTL) of a key.
+// Queries the value and TTL information of a key-value pair.
 //
 // @param request - GetKvDetailRequest
 //
@@ -16740,7 +16926,7 @@ func GetKvDetail(client *Client, request *GetKvDetailRequest) (_result *GetKvDet
 
 // Summary:
 //
-// Retrieves information about a specific namespace.
+// Queries the information of a KV namespace under an account.
 //
 // @param request - GetKvNamespaceRequest
 //
@@ -16780,7 +16966,7 @@ func GetKvNamespaceWithOptions(client *Client, request *GetKvNamespaceRequest, r
 
 // Summary:
 //
-// Retrieves information about a specific namespace.
+// Queries the information of a KV namespace under an account.
 //
 // @param request - GetKvNamespaceRequest
 //
@@ -16926,7 +17112,7 @@ func GetLoadBalancer(client *Client, request *GetLoadBalancerRequest) (_result *
 
 // Summary:
 //
-// Queries the root domain name of a website.
+// Retrieves the primary domain name based on the specified site name.
 //
 // @param request - GetMainDomainNameRequest
 //
@@ -16966,7 +17152,7 @@ func GetMainDomainNameWithOptions(client *Client, request *GetMainDomainNameRequ
 
 // Summary:
 //
-// Queries the root domain name of a website.
+// Retrieves the primary domain name based on the specified site name.
 //
 // @param request - GetMainDomainNameRequest
 //
@@ -17935,6 +18121,68 @@ func GetRedirectRule(client *Client, request *GetRedirectRuleRequest) (_result *
 	runtime := &dara.RuntimeOptions{}
 	_result = &GetRedirectRuleResponse{}
 	_body, _err := GetRedirectRuleWithOptions(client,request, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_result = _body
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the scheduled release time.
+//
+// @param request - GetReleaseTimeRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return GetReleaseTimeResponse
+func GetReleaseTimeWithOptions(client *Client, request *GetReleaseTimeRequest, runtime *dara.RuntimeOptions) (_result *GetReleaseTimeResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.InstanceId) {
+		query["InstanceId"] = request.InstanceId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("GetReleaseTime"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &GetReleaseTimeResponse{}
+	_body, _err := client.CallApi(params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the scheduled release time.
+//
+// @param request - GetReleaseTimeRequest
+//
+// @return GetReleaseTimeResponse
+func GetReleaseTime(client *Client, request *GetReleaseTimeRequest) (_result *GetReleaseTimeResponse, _err error) {
+	runtime := &dara.RuntimeOptions{}
+	_result = &GetReleaseTimeResponse{}
+	_body, _err := GetReleaseTimeWithOptions(client,request, runtime)
 	if _err != nil {
 		return _result, _err
 	}
@@ -18934,7 +19182,7 @@ func GetSiteCustomLog(client *Client, request *GetSiteCustomLogRequest) (_result
 
 // Summary:
 //
-// Retrieves the details of a real-time log delivery task.
+// Retrieves the configuration information of a real-time log delivery task.
 //
 // @param request - GetSiteDeliveryTaskRequest
 //
@@ -18974,7 +19222,7 @@ func GetSiteDeliveryTaskWithOptions(client *Client, request *GetSiteDeliveryTask
 
 // Summary:
 //
-// Retrieves the details of a real-time log delivery task.
+// Retrieves the configuration information of a real-time log delivery task.
 //
 // @param request - GetSiteDeliveryTaskRequest
 //
@@ -19562,13 +19810,13 @@ func GetUploadTask(client *Client, request *GetUploadTaskRequest) (_result *GetU
 
 // Summary:
 //
-// Queries the delivery configuration and status of a task for a specific user.
+// Queries the delivery configuration and status information of a specified task for a user.
 //
 // Description:
 //
-// - **Function**: This operation retrieves detailed delivery information for a specific task of an Alibaba Cloud user, including the task name, discard rate, region, business type, status, delivery type, delivery configuration, and filter rules.
+// - **Features**: This operation retrieves the detailed delivery information of a specified task under an Alibaba Cloud account, including the task name, discard rate, region, business type, status, delivery type and configuration, and filter rules.
 //
-// - **Use case**: Use this operation to review the log processing and delivery configuration for a specific task. This helps you analyze processing efficiency or troubleshoot issues.
+// - **Scenarios**: Use this operation when you need to understand or check the log processing and delivery configuration of a specific task for analyzing processing efficiency or troubleshooting issues.
 //
 // @param request - GetUserDeliveryTaskRequest
 //
@@ -19608,13 +19856,13 @@ func GetUserDeliveryTaskWithOptions(client *Client, request *GetUserDeliveryTask
 
 // Summary:
 //
-// Queries the delivery configuration and status of a task for a specific user.
+// Queries the delivery configuration and status information of a specified task for a user.
 //
 // Description:
 //
-// - **Function**: This operation retrieves detailed delivery information for a specific task of an Alibaba Cloud user, including the task name, discard rate, region, business type, status, delivery type, delivery configuration, and filter rules.
+// - **Features**: This operation retrieves the detailed delivery information of a specified task under an Alibaba Cloud account, including the task name, discard rate, region, business type, status, delivery type and configuration, and filter rules.
 //
-// - **Use case**: Use this operation to review the log processing and delivery configuration for a specific task. This helps you analyze processing efficiency or troubleshoot issues.
+// - **Scenarios**: Use this operation when you need to understand or check the log processing and delivery configuration of a specific task for analyzing processing efficiency or troubleshooting issues.
 //
 // @param request - GetUserDeliveryTaskRequest
 //
@@ -19632,11 +19880,11 @@ func GetUserDeliveryTask(client *Client, request *GetUserDeliveryTaskRequest) (_
 
 // Summary:
 //
-// Queries the remaining log delivery quota of each log category in your account.
+// Queries the remaining log delivery quota for each business type of a specified user.
 //
 // Description:
 //
-// This operation allows you to query the remaining real-time log delivery quota of each log category in your Alibaba Cloud account. You must provide your Alibaba Cloud account ID (aliUid) and log category (BusinessType). The system then returns the remaining quota of the log category to help you track the usage.
+// This operation allows you to query the real-time log delivery quota for different business types in your Alibaba Cloud account. You must provide your Alibaba Cloud user ID (aliUid) and the business type (BusinessType). The system returns the remaining quota for the specified business type, helping you understand the current quota usage.
 //
 // @param request - GetUserLogDeliveryQuotaRequest
 //
@@ -19676,11 +19924,11 @@ func GetUserLogDeliveryQuotaWithOptions(client *Client, request *GetUserLogDeliv
 
 // Summary:
 //
-// Queries the remaining log delivery quota of each log category in your account.
+// Queries the remaining log delivery quota for each business type of a specified user.
 //
 // Description:
 //
-// This operation allows you to query the remaining real-time log delivery quota of each log category in your Alibaba Cloud account. You must provide your Alibaba Cloud account ID (aliUid) and log category (BusinessType). The system then returns the remaining quota of the log category to help you track the usage.
+// This operation allows you to query the real-time log delivery quota for different business types in your Alibaba Cloud account. You must provide your Alibaba Cloud user ID (aliUid) and the business type (BusinessType). The system returns the remaining quota for the specified business type, helping you understand the current quota usage.
 //
 // @param request - GetUserLogDeliveryQuotaRequest
 //
@@ -20345,7 +20593,7 @@ func ListAWSRegionInfos(client *Client, request *ListAWSRegionInfosRequest) (_re
 
 // Summary:
 //
-// 查询异步任务列表
+// Queries the list of asynchronous tasks. You can use this operation to query the status of asynchronous tasks triggered by users, such as free certificate applications.
 //
 // @param request - ListAsyncTasksRequest
 //
@@ -20385,7 +20633,7 @@ func ListAsyncTasksWithOptions(client *Client, request *ListAsyncTasksRequest, r
 
 // Summary:
 //
-// 查询异步任务列表
+// Queries the list of asynchronous tasks. You can use this operation to query the status of asynchronous tasks triggered by users, such as free certificate applications.
 //
 // @param request - ListAsyncTasksRequest
 //
@@ -22530,7 +22778,7 @@ func ListKeylessServers(client *Client, request *ListKeylessServersRequest) (_re
 
 // Summary:
 //
-// Lists all key-value pairs in a specified KV storage namespace under your account.
+// Lists all key-value pairs in a specified KV namespace under the account.
 //
 // @param request - ListKvsRequest
 //
@@ -22570,7 +22818,7 @@ func ListKvsWithOptions(client *Client, request *ListKvsRequest, runtime *dara.R
 
 // Summary:
 //
-// Lists all key-value pairs in a specified KV storage namespace under your account.
+// Lists all key-value pairs in a specified KV namespace under the account.
 //
 // @param request - ListKvsRequest
 //
@@ -23946,6 +24194,92 @@ func ListRoutineCodeVersions(client *Client, request *ListRoutineCodeVersionsReq
 
 // Summary:
 //
+// Queries the environment variables of a Routine.
+//
+// Description:
+//
+// This operation allows you to perform a paged query of all Edge Routines (Routines) created under your account, and provides the Routine quota and usage for your current plan. You can specify the paging parameters `PageNumber` and `PageSize` to control the number of returned results, and use `SearchKeyWord` to perform a fuzzy search to filter specific Routine names.
+//
+// @param request - ListRoutineEnvironmentVariablesRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return ListRoutineEnvironmentVariablesResponse
+func ListRoutineEnvironmentVariablesWithOptions(client *Client, request *ListRoutineEnvironmentVariablesRequest, runtime *dara.RuntimeOptions) (_result *ListRoutineEnvironmentVariablesResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	body := map[string]interface{}{}
+	if !dara.IsNil(request.Env) {
+		body["Env"] = request.Env
+	}
+
+	if !dara.IsNil(request.KeyWord) {
+		body["KeyWord"] = request.KeyWord
+	}
+
+	if !dara.IsNil(request.Name) {
+		body["Name"] = request.Name
+	}
+
+	if !dara.IsNil(request.PageNumber) {
+		body["PageNumber"] = request.PageNumber
+	}
+
+	if !dara.IsNil(request.PageSize) {
+		body["PageSize"] = request.PageSize
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Body: openapiutil.ParseToMap(body),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("ListRoutineEnvironmentVariables"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &ListRoutineEnvironmentVariablesResponse{}
+	_body, _err := client.CallApi(params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Queries the environment variables of a Routine.
+//
+// Description:
+//
+// This operation allows you to perform a paged query of all Edge Routines (Routines) created under your account, and provides the Routine quota and usage for your current plan. You can specify the paging parameters `PageNumber` and `PageSize` to control the number of returned results, and use `SearchKeyWord` to perform a fuzzy search to filter specific Routine names.
+//
+// @param request - ListRoutineEnvironmentVariablesRequest
+//
+// @return ListRoutineEnvironmentVariablesResponse
+func ListRoutineEnvironmentVariables(client *Client, request *ListRoutineEnvironmentVariablesRequest) (_result *ListRoutineEnvironmentVariablesResponse, _err error) {
+	runtime := &dara.RuntimeOptions{}
+	_result = &ListRoutineEnvironmentVariablesResponse{}
+	_body, _err := ListRoutineEnvironmentVariablesWithOptions(client,request, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_result = _body
+	return _result, _err
+}
+
+// Summary:
+//
 // The records associated with the function.
 //
 // Description:
@@ -24156,7 +24490,7 @@ func ListScheduledPreloadExecutions(client *Client, request *ListScheduledPreloa
 
 // Summary:
 //
-// Lists scheduled prefetch tasks for a site.
+// Lists the scheduled prefetch tasks for a site.
 //
 // @param request - ListScheduledPreloadJobsRequest
 //
@@ -24196,7 +24530,7 @@ func ListScheduledPreloadJobsWithOptions(client *Client, request *ListScheduledP
 
 // Summary:
 //
-// Lists scheduled prefetch tasks for a site.
+// Lists the scheduled prefetch tasks for a site.
 //
 // @param request - ListScheduledPreloadJobsRequest
 //
@@ -26322,7 +26656,7 @@ func OpenErService(client *Client, request *OpenErServiceRequest) (_result *Open
 
 // Summary:
 //
-// Prefetches resources.
+// Prefetches cache content.
 //
 // @param tmpReq - PreloadCachesRequest
 //
@@ -26384,7 +26718,7 @@ func PreloadCachesWithOptions(client *Client, tmpReq *PreloadCachesRequest, runt
 
 // Summary:
 //
-// Prefetches resources.
+// Prefetches cache content.
 //
 // @param request - PreloadCachesRequest
 //
@@ -26730,7 +27064,7 @@ func PurchaseCacheReserve(client *Client, request *PurchaseCacheReserveRequest) 
 
 // Summary:
 //
-// 新购DDoS实例
+// Purchases a new Anti-DDoS Pro or Anti-DDoS Premium instance.
 //
 // @param request - PurchaseDDoSInstanceRequest
 //
@@ -26786,7 +27120,7 @@ func PurchaseDDoSInstanceWithOptions(client *Client, request *PurchaseDDoSInstan
 
 // Summary:
 //
-// 新购DDoS实例
+// Purchases a new Anti-DDoS Pro or Anti-DDoS Premium instance.
 //
 // @param request - PurchaseDDoSInstanceRequest
 //
@@ -28785,6 +29119,110 @@ func SetOriginClientCertificateHostnames(client *Client, request *SetOriginClien
 
 // Summary:
 //
+// Sets environment variables for a Routine.
+//
+// Description:
+//
+// - If you do not specify StartTime and EndTime, this operation returns data from the past 24 hours. If you specify StartTime and EndTime, this operation returns data for the specified time range.
+//
+// - The time granularity of returned data varies based on the time range specified by StartTime and EndTime.
+//
+//   - If the time range is less than or equal to 3 hours, data is returned at a 1-minute granularity.
+//
+//   - If the time range is greater than 3 hours and less than or equal to 1 day, data is returned at a 5-minute granularity.
+//
+//   - If the time range is greater than 1 day and less than or equal to 10 days, data is returned at an hourly granularity.
+//
+//   - If the time range is greater than 10 days and less than or equal to 31 days, data is returned at a daily granularity.
+//
+// @param tmpReq - SetRoutineEnvironmentVariablesRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return SetRoutineEnvironmentVariablesResponse
+func SetRoutineEnvironmentVariablesWithOptions(client *Client, tmpReq *SetRoutineEnvironmentVariablesRequest, runtime *dara.RuntimeOptions) (_result *SetRoutineEnvironmentVariablesResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = tmpReq.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	request := &SetRoutineEnvironmentVariablesShrinkRequest{}
+	openapiutil.Convert(tmpReq, request)
+	if !dara.IsNil(tmpReq.EnvironmentVariables) {
+		request.EnvironmentVariablesShrink = openapiutil.ArrayToStringWithSpecifiedStyle(tmpReq.EnvironmentVariables, dara.String("EnvironmentVariables"), dara.String("json"))
+	}
+
+	body := map[string]interface{}{}
+	if !dara.IsNil(request.Env) {
+		body["Env"] = request.Env
+	}
+
+	if !dara.IsNil(request.EnvironmentVariablesShrink) {
+		body["EnvironmentVariables"] = request.EnvironmentVariablesShrink
+	}
+
+	if !dara.IsNil(request.Name) {
+		body["Name"] = request.Name
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Body: openapiutil.ParseToMap(body),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("SetRoutineEnvironmentVariables"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &SetRoutineEnvironmentVariablesResponse{}
+	_body, _err := client.CallApi(params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Sets environment variables for a Routine.
+//
+// Description:
+//
+// - If you do not specify StartTime and EndTime, this operation returns data from the past 24 hours. If you specify StartTime and EndTime, this operation returns data for the specified time range.
+//
+// - The time granularity of returned data varies based on the time range specified by StartTime and EndTime.
+//
+//   - If the time range is less than or equal to 3 hours, data is returned at a 1-minute granularity.
+//
+//   - If the time range is greater than 3 hours and less than or equal to 1 day, data is returned at a 5-minute granularity.
+//
+//   - If the time range is greater than 1 day and less than or equal to 10 days, data is returned at an hourly granularity.
+//
+//   - If the time range is greater than 10 days and less than or equal to 31 days, data is returned at a daily granularity.
+//
+// @param request - SetRoutineEnvironmentVariablesRequest
+//
+// @return SetRoutineEnvironmentVariablesResponse
+func SetRoutineEnvironmentVariables(client *Client, request *SetRoutineEnvironmentVariablesRequest) (_result *SetRoutineEnvironmentVariablesResponse, _err error) {
+	runtime := &dara.RuntimeOptions{}
+	_result = &SetRoutineEnvironmentVariablesResponse{}
+	_body, _err := SetRoutineEnvironmentVariablesWithOptions(client,request, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_result = _body
+	return _result, _err
+}
+
+// Summary:
+//
 // Starts a scheduled prefetch based on the prefetch plan ID.
 //
 // @param request - StartScheduledPreloadExecutionRequest
@@ -28909,9 +29347,9 @@ func StopRoutineBuild(client *Client, request *StopRoutineBuildRequest) (_result
 
 // Summary:
 //
-// Stops a single scheduled preload execution plan based on the preload plan ID.
+// Stops a single scheduled prefetch plan by prefetch plan ID.
 //
-// Prerequisites: (1) This API only takes effect when the execution plan status is running. Execution plans in the waiting or failed status cannot be stopped. (2) Whether an execution plan can reach the running status depends on whether the site it belongs to has completed access verification (site Status=active).
+// Prerequisites: (1) This operation takes effect only when the execution plan is in the running state. Execution plans in the waiting or failed state cannot be stopped. (2) Whether an execution plan can reach the running state depends on whether the associated site has passed the access verification (site Status=active).
 //
 // @param request - StopScheduledPreloadExecutionRequest
 //
@@ -28955,9 +29393,9 @@ func StopScheduledPreloadExecutionWithOptions(client *Client, request *StopSched
 
 // Summary:
 //
-// Stops a single scheduled preload execution plan based on the preload plan ID.
+// Stops a single scheduled prefetch plan by prefetch plan ID.
 //
-// Prerequisites: (1) This API only takes effect when the execution plan status is running. Execution plans in the waiting or failed status cannot be stopped. (2) Whether an execution plan can reach the running status depends on whether the site it belongs to has completed access verification (site Status=active).
+// Prerequisites: (1) This operation takes effect only when the execution plan is in the running state. Execution plans in the waiting or failed state cannot be stopped. (2) Whether an execution plan can reach the running state depends on whether the associated site has passed the access verification (site Status=active).
 //
 // @param request - StopScheduledPreloadExecutionRequest
 //
@@ -29037,7 +29475,7 @@ func StopSite(client *Client, request *StopSiteRequest) (_result *StopSiteRespon
 
 // Summary:
 //
-// Submits a purge or prefetch task after a file that contains resources to be purged or prefetched is uploaded.
+// Starts a cache purge or prefetch task after the file is uploaded successfully.
 //
 // @param request - SubmitUploadTaskRequest
 //
@@ -29077,7 +29515,7 @@ func SubmitUploadTaskWithOptions(client *Client, request *SubmitUploadTaskReques
 
 // Summary:
 //
-// Submits a purge or prefetch task after a file that contains resources to be purged or prefetched is uploaded.
+// Starts a cache purge or prefetch task after the file is uploaded successfully.
 //
 // @param request - SubmitUploadTaskRequest
 //
@@ -29177,6 +29615,118 @@ func TagResources(client *Client, request *TagResourcesRequest) (_result *TagRes
 
 // Summary:
 //
+// Performs Tracing Analysis. You can use this operation to construct and initiate an impersonation HTTP/HTTPS request to the ESA platform, displaying the site configuration matching and effective settings on the ESA platform for the request.
+//
+// Description:
+//
+//	Notice: Before you use this operation, make sure that the site is connected to the ESA platform and enabled.
+//
+// @param tmpReq - TraceSiteRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return TraceSiteResponse
+func TraceSiteWithOptions(client *Client, tmpReq *TraceSiteRequest, runtime *dara.RuntimeOptions) (_result *TraceSiteResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = tmpReq.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	request := &TraceSiteShrinkRequest{}
+	openapiutil.Convert(tmpReq, request)
+	if !dara.IsNil(tmpReq.Body) {
+		request.BodyShrink = openapiutil.ArrayToStringWithSpecifiedStyle(tmpReq.Body, dara.String("Body"), dara.String("json"))
+	}
+
+	if !dara.IsNil(tmpReq.Context) {
+		request.ContextShrink = openapiutil.ArrayToStringWithSpecifiedStyle(tmpReq.Context, dara.String("Context"), dara.String("json"))
+	}
+
+	if !dara.IsNil(tmpReq.Cookies) {
+		request.CookiesShrink = openapiutil.ArrayToStringWithSpecifiedStyle(tmpReq.Cookies, dara.String("Cookies"), dara.String("json"))
+	}
+
+	if !dara.IsNil(tmpReq.Headers) {
+		request.HeadersShrink = openapiutil.ArrayToStringWithSpecifiedStyle(tmpReq.Headers, dara.String("Headers"), dara.String("json"))
+	}
+
+	body := map[string]interface{}{}
+	if !dara.IsNil(request.BodyShrink) {
+		body["Body"] = request.BodyShrink
+	}
+
+	if !dara.IsNil(request.ContextShrink) {
+		body["Context"] = request.ContextShrink
+	}
+
+	if !dara.IsNil(request.CookiesShrink) {
+		body["Cookies"] = request.CookiesShrink
+	}
+
+	if !dara.IsNil(request.HeadersShrink) {
+		body["Headers"] = request.HeadersShrink
+	}
+
+	if !dara.IsNil(request.Method) {
+		body["Method"] = request.Method
+	}
+
+	if !dara.IsNil(request.Protocol) {
+		body["Protocol"] = request.Protocol
+	}
+
+	if !dara.IsNil(request.Url) {
+		body["Url"] = request.Url
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Body: openapiutil.ParseToMap(body),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("TraceSite"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &TraceSiteResponse{}
+	_body, _err := client.CallApi(params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Performs Tracing Analysis. You can use this operation to construct and initiate an impersonation HTTP/HTTPS request to the ESA platform, displaying the site configuration matching and effective settings on the ESA platform for the request.
+//
+// Description:
+//
+//	Notice: Before you use this operation, make sure that the site is connected to the ESA platform and enabled.
+//
+// @param request - TraceSiteRequest
+//
+// @return TraceSiteResponse
+func TraceSite(client *Client, request *TraceSiteRequest) (_result *TraceSiteResponse, _err error) {
+	runtime := &dara.RuntimeOptions{}
+	_result = &TraceSiteResponse{}
+	_body, _err := TraceSiteWithOptions(client,request, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_result = _body
+	return _result, _err
+}
+
+// Summary:
+//
 // Deletes a resource tag based on a specified resource ID.
 //
 // @param request - UntagResourcesRequest
@@ -29250,6 +29800,72 @@ func UntagResources(client *Client, request *UntagResourcesRequest) (_result *Un
 	runtime := &dara.RuntimeOptions{}
 	_result = &UntagResourcesResponse{}
 	_body, _err := UntagResourcesWithOptions(client,request, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_result = _body
+	return _result, _err
+}
+
+// Summary:
+//
+// Changes the specifications of a bot instance.
+//
+// @param request - UpdateBotSpecRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return UpdateBotSpecResponse
+func UpdateBotSpecWithOptions(client *Client, request *UpdateBotSpecRequest, runtime *dara.RuntimeOptions) (_result *UpdateBotSpecResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.BotInstanceLevel) {
+		query["BotInstanceLevel"] = request.BotInstanceLevel
+	}
+
+	if !dara.IsNil(request.InstanceId) {
+		query["InstanceId"] = request.InstanceId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("UpdateBotSpec"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &UpdateBotSpecResponse{}
+	_body, _err := client.CallApi(params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Changes the specifications of a bot instance.
+//
+// @param request - UpdateBotSpecRequest
+//
+// @return UpdateBotSpecResponse
+func UpdateBotSpec(client *Client, request *UpdateBotSpecRequest) (_result *UpdateBotSpecResponse, _err error) {
+	runtime := &dara.RuntimeOptions{}
+	_result = &UpdateBotSpecResponse{}
+	_body, _err := UpdateBotSpecWithOptions(client,request, runtime)
 	if _err != nil {
 		return _result, _err
 	}
@@ -30220,6 +30836,80 @@ func UpdateCustomScenePolicy(client *Client, request *UpdateCustomScenePolicyReq
 	runtime := &dara.RuntimeOptions{}
 	_result = &UpdateCustomScenePolicyResponse{}
 	_body, _err := UpdateCustomScenePolicyWithOptions(client,request, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_result = _body
+	return _result, _err
+}
+
+// Summary:
+//
+// Modifies the specifications of an Anti-DDoS Pro or Anti-DDoS Premium instance.
+//
+// @param request - UpdateDDoSSpecRequest
+//
+// @param runtime - runtime options for this request RuntimeOptions
+//
+// @return UpdateDDoSSpecResponse
+func UpdateDDoSSpecWithOptions(client *Client, request *UpdateDDoSSpecRequest, runtime *dara.RuntimeOptions) (_result *UpdateDDoSSpecResponse, _err error) {
+	if dara.BoolValue(client.EnableValidate) == true {
+		_err = request.Validate()
+		if _err != nil {
+			return _result, _err
+		}
+	}
+	query := map[string]interface{}{}
+	if !dara.IsNil(request.DDoSBillingMode) {
+		query["DDoSBillingMode"] = request.DDoSBillingMode
+	}
+
+	if !dara.IsNil(request.DDoSBurstableDomesticProtection) {
+		query["DDoSBurstableDomesticProtection"] = request.DDoSBurstableDomesticProtection
+	}
+
+	if !dara.IsNil(request.DDoSBurstableOverseasProtection) {
+		query["DDoSBurstableOverseasProtection"] = request.DDoSBurstableOverseasProtection
+	}
+
+	if !dara.IsNil(request.InstanceId) {
+		query["InstanceId"] = request.InstanceId
+	}
+
+	req := &openapiutil.OpenApiRequest{
+		Query: openapiutil.Query(query),
+	}
+	params := &openapiutil.Params{
+		Action:      dara.String("UpdateDDoSSpec"),
+		Version:     dara.String("2024-09-10"),
+		Protocol:    dara.String("HTTPS"),
+		Pathname:    dara.String("/"),
+		Method:      dara.String("POST"),
+		AuthType:    dara.String("AK"),
+		Style:       dara.String("RPC"),
+		ReqBodyType: dara.String("formData"),
+		BodyType:    dara.String("json"),
+	}
+	_result = &UpdateDDoSSpecResponse{}
+	_body, _err := client.CallApi(params, req, runtime)
+	if _err != nil {
+		return _result, _err
+	}
+	_err = dara.Convert(_body, &_result)
+	return _result, _err
+}
+
+// Summary:
+//
+// Modifies the specifications of an Anti-DDoS Pro or Anti-DDoS Premium instance.
+//
+// @param request - UpdateDDoSSpecRequest
+//
+// @return UpdateDDoSSpecResponse
+func UpdateDDoSSpec(client *Client, request *UpdateDDoSSpecRequest) (_result *UpdateDDoSSpecResponse, _err error) {
+	runtime := &dara.RuntimeOptions{}
+	_result = &UpdateDDoSSpecResponse{}
+	_body, _err := UpdateDDoSSpecWithOptions(client,request, runtime)
 	if _err != nil {
 		return _result, _err
 	}
@@ -33019,7 +33709,7 @@ func UpdateRoutineRoute(client *Client, request *UpdateRoutineRouteRequest) (_re
 
 // Summary:
 //
-// Updates a scheduled prefetch plan by prefetch plan ID.
+// Updates a scheduled prefetch plan based on the prefetch plan ID.
 //
 // @param request - UpdateScheduledPreloadExecutionRequest
 //
@@ -33081,7 +33771,7 @@ func UpdateScheduledPreloadExecutionWithOptions(client *Client, request *UpdateS
 
 // Summary:
 //
-// Updates a scheduled prefetch plan by prefetch plan ID.
+// Updates a scheduled prefetch plan based on the prefetch plan ID.
 //
 // @param request - UpdateScheduledPreloadExecutionRequest
 //
@@ -33401,7 +34091,7 @@ func UpdateSiteCustomLog(client *Client, request *UpdateSiteCustomLogRequest) (_
 
 // Summary:
 //
-// Updates a site delivery task.
+// Modifies the delivery settings of a real-time log task for a user.
 //
 // @param request - UpdateSiteDeliveryTaskRequest
 //
@@ -33465,7 +34155,7 @@ func UpdateSiteDeliveryTaskWithOptions(client *Client, request *UpdateSiteDelive
 
 // Summary:
 //
-// Updates a site delivery task.
+// Modifies the delivery settings of a real-time log task for a user.
 //
 // @param request - UpdateSiteDeliveryTaskRequest
 //
@@ -34069,7 +34759,11 @@ func UpdateUrlObservation(client *Client, request *UpdateUrlObservationRequest) 
 
 // Summary:
 //
-// Updates a delivery task configuration. You can modify the task name, selected fields, real-time log type, and discard rate.
+// Modifies the delivery task configuration of a user, allowing you to set the task name, select fields, specify the real-time log type, and adjust the discard rate.
+//
+// Description:
+//
+// Before calling this operation, you must have successfully created a task with the target TaskName by using CreateUserDeliveryTask. Only then can you use this operation to update the delivery task configuration.
 //
 // @param request - UpdateUserDeliveryTaskRequest
 //
@@ -34133,7 +34827,11 @@ func UpdateUserDeliveryTaskWithOptions(client *Client, request *UpdateUserDelive
 
 // Summary:
 //
-// Updates a delivery task configuration. You can modify the task name, selected fields, real-time log type, and discard rate.
+// Modifies the delivery task configuration of a user, allowing you to set the task name, select fields, specify the real-time log type, and adjust the discard rate.
+//
+// Description:
+//
+// Before calling this operation, you must have successfully created a task with the target TaskName by using CreateUserDeliveryTask. Only then can you use this operation to update the delivery task configuration.
 //
 // @param request - UpdateUserDeliveryTaskRequest
 //

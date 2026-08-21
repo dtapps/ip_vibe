@@ -1,5 +1,5 @@
 # 使用 golang 镜像作为基础
-FROM golang:1.27rc1-trixie
+FROM golang:1.27.0-trixie
 
 # ==========================================
 # 定义版本变量

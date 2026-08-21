@@ -40,11 +40,11 @@ type iCreateSiteDeliveryTaskRequest interface {
 type CreateSiteDeliveryTaskRequest struct {
 	// The business type. Valid values:
 	//
-	// - **dcdn_log_access_l1*	- (default): Access logs.
+	// - **dcdn_log_access_l1*	- (default): access logs.
 	//
-	// - **dcdn_log_er**: Edge Routine logs.
+	// - **dcdn_log_er**: Edge Routine function logs.
 	//
-	// - **dcdn_log_waf**: Security protection logs.
+	// - **dcdn_log_waf**: security protection logs.
 	//
 	// - **dcdn_log_ipa**: Layer 4 acceleration logs.
 	//
@@ -56,9 +56,9 @@ type CreateSiteDeliveryTaskRequest struct {
 	BusinessType *string `json:"BusinessType,omitempty" xml:"BusinessType,omitempty"`
 	// The data center. Valid values:
 	//
-	// - **cn**: The Chinese mainland.
+	// - **cn**: the Chinese mainland.
 	//
-	// - **oversea**: Outside the Chinese mainland.
+	// - **oversea**: outside the Chinese mainland.
 	//
 	// example:
 	//
@@ -70,7 +70,7 @@ type CreateSiteDeliveryTaskRequest struct {
 	//
 	// - **http**: HTTP service.
 	//
-	// - **aws3**: Amazon S3.
+	// - **aws3**: Amazon S3 service.
 	//
 	// - **oss**: Object Storage Service (OSS).
 	//
@@ -84,20 +84,29 @@ type CreateSiteDeliveryTaskRequest struct {
 	//
 	// sls
 	DeliveryType *string `json:"DeliveryType,omitempty" xml:"DeliveryType,omitempty"`
-	// The discard rate. If you do not specify this parameter, the default value is 0.
+	// The discard rate. Default value: 0.
 	//
 	// example:
 	//
 	// 0.0
 	DiscardRate *float32 `json:"DiscardRate,omitempty" xml:"DiscardRate,omitempty"`
-	// The log fields to be delivered, separated by commas (,).
+	// The selected log fields, separated by commas (,).
+	//
+	// > The field names must come from the FieldName values returned by the GetRealtimeDeliveryField operation, and the corresponding BusinessType must be specified.
 	//
 	// This parameter is required.
 	//
 	// example:
 	//
-	// user_agent,ip_adress,ip_port
+	// ClientIP,ClientRequestURI,EdgeResponseStatusCode
 	FieldName *string `json:"FieldName,omitempty" xml:"FieldName,omitempty"`
+	// The filter rule version.
+	//
+	// > For backward compatibility with legacy filter rules, the default value is v1. Newly created tasks use v2.
+	//
+	// example:
+	//
+	// v2
 	FilterVer *string `json:"FilterVer,omitempty" xml:"FilterVer,omitempty"`
 	// The HTTP delivery configuration parameters.
 	HttpDelivery *CreateSiteDeliveryTaskRequestHttpDelivery `json:"HttpDelivery,omitempty" xml:"HttpDelivery,omitempty" type:"Struct"`
@@ -105,9 +114,9 @@ type CreateSiteDeliveryTaskRequest struct {
 	KafkaDelivery *CreateSiteDeliveryTaskRequestKafkaDelivery `json:"KafkaDelivery,omitempty" xml:"KafkaDelivery,omitempty" type:"Struct"`
 	// The OSS delivery configuration.
 	OssDelivery *CreateSiteDeliveryTaskRequestOssDelivery `json:"OssDelivery,omitempty" xml:"OssDelivery,omitempty" type:"Struct"`
-	// The configuration parameters for S3 or S3-compatible delivery.
+	// The S3 or S3-compatible delivery configuration parameters.
 	S3Delivery *CreateSiteDeliveryTaskRequestS3Delivery `json:"S3Delivery,omitempty" xml:"S3Delivery,omitempty" type:"Struct"`
-	// The site ID. You can call the [ListSites](https://help.aliyun.com/document_detail/2850189.html) operation to query the site ID.
+	// The site ID, which can be obtained by calling the [ListSites](https://help.aliyun.com/document_detail/2850189.html) operation.
 	//
 	// This parameter is required.
 	//
@@ -115,9 +124,9 @@ type CreateSiteDeliveryTaskRequest struct {
 	//
 	// 12312312112***
 	SiteId *int64 `json:"SiteId,omitempty" xml:"SiteId,omitempty"`
-	// The Simple Log Service delivery configuration.
+	// The Simple Log Service (SLS) delivery configuration.
 	SlsDelivery *CreateSiteDeliveryTaskRequestSlsDelivery `json:"SlsDelivery,omitempty" xml:"SlsDelivery,omitempty" type:"Struct"`
-	// The name of the task.
+	// The task name.
 	//
 	// This parameter is required.
 	//
@@ -288,36 +297,51 @@ type CreateSiteDeliveryTaskRequestHttpDelivery struct {
 	//
 	// gzip
 	Compress *string `json:"Compress,omitempty" xml:"Compress,omitempty"`
-	// The delivery URL of the HTTP server.
+	// The HTTP server delivery address.
 	//
 	// example:
 	//
 	// http://xxx.aliyun.com/v1/log/upload
 	DestUrl *string `json:"DestUrl,omitempty" xml:"DestUrl,omitempty"`
-	// The custom header.
-	HeaderParam  map[string]*HttpDeliveryHeaderParamValue `json:"HeaderParam,omitempty" xml:"HeaderParam,omitempty"`
-	LastLogSplit *bool                                    `json:"LastLogSplit,omitempty" xml:"LastLogSplit,omitempty"`
-	// The prefix of the log delivery package.
+	// The Custom Header.
+	HeaderParam map[string]*HttpDeliveryHeaderParamValue `json:"HeaderParam,omitempty" xml:"HeaderParam,omitempty"`
+	// The trailing separator.
+	//
+	// example:
+	//
+	// true
+	LastLogSplit *bool `json:"LastLogSplit,omitempty" xml:"LastLogSplit,omitempty"`
+	// The log delivery body prefix.
 	//
 	// example:
 	//
 	// cdnVersion:1.0
 	LogBodyPrefix *string `json:"LogBodyPrefix,omitempty" xml:"LogBodyPrefix,omitempty"`
-	// The suffix of the log delivery package.
+	// The log delivery body suffix.
 	//
 	// example:
 	//
 	// cdnVersion:1.0
 	LogBodySuffix *string `json:"LogBodySuffix,omitempty" xml:"LogBodySuffix,omitempty"`
-	LogSplit      *bool   `json:"LogSplit,omitempty" xml:"LogSplit,omitempty"`
+	// Specifies whether to enable log segmentation. Default value: true.
+	//
+	// example:
+	//
+	// true
+	LogSplit *bool `json:"LogSplit,omitempty" xml:"LogSplit,omitempty"`
+	// The log separator.
+	//
+	// example:
+	//
+	// \\n
 	LogSplitWords *string `json:"LogSplitWords,omitempty" xml:"LogSplitWords,omitempty"`
-	// The maximum size per delivery batch, in MB.
+	// The maximum size per delivery. Unit: MB.
 	//
 	// example:
 	//
 	// 5
 	MaxBatchMB *int64 `json:"MaxBatchMB,omitempty" xml:"MaxBatchMB,omitempty"`
-	// The maximum number of entries per delivery batch.
+	// The maximum number of log entries per delivery.
 	//
 	// example:
 	//
@@ -329,9 +353,9 @@ type CreateSiteDeliveryTaskRequestHttpDelivery struct {
 	//
 	// 3
 	MaxRetry *int64 `json:"MaxRetry,omitempty" xml:"MaxRetry,omitempty"`
-	// The custom request parameter.
+	// The custom request parameters.
 	QueryParam map[string]*HttpDeliveryQueryParamValue `json:"QueryParam,omitempty" xml:"QueryParam,omitempty"`
-	// Specifies whether standard authentication is enabled.
+	// Specifies whether to use standard authentication.
 	//
 	// example:
 	//
@@ -339,7 +363,7 @@ type CreateSiteDeliveryTaskRequestHttpDelivery struct {
 	StandardAuthOn *bool `json:"StandardAuthOn,omitempty" xml:"StandardAuthOn,omitempty"`
 	// The standard authentication parameters.
 	StandardAuthParam *CreateSiteDeliveryTaskRequestHttpDeliveryStandardAuthParam `json:"StandardAuthParam,omitempty" xml:"StandardAuthParam,omitempty" type:"Struct"`
-	// The timeout period, in seconds.
+	// The timeout period. Unit: seconds.
 	//
 	// example:
 	//
@@ -502,9 +526,7 @@ func (s *CreateSiteDeliveryTaskRequestHttpDelivery) Validate() error {
 type CreateSiteDeliveryTaskRequestHttpDeliveryStandardAuthParam struct {
 	// The encryption timeout period.
 	//
-	// >
-	//
-	// > Set this parameter to a value greater than 0. We recommend that you set it to at least 300.
+	// > The value must be greater than 0. A value of 300 or greater is recommended. Unit: seconds.
 	//
 	// example:
 	//
@@ -570,7 +592,7 @@ type CreateSiteDeliveryTaskRequestKafkaDelivery struct {
 	//
 	// kafka.LeastBytes
 	Balancer *string `json:"Balancer,omitempty" xml:"Balancer,omitempty"`
-	// The server array.
+	// The array of servers.
 	Brokers []*string `json:"Brokers,omitempty" xml:"Brokers,omitempty" type:"Repeated"`
 	// The compression method.
 	//
@@ -595,9 +617,16 @@ type CreateSiteDeliveryTaskRequestKafkaDelivery struct {
 	// example:
 	//
 	// dqc_test2
-	Topic  *string `json:"Topic,omitempty" xml:"Topic,omitempty"`
-	UseTLS *bool   `json:"UseTLS,omitempty" xml:"UseTLS,omitempty"`
-	// Specifies whether user authentication is enabled.
+	Topic *string `json:"Topic,omitempty" xml:"Topic,omitempty"`
+	// Specifies whether to enable SASL-encrypted transmission for Kafka delivery.
+	//
+	// > The delivery address must be configured with a public certificate. Self-signed certificate verification will fail.
+	//
+	// example:
+	//
+	// false
+	UseTLS *bool `json:"UseTLS,omitempty" xml:"UseTLS,omitempty"`
+	// Specifies whether to enable user authentication.
 	//
 	// example:
 	//
@@ -717,7 +746,7 @@ type CreateSiteDeliveryTaskRequestOssDelivery struct {
 	//
 	// test_rlog
 	BucketName *string `json:"BucketName,omitempty" xml:"BucketName,omitempty"`
-	// The prefix of the OSS storage path.
+	// The OSS storage path prefix.
 	//
 	// example:
 	//
@@ -792,15 +821,15 @@ type CreateSiteDeliveryTaskRequestS3Delivery struct {
 	//
 	// logriver-test/log
 	BucketPath *string `json:"BucketPath,omitempty" xml:"BucketPath,omitempty"`
-	// The endpoint of the server. This parameter is required when S3Cmpt is set to true.
+	// The server endpoint. This parameter is required when S3Cmpt is set to true.
 	//
-	// > For S3-compatible services, configure the domain name resolution by concatenating the bucket and endpoint. For example, if the endpoint is example.com and the bucket is demo, the actual delivery address is demo.example.com.
+	// > For S3-compatible services, configure domain name resolution by concatenating the Bucket and Endpoint addresses. For example, if Endpoint is example.com and Bucket is demo, the actual delivery address is demo.example.com.
 	//
 	// example:
 	//
 	// https://s3.oss-cn-hangzhou.aliyuncs.com
 	Endpoint *string `json:"Endpoint,omitempty" xml:"Endpoint,omitempty"`
-	// The prefix of the storage path.
+	// The storage path prefix.
 	//
 	// example:
 	//
@@ -818,14 +847,28 @@ type CreateSiteDeliveryTaskRequestS3Delivery struct {
 	//
 	// true
 	S3Cmpt *bool `json:"S3Cmpt,omitempty" xml:"S3Cmpt,omitempty"`
-	// The secret key used by the S3 account.
+	// The SecretKey ID used by the S3 account.
 	//
 	// example:
 	//
 	// LDSIKh***
-	SecretKey            *string `json:"SecretKey,omitempty" xml:"SecretKey,omitempty"`
-	ServerSideEncryption *bool   `json:"ServerSideEncryption,omitempty" xml:"ServerSideEncryption,omitempty"`
-	VertifyType          *string `json:"VertifyType,omitempty" xml:"VertifyType,omitempty"`
+	SecretKey *string `json:"SecretKey,omitempty" xml:"SecretKey,omitempty"`
+	// Specifies whether to enable S3 server-side encryption.
+	//
+	// To configure server-side encryption for the S3 bucket, refer to OSS [Server-side encryption](https://help.aliyun.com/document_detail/31871.html).
+	//
+	// example:
+	//
+	// false
+	ServerSideEncryption *bool `json:"ServerSideEncryption,omitempty" xml:"ServerSideEncryption,omitempty"`
+	// The verification method for S3 delivery keys.
+	//
+	// > The key configuration comes from the console or SDK. Keys from the console are encrypted during transmission. Keys from the SDK do not require encryption.
+	//
+	// example:
+	//
+	// console
+	VertifyType *string `json:"VertifyType,omitempty" xml:"VertifyType,omitempty"`
 }
 
 func (s CreateSiteDeliveryTaskRequestS3Delivery) String() string {
@@ -922,19 +965,19 @@ func (s *CreateSiteDeliveryTaskRequestS3Delivery) Validate() error {
 }
 
 type CreateSiteDeliveryTaskRequestSlsDelivery struct {
-	// The name of the Simple Log Service Logstore.
+	// The SLS Logstore name.
 	//
 	// example:
 	//
 	// accesslog-test
 	SLSLogStore *string `json:"SLSLogStore,omitempty" xml:"SLSLogStore,omitempty"`
-	// The name of the Simple Log Service project.
+	// The SLS project name.
 	//
 	// example:
 	//
 	// dcdn-test20240417
 	SLSProject *string `json:"SLSProject,omitempty" xml:"SLSProject,omitempty"`
-	// The region of the Simple Log Service project.
+	// The SLS real-time log region name.
 	//
 	// example:
 	//

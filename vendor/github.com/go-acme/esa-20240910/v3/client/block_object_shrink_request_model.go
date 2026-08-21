@@ -24,7 +24,7 @@ type BlockObjectShrinkRequest struct {
 	//
 	// This parameter is required.
 	ContentShrink *string `json:"Content,omitempty" xml:"Content,omitempty"`
-	// The effective period of the block, in seconds. This parameter is required when the type is set to block.
+	// The effective period of the block, in seconds. Specify this parameter when the type is block.
 	//
 	// example:
 	//
@@ -40,9 +40,9 @@ type BlockObjectShrinkRequest struct {
 	SiteId *int64 `json:"SiteId,omitempty" xml:"SiteId,omitempty"`
 	// The type. Valid values:
 	//
-	// - **block**: blocks the URLs.
+	// - **block**: Block.
 	//
-	// - **unblock**: unblocks the URLs.
+	// - **unblock**: Unblock.
 	//
 	// This parameter is required.
 	//
