@@ -10,39 +10,20 @@
         volumes:
           - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
           - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
-          - /go:copy-on-write # 缓存整个 GOPATH（包含 mod、bin 等）
+          - /go/pkg/mod:copy-on-write # 仅缓存 Go 模块下载，避免覆盖镜像内预装的 /go/bin 工具
       env:
         LINT_PLATFORMS: linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64
       stages:
-        - name: 验证 make 工具
-          script: make --version
-
-        - name: 验证 go 工具
-          script: go version
-
-        - name: 验证 node 工具
-          script: node --version
-
-        - name: 验证 npm 工具
-          script: npm --version
-
-        - name: 验证 pnpm 工具
-          script: pnpm --version
-
-        - name: 验证 upx 工具
-          script: upx --version
-
-        - name: 验证 golangci-lint 工具
-          script: golangci-lint --version
-
-        - name: 验证 nfpm 工具
-          script: nfpm --version
-
-        - name: 验证 wixl 工具
-          script: wixl --version
-
         - name: 安装依赖
           script: make deps
 
         - name: 检查项目
           script: make check-all
+
+    # 流水线 2：知识库构建。与上方流水线 1 相互独立、并行执行——
+    # push 事件的值是 Pipeline 数组，CNB 对同一事件触发的多条 Pipeline 并行运行。
+    - stages:
+        - name: 知识库构建
+          image: cnbcool/knowledge-base
+          settings:
+            include: 'docs/**.md'
