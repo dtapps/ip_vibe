@@ -50,7 +50,6 @@ deps:
 	@echo "[Deps] 安装 Go 模块依赖..."
 	go mod tidy
 	go mod download
-	go mod vendor
 	@echo "[Deps] 安装前端依赖..."
 	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) install --frozen-lockfile --prefer-offline
 	@echo "[Deps] 完成。"
@@ -60,11 +59,10 @@ update-deps:
 	@echo "[Deps] 更新 Go 模块依赖..."
 	go get -u ./...
 	go mod tidy
-	go mod vendor
 	@echo "[Deps] 更新前端依赖..."
+	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) update --latest
 # 	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) update
 	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) self-update
-	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) update --latest
 	@echo "[Deps] 完成。"
 
 # generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
@@ -543,7 +541,7 @@ format: format-go format-yaml format-markdown format-docker
 .PHONY: format-go
 format-go:
 	@echo "[Format] 格式化后端文件 (GO)..."
-	gofmt -w -s $(shell find . -type f -name '*.go' -not -path './vendor/*' -not -path './internal/ent/*' -not -path './internal/ent_log/*' -not -path './internal/ent_stat/*')
+	gofmt -w -s $(shell find . -type f -name '*.go' -not -path './internal/ent/*' -not -path './internal/ent_log/*' -not -path './internal/ent_stat/*')
 	go fmt ./...
 	go fix ./...
 
