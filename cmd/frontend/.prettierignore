@@ -1,0 +1,5 @@
+# c8 覆盖率产物（coverage/lcov-report 下的 HTML/CSS/JS 报告），非手写源码，不参与格式检查
+coverage
+
+# 依赖目录（prettier 默认也忽略，显式声明以防万一）
+node_modules

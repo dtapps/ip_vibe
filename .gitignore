@@ -6,7 +6,6 @@
 .trae
 .codebuddy
 .log
-*_test.go
 /bin
 /cmd/frontend/node_modules
 /data
