@@ -59,3 +59,33 @@
         - name: 输出覆盖率
           script: 'echo "coverage: lines=$COVERAGE_LINES diff=$COVERAGE_DIFF_PCT"'
 
+    # 流水线 4：前端（Node/vanilla JS）单元测试覆盖率（全量红线）。与 1/2/3 并行执行。
+    # 技术栈为原生 JS（jQuery/daisyUI/Tailwind），非 Vite/Vue/TS；用 Node 内置 test runner + c8
+    # 覆盖 CJS（vitest 对 CJS 经 vite-node 转译会丢失插桩，c8 通过 require hook 原生支持 CJS）。
+    - runner:
+        tags: cnb:arch:amd64
+      docker:
+        build: .cnb/Dockerfile # 使用自定义 Dockerfile（已预装 Node + pnpm）
+        volumes:
+          - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
+      stages:
+        - name: 安装前端依赖
+          script: pnpm --dir ./cmd/frontend install --frozen-lockfile
+
+        - name: 生成前端测试覆盖率
+          # test:coverage 内部 cd 到仓库根运行 c8，产出 cmd/frontend/coverage/lcov.info
+          script: pnpm --dir ./cmd/frontend test:coverage
+
+        - name: 上报覆盖率（全量红线）
+          # https://docs.cnb.cool/zh/build/internal-steps/testing/coverage.html
+          type: testing:coverage
+          options:
+            lines: 1 # 全量行覆盖红线（%）：当前基线≈1%（仅 uuid 已测），随测试增多逐步上调
+            pattern: 'cmd/frontend/coverage/lcov.info'
+            breakIfNoCoverage: true # 找不到覆盖率报告则报错终止，避免静默通过
+          exports:
+            lines: NODE_COVERAGE_LINES
+
+        - name: 输出覆盖率
+          script: 'echo "node coverage: lines=$NODE_COVERAGE_LINES"'
+

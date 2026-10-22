@@ -7,7 +7,9 @@
     "dev": "sh ./dev.sh",
     "build": "sh ./build.sh",
     "lint": "prettier --check \"**/*.{html,js,css,json}\"",
-    "format": "prettier --write \"**/*.{html,js,css,json}\""
+    "format": "prettier --write \"**/*.{html,js,css,json}\"",
+    "test": "node test/uuid.test.js",
+    "test:coverage": "cd ../.. && c8 --reporter=lcov --reporter=text --all --include='cmd/backend/static/js/**/*.js' --reports-dir=cmd/frontend/coverage node cmd/frontend/test/uuid.test.js"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +19,7 @@
     "@egoist/tailwindcss-icons": "^1.9.2",
     "@iconify-json/lucide": "^1.2.147",
     "@tailwindcss/cli": "^4.3.3",
+    "c8": "^12.0.0",
     "clipboard": "^2.0.11",
     "daisyui": "^5.7.50",
     "dayjs": "^1.11.23",
