@@ -1,4 +1,4 @@
-"**":
+'**':
   # 自定义按钮可触发的事件：web_trigger_build_docker_image
   web_trigger_build_docker_image:
     - runner:
@@ -16,7 +16,7 @@
       stages:
         - name: 验证 make 工具
           script: make --version
-        
+
         - name: 验证 go 工具
           script: go version
 

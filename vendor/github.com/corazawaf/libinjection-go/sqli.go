@@ -2,6 +2,7 @@ package libinjection
 
 import (
 	"strings"
+	"sync"
 )
 
 type sqliState struct {
@@ -134,6 +135,8 @@ func (s *sqliState) sqliFingerprint(flags int) string {
 // new value is special using the PHRASES mapping.
 //
 // Example: "UNION" + "ALL" = "UNION ALL"
+//
+//nolint:gocyclo // complexity 20, reduction tracked in #124
 func (s *sqliState) merge(tokenA, tokenB *sqliToken) bool {
 	// first token is of right type?
 	if !(tokenA.category == sqliTokenTypeKeyword ||
@@ -175,6 +178,8 @@ func (s *sqliState) merge(tokenA, tokenB *sqliToken) bool {
 }
 
 // parses and folds input, up to 5 tokens
+//
+//nolint:gocyclo // complexity 178, reduction tracked in #129
 func (s *sqliState) fold() int {
 	var (
 		pos         = 0 // pos is the position of where whe Next token goes
@@ -225,10 +230,13 @@ func (s *sqliState) fold() int {
 					s.tokenVec[2].category == sqliTokenTypeOperator &&
 					s.tokenVec[3].category == sqliTokenTypeLeftParenthesis &&
 					s.tokenVec[4].category == sqliTokenTypeBareWord) {
+				// If we've already read an extra token beyond maxTokens,
+				// preserve it by moving it into position 1; otherwise,
+				// just reset to start from tokenVec[0] again.
 				if pos > maxTokens {
-					s.tokenVec[1] = s.tokenVec[5]
+					s.tokenVec[1] = s.tokenVec[maxTokens]
+					left = 1
 					pos = 2
-					left = 0
 				} else {
 					pos = 1
 					left = 0
@@ -664,7 +672,6 @@ func (s *sqliState) tokenize() bool {
 //
 // return TRUE if SQLi, false otherwise
 func (s *sqliState) blacklist() bool {
-
 	length := len(s.fingerprint)
 	if length < 1 {
 		return false
@@ -695,6 +702,8 @@ func (s *sqliState) blacklist() bool {
 // does additional analysis to reduce false positives.
 //
 // return TRUE if SQLi, false otherwise
+//
+//nolint:gocyclo // complexity 34, reduction tracked in #127
 func (s *sqliState) notWhitelist() bool {
 	// We assume we got a SQLi match
 	// This next part just helps reduce false positives
@@ -742,7 +751,7 @@ func (s *sqliState) notWhitelist() bool {
 		// if '1c' ends with '/x' then it's SQLi
 		if s.tokenVec[0].category == sqliTokenTypeNumber &&
 			s.tokenVec[1].category == sqliTokenTypeComment &&
-			s.tokenVec[1].val[0] != '/' {
+			s.tokenVec[1].val[0] == '/' {
 			return true
 		}
 
@@ -850,6 +859,7 @@ func (s *sqliState) reparseAsMySQL() bool {
 	return s.statsCommentDDX != 0 || s.statsCommentHash != 0
 }
 
+//nolint:gocyclo // complexity 11, reduction tracked in #122
 func (s *sqliState) check() bool {
 	// no input? not SQLi
 	if s.length == 0 {
@@ -894,14 +904,22 @@ func (s *sqliState) check() bool {
 	return false
 }
 
-// IsSQLi returns true if the input is SQLi
-// It also returns the fingerprint of the SQL Injection as []byte
+var sqliStatePool = sync.Pool{New: func() any { return new(sqliState) }}
+
+// IsSQLi returns true if the input is SQLi.
+// It also returns the fingerprint of the SQL injection as a string.
 func IsSQLi(input string) (bool, string) {
-	state := new(sqliState)
+	state := sqliStatePool.Get().(*sqliState)
+	defer func() {
+		*state = sqliState{} // clear input/token references before returning to pool
+		sqliStatePool.Put(state)
+	}()
 	sqliInit(state, input, 0)
-	result := state.check()
-	if result {
-		return result, state.fingerprint
+	if state.check() {
+		// state.fingerprint backing bytes come from string(buf[:]) inside
+		// sqliFingerprint — a separate heap allocation, not part of the struct.
+		// Safe to return after Put.
+		return true, state.fingerprint
 	}
-	return result, ""
+	return false, ""
 }

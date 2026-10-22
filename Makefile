@@ -9,7 +9,7 @@ setup: install-tools verify-tools deps
 # 	go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest
 # 	go install github.com/cloudwego/thriftgo@latest
 # 	go install github.com/zxmfke/swagger2openapi3/cmd/swag2op@latest
-# 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest 
+# 	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
 install-tools:
 	go install entgo.io/ent/cmd/ent@latest && \
 	go install github.com/swaggo/swag/cmd/swag@latest && mv $(shell go env GOPATH)/bin/swag $(shell go env GOPATH)/bin/swag_v1 && \
@@ -52,7 +52,7 @@ deps:
 	go mod download
 	go mod vendor
 	@echo "[Deps] 安装前端依赖..."
-	cd cmd/$(BINARY_NAME_FRONTEND) && pnpm install --frozen-lockfile --prefer-offline
+	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) install --frozen-lockfile --prefer-offline
 	@echo "[Deps] 完成。"
 
 # 更新依赖
@@ -62,7 +62,9 @@ update-deps:
 	go mod tidy
 	go mod vendor
 	@echo "[Deps] 更新前端依赖..."
-	cd cmd/$(BINARY_NAME_FRONTEND) && pnpm update --latest
+# 	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) update
+	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) self-update
+	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) update --latest
 	@echo "[Deps] 完成。"
 
 # generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
@@ -129,7 +131,7 @@ grpc_generate_pb:
 	@echo "Generating gRPC core code..."
 	protoc --proto_path=./internal/grpc_proto \
 	       --proto_path=$$(go env GOPATH)/src/googleapis \
-		   --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
+	       --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
 	       --go_out=./internal/grpc_generated \
 	       --go_opt=paths=source_relative \
 	       --go-grpc_out=./internal/grpc_generated \
@@ -144,7 +146,7 @@ grpc_generate_connect:
 	@echo "Generating Connect HTTP handlers..."
 	protoc --proto_path=./internal/grpc_proto \
 	       --proto_path=$$(go env GOPATH)/src/googleapis \
-		   --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
+	       --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
 	       --connect-go_out=./internal \
 	       --connect-go_opt=paths=source_relative \
 	       ./internal/grpc_proto/*.proto
@@ -155,7 +157,7 @@ grpc_generate_gateway:
 	@echo "Generating gRPC-Gateway code..."
 	protoc --proto_path=./internal/grpc_proto \
 	       --proto_path=$$(go env GOPATH)/src/googleapis \
-		   --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
+	       --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
 	       --grpc-gateway_out=./internal/grpc_generated \
 	       --grpc-gateway_opt=paths=source_relative \
 	       --grpc-gateway_opt=logtostderr=true \
@@ -167,7 +169,7 @@ grpc_generate_openapi:
 	@echo "Generating OpenAPI v2 (Swagger)..."
 	protoc --proto_path=./internal/grpc_proto \
 	       --proto_path=$$(go env GOPATH)/src/googleapis \
-		   --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
+	       --proto_path=$$(go env GOPATH)/src/protoc-gen-validate \
 	       --openapiv2_out=./internal/grpc_openapi \
 	       --openapiv2_opt=logtostderr=true \
 	       ./internal/grpc_proto/*.proto
@@ -188,7 +190,7 @@ grpc_generate_old:
 # 	thrift \
 # 		   --gen go:package_prefix=vibe_ip/internal/thrift_generated/ \
 # 	       -out ./internal/thrift_generated \
-# 	       ./internal/thrift_idl/*.thrift 
+# 	       ./internal/thrift_idl/*.thrift
 # 	rm -rf ./internal/thrift_generated/*/*-remote
 
 # thriftgo_generate:
@@ -198,25 +200,25 @@ grpc_generate_old:
 # 	       ./internal/thrift_idl/*.thrift
 
 # 二进制文件名
-BINARY_NAME=ip_vibe
+BINARY_NAME = ip_vibe
 # BINARY_NAME_CLI=cli
-BINARY_NAME_FRONTEND=frontend
-BINARY_NAME_BACKEND=backend
-BINARY_NAME_REPORTER=reporter
-BINARY_NAME_FORWARDER=forwarder
+BINARY_NAME_FRONTEND = frontend
+BINARY_NAME_BACKEND = backend
+BINARY_NAME_REPORTER = reporter
+BINARY_NAME_FORWARDER = forwarder
 
 # 编译输出目录
-BUILD_DIR=bin
+BUILD_DIR = bin
 
 # 环境参数
-ENV_DEBUG=true
+ENV_DEBUG = true
 
 ENV_SERVER_ADDR=0.0.0.0:9999
 
 ENV_BACKEND_ENDPOINT=localhost:9999
 
-ENV_BASIC_AUTH_USERNAME=admin
-ENV_BASIC_AUTH_PASSWORD=123456
+ENV_BASIC_AUTH_USERNAME = admin
+ENV_BASIC_AUTH_PASSWORD = 123456
 
 # ENV_BACKEND_ENDPOINT=192.168.101.4:9998
 # ENV_BACKEND_ENDPOINT=100.113.15.21:9998
@@ -278,7 +280,6 @@ dev_forwarder_basic_auth:
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
 	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
 
-
 #####################
 ## 检查相关
 #####################
@@ -314,20 +315,19 @@ check-frontend:
 	@echo "[Check] 检查前端依赖与质量..."
 	@echo "  -> 同步依赖 (确保环境一致)..."
 	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm install --frozen-lockfile --prefer-offline
-	
+
 	@echo "  -> 检查安全漏洞 (仅高危阻断)..."
 	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm audit --production --audit-level high --registry=https://registry.npmjs.org
-	
+
 	@echo "  -> 检查过时依赖..."
 	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm outdated
-	
+
 	@echo "  -> 检查代码风格 (Lint)..."
 	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm run lint
-	
+
 	@echo "[Check] 前端检查完成。"
 
 check-all: check-backend check-frontend
-
 
 #####################
 ## 构建相关
@@ -359,10 +359,10 @@ define compress_file
 			LEVEL="-1"; \
 			DESC="大文件-极速模式"; \
 		fi; \
-		\
+ \
 		echo "  📦 正在以 [$$DESC ($$LEVEL)] 压缩..."; \
 		ERR_MSG=$$($(UPX) $$LEVEL "$(1)" 2>&1); \
-		\
+ \
 		if [ $$? -eq 0 ]; then \
 			NEW_SIZE_H=$$(du -h "$(1)" | cut -f1); \
 			echo "  ⚡ UPX 压缩完成: $(1) [ $${ORIG_SIZE_H} -> $${NEW_SIZE_H} ]"; \
@@ -435,7 +435,7 @@ endef
 
 # 版本信息（支持外部传入）
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
-COMMIT  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 BUILDTIME ?= $(shell date -u '+%Y-%m-%d %H:%M:%S UTC')
 
 # 路径
@@ -532,3 +532,74 @@ clean-binaries:
 	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-arm64)
 	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64)
 	@echo "✓ 清理完成"
+
+# ==================== 工具 ====================
+
+# 格式化（Go + 配置 + 文档 + 脚本 + SQL + Docker）
+.PHONY: format
+format: format-go format-yaml format-markdown format-docker
+
+# 格式化 Go 代码
+.PHONY: format-go
+format-go:
+	@echo "[Format] 格式化后端文件 (GO)..."
+	gofmt -w -s $(shell find . -type f -name '*.go' -not -path './vendor/*' -not -path './internal/ent/*' -not -path './internal/ent_log/*' -not -path './internal/ent_stat/*')
+	go fmt ./...
+	go fix ./...
+
+# 格式化 YAML 文件
+.PHONY: format-yaml
+format-yaml:
+	@echo "[Format] 格式化配置文件 (YAML)…"
+	@command -v yamlfmt >/dev/null 2>&1 || { \
+		echo "⚠️  yamlfmt 未安装，跳过 YAML 格式化。" ; \
+		echo "   提示: 可通过运行 'go install github.com/google/yamlfmt/cmd/yamlfmt@latest' 安装" ; \
+		exit 0 ; \
+		}
+	@echo "[Format] 使用 yamlfmt 格式化 YAML..."
+	@yamlfmt -conf .yamlfmt \
+		".cnb" \
+		".github" \
+		".cnb.yml" \
+		".golangci.yml" || { echo "❌ yamlfmt 格式化失败"; exit 1; }
+	@echo "[Format] YAML 格式化完成（yamlfmt）。"
+
+# 格式化 Markdown 文件
+.PHONY: format-markdown
+format-markdown:
+	@echo "[Format] 格式化文档 (Markdown)…"
+	@npx --yes prettier@latest \
+		--write \
+		--tab-width 2 \
+		--print-width 120 \
+		--prose-wrap preserve \
+		"**/*.md" \
+		|| echo "⚠️  prettier 格式化失败，请确认 npx 可用"
+	@echo "[Format] Markdown 格式化完成。"
+
+# 格式化 Dockerfile 文件
+.PHONY: format-docker
+format-docker:
+	@echo "[Format] 格式化 Dockerfile..."
+	@command -v dockerfmt >/dev/null 2>&1 || { \
+		echo "⚠️  dockerfmt 未安装，跳过 Dockerfile 格式化。" ; \
+		echo "   提示: 可通过运行 'go install github.com/reteps/dockerfmt@latest' 安装" ; \
+		exit 0 ; \
+		}
+	@echo "[Format] 使用 dockerfmt 格式化 Dockerfile..."
+	@find .cnb -type f -name "Dockerfile*" -exec dockerfmt -w {} + || { echo "❌ dockerfmt 格式化失败"; exit 1; }
+	@echo "[Format] Dockerfile 格式化完成（dockerfmt）。"
+
+# ==================== 推送 ====================
+
+# 推送到所有远程仓库
+.PHONY: push
+push:
+	git push origin HEAD
+	@echo "推送完成！"
+
+# 强制推送到所有远程仓库（忽略冲突）
+.PHONY: push-force
+push-force:
+	git push --force origin HEAD
+	@echo "强制推送完成！"

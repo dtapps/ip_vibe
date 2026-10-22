@@ -18,6 +18,7 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 )
 
@@ -139,7 +140,13 @@ func parseRequestURL(c *Client, r *Request) error {
 			}
 		}
 
-		reqURL, err = url.Parse(r.baseURL + r.URL)
+		var composed string
+		if r.URL == "" || r.URL == "/" {
+			composed = r.baseURL
+		} else {
+			composed = strings.TrimRight(r.baseURL, "/") + r.URL
+		}
+		reqURL, err = url.Parse(composed)
 		if err != nil {
 			return &invalidRequestError{Err: err}
 		}
@@ -156,7 +163,7 @@ func parseRequestURL(c *Client, r *Request) error {
 			if _, ok := r.QueryParams[k]; ok {
 				continue
 			}
-			r.QueryParams[k] = v[:]
+			r.QueryParams[k] = slices.Clone(v)
 		}
 
 		// GitHub #123 Preserve query string order partially.
@@ -189,7 +196,7 @@ func parseRequestHeader(c *Client, r *Request) {
 		if _, ok := r.Header[k]; ok {
 			continue
 		}
-		r.Header[k] = v[:]
+		r.Header[k] = slices.Clone(v)
 	}
 
 	if !r.isHeaderExists(hdrUserAgentKey) {
@@ -347,7 +354,7 @@ func handleMultipart(c *Client, r *Request) error {
 		if _, ok := r.FormData[k]; ok {
 			continue
 		}
-		r.FormData[k] = v[:]
+		r.FormData[k] = slices.Clone(v)
 	}
 
 	if len(r.multipartFields) == 0 {
@@ -373,6 +380,7 @@ func handleMultipart(c *Client, r *Request) error {
 	br, bw := io.Pipe()
 	mw := multipart.NewWriter(bw)
 	r.Body = br
+	r.multipartPipeWriter = bw
 
 	// set custom multipart boundary if exists
 	if err := multipartSetBoundary(mw, r); err != nil {
@@ -382,6 +390,10 @@ func handleMultipart(c *Client, r *Request) error {
 
 	r.Header.Set(hdrContentTypeKey, mw.FormDataContentType())
 
+	// Create cancel before the writer goroutine so Client.execute can stop
+	// production without racing on multipartCancelFunc publication.
+	ctx, cancel := context.WithCancel(r.Context())
+	r.multipartCancelFunc = cancel
 	r.multipartErrChan = make(chan error, 1)
 	go func() {
 		defer close(r.multipartErrChan)
@@ -399,8 +411,6 @@ func handleMultipart(c *Client, r *Request) error {
 			return
 		}
 
-		ctx, cancel := context.WithCancel(r.Context())
-		r.multipartCancelFunc = cancel
 		for _, mf := range r.multipartFields {
 			if mf.isValues() {
 				for _, v := range mf.Values {
@@ -442,7 +452,7 @@ func handleFormData(c *Client, r *Request) {
 		if _, ok := r.FormData[k]; ok {
 			continue
 		}
-		r.FormData[k] = v[:]
+		r.FormData[k] = slices.Clone(v)
 	}
 
 	r.bodyBuf = acquireBuffer()

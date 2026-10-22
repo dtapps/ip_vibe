@@ -60,7 +60,12 @@ func startTCPProxy(laddr, raddr string, stats *Stats, ctx context.Context, logge
 	// 监听 context 取消，关闭代理
 	go func() {
 		<-ctx.Done()
-		proxy.Close()
+		if err := proxy.Close(); err != nil {
+			logger.Error("[TCPProxy] 关闭代理失败",
+				slog.String("规则ID", ruleID),
+				slog.String("错误", err.Error()),
+			)
+		}
 		atomic.AddInt64(&stats.Errors, 1)
 		logger.Info("[TCPProxy] 监听已关闭",
 			slog.String("规则ID", ruleID),

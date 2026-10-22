@@ -19,6 +19,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"sync"
 	"syscall"
@@ -108,6 +109,7 @@ type Request struct {
 	unescapeQueryParams  bool
 	multipartErrChan     chan error
 	multipartCancelFunc  context.CancelFunc
+	multipartPipeWriter  *io.PipeWriter
 }
 
 // SetCorrelationID method is used to set the correlation ID for the request
@@ -1438,6 +1440,18 @@ func (r *Request) Trace(url string) (*Response, error) {
 	return r.Execute(MethodTrace, url)
 }
 
+// Query method does QUERY HTTP request. QUERY is a safe, idempotent method that
+// carries the query as request content; it's defined in section 2 of [RFC 10008].
+//
+// NOTE:
+//   - RFC is in the early stage of adoption in the industry; server side and browsers
+//     are yet to add support. You may run into unexpected failures due to infrastructure/environment.
+//
+// [RFC 10008]: https://datatracker.ietf.org/doc/html/rfc10008.html#section-2
+func (r *Request) Query(url string) (*Response, error) {
+	return r.Execute(MethodQuery, url)
+}
+
 // Send method performs the HTTP request using the method and URL already defined
 // for current [Request].
 //
@@ -1478,12 +1492,15 @@ func (r *Request) Execute(method, url string) (res *Response, err error) {
 		r.SetCorrelationID(newGUID())
 	}
 
-	retryConditions := append(r.retryConditions, r.client.retryConditions...)
+	// slices.Concat allocates a fresh slice; appending to r.retryConditions
+	// directly would write into its spare capacity, which is shared with every
+	// clone of this Request.
+	retryConditions := slices.Concat(r.retryConditions, r.client.RetryConditions())
 	if r.isSetRetryConditions {
 		retryConditions = r.retryConditions
 	}
 
-	retryHooks := append(r.retryHooks, r.client.retryHooks...)
+	retryHooks := slices.Concat(r.retryHooks, r.client.RetryHooks())
 	if r.isSetRetryHooks {
 		retryHooks = r.retryHooks
 	}
@@ -1593,8 +1610,33 @@ func (r *Request) Execute(method, url string) (res *Response, err error) {
 	}
 
 	r.sendLoadBalancerFeedback(res, err)
-	backToBufPool(r.bodyBuf)
+
+	// The buffer goes back to bufPool, so this Request must stop pointing at it;
+	// another goroutine may own it by the time anyone touches r again.
+	releaseBuffer(r.bodyBuf)
+	r.bodyBuf = nil
+
 	return
+}
+
+// stopMultipart cancels multipart streaming, closes the pipe writer, and closes
+// field readers so a writer blocked in io.Reader.Read can unblock once the HTTP
+// round-trip ends (or needs to be aborted).
+func (r *Request) stopMultipart() {
+	if r == nil {
+		return
+	}
+	if r.multipartCancelFunc != nil {
+		r.multipartCancelFunc()
+	}
+	if r.multipartPipeWriter != nil {
+		// Unblock Client.Do / RoundTrip waiting on the request body pipe.
+		_ = r.multipartPipeWriter.CloseWithError(io.ErrClosedPipe)
+		r.multipartPipeWriter = nil
+	}
+	for _, mf := range r.multipartFields {
+		mf.close()
+	}
 }
 
 // Clone returns a deep copy of r with its context changed to ctx.
@@ -1662,6 +1704,8 @@ func (r *Request) Clone(ctx context.Context) *Request {
 	rr.initTraceIfEnabled()
 	rr.values = make(map[string]any)
 	rr.multipartErrChan = nil
+	rr.multipartCancelFunc = nil
+	rr.multipartPipeWriter = nil
 	rr.ctxCancelFunc = nil
 
 	// copy bodyBuf
@@ -1800,7 +1844,8 @@ func (r *Request) isPayloadSupported() bool {
 		return true
 	}
 
-	if r.Method == MethodPost || r.Method == MethodPut || r.Method == MethodPatch {
+	// QUERY (RFC 10008) always carries the query as request content.
+	if r.Method == MethodPost || r.Method == MethodPut || r.Method == MethodPatch || r.Method == MethodQuery {
 		return true
 	}
 
@@ -1853,6 +1898,7 @@ var idempotentMethods = map[string]struct{}{
 	MethodHead:    {},
 	MethodOptions: {},
 	MethodPut:     {},
+	MethodQuery:   {},
 	MethodTrace:   {},
 }
 

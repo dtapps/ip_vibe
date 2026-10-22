@@ -20,11 +20,7 @@ func flag2Delimiter(flag int) byte {
 //		   "   \\"	" two backslash = not escaped!
 //	    "  \\\"	" three backslash = escaped!
 func isBackslashEscaped(str string) bool {
-	if strings.IndexByte(str, '\\') == -1 {
-		return false
-	}
-
-	var count = 0
+	count := 0
 	for i := len(str) - 1; i >= 0; i-- {
 		if str[i] == '\\' {
 			count++

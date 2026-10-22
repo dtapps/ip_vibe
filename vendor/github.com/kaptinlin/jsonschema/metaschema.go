@@ -2,9 +2,11 @@ package jsonschema
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"strings"
 
-	"github.com/go-json-experiment/json/jsontext"
+	"encoding/json/jsontext"
 )
 
 // ValidateSchema validates a JSON Schema document against its declared
@@ -71,12 +73,28 @@ func (c *Compiler) metaSchema(schemaURI string) (*Schema, error) {
 }
 
 func (c *Compiler) builtinMetaSchema(dialect Dialect) (*Schema, error) {
+	uri := strings.TrimSuffix(string(dialect), "#")
+	c.mu.RLock()
+	cached := c.schemas[uri]
+	c.mu.RUnlock()
+	if cached != nil {
+		return cached, nil
+	}
 	data, ok := builtinMetaSchemaJSON(dialect)
 	if !ok {
 		return nil, ErrNoLoaderRegistered
 	}
 
 	metaSchema, err := c.Compile(data)
+	if errors.Is(err, ErrSchemaConflict) {
+		// Another call may have published the same built-in while we compiled it.
+		c.mu.RLock()
+		metaSchema = c.schemas[uri]
+		c.mu.RUnlock()
+		if metaSchema != nil {
+			return metaSchema, nil
+		}
+	}
 	if err != nil {
 		return nil, fmt.Errorf("compiling %s meta-schema: %w", dialect, err)
 	}

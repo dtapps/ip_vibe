@@ -1,0 +1,13 @@
+# Prettier 忽略规则（gitignore 风格）
+# vendor 为 Go 依赖目录，不参与 Markdown 格式化
+vendor/
+
+# 前端依赖与构建产物
+cmd/frontend/node_modules/
+bin/
+data/
+logs/
+
+# 文档生成目录
+internal/docs_2/
+internal/docs_3/

@@ -1,5 +1,5 @@
 # 使用 golang 镜像作为基础
-FROM golang:1.27.0-trixie
+FROM golang:1.27.3-trixie
 
 # ==========================================
 # 定义版本变量
@@ -8,10 +8,10 @@ FROM golang:1.27.0-trixie
 # https://github.com/nodejs/node/releases
 # https://github.com/goreleaser/nfpm/releases
 # ==========================================
-ARG UPX_VERSION=5.2.0
-ARG GOLANGCI_LINT_VERSION=2.12.2
-ARG NODE_VERSION=26.5.0
-ARG NFPM_VERSION=2.47.0
+ARG UPX_VERSION=5.2.1
+ARG GOLANGCI_LINT_VERSION=2.15.0
+ARG NODE_VERSION=26.12.1
+ARG NFPM_VERSION=2.48.0
 
 # 1. 设置 Go 环境变量
 ENV GO111MODULE=on
@@ -21,8 +21,8 @@ ENV GOPATH=/go
 ENV PATH="$GOPATH/bin:$PATH"
 
 # 2. 替换 Debian APT 加速源
-RUN sed -i 's|deb.debian.org|mirrors.cloud.tencent.com|g' /etc/apt/sources.list.d/debian.sources 2>/dev/null || \
-    sed -i 's|deb.debian.org|mirrors.cloud.tencent.com|g' /etc/apt/sources.list
+RUN sed -i 's|deb.debian.org|mirrors.cloud.tencent.com|g' /etc/apt/sources.list.d/debian.sources 2>/dev/null \
+    || sed -i 's|deb.debian.org|mirrors.cloud.tencent.com|g' /etc/apt/sources.list
 
 # 3. 安装基础构建工具
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -117,19 +117,19 @@ RUN ARCH=$(uname -m) && \
     nfpm --version
 
 # 8. 安装 yamllint (用于 YAML 文件检查)
-RUN apt-get update && apt-get install -y --no-install-recommends yamllint && \
-    echo "--- yamllint installed ---" && \
-    yamllint --version
+RUN apt-get update && apt-get install -y --no-install-recommends yamllint \
+    && echo "--- yamllint installed ---" \
+    && yamllint --version
 
 # 9. 安装 wixl (用于编译 Windows MSI)
-RUN apt-get update && apt-get install -y --no-install-recommends wixl wixl-data && \
-    echo "--- wixl installed ---" && \
-    wixl --version
+RUN apt-get update && apt-get install -y --no-install-recommends wixl wixl-data \
+    && echo "--- wixl installed ---" \
+    && wixl --version
 
 # 10. 卸载不需要的工具，并清空所有 apt 缓存
-RUN apt-get purge -y wget xz-utils && \
-    apt-get autoremove -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /root/.npm
+RUN apt-get purge -y wget xz-utils \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /root/.npm
 
 CMD ["bash"]

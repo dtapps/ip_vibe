@@ -24,33 +24,33 @@ type iListDDoSInstancesResponseBody interface {
 }
 
 type ListDDoSInstancesResponseBody struct {
-	// Instance details
+	// The instance details.
 	InstanceInfo []*ListDDoSInstancesResponseBodyInstanceInfo `json:"InstanceInfo,omitempty" xml:"InstanceInfo,omitempty" type:"Repeated"`
-	// Page number. Default: **1**.
+	// The current page number, which is the same as the PageNumber request parameter.
 	//
 	// example:
 	//
 	// 1
 	PageNumber *int32 `json:"PageNumber,omitempty" xml:"PageNumber,omitempty"`
-	// Number of entries per page
+	// The number of entries per page.
 	//
 	// example:
 	//
 	// 20
 	PageSize *int32 `json:"PageSize,omitempty" xml:"PageSize,omitempty"`
-	// Request ID
+	// The request ID.
 	//
 	// example:
 	//
 	// 9F1DC265-BF10-5C9C-B607-760265C5F365
 	RequestId *string `json:"RequestId,omitempty" xml:"RequestId,omitempty"`
-	// Total number of entries
+	// The total number of entries.
 	//
 	// example:
 	//
 	// 100
 	TotalCount *int32 `json:"TotalCount,omitempty" xml:"TotalCount,omitempty"`
-	// Total number of pages
+	// The total number of pages.
 	//
 	// example:
 	//
@@ -134,51 +134,51 @@ func (s *ListDDoSInstancesResponseBody) Validate() error {
 }
 
 type ListDDoSInstancesResponseBodyInstanceInfo struct {
-	// Time when the instance was purchased
+	// The creation time of the instance. The time is displayed in UTC and formatted in accordance with the ISO 8601 standard in the yyyy-MM-ddTHH:mm:ssZ format.
 	//
 	// example:
 	//
 	// 2025-07-01T07:59:07Z
 	CreateTime *string `json:"CreateTime,omitempty" xml:"CreateTime,omitempty"`
-	// DDoS protection specification for the Chinese mainland
+	// The specifications of the DDoS instance in the Chinese mainland.
 	//
 	// example:
 	//
 	// cn_300
 	DDoSBurstableDomesticProtection *string `json:"DDoSBurstableDomesticProtection,omitempty" xml:"DDoSBurstableDomesticProtection,omitempty"`
-	// DDoS protection specification for regions outside the Chinese mainland
+	// The specifications of the DDoS instance outside the Chinese mainland.
 	//
 	// example:
 	//
 	// overseas_300
 	DDoSBurstableOverseasProtection *string `json:"DDoSBurstableOverseasProtection,omitempty" xml:"DDoSBurstableOverseasProtection,omitempty"`
-	// Instance ID
+	// The instance ID.
 	//
 	// example:
 	//
 	// sp-ddddxxxxx
 	InstanceId *string `json:"InstanceId,omitempty" xml:"InstanceId,omitempty"`
-	// Scheduled release time
+	// The scheduled release time. The time is displayed in UTC and formatted in accordance with the ISO 8601 standard in the yyyy-MM-ddTHH:mm:ssZ format.
 	//
 	// example:
 	//
 	// 2026-03-25T16:00:00Z
 	ReserveReleaseTime *string `json:"ReserveReleaseTime,omitempty" xml:"ReserveReleaseTime,omitempty"`
-	// Associated site package instance ID
+	// The ID of the associated website plan instance.
 	//
 	// example:
 	//
 	// esa-site-b0s6kmx0r0n4
 	SiteInstanceId *string `json:"SiteInstanceId,omitempty" xml:"SiteInstanceId,omitempty"`
-	// Instance status. Valid values:
+	// The instance status. Valid values:
 	//
-	// - **online**: Normal service status.
+	// - **online**: the instance is in normal service status.
 	//
-	// - **offline**: Expired but not overdue. Instance is unavailable.
+	// - **offline**: the instance has expired but is not overdue, and is in an unavailable state.
 	//
-	// - **disable**: Released.
+	// - **disable**: the instance is released.
 	//
-	// - **overdue**: Service suspended due to overdue payment.
+	// - **overdue**: the instance is stopped due to an overdue payment.
 	//
 	// example:
 	//

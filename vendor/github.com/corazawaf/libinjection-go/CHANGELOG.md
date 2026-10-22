@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.3.5](https://github.com/corazawaf/libinjection-go/compare/v0.3.4...v0.3.5) (2026-10-08)
+
+
+### Bug Fixes
+
+* restore upstream parity in the 1c whitelist and q-string delimiter check ([#135](https://github.com/corazawaf/libinjection-go/issues/135)) ([dcfc067](https://github.com/corazawaf/libinjection-go/commit/dcfc0677ef1314df245b4aac42b312f9e471406c))
+
+## [0.3.4](https://github.com/corazawaf/libinjection-go/compare/v0.3.3...v0.3.4) (2026-10-07)
+
+
+### Bug Fixes
+
+* make SQLi string-literal parsing linear (GHSA-974q-67pr-5pc2) ([#133](https://github.com/corazawaf/libinjection-go/issues/133)) ([021aa81](https://github.com/corazawaf/libinjection-go/commit/021aa81344db494c76c4e3ef2266360087ae546e))
+
+## [0.3.3](https://github.com/corazawaf/libinjection-go/compare/v0.3.2...v0.3.3) (2026-09-01)
+
+
+### Bug Fixes
+
+* use the local cursor in the stateCData bounds guard ([#130](https://github.com/corazawaf/libinjection-go/issues/130)) ([c91e215](https://github.com/corazawaf/libinjection-go/commit/c91e2154f4313cb7bc3205dffe6080ff092299cc))
+
+
+### Performance Improvements
+
+* pool allocations + O(1) attr lookup + DataState prefilter ([#114](https://github.com/corazawaf/libinjection-go/issues/114)) ([77d5170](https://github.com/corazawaf/libinjection-go/commit/77d51709d56dab69d2c909add081b06bc3619c5a))
+
 ## [0.3.2](https://github.com/corazawaf/libinjection-go/compare/v0.3.1...v0.3.2) (2026-02-23)
 
 

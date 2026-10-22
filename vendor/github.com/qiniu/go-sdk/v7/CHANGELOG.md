@@ -1,4 +1,34 @@
 # Changelog
+## 7.29.0
+
+* 新增
+  * sandbox: 支持创建和管理 Desktop Sandbox，提供 Xvfb/Xfce 桌面初始化、截图、屏幕尺寸、鼠标、键盘、窗口和应用操作。
+  * sandbox: 支持通过 x11vnc 和 noVNC 启动 Desktop 桌面流，提供随机 VNC 密码认证、自定义端口、窗口 ID 和页面显示选项。
+  * examples: 新增 Desktop Sandbox 使用示例，并补充单元测试和真实模板集成测试。
+
+* 相关 PR
+  * https://github.com/qiniu/go-sdk/pull/238
+
+## 7.28.1
+
+* 新增
+  * sandbox: `Client` 支持通过沙箱 ID 调用 `GetInfo`、`GetMetrics`、`GetLogs`、`Kill`、`Pause`、`Refresh`、`WaitForReady`、`SetTimeout`、`GetInjections`、`UpdateInjections`、`UpdateGitHubToken`、`GetResources` 和 `UpdateGitRepositoryResourceToken`。
+  * sandbox: `Sandbox` 提供对应的实例方法，自动传入自身 ID，与 `Client` 共用控制面实现。持有实例时可调用 `sb.GetInfo(ctx)`、`sb.UpdateGitHubToken(ctx, token)`；持有沙箱 ID 时可调用 `client.GetInfo(ctx, sandboxID)`、`client.UpdateGitHubToken(ctx, sandboxID, token)`。
+
+* 完善
+  * sandbox: 补充模板构建文件上传链接 API 的文档。
+
+## 7.28.0
+
+* 新增
+  * sandbox: 支持查询沙箱已挂载的资源，并按资源 ID 更新 Git 仓库授权令牌
+  * sandbox: Kodo 资源支持直接指定 AccessKey 和 SecretKey，省略时继续使用 Client 配置的七牛凭证
+  * sandbox: CreateTemplateParams 新增 DiskSizeMB，用于配置模板构建磁盘大小
+* 完善
+  * sandbox: 模板示例在构建失败时输出完整构建日志，便于定位服务端问题
+* 修复
+  * storagev2: 修复并发降低批次大小时重置 ticker 的数据竞争
+
 ## 7.27.0
 
 * 新增
