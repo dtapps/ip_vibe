@@ -8,8 +8,8 @@
     "build": "sh ./build.sh",
     "lint": "prettier --check \"**/*.{html,js,css,json}\"",
     "format": "prettier --write \"**/*.{html,js,css,json}\"",
-    "test": "node test/uuid.test.js",
-    "test:coverage": "cd ../.. && c8 --reporter=lcov --reporter=text --all --include='cmd/backend/static/js/**/*.js' --reports-dir=cmd/frontend/coverage node cmd/frontend/test/uuid.test.js"
+    "test": "node test/index.test.js",
+    "test:coverage": "cd ../.. && c8 --reporter=lcov --reporter=text --all --include='cmd/backend/static/js/**/*.js' --reports-dir=cmd/frontend/coverage node cmd/frontend/test/index.test.js"
   },
   "keywords": [],
   "author": "",

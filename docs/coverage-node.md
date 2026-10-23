@@ -56,12 +56,31 @@ test.describe("uuid", () => {
 
 优先覆盖**纯逻辑/UMD 模块**（如 `uuid.js`，不依赖 DOM）；顶层直接操作 `document` 的全局脚本需 jsdom，作为第二步。
 
+当前三类测试的加载方式（都不引 jsdom / jQuery）：
+
+| 测试文件             | 被测对象                            | 加载方式                                                                                   |
+|----------------------|-------------------------------------|--------------------------------------------------------------------------------------------|
+| `uuid.test.js`       | `uuid.js`（CJS）                    | 直接 `require`；另用 `vm` 沙箱造「无 crypto」「有 msCrypto」宿主，覆盖兼容分支             |
+| `schema.test.js`     | 4 个 `*_schema.js`                  | `vm` 沙箱注入 `document/window/console/API/timer` 桩，取顶层 `const XXX_SCHEMA` 做结构校验 |
+| `components.test.js` | `components/{pagination,switch}.js` | `vm` 沙箱注入 `localStorage/document.cookie/location/URL/API/alert` 假实现，直接驱动函数   |
+
+关键技巧：脚本用 `new vm.Script(src, { filename: 绝对路径 })` 编译，V8 覆盖率才能按真实文件归因；若用 `vm.runInContext(字符串)` 则这些文件会统计成 0%。`*_schema.js` 是数据文件，只能覆盖到各平台定义行（函数体未执行，故行覆盖 25%~76% 属正常）。
+
 ### 第 3 步：package.json 脚本
+
+测试文件拆多个（`uuid.test.js` / `schema.test.js` / `components.test.js`），但**入口只有一个** `test/index.test.js`，由它按序 `require` 各文件，保证都在主线程注册：
+
+```js
+// cmd/frontend/test/index.test.js
+require("./uuid.test.js");
+require("./schema.test.js");
+require("./components.test.js");
+```
 
 ```json
 "scripts": {
-  "test": "node test/uuid.test.js",
-  "test:coverage": "cd ../.. && c8 --reporter=lcov --reporter=text --all --include='cmd/backend/static/js/**/*.js' --reports-dir=cmd/frontend/coverage node cmd/frontend/test/uuid.test.js"
+  "test": "node test/index.test.js",
+  "test:coverage": "cd ../.. && c8 --reporter=lcov --reporter=text --all --include='cmd/backend/static/js/**/*.js' --reports-dir=cmd/frontend/coverage node cmd/frontend/test/index.test.js"
 }
 ```
 
@@ -126,9 +145,11 @@ CNB 语义：事件键下的值是 Pipeline 数组，同事件多个条目 = 多
 
 ## 已知问题
 
-- `cmd/backend/static/js/uuid.js` 的 **v7 实现不符合 RFC 9562**：变体位（variant）被放在 `byte[7]`（第 3 段第 3 个 nibble）而非 `byte[8]`，第 4 段（bytes[8..9]）是 14-bit 计数器而非标准 `rand_b`；v4 为标准布局。测试已按实际实现校验；若需对外提供合规 UUIDv7，需修正源码。
+1. `cmd/backend/static/js/uuid.js` 的 **v7 实现不符合 RFC 9562**：变体位（variant）被放在 `byte[7]`（第 3 段第 3 个 nibble）而非 `byte[8]`，第 4 段（bytes[8..9]）是 14-bit 计数器而非标准 `rand_b`；v4 为标准布局。测试已按实际实现校验；若需对外提供合规 UUIDv7，需修正源码。
+2. **v7 时间戳编码错误**：`bytes[0..5]` 用 `ts >>> 40`、`ts >>> 32` 等位移写 48 位毫秒时间戳，但 JS 位运算会先把操作数转成 **uint32**（`ts >>> 40` 实际等价 `ts >>> 8`），导致高字节丢失、`bytes[0]==bytes[4]`、`bytes[1]==bytes[5]`，无法从 UUID 还原时间、也失去「按时间有序」的意义。正确写法是用除法取字节，如 `Math.floor(ts / 2 ** 40) & 0xff`。当前测试只断言版本位/变体位/计数器，未断言时间戳，避免把缺陷固化成契约。
+3. **导出分支 `else if (typeof window !== "undefined") { window.uuid = ... }` 不可达**：IIFE 的形参就叫 `global`（实参是 `globalThis`），永远满足前一个分支。测试按「无 `module` 时挂到宿主全局对象」断言，不假设挂在 `window` 上。
 
 ## 验收标准
 
-- `pnpm test` 全绿；`pnpm test:coverage` 产出 `cmd/frontend/coverage/lcov.info`，`uuid.js` 行覆盖≈88%（未覆盖的是 crypto 不可用时的 fallback 分支与导出语句）。
+- `pnpm test` 全绿（当前 21 例）；`pnpm test:coverage` 产出 `cmd/frontend/coverage/lcov.info`：`uuid.js` 行覆盖≈98%（仅剩不可达的 window 导出分支）、`js/components/*` 100%、`*_schema.js` 25%~76%（仅数据定义行）。
 - YAML 解析正确；push/pull_request 各一条独立并行流水线；徽章显示 "Node Coverage"。
