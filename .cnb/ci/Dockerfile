@@ -9,12 +9,14 @@ ARG GITHUB_MIRROR="https://files.m.daocloud.io"
 # https://github.com/nodejs/node/releases
 # https://github.com/pnpm/pnpm/releases
 # https://github.com/goreleaser/nfpm/releases
+# https://github.com/Kunde21/markdownfmt/releases
 # ==========================================
 ARG UPX_VERSION=5.2.1
 ARG GOLANGCI_LINT_VERSION=v2.15.0
 ARG NODE_VERSION=26.12.1
 ARG PNPM_VERSION=12.15.0
 ARG NFPM_VERSION=2.48.0
+ARG MARKDOWNFMT_VERSION=v0.1.6
 
 # 1. 设置 Go 环境变量
 ENV GO111MODULE=on
@@ -115,6 +117,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends wixl wixl-data 
 RUN echo "==> 预安装 Go 工具链（版本已锁定）..." \
     && go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION} \
     && echo "==> golangci-lint 安装完成 (${GOLANGCI_LINT_VERSION})" \
+    && go install github.com/Kunde21/markdownfmt@${MARKDOWNFMT_VERSION} \
+    && echo "==> markdownfmt 安装完成 (${MARKDOWNFMT_VERSION})" \
     && echo "--- Go 工具链安装完成 ---" \
     && ls -l $GOPATH/bin
 
