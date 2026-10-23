@@ -1,16 +1,19 @@
 # 使用 golang 镜像作为基础
 FROM golang:1.27.3-trixie
 
+ARG GITHUB_MIRROR="https://files.m.daocloud.io"
 # ==========================================
 # 定义版本变量
 # https://github.com/upx/upx/releases
 # https://github.com/golangci/golangci-lint/releases
 # https://github.com/nodejs/node/releases
+# https://github.com/pnpm/pnpm/releases
 # https://github.com/goreleaser/nfpm/releases
 # ==========================================
 ARG UPX_VERSION=5.2.1
-ARG GOLANGCI_LINT_VERSION=2.15.0
+ARG GOLANGCI_LINT_VERSION=v2.15.0
 ARG NODE_VERSION=26.12.1
+ARG PNPM_VERSION=12.15.0
 ARG NFPM_VERSION=2.48.0
 
 # 1. 设置 Go 环境变量
@@ -32,6 +35,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     gnupg \
     zip \
+    git \
+    make \
     unzip
 
 # 4. 安装 Node.js 工具
@@ -50,7 +55,7 @@ RUN ARCH=$(uname -m) && \
     \
     # 配置 npm/pnpm 使用腾讯云源
     npm config set registry https://mirrors.cloud.tencent.com/npm/ && \
-    npm install -g pnpm && \
+    npm install -g pnpm@${PNPM_VERSION} && \
     pnpm config set registry https://mirrors.cloud.tencent.com/npm/ && \
     pnpm config set ignore-scripts false && \
     \
@@ -67,7 +72,7 @@ RUN ARCH=$(uname -m) && \
     \
     # 构建下载地址
     UPX_DIR="upx-${UPX_VERSION}-${UPX_ARCH}_linux" && \
-    UPX_URL="https://files.m.daocloud.io/github.com/upx/upx/releases/download/v${UPX_VERSION}/${UPX_DIR}.tar.xz" && \
+    UPX_URL="${GITHUB_MIRROR}/github.com/upx/upx/releases/download/v${UPX_VERSION}/${UPX_DIR}.tar.xz" && \
     \
     cd /tmp && \
     wget -q -O upx.tar.xz "${UPX_URL}" && \
@@ -79,33 +84,13 @@ RUN ARCH=$(uname -m) && \
     echo "--- UPX installed ---" && \
     upx --version
 
-# 6. 安装 golangci-lint 工具
-RUN ARCH=$(uname -m) && \
-    if [ "$ARCH" = "x86_64" ]; then LINT_ARCH="amd64"; \
-    elif [ "$ARCH" = "aarch64" ]; then LINT_ARCH="arm64"; \
-    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
-    \
-    # 构建下载地址
-    LINT_DIR="golangci-lint-${GOLANGCI_LINT_VERSION}-linux-${LINT_ARCH}" && \
-    LINT_URL="https://files.m.daocloud.io/github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}/${LINT_DIR}.tar.gz" && \
-    \
-    cd /tmp && \
-    wget -q -O lint.tar.gz "${LINT_URL}" && \
-    tar -xf lint.tar.gz && \
-    mv ${LINT_DIR}/golangci-lint /usr/local/bin/golangci-lint && \
-    chmod +x /usr/local/bin/golangci-lint && \
-    rm -rf lint.tar.gz ${LINT_DIR} && \
-    # 清理
-    echo "--- golangci-lint installed ---" && \
-    golangci-lint --version
-
-# 7. 安装 nfpm (用于打包 deb/rpm)
+# 6. 安装 nfpm (用于打包 deb/rpm)
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then NFPM_ARCH="x86_64"; \
     elif [ "$ARCH" = "aarch64" ]; then NFPM_ARCH="arm64"; \
     else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
     \
-    NFPM_URL="https://files.m.daocloud.io/github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_Linux_${NFPM_ARCH}.tar.gz" && \
+    NFPM_URL="${GITHUB_MIRROR}/github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_Linux_${NFPM_ARCH}.tar.gz" && \
     \
     cd /tmp && \
     wget -q -O nfpm.tar.gz "${NFPM_URL}" && \
@@ -116,15 +101,22 @@ RUN ARCH=$(uname -m) && \
     echo "--- nfpm installed ---" && \
     nfpm --version
 
-# 8. 安装 yamllint (用于 YAML 文件检查)
+# 7. 安装 yamllint (用于 YAML 文件检查)
 RUN apt-get update && apt-get install -y --no-install-recommends yamllint \
     && echo "--- yamllint installed ---" \
     && yamllint --version
 
-# 9. 安装 wixl (用于编译 Windows MSI)
+# 8. 安装 wixl (用于编译 Windows MSI)
 RUN apt-get update && apt-get install -y --no-install-recommends wixl wixl-data \
     && echo "--- wixl installed ---" \
     && wixl --version
+
+# 9. 预安装 Go 工具链（版本已锁定）
+RUN echo "==> 预安装 Go 工具链（版本已锁定）..." \
+    && go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION} \
+    && echo "==> golangci-lint 安装完成 (${GOLANGCI_LINT_VERSION})" \
+    && echo "--- Go 工具链安装完成 ---" \
+    && ls -l $GOPATH/bin
 
 # 10. 卸载不需要的工具，并清空所有 apt 缓存
 RUN apt-get purge -y wget xz-utils \
