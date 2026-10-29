@@ -2,7 +2,7 @@ branch:
   - buttons:
       - name: 打包 Go 项目
         description: 打包 Go 项目 然后上传到附件
-        event: web_trigger_build_go_project # 触发的 CI 事件名
+        event: web_trigger_release # 触发的 CI 事件名
         permissions:
           roles:
             - owner

@@ -16,11 +16,9 @@
           script: make deps
 
         - name: 生成测试覆盖率
-          script:
-            # 内联：覆盖 cmd/internal/pkg 业务代码；排除 4 处 ent 生成目录（ent 占全树语句约 73%，计入会把约 27% 稀释到约 5%）与 tests/ 集成测试，产出 coverage.out
-            - go test -vet=off -coverpkg=$(go list ./cmd/... ./internal/... ./pkg/... | grep -vE '/(ent|ent_log|ent_stat)(/|$)'
-              | paste -sd, -) -coverprofile=coverage.out ./cmd/... ./internal/... ./pkg/...
-            - go tool cover -func=coverage.out
+          # 口径（coverpkg 范围、ent 生成目录排除）唯一定义在 Makefile 的 cover-go 目标，
+          # 与 GitHub Actions 流水线共用同一份命令，避免多处漂移
+          script: make cover-go
 
         - name: 上报覆盖率（全量红线）
           # https://docs.cnb.cool/zh/build/internal-steps/testing/coverage.html
@@ -55,7 +53,8 @@
           script: make deps
 
         - name: 生成前端测试覆盖率
-          script: pnpm --dir ./cmd/frontend test:coverage # 产出 cmd/frontend/coverage/lcov.info
+          # c8 命令唯一定义在 cmd/frontend/package.json 的 test:coverage 脚本里
+          script: make cover-node # 产出 cmd/frontend/coverage/lcov.info
 
         - name: 上报覆盖率（全量红线）
           # https://docs.cnb.cool/zh/build/internal-steps/testing/coverage.html

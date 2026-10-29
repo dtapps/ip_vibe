@@ -1,6 +1,5 @@
 include:
   - .cnb/workflows/build-image.yml
-  - .cnb/workflows/build-project.yml
   - .cnb/workflows/cnb-sechook.yml
   - .cnb/workflows/code-review.yml
   - .cnb/workflows/codewiki.yml
@@ -8,6 +7,5 @@ include:
   - .cnb/workflows/pull-coverage.yml
   - .cnb/workflows/push-coverage.yml
   - .cnb/workflows/push.yml
-  - .cnb/workflows/sca-license.yml
-  - .cnb/workflows/sca-sbom.yml
-  - .cnb/workflows/sca-vulnerability.yml
+  - .cnb/workflows/release.yml
+  - .cnb/workflows/sca.yml

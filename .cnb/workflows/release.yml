@@ -1,6 +1,6 @@
 '**':
   # 自定义按钮可触发的事件：web_trigger_*
-  web_trigger_build_go_project:
+  web_trigger_release:
     - runner:
         tags: cnb:arch:amd64 # 指定 Runner 必须有这个标签
       services:

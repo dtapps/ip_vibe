@@ -9,7 +9,8 @@
     "lint": "prettier --check \"**/*.{html,js,css,json}\"",
     "format": "prettier --write \"**/*.{html,js,css,json}\"",
     "test": "node test/index.test.js",
-    "test:coverage": "cd ../.. && c8 --reporter=lcov --reporter=text --all --include='cmd/backend/static/js/**/*.js' --reports-dir=cmd/frontend/coverage node cmd/frontend/test/index.test.js"
+    "test:coverage": "cd ../.. && c8 --reporter=lcov --reporter=text --all --include='cmd/backend/static/js/**/*.js' --reports-dir=cmd/frontend/coverage node cmd/frontend/test/index.test.js",
+    "test:junit": "mkdir -p coverage && node --test-reporter=junit test/index.test.js > coverage/junit.xml"
   },
   "keywords": [],
   "author": "",

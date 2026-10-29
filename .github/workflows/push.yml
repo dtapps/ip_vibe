@@ -1,0 +1,92 @@
+# 推送工作流
+# https://github.com/actions/runner-images
+# https://github.com/actions/checkout
+# https://github.com/actions/setup-go
+# https://github.com/actions/setup-node
+# https://github.com/pnpm/action-setup
+# https://github.com/crazy-max/ghaction-upx
+# https://github.com/golangci/golangci-lint-action
+# https://github.com/sqlc-dev/setup-sqlc
+name: PushRequest
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+permissions:
+  contents: read
+  packages: read # 拉取 GHCR 上的 CI 镜像（公开镜像亦可匿名拉，写上以防仓库转私有）
+
+# 同一分支的多次 push 取消旧的运行，避免排队浪费。
+concurrency:
+  group: push-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    # 直接用预构建的 CI 镜像（含 Go/Node/pnpm + GTK/WebKit + 全部 Go 工具链），
+    # 免去每次重装系统库与 go install 工具。镜像由 ci-image.yml 在 Dockerfile 变动时
+    # 自动重建并推送到 GHCR；首次使用前需先跑一次 ci-image.yml 让镜像存在。
+    container:
+      image: ghcr.io/${{ github.repository }}/ci:latest
+    # env:
+    #     LINT_PLATFORMS: linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v7
+
+      # 容器镜像已预装 Go 工具链（GOPATH=/go，工具在 /go/bin 且已在 PATH），
+      # 这里把路径常量写入 $GITHUB_ENV，供后续 make 步骤的 GOPATH/GOBIN 引用。
+      # 无需再 apt 装 GTK/WebKit、setup-go/node、make tool-deps——镜像里都已就绪。
+      - name: 设置 Go 工具链目录
+        shell: bash
+        run: |
+          echo "GO_PATH_DIR=/go" >> "$GITHUB_ENV"
+          echo "GO_BIN_DIR=/go/bin" >> "$GITHUB_ENV"
+
+      # 缓存 Go module 下载（GOMODCACHE），让 go mod download / go install
+      # 命中已下载模块，避免重复从 proxy 拉取。镜像内 GOPATH=/go。
+      - name: 缓存 Go module
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.GO_PATH_DIR }}/pkg/mod
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-mod-
+
+      # 缓存 Go 编译缓存（~/.cache/go-build），避免每次全量重编。
+      - name: 缓存 Go build 缓存
+        uses: actions/cache@v6
+        with:
+          path: ${{ format('{0}/.cache/go-build', env.HOME) }}
+          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-build-
+
+      # 动态获取 pnpm 实际 store 目录（受 PNPM_HOME / 配置影响，写死路径可能 Miss），
+      # 写入 $GITHUB_ENV 供下方缓存步骤引用。
+      - name: 获取 pnpm store 目录
+        id: pnpm-store
+        shell: bash
+        run: echo "PNPM_STORE_DIR=$(pnpm config get store-dir)" >> "$GITHUB_ENV"
+
+      # 自定义缓存 pnpm store，按 lockfile hash 命中，pnpm install 命中后跳过从 registry 下载。
+      - name: 缓存 pnpm store
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.PNPM_STORE_DIR }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('cmd/frontend/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
+
+      - name: 安装所有依赖
+        run: make deps
+
+      - name: 格式化代码
+        run: make format
+
+      - name: 检查项目
+        run: make check

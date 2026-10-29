@@ -1,0 +1,45 @@
+# CNB 代码安全扫描 · 公共忽略规则
+# https://docs.cnb.cool/zh/security/intro.html
+#
+# 语义（gitignore 风格）：本文件每一条都是「排除」；'!' 前缀才是重新纳入。
+# 对所有扫描能力生效。能力级差异才需要 .cnb/security/code_scan_config.yml，
+# 目前 secrets 与 software-composition-analysis 口径一致，统一写在这里。
+#
+# 原则：排除面保持最小。每多加一条，安全扫描面就少一块，按实际路径补，不要预先放宽。
+
+# Go 测试：测试里写死假 Key、假凭证、自签证书是刻意为之，扫出来是噪音。
+#   - internal/utils/ssl_test.go        运行时自签 RSA/ECDSA 证书与私钥
+#   - internal/core/token_test.go       假 BasicAuth token / header
+#   - internal/grpc_credential/basic_auth_test.go  假 metadata 凭据
+#   - internal/helper/ip_helper/ip_helper_test.go  文档示例 IP
+# 口径对齐 .golangci.yml 中 gosec 对 _test.go 的文件级豁免——只豁免测试文件本身。
+**/*_test.go
+
+# 前端测试：cmd/frontend/test/ 下的 4 个 *.test.js（uuid / schema / components / index，
+# node:test + vm 沙箱，共 442 行）及将来的测试辅助文件。
+# 当前内容不含任何凭证类字符串，排除了也不减少噪音，只为与 Go 测试口径一致——
+# 将来测试里写死假 token 时不必再回来补规则。
+cmd/frontend/test/**
+# test 目录之外的用例文件（将来就近放置的，如 static/js/components/foo.test.js）
+# 注意：只匹配 *.test.js；*.spec.* 本仓库尚未出现，不预先排除。
+**/*.test.js
+
+# vendor：当前仓库没有（Go modules，未提交 vendored 依赖）。
+# 留一行是防哪天 go mod vendor 被提交，成本为零。
+vendor/**
+
+# 以下刻意【不】排除，已逐项确认过：
+#   docs/**                       纯文档，grep 未发现 TOKEN/SECRET/PASSWORD/API_KEY 字样的值；
+#                                 若被 secrets 报假阳性，用 code_scan_config.yml 的 rules 单条抑制，
+#                                 不要整目录排除——真实泄露最常藏在文档示例里。
+#   sql/**                        建表 SQL，无凭证内容。
+#   cmd/backend/static/js/**      后端自带前端静态资源（含 9 个 *.map），项目自身代码。
+#   internal/**/*.tmpl/*.proto    模板与 protobuf 定义，无凭证内容。
+#   go.mod / go.sum / cmd/frontend/pnpm-lock.yaml 等清单  SCA 的扫描对象，排除即等于放弃依赖漏洞检测。
+#
+# 未被 git 跟踪、扫描器本就看不到的路径（仅备查）：
+#   /bin                        构建产物，已在 .gitignore
+#   /cmd/frontend/node_modules  依赖目录，已在 .gitignore
+#   /cmd/frontend/coverage      c8 覆盖率输出（lcov.info 等），已在 .gitignore
+#   /tests /data /logs          测试数据与运行时目录，已在 .gitignore
+# 本仓库没有 Go 的 testdata/、fixtures/、__mocks__ 目录；无 .pem/.key/.p12 等证书密钥文件入库。

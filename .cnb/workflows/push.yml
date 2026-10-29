@@ -10,11 +10,14 @@
           - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
           - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
           - /go/pkg/mod:copy-on-write # 仅缓存 Go 模块下载，避免覆盖镜像内预装的 /go/bin 工具
-      env:
-        LINT_PLATFORMS: linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64
+      # env:
+      #   LINT_PLATFORMS: linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64
       stages:
         - name: 安装所有依赖
           script: make deps
 
+        - name: 格式化代码
+          script: make format
+
         - name: 检查项目
-          script: make check-all
+          script: make check

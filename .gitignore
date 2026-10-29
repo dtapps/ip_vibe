@@ -15,4 +15,7 @@
 test-*.yml
 coverage.out
 coverage.html
+coverage-lcov.info
 /cmd/frontend/coverage
+go-test-report.xml
+junit.xml

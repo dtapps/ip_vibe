@@ -281,11 +281,12 @@ dev_forwarder_basic_auth:
 #####################
 ## 检查相关
 #####################
-
+#
 # 统一定义构建命令
 # CGO_ENABLED=0: 禁用 CGO，实现完全静态链接
 # CGO_ENABLED=1: 启用 CGO，实现动态链接
-LINT_ENV = CGO_ENABLED=0
+#
+# Lint 用的 CGO_ENABLED 由 scripts/check.sh 通过环境变量接收（默认 0）。
 
 # 定义 Lint 过程中需要激活的 Go Build Tags
 LINT_TAGS = goolm,stdjson
@@ -293,39 +294,94 @@ LINT_TAGS = goolm,stdjson
 # Lint 扫描的目标平台，默认当前平台；CI 通过 LINT_PLATFORMS=... 覆盖为全平台
 LINT_PLATFORMS ?= $(shell go env GOOS)/$(shell go env GOARCH)
 
+# 实现放在 scripts/check.sh：Make 的每个 recipe 行是独立 shell，
+# 原来的多平台 for 循环所在行没有 set -e，只有最后一个平台的退出码决定成败，
+# 中间平台 lint 失败会被静默吞掉；放进脚本后 set -euo pipefail 生效，失败即报错。
+.PHONY: check-backend
 check-backend:
-	@echo "[Check] 运行 golangci-lint 扫描 (平台: $(LINT_PLATFORMS), Tags: $(LINT_TAGS))..."
+	@LINT_TAGS="$(LINT_TAGS)" LINT_PLATFORMS="$(LINT_PLATFORMS)" \
+		CGO_ENABLED=0 bash scripts/check.sh backend
 
-	@for os_arch in $(LINT_PLATFORMS); do \
-		os=$$(echo $$os_arch | cut -d'/' -f1); \
-		arch=$$(echo $$os_arch | cut -d'/' -f2); \
-		echo "  -> $$os 平台 ($$arch)"; \
-		$(LINT_ENV) GOOS=$$os GOARCH=$$arch golangci-lint fmt; \
-		$(LINT_ENV) GOOS=$$os GOARCH=$$arch golangci-lint run --build-tags $(LINT_TAGS); \
-	done
-
-	@echo "[Check] 自动修复代码风格问题..."
-	$(LINT_ENV) golangci-lint run --fix --build-tags $(LINT_TAGS)
-
-	@echo "[Check] 完成。"
-
+.PHONY: check-frontend
 check-frontend:
-	@echo "[Check] 检查前端依赖与质量..."
-	@echo "  -> 同步依赖 (确保环境一致)..."
-	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm install --frozen-lockfile --prefer-offline
+	@FRONTEND_DIR="cmd/$(BINARY_NAME_FRONTEND)" bash scripts/check.sh frontend
 
-	@echo "  -> 检查安全漏洞 (仅高危阻断)..."
-	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm audit --production --audit-level high --registry=https://registry.npmjs.org
+# 检查项目
+.PHONY: check
+check:
+	@LINT_TAGS="$(LINT_TAGS)" LINT_PLATFORMS="$(LINT_PLATFORMS)" \
+		CGO_ENABLED=0 FRONTEND_DIR="cmd/$(BINARY_NAME_FRONTEND)" bash scripts/check.sh all
 
-	@echo "  -> 检查过时依赖..."
-	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm outdated
+#####################
+## 测试覆盖率
+#####################
 
-	@echo "  -> 检查代码风格 (Lint)..."
-	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm run lint
+# 覆盖率口径的唯一事实来源：CNB（.cnb/workflows/*-coverage.yml）与 GitHub Actions
+# （.github/workflows/coverage.yml、coveralls.yml）都调用本节目标，命令不再在多处漂移。
+#
+# Go：
+#   - coverpkg 范围为 ./cmd/... ./internal/... ./pkg/...，排除 4 处 ent 生成目录
+#     （internal/ent、internal/ent_log、internal/ent_stat、cmd/ent；
+#      ent 占全树语句约 73%，计入会把业务覆盖率严重稀释）；
+#   - 产出 coverage.out（仓库根）。
+# 前端：
+#   - node:test + c8（CJS 插桩靠 require hook；vitest 对 CJS 经转译会丢失插桩），
+#     c8 命令唯一定义在 cmd/frontend/package.json 的 test:coverage 脚本里，
+#     本目标只做转发——该脚本必须在仓库根执行，lcov 的 SF 路径才是仓库根相对，
+#     Codecov / Coveralls 靠它映射到源码文件；
+#   - 产出 cmd/frontend/coverage/lcov.info。
+GO_COVER_PKGS = ./cmd/... ./internal/... ./pkg/...
 
-	@echo "[Check] 前端检查完成。"
+.PHONY: cover-go
+cover-go:
+	@echo "[Coverage] 生成 Go 测试覆盖率..."
+	go test -vet=off -coverpkg=$$(go list $(GO_COVER_PKGS) | grep -vE '/(ent|ent_log|ent_stat)(/|$$)' | paste -sd, -) -coverprofile=coverage.out $(GO_COVER_PKGS)
+	go tool cover -func=coverage.out
+	@echo "[Coverage] 完成：coverage.out"
 
-check-all: check-backend check-frontend
+# Coveralls 专用：把 coverage.out 转成 lcov。
+#   - coverage.out 里的路径是 Go 包导入路径（vibe_ip/internal/core/device.go）；
+#   - Coveralls 的 golang parser（coverage-reporter 的 golang_parser.cr）会用正则
+#     硬吃 3 段包前缀，只把 basename（device.go）当文件名 → 243 个文件全坍缩到同一级；
+#   - 而 lcov parser 的 SF: 是原样保留完整路径的，所以走 lcov 格式可避开这个正则。
+# gcov2lcov 转 lcov 时把包导入路径解析回仓库根相对路径（SF:internal/core/device.go），
+# 与前端 c8 产出的 lcov 形态一致，Coveralls 侧就能正确按目录层级展示。
+.PHONY: cover-go-lcov
+cover-go-lcov: cover-go
+	@echo "[Coverage] 转换 Go 覆盖率为 lcov (供 Coveralls)..."
+	gcov2lcov -infile coverage.out -outfile coverage-lcov.info 2>/dev/null
+	@echo "[Coverage] 完成：coverage-lcov.info"
+
+.PHONY: cover-node
+cover-node:
+	@echo "[Coverage] 生成前端测试覆盖率..."
+	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) test:coverage
+	@echo "[Coverage] 完成：cmd/$(BINARY_NAME_FRONTEND)/coverage/lcov.info"
+
+.PHONY: cover
+cover: cover-go cover-node
+
+# JUnit XML：供 Codecov 的 Tests 面板消费（codecov/test-results-action）。
+#   - 前端：Node 内置 --test-reporter=junit（Node >= 22.8；镜像里是 Node 26），
+#     单进程跑聚合入口 test/index.test.js，不用 node --test（那会把多文件塞进
+#     worker，CJS 源不被 c8 插桩 → 覆盖率归零）；
+#   - Go：gotestsum（镜像第 7 步已预装，v1.13.0 —— v1.12.0 在 Go 1.27 编译失败），
+#     与 cover-go 同一套 coverpkg 口径，顺带产出 coverage.out。
+.PHONY: junit-node
+junit-node:
+	@echo "[JUnit] 生成前端测试报告 (JUnit XML)..."
+	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) test:junit
+	@echo "[JUnit] 完成：cmd/$(BINARY_NAME_FRONTEND)/coverage/junit.xml"
+
+.PHONY: junit-go
+junit-go:
+	@echo "[JUnit] 生成 Go 测试报告 (JUnit XML)..."
+	gotestsum --junitfile go-test-report.xml --format testname --raw-command -- go test -json -vet=off -coverpkg=$$(go list $(GO_COVER_PKGS) | grep -vE '/(ent|ent_log|ent_stat)(/|$$)' | paste -sd, -) -coverprofile=coverage.out $(GO_COVER_PKGS)
+	go tool cover -func=coverage.out
+	@echo "[JUnit] 完成：go-test-report.xml（同时产出 coverage.out）"
+
+.PHONY: junit
+junit: junit-go junit-node
 
 #####################
 ## 构建相关
@@ -533,9 +589,9 @@ clean-binaries:
 
 # ==================== 工具 ====================
 
-# 格式化（Go + 配置 + 文档 + 脚本 + SQL + Docker）
+# 格式化（Go + 配置 + 脚本 + 文档 + Docker）
 .PHONY: format
-format: format-go format-yaml format-markdown format-docker
+format: format-go format-yaml format-shell format-markdown format-docker
 
 # 格式化 Go 代码
 .PHONY: format-go
@@ -548,60 +604,23 @@ format-go:
 # 格式化 YAML 文件
 .PHONY: format-yaml
 format-yaml:
-	@echo "[Format] 格式化配置文件 (YAML)…"
-	@command -v yamlfmt >/dev/null 2>&1 || { \
-		echo "⚠️  yamlfmt 未安装，跳过 YAML 格式化。" ; \
-		echo "   提示: 可通过运行 'go install github.com/google/yamlfmt/cmd/yamlfmt@latest' 安装" ; \
-		exit 0 ; \
-		}
-	@echo "[Format] 使用 yamlfmt 格式化 YAML..."
-	@yamlfmt -conf .yamlfmt \
-		".cnb" \
-		".github" \
-		".gitlab" \
-		".cnb.yml" \
-		".nfpm.yaml" \
-		".golangci.yml" \
-		".gitlab-ci.yml" || { echo "❌ yamlfmt 格式化失败"; exit 1; }
-	@echo "[Format] YAML 格式化完成（yamlfmt）。"
+	@bash scripts/format.sh yaml
+
+# 格式化 Shell 脚本
+# 实现放在 scripts/format.sh：工具缺失即跳过，不误报失败（同 format-yaml 的说明）。
+.PHONY: format-shell
+format-shell:
+	@bash scripts/format.sh shell
 
 # 格式化 Markdown 文件
 .PHONY: format-markdown
 format-markdown:
-	@echo "[Format] 格式化文档 (Markdown)…"
-	@command -v markdownfmt >/dev/null 2>&1 || { \
-		echo "⚠️  markdownfmt 未安装，跳过 Markdown 格式化。" ; \
-		echo "   提示: 可通过运行 'go install github.com/Kunde21/markdownfmt/v3/cmd/markdownfmt@latest' 安装" ; \
-		exit 0 ; \
-	}
-	@echo "[Format] 使用 markdownfmt 格式化 Markdown..."
-	@for f in $(shell find . -type f -name '*.md' \
-		-not -path '*/node_modules/*' \
-		-not -path './.git/*' \
-		-not -path './.vscode/*' \
-		-not -path './.idea/*' \
-		-not -path './.codebuddy/*' \
-		-not -path './.trae/*' \
-		-not -path './.mimocode/*'); do \
-		[ -f "$$f" ] || continue; \
-		markdownfmt -w "$$f" || { echo "❌ markdownfmt 格式化失败: $$f"; exit 1; }; \
-	done
-	@echo "[Format] Markdown 格式化完成（markdownfmt）。"
+	@bash scripts/format.sh markdown
 
 # 格式化 Dockerfile 文件
 .PHONY: format-docker
 format-docker:
-	@echo "[Format] 格式化 Dockerfile..."
-	@command -v dockerfmt >/dev/null 2>&1 || { \
-		echo "⚠️  dockerfmt 未安装，跳过 Dockerfile 格式化。" ; \
-		echo "   提示: 可通过运行 'go install github.com/reteps/dockerfmt@latest' 安装" ; \
-		exit 0 ; \
-		}
-	@echo "[Format] 使用 dockerfmt 格式化 Dockerfile..."
-	@find .cnb -type f -name "Dockerfile*" -exec dockerfmt -w {} + || { echo "❌ dockerfmt 格式化失败"; exit 1; }
-	@find .github -type f -name "Dockerfile*" -exec dockerfmt -w {} + || { echo "❌ dockerfmt 格式化失败"; exit 1; }
-	@find .gitlab -type f -name "Dockerfile*" -exec dockerfmt -w {} + || { echo "❌ dockerfmt 格式化失败"; exit 1; }
-	@echo "[Format] Dockerfile 格式化完成（dockerfmt）。"
+	@bash scripts/format.sh docker
 
 # ==================== 推送 ====================
 
@@ -609,10 +628,12 @@ format-docker:
 .PHONY: push
 push:
 	git push origin HEAD
+	git push github HEAD
 	@echo "推送完成！"
 
 # 强制推送到所有远程仓库（忽略冲突）
 .PHONY: push-force
 push-force:
 	git push --force origin HEAD
+	git push --force github HEAD
 	@echo "强制推送完成！"

@@ -1,0 +1,142 @@
+# Codecov 配置（放在 .github/ 下，Codecov 自动读取）
+# 官方文档：https://docs.codecov.com/docs/codecov-yaml
+#
+# 本仓库 Go 后端 + Node(vanilla JS) 前端两套覆盖率，用 flags 区分（go / node）。
+# 数据由 GitHub Actions 的覆盖率工作流（.github/workflows/coverage.yml，
+# 使用 codecov/codecov-action@v7）生成并上传：
+#   - Go 后端          → coverage.out                    （flag: go）
+#   - 前端 vanilla JS  → cmd/frontend/coverage/lcov.info（flag: node，c8 产出）
+# 两份报告用不同 flag 区分，各自独立统计、互不覆盖。
+#
+# 职责分离：CNB 流水线（.cnb/workflows/push-coverage.yml、pull-coverage.yml）
+# 的 testing:coverage 负责硬性红线门禁（lines / diffLines），Codecov 仅做
+# 趋势 / PR 评论 / 徽章。状态检查默认 informational 不阻塞；若想在 GitHub 侧
+# 也强约束，把对应 status 块的 `informational: true` 去掉即可。
+
+coverage:
+  range: '0...100'
+  round: down
+  precision: 2
+
+  status:
+    project:
+      default:
+        informational: true
+        target: auto # 以每次提交前的覆盖率为基线，自动对比
+        threshold: 5% # 允许相对基线下降 5%，超过则状态变红
+      go:
+        informational: true
+        flags: go # 只看 Go 后端报告
+        target: auto
+        threshold: 5%
+      node:
+        informational: true
+        flags: node # 只看前端报告
+        target: auto
+        threshold: 5%
+    patch:
+      default:
+        informational: true
+        target: auto # PR 增量代码覆盖率门槛
+        threshold: 5%
+
+  # 标志（flag）：按语言拆分，便于分别看趋势、分别设门槛
+  flags:
+    go:
+      paths:
+        - cmd/
+        - internal/
+        - pkg/
+      carryforward: true # PR 只跑部分测试时，沿用历史 flag 覆盖率算总项目覆盖
+    node:
+      paths:
+        - cmd/backend/static/js/ # c8 --include 的实际统计范围
+      carryforward: true
+
+  # 忽略不参与覆盖率统计的文件
+  ignore:
+    # 4 处 ent 生成目录（ent 占全树语句约 73%，计入会把业务覆盖率严重稀释），
+    # 口径与 .cnb/workflows/*-coverage.yml 的 coverpkg 排除完全一致
+    - 'internal/ent/**'
+    - 'internal/ent_log/**'
+    - 'internal/ent_stat/**'
+    - 'cmd/ent/**'
+    - '**/*_test.go'
+    # 前端：c8 覆盖率产物与依赖目录
+    - 'cmd/frontend/coverage/**'
+    - '**/node_modules/**'
+    # internal/docs_2、internal/docs_3 是 swaggo 生成的 swagger 嵌入包，属生成代码，
+    # 但 CNB 门禁的 coverpkg 并未排除它们——为保持两侧数字一致，这里也不排除。
+
+  # PR 评论：展示总体覆盖、增量、各 flag 与文件明细
+  comment:
+    layout: 'reach,diff,flags,files'
+    behavior: default
+    require_changes: false
+    hide_project_coverage: false
+
+# Codecov Components 面板（与 coverage.flags 不同：flags 是按语言「分开上传」，
+# components 是在同一份覆盖率数据里按目录「再切块」，面板名就叫 Components）。
+# 组件覆盖率同样受上面 coverage.ignore 影响——ent 生成目录、*_test.go 不计入。
+# 状态沿用「只展示不阻塞」策略（informational），硬门禁仍由 CNB 负责。
+component_management:
+  default_rules:
+    statuses:
+      - type: project
+        informational: true
+        target: auto # 以组件自身历史覆盖率为基线
+        threshold: 5%
+  individual_components:
+    # gRPC 家族：服务、客户端、拦截器、生成的桩代码
+    - component_id: go-grpc
+      name: Go · gRPC
+      paths:
+        - internal/grpc_client/**
+        - internal/grpc_credential/**
+        - internal/grpc_gateway_client/**
+        - internal/grpc_generated/**
+        - internal/grpc_interceptor/**
+        - internal/grpc_proto/**
+        - internal/grpc_server/**
+        - internal/grpc_service/**
+    # MCP 家族：server / client / tool / prompt / resource
+    - component_id: go-mcp
+      name: Go · MCP
+      paths:
+        - internal/mcp_client/**
+        - internal/mcp_prompt/**
+        - internal/mcp_resource/**
+        - internal/mcp_server/**
+        - internal/mcp_tool/**
+    # HTTP 网关：gin 服务、中间件、路由处理器
+    - component_id: go-web
+      name: Go · HTTP 网关
+      paths:
+        - internal/backend/**
+        - internal/gin_middleware/**
+        - internal/gin_server/**
+        - internal/handlers/**
+    # 转发器与上报器
+    - component_id: go-forwarder
+      name: Go · 转发与上报
+      paths:
+        - internal/forwarder/**
+        - internal/reporter/**
+    # 基础组件：全局状态、初始化、领域核心、工具与公共包
+    - component_id: go-foundation
+      name: Go · 基础组件
+      paths:
+        - internal/core/**
+        - internal/global/**
+        - internal/helper/**
+        - internal/initialize/**
+        - internal/manager/**
+        - internal/provider/**
+        - internal/types/**
+        - internal/utils/**
+        - pkg/**
+    # 前端：后端自带的 vanilla JS（c8 实际统计范围，含 components/）
+    - component_id: frontend
+      name: 前端 vanilla JS
+      paths:
+        - cmd/backend/static/js/**
