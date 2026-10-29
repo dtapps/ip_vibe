@@ -784,8 +784,8 @@ github.com/valllabh/ocsf-schema-golang v1.0.3/go.mod h1:sZ3as9xqm1SSK5feFWIR2CuG
 github.com/volcengine/volc-sdk-golang v1.0.23/go.mod h1:AfG/PZRUkHJ9inETvbjNifTDgut25Wbkm2QoYBTbvyU=
 github.com/volcengine/volc-sdk-golang v1.0.258 h1:75HALNNPeVm9Jvojft7CGS5PB7PN46h2oHuQOfdJ15w=
 github.com/volcengine/volc-sdk-golang v1.0.258/go.mod h1:zHJlaqiMbIB+0mcrsZPTwOb3FB7S/0MCfqlnO8R7hlM=
-github.com/volcengine/volcengine-go-sdk v1.2.58 h1:Saq1C8w+tSezALd3ZlNdfzmWlkuMbpP1icVMGxtTeHI=
-github.com/volcengine/volcengine-go-sdk v1.2.58/go.mod h1:DURKPVQ8Rsi4OQu4/NPjUyjla3MeHPgXT/qV+400fAw=
+github.com/volcengine/volcengine-go-sdk v1.2.59 h1:sWj1PMCSMG0rO0wekrWwzkmlyvLWAKbwoTmNPG3g8tM=
+github.com/volcengine/volcengine-go-sdk v1.2.59/go.mod h1:DURKPVQ8Rsi4OQu4/NPjUyjla3MeHPgXT/qV+400fAw=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.0.2/go.mod h1:1WAq6h33pAW+iRreB34OORO2Nf7qel3VV3fjBj+hCSs=
 github.com/xdg-go/scram v1.1.2/go.mod h1:RT/sEzTbU5y00aCK8UOx6R7YryM0iF1N2MOmC3kKLN4=
