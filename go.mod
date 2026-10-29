@@ -38,7 +38,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.4
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.32.0
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.219
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.220
 	github.com/inetaf/tcpproxy v0.0.0-20260515195445-c159a6051109
 	github.com/jdcloud-api/jdcloud-sdk-go v1.68.0
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.129
