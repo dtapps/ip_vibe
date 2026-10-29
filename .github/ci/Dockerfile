@@ -34,13 +34,67 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zip \
     git \
     make \
-    unzip
+    unzip \
+    yamllint \
+    wixl \
+    wixl-data \
+    && rm -rf /var/lib/apt/lists/* \
+    && echo "--- 基础构建工具安装完成 ---" \
+    && wget --version | head -1 \
+    && xz --version | head -1 \
+    && curl --version | head -1 \
+    && gpg --version | head -1 \
+    && zip -v | sed -n '2p' \
+    && git --version \
+    && make --version | head -1 \
+    && unzip -v | head -1 \
+    && yamllint --version \
+    && wixl --version \
+    && dpkg-query -W -f='ca-certificates ${Version}\n' ca-certificates \
+    && dpkg-query -W -f='wixl-data ${Version}\n' wixl-data
 
-# 4. 安装 Node.js 工具
+# 3. 安装 UPX 工具
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then UPX_ARCH="amd64"; \
+    elif [ "$ARCH" = "aarch64" ]; then UPX_ARCH="arm64"; \
+    else echo "不支持的架构: $ARCH" && exit 1; fi && \
+    \
+    # 构建下载地址
+    UPX_DIR="upx-${UPX_VERSION}-${UPX_ARCH}_linux" && \
+    UPX_URL="https://github.com/upx/upx/releases/download/v${UPX_VERSION}/${UPX_DIR}.tar.xz" && \
+    \
+    cd /tmp && \
+    wget -q -O upx.tar.xz "${UPX_URL}" && \
+    tar -xf upx.tar.xz && \
+    mv ${UPX_DIR}/upx /usr/local/bin/upx && \
+    chmod +x /usr/local/bin/upx && \
+    # 清理
+    rm -rf upx.tar.xz ${UPX_DIR} && \
+    echo "--- UPX 安装的 ---" && \
+    upx --version
+
+# 4. 安装 nfpm 工具
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then NFPM_ARCH="x86_64"; \
+    elif [ "$ARCH" = "aarch64" ]; then NFPM_ARCH="arm64"; \
+    else echo "不支持的架构: $ARCH" && exit 1; fi && \
+    \
+    NFPM_URL="https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_Linux_${NFPM_ARCH}.tar.gz" && \
+    \
+    cd /tmp && \
+    wget -q -O nfpm.tar.gz "${NFPM_URL}" && \
+    tar -xzf nfpm.tar.gz nfpm && \
+    mv nfpm /usr/local/bin/nfpm && \
+    chmod +x /usr/local/bin/nfpm && \
+    rm -rf nfpm.tar.gz && \
+    echo "--- nfpm 安装的 ---" && \
+    nfpm --version
+
+# 5. 安装 Node.js 工具
 RUN ARCH=$(uname -m) && \
     if [ "$ARCH" = "x86_64" ]; then NODE_ARCH="x64"; \
     elif [ "$ARCH" = "aarch64" ]; then NODE_ARCH="arm64"; \
-    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
+    else echo "不支持的架构: $ARCH" && exit 1; fi && \
     \
     # 构建下载地址
     NODE_DIR="node-v${NODE_VERSION}-linux-${NODE_ARCH}" && \
@@ -54,59 +108,13 @@ RUN ARCH=$(uname -m) && \
     npm install -g pnpm@${PNPM_VERSION} && \
     \
     # 清理
-    rm -rf node.tar.xz && \
-    echo "--- Node.js installed ---" && \
+    rm -rf node.tar.xz /root/.npm /root/.cache/node && \
+    echo "--- Node.js 安装的 ---" && \
     node -v && npm -v && pnpm -v
 
-# 5. 安装 UPX 压缩工具
-RUN ARCH=$(uname -m) && \
-    if [ "$ARCH" = "x86_64" ]; then UPX_ARCH="amd64"; \
-    elif [ "$ARCH" = "aarch64" ]; then UPX_ARCH="arm64"; \
-    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
-    \
-    # 构建下载地址
-    UPX_DIR="upx-${UPX_VERSION}-${UPX_ARCH}_linux" && \
-    UPX_URL="https://github.com/upx/upx/releases/download/v${UPX_VERSION}/${UPX_DIR}.tar.xz" && \
-    \
-    cd /tmp && \
-    wget -q -O upx.tar.xz "${UPX_URL}" && \
-    tar -xf upx.tar.xz && \
-    mv ${UPX_DIR}/upx /usr/local/bin/upx && \
-    chmod +x /usr/local/bin/upx && \
-    # 清理
-    rm -rf upx.tar.xz ${UPX_DIR} && \
-    echo "--- UPX installed ---" && \
-    upx --version
-
-# 6. 安装 nfpm (用于打包 deb/rpm)
-RUN ARCH=$(uname -m) && \
-    if [ "$ARCH" = "x86_64" ]; then NFPM_ARCH="x86_64"; \
-    elif [ "$ARCH" = "aarch64" ]; then NFPM_ARCH="arm64"; \
-    else echo "Unsupported architecture: $ARCH" && exit 1; fi && \
-    \
-    NFPM_URL="https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VERSION}/nfpm_${NFPM_VERSION}_Linux_${NFPM_ARCH}.tar.gz" && \
-    \
-    cd /tmp && \
-    wget -q -O nfpm.tar.gz "${NFPM_URL}" && \
-    tar -xf nfpm.tar.gz && \
-    mv nfpm /usr/local/bin/nfpm && \
-    chmod +x /usr/local/bin/nfpm && \
-    rm -rf nfpm.tar.gz && \
-    echo "--- nfpm installed ---" && \
-    nfpm --version
-
-# 7. 安装 yamllint (用于 YAML 文件检查)
-RUN apt-get update && apt-get install -y --no-install-recommends yamllint \
-    && echo "--- yamllint installed ---" \
-    && yamllint --version
-
-# 8. 安装 wixl (用于编译 Windows MSI)
-RUN apt-get update && apt-get install -y --no-install-recommends wixl wixl-data \
-    && echo "--- wixl installed ---" \
-    && wixl --version
-
-# 9. 预安装 Go 工具链（版本已锁定）
-RUN echo "==> 预安装 Go 工具链（版本已锁定）..." \
+# 6. 预安装 Go 工具链
+# 同一层内 go install + 清缓存，避免 go-build 和 mod 缓存留在独立层里
+RUN echo "==> 预安装 Go 工具链..." \
     && go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION} \
     && echo "==> golangci-lint 安装完成 (${GOLANGCI_LINT_VERSION})" \
     && go install gotest.tools/gotestsum@${GOTESTSUM_VERSION} \
@@ -116,7 +124,7 @@ RUN echo "==> 预安装 Go 工具链（版本已锁定）..." \
     && echo "--- Go 工具链安装完成 ---" \
     && ls -l $GOPATH/bin
 
-# 10. 卸载不需要的工具，并清空所有 apt 缓存
+# 7. 卸载不需要的工具，并清空所有 apt 缓存
 RUN apt-get purge -y wget xz-utils \
     && apt-get autoremove -y \
     && apt-get clean \
