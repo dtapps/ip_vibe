@@ -1,0 +1,32 @@
+# Docker 构建上下文忽略清单
+#
+# 镜像构建只需要 bin/ 下的 linux 二进制（见 .github/docker/ 与 .cnb/docker/ 下的 Dockerfile.*），
+# 其余内容只是把上下文撑大、拖慢每次 build 的上传：
+#   - cmd/frontend/node_modules 约 118MB
+#   - .git 约 139MB
+# build-image 工作流一次要建三个镜像，上下文每多 250MB 就是三倍的浪费。
+#
+# 注意：不要忽略 bin/，镜像要 COPY 的二进制就在里面。
+
+.git
+.github
+.cnb
+.idea
+.vscode
+.trae
+.codebuddy
+docs
+data
+logs
+tests
+coverage
+coverage.out
+coverage.html
+coverage-lcov.info
+go-test-report.xml
+junit.xml
+**/node_modules
+
+# 压缩包只在 GitHub Release / 制品库用，镜像里不需要
+bin/*.tar.gz
+bin/*.zip

@@ -1,0 +1,331 @@
+# 发布工作流
+#
+# 手动触发，输入版本号后自动构建全平台二进制包（zip / tar.gz）并发布 GitHub Release。
+#
+# 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 CNB 的 .cnb/workflows/release.yml 同口径）：
+#   v1.2.3          -> 正式版，Release 不勾选 prerelease
+#   v1.2.3-rc.1     -> 预发布，Release 勾选 prerelease
+#   v1.2.3-beta.1   -> 预发布，Release 勾选 prerelease
+#   v1.2.3-alpha.1  -> 预发布，Release 勾选 prerelease
+#
+# https://github.com/actions/runner-images
+# https://github.com/actions/checkout
+# https://github.com/actions/cache
+# https://github.com/actions/upload-artifact
+# https://github.com/actions/download-artifact
+# https://github.com/softprops/action-gh-release
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号。预发布看后缀：1.2.3-rc.1 / 1.2.3-beta.1 / 1.2.3-alpha.1；没有后缀就是正式版'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: read # 拉取 GHCR 上的 CI 镜像（公开镜像亦可匿名拉，写上以防仓库转私有）
+
+# 同一分支的多次运行取消旧的运行，避免排队浪费。
+# ⚠️ 但 release 这一步不能跟着被砍：它不是幂等的一次性动作（建 tag → 传 19 个附件 →
+# 写正文），取消在半路会留下一个只挂了两三个文件的 Release，比排队慢更贵。
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    # 直接用预构建的 CI 镜像（含 Go/Node/pnpm + 全部 Go 工具链），
+    # 免去每次重装系统库与 go install 工具。镜像由 ci-image.yml 在 Dockerfile 变动时
+    # 自动重建并推送到 GHCR；首次使用前需先跑一次 ci-image.yml 让镜像存在。
+    container:
+      image: ghcr.io/${{ github.repository }}/ci:latest
+    outputs:
+      interior_version: ${{ steps.gen.outputs.interior_version }}
+      interior_release_title: ${{ steps.gen.outputs.interior_release_title }}
+      pre_release: ${{ steps.gen.outputs.pre_release }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v7
+
+      - name: 解析版本号（预发布看后缀）
+        id: gen
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          # 归一化 / 格式校验 / 预发布判定只有一份实现，release.yml 与 build-image.yml 共用
+          # shellcheck source=scripts/ci/resolve-prerelease.sh
+          . scripts/ci/resolve-prerelease.sh
+          resolve_version "${VERSION}"
+
+          echo "${PRE_NOTE}"
+
+          # 预发布版本在标题上带个后缀，便于在 Release 列表里一眼区分
+          if [ "${PRERELEASE}" = "true" ]; then
+            RELEASE_TITLE="${TAG} (预发布)"
+          else
+            RELEASE_TITLE="${TAG}"
+          fi
+
+          {
+            echo "interior_version=${TAG}"
+            echo "interior_release_title=${RELEASE_TITLE}"
+            # 只在本流水线 job 之间传，不再来自用户输入
+            echo "pre_release=${PRERELEASE}"
+          } >> "$GITHUB_OUTPUT"
+
+  # 构建全平台二进制并压缩（linux/windows/darwin × amd64/arm64）
+  build:
+    needs: prepare
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}/ci:latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v7
+
+      # go build 默认做 VCS 盖章，会调用 `git status --porcelain`。容器 job 的工作区是
+      # runner 挂进来的 bind mount（属主是 runner 用户），容器内进程却是 root，git 会判定
+      # dubious ownership 并 exit 128 —— 而 cmd/go 对这次调用用 runOutputVerboseOnly，
+      # 会把 git 的 stderr 吞掉，日志里只剩 “error obtaining VCS status: exit status 128”。
+      # 这里写 system 作用域（容器内 root 可写 /etc/gitconfig，不依赖 $HOME 是否可写），
+      # 让容器里的 git 正常可用（Makefile 里 `git rev-parse`/`git describe` 也依赖它）。
+      - name: 让容器内的 git 可用
+        shell: bash
+        run: |
+          git config --system --add safe.directory '*' 2>/dev/null || true
+          git config --global --add safe.directory "$GITHUB_WORKSPACE" 2>/dev/null || true
+
+          # 结果打进日志：以后一眼能看出这条登记有没有生效
+          if git status --porcelain > /dev/null 2>&1; then
+            echo "✓ 容器内 git 可用，COMMIT=$(git rev-parse --short HEAD)"
+          else
+            echo "⚠️ 容器内 git 仍不可用，构建由 -buildvcs=false 兜底"
+          fi
+
+      # 容器镜像已预装 Go 工具链（GOPATH=/go，工具在 /go/bin 且已在 PATH），
+      # 这里把路径常量写入 $GITHUB_ENV，供后续 make 步骤的 GOPATH/GOBIN 引用。
+      - name: 设置 Go 工具链目录
+        shell: bash
+        run: |
+          echo "GO_PATH_DIR=/go" >> "$GITHUB_ENV"
+          echo "GO_BIN_DIR=/go/bin" >> "$GITHUB_ENV"
+
+      # 缓存 Go module 下载（GOMODCACHE），让 go mod download / go install
+      # 命中已下载模块，避免重复从 proxy 拉取。镜像内 GOPATH=/go。
+      - name: 缓存 Go module
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.GO_PATH_DIR }}/pkg/mod
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-mod-
+
+      # 缓存 Go 编译缓存（~/.cache/go-build），避免每次全量重编。
+      - name: 缓存 Go build 缓存
+        uses: actions/cache@v6
+        with:
+          path: ${{ format('{0}/.cache/go-build', env.HOME) }}
+          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-build-
+
+      # 动态获取 pnpm 实际 store 目录（受 PNPM_HOME / 配置影响，写死路径可能 Miss），
+      # 写入 $GITHUB_ENV 供下方缓存步骤引用。
+      - name: 获取 pnpm store 目录
+        id: pnpm-store
+        shell: bash
+        run: echo "PNPM_STORE_DIR=$(pnpm config get store-dir)" >> "$GITHUB_ENV"
+
+      # 自定义缓存 pnpm store，按 lockfile hash 命中，pnpm install 命中后跳过从 registry 下载。
+      - name: 缓存 pnpm store
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.PNPM_STORE_DIR }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('cmd/frontend/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
+
+      - name: 安装所有依赖
+        shell: bash
+        run: make deps
+
+      - name: 构建前端静态文件
+        shell: bash
+        env:
+          VERSION: ${{ needs.prepare.outputs.interior_version }}
+        run: VERSION="${VERSION}" make build-frontend
+
+      # build-all 会先 clean（清空 bin/），再逐个平台编译 backend/reporter/forwarder，
+      # 每编完一个就打包成 tar.gz（Windows 为 zip）并删掉未压缩的二进制。
+      - name: 构建所有平台二进制文件
+        shell: bash
+        env:
+          VERSION: ${{ needs.prepare.outputs.interior_version }}
+        run: VERSION="${VERSION}" make build-all
+
+      # 兜底清理：确保 bin/ 里只剩可发布的压缩包（build-all 里的打包缺失时不会留下裸二进制）
+      - name: 清理二进制文件
+        shell: bash
+        run: make clean-binaries
+
+      - name: 生成校验文件
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd bin
+          : > SHA256SUMS
+          for f in *.tar.gz *.zip; do
+            [ -e "${f}" ] || continue
+            sha256sum "${f}" >> SHA256SUMS
+          done
+          cat SHA256SUMS
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v7
+        with:
+          name: ip_vibe-release
+          path: bin/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # 构建完成后，发布 GitHub Release
+  release:
+    needs: [prepare, build]
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v7
+        with:
+          # 需要完整 tag 历史，才能算出「上一个 tag」并生成 changelog
+          fetch-depth: 0
+
+      - name: 下载所有产物
+        uses: actions/download-artifact@v8
+        with:
+          name: ip_vibe-release
+          path: release
+
+      - name: 生成 Release 正文
+        shell: bash
+        env:
+          INTERIOR_VERSION: ${{ needs.prepare.outputs.interior_version }}
+          PRE_RELEASE: ${{ needs.prepare.outputs.pre_release }}
+        run: |
+          set -euo pipefail
+
+          REPO="${GITHUB_REPOSITORY}"
+          DL_BASE="https://github.com/${REPO}/releases/download/${INTERIOR_VERSION}"
+          BUILD_TIME="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+
+          if [ ! -d release ]; then
+            echo '❌ 缺少 release 目录：artifact 下载失败？' >&2
+            exit 1
+          fi
+
+          if [ "${PRE_RELEASE}" = "true" ]; then
+            RELEASE_TYPE="🚧 预发布版本 (Pre-release)"
+          else
+            RELEASE_TYPE="✅ 正式发布版本 (Stable)"
+          fi
+
+          # 生成 changelog（取上一个 tag 到 HEAD 的提交摘要）
+          #
+          # 不能写 `git tag --sort=-v:refname | head -2 | tail -1`：那是「全仓库第二新的 tag」，
+          # 跟当前 HEAD 没有关系。重跑一次（tag 已经建过）就会把刚发的 tag 自己当成上一个版本，
+          # 段落直接变成空；分支上多了个更新的 tag 时也会指到别的线上去。
+          PREV_TAG=$(git describe --tags --abbrev=0 'HEAD^' 2>/dev/null || true)
+          if [ -z "${PREV_TAG}" ]; then
+            CHANGES='首次发布'
+          else
+            CHANGES=$(git log --pretty=format:'- %s' "${PREV_TAG}..HEAD" 2>/dev/null || echo '- 版本更新')
+          fi
+
+          {
+            if [ "${PRE_RELEASE}" = "true" ]; then
+              echo '## ⚠️ 预发布版本'
+              echo ''
+              echo '> 这是 rc / beta / alpha 预发布版本，可能包含未充分测试的功能。'
+              printf '> 如需稳定版本，请使用 [最新正式版](https://github.com/%s/releases/latest)。\n' "${REPO}"
+              echo ''
+            fi
+
+            echo '## 发布信息'
+            echo ''
+            echo '| 项目 | 内容 |'
+            echo '| --- | --- |'
+            printf '| 版本号 | %s |\n' "${INTERIOR_VERSION}"
+            printf '| 发布类型 | %s |\n' "${RELEASE_TYPE}"
+            printf '| 提交 | [%s](https://github.com/%s/commit/%s) |\n' "${SHORT_SHA}" "${REPO}" "${GITHUB_SHA}"
+            printf '| 构建时间 | %s |\n' "${BUILD_TIME}"
+            echo ''
+            echo '## 下载'
+            echo ''
+            echo '| 组件 | 平台 | 架构 | 文件 | 大小 |'
+            echo '| --- | --- | --- | --- | --- |'
+
+            # 附件命名规范：{backend,reporter,forwarder}-{os}-{arch}.{tar.gz,zip}
+            while IFS= read -r f; do
+              fname="$(basename "${f}")"
+              case "${fname}" in
+                backend-* | reporter-* | forwarder-*) ;;
+                *) continue ;;
+              esac
+
+              comp="${fname%%-*}"
+              rest="${fname#*-}"
+              os="${rest%%-*}"
+              arch="${rest#*-}"
+              arch="${arch%%.*}"
+
+              case "${os}" in
+                linux) os_name='Linux' ;;
+                windows) os_name='Windows' ;;
+                darwin) os_name='macOS' ;;
+                *) os_name="${os}" ;;
+              esac
+
+              case "${arch}" in
+                amd64) arch_name='x86_64' ;;
+                arm64) arch_name='ARM64' ;;
+                *) arch_name="${arch}" ;;
+              esac
+
+              fsize="$(du -h "${f}" | cut -f1)"
+              printf '| %s | %s | %s | [%s](%s/%s) | %s |\n' \
+                "${comp}" "${os_name}" "${arch_name}" "${fname}" "${DL_BASE}" "${fname}" "${fsize}"
+            done < <(find release -maxdepth 1 -type f | sort)
+
+            echo ''
+            echo '## 校验'
+            echo ''
+            echo '附件含 SHA256SUMS，Linux/macOS 用 sha256sum -c SHA256SUMS（macOS 亦可 shasum -a 256 -c）校验。'
+            echo ''
+            echo '## 更新内容'
+            echo ''
+            echo "${CHANGES}"
+          } > release_body.md
+
+          cat release_body.md
+
+      - name: 发布 Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.prepare.outputs.interior_version }}
+          name: ${{ needs.prepare.outputs.interior_release_title }}
+          draft: false
+          # 版本号带 rc/beta/alpha 才勾选预发布，正式版不勾
+          prerelease: ${{ needs.prepare.outputs.pre_release }}
+          body_path: release_body.md
+          files: release/*

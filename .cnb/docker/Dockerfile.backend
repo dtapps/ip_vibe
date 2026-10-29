@@ -1,0 +1,42 @@
+# CNB 镜像定义（由 .cnb/workflows/build-image.yml 构建，构建上下文 = 仓库根目录）
+#
+# 与 .github/docker/Dockerfile.backend 结构完全一致，唯一差异是基础镜像：
+# GitHub 侧用 Docker Hub 的 alpine，CNB 侧用内部仓库的 alpine（同在 CNB 网络内，拉取更快）。
+# 两份都只负责「把静态编译好的二进制装进最小运行镜像」，应用参数与目录结构保持一致。
+#
+# 历史：这份原先放在 cmd/backend/Dockerfile（已删除），其 COPY 写的是 `../../bin/...`，
+# 以仓库根目录为构建上下文时属于「路径超出上下文」，Docker 会直接拒绝；搬家时一并修正为 bin/。
+
+FROM docker.cnb.cool/dtapp/alpine:latest
+
+# tzdata：Go 程序要靠系统时区库才能让 TZ=Asia/Shanghai 真正生效
+# ca-certificates：上报/通知走 HTTPS 时需要根证书
+RUN apk add --no-cache tzdata ca-certificates
+
+WORKDIR /app
+
+# CGO_ENABLED=0 静态编译产物，由 build-image.yml 中的 make build-linux-amd64 生成
+COPY bin/backend-linux-amd64 /app/ip_vibe
+
+RUN mkdir -p /app/data/ /app/logs/ \
+    && chmod +x /app/ip_vibe
+
+ENV TZ=Asia/Shanghai \
+    LANG=C.UTF-8
+
+# 构建时参数：不传即为空字符串
+ARG DEBUG
+ARG HTTP_PORT
+ARG BASIC_AUTH_USERNAME
+ARG BASIC_AUTH_PASSWORD
+ARG DEVICE_CODE
+ARG DEVICE_NAME
+
+ENV DEBUG=${DEBUG} \
+    HTTP_PORT=${HTTP_PORT} \
+    BASIC_AUTH_USERNAME=${BASIC_AUTH_USERNAME} \
+    BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD} \
+    DEVICE_CODE=${DEVICE_CODE} \
+    DEVICE_NAME=${DEVICE_NAME}
+
+ENTRYPOINT ["/app/ip_vibe"]

@@ -1,0 +1,40 @@
+# GitHub Actions 镜像定义（由 build-image.yml 构建，构建上下文 = 仓库根目录）
+#
+# 与 CNB 的 .cnb/docker/Dockerfile.backend 一一对应，唯一差异是基础镜像：
+# GitHub hosted runner 上用 Docker Hub 的 alpine 更稳，CNB 侧用内部仓库的 alpine 更快。
+# 两份都只负责「把静态编译好的二进制装进最小运行镜像」，
+# 应用的启动参数、目录结构保持完全一致。
+
+FROM alpine:3.22
+
+# tzdata：Go 程序要靠系统时区库才能让 TZ=Asia/Shanghai 真正生效
+# ca-certificates：上报/通知走 HTTPS 时需要根证书
+RUN apk add --no-cache tzdata ca-certificates
+
+WORKDIR /app
+
+# CGO_ENABLED=0 静态编译产物，由 build-image.yml 中的 make build-linux-amd64 生成
+COPY bin/backend-linux-amd64 /app/ip_vibe
+
+RUN mkdir -p /app/data/ /app/logs/ \
+    && chmod +x /app/ip_vibe
+
+ENV TZ=Asia/Shanghai \
+    LANG=C.UTF-8
+
+# 构建时参数：不传即为空字符串，与原 Dockerfile 行为一致
+ARG DEBUG
+ARG HTTP_PORT
+ARG BASIC_AUTH_USERNAME
+ARG BASIC_AUTH_PASSWORD
+ARG DEVICE_CODE
+ARG DEVICE_NAME
+
+ENV DEBUG=${DEBUG} \
+    HTTP_PORT=${HTTP_PORT} \
+    BASIC_AUTH_USERNAME=${BASIC_AUTH_USERNAME} \
+    BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD} \
+    DEVICE_CODE=${DEVICE_CODE} \
+    DEVICE_NAME=${DEVICE_NAME}
+
+ENTRYPOINT ["/app/ip_vibe"]

@@ -1,0 +1,259 @@
+# 构建镜像工作流
+#
+# 手动触发，输入版本号后：编译 linux/amd64 二进制 → 构建 backend / reporter / forwarder
+# 三个运行镜像 → 推送到 GitHub Container Registry（GHCR）。
+#
+# 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 release.yml、CNB 的
+# .cnb/workflows/build-image.yml 同口径）：
+#   v1.2.3          -> 正式版，推 :v1.2.3 与 :latest
+#   v1.2.3-rc.1     -> 预发布，只推 :v1.2.3-rc.1，不覆盖 :latest
+#   v1.2.3-beta.1   -> 预发布，只推 :v1.2.3-beta.1，不覆盖 :latest
+#   v1.2.3-alpha.1  -> 预发布，只推 :v1.2.3-alpha.1，不覆盖 :latest
+#
+# 镜像地址：ghcr.io/<owner>/<repo>/{backend,reporter,forwarder}
+#
+# Dockerfile 位置：GitHub 用 .github/docker/Dockerfile.*，CNB 用 .cnb/docker/Dockerfile.*，
+# 两份一一对应、构建上下文都是仓库根目录，只差基础镜像（Docker Hub alpine vs CNB 内部仓库 alpine）。
+#
+# https://github.com/actions/checkout
+# https://github.com/actions/cache
+# https://github.com/actions/upload-artifact
+# https://github.com/actions/download-artifact
+# https://github.com/docker/setup-buildx-action
+# https://github.com/docker/login-action
+# https://github.com/docker/build-push-action
+name: Build Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号。预发布看后缀：1.2.3-rc.1 / 1.2.3-beta.1 / 1.2.3-alpha.1；没有后缀就是正式版'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  # write 已经包含 read 权限：既能推镜像到 GHCR，也能拉 GHCR 上的 CI 镜像
+  packages: write
+
+# 镜像推送不是幂等的一次性动作，跑到一半被取消会留下「只有部分服务更新」的镜像组合，
+# 所以不跟随同分支新运行自动取消。
+concurrency:
+  group: build-image-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # 先编 amd64 二进制：镜像里只需要 linux/amd64，其它平台由 release.yml 负责打压缩包
+  binaries:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository }}/ci:latest
+    outputs:
+      version: ${{ steps.gen.outputs.version }}
+      pre_release: ${{ steps.gen.outputs.pre_release }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v7
+
+      # go build 默认做 VCS 盖章，会调用 `git status --porcelain`。容器 job 的工作区是
+      # runner 挂进来的 bind mount（属主是 runner 用户），容器内进程却是 root，git 会判定
+      # dubious ownership 并 exit 128 —— 而 cmd/go 对这次调用用 runOutputVerboseOnly，
+      # 会把 git 的 stderr 吞掉，日志里只剩 “error obtaining VCS status: exit status 128”。
+      # 这里写 system 作用域（容器内 root 可写 /etc/gitconfig，不依赖 $HOME 是否可写），
+      # 让容器里的 git 正常可用（Makefile 里 `git rev-parse`/`git describe` 也依赖它）。
+      - name: 让容器内的 git 可用
+        shell: bash
+        run: |
+          git config --system --add safe.directory '*' 2>/dev/null || true
+          git config --global --add safe.directory "$GITHUB_WORKSPACE" 2>/dev/null || true
+
+          # 结果打进日志：以后一眼能看出这条登记有没有生效
+          if git status --porcelain > /dev/null 2>&1; then
+            echo "✓ 容器内 git 可用，COMMIT=$(git rev-parse --short HEAD)"
+          else
+            echo "⚠️ 容器内 git 仍不可用，构建由 -buildvcs=false 兜底"
+          fi
+
+      - name: 解析版本号（预发布看后缀）
+        id: gen
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          # 归一化 / 格式校验 / 预发布判定只有一份实现，两个 workflow 共用
+          # shellcheck source=scripts/ci/resolve-prerelease.sh
+          . scripts/ci/resolve-prerelease.sh
+          resolve_version "${VERSION}"
+
+          echo "${PRE_NOTE}"
+          echo "version=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "pre_release=${PRERELEASE}" >> "$GITHUB_OUTPUT"
+
+      - name: 设置 Go 工具链目录
+        shell: bash
+        run: |
+          echo "GO_PATH_DIR=/go" >> "$GITHUB_ENV"
+          echo "GO_BIN_DIR=/go/bin" >> "$GITHUB_ENV"
+
+      - name: 缓存 Go module
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.GO_PATH_DIR }}/pkg/mod
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-mod-
+
+      - name: 缓存 Go build 缓存
+        uses: actions/cache@v6
+        with:
+          path: ${{ format('{0}/.cache/go-build', env.HOME) }}
+          key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-build-
+
+      - name: 获取 pnpm store 目录
+        id: pnpm-store
+        shell: bash
+        run: echo "PNPM_STORE_DIR=$(pnpm config get store-dir)" >> "$GITHUB_ENV"
+
+      - name: 缓存 pnpm store
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.PNPM_STORE_DIR }}
+          key: pnpm-${{ runner.os }}-${{ hashFiles('cmd/frontend/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-${{ runner.os }}-
+
+      - name: 安装所有依赖
+        shell: bash
+        run: make deps
+
+      # 前端静态文件会被 backend 二进制 go:embed 进去，必须先于后端编译执行
+      - name: 构建前端静态文件
+        shell: bash
+        env:
+          VERSION: ${{ steps.gen.outputs.version }}
+        run: VERSION="${VERSION}" make build-frontend
+
+      - name: 构建后端二进制文件（linux/amd64）
+        shell: bash
+        env:
+          VERSION: ${{ steps.gen.outputs.version }}
+        run: VERSION="${VERSION}" make build-linux-amd64
+
+      - name: 上传二进制产物
+        uses: actions/upload-artifact@v7
+        with:
+          name: ip_vibe-linux-amd64
+          path: bin/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # 镜像在普通 runner（非容器 job）上构建：容器 job 里没有 docker daemon
+  image:
+    needs: binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v7
+
+      - name: 下载二进制产物
+        uses: actions/download-artifact@v8
+        with:
+          name: ip_vibe-linux-amd64
+          path: bin
+
+      - name: 校验构建产物
+        shell: bash
+        run: |
+          set -euo pipefail
+          for svc in backend reporter forwarder; do
+            if [ ! -f "bin/${svc}-linux-amd64" ]; then
+              echo "❌ 缺少 bin/${svc}-linux-amd64" >&2
+              exit 1
+            fi
+            echo "✓ bin/${svc}-linux-amd64 $(du -h "bin/${svc}-linux-amd64" | cut -f1)"
+          done
+
+      # 标签在这里一次性算好写入 $GITHUB_ENV，避免在三个 build 步骤里各写一遍
+      # 「有后缀就不推 latest」这种条件表达式（容易三处写不一致）。
+      - name: 计算镜像标签
+        shell: bash
+        env:
+          TAG: ${{ needs.binaries.outputs.version }}
+          PRE_RELEASE: ${{ needs.binaries.outputs.pre_release }}
+        run: |
+          set -euo pipefail
+
+          # GHCR 要求仓库名全小写
+          registry="ghcr.io/$(printf '%s' "${GITHUB_REPOSITORY}" | tr '[:upper:]' '[:lower:]')"
+
+          {
+            echo '## 镜像推送清单'
+            echo ''
+            echo '| 服务 | 标签 |'
+            echo '| --- | --- |'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          for svc in backend reporter forwarder; do
+            tags="${registry}/${svc}:${TAG}"
+            if [ "${PRE_RELEASE}" = "false" ]; then
+              tags="${tags},${registry}/${svc}:latest"
+            else
+              echo "ℹ️ 预发布版本，${svc} 不覆盖 latest 标签"
+            fi
+
+            env_name="$(printf '%s' "${svc}" | tr '[:lower:]' '[:upper:]')_TAGS"
+            printf '%s=%s\n' "${env_name}" "${tags}" >> "$GITHUB_ENV"
+            printf '| %s | %s |\n' "${svc}" "${tags//,/ <br> }" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      - name: 设置 Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: 登录 GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 构建并推送 Backend 镜像
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: .github/docker/Dockerfile.backend
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.BACKEND_TAGS }}
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+      - name: 构建并推送 Reporter 镜像
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: .github/docker/Dockerfile.reporter
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.REPORTER_TAGS }}
+          cache-from: type=gha,scope=reporter
+          cache-to: type=gha,mode=max,scope=reporter
+
+      - name: 构建并推送 Forwarder 镜像
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: .github/docker/Dockerfile.forwarder
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.FORWARDER_TAGS }}
+          cache-from: type=gha,scope=forwarder
+          cache-to: type=gha,mode=max,scope=forwarder
+
+    # 刻意不做旧版本清理：这里的每个标签都对应一个正式/预发布版本，
+    # 删掉会让仍在使用旧版本的用户无法重新拉取。GHCR 存储配额确实需要时，
+    # 再按 actions/delete-package-versions 只清理 untagged 版本。

@@ -1,0 +1,33 @@
+# GitHub Actions 镜像定义（由 build-image.yml 构建，构建上下文 = 仓库根目录）
+# 与 CNB 的 .cnb/docker/Dockerfile.forwarder 一一对应，唯一差异是基础镜像。
+
+FROM alpine:3.22
+
+# tzdata：让 TZ=Asia/Shanghai 生效；ca-certificates：HTTPS 请求需要根证书
+RUN apk add --no-cache tzdata ca-certificates
+
+WORKDIR /app
+
+# CGO_ENABLED=0 静态编译产物，由 build-image.yml 中的 make build-linux-amd64 生成
+COPY bin/forwarder-linux-amd64 /app/ip_vibe
+
+RUN mkdir -p /app/logs/ \
+    && chmod +x /app/ip_vibe
+
+ENV TZ=Asia/Shanghai \
+    LANG=C.UTF-8
+
+# 构建时参数：不传即为空字符串，与原 Dockerfile 行为一致
+ARG DEBUG
+ARG HTTP_URL
+ARG BASIC_AUTH_USERNAME
+ARG BASIC_AUTH_PASSWORD
+ARG DEVICE_CODE
+
+ENV DEBUG=${DEBUG} \
+    HTTP_URL=${HTTP_URL} \
+    BASIC_AUTH_USERNAME=${BASIC_AUTH_USERNAME} \
+    BASIC_AUTH_PASSWORD=${BASIC_AUTH_PASSWORD} \
+    DEVICE_CODE=${DEVICE_CODE}
+
+ENTRYPOINT ["/app/ip_vibe"]

@@ -16,17 +16,44 @@
           script: |
             echo "原始 version: $version"
 
-            # 1. 如果输入没有 v 前缀，自动加上
-            if ! echo "$version" | grep -qE '^v'; then
-              version="v${version}"
+            # 1. 版本号不能为空
+            if [ -z "$version" ]; then
+              echo "错误: 版本号不能为空。示例: v1.2.3 / v1.2.3-rc.1 / v1.2.3-beta.1 / v1.2.3-alpha.1" >&2
+              exit 1
+            fi
+
+            # 2. 如果输入没有 v 前缀，自动加上
+            case "$version" in
+              v*) ;;
+              *) version="v${version}" ;;
+            esac
+
+            # 3. 判断是否为预发布版本（版本号后缀带 rc / beta / alpha）
+            #    v1.2.3          -> 正式版   （不勾选 prerelease）
+            #    v1.2.3-rc.1     -> 预发布   （勾选 prerelease）
+            #    v1.2.3-beta.1   -> 预发布   （勾选 prerelease）
+            #    v1.2.3-alpha.1  -> 预发布   （勾选 prerelease）
+            if echo "$version" | grep -qiE -- '-(rc|beta|alpha)([.-]?[0-9A-Za-z.-]*)$'; then
+              is_prerelease="true"
+              version_type="预发布"
+              release_title="${version} (预发布)"
+            else
+              is_prerelease="false"
+              version_type="正式版"
+              release_title="${version}"
             fi
 
             echo "处理 version: $version"
+            echo "版本类型: ${version_type} (is_prerelease=${is_prerelease})"
 
-            # 2 .通过 set-output 输出到 result
+            # 4. 通过 set-output 输出到 result
             echo "##[set-output interior_version=$version]"
+            echo "##[set-output interior_is_prerelease=$is_prerelease]"
+            echo "##[set-output interior_release_title=$release_title]"
           exports:
             interior_version: INTERIOR_VERSION
+            interior_is_prerelease: INTERIOR_IS_PRERELEASE
+            interior_release_title: INTERIOR_RELEASE_TITLE
 
         - name: 安装所有依赖
           script: make deps
@@ -47,12 +74,14 @@
             latestChangeLog: LATEST_CHANGE_LOG
 
         # https://docs.cnb.cool/zh/build/internal-steps.html#git-release
+        # 版本号带 rc / beta / alpha 时 prerelease=true（预发布），否则 prerelease=false（正式版）
         - name: 创建 Release
           type: git:release
           options:
             tag: ${INTERIOR_VERSION}
-            title: '${INTERIOR_VERSION}'
+            title: '${INTERIOR_RELEASE_TITLE}'
             description: ${LATEST_CHANGE_LOG}
+            prerelease: ${INTERIOR_IS_PRERELEASE}
 
         # https://docs.cnb.cool/zh/plugin/public/cnbcool/attachments.html
         - name: 上传 Release 附件

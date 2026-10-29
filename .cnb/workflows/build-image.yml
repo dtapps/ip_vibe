@@ -1,5 +1,10 @@
 '**':
   # 自定义按钮可触发的事件：web_trigger_build_docker_image
+  #
+  # 三个服务镜像的 Dockerfile 统一放在 .cnb/docker/Dockerfile.{backend,reporter,forwarder}
+  # （构建上下文 = 仓库根目录，Dockerfile 里 COPY bin/<服务>-linux-amd64）。
+  # 与 GitHub 的 .github/docker/Dockerfile.* 结构一致，只差基础镜像来源：
+  # CNB 用内部仓库的 alpine，GitHub 用 Docker Hub 的 alpine。
   web_trigger_build_docker_image:
     - runner:
         tags: cnb:arch:amd64 # 指定 Runner 必须有这个标签
@@ -19,14 +24,35 @@
             echo "CNB_DOCKER_REGISTRY: ${CNB_DOCKER_REGISTRY}"
             echo "CNB_REPO_SLUG_LOWERCASE: ${CNB_REPO_SLUG_LOWERCASE}"
 
-            # 1. 如果输入没有 v 前缀，自动加上
-            if ! echo "$version" | grep -qE '^v'; then
-              version="v${version}"
+            # 1. 版本号不能为空，否则会打出 :v 这样的非法镜像标签
+            if [ -z "$version" ]; then
+              echo "错误: 版本号不能为空。示例: v1.2.3 / v1.2.3-rc.1 / v1.2.3-beta.1 / v1.2.3-alpha.1" >&2
+              exit 1
+            fi
+
+            # 2. 如果输入没有 v 前缀，自动加上
+            case "$version" in
+              v*) ;;
+              *) version="v${version}" ;;
+            esac
+
+            # 3. 判断是否为预发布版本（版本号后缀带 rc / beta / alpha）
+            #    v1.2.3          -> 正式版   （推送 :v1.2.3 与 :latest）
+            #    v1.2.3-rc.1     -> 预发布   （只推送 :v1.2.3-rc.1，不覆盖 :latest）
+            #    v1.2.3-beta.1   -> 预发布   （只推送 :v1.2.3-beta.1，不覆盖 :latest）
+            #    v1.2.3-alpha.1  -> 预发布   （只推送 :v1.2.3-alpha.1，不覆盖 :latest）
+            if echo "$version" | grep -qiE -- '-(rc|beta|alpha)([.-]?[0-9A-Za-z.-]*)$'; then
+              is_prerelease="true"
+              version_type="预发布"
+            else
+              is_prerelease="false"
+              version_type="正式版"
             fi
 
             echo "处理 version: $version"
+            echo "版本类型: ${version_type} (is_prerelease=${is_prerelease})"
 
-            # 2. 计算各镜像的名称与地址（构建/推送阶段共用）
+            # 4. 计算各镜像的名称与地址（构建/推送阶段共用）
             backend_image_name="${CNB_REPO_SLUG_LOWERCASE}/backend"
             reporter_image_name="${CNB_REPO_SLUG_LOWERCASE}/reporter"
             forwarder_image_name="${CNB_REPO_SLUG_LOWERCASE}/forwarder"
@@ -40,8 +66,9 @@
             forwarder_docker_image_full="${CNB_DOCKER_REGISTRY}/${forwarder_image_name}:${version}"
             forwarder_docker_image_latest="${CNB_DOCKER_REGISTRY}/${forwarder_image_name}:latest"
 
-            # 3. 通过 set-output 输出到 result
+            # 5. 通过 set-output 输出到 result
             echo "##[set-output interior_version=$version]"
+            echo "##[set-output interior_is_prerelease=$is_prerelease]"
             echo "##[set-output interior_backend_image_name=$backend_image_name]"
             echo "##[set-output interior_backend_docker_image_full=$backend_docker_image_full]"
             echo "##[set-output interior_backend_docker_image_latest=$backend_docker_image_latest]"
@@ -53,6 +80,7 @@
             echo "##[set-output interior_forwarder_docker_image_latest=$forwarder_docker_image_latest]"
           exports:
             interior_version: INTERIOR_VERSION
+            interior_is_prerelease: INTERIOR_IS_PRERELEASE
             interior_backend_image_name: INTERIOR_BACKEND_IMAGE_NAME
             interior_backend_docker_image_full: INTERIOR_BACKEND_DOCKER_IMAGE_FULL
             interior_backend_docker_image_latest: INTERIOR_BACKEND_DOCKER_IMAGE_LATEST
@@ -79,35 +107,50 @@
         - name: 构建 Docker Backend 镜像
           script: |
             docker build \
-              -f "./cmd/backend/Dockerfile" \
+              -f "./.cnb/docker/Dockerfile.backend" \
               -t "${INTERIOR_BACKEND_DOCKER_IMAGE_FULL}" \
               -t "${INTERIOR_BACKEND_DOCKER_IMAGE_LATEST}" .
 
         - name: 构建 Docker Reporter 镜像
           script: |
             docker build \
-              -f "./cmd/reporter/Dockerfile" \
+              -f "./.cnb/docker/Dockerfile.reporter" \
               -t "${INTERIOR_REPORTER_DOCKER_IMAGE_FULL}" \
               -t "${INTERIOR_REPORTER_DOCKER_IMAGE_LATEST}" .
 
         - name: 构建 Docker Forwarder 镜像
           script: |
             docker build \
-              -f "./cmd/forwarder/Dockerfile" \
+              -f "./.cnb/docker/Dockerfile.forwarder" \
               -t "${INTERIOR_FORWARDER_DOCKER_IMAGE_FULL}" \
               -t "${INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST}" .
 
         - name: 推送 Docker Backend 镜像
           script: |
             docker push "${INTERIOR_BACKEND_DOCKER_IMAGE_FULL}"
-            docker push "${INTERIOR_BACKEND_DOCKER_IMAGE_LATEST}"
+            # 预发布版本不覆盖 latest 标签，避免把未正式发布的版本推给线上用户
+            if [ "${INTERIOR_IS_PRERELEASE}" = "true" ]; then
+              echo "预发布版本，跳过 latest 标签推送: ${INTERIOR_BACKEND_DOCKER_IMAGE_LATEST}"
+            else
+              docker push "${INTERIOR_BACKEND_DOCKER_IMAGE_LATEST}"
+            fi
 
         - name: 推送 Docker Reporter 镜像
           script: |
             docker push "${INTERIOR_REPORTER_DOCKER_IMAGE_FULL}"
-            docker push "${INTERIOR_REPORTER_DOCKER_IMAGE_LATEST}"
+            # 预发布版本不覆盖 latest 标签，避免把未正式发布的版本推给线上用户
+            if [ "${INTERIOR_IS_PRERELEASE}" = "true" ]; then
+              echo "预发布版本，跳过 latest 标签推送: ${INTERIOR_REPORTER_DOCKER_IMAGE_LATEST}"
+            else
+              docker push "${INTERIOR_REPORTER_DOCKER_IMAGE_LATEST}"
+            fi
 
         - name: 推送 Docker Forwarder 镜像
           script: |
             docker push "${INTERIOR_FORWARDER_DOCKER_IMAGE_FULL}"
-            docker push "${INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST}"
+            # 预发布版本不覆盖 latest 标签，避免把未正式发布的版本推给线上用户
+            if [ "${INTERIOR_IS_PRERELEASE}" = "true" ]; then
+              echo "预发布版本，跳过 latest 标签推送: ${INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST}"
+            else
+              docker push "${INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST}"
+            fi

@@ -60,9 +60,9 @@ update-deps:
 	go get -u ./...
 	go mod tidy
 	@echo "[Deps] 更新前端依赖..."
-	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) update --latest
-# 	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) update
 	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) self-update
+# 	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) update
+	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) update --latest
 	@echo "[Deps] 完成。"
 
 # generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
@@ -507,7 +507,11 @@ LDFLAGS = -s -w \
 # CGO_ENABLED=0: 禁用 CGO，实现完全静态链接
 # CGO_ENABLED=1: 启用 CGO，实现动态链接
 # -trimpath: 移除本地路径，保护隐私
-BUILD_CMD = CGO_ENABLED=0 go build -trimpath -ldflags="$(LDFLAGS)"
+# -buildvcs=false: 不把 git 状态盖章进二进制
+#   版本/提交号本来就走上面的 LDFLAGS 注入，VCS 盖章信息用不上；而它会调用
+#   `git status --porcelain`，git 一旦不可用就报 `error obtaining VCS status: exit status 128`
+#   把构建打断（go test 不做盖章，所以覆盖率流水线一直是绿的）。
+BUILD_CMD = CGO_ENABLED=0 go build -trimpath -buildvcs=false -ldflags="$(LDFLAGS)"
 
 # 构建所有平台
 build-all: clean \

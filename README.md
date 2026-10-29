@@ -15,6 +15,7 @@ IPVibe 是一套面向多机房 / 多设备的 **IP 动态管理与应用交付*
 - [接口入口](#接口入口)
 - [目录结构](#目录结构)
 - [常用命令](#常用命令)
+- [文档](#文档)
 - [许可证](#许可证)
 
 ---
@@ -124,6 +125,10 @@ docker compose up -d
 启动 backend / reporter / forwarder 三个服务，数据与日志分别挂载到 `./data`、`./logs`。 控制台默认访问 `http://127.0.0.1:8080`，健康检查 `GET /health`。
 
 > 镜像：`docker.cnb.cool/dtapp/ip_vibe/{backend,reporter,forwarder}:latest`，均使用 `network_mode: host`。 `reporter` / `forwarder` 通过 `BACKEND_ENDPOINT` 指向 backend 地址。
+>
+> 版本号规则：`v1.2.3` 为正式版（推送 `:v1.2.3` 与 `:latest`，Release 不勾选 prerelease）；`v1.2.3-rc.1`、`v1.2.3-beta.1`、`v1.2.3-alpha.1` 为预发布（只推送对应版本标签，不覆盖 `:latest`，Release 勾选 prerelease）。
+>
+> GitHub Actions 侧同一套规则：`Release` 工作流产出全平台压缩包并发布 Release，`Build Image` 工作流把镜像推到 `ghcr.io/dtapps/ip_vibe/{backend,reporter,forwarder}`。
 
 ### 本地开发
 
@@ -237,6 +242,20 @@ make format            # 格式化 Go / YAML / Markdown / Dockerfile
 ```
 
 构建产物命名：`{backend|reporter|forwarder}-{os}-{arch}[.exe]`，输出到 `bin/`；版本号、Git Commit、构建时间通过 ldflags 注入 `internal/global`。
+
+---
+
+## 文档
+
+更多细节见 `docs/` 下的专题文档：
+
+| 文档                                    | 内容                                                                                 |
+|-----------------------------------------|--------------------------------------------------------------------------------------|
+| [架构与模块设计](docs/architecture.md)  | 系统概览、代码分层、数据层、核心业务链路、调度与厂商适配、扩展指南                   |
+| [CI/CD 流水线](docs/ci-cd.md)           | CNB 与 GitHub Actions 全部工作流、版本号规则、发布与镜像构建流程、覆盖率分工、已知坑 |
+| [CI 基础镜像](docs/ci-image.md)         | 预装工具链的 CI 镜像：内容、版本升级、平台范围与加回 arm64                           |
+| [Go 覆盖率实现](docs/coverage-go.md)    | Go 单测覆盖率上报与红线门禁方案（可复用到其他项目的实现文案）                        |
+| [前端覆盖率实现](docs/coverage-node.md) | 前端（原生 JS）单测覆盖率方案：Node 内置 test runner + c8                            |
 
 ---
 
