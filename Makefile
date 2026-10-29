@@ -622,6 +622,20 @@ format-markdown:
 format-docker:
 	@bash scripts/format.sh docker
 
+# ==================== 更新 / 拉取 ====================
+
+sync: sync-github sync-cnb push-force ## 拉取所有远程最新（先 GitHub，后 CNB 镜像）然后强制推送
+
+sync-github: ## 拉取 GitHub 最新并以 fast-forward 合并（保留本地未提交改动）
+	git fetch github
+	git merge --ff-only github/master
+	@echo "已同步 github/master 最新代码，本地未提交改动已保留"
+
+sync-cnb: ## 拉取 CNB 最新并以 fast-forward 合并（保留本地未提交改动）
+	git fetch origin
+	git merge --ff-only origin/master
+	@echo "已同步 origin/master 最新代码，本地未提交改动已保留"
+
 # ==================== 推送 ====================
 
 # 推送到所有远程仓库
