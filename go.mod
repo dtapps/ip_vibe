@@ -28,7 +28,7 @@ require (
 	github.com/dromara/carbon/v2 v2.7.0
 	github.com/dustin/go-humanize v1.1.0
 	github.com/envoyproxy/protoc-gen-validate v1.3.3
-	github.com/gin-contrib/cors v1.7.9
+	github.com/gin-contrib/cors v1.7.10
 	github.com/gin-contrib/gzip v1.2.8
 	github.com/gin-contrib/multitemplate v1.1.4
 	github.com/gin-contrib/requestid v1.0.8
