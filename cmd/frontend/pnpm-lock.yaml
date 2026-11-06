@@ -168,7 +168,7 @@ importers:
     devDependencies:
       '@egoist/tailwindcss-icons':
         specifier: ^1.9.2
-        version: 1.9.2(tailwindcss@4.3.3)
+        version: 1.9.2(tailwindcss@4.3.4)
       '@iconify-json/lucide':
         specifier: ^1.2.148
         version: 1.2.148
@@ -207,7 +207,7 @@ importers:
         version: 1.2.5
       tailwindcss:
         specifier: ^4.3.3
-        version: 4.3.3
+        version: 4.3.4
 
 packages:
 
@@ -782,6 +782,9 @@ packages:
   tailwindcss@4.3.3:
     resolution: {integrity: sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==}
 
+  tailwindcss@4.3.4:
+    resolution: {integrity: sha512-PCJZTFFdG+sL3gvnP1Do9o6GbkvH2q0p04xSs3f7cSvmAeK+sttG+/7ncK1fdRwKFfC7n+wDDJaOMBSefkI9ow==}
+
   tapable@2.3.3:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
     engines: {node: '>=6'}
@@ -849,10 +852,10 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@egoist/tailwindcss-icons@1.9.2(tailwindcss@4.3.3)':
+  '@egoist/tailwindcss-icons@1.9.2(tailwindcss@4.3.4)':
     dependencies:
       '@iconify/utils': 3.1.7
-      tailwindcss: 4.3.3
+      tailwindcss: 4.3.4
 
   '@iconify-json/lucide@1.2.148':
     dependencies:
@@ -1298,6 +1301,8 @@ snapshots:
       has-flag: 4.0.0
 
   tailwindcss@4.3.3: {}
+
+  tailwindcss@4.3.4: {}
 
   tapable@2.3.3: {}
 
