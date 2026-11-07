@@ -28,21 +28,23 @@ permissions:
   contents: write
   packages: read # 拉取 GHCR 上的 CI 镜像（公开镜像亦可匿名拉，写上以防仓库转私有）
 
-# 同一分支的多次运行取消旧的运行，避免排队浪费。
-# ⚠️ 但 release 这一步不能跟着被砍：它不是幂等的一次性动作（建 tag → 传 19 个附件 →
-# 写正文），取消在半路会留下一个只挂了两三个文件的 Release，比排队慢更贵。
+# 并发策略：同一分支的多次触发串行排队，绝不取消「正在运行」的旧运行。
+# cancel-in-progress: false 表示新运行进入 pending 等待，而非抢占/取消 in-progress。
+# queue: max 让同一 group 最多保留 100 个 pending（默认 queue: single 只留 1 个，
+# 新的会顶掉旧的 pending），按进入等待的先后 FIFO 依次执行，仅队列满的溢出运行被取消。
+# 注意：queue: max 不能与 cancel-in-progress: true 组合，否则 workflow 校验失败。
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
+  queue: max
 
 jobs:
   prepare:
     runs-on: ubuntu-latest
-    # 直接用预构建的 CI 镜像（含 Go/Node/pnpm + 全部 Go 工具链），
-    # 免去每次重装系统库与 go install 工具。镜像由 ci-image.yml 在 Dockerfile 变动时
-    # 自动重建并推送到 GHCR；首次使用前需先跑一次 ci-image.yml 让镜像存在。
+    # 统一使用 dtapps 维护的 CI 基础镜像（含 Go/Node/pnpm + 工具链），
+    # 免去每次重装系统库与 go install 工具；本仓库不再自建、推送 CI 镜像。
     container:
-      image: ghcr.io/${{ github.repository }}/ci:latest
+      image: ghcr.io/dtapps/golang:latest
     outputs:
       interior_version: ${{ steps.gen.outputs.interior_version }}
       interior_release_title: ${{ steps.gen.outputs.interior_release_title }}
@@ -85,7 +87,7 @@ jobs:
     needs: prepare
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository }}/ci:latest
+      image: ghcr.io/dtapps/golang:latest
     steps:
       - name: 检出代码
         uses: actions/checkout@v7
@@ -240,16 +242,56 @@ jobs:
             RELEASE_TYPE="✅ 正式发布版本 (Stable)"
           fi
 
-          # 生成 changelog（取上一个 tag 到 HEAD 的提交摘要）
-          #
+          # 生成 changelog。对比基准按版本类型区分（rc / beta / alpha 的存在决定了不能一律「上一个 tag」）：
+          #   预发布 -> 对比最近一个 tag（通常是上一个预发布），只看这次预发布新增了什么；
+          #   正式版 -> 对比上一个「正式版」（--exclude '*-*' 滤掉带后缀的 tag），
+          #             汇总整个预发布周期的全部改动，并列出被纳入的预发布版本。
           # 不能写 `git tag --sort=-v:refname | head -2 | tail -1`：那是「全仓库第二新的 tag」，
           # 跟当前 HEAD 没有关系。重跑一次（tag 已经建过）就会把刚发的 tag 自己当成上一个版本，
           # 段落直接变成空；分支上多了个更新的 tag 时也会指到别的线上去。
-          PREV_TAG=$(git describe --tags --abbrev=0 'HEAD^' 2>/dev/null || true)
-          if [ -z "${PREV_TAG}" ]; then
+          if [ "${PRE_RELEASE}" = "true" ]; then
+            BASE_TAG=$(git describe --tags --abbrev=0 'HEAD^' 2>/dev/null || true)
+            LAST_STABLE=$(git describe --tags --abbrev=0 --exclude '*-*' 'HEAD^' 2>/dev/null || true)
+          else
+            BASE_TAG=$(git describe --tags --abbrev=0 --exclude '*-*' 'HEAD^' 2>/dev/null || true)
+            LAST_STABLE="${BASE_TAG}"
+          fi
+
+          if [ -z "${BASE_TAG}" ]; then
+            RANGE_DESC=''
             CHANGES='首次发布'
           else
-            CHANGES=$(git log --pretty=format:'- %s' "${PREV_TAG}..HEAD" 2>/dev/null || echo '- 版本更新')
+            if [ "${PRE_RELEASE}" = "true" ]; then
+              if [ -n "${LAST_STABLE}" ]; then
+                RANGE_DESC="自上一个版本 ${BASE_TAG} 以来的改动（完整变更见上一个正式版 ${LAST_STABLE}）"
+              else
+                RANGE_DESC="自上一个版本 ${BASE_TAG} 以来的改动"
+              fi
+            else
+              RANGE_DESC="自上一个正式版 ${BASE_TAG} 以来的全部改动"
+            fi
+            CHANGES=$(git log --pretty=format:'- %s' "${BASE_TAG}..HEAD" 2>/dev/null || echo '- 版本更新')
+          fi
+
+          # 正式版：列出本次被纳入的预发布版本（上一个正式版之后、HEAD 之前打过的 rc/beta/alpha tag）
+          INCLUDED=''
+          if [ "${PRE_RELEASE}" != "true" ]; then
+            TAG_LIST=$(git tag --merged HEAD --sort=v:refname --list 'v*' 2>/dev/null || true)
+            # 用 for 而不是管道：管道会把 while 放进子 shell，累加结果拿不出来
+            for t in ${TAG_LIST}; do
+              case "${t}" in
+                *-rc* | *-beta* | *-alpha*) ;;
+                *) continue ;;
+              esac
+              # 只算「上一个正式版之后」打的预发布：靠祖先关系判断，
+              # 不能靠 tag 版本排序——git 的 v:refname 会把 v1.1.0 排在 v1.1.0-rc.1 前面。
+              if [ -n "${BASE_TAG}" ]; then
+                if ! git merge-base --is-ancestor "${BASE_TAG}" "${t}" 2>/dev/null; then
+                  continue
+                fi
+              fi
+              INCLUDED="${INCLUDED}${INCLUDED:+, }${t}"
+            done
           fi
 
           {
@@ -310,10 +352,22 @@ jobs:
             echo ''
             echo '## 校验'
             echo ''
-            echo '附件含 SHA256SUMS，Linux/macOS 用 sha256sum -c SHA256SUMS（macOS 亦可 shasum -a 256 -c）校验。'
+            echo '附件含 SHA256SUMS（sha256sum 标准格式，每行「哈希  文件名」），按平台校验：'
+            echo ''
+            echo '- Linux：sha256sum -c SHA256SUMS'
+            echo '- macOS：shasum -a 256 -c SHA256SUMS'
+            echo '- Windows（PowerShell）：Get-FileHash .\backend-windows-amd64.exe.zip -Algorithm SHA256 —— 输出为全大写，与 SHA256SUMS 里的小写哈希等价；也可 certutil -hashfile <文件> SHA256'
             echo ''
             echo '## 更新内容'
             echo ''
+            if [ -n "${RANGE_DESC}" ]; then
+              printf '%s\n' "${RANGE_DESC}"
+              echo ''
+            fi
+            if [ -n "${INCLUDED}" ]; then
+              printf '本次正式版纳入的预发布版本：%s\n' "${INCLUDED}"
+              echo ''
+            fi
             echo "${CHANGES}"
           } > release_body.md
 

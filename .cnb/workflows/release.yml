@@ -6,7 +6,7 @@
       services:
         - docker # 启用 Docker 服务（用于 docker build/push）
       docker:
-        build: .cnb/ci/Dockerfile # 使用自定义 Dockerfile
+        image: docker.cnb.cool/dtapp/golang # 统一使用 CNB 内部 CI 基础镜像
         volumes:
           - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
           - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
@@ -29,30 +29,34 @@
             esac
 
             # 3. 判断是否为预发布版本（版本号后缀带 rc / beta / alpha）
-            #    v1.2.3          -> 正式版   （不勾选 prerelease）
-            #    v1.2.3-rc.1     -> 预发布   （勾选 prerelease）
-            #    v1.2.3-beta.1   -> 预发布   （勾选 prerelease）
-            #    v1.2.3-alpha.1  -> 预发布   （勾选 prerelease）
+            #    v1.2.3          -> 正式版   （preRelease=false，latest=true）
+            #    v1.2.3-rc.1     -> 预发布   （preRelease=true，latest=false）
+            #    v1.2.3-beta.1   -> 预发布   （preRelease=true，latest=false）
+            #    v1.2.3-alpha.1  -> 预发布   （preRelease=true，latest=false）
             if echo "$version" | grep -qiE -- '-(rc|beta|alpha)([.-]?[0-9A-Za-z.-]*)$'; then
               is_prerelease="true"
+              is_latest="false"
               version_type="预发布"
               release_title="${version} (预发布)"
             else
               is_prerelease="false"
+              is_latest="true"
               version_type="正式版"
               release_title="${version}"
             fi
 
             echo "处理 version: $version"
-            echo "版本类型: ${version_type} (is_prerelease=${is_prerelease})"
+            echo "版本类型: ${version_type} (preRelease=${is_prerelease}, latest=${is_latest})"
 
             # 4. 通过 set-output 输出到 result
             echo "##[set-output interior_version=$version]"
             echo "##[set-output interior_is_prerelease=$is_prerelease]"
+            echo "##[set-output interior_is_latest=$is_latest]"
             echo "##[set-output interior_release_title=$release_title]"
           exports:
             interior_version: INTERIOR_VERSION
             interior_is_prerelease: INTERIOR_IS_PRERELEASE
+            interior_is_latest: INTERIOR_IS_LATEST
             interior_release_title: INTERIOR_RELEASE_TITLE
 
         - name: 安装所有依赖
@@ -67,21 +71,181 @@
         - name: 清理二进制文件
           script: make clean-binaries
 
-        # https://docs.cnb.cool/zh/plugin/public/cnbcool/changelog.html
-        - name: 生成 Release 日志
-          image: cnbcool/changelog
-          exports:
-            latestChangeLog: LATEST_CHANGE_LOG
+        - name: 生成校验文件
+          script: |
+            set -eu
+            cd bin
+            : > SHA256SUMS
+            for f in *.tar.gz *.zip; do
+              [ -e "$f" ] || continue
+              sha256sum "$f" >> SHA256SUMS
+            done
+            cat SHA256SUMS
 
-        # https://docs.cnb.cool/zh/build/internal-steps.html#git-release
-        # 版本号带 rc / beta / alpha 时 prerelease=true（预发布），否则 prerelease=false（正式版）
+        # 正文结构与 GitHub 的 Release 一致：预发布提示 + 发布信息表 + 下载表 + 校验 + 更新内容。
+        # 附件下载地址规律（实测可用）：https://cnb.cool/<repo-slug>/-/releases/download/<tag>/<file>
+        - name: 生成 Release 正文
+          script: |
+            set -eu
+
+            # 浅克隆会让 git describe / git log 失真，先尽量补齐历史（失败不阻断）
+            if [ "$(git rev-parse --is-shallow-repository 2>/dev/null || echo false)" = "true" ]; then
+              git fetch --unshallow --tags --quiet 2>/dev/null || git fetch --tags --quiet 2>/dev/null || true
+            fi
+
+            tag="${INTERIOR_VERSION}"
+            prerelease="${INTERIOR_IS_PRERELEASE}"
+            dl_base="https://cnb.cool/${CNB_REPO_SLUG}/-/releases/download/${tag}"
+            build_time="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+            short_sha="${CNB_COMMIT_SHORT:-}"
+
+            if [ "${prerelease}" = "true" ]; then
+              release_type="🚧 预发布版本 (Pre-release)"
+            else
+              release_type="✅ 正式发布版本 (Stable)"
+            fi
+
+            # 更新内容的对比基准按版本类型区分（存在 rc/beta/alpha 时不能一律用「上一个 tag」）：
+            #   预发布 -> 最近一个 tag（通常是上一个预发布），只看这次预发布新增了什么；
+            #   正式版 -> 上一个「正式版」（--exclude '*-*' 滤掉带后缀的 tag），
+            #             汇总整个预发布周期的全部改动，并列出被纳入的预发布版本。
+            if [ "${prerelease}" = "true" ]; then
+              base_tag="$(git describe --tags --abbrev=0 'HEAD^' 2>/dev/null || true)"
+              last_stable="$(git describe --tags --abbrev=0 --exclude '*-*' 'HEAD^' 2>/dev/null || true)"
+            else
+              base_tag="$(git describe --tags --abbrev=0 --exclude '*-*' 'HEAD^' 2>/dev/null || true)"
+              last_stable="${base_tag}"
+            fi
+
+            if [ -z "${base_tag}" ]; then
+              range_desc=''
+              changes='首次发布'
+            else
+              if [ "${prerelease}" = "true" ]; then
+                if [ -n "${last_stable}" ]; then
+                  range_desc="自上一个版本 ${base_tag} 以来的改动（完整变更见上一个正式版 ${last_stable}）"
+                else
+                  range_desc="自上一个版本 ${base_tag} 以来的改动"
+                fi
+              else
+                range_desc="自上一个正式版 ${base_tag} 以来的全部改动"
+              fi
+              changes="$(git log --pretty=format:'- %s' "${base_tag}..HEAD" 2>/dev/null || echo '- 版本更新')"
+            fi
+
+            # 正式版：列出本次被纳入的预发布版本（上一个正式版之后、HEAD 之前打过的 rc/beta/alpha tag）
+            included=''
+            if [ "${prerelease}" != "true" ]; then
+              tag_list="$(git tag --merged HEAD --sort=v:refname --list 'v*' 2>/dev/null || true)"
+              for t in ${tag_list}; do
+                case "${t}" in
+                  *-rc* | *-beta* | *-alpha*) ;;
+                  *) continue ;;
+                esac
+                # 只算「上一个正式版之后」打的预发布：靠祖先关系判断，
+                # 不能靠 tag 版本排序——git 的 v:refname 会把 v1.1.0 排在 v1.1.0-rc.1 前面。
+                if [ -n "${base_tag}" ]; then
+                  if ! git merge-base --is-ancestor "${base_tag}" "${t}" 2>/dev/null; then
+                    continue
+                  fi
+                fi
+                included="${included}${included:+, }${t}"
+              done
+            fi
+
+            {
+              if [ "${prerelease}" = "true" ]; then
+                echo '## ⚠️ 预发布版本'
+                echo ''
+                echo '> 这是 rc / beta / alpha 预发布版本，可能包含未充分测试的功能。'
+                echo '> 如需稳定版本，请使用仓库的正式 Release。'
+                echo ''
+              fi
+
+              echo '## 发布信息'
+              echo ''
+              echo '| 项目 | 内容 |'
+              echo '| --- | --- |'
+              printf '| 版本号 | %s |\n' "${tag}"
+              printf '| 发布类型 | %s |\n' "${release_type}"
+              printf '| 提交 | `%s` |\n' "${short_sha}"
+              printf '| 构建时间 | %s |\n' "${build_time}"
+              echo ''
+              echo '## 下载'
+              echo ''
+              echo '| 组件 | 平台 | 架构 | 文件 | 大小 |'
+              echo '| --- | --- | --- | --- | --- |'
+
+              # 附件命名规范：{backend,reporter,forwarder}-{os}-{arch}[.exe].{tar.gz,zip}
+              for f in bin/*.tar.gz bin/*.zip; do
+                [ -e "${f}" ] || continue
+                fname="$(basename "${f}")"
+                case "${fname}" in
+                  backend-* | reporter-* | forwarder-*) ;;
+                  *) continue ;;
+                esac
+
+                comp="${fname%%-*}"
+                rest="${fname#*-}"
+                os="${rest%%-*}"
+                arch="${rest#*-}"
+                arch="${arch%%.*}"
+
+                case "${os}" in
+                  linux) os_name='Linux' ;;
+                  windows) os_name='Windows' ;;
+                  darwin) os_name='macOS' ;;
+                  *) os_name="${os}" ;;
+                esac
+
+                case "${arch}" in
+                  amd64) arch_name='x86_64' ;;
+                  arm64) arch_name='ARM64' ;;
+                  *) arch_name="${arch}" ;;
+                esac
+
+                fsize="$(du -h "${f}" | cut -f1)"
+                printf '| %s | %s | %s | [%s](%s/%s) | %s |\n' \
+                  "${comp}" "${os_name}" "${arch_name}" "${fname}" "${dl_base}" "${fname}" "${fsize}"
+              done
+
+              echo ''
+              echo '## 校验'
+              echo ''
+              echo '附件含 SHA256SUMS（sha256sum 标准格式，每行「哈希  文件名」），按平台校验：'
+              echo ''
+              echo '- Linux：sha256sum -c SHA256SUMS'
+              echo '- macOS：shasum -a 256 -c SHA256SUMS'
+              echo '- Windows（PowerShell）：Get-FileHash .\backend-windows-amd64.exe.zip -Algorithm SHA256 —— 输出为全大写，与 SHA256SUMS 里的小写哈希等价；也可 certutil -hashfile <文件> SHA256'
+              echo ''
+              echo '## 更新内容'
+              echo ''
+              if [ -n "${range_desc}" ]; then
+                printf '%s\n' "${range_desc}"
+                echo ''
+              fi
+              if [ -n "${included}" ]; then
+                printf '本次正式版纳入的预发布版本：%s\n' "${included}"
+                echo ''
+              fi
+              echo "${changes}"
+            } > release_body.md
+
+            cat release_body.md
+
+        # https://docs.cnb.cool/zh/build/internal-steps/git/release.html
+        # ⚠️ 参数名是 preRelease（驼峰），不是 prerelease —— 写成小写会被静默忽略，
+        #    Release 就不会打上「预发布」标记。
+        #    latest 同理：预发布不设为最新版本，正式版设为最新。
         - name: 创建 Release
           type: git:release
           options:
             tag: ${INTERIOR_VERSION}
             title: '${INTERIOR_RELEASE_TITLE}'
-            description: ${LATEST_CHANGE_LOG}
-            prerelease: ${INTERIOR_IS_PRERELEASE}
+            # description 与 descriptionFromFile 互斥，正文统一由上面的 stage 生成
+            descriptionFromFile: release_body.md
+            preRelease: ${INTERIOR_IS_PRERELEASE}
+            latest: ${INTERIOR_IS_LATEST}
 
         # https://docs.cnb.cool/zh/plugin/public/cnbcool/attachments.html
         - name: 上传 Release 附件

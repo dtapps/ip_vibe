@@ -25,14 +25,15 @@
 
 ### 1.1 GitHub Actions（`.github/workflows/`）
 
-| 工作流         | 文件              | 触发                                      | 作用                                             |
-|----------------|-------------------|-------------------------------------------|--------------------------------------------------|
-| PushRequest    | `push.yml`        | push / PR（所有分支）                     | `make deps → format → check`，质量门禁           |
-| Build CI Image | `ci-image.yml`    | CI Dockerfile 变更、每周一 UTC 0 点、手动 | 构建预装工具链的基础镜像推 GHCR                  |
-| Coverage       | `coverage.yml`    | push / PR                                 | Go + Node 覆盖率与 JUnit 测试报告上传 Codecov    |
-| Coveralls      | `coveralls.yml`   | push / PR                                 | 同口径覆盖率以 lcov 上传 Coveralls（独立工作流） |
-| Build Image    | `build-image.yml` | 手动（输入版本号）                        | linux/amd64 二进制 → 三服务运行镜像推 GHCR       |
-| Release        | `release.yml`     | 手动（输入版本号）                        | 全平台压缩包并发布 GitHub Release                |
+| 工作流      | 文件              | 触发                  | 作用                                             |
+|-------------|-------------------|-----------------------|--------------------------------------------------|
+| PushRequest | `push.yml`        | push / PR（所有分支） | `make deps → format → check`，质量门禁           |
+| Coverage    | `coverage.yml`    | push / PR             | Go + Node 覆盖率与 JUnit 测试报告上传 Codecov    |
+| Coveralls   | `coveralls.yml`   | push / PR             | 同口径覆盖率以 lcov 上传 Coveralls（独立工作流） |
+| Build Image | `build-image.yml` | 手动（输入版本号）    | linux/amd64 二进制 → 三服务运行镜像推 GHCR       |
+| Release     | `release.yml`     | 手动（输入版本号）    | 全平台压缩包并发布 GitHub Release                |
+
+另有 Dependabot（配置在 `.github/dependabot.yml`，不在 workflows 目录）：每日检查三类依赖并自动提升级 PR（label `dependencies`）——Go 模块（根 `go.mod`）、前端 npm（`cmd/frontend`）、GitHub Actions 用到的第三方 action 版本。
 
 ### 1.2 CNB（`.cnb/workflows/`，经根目录 `.cnb.yml` include）
 
@@ -95,15 +96,29 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 1. **prepare**（CI 镜像容器）：source `resolve-prerelease.sh` 归一化版本号，输出 TAG / 是否预发布 / 标题（预发布标题带 `(预发布)` 后缀）。
 2. **build**（CI 镜像容器）：三类缓存（Go module、Go build、pnpm store）→ `make deps` → **先 `make build-frontend`**（前端静态资源由 go:embed 打进 backend 二进制，顺序不能反）→ `make build-all` → `make clean-binaries` 兜底清掉裸二进制 → 生成 `SHA256SUMS` → 上传 artifact。
-3. **release**：`fetch-depth: 0` 拉全量 tag 历史 → 用 `git describe --tags --abbrev=0 'HEAD^'` 找上一个 tag、`git log` 生成 changelog → 拼出含下载表与校验说明的正文 → `softprops/action-gh-release` 建 tag、上传 19 个附件。
+3. **release**：`fetch-depth: 0` 拉全量 tag 历史 → 按版本类型选 changelog 对比基准（见 §3.3）→ 拼出含下载表与校验说明的正文 → `softprops/action-gh-release` 建 tag、上传 19 个附件。
 
 > 为什么不用 `git tag --sort=-v:refname | head -2 | tail -1` 取「上一个 tag」：那取的是全仓库第二新的 tag，跟当前 HEAD 没有关系。重跑发布（tag 已建过）时会把刚发的 tag 自己当成上一个版本，changelog 段落直接变空。
 
 ### 3.2 CNB（`release.yml`，分支按钮「打包 Go 项目」）
 
-一条流水线完成：归一化版本号 → `make deps / build-frontend / build-all / clean-binaries` → `cnbcool/changelog` 插件生成日志 → 内置 `git:release` 建 Release（`prerelease: ${INTERIOR_IS_PRERELEASE}`）→ `cnbcool/attachments` 上传 `bin/*`。
+一条流水线完成：归一化版本号 → `make deps / build-frontend / build-all / clean-binaries` → 生成 `bin/SHA256SUMS` → 生成 Release 正文 → 内置 `git:release` 建 Release（`preRelease: ${INTERIOR_IS_PRERELEASE}`、`latest: ${INTERIOR_IS_LATEST}`——参数名是驼峰 `preRelease`，写成小写会被静默忽略）→ `cnbcool/attachments` 上传 `bin/*`。
 
-与 GitHub 的差异：CNB 不生成 `SHA256SUMS`；changelog 用插件而非 git log。
+Release 正文与 GitHub 侧同构（预发布提示 + 发布信息表 + 下载表 + 校验 + 更新内容），通过 `descriptionFromFile: release_body.md` 传给 `git:release`（注意 `description` 与 `descriptionFromFile` 互斥）。附件直链规律（实测可用）：`https://cnb.cool/<repo-slug>/-/releases/download/<tag>/<file>`。更新内容与 GitHub 用同一套 git 规则（§3.3），不再依赖 `cnbcool/changelog` 插件——插件的时间区间不透明，且无法区分预发布/正式版。
+
+> CNB 的脚本任务不保证跑在 bash 下，脚本按 POSIX sh 写：不用 `pipefail`、进程替换、`[[ ]]`；正文 stage 还会在浅克隆时先 `git fetch --unshallow --tags` 再算 changelog。
+
+### 3.3 更新内容的对比基准（rc / beta / alpha 的关键）
+
+`git describe --tags --abbrev=0 HEAD^` 一律取「最近一个 tag」，在预发布场景下会把正式版的说明做残：`v1.1.0` 前打了 `rc.1 → rc.2 → rc.3`，正式版的更新内容就只剩最后一条 rc 的增量。所以按版本类型分开取基准：
+
+| 版本类型                | 对比基准                                                                                     | 效果                                                                                              |
+|-------------------------|----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| 预发布（rc/beta/alpha） | 最近一个 tag（`git describe --tags --abbrev=0 HEAD^`），通常是上一个预发布                   | rc.2 只列 rc.1→rc.2 的增量；正文附一句「完整变更见上一个正式版 vX.Y.Z」                           |
+| 正式版                  | 上一个**正式版**（`git describe --tags --abbrev=0 --exclude '*-*' HEAD^`，滤掉带后缀的 tag） | 汇总整个预发布周期的全部改动，并列出「本次正式版纳入的预发布版本：v1.1.0-rc.1, v1.1.0-rc.2, ...」 |
+| 无任何 tag              | 无                                                                                           | 「首次发布」                                                                                      |
+
+> 判断「哪些预发布版本被本次正式版纳入」必须用祖先关系 `git merge-base --is-ancestor <上一个正式版> <tag>`，**不能靠 tag 的版本排序**：git 的 `v:refname` 会把 `v1.1.0` 排在 `v1.1.0-rc.1` 前面，按排序切区间会把上一轮已经发布的 beta/rc 又算进来。
 
 ---
 
@@ -137,10 +152,10 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 两侧口径一致：`make deps → make format → make check`（先格式化，再跑 golangci-lint 等静态检查，实现见 `scripts/check.sh`）。
 
-- GitHub `push.yml`：容器 job 直接用 CI 基础镜像（`ghcr.io/<owner>/<repo>/ci:latest`），免装工具链；带 Go module、Go build、pnpm store 三类缓存。
-- CNB `push.yml`：runner 上用 `.cnb/ci/Dockerfile` 现场构建执行环境，缓存靠 copy-on-write 卷（Go 构建缓存、pnpm store、Go 模块目录）。
+- GitHub `push.yml`：容器 job 统一使用 CI 基础镜像 `ghcr.io/dtapps/golang:latest`，免装工具链；带 Go module、Go build、pnpm store 三类缓存。
+- CNB `push.yml`：流水线统一使用 CI 基础镜像 `docker.cnb.cool/dtapp/golang`（`docker.image`），缓存靠 copy-on-write 卷（Go 构建缓存、pnpm store、Go 模块目录）。
 
-`concurrency` 策略：`push.yml` / `ci-image.yml` 同分支新运行会取消旧运行（动作幂等）；`coverage.yml` / `coveralls.yml` / `release.yml` / `build-image.yml` 不取消（上传类、发布类动作跑到一半被砍会留半成品）。
+`concurrency` 策略：GitHub 侧工作流统一 `cancel-in-progress: false`（同分支新运行排队，不取消旧运行）——上传类、发布类动作跑到一半被砍会留半成品。
 
 ---
 
@@ -156,6 +171,8 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 红线现状：CNB 两侧的 `lines` / `diffLines` 目前处于注释状态（等真实基线稳定后按「基线减缓冲」再启用）；Go 报告 `breakIfNoCoverage: false`，Node 报告 `breakIfNoCoverage: true`（报告缺失直接失败，防假绿）。日后启用门禁时，注意两侧数值保持一致。
 
+Codecov 侧的配置在 `.github/codecov.yml`：go / node 双 flag 独立统计（`carryforward: true`，PR 只跑部分测试时沿用历史数据），`ignore` 列表与 coverpkg 排除口径一致（同样排除 4 处 ent 生成目录）；所有 status（project / patch）均为 `informational: true`——**GitHub 侧只做趋势展示与 PR 评论，不做硬门禁，红线只在 CNB**。想在 GitHub 侧也强约束时，去掉对应 status 块的 `informational: true` 即可。
+
 ### 6.2 命令口径唯一在 Makefile
 
 | Makefile 目标   | 产物                                                     | 消费方                               |
@@ -169,7 +186,7 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 关键口径（详见 Makefile 注释与两篇 coverage 文档）：
 
 - coverpkg 范围为 `./cmd/... ./internal/... ./pkg/...`，排除 4 处 ent 生成目录（ent 占全树语句约 73%，计入会把业务覆盖率从约 27% 稀释到约 5%）；不用 `./...`（会带上 `tests/` 无 build tag 的集成测试，CI 里跑会挂）。
-- Coveralls 不吃 golang 格式：其 parser 用正则吃掉包前缀，243 个文件会坍缩到同一级，所以先转 lcov（gcov2lcov）再上传。
+- Coveralls 不吃 golang 格式：其 parser 用正则吃掉包前缀，243 个文件会坍缩到同一级，所以先转 lcov（CI 镜像预装的 gcov2lcov）再上传。
 - 前端是原生 JS（非 Vite/Vue/TS），用 Node 内置 test runner + c8（vitest 对 CJS 经转译会丢失插桩）；c8 必须在仓库根执行，lcov 的 SF 路径才是仓库根相对。
 - Codecov 未启用 Bundle Analysis：前端无打包器、产物无 sourcemap，将来引入打包器后再加。
 
@@ -177,11 +194,9 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 ## 7. CI 基础镜像
 
-GitHub 侧五个工作流的容器 job 共用一个预构建镜像 `ghcr.io/<owner>/<repo>/ci:latest`（golang:1.27.3-trixie + Node 26 + pnpm + golangci-lint、gotestsum、gcov2lcov、markdownfmt、yamlfmt、shfmt、dockerfmt、upx、nfpm、wixl 等）。由 `ci-image.yml` 在 Dockerfile 变更时自动重建并推送，每周一定时拉基础镜像安全更新；每次构建附 sha 标签、只保留最近 5 个版本。
+GitHub 侧五个工作流的容器 job 统一使用 `ghcr.io/dtapps/golang:latest`；CNB 侧 7 处流水线配置统一使用内部制品库的 `docker.cnb.cool/dtapp/golang`（写在 `docker.image`，与 `docker.build` 二选一）。本仓库不再维护任何 CI Dockerfile，也不再构建 CI 镜像；工具链版本由上游镜像统一维护，升级时无需改本仓库。消费方清单、路径假设与权限说明见 [ci-image.md](ci-image.md)。
 
-**首次使用前必须先手动跑一次 Build CI Image**，否则消费方 pull 不到镜像。详细内容、版本升级方式与「加回 arm64」见 [ci-image.md](ci-image.md)。
-
-CNB 侧不用预推镜像：每条流水线 `docker.build: .cnb/ci/Dockerfile` 现场构建执行环境（多配了 daocloud / 腾讯云镜像加速；不含 gotestsum、gcov2lcov——CNB 不产 JUnit / lcov）。
+CNB 侧另用 `docker.volumes` 保留 copy-on-write 缓存（`/root/.cache/go-build`、pnpm store、`/go/pkg/mod`），并特意只缓存模块下载，不覆盖镜像内预装的 `/go/bin` 工具。
 
 ---
 
@@ -194,6 +209,8 @@ CNB 侧不用预推镜像：每条流水线 `docker.build: .cnb/ci/Dockerfile` �
 | `sca.yml`            | push 全量 + PR 增量的组件漏洞 / License 扫描与 SBOM（SPDX 格式）；PR 侧 `failOnSeverity: high` 门禁，push 侧只出报告         |
 | `codewiki.yml`       | 推 tag 时生成 Code Wiki（timeout 3h）                                                                                        |
 | `knowledge-base.yml` | push 与 Issue 事件时把 `docs/**.md` 索引入知识库（Issue 同步开启）——docs/ 下的文档推送后即可被检索                           |
+
+敏感信息与 SCA 扫描的忽略清单在仓库根 `.scanignore`，由 `.cnb/security/code_scan_config.yml` 的 secrets 与 software-composition-analysis 两处 `scan.ignoreFrom` 指定。
 
 `.cnb/settings.yml` 配置 Issue 按钮悬浮图、reaction 图与 NPC 角色。
 
@@ -208,7 +225,7 @@ CNB 侧不用预推镜像：每条流水线 `docker.build: .cnb/ci/Dockerfile` �
 | `COVERALLS_REPO_TOKEN`              | `coveralls.yml`；缺失时自动跳过上传（`continue-on-error`），不影响其它步骤            |
 | `CNB_TOKEN` / `CNB_TOKEN_USER_NAME` | CNB 内置，用于 `docker login` 制品库                                                  |
 | CNB imports                         | 多条流水线 `imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml` 引入环境变量 |
-| GitLab                              | `.gitlab/ci/Dockerfile` 仅为预留，仓库暂无 `.gitlab-ci.yml`                           |
+| GitLab                              | `.gitlab/` 仅为预留目录，仓库暂无 `.gitlab-ci.yml`                                    |
 
 ---
 

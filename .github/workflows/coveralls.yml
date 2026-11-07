@@ -26,19 +26,24 @@ on:
 
 permissions:
   contents: read
-  packages: read # 拉取 GHCR 上的 CI 镜像
+  packages: read # 拉取 GHCR 上的 CI 镜像（公开镜像亦可匿名拉，写上以防仓库转私有）
 
-# 同一分支的多次 push 不取消旧的运行。
+# 并发策略：同一分支的多次触发串行排队，绝不取消「正在运行」的旧运行。
+# cancel-in-progress: false 表示新运行进入 pending 等待，而非抢占/取消 in-progress。
+# queue: max 让同一 group 最多保留 100 个 pending（默认 queue: single 只留 1 个，
+# 新的会顶掉旧的 pending），按进入等待的先后 FIFO 依次执行，仅队列满的溢出运行被取消。
+# 注意：queue: max 不能与 cancel-in-progress: true 组合，否则 workflow 校验失败。
 concurrency:
   group: coveralls-${{ github.ref }}
   cancel-in-progress: false
+  queue: max
 
 jobs:
   coverage:
     runs-on: ubuntu-latest
-    # 复用预构建 CI 镜像（构建与推送见 ci-image.yml）
+    # 统一使用 dtapps 维护的 CI 基础镜像；本仓库不再自建、推送 CI 镜像。
     container:
-      image: ghcr.io/${{ github.repository }}/ci:latest
+      image: ghcr.io/dtapps/golang:latest
     env:
       COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
     steps:
@@ -83,7 +88,7 @@ jobs:
       - name: 安装所有依赖
         run: make deps
 
-      # 口径与 CNB 一致，统一走 Makefile 目标（命令唯一定义在 Makefile 的 cover-go）
+      # 口径与 CNB 一致，统一走 Makefile 目标（命令唯一定义在 Makefile 的 cover-go-lcov）
       # Go 覆盖率以 lcov 格式上传（而非 format: golang）：Coveralls 的 golang parser
       # 会用正则硬吃 3 段包前缀只留 basename，导致 243 个文件全坍缩到同一级；
       # lcov parser 的 SF: 保留完整路径，故走 lcov 绕开该正则。详见 Makefile cover-go-lcov。

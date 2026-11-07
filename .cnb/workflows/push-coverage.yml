@@ -1,12 +1,12 @@
 '**':
   push:
     # Go 单元测试覆盖率（全量红线）。
-    # 复用同一 Dockerfile 构建环境与 Go 模块/构建缓存（不需要 pnpm 缓存，不构建前端）。
+    # 复用统一 CI 镜像与 Go 模块/构建缓存（不需要 pnpm 缓存，不构建前端）。
     # 参考 CNB 官方示例 examples/ecosystem/testing-go-demo 的 testing:coverage 内置任务。
     - runner:
         tags: cnb:arch:amd64
       docker:
-        build: .cnb/ci/Dockerfile # 使用自定义 Dockerfile
+        image: docker.cnb.cool/dtapp/golang # 统一使用 CNB 内部 CI 基础镜像
         volumes:
           - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
           - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
@@ -43,7 +43,7 @@
     - runner:
         tags: cnb:arch:amd64
       docker:
-        build: .cnb/ci/Dockerfile # 使用自定义 Dockerfile
+        image: docker.cnb.cool/dtapp/golang # 统一使用 CNB 内部 CI 基础镜像
         volumes:
           - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
           - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装

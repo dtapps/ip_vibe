@@ -33,22 +33,25 @@ on:
         type: string
 
 permissions:
-  contents: read
-  # write 已经包含 read 权限：既能推镜像到 GHCR，也能拉 GHCR 上的 CI 镜像
-  packages: write
+  contents: write
+  packages: write # 拉取 GHCR 上的 CI 镜像（公开镜像亦可匿名拉，写上以防仓库转私有）
 
-# 镜像推送不是幂等的一次性动作，跑到一半被取消会留下「只有部分服务更新」的镜像组合，
-# 所以不跟随同分支新运行自动取消。
+# 并发策略：同一分支的多次触发串行排队，绝不取消「正在运行」的旧运行。
+# cancel-in-progress: false 表示新运行进入 pending 等待，而非抢占/取消 in-progress。
+# queue: max 让同一 group 最多保留 100 个 pending（默认 queue: single 只留 1 个，
+# 新的会顶掉旧的 pending），按进入等待的先后 FIFO 依次执行，仅队列满的溢出运行被取消。
+# 注意：queue: max 不能与 cancel-in-progress: true 组合，否则 workflow 校验失败。
 concurrency:
   group: build-image-${{ github.ref }}
   cancel-in-progress: false
+  queue: max
 
 jobs:
   # 先编 amd64 二进制：镜像里只需要 linux/amd64，其它平台由 release.yml 负责打压缩包
   binaries:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/${{ github.repository }}/ci:latest
+      image: ghcr.io/dtapps/golang:latest
     outputs:
       version: ${{ steps.gen.outputs.version }}
       pre_release: ${{ steps.gen.outputs.pre_release }}

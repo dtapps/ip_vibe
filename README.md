@@ -253,7 +253,7 @@ make format            # 格式化 Go / YAML / Markdown / Dockerfile
 |-----------------------------------------|--------------------------------------------------------------------------------------|
 | [架构与模块设计](docs/architecture.md)  | 系统概览、代码分层、数据层、核心业务链路、调度与厂商适配、扩展指南                   |
 | [CI/CD 流水线](docs/ci-cd.md)           | CNB 与 GitHub Actions 全部工作流、版本号规则、发布与镜像构建流程、覆盖率分工、已知坑 |
-| [CI 基础镜像](docs/ci-image.md)         | 预装工具链的 CI 镜像：内容、版本升级、平台范围与加回 arm64                           |
+| [CI 基础镜像](docs/ci-image.md)         | GitHub / CNB 统一 CI 镜像的使用口径与流水线配置注意事项                              |
 | [Go 覆盖率实现](docs/coverage-go.md)    | Go 单测覆盖率上报与红线门禁方案（可复用到其他项目的实现文案）                        |
 | [前端覆盖率实现](docs/coverage-node.md) | 前端（原生 JS）单测覆盖率方案：Node 内置 test runner + c8                            |
 

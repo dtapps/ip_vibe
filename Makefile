@@ -346,10 +346,12 @@ cover-go:
 #   - 而 lcov parser 的 SF: 是原样保留完整路径的，所以走 lcov 格式可避开这个正则。
 # gcov2lcov 转 lcov 时把包导入路径解析回仓库根相对路径（SF:internal/core/device.go），
 # 与前端 c8 产出的 lcov 形态一致，Coveralls 侧就能正确按目录层级展示。
+# gcov2lcov 由统一 CI 基础镜像预装（GOPATH=/go，工具在 /go/bin 且已在 PATH），直接调二进制。
+# 不再吞 stderr：工具缺失或转换失败时，日志里能直接看到原因。
 .PHONY: cover-go-lcov
 cover-go-lcov: cover-go
 	@echo "[Coverage] 转换 Go 覆盖率为 lcov (供 Coveralls)..."
-	gcov2lcov -infile coverage.out -outfile coverage-lcov.info 2>/dev/null
+	gcov2lcov -infile coverage.out -outfile coverage-lcov.info
 	@echo "[Coverage] 完成：coverage-lcov.info"
 
 .PHONY: cover-node
