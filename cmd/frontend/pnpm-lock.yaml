@@ -168,7 +168,7 @@ importers:
     devDependencies:
       '@egoist/tailwindcss-icons':
         specifier: ^1.9.2
-        version: 1.9.2(tailwindcss@4.3.3)
+        version: 1.9.2(tailwindcss@4.3.4)
       '@iconify-json/lucide':
         specifier: ^1.2.148
         version: 1.2.148
@@ -207,7 +207,7 @@ importers:
         version: 1.2.5
       tailwindcss:
         specifier: ^4.3.3
-        version: 4.3.3
+        version: 4.3.4
 
 packages:
 
@@ -820,10 +820,10 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@egoist/tailwindcss-icons@1.9.2(tailwindcss@4.3.3)':
+  '@egoist/tailwindcss-icons@1.9.2(tailwindcss@4.3.4)':
     dependencies:
       '@iconify/utils': 3.1.7
-      tailwindcss: 4.3.3
+      tailwindcss: 4.3.4
 
   '@iconify-json/lucide@1.2.148':
     dependencies:
