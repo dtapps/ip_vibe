@@ -44,7 +44,7 @@ require (
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.129
 	github.com/miekg/dns v1.1.73
 	github.com/modelcontextprotocol/go-sdk v1.8.0
-	github.com/qiniu/go-sdk/v7 v7.29.0
+	github.com/qiniu/go-sdk/v7 v7.30.0
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/spf13/cast v1.10.0
 	github.com/swaggo/files v1.0.1
