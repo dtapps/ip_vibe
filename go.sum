@@ -249,8 +249,8 @@ github.com/gabriel-vasile/mimetype v1.4.16/go.mod h1:3oFFwxX8kTklZwzIl2aQEDZT0lK
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/gin-contrib/cors v1.7.10 h1:psSUzREHu/qjLdH9j/+VYgAxll1/61rEoM5FhFf/2QE=
 github.com/gin-contrib/cors v1.7.10/go.mod h1:VJ2EOJXwnWuloSNs4nRKUPfwpJfqobjWiLaH8ezHM7c=
-github.com/gin-contrib/gzip v1.2.8 h1:wDb1thtVsSUe+126xHdgLiWcZqHdWXiBzdZj2yhdUM8=
-github.com/gin-contrib/gzip v1.2.8/go.mod h1:OiNBR7FxAwHN3iwoDtjj2RlypuONCk48zmtagvASfrc=
+github.com/gin-contrib/gzip v1.2.9 h1:MPyIubgLF/o5A4ni90weaQV0Oji7JTQto7QBVqWtmmY=
+github.com/gin-contrib/gzip v1.2.9/go.mod h1:vLBq0o7y73JpE7m1pngAK/BPaVB7EU56R2gQP1yCgbo=
 github.com/gin-contrib/multitemplate v1.1.5 h1:ysskdBwBpEUmgArwJeK+7l6kiTooTERbOwMgvlFOURA=
 github.com/gin-contrib/multitemplate v1.1.5/go.mod h1:/lmewmjvr07Pr4EMyad7qNLCZzWGyHmdWJBZC3wBDsc=
 github.com/gin-contrib/requestid v1.0.9 h1:sgl++Hl71YtG0TMpCqqHwh6bxHS1a4wmJrTjB6a4Vws=
