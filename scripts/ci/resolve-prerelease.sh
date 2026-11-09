@@ -2,8 +2,9 @@
 #
 # 版本号归一化 + 预发布判定。
 #
-# 事实来源：GitHub Actions 的 release.yml / build-image.yml 都 source 这一份实现，
-# 避免两处各写一套 grep 正则、判断口径慢慢跑偏。规则与 CNB 的 .cnb/workflows/*.yml 一致：
+# 事实来源：GitHub Actions 的 release.yml / build-image.yml 与 CNB 的
+# .cnb/workflows/release.yml / build-image.yml 都 source 这一份实现，避免四处各写一套
+# grep 正则、判断口径慢慢跑偏：
 #
 #   v1.2.3 / 1.2.3        -> TAG=v1.2.3        PRERELEASE=false   正式版
 #   v1.2.3-rc.1           -> TAG=v1.2.3-rc.1   PRERELEASE=true    预发布
@@ -19,6 +20,9 @@
 #
 # 直接执行可以跑内置用例自检（改了正则以后先跑它）：
 #   bash scripts/ci/resolve-prerelease.sh --self-test
+#
+# ⚠️ 本文件必须保持 POSIX sh 语法：CNB 的 stage 默认用 `sh`（可能是 dash/ash）执行，
+# GitHub Actions 用 bash。不要引入 [[ ]]、数组、BASH_SOURCE、$'...' 这类 bash 专有写法。
 
 # resolve_version <版本号>
 #   归一化版本号（补 v 前缀）并判定是否预发布；
@@ -32,6 +36,14 @@ resolve_version() {
 
   if [ -z "${input}" ]; then
     printf '错误: 版本号不能为空。示例: v1.2.3 / v1.2.3-rc.1 / v1.2.3-beta.1 / v1.2.3-alpha.1\n' >&2
+    return 1
+  fi
+
+  # 字符白名单：版本号最终会变成 git tag、Docker tag 和 JSON 字段值。
+  # 含引号/反斜杠/换行的输入既不是合法版本号，拼进 JSON 时还会破坏结构（甚至注入字段），
+  # 所以在这里一次性挡掉。允许的字符与 Docker tag 的字符集一致。
+  if printf '%s' "${input}" | grep -qvE '^[0-9A-Za-z._+-]+$'; then
+    printf '错误: 版本号含非法字符（只允许字母、数字、. _ + -）: %s\n' "${input}" >&2
     return 1
   fi
 
@@ -58,58 +70,73 @@ resolve_version() {
   return 0
 }
 
-# 直接执行（而不是被 source）时跑内置用例，方便本地确认规则没被改坏。
-if [ "${BASH_SOURCE[0]:-}" = "${0}" ]; then
-  if [ "${1:-}" != "--self-test" ]; then
-    printf '用法: %s --self-test\n通常不需要单独执行，CI 里是 source 使用：%s\n' "${0}" '. scripts/ci/resolve-prerelease.sh' >&2
-    exit 2
+# 下面是「直接执行」才跑的自检，被 source 时只导出函数就收工。
+#
+# 判定方式不能用 `[ "${BASH_SOURCE[0]}" = "${0}" ]`：数组下标是 bash 专有语法，CNB 的 stage
+# 默认用 sh（dash）执行，`${BASH_SOURCE[0]:-}` 会直接 "Bad substitution" 让整个 stage 挂掉。
+# 这里改用 $0 的 basename：直接执行时 $0 是本文件名，被 source 时 $0 是调用方
+# （bash / sh / /bin/dash 或调用脚本），在 POSIX 范围内可靠。
+# 另外放行显式的 --self-test：source 的调用方不会传这个参数，不会误触发。
+if [ "${0##*/}" != 'resolve-prerelease.sh' ] && [ "${1:-}" != '--self-test' ]; then
+  # `return` 在被 source 时生效；万一本文件被 `bash < file` 之类方式执行（$0 不是文件名、
+  # return 会失败），退回 exit 0。shellcheck 认为 return 不会失败，故显式关掉该提示。
+  # shellcheck disable=SC2317
+  return 0 2>/dev/null || exit 0
+fi
+
+if [ "${1:-}" != "--self-test" ]; then
+  printf '用法: %s --self-test\n通常不需要单独执行，CI 里是 source 使用：%s\n' "${0}" '. scripts/ci/resolve-prerelease.sh' >&2
+  exit 2
+fi
+
+failures=0
+
+check_version() {
+  local input="$1" want_tag="$2" want_pre="$3"
+
+  if ! resolve_version "${input}" 2>/dev/null; then
+    printf '  ✗ %-20s 解析失败（期望 %s）\n' "${input:-<空>}" "${want_tag}"
+    failures=$((failures + 1))
+    return 0
   fi
 
-  failures=0
+  if [ "${TAG}" = "${want_tag}" ] && [ "${PRERELEASE}" = "${want_pre}" ]; then
+    printf '  ✓ %-20s -> %-20s prerelease=%s\n' "${input}" "${TAG}" "${PRERELEASE}"
+  else
+    printf '  ✗ %-20s -> %-20s prerelease=%s（期望 %s / %s）\n' \
+      "${input}" "${TAG}" "${PRERELEASE}" "${want_tag}" "${want_pre}"
+    failures=$((failures + 1))
+  fi
+}
 
-  check_version() {
-    local input="$1" want_tag="$2" want_pre="$3"
+check_version 'v1.2.3' 'v1.2.3' 'false'
+check_version '1.2.3' 'v1.2.3' 'false'
+check_version 'v1.2.3-rc.1' 'v1.2.3-rc.1' 'true'
+check_version 'v1.2.3-beta.1' 'v1.2.3-beta.1' 'true'
+check_version 'v1.2.3-alpha.1' 'v1.2.3-alpha.1' 'true'
+check_version 'v1.2.3-rc' 'v1.2.3-rc' 'true'
+check_version 'V1.2.3-RC.1' 'V1.2.3-RC.1' 'true'
+check_version 'v1.2.3-alpha.1.2' 'v1.2.3-alpha.1.2' 'true'
+check_version ' v1.2.3 ' 'v1.2.3' 'false'
+# 不带 rc/beta/alpha 后缀的一律是正式版
+check_version 'v1.2.3-hotfix' 'v1.2.3-hotfix' 'false'
+check_version 'v2.0.0-core' 'v2.0.0-core' 'false'
 
-    if ! resolve_version "${input}" 2>/dev/null; then
-      printf '  ✗ %-20s 解析失败（期望 %s）\n' "${input:-<空>}" "${want_tag}"
-      failures=$((failures + 1))
-      return 0
-    fi
-
-    if [ "${TAG}" = "${want_tag}" ] && [ "${PRERELEASE}" = "${want_pre}" ]; then
-      printf '  ✓ %-20s -> %-20s prerelease=%s\n' "${input}" "${TAG}" "${PRERELEASE}"
-    else
-      printf '  ✗ %-20s -> %-20s prerelease=%s（期望 %s / %s）\n' \
-        "${input}" "${TAG}" "${PRERELEASE}" "${want_tag}" "${want_pre}"
-      failures=$((failures + 1))
-    fi
-  }
-
-  check_version 'v1.2.3' 'v1.2.3' 'false'
-  check_version '1.2.3' 'v1.2.3' 'false'
-  check_version 'v1.2.3-rc.1' 'v1.2.3-rc.1' 'true'
-  check_version 'v1.2.3-beta.1' 'v1.2.3-beta.1' 'true'
-  check_version 'v1.2.3-alpha.1' 'v1.2.3-alpha.1' 'true'
-  check_version 'v1.2.3-rc' 'v1.2.3-rc' 'true'
-  check_version 'V1.2.3-RC.1' 'V1.2.3-RC.1' 'true'
-  check_version 'v1.2.3-alpha.1.2' 'v1.2.3-alpha.1.2' 'true'
-  check_version ' v1.2.3 ' 'v1.2.3' 'false'
-  # 不带 rc/beta/alpha 后缀的一律是正式版
-  check_version 'v1.2.3-hotfix' 'v1.2.3-hotfix' 'false'
-  check_version 'v2.0.0-core' 'v2.0.0-core' 'false'
-
-  # 空版本号必须被拒绝：历史上空输入会打出 :v 这种非法标签
-  if resolve_version '' 2>/dev/null; then
-    printf '  ✗ %-20s 应当报错，实际通过\n' '<空>'
+# 非法输入必须被拒绝，不能漏到 git tag / Docker tag / JSON 里：
+# 空版本号历史上会打出 :v 这种非法标签；引号/分号会破坏 optionsFrom 的 JSON 结构。
+# 注意不要把 "v1.2.3 beta" 当非法输入：空白会先被去掉（粘贴常带空格），结果 v1.2.3beta 合法
+for bad_input in '' 'v1.2.3"x' 'v1.2.3;rm -rf /' 'v1.2.3@1' 'v1/2/3'; do
+  if resolve_version "${bad_input}" 2>/dev/null; then
+    printf '  ✗ %-20s 应当报错，实际通过（TAG=%s）\n' "${bad_input:-<空>}" "${TAG}"
     failures=$((failures + 1))
   else
-    printf '  ✓ %-20s 被拒绝（返回非 0）\n' '<空>'
+    printf '  ✓ %-20s 被拒绝（返回非 0）\n' "${bad_input:-<空>}"
   fi
+done
 
-  if [ "${failures}" -ne 0 ]; then
-    printf '\n自检失败: %d 项\n' "${failures}" >&2
-    exit 1
-  fi
-
-  printf '\n自检通过\n'
+if [ "${failures}" -ne 0 ]; then
+  printf '\n自检失败: %d 项\n' "${failures}" >&2
+  exit 1
 fi
+
+printf '\n自检通过\n'

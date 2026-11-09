@@ -1,5 +1,6 @@
 # CNB 镜像定义（由 .cnb/workflows/build-image.yml 构建，构建上下文 = 仓库根目录）
-# 与 .github/docker/Dockerfile.forwarder 结构完全一致，唯一差异是基础镜像（CNB 内部仓库拉取更快）。
+# 与 .github/docker/Dockerfile.forwarder 结构完全一致，唯一差异是基础镜像的 registry：
+# CNB 拉 docker.cnb.cool/dtapp/alpine:latest，GitHub 拉 ghcr.io/dtapps/alpine:latest。
 
 FROM docker.cnb.cool/dtapp/alpine:latest
 

@@ -94,31 +94,57 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 三个 job 串行：
 
-1. **prepare**（CI 镜像容器）：source `resolve-prerelease.sh` 归一化版本号，输出 TAG / 是否预发布 / 标题（预发布标题带 `(预发布)` 后缀）。
+1. **prepare**（CI 镜像容器）：source `scripts/ci/resolve-prerelease.sh` 归一化版本号，输出 TAG / 是否预发布 / 标题（预发布标题带 `(预发布)` 后缀）。
 2. **build**（CI 镜像容器）：三类缓存（Go module、Go build、pnpm store）→ `make deps` → **先 `make build-frontend`**（前端静态资源由 go:embed 打进 backend 二进制，顺序不能反）→ `make build-all` → `make clean-binaries` 兜底清掉裸二进制 → 生成 `SHA256SUMS` → 上传 artifact。
-3. **release**：`fetch-depth: 0` 拉全量 tag 历史 → 按版本类型选 changelog 对比基准（见 §3.3）→ 拼出含下载表与校验说明的正文 → `softprops/action-gh-release` 建 tag、上传 19 个附件。
+3. **release**：`fetch-depth: 0` 拉全量 tag 历史 → **校验版本号与 tag**（§3.4）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → `softprops/action-gh-release` 建 tag、上传 19 个附件。
 
-> 为什么不用 `git tag --sort=-v:refname | head -2 | tail -1` 取「上一个 tag」：那取的是全仓库第二新的 tag，跟当前 HEAD 没有关系。重跑发布（tag 已建过）时会把刚发的 tag 自己当成上一个版本，changelog 段落直接变空。
+> 正文与 changelog 都**不再内联在工作流里**，统一走 `scripts/ci/` 下的两个脚本，CNB 那份调用同一组脚本，避免两边各写一遍表格/标题/下载链接。
 
 ### 3.2 CNB（`release.yml`，分支按钮「打包 Go 项目」）
 
-一条流水线完成：归一化版本号 → `make deps / build-frontend / build-all / clean-binaries` → 生成 `bin/SHA256SUMS` → 生成 Release 正文 → 内置 `git:release` 建 Release（`preRelease: ${INTERIOR_IS_PRERELEASE}`、`latest: ${INTERIOR_IS_LATEST}`——参数名是驼峰 `preRelease`，写成小写会被静默忽略）→ `cnbcool/attachments` 上传 `bin/*`。
+一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps / build-frontend / build-all / clean-binaries` → 生成 `bin/SHA256SUMS` → 校验版本号与 tag（§3.4）→ 调用 `scripts/ci/*.sh` 生成正文 → 生成 `./.cnb-release-options.json` → 内置 `git:release`（`optionsFrom`）建 Release → `cnbcool/attachments` 上传 `bin/*`。
 
-Release 正文与 GitHub 侧同构（预发布提示 + 发布信息表 + 下载表 + 校验 + 更新内容），通过 `descriptionFromFile: release_body.md` 传给 `git:release`（注意 `description` 与 `descriptionFromFile` 互斥）。附件直链规律（实测可用）：`https://cnb.cool/<repo-slug>/-/releases/download/<tag>/<file>`。更新内容与 GitHub 用同一套 git 规则（§3.3），不再依赖 `cnbcool/changelog` 插件——插件的时间区间不透明，且无法区分预发布/正式版。
+⚠️ **`preRelease` 用 `optionsFrom` 传真布尔值，不用 `${...}` 插值**：`preRelease` 的类型是严格 Boolean，插值产出字符串 `"false"`，字符串在布尔位置上容易被当成真值，正式版会被误勾预发布；`descriptionFromFile` 同理，正文里有反引号/管道符/换行，插值容易被转义毁掉。
 
-> CNB 的脚本任务不保证跑在 bash 下，脚本按 POSIX sh 写：不用 `pipefail`、进程替换、`[[ ]]`；正文 stage 还会在浅克隆时先 `git fetch --unshallow --tags` 再算 changelog。
+附件直链规律（实测可用）：`https://cnb.cool/<repo-slug>/-/releases/download/<tag>/<file>`。
 
-### 3.3 更新内容的对比基准（rc / beta / alpha 的关键）
+> CNB 的脚本任务不保证跑在 bash 下，三个 `scripts/ci/*.sh` 都按 POSIX sh 写：不用 `pipefail`、进程替换、`[[ ]]`、`BASH_SOURCE`。正文 stage 会把 `ARTIFACT_LAYOUT=triplet` 传给渲染脚本（本仓库是三服务项目，下载表要「组件」列）。
 
-`git describe --tags --abbrev=0 HEAD^` 一律取「最近一个 tag」，在预发布场景下会把正式版的说明做残：`v1.1.0` 前打了 `rc.1 → rc.2 → rc.3`，正式版的更新内容就只剩最后一条 rc 的增量。所以按版本类型分开取基准：
+### 3.3 更新内容：按渠道选对比基准（rc / beta / alpha 的关键）
 
-| 版本类型                | 对比基准                                                                                     | 效果                                                                                              |
-|-------------------------|----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
-| 预发布（rc/beta/alpha） | 最近一个 tag（`git describe --tags --abbrev=0 HEAD^`），通常是上一个预发布                   | rc.2 只列 rc.1→rc.2 的增量；正文附一句「完整变更见上一个正式版 vX.Y.Z」                           |
-| 正式版                  | 上一个**正式版**（`git describe --tags --abbrev=0 --exclude '*-*' HEAD^`，滤掉带后缀的 tag） | 汇总整个预发布周期的全部改动，并列出「本次正式版纳入的预发布版本：v1.1.0-rc.1, v1.1.0-rc.2, ...」 |
-| 无任何 tag              | 无                                                                                           | 「首次发布」                                                                                      |
+实现：`scripts/ci/release-changelog.sh`，GitHub 与 CNB 共用一份。只看版本号后缀决定**渠道**，同渠道内对比：
 
-> 判断「哪些预发布版本被本次正式版纳入」必须用祖先关系 `git merge-base --is-ancestor <上一个正式版> <tag>`，**不能靠 tag 的版本排序**：git 的 `v:refname` 会把 `v1.1.0` 排在 `v1.1.0-rc.1` 前面，按排序切区间会把上一轮已经发布的 beta/rc 又算进来。
+| 场景 | 对比基准 | 说明 |
+|---|---|---|
+| 发 `v1.0.44-rc.2` | `v1.0.44-rc.1` | rc 只跟 rc 比 |
+| 发 `v1.0.44-beta.2` | `v1.0.44-beta.1` | beta 只跟 beta 比，**不会跨到 rc** |
+| 发 `v1.0.44-rc.1`（该渠道首次） | 上一个**正式版** `v1.0.43` | 渠道没有历史 tag 时回退 |
+| 发正式版 `v1.0.45` | 第一个**正式版** `v1.0.43` | 不掺预发布，整轮改动都在 |
+| 取不到基准但仓库里有别的 tag | **exit 1 报错** | 不谎报「首次发布」，避免掩盖 clone 缺 tag |
+
+为什么不能用 `git describe --tags --abbrev=0 HEAD^`：它取「最近的可达 tag」，**不区分渠道**。发正式版时会取到刚发的 rc，整轮改动全丢；而且会被 `docker-v1.0.x` 之类的无关 tag 干扰。脚本因此显式按 `^v[0-9]+\.[0-9]+\.[0-9]+(-(rc|beta|alpha)(\.[0-9]+)?)?$` 白名单 + 渠道过滤，并用 `sort -V` 而不是 `--sort=v:refname`（后者对 `rc.2`/`rc.10` 排序不符合直觉）。
+
+输出格式对齐 `cnbcool/changelog` 插件：按 Conventional Commits type 分组（Features / Bug Fixes / CI / Build System…），行内 `[短号](完整SHA链接) - scope: subject (作者)`，`--no-merges` 去掉 dependabot 的重复合并记录，每组最多 50 条并附溢出提示。
+
+### 3.4 发版前的三道校验
+
+两条流水线都有「校验版本号与 tag」这一步。这三件事出错都**不会让构建失败**，但会发出一个「看起来成功、内容是错的」Release：
+
+1. **tag 没拉全** → changelog 算不出基准，正文退化成「首次发布」→ 直接失败；
+2. **tag 已存在** → 重跑会把 tag 挪到新提交上，历史 Release 的对比基准跟着变 → 直接失败；
+3. **正式版比已有正式版旧** → 正文里的 diff 是反的 → 直接失败。
+
+### 3.5 正文渲染：`render-release-body.sh`
+
+一份实现供 CNB 与 GitHub 共用，只用环境变量传参。要点：
+
+- **`ARTIFACT_LAYOUT`**：`single`（默认，单二进制项目如 ikuai，下载表 4 列）/ `triplet`（多服务项目如本仓库，多一列「组件」，按 组件→平台→架构 排序）。默认 single 保证与 ikuai 行为一致。
+- **只把 `.tar.gz` / `.zip` 当附件**：产物目录里混进正文 md、日志时不会误列表。
+- **Windows 校验命令按实际产物生成**，不硬编码文件名；PowerShell 输出全大写与 `SHA256SUMS` 的小写等价，正文里显式说明。
+- **一律 `printf %s\n` 而非 `echo`**：dash 的 `echo` 会解释反斜杠，`Get-FileHash .\backend-...` 里的 `\b` 会被吞成退格符，显示成 `.ackend-...`。
+- 提交号**显示短号、链接用完整 SHA**（缩写长度随仓库规模变化，链接里用缩写部分平台会 404）。
+
+> 脚本自带自检：`sh scripts/ci/render-release-body.sh --self-test`、`sh scripts/ci/release-changelog.sh --help`、`sh scripts/ci/resolve-prerelease.sh --self-test`。改格式/改判定先跑它们。
 
 ---
 
@@ -131,7 +157,7 @@ Release 正文与 GitHub 侧同构（预发布提示 + 发布信息表 + 下载�
 | GitHub | `ghcr.io/<owner>/<repo>/{backend,reporter,forwarder}`                                                                      | `.github/docker/Dockerfile.*` |
 | CNB    | `${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/{backend,reporter,forwarder}`（即 `docker.cnb.cool/dtapp/ip_vibe/...`） | `.cnb/docker/Dockerfile.*`    |
 
-两份 Dockerfile 一一对应，构建上下文都是仓库根目录，唯一差异是基础镜像（Docker Hub 的 `alpine:3.22` vs CNB 内部的 `docker.cnb.cool/dtapp/alpine`）：装 tzdata + ca-certificates，把 `bin/{service}-linux-amd64` 放到 `/app/ip_vibe`，建 `/app/data`、`/app/logs` 目录。
+两份 Dockerfile 一一对应，构建上下文都是仓库根目录，唯一差异是基础镜像的 registry（GitHub 拉 `ghcr.io/dtapps/alpine:latest`，CNB 拉 `docker.cnb.cool/dtapp/alpine:latest`；两者由 [dtapps/alpine](https://github.com/dtapps/alpine) 同一套流水线发布、标签契约一致）：装 tzdata + ca-certificates，把 `bin/{service}-linux-amd64` 放到 `/app/ip_vibe`，建 `/app/data`、`/app/logs` 目录。
 
 ### 4.1 GitHub（`build-image.yml`）
 
@@ -234,8 +260,11 @@ CNB 侧另用 `docker.volumes` 保留 copy-on-write 缓存（`/root/.cache/go-bu
 1. **容器 job 的 git「dubious ownership」**：仓库由 runner 用户落盘、容器内以 root 运行，git 因所有权检查直接 exit 128。构建类工作流（`release.yml` / `build-image.yml`）在 checkout 后用一个「让容器内的 git 可用」步骤登记 `git config --system --add safe.directory '*'`（容器里 root 可写 `/etc/gitconfig`，不依赖 `$HOME`；再补一条 `--global` 的工作区路径），该步骤还会把 `git status` 的结果打进日志，便于确认登记有没有生效；同时 Makefile 的 `BUILD_CMD` 加了 `-buildvcs=false`——go build 默认会把 git 状态盖章进二进制，git 不可用即以 `error obtaining VCS status: exit status 128` 中断（go test 不做 VCS 盖章，所以覆盖率流水线一直是绿的，只有构建会挂）。新增容器 job 里要跑 git 或 go build 时，两道保险都要上。
 2. **go:embed 顺序**：`build-frontend` 必须先于后端编译，否则打进二进制的是旧静态资源。
 3. **GHCR 镜像名必须全小写**。
-4. **changelog 的「上一个 tag」**要用 `git describe --tags --abbrev=0 'HEAD^'` 且 `fetch-depth: 0`，见 §3.1 的反例。
+4. **changelog 按渠道选基准**（§3.3），不要再退回 `git describe --tags --abbrev=0 HEAD^`——它不区分渠道，发正式版时整轮预发布改动会丢；`fetch-depth: 0` 仍是前提。
 5. **前端覆盖率必须单进程直跑**（直接 `node <file>` 或聚合入口）：`node --test` 的 worker 线程里 c8 无法对 CJS 源插桩，行覆盖率恒为 0。
 6. **c8 的 include glob 不允许 `../` 逃逸 cwd**，`test:coverage` 脚本要先 `cd` 回仓库根再跑。
 7. **CNB 多份覆盖率报告必须用 key/name 区分**（go / node），否则写入同一 meta map 互相覆盖，徽章与数据残缺。
-8. **镜像推送 / Release 发布的 concurrency 不设 cancel-in-progress**：宁可排队，不要半路砍——取消留下的「只有部分服务更新」的镜像组合或只有两三个附件的 Release，比排队慢更贵。
+8. **CNB 的 `git:release` 参数名是驼峰 `preRelease`**，写成小写 `prerelease` 会被**静默忽略**，Release 不会打上预发布标记；且 `preRelease` 是严格 Boolean，必须用 `optionsFrom` 传 JSON 里的真布尔值，不要用 `${...}` 插值（字符串 "false" 易被当真理）。改 `options`/`settings` 时务必对着文档核参数名与大小写。
+9. **`scripts/ci/*.sh` 必须保持 POSIX sh**：CNB 的 stage 用 `sh`（可能是 dash/ash）执行，不要引入 `[[ ]]`、数组、`BASH_SOURCE`、`pipefail`、进程替换。判定「是否被 source」用 `$0` 的 basename，不能用 `${BASH_SOURCE[0]}`（dash 会 Bad substitution）。
+10. **`render-release-body.sh` 只把 `.tar.gz`/`.zip` 当附件**：GitHub 侧的 `release_body.md` 常和附件同放一个目录，不筛会把它当成可下载文件列进表格。
+11. **镜像推送 / Release 发布的 concurrency 不设 cancel-in-progress**：宁可排队，不要半路砍——取消留下的「只有部分服务更新」的镜像组合或只有两三个附件的 Release，比排队慢更贵。

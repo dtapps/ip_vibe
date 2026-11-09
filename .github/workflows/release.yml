@@ -218,160 +218,70 @@ jobs:
           name: ip_vibe-release
           path: release
 
-      - name: 生成 Release 正文
+      # 发版前先把版本号这件事验干净。这几件事出错都不会让构建失败，
+      # 但会发出一个「看起来成功、内容是错的」Release。
+      - name: 校验版本号与 tag
         shell: bash
         env:
-          INTERIOR_VERSION: ${{ needs.prepare.outputs.interior_version }}
-          PRE_RELEASE: ${{ needs.prepare.outputs.pre_release }}
+          VERSION: ${{ needs.prepare.outputs.interior_version }}
+          PRERELEASE: ${{ needs.prepare.outputs.pre_release }}
         run: |
           set -euo pipefail
+          echo "版本号: ${VERSION}"
 
-          REPO="${GITHUB_REPOSITORY}"
-          DL_BASE="https://github.com/${REPO}/releases/download/${INTERIOR_VERSION}"
-          BUILD_TIME="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-          SHORT_SHA="${GITHUB_SHA:0:7}"
-
-          if [ ! -d release ]; then
-            echo '❌ 缺少 release 目录：artifact 下载失败？' >&2
+          # checkout 已带 fetch-depth: 0，这里再补一次兜底
+          git fetch --tags --quiet --force || true
+          count=$(git tag -l 'v*' | wc -l | tr -d ' ')
+          echo "本地版本 tag: ${count} 个"
+          if [ "$count" -eq 0 ]; then
+            echo "❌ 一个版本 tag 都没有，changelog 会退化成「首次发布」"
             exit 1
           fi
 
-          if [ "${PRE_RELEASE}" = "true" ]; then
-            RELEASE_TYPE="🚧 预发布版本 (Pre-release)"
-          else
-            RELEASE_TYPE="✅ 正式发布版本 (Stable)"
+          if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null; then
+            echo "❌ tag ${VERSION} 已存在，不能重复发布"
+            exit 1
+          fi
+          echo "✅ tag ${VERSION} 不存在，可以发布"
+
+          if [ "${PRERELEASE}" = "false" ]; then
+            latest=$(git tag -l 'v*' | grep -Ev -- '-(rc|beta|alpha)' | grep -v '\.rc' | sort -V | tail -n 1 || true)
+            if [ -n "$latest" ] && [ "$(printf '%s\n%s\n' "$latest" "${VERSION}" | sort -V | tail -n 1)" != "${VERSION}" ]; then
+              echo "❌ 版本号 ${VERSION} 比已有的正式版 ${latest} 旧"
+              exit 1
+            fi
+            echo "✅ 比上一个正式版 ${latest:-（无）} 新"
           fi
 
-          # 生成 changelog。对比基准按版本类型区分（rc / beta / alpha 的存在决定了不能一律「上一个 tag」）：
-          #   预发布 -> 对比最近一个 tag（通常是上一个预发布），只看这次预发布新增了什么；
-          #   正式版 -> 对比上一个「正式版」（--exclude '*-*' 滤掉带后缀的 tag），
-          #             汇总整个预发布周期的全部改动，并列出被纳入的预发布版本。
-          # 不能写 `git tag --sort=-v:refname | head -2 | tail -1`：那是「全仓库第二新的 tag」，
-          # 跟当前 HEAD 没有关系。重跑一次（tag 已经建过）就会把刚发的 tag 自己当成上一个版本，
-          # 段落直接变成空；分支上多了个更新的 tag 时也会指到别的线上去。
-          if [ "${PRE_RELEASE}" = "true" ]; then
-            BASE_TAG=$(git describe --tags --abbrev=0 'HEAD^' 2>/dev/null || true)
-            LAST_STABLE=$(git describe --tags --abbrev=0 --exclude '*-*' 'HEAD^' 2>/dev/null || true)
-          else
-            BASE_TAG=$(git describe --tags --abbrev=0 --exclude '*-*' 'HEAD^' 2>/dev/null || true)
-            LAST_STABLE="${BASE_TAG}"
-          fi
+      # 正文与更新内容只有一份实现（scripts/ci/*.sh），CNB 那份也调用同样的脚本，
+      # 避免两边各写一遍表格/标题/下载链接，改一处忘一处。
+      - name: 生成 Release 正文
+        shell: bash
+        env:
+          VERSION: ${{ needs.prepare.outputs.interior_version }}
+          PRERELEASE: ${{ needs.prepare.outputs.pre_release }}
+          REPO_URL: https://github.com/${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+          ARTIFACT_DIR: release
+          ARTIFACT_LAYOUT: triplet # 本仓库是 backend/reporter/forwarder 三服务
+          OUT_FILE: release_body.md
+        run: |
+          set -euo pipefail
 
-          if [ -z "${BASE_TAG}" ]; then
-            RANGE_DESC=''
-            CHANGES='首次发布'
-          else
-            if [ "${PRE_RELEASE}" = "true" ]; then
-              if [ -n "${LAST_STABLE}" ]; then
-                RANGE_DESC="自上一个版本 ${BASE_TAG} 以来的改动（完整变更见上一个正式版 ${LAST_STABLE}）"
-              else
-                RANGE_DESC="自上一个版本 ${BASE_TAG} 以来的改动"
-              fi
-            else
-              RANGE_DESC="自上一个正式版 ${BASE_TAG} 以来的全部改动"
-            fi
-            CHANGES=$(git log --pretty=format:'- %s' "${BASE_TAG}..HEAD" 2>/dev/null || echo '- 版本更新')
-          fi
+          # 下载基址在脚本里拼，不写进 env：整条 URL 太长，yamlfmt 会把表达式折行
+          DL_BASE="${REPO_URL}/releases/download/${VERSION}"
+          STABLE_URL="${REPO_URL}/releases/latest"
+          export DL_BASE STABLE_URL
 
-          # 正式版：列出本次被纳入的预发布版本（上一个正式版之后、HEAD 之前打过的 rc/beta/alpha tag）
-          INCLUDED=''
-          if [ "${PRE_RELEASE}" != "true" ]; then
-            TAG_LIST=$(git tag --merged HEAD --sort=v:refname --list 'v*' 2>/dev/null || true)
-            # 用 for 而不是管道：管道会把 while 放进子 shell，累加结果拿不出来
-            for t in ${TAG_LIST}; do
-              case "${t}" in
-                *-rc* | *-beta* | *-alpha*) ;;
-                *) continue ;;
-              esac
-              # 只算「上一个正式版之后」打的预发布：靠祖先关系判断，
-              # 不能靠 tag 版本排序——git 的 v:refname 会把 v1.1.0 排在 v1.1.0-rc.1 前面。
-              if [ -n "${BASE_TAG}" ]; then
-                if ! git merge-base --is-ancestor "${BASE_TAG}" "${t}" 2>/dev/null; then
-                  continue
-                fi
-              fi
-              INCLUDED="${INCLUDED}${INCLUDED:+, }${t}"
-            done
-          fi
+          # changelog：按渠道选对比基准（rc 对 rc、beta 对 beta、正式版对正式版；
+          # 首次发某渠道则回退到上一个正式版）。实现见 scripts/ci/release-changelog.sh。
+          # GitHub 的提交路径是 /commit/<sha>，和 CNB 的 /-/commit 不同，前缀显式传
+          CHANGELOG=$(COMMIT_URL="${REPO_URL}/commit" sh scripts/ci/release-changelog.sh "${VERSION}")
+          # 直接 export 给同一步的脚本：写 $GITHUB_ENV 只对**后续** step 生效，
+          # 本 step 里读不到，之前那样写 CHANGELOG 会是空的。
+          export CHANGELOG
 
-          {
-            if [ "${PRE_RELEASE}" = "true" ]; then
-              echo '## ⚠️ 预发布版本'
-              echo ''
-              echo '> 这是 rc / beta / alpha 预发布版本，可能包含未充分测试的功能。'
-              printf '> 如需稳定版本，请使用 [最新正式版](https://github.com/%s/releases/latest)。\n' "${REPO}"
-              echo ''
-            fi
-
-            echo '## 发布信息'
-            echo ''
-            echo '| 项目 | 内容 |'
-            echo '| --- | --- |'
-            printf '| 版本号 | %s |\n' "${INTERIOR_VERSION}"
-            printf '| 发布类型 | %s |\n' "${RELEASE_TYPE}"
-            printf '| 提交 | [%s](https://github.com/%s/commit/%s) |\n' "${SHORT_SHA}" "${REPO}" "${GITHUB_SHA}"
-            printf '| 构建时间 | %s |\n' "${BUILD_TIME}"
-            echo ''
-            echo '## 下载'
-            echo ''
-            echo '| 组件 | 平台 | 架构 | 文件 | 大小 |'
-            echo '| --- | --- | --- | --- | --- |'
-
-            # 附件命名规范：{backend,reporter,forwarder}-{os}-{arch}.{tar.gz,zip}
-            while IFS= read -r f; do
-              fname="$(basename "${f}")"
-              case "${fname}" in
-                backend-* | reporter-* | forwarder-*) ;;
-                *) continue ;;
-              esac
-
-              comp="${fname%%-*}"
-              rest="${fname#*-}"
-              os="${rest%%-*}"
-              arch="${rest#*-}"
-              arch="${arch%%.*}"
-
-              case "${os}" in
-                linux) os_name='Linux' ;;
-                windows) os_name='Windows' ;;
-                darwin) os_name='macOS' ;;
-                *) os_name="${os}" ;;
-              esac
-
-              case "${arch}" in
-                amd64) arch_name='x86_64' ;;
-                arm64) arch_name='ARM64' ;;
-                *) arch_name="${arch}" ;;
-              esac
-
-              fsize="$(du -h "${f}" | cut -f1)"
-              printf '| %s | %s | %s | [%s](%s/%s) | %s |\n' \
-                "${comp}" "${os_name}" "${arch_name}" "${fname}" "${DL_BASE}" "${fname}" "${fsize}"
-            done < <(find release -maxdepth 1 -type f | sort)
-
-            echo ''
-            echo '## 校验'
-            echo ''
-            echo '附件含 SHA256SUMS（sha256sum 标准格式，每行「哈希  文件名」），按平台校验：'
-            echo ''
-            echo '- Linux：sha256sum -c SHA256SUMS'
-            echo '- macOS：shasum -a 256 -c SHA256SUMS'
-            echo '- Windows（PowerShell）：Get-FileHash .\backend-windows-amd64.exe.zip -Algorithm SHA256 —— 输出为全大写，与 SHA256SUMS 里的小写哈希等价；也可 certutil -hashfile <文件> SHA256'
-            echo ''
-            echo '## 更新内容'
-            echo ''
-            if [ -n "${RANGE_DESC}" ]; then
-              printf '%s\n' "${RANGE_DESC}"
-              echo ''
-            fi
-            if [ -n "${INCLUDED}" ]; then
-              printf '本次正式版纳入的预发布版本：%s\n' "${INCLUDED}"
-              echo ''
-            fi
-            echo "${CHANGES}"
-          } > release_body.md
-
-          cat release_body.md
+          sh scripts/ci/render-release-body.sh
 
       - name: 发布 Release
         uses: softprops/action-gh-release@v3
