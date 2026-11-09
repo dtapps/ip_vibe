@@ -131,7 +131,7 @@ Release 正文与 GitHub 侧同构（预发布提示 + 发布信息表 + 下载�
 | GitHub | `ghcr.io/<owner>/<repo>/{backend,reporter,forwarder}`                                                                      | `.github/docker/Dockerfile.*` |
 | CNB    | `${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/{backend,reporter,forwarder}`（即 `docker.cnb.cool/dtapp/ip_vibe/...`） | `.cnb/docker/Dockerfile.*`    |
 
-两份 Dockerfile 一一对应，构建上下文都是仓库根目录，唯一差异是基础镜像（Docker Hub 的 `alpine:3.22` vs CNB 内部的 `docker.cnb.cool/dtapp/alpine`）：装 tzdata + ca-certificates，把 `bin/{service}-linux-amd64` 放到 `/app/ip_vibe`，建 `/app/data`、`/app/logs` 目录。
+两份 Dockerfile 一一对应，构建上下文都是仓库根目录，唯一差异是基础镜像的 registry（GitHub 拉 `ghcr.io/dtapps/alpine:latest`，CNB 拉 `docker.cnb.cool/dtapp/alpine:latest`；两者由 [dtapps/alpine](https://github.com/dtapps/alpine) 同一套流水线发布、标签契约一致）：装 tzdata + ca-certificates，把 `bin/{service}-linux-amd64` 放到 `/app/ip_vibe`，建 `/app/data`、`/app/logs` 目录。
 
 ### 4.1 GitHub（`build-image.yml`）
 

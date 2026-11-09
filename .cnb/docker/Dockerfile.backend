@@ -1,8 +1,11 @@
 # CNB 镜像定义（由 .cnb/workflows/build-image.yml 构建，构建上下文 = 仓库根目录）
 #
-# 与 .github/docker/Dockerfile.backend 结构完全一致，唯一差异是基础镜像：
-# GitHub 侧用 Docker Hub 的 alpine，CNB 侧用内部仓库的 alpine（同在 CNB 网络内，拉取更快）。
-# 两份都只负责「把静态编译好的二进制装进最小运行镜像」，应用参数与目录结构保持一致。
+# 基础镜像统一用 dtapps 维护的 alpine（https://github.com/dtapps/alpine）：
+# CNB 侧从内部制品库拉 docker.cnb.cool/dtapp/alpine:latest，GitHub 侧从 GHCR 拉
+# ghcr.io/dtapps/alpine:latest（见 .github/docker/Dockerfile.backend）。
+# 两个 registry 由同一套上游流水线发布、标签契约一致，差异只在拉取地址。
+# 两份 Dockerfile 都只负责「把静态编译好的二进制装进最小运行镜像」，
+# 应用的启动参数、目录结构保持完全一致。
 #
 # 历史：这份原先放在 cmd/backend/Dockerfile（已删除），其 COPY 写的是 `../../bin/...`，
 # 以仓库根目录为构建上下文时属于「路径超出上下文」，Docker 会直接拒绝；搬家时一并修正为 bin/。

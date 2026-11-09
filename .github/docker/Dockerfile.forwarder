@@ -1,7 +1,8 @@
 # GitHub Actions 镜像定义（由 build-image.yml 构建，构建上下文 = 仓库根目录）
-# 与 CNB 的 .cnb/docker/Dockerfile.forwarder 一一对应，唯一差异是基础镜像。
+# 与 CNB 的 .cnb/docker/Dockerfile.forwarder 一一对应，唯一差异是基础镜像的 registry：
+# GitHub 拉 ghcr.io/dtapps/alpine:latest，CNB 拉 docker.cnb.cool/dtapp/alpine:latest。
 
-FROM alpine:3.22
+FROM ghcr.io/dtapps/alpine:latest
 
 # tzdata：让 TZ=Asia/Shanghai 生效；ca-certificates：HTTPS 请求需要根证书
 RUN apk add --no-cache tzdata ca-certificates

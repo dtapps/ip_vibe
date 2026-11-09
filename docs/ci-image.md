@@ -1,6 +1,6 @@
 # CI 基础镜像
 
-> GitHub 与 CNB 两侧流水线统一使用同一套 CI 基础镜像：GitHub 用 `ghcr.io/dtapps/golang:latest`，CNB 用 `docker.cnb.cool/dtapp/golang`。本仓库不再维护任何 CI Dockerfile，也不再构建、推送 CI 镜像。
+> GitHub 与 CNB 两侧流水线统一使用同一套 CI 基础镜像：GitHub 用 `ghcr.io/dtapps/golang:latest`，CNB 用 `docker.cnb.cool/dtapp/golang`。运行镜像（backend / reporter / forwarder）的 `FROM` 同样统一到 dtapps 维护的 alpine：GitHub 用 `ghcr.io/dtapps/alpine:latest`，CNB 用 `docker.cnb.cool/dtapp/alpine:latest`。本仓库不再维护任何 CI Dockerfile，也不再构建、推送 CI 镜像。
 
 ---
 
@@ -25,3 +25,14 @@
 - 镜像来源：GitHub 从 GHCR 拉 `ghcr.io/dtapps/golang:latest`，CNB 从内部制品库拉 `docker.cnb.cool/dtapp/golang`；两侧都不再现场构建 Dockerfile。
 - 认证：CNB 侧镜像若设为私有，需确保流水线具备该制品库的读取权限；GitHub 侧保留 `packages: read`。
 - 已知坑：GitHub 容器 job 的 git「dubious ownership」等见 [ci-cd.md](ci-cd.md) §10；CNB 流水线无此问题。
+
+## 4. 运行镜像的基础镜像
+
+三个运行镜像（backend / reporter / forwarder）的 `FROM` 同样是 dtapps 维护的镜像，只是换成 [dtapps/alpine](https://github.com/dtapps/alpine)：
+
+| 平台   | 基础镜像                              | 消费方                                                   |
+|--------|---------------------------------------|----------------------------------------------------------|
+| GitHub | `ghcr.io/dtapps/alpine:latest`        | `.github/docker/Dockerfile.{backend,reporter,forwarder}` |
+| CNB    | `docker.cnb.cool/dtapp/alpine:latest` | `.cnb/docker/Dockerfile.{backend,reporter,forwarder}`    |
+
+两侧 Dockerfile 只差这一行 `FROM` 的 registry，其余（`apk add tzdata ca-certificates`、`COPY bin/<服务>-linux-amd64`、`ENV TZ=Asia/Shanghai`、`ENTRYPOINT`）完全一致。上游镜像已经预装 tzdata、ca-certificates、curl、drill、git、nc 并把 `TZ` 设为 `Asia/Shanghai`，所以 `apk add` 这一步是幂等兜底，不依赖上游是否保留这些包。标签契约（`<alpine 版本>` / `<major.minor>` / `latest` / `<版本>-linux-{amd64,arm64}`）见上游 [images-and-tags.md](https://github.com/dtapps/alpine/blob/main/docs/alpine/images-and-tags.md)；两个 registry 各自构建、digest 不通用，需要固定到某一次构建时按 digest 拉取。

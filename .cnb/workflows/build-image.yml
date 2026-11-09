@@ -3,8 +3,9 @@
   #
   # 三个服务镜像的 Dockerfile 统一放在 .cnb/docker/Dockerfile.{backend,reporter,forwarder}
   # （构建上下文 = 仓库根目录，Dockerfile 里 COPY bin/<服务>-linux-amd64）。
-  # 与 GitHub 的 .github/docker/Dockerfile.* 结构一致，只差基础镜像来源：
-  # CNB 用内部仓库的 alpine，GitHub 用 Docker Hub 的 alpine。
+  # 与 GitHub 的 .github/docker/Dockerfile.* 结构一致，只差基础镜像的 registry：
+  # CNB 拉 docker.cnb.cool/dtapp/alpine:latest，GitHub 拉 ghcr.io/dtapps/alpine:latest
+  # （同一套上游流水线发布，标签契约一致）。
   web_trigger_build_docker_image:
     - runner:
         tags: cnb:arch:amd64 # 指定 Runner 必须有这个标签

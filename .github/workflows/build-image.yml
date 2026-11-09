@@ -13,7 +13,8 @@
 # 镜像地址：ghcr.io/<owner>/<repo>/{backend,reporter,forwarder}
 #
 # Dockerfile 位置：GitHub 用 .github/docker/Dockerfile.*，CNB 用 .cnb/docker/Dockerfile.*，
-# 两份一一对应、构建上下文都是仓库根目录，只差基础镜像（Docker Hub alpine vs CNB 内部仓库 alpine）。
+# 两份一一对应、构建上下文都是仓库根目录，只差基础镜像的 registry：GitHub 拉
+# ghcr.io/dtapps/alpine:latest，CNB 拉 docker.cnb.cool/dtapp/alpine:latest（同一套上游流水线发布）。
 #
 # https://github.com/actions/checkout
 # https://github.com/actions/cache
