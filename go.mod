@@ -75,7 +75,7 @@ require (
 	go.dtapp.net/library/utils/gostring v1.0.32
 	go.dtapp.net/library/utils/gotime v1.0.19
 	golang.org/x/net v0.62.0
-	golang.org/x/sync v0.24.0
+	golang.org/x/sync v0.25.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20261104224025-d1e00e9f33ab
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20261104224025-d1e00e9f33ab
 	google.golang.org/grpc v1.85.0
