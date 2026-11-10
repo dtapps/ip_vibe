@@ -1,6 +1,26 @@
 # 设置默认目标
 .DEFAULT_GOAL := setup
 
+# 环境变量优先级高于 .env：include 的赋值会覆盖环境值，先暂存一份
+ifeq ($(origin GIT_REMOTE),environment)
+    GIT_REMOTE_ENV := $(GIT_REMOTE)
+endif
+
+# 加载 .env 文件（如果存在）
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
+ifneq ($(GIT_REMOTE_ENV),)
+    GIT_REMOTE := $(GIT_REMOTE_ENV)
+endif
+
+# 同步/推送目标远程，逗号分隔：GIT_REMOTE=origin,github,gitlab
+# 可通过 .env / 环境变量 / 命令行覆盖，未配置时默认 origin。
+GIT_REMOTE ?= origin
+export GIT_REMOTE
+
 # 一键设置项目（默认执行）
 setup: install-tools verify-tools deps
 	@echo "🎉 Project setup completed!"
@@ -630,30 +650,25 @@ format-docker:
 
 # ==================== 更新 / 拉取 ====================
 
-sync: sync-cnb sync-github push ## 拉取所有远程最新（先 CNB 后 GitHub 镜像）然后推送
-
-sync-github: ## 拉取 GitHub 最新并以 fast-forward 合并（保留本地未提交改动）
-	git fetch github
-	git merge --ff-only github/master
-	@echo "已同步 github/master 最新代码，本地未提交改动已保留"
-
-sync-cnb: ## 拉取 CNB 最新并以 fast-forward 合并（保留本地未提交改动）
-	git fetch origin
-	git merge --ff-only origin/master
-	@echo "已同步 origin/master 最新代码，本地未提交改动已保留"
+# 按 GIT_REMOTE 顺序先全部拉取合并，再统一推送（保留本地未提交改动）
+.PHONY: sync
+sync:
+	@IFS=,; for r in $$GIT_REMOTE; do \
+		git fetch "$$r" && git merge --ff-only "$$r/master" || exit 1; \
+	done
+	@IFS=,; for r in $$GIT_REMOTE; do git push "$$r" HEAD || exit 1; done
+	@echo "同步完成！"
 
 # ==================== 推送 ====================
 
 # 推送到所有远程仓库
 .PHONY: push
 push:
-	git push origin HEAD
-	git push github HEAD
+	@IFS=,; for r in $$GIT_REMOTE; do git push "$$r" HEAD || exit 1; done
 	@echo "推送完成！"
 
 # 强制推送到所有远程仓库（忽略冲突）
 .PHONY: push-force
 push-force:
-	git push --force origin HEAD
-	git push --force github HEAD
+	@IFS=,; for r in $$GIT_REMOTE; do git push --force "$$r" HEAD || exit 1; done
 	@echo "强制推送完成！"
