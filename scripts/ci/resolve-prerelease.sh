@@ -7,9 +7,10 @@
 # grep 正则、判断口径慢慢跑偏：
 #
 #   v1.2.3 / 1.2.3        -> TAG=v1.2.3        PRERELEASE=false   正式版
-#   v1.2.3-rc.1           -> TAG=v1.2.3-rc.1   PRERELEASE=true    预发布
-#   v1.2.3-beta.1         -> TAG=v1.2.3-beta.1 PRERELEASE=true    预发布
-#   v1.2.3-alpha.1        -> TAG=v1.2.3-alpha.1 PRERELEASE=true   预发布
+#   v1.2.3-rc.1           -> TAG=v1.2.3-rc.1   PRERELEASE=true    预发布（rc 渠道）
+#   v1.2.3-beta.1         -> TAG=v1.2.3-beta.1 PRERELEASE=true    预发布（beta 渠道）
+#   v1.2.3-alpha.1        -> TAG=v1.2.3-alpha.1 PRERELEASE=true   预发布（alpha 渠道）
+#   v1.2.3-nightly.20260101 -> TAG=v1.2.3-nightly.20260101 PRERELEASE=true 预发布（nightly 渠道）
 #
 # 只用版本号后缀判定，不接受「是不是预发布」这种布尔输入：布尔输入会和版本号打架。
 #
@@ -35,7 +36,7 @@ resolve_version() {
   input="$(printf '%s' "${input}" | tr -d '[:space:]')"
 
   if [ -z "${input}" ]; then
-    printf '错误: 版本号不能为空。示例: v1.2.3 / v1.2.3-rc.1 / v1.2.3-beta.1 / v1.2.3-alpha.1\n' >&2
+    printf '错误: 版本号不能为空。示例: v1.2.3 / v1.2.3-rc.1 / v1.2.3-beta.1 / v1.2.3-alpha.1 / v1.2.3-nightly.20260101\n' >&2
     return 1
   fi
 
@@ -54,9 +55,10 @@ resolve_version() {
     *) TAG="v${input}" ;;
   esac
 
-  # 后缀判定：-rc / -beta / -alpha（大小写不敏感，rc1 / rc.1 / 裸 rc 都算预发布）
+  # 后缀判定：-rc / -beta / -alpha / -nightly（大小写不敏感，rc1 / rc.1 / 裸 rc、
+  # nightly.YYYYMMDD 都算预发布）
   # 匹配要求后缀出现在版本号末尾，避免 v1.2.3-source、v1.2.3-hotfix 这类被误判
-  if printf '%s' "${TAG}" | grep -qiE -- '-(rc|beta|alpha)([.-]?[0-9A-Za-z.-]*)$'; then
+  if printf '%s' "${TAG}" | grep -qiE -- '-(rc|beta|alpha|nightly)([.-]?[0-9A-Za-z.-]*)$'; then
     PRERELEASE="true"
     VERSION_TYPE="预发布"
   else
@@ -114,11 +116,14 @@ check_version '1.2.3' 'v1.2.3' 'false'
 check_version 'v1.2.3-rc.1' 'v1.2.3-rc.1' 'true'
 check_version 'v1.2.3-beta.1' 'v1.2.3-beta.1' 'true'
 check_version 'v1.2.3-alpha.1' 'v1.2.3-alpha.1' 'true'
+check_version 'v1.2.3-nightly.20260101' 'v1.2.3-nightly.20260101' 'true'
+check_version '1.2.3-nightly.20260101' 'v1.2.3-nightly.20260101' 'true'
+check_version 'V1.2.3-NIGHTLY.20260101' 'V1.2.3-NIGHTLY.20260101' 'true'
 check_version 'v1.2.3-rc' 'v1.2.3-rc' 'true'
 check_version 'V1.2.3-RC.1' 'V1.2.3-RC.1' 'true'
 check_version 'v1.2.3-alpha.1.2' 'v1.2.3-alpha.1.2' 'true'
 check_version ' v1.2.3 ' 'v1.2.3' 'false'
-# 不带 rc/beta/alpha 后缀的一律是正式版
+# 不带 rc/beta/alpha/nightly 后缀的一律是正式版
 check_version 'v1.2.3-hotfix' 'v1.2.3-hotfix' 'false'
 check_version 'v2.0.0-core' 'v2.0.0-core' 'false'
 

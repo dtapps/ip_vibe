@@ -1,7 +1,7 @@
 branch:
   - buttons:
       - name: 打包 Go 项目
-        description: 打包 Go 项目 然后上传到附件（版本号带 rc/beta/alpha 时自动标记为预发布）
+        description: 打包 Go 项目 然后上传到附件（版本号带 rc/beta/alpha/nightly 时自动标记为预发布）
         event: web_trigger_release # 触发的 CI 事件名
         permissions:
           roles:
@@ -12,11 +12,12 @@ branch:
           version:
             # 输入框
             # 版本号规则：
-            #   v1.2.3          -> 正式版（Release 不勾选 prerelease）
-            #   v1.2.3-rc.1     -> 预发布（Release 勾选 prerelease）
-            #   v1.2.3-beta.1   -> 预发布（Release 勾选 prerelease）
-            #   v1.2.3-alpha.1  -> 预发布（Release 勾选 prerelease）
-            description: 请输入打包版本，如 v1.2.3；预发布版本请带 rc/beta/alpha 后缀，如 v1.2.3-rc.1
+            #   v1.2.3                  -> 正式版，Release 不勾选 prerelease
+            #   v1.2.3-rc.1             -> 预发布（rc 渠道）
+            #   v1.2.3-beta.1           -> 预发布（beta 渠道）
+            #   v1.2.3-alpha.1          -> 预发布（alpha 渠道）
+            #   v1.2.3-nightly.20260101 -> 预发布（nightly 渠道）
+            description: 请输入打包版本，如 v1.2.3；预发布版本请带 rc/beta/alpha/nightly 后缀，如 v1.2.3-rc.1、v1.2.3-nightly.20260101
             required: true # 是否必填
             type: input
 
@@ -32,10 +33,11 @@ branch:
           version:
             # 输入框
             # 版本号规则：
-            #   v1.2.3          -> 正式版（推送 v1.2.3 与 latest）
-            #   v1.2.3-rc.1     -> 预发布（只推送 v1.2.3-rc.1，不覆盖 latest）
-            #   v1.2.3-beta.1   -> 预发布（只推送 v1.2.3-beta.1，不覆盖 latest）
-            #   v1.2.3-alpha.1  -> 预发布（只推送 v1.2.3-alpha.1，不覆盖 latest）
-            description: 请输入打包版本，如 v1.2.3；预发布版本请带 rc/beta/alpha 后缀，如 v1.2.3-rc.1
+            #   v1.2.3                  -> 正式版，推送 v1.2.3 与 latest
+            #   v1.2.3-rc.1             -> 预发布（rc 渠道），不覆盖 latest
+            #   v1.2.3-beta.1           -> 预发布（beta 渠道），不覆盖 latest
+            #   v1.2.3-alpha.1          -> 预发布（alpha 渠道），不覆盖 latest
+            #   v1.2.3-nightly.20260101 -> 预发布（nightly 渠道），不覆盖 latest
+            description: 请输入打包版本，如 v1.2.3；预发布版本请带 rc/beta/alpha/nightly 后缀，如 v1.2.3-rc.1、v1.2.3-nightly.20260101
             required: true # 是否必填
             type: input

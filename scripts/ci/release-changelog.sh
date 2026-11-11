@@ -3,9 +3,10 @@
 # 生成 Release 正文的「更新内容」：按发布渠道找对比基准，输出提交摘要。
 #
 # 需求（同渠道对比）：
-#   - 预发布（rc / beta / alpha）：和**同渠道**的上一个 tag 对比
+#   - 预发布（rc / beta / alpha / nightly）：和**同渠道**的上一个 tag 对比
 #       发 v1.0.44-rc.2 → 对比 v1.0.44-rc.1
 #       发 v1.0.44-beta.2 → 对比 v1.0.44-beta.1
+#       发 v1.0.44-nightly.20260102 → 对比 v1.0.44-nightly.20260101
 #   - 正式版：和上一个**正式版**对比，不掺预发布阶段的提交
 #       发 v1.0.45 → 对比 v1.0.43（中间那些 -rc.1/-rc.2 不算基准）
 #   - 该渠道还没有过 tag 时，回退到上一个正式版
@@ -41,22 +42,24 @@ fi
 
 # ── 渠道判定 ────────────────────────────────────────────────────────────────
 # 只看版本号后缀决定渠道，和 resolve-prerelease.sh 的口径保持一致：
-# 预发布后缀一律用连字符（-rc.N / -beta.N / -alpha.N），这是 SemVer 的规定。
+# 预发布后缀一律用连字符（-rc.N / -beta.N / -alpha.N / -nightly.YYYYMMDD），
+# 这是 SemVer 的规定；nightly 用日期当序号，仍是独立渠道。
 channel='stable'
 case "${version}" in
   *-rc*) channel='rc' ;;
   *-beta*) channel='beta' ;;
   *-alpha*) channel='alpha' ;;
+  *-nightly*) channel='nightly' ;;
 esac
 
 # ── 收集候选 tag ────────────────────────────────────────────────────────────
-# 只认合法的 SemVer 版本 tag：vX.Y.Z 或 vX.Y.Z-rc.N / -beta.N / -alpha.N。
-# 不合规的 tag 一律不进候选集 —— 否则一个随手建的 v1.0.44.rc1 之类就会变成
-# 对比基准，把 diff 算到错误的区间上。
+# 只认合法的 SemVer 版本 tag：vX.Y.Z 或 vX.Y.Z-rc.N / -beta.N / -alpha.N /
+# -nightly.YYYYMMDD。不合规的 tag 一律不进候选集 —— 否则一个随手建的
+# v1.0.44.rc1 之类就会变成对比基准，把 diff 算到错误的区间上。
 # 拉取 tag 是调用方的责任：GitHub 用 fetch-depth: 0，CNB 用 git fetch --tags，
 # 工作流里都有独立一步校验，这里不做兜底 fetch。
 all_tags="$(git tag -l 'v*' 2>/dev/null \
-  | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-(rc|beta|alpha)(\.[0-9]+)?)?$' \
+  | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-(rc|beta|alpha|nightly)(\.[0-9]+)?)?$' \
   || true)"
 
 # 按渠道过滤出「同渠道」的 tag。注意排除当前版本自己：重跑同一次发布时，
@@ -69,6 +72,7 @@ for t in ${all_tags}; do
     *-rc*) t_channel='rc' ;;
     *-beta*) t_channel='beta' ;;
     *-alpha*) t_channel='alpha' ;;
+    *-nightly*) t_channel='nightly' ;;
   esac
   [ "${t_channel}" = "${channel}" ] || continue
   same_channel="${same_channel}${same_channel:+
@@ -107,7 +111,7 @@ if [ -z "${base}" ]; then
   for t in ${all_tags}; do
     [ "${t}" = "${version}" ] && continue
     case "${t}" in
-      *-rc* | *-beta* | *-alpha*) continue ;;
+      *-rc* | *-beta* | *-alpha* | *-nightly*) continue ;;
     esac
     stable_tags="${stable_tags}${stable_tags:+
 }${t}"

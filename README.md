@@ -126,7 +126,7 @@ docker compose up -d
 
 > 镜像：`docker.cnb.cool/dtapp/ip_vibe/{backend,reporter,forwarder}:latest`，均使用 `network_mode: host`。 `reporter` / `forwarder` 通过 `BACKEND_ENDPOINT` 指向 backend 地址。
 >
-> 版本号规则：`v1.2.3` 为正式版（推送 `:v1.2.3` 与 `:latest`，Release 不勾选 prerelease）；`v1.2.3-rc.1`、`v1.2.3-beta.1`、`v1.2.3-alpha.1` 为预发布（只推送对应版本标签，不覆盖 `:latest`，Release 勾选 prerelease）。
+> 版本号规则：`v1.2.3` 为正式版（推送 `:v1.2.3` 与 `:latest`，Release 不勾选 prerelease）；`v1.2.3-rc.1`、`v1.2.3-beta.1`、`v1.2.3-alpha.1`、`v1.2.3-nightly.20260101` 为预发布（只推送对应版本标签，不覆盖 `:latest`，Release 勾选 prerelease）。
 >
 > GitHub Actions 侧同一套规则：`Release` 工作流产出全平台压缩包并发布 Release，`Build Image` 工作流把镜像推到 `ghcr.io/dtapps/ip_vibe/{backend,reporter,forwarder}`。
 

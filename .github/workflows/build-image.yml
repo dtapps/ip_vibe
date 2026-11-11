@@ -5,10 +5,11 @@
 #
 # 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 release.yml、CNB 的
 # .cnb/workflows/build-image.yml 同口径）：
-#   v1.2.3          -> 正式版，推 :v1.2.3 与 :latest
-#   v1.2.3-rc.1     -> 预发布，只推 :v1.2.3-rc.1，不覆盖 :latest
-#   v1.2.3-beta.1   -> 预发布，只推 :v1.2.3-beta.1，不覆盖 :latest
-#   v1.2.3-alpha.1  -> 预发布，只推 :v1.2.3-alpha.1，不覆盖 :latest
+#   v1.2.3                  -> 正式版，推 :v1.2.3 与 :latest
+#   v1.2.3-rc.1             -> 预发布（rc 渠道），只推 :v1.2.3-rc.1，不覆盖 :latest
+#   v1.2.3-beta.1           -> 预发布（beta 渠道），只推 :v1.2.3-beta.1，不覆盖 :latest
+#   v1.2.3-alpha.1          -> 预发布（alpha 渠道），只推 :v1.2.3-alpha.1，不覆盖 :latest
+#   v1.2.3-nightly.20260101 -> 预发布（nightly 渠道），只推 :v1.2.3-nightly.20260101，不覆盖 :latest
 #
 # 镜像地址：ghcr.io/<owner>/<repo>/{backend,reporter,forwarder}
 #
@@ -29,7 +30,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: '版本号。预发布看后缀：1.2.3-rc.1 / 1.2.3-beta.1 / 1.2.3-alpha.1；没有后缀就是正式版'
+        description: '版本号。预发布看后缀：1.2.3-rc.1 / 1.2.3-beta.1 / 1.2.3-alpha.1 / 1.2.3-nightly.20260101；没有后缀就是正式版'
         required: true
         type: string
 

@@ -5,7 +5,7 @@
       services:
         - docker # 启用 Docker 服务（用于 docker build/push）
       docker:
-        image: docker.cnb.cool/dtapp/golang # 统一使用 CNB 内部 CI 基础镜像
+        image: docker.cnb.cool/dtapp/golang:latest # 统一使用 CNB 内部 CI 基础镜像
         volumes:
           - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
           - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装

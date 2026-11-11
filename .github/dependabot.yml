@@ -29,3 +29,21 @@ updates:
       - 'dependencies'
       - 'github-actions'
 
+  # GitHub 镜像构建的 Dockerfile 基础镜像
+  - package-ecosystem: 'docker'
+    directory: '/.github/docker'
+    schedule:
+      interval: 'daily'
+    labels:
+      - 'dependencies'
+      - 'docker'
+
+  # CNB 镜像构建的 Dockerfile 基础镜像
+  - package-ecosystem: 'docker'
+    directory: '/.cnb/docker'
+    schedule:
+      interval: 'daily'
+    labels:
+      - 'dependencies'
+      - 'docker'
+

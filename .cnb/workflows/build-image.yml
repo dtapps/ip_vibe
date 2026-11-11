@@ -1,3 +1,12 @@
+# 构建镜像工作流（CNB 分支按钮「打包 Docker 镜像」）：三服务镜像推 CNB 制品库
+#
+# 版本号规则（与 GitHub 的 .github/workflows/build-image.yml 同口径）：
+#   v1.2.3                  -> 正式版，推 :v1.2.3 与 :latest
+#   v1.2.3-rc.1             -> 预发布（rc 渠道），只推 :v1.2.3-rc.1，不覆盖 :latest
+#   v1.2.3-beta.1           -> 预发布（beta 渠道），只推 :v1.2.3-beta.1，不覆盖 :latest
+#   v1.2.3-alpha.1          -> 预发布（alpha 渠道），只推 :v1.2.3-alpha.1，不覆盖 :latest
+#   v1.2.3-nightly.20260101 -> 预发布（nightly 渠道），只推 :v1.2.3-nightly.20260101，不覆盖 :latest
+
 '**':
   # 自定义按钮可触发的事件：web_trigger_build_docker_image
   #
@@ -12,7 +21,7 @@
       services:
         - docker # 启用 Docker 服务（用于 docker build/push）
       docker:
-        image: docker.cnb.cool/dtapp/golang # 统一使用 CNB 内部 CI 基础镜像
+        image: docker.cnb.cool/dtapp/golang:latest # 统一使用 CNB 内部 CI 基础镜像
         volumes:
           - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
           - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
@@ -27,7 +36,7 @@
 
             # 1. 版本号不能为空，否则会打出 :v 这样的非法镜像标签
             if [ -z "$version" ]; then
-              echo "错误: 版本号不能为空。示例: v1.2.3 / v1.2.3-rc.1 / v1.2.3-beta.1 / v1.2.3-alpha.1" >&2
+              echo "错误: 版本号不能为空。示例: v1.2.3 / v1.2.3-rc.1 / v1.2.3-beta.1 / v1.2.3-alpha.1 / v1.2.3-nightly.20260101" >&2
               exit 1
             fi
 
@@ -37,12 +46,13 @@
               *) version="v${version}" ;;
             esac
 
-            # 3. 判断是否为预发布版本（版本号后缀带 rc / beta / alpha）
-            #    v1.2.3          -> 正式版   （推送 :v1.2.3 与 :latest）
-            #    v1.2.3-rc.1     -> 预发布   （只推送 :v1.2.3-rc.1，不覆盖 :latest）
-            #    v1.2.3-beta.1   -> 预发布   （只推送 :v1.2.3-beta.1，不覆盖 :latest）
-            #    v1.2.3-alpha.1  -> 预发布   （只推送 :v1.2.3-alpha.1，不覆盖 :latest）
-            if echo "$version" | grep -qiE -- '-(rc|beta|alpha)([.-]?[0-9A-Za-z.-]*)$'; then
+            # 3. 判断是否为预发布版本（版本号后缀带 rc / beta / alpha / nightly）
+            #    v1.2.3                  -> 正式版   （推送 :v1.2.3 与 :latest）
+            #    v1.2.3-rc.1             -> 预发布   （只推送 :v1.2.3-rc.1，不覆盖 :latest）
+            #    v1.2.3-beta.1           -> 预发布   （只推送 :v1.2.3-beta.1，不覆盖 :latest）
+            #    v1.2.3-alpha.1          -> 预发布   （只推送 :v1.2.3-alpha.1，不覆盖 :latest）
+            #    v1.2.3-nightly.20260101 -> 预发布   （只推送 :v1.2.3-nightly.20260101，不覆盖 :latest）
+            if echo "$version" | grep -qiE -- '-(rc|beta|alpha|nightly)([.-]?[0-9A-Za-z.-]*)$'; then
               is_prerelease="true"
               version_type="预发布"
             else

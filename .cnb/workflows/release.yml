@@ -1,3 +1,15 @@
+# 发布工作流（CNB 分支按钮「打包 Go 项目」）：全平台压缩包 + Release + 附件
+#
+# 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 GitHub 的
+# .github/workflows/release.yml 同口径）：
+#   v1.2.3                  -> 正式版，Release 不勾选 prerelease
+#   v1.2.3-rc.1             -> 预发布（rc 渠道），Release 勾选 prerelease
+#   v1.2.3-beta.1           -> 预发布（beta 渠道），Release 勾选 prerelease
+#   v1.2.3-alpha.1          -> 预发布（alpha 渠道），Release 勾选 prerelease
+#   v1.2.3-nightly.20260101 -> 预发布（nightly 渠道），Release 勾选 prerelease
+#
+# Release 标题：IPVibe <版本号>，预发布再加 "(预发布)" 后缀；tag 始终是纯版本号。
+
 '**':
   # 自定义按钮可触发的事件：web_trigger_*
   web_trigger_release:
@@ -6,7 +18,7 @@
       services:
         - docker # 启用 Docker 服务（用于 docker build/push）
       docker:
-        image: docker.cnb.cool/dtapp/golang # 统一使用 CNB 内部 CI 基础镜像
+        image: docker.cnb.cool/dtapp/golang:latest # 统一使用 CNB 内部 CI 基础镜像
         volumes:
           - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
           - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
@@ -86,7 +98,7 @@
 
             # 新版本必须比已有的正式版更新，否则正文里的 diff 是反的
             if [ "${INTERIOR_PRERELEASE}" = "false" ]; then
-              latest=$(git tag -l 'v*' | grep -Ev -- '-(rc|beta|alpha)' | grep -v '\.rc' | sort -V | tail -n 1 || true)
+              latest=$(git tag -l 'v*' | grep -Ev -- '-(rc|beta|alpha|nightly)' | grep -v '\.rc' | sort -V | tail -n 1 || true)
               if [ -n "$latest" ] && [ "$(printf '%s\n%s\n' "$latest" "${INTERIOR_VERSION}" | sort -V | tail -n 1)" != "${INTERIOR_VERSION}" ]; then
                 echo "❌ 版本号 ${INTERIOR_VERSION} 比已有的正式版 ${latest} 旧"
                 exit 1
@@ -109,8 +121,8 @@
             echo "产物 ${count} 个"
 
             CNB_BASE="${CNB_REPO_URL_HTTPS%/}"
-            # changelog：按渠道选对比基准（rc 对 rc、beta 对 beta、正式版对正式版；
-            # 首次发某渠道则回退到上一个正式版）。实现见 scripts/ci/release-changelog.sh。
+            # changelog：按渠道选对比基准（rc 对 rc、beta 对 beta、nightly 对 nightly、
+            # 正式版对正式版；首次发某渠道则回退到上一个正式版）。实现见 scripts/ci/release-changelog.sh。
             # 脚本挑不出基准时会 exit 1（而不是谎报「首次发布」），这里显式接住，
             # 免得 CNB 不传播退出码、正文带着错误提示发出去。
             # CNB 的 Web 路径统一带 /-/ 前缀（releases 是 /-/releases，提交是 /-/commit），
@@ -150,11 +162,14 @@
             : "${INTERIOR_VERSION:?INTERIOR_VERSION 为空——第一步没跑成功}"
             : "${INTERIOR_PRERELEASE:?INTERIOR_PRERELEASE 为空——第一步没跑成功}"
 
+            # 标题与 GitHub 侧同口径：「IPVibe <版本号>」，预发布再加 (预发布) 后缀；
+            # tag 仍是纯版本号，不要动
+            project_name="IPVibe"
             if [ "${INTERIOR_PRERELEASE}" = "true" ]; then
-              release_title="${INTERIOR_VERSION} (预发布)"
+              release_title="${project_name} ${INTERIOR_VERSION} (预发布)"
               prerelease_json=true
             else
-              release_title="${INTERIOR_VERSION}"
+              release_title="${project_name} ${INTERIOR_VERSION}"
               prerelease_json=false
             fi
 
@@ -165,7 +180,7 @@
         # https://docs.cnb.cool/zh/build/internal-steps/git/release.html
         # tag / title / preRelease / descriptionFromFile 全部来自上一步写出的 JSON。
         # ⚠️ 参数名是 preRelease（驼峰），不是 prerelease —— 写成小写会被静默忽略。
-        # 版本号带 -rc / -beta / -alpha 后缀才勾选「预发布」，正式版不勾，不接受人工输入。
+        # 版本号带 -rc / -beta / -alpha / -nightly 后缀才勾选「预发布」，正式版不勾，不接受人工输入。
         - name: 创建 Release
           type: git:release
           optionsFrom: ./.cnb-release-options.json

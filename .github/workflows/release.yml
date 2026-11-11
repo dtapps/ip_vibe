@@ -3,10 +3,13 @@
 # 手动触发，输入版本号后自动构建全平台二进制包（zip / tar.gz）并发布 GitHub Release。
 #
 # 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 CNB 的 .cnb/workflows/release.yml 同口径）：
-#   v1.2.3          -> 正式版，Release 不勾选 prerelease
-#   v1.2.3-rc.1     -> 预发布，Release 勾选 prerelease
-#   v1.2.3-beta.1   -> 预发布，Release 勾选 prerelease
-#   v1.2.3-alpha.1  -> 预发布，Release 勾选 prerelease
+#   v1.2.3                  -> 正式版，Release 不勾选 prerelease
+#   v1.2.3-rc.1             -> 预发布（rc 渠道），Release 勾选 prerelease
+#   v1.2.3-beta.1           -> 预发布（beta 渠道），Release 勾选 prerelease
+#   v1.2.3-alpha.1          -> 预发布（alpha 渠道），Release 勾选 prerelease
+#   v1.2.3-nightly.20260101 -> 预发布（nightly 渠道），Release 勾选 prerelease
+#
+# Release 标题：IPVibe <版本号>，预发布再加 "(预发布)" 后缀；tag 始终是纯版本号。
 #
 # https://github.com/actions/runner-images
 # https://github.com/actions/checkout
@@ -20,7 +23,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: '版本号。预发布看后缀：1.2.3-rc.1 / 1.2.3-beta.1 / 1.2.3-alpha.1；没有后缀就是正式版'
+        description: '版本号。预发布看后缀：1.2.3-rc.1 / 1.2.3-beta.1 / 1.2.3-alpha.1 / 1.2.3-nightly.20260101；没有后缀就是正式版'
         required: true
         type: string
 
@@ -68,11 +71,13 @@ jobs:
 
           echo "${PRE_NOTE}"
 
-          # 预发布版本在标题上带个后缀，便于在 Release 列表里一眼区分
+          # 标题统一带项目名（tag 仍是纯版本号），便于在 Release 列表里一眼认出是哪个项目；
+          # 预发布再加后缀，和正式版区分开
+          PROJECT_NAME="IPVibe"
           if [ "${PRERELEASE}" = "true" ]; then
-            RELEASE_TITLE="${TAG} (预发布)"
+            RELEASE_TITLE="${PROJECT_NAME} ${TAG} (预发布)"
           else
-            RELEASE_TITLE="${TAG}"
+            RELEASE_TITLE="${PROJECT_NAME} ${TAG}"
           fi
 
           {
@@ -245,7 +250,7 @@ jobs:
           echo "✅ tag ${VERSION} 不存在，可以发布"
 
           if [ "${PRERELEASE}" = "false" ]; then
-            latest=$(git tag -l 'v*' | grep -Ev -- '-(rc|beta|alpha)' | grep -v '\.rc' | sort -V | tail -n 1 || true)
+            latest=$(git tag -l 'v*' | grep -Ev -- '-(rc|beta|alpha|nightly)' | grep -v '\.rc' | sort -V | tail -n 1 || true)
             if [ -n "$latest" ] && [ "$(printf '%s\n%s\n' "$latest" "${VERSION}" | sort -V | tail -n 1)" != "${VERSION}" ]; then
               echo "❌ 版本号 ${VERSION} 比已有的正式版 ${latest} 旧"
               exit 1
@@ -273,8 +278,8 @@ jobs:
           STABLE_URL="${REPO_URL}/releases/latest"
           export DL_BASE STABLE_URL
 
-          # changelog：按渠道选对比基准（rc 对 rc、beta 对 beta、正式版对正式版；
-          # 首次发某渠道则回退到上一个正式版）。实现见 scripts/ci/release-changelog.sh。
+          # changelog：按渠道选对比基准（rc 对 rc、beta 对 beta、nightly 对 nightly、
+          # 正式版对正式版；首次发某渠道则回退到上一个正式版）。实现见 scripts/ci/release-changelog.sh。
           # GitHub 的提交路径是 /commit/<sha>，和 CNB 的 /-/commit 不同，前缀显式传
           CHANGELOG=$(COMMIT_URL="${REPO_URL}/commit" sh scripts/ci/release-changelog.sh "${VERSION}")
           # 直接 export 给同一步的脚本：写 $GITHUB_ENV 只对**后续** step 生效，
@@ -289,7 +294,7 @@ jobs:
           tag_name: ${{ needs.prepare.outputs.interior_version }}
           name: ${{ needs.prepare.outputs.interior_release_title }}
           draft: false
-          # 版本号带 rc/beta/alpha 才勾选预发布，正式版不勾
+          # 版本号带 rc/beta/alpha/nightly 才勾选预发布，正式版不勾
           prerelease: ${{ needs.prepare.outputs.pre_release }}
           body_path: release_body.md
           files: release/*

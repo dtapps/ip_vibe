@@ -56,19 +56,21 @@ CNB 的两个发布按钮定义在 `.cnb/web_trigger.yml`（权限 owner / maste
 
 ## 2. 版本号规则
 
-唯一实现是 [scripts/ci/resolve-prerelease.sh](../scripts/ci/resolve-prerelease.sh)：GitHub 的 `release.yml` / `build-image.yml` 都 source 这一份；CNB 侧在两个发布流水线里内联了同口径的正则。规则：
+唯一实现是 [scripts/ci/resolve-prerelease.sh](../scripts/ci/resolve-prerelease.sh)：GitHub 的 `release.yml` / `build-image.yml` 与 CNB 的 `release.yml` 都 source 这一份；CNB 的 `build-image.yml` 内联了同口径的正则。规则：
 
 | 输入               | 归一化 TAG       | 类型   | 镜像标签                            | Release         |
 |--------------------|------------------|--------|-------------------------------------|-----------------|
 | `1.2.3` / `v1.2.3` | `v1.2.3`         | 正式版 | 推 `:v1.2.3` 并覆盖 `:latest`       | 不勾 prerelease |
-| `v1.2.3-rc.1`      | `v1.2.3-rc.1`    | 预发布 | 只推 `:v1.2.3-rc.1`，不动 `:latest` | 勾 prerelease   |
-| `v1.2.3-beta.1`    | `v1.2.3-beta.1`  | 预发布 | 同上                                | 勾 prerelease   |
-| `v1.2.3-alpha.1`   | `v1.2.3-alpha.1` | 预发布 | 同上                                | 勾 prerelease   |
+| `v1.2.3-rc.1`      | `v1.2.3-rc.1`    | 预发布（rc） | 只推 `:v1.2.3-rc.1`，不动 `:latest` | 勾 prerelease   |
+| `v1.2.3-beta.1`    | `v1.2.3-beta.1`  | 预发布（beta） | 同上                                | 勾 prerelease   |
+| `v1.2.3-alpha.1`   | `v1.2.3-alpha.1` | 预发布（alpha） | 同上                                | 勾 prerelease   |
+| `v1.2.3-nightly.20260101` | `v1.2.3-nightly.20260101` | 预发布（nightly） | 同上 | 勾 prerelease |
 
 判定细则：
 
-- 后缀 `-rc` / `-beta` / `-alpha` 才算预发布，大小写不敏感；`rc1`、`rc.1`、裸 `rc` 都能识别（正则 `-(rc|beta|alpha)([.-]?[0-9A-Za-z.-]*)$`）。
-- 不带这三种后缀的一律按正式版处理：`v1.2.3-hotfix`、`v2.0.0-core` 不会被误判。
+- 后缀 `-rc` / `-beta` / `-alpha` / `-nightly` 才算预发布，大小写不敏感；`rc1`、`rc.1`、裸 `rc`、`nightly.20260101` 都能识别（正则 `-(rc|beta|alpha|nightly)([.-]?[0-9A-Za-z.-]*)$`）。
+- 不带这四种后缀的一律按正式版处理：`v1.2.3-hotfix`、`v2.0.0-core` 不会被误判。
+- `nightly` 是独立渠道：`v1.2.3-nightly.20260101` 勾 prerelease、不覆盖 `:latest`，changelog 只跟 nightly 的 tag 对比，不会跨到 rc / beta / alpha。
 - 输入自动补 `v` 前缀、去空白字符；空输入直接报错（历史上空输入会打出 `:v` 这种非法标签）。
 - 预发布的核心目的：镜像不覆盖 `:latest`、Release 标记 prerelease，未经充分验证的版本不会推给线上用户。
 
@@ -94,7 +96,7 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 三个 job 串行：
 
-1. **prepare**（CI 镜像容器）：source `scripts/ci/resolve-prerelease.sh` 归一化版本号，输出 TAG / 是否预发布 / 标题（预发布标题带 `(预发布)` 后缀）。
+1. **prepare**（CI 镜像容器）：source `scripts/ci/resolve-prerelease.sh` 归一化版本号，输出 TAG / 是否预发布 / 标题。GitHub 与 CNB 的标题同口径：`IPVibe <TAG>`（预发布再加 `(预发布)` 后缀）；tag 本身仍是纯版本号。
 2. **build**（CI 镜像容器）：三类缓存（Go module、Go build、pnpm store）→ `make deps` → **先 `make build-frontend`**（前端静态资源由 go:embed 打进 backend 二进制，顺序不能反）→ `make build-all` → `make clean-binaries` 兜底清掉裸二进制 → 生成 `SHA256SUMS` → 上传 artifact。
 3. **release**：`fetch-depth: 0` 拉全量 tag 历史 → **校验版本号与 tag**（§3.4）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → `softprops/action-gh-release` 建 tag、上传 19 个附件。
 
@@ -110,19 +112,20 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 > CNB 的脚本任务不保证跑在 bash 下，三个 `scripts/ci/*.sh` 都按 POSIX sh 写：不用 `pipefail`、进程替换、`[[ ]]`、`BASH_SOURCE`。正文 stage 会把 `ARTIFACT_LAYOUT=triplet` 传给渲染脚本（本仓库是三服务项目，下载表要「组件」列）。
 
-### 3.3 更新内容：按渠道选对比基准（rc / beta / alpha 的关键）
+### 3.3 更新内容：按渠道选对比基准（rc / beta / alpha / nightly 的关键）
 
 实现：`scripts/ci/release-changelog.sh`，GitHub 与 CNB 共用一份。只看版本号后缀决定**渠道**，同渠道内对比：
 
-| 场景 | 对比基准 | 说明 |
-|---|---|---|
-| 发 `v1.0.44-rc.2` | `v1.0.44-rc.1` | rc 只跟 rc 比 |
-| 发 `v1.0.44-beta.2` | `v1.0.44-beta.1` | beta 只跟 beta 比，**不会跨到 rc** |
-| 发 `v1.0.44-rc.1`（该渠道首次） | 上一个**正式版** `v1.0.43` | 渠道没有历史 tag 时回退 |
-| 发正式版 `v1.0.45` | 第一个**正式版** `v1.0.43` | 不掺预发布，整轮改动都在 |
-| 取不到基准但仓库里有别的 tag | **exit 1 报错** | 不谎报「首次发布」，避免掩盖 clone 缺 tag |
+| 场景                            | 对比基准                   | 说明                                      |
+|---------------------------------|----------------------------|-------------------------------------------|
+| 发 `v1.0.44-rc.2`               | `v1.0.44-rc.1`             | rc 只跟 rc 比                             |
+| 发 `v1.0.44-beta.2`             | `v1.0.44-beta.1`           | beta 只跟 beta 比，**不会跨到 rc**        |
+| 发 `v1.0.44-nightly.20260102`   | `v1.0.44-nightly.20260101` | nightly 按日期只跟 nightly 比             |
+| 发 `v1.0.44-rc.1`（该渠道首次） | 上一个**正式版** `v1.0.43` | 渠道没有历史 tag 时回退                   |
+| 发正式版 `v1.0.45`              | 第一个**正式版** `v1.0.43` | 不掺预发布，整轮改动都在                  |
+| 取不到基准但仓库里有别的 tag    | **exit 1 报错**            | 不谎报「首次发布」，避免掩盖 clone 缺 tag |
 
-为什么不能用 `git describe --tags --abbrev=0 HEAD^`：它取「最近的可达 tag」，**不区分渠道**。发正式版时会取到刚发的 rc，整轮改动全丢；而且会被 `docker-v1.0.x` 之类的无关 tag 干扰。脚本因此显式按 `^v[0-9]+\.[0-9]+\.[0-9]+(-(rc|beta|alpha)(\.[0-9]+)?)?$` 白名单 + 渠道过滤，并用 `sort -V` 而不是 `--sort=v:refname`（后者对 `rc.2`/`rc.10` 排序不符合直觉）。
+为什么不能用 `git describe --tags --abbrev=0 HEAD^`：它取「最近的可达 tag」，**不区分渠道**。发正式版时会取到刚发的 rc，整轮改动全丢；而且会被 `docker-v1.0.x` 之类的无关 tag 干扰。脚本因此显式按 `^v[0-9]+\.[0-9]+\.[0-9]+(-(rc|beta|alpha|nightly)(\.[0-9]+)?)?$` 白名单 + 渠道过滤，并用 `sort -V` 而不是 `--sort=v:refname`（后者对 `rc.2`/`rc.10` 排序不符合直觉）。
 
 输出格式对齐 `cnbcool/changelog` 插件：按 Conventional Commits type 分组（Features / Bug Fixes / CI / Build System…），行内 `[短号](完整SHA链接) - scope: subject (作者)`，`--no-merges` 去掉 dependabot 的重复合并记录，每组最多 50 条并附溢出提示。
 
@@ -138,13 +141,14 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 一份实现供 CNB 与 GitHub 共用，只用环境变量传参。要点：
 
-- **`ARTIFACT_LAYOUT`**：`single`（默认，单二进制项目如 ikuai，下载表 4 列）/ `triplet`（多服务项目如本仓库，多一列「组件」，按 组件→平台→架构 排序）。默认 single 保证与 ikuai 行为一致。
+- **`ARTIFACT_LAYOUT`**：`single`（默认，单二进制项目如 ikuai，下载表 5 列）/ `triplet`（多服务项目如本仓库，多一列「组件」，按 组件→平台→架构 排序）。默认 single 保证与 ikuai 行为一致。
+- **「说明」列**：按平台写包类型（Debian/Ubuntu 等 Linux 通用包 / macOS 通用包 / Windows 可执行程序包），均为解压即用的压缩包，不是 `.deb` / `.rpm` / `.msi` 安装包。
 - **只把 `.tar.gz` / `.zip` 当附件**：产物目录里混进正文 md、日志时不会误列表。
 - **Windows 校验命令按实际产物生成**，不硬编码文件名；PowerShell 输出全大写与 `SHA256SUMS` 的小写等价，正文里显式说明。
 - **一律 `printf %s\n` 而非 `echo`**：dash 的 `echo` 会解释反斜杠，`Get-FileHash .\backend-...` 里的 `\b` 会被吞成退格符，显示成 `.ackend-...`。
 - 提交号**显示短号、链接用完整 SHA**（缩写长度随仓库规模变化，链接里用缩写部分平台会 404）。
 
-> 脚本自带自检：`sh scripts/ci/render-release-body.sh --self-test`、`sh scripts/ci/release-changelog.sh --help`、`sh scripts/ci/resolve-prerelease.sh --self-test`。改格式/改判定先跑它们。
+> 脚本自带自检：`sh scripts/ci/render-release-body.sh --self-test`、`sh scripts/ci/resolve-prerelease.sh --self-test`；`sh scripts/ci/release-changelog.sh` 无参数时打印用法。改格式/改判定先跑它们。
 
 ---
 
