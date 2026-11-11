@@ -8,6 +8,8 @@
 #   v1.2.3-beta.1   -> 预发布，Release 勾选 prerelease
 #   v1.2.3-alpha.1  -> 预发布，Release 勾选 prerelease
 #
+# Release 标题：IPVibe <版本号>，预发布再加 "(预发布)" 后缀；tag 始终是纯版本号。
+#
 # https://github.com/actions/runner-images
 # https://github.com/actions/checkout
 # https://github.com/actions/cache
@@ -68,11 +70,13 @@ jobs:
 
           echo "${PRE_NOTE}"
 
-          # 预发布版本在标题上带个后缀，便于在 Release 列表里一眼区分
+          # 标题统一带项目名（tag 仍是纯版本号），便于在 Release 列表里一眼认出是哪个项目；
+          # 预发布再加后缀，和正式版区分开
+          PROJECT_NAME="IPVibe"
           if [ "${PRERELEASE}" = "true" ]; then
-            RELEASE_TITLE="${TAG} (预发布)"
+            RELEASE_TITLE="${PROJECT_NAME} ${TAG} (预发布)"
           else
-            RELEASE_TITLE="${TAG}"
+            RELEASE_TITLE="${PROJECT_NAME} ${TAG}"
           fi
 
           {

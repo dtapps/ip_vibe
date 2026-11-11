@@ -13,7 +13,7 @@
 #   STABLE_URL    选填，正式版列表页 URL，预发布时提示用户去哪找稳定版
 #   ARTIFACT_DIR  选填，产物目录，默认 bin
 #   ARTIFACT_LAYOUT 选填，产物命名布局，默认 single：
-#                 single —— 单二进制项目（ikuai-{os}-{arch}），下载表 4 列；
+#                 single —— 单二进制项目（ikuai-{os}-{arch}），下载表 5 列；
 #                 triplet —— 多服务项目（{服务}-{os}-{arch}），下载表多一列「组件」，
 #                            并按「组件 → 平台 → 架构」排序，方便用户按服务找包。
 #   OUT_FILE      选填，输出文件，默认 release_body.md
@@ -31,7 +31,7 @@
 
 set -eu
 
-# 产物名解析。输出三个全局变量：COMP / PLAT / ARCH
+# 产物名解析。输出四个全局变量：COMP / PLAT / ARCH / EXT
 #
 # 两种命名布局由 ARTIFACT_LAYOUT 决定（默认 single，与 ikuai 一致）：
 #   single  —— 单二进制：{name}-{os}-{arch}[.exe].{tar.gz,zip}，如 ikuai-linux-amd64.tar.gz
@@ -43,11 +43,18 @@ parse_artifact_name() {
   COMP=''
   PLAT='其它'
   ARCH='-'
+  EXT=''
 
   # 先去掉压缩后缀，拿到 xxx-linux-amd64 / xxx-windows-amd64.exe 这种主干
   case "${fname}" in
-    *.tar.gz) stem="${fname%.tar.gz}" ;;
-    *.zip) stem="${fname%.zip}" ;;
+    *.tar.gz)
+      stem="${fname%.tar.gz}"
+      EXT='.tar.gz'
+      ;;
+    *.zip)
+      stem="${fname%.zip}"
+      EXT='.zip'
+      ;;
     *) return 0 ;;
   esac
   # Windows 产物主干还带 .exe，一并去掉再切分
@@ -81,6 +88,15 @@ parse_artifact_name() {
   esac
 }
 
+describe_artifact() {
+  case "${PLAT}:${EXT}" in
+    Linux:.tar.gz) printf '%s' 'Debian/Ubuntu 等 Linux 通用包（tar.gz，解压即用）' ;;
+    macOS:.tar.gz) printf '%s' 'macOS 通用包（tar.gz，解压即用）' ;;
+    Windows:.zip) printf '%s' 'Windows 可执行程序包（zip，解压运行 .exe）' ;;
+    *) printf '压缩包（%s），解压即用' "${EXT}" ;;
+  esac
+}
+
 render_body() {
   : "${VERSION:?VERSION 为空}"
   : "${PRERELEASE:?PRERELEASE 为空}"
@@ -88,7 +104,7 @@ render_body() {
 
   artifact_dir="${ARTIFACT_DIR:-bin}"
   out_file="${OUT_FILE:-release_body.md}"
-  # 默认 single：保持 ikuai 的既有行为（4 列，无「组件」列）
+  # 默认 single：保持 ikuai 的既有行为（5 列，无「组件」列）
   layout="${ARTIFACT_LAYOUT:-single}"
   case "${layout}" in
     single | triplet) ;;
@@ -213,22 +229,24 @@ render_body() {
         # 排序键放前 3 段，第 4 段起是完整的表格行（含行首竖线），输出时 cut -f4- 取回。
         # ⚠️ 组件列必须拼在「第 4 段」里，而不是当成排序键之外的单列：
         #    排序键 f1 就是组件，若再指望 cut -f4- 把组件带出来，组件会被整列切掉。
+        desc="$(describe_artifact)"
+        # 说明文案最长，放最后一列；文件名和大小靠前，便于一眼扫到要下载的包
         if [ "${layout}" = 'single' ]; then
-          row="| ${PLAT} | ${ARCH} | [${fname}](${DL_BASE}/${fname}) | ${fsize} |"
+          row="| ${PLAT} | ${ARCH} | [${fname}](${DL_BASE}/${fname}) | ${fsize} | ${desc} |"
         else
-          row="| ${COMP} | ${PLAT} | ${ARCH} | [${fname}](${DL_BASE}/${fname}) | ${fsize} |"
+          row="| ${COMP} | ${PLAT} | ${ARCH} | [${fname}](${DL_BASE}/${fname}) | ${fsize} | ${desc} |"
         fi
         printf '%s\t%s\t%s\t%s\n' "${COMP}" "${_p}" "${_a}" "${row}" >>"${rows_file}"
       done
 
       if [ "${layout}" = 'single' ]; then
-        echo '| 平台 | 架构 | 文件 | 大小 |'
-        echo '| --- | --- | --- | --- |'
+        echo '| 平台 | 架构 | 文件 | 大小 | 说明 |'
+        echo '| --- | --- | --- | --- | --- |'
         LC_ALL=C sort -t "$(printf '\t')" -k2,2n -k3,3n "${rows_file}" \
           | cut -f4-
       else
-        echo '| 组件 | 平台 | 架构 | 文件 | 大小 |'
-        echo '| --- | --- | --- | --- | --- |'
+        echo '| 组件 | 平台 | 架构 | 文件 | 大小 | 说明 |'
+        echo '| --- | --- | --- | --- | --- | --- |'
         LC_ALL=C sort -t "$(printf '\t')" -k1,1 -k2,2n -k3,3n "${rows_file}" \
           | cut -f4-
       fi
@@ -330,9 +348,9 @@ if [ "${1:-}" = '--self-test' ]; then
   reject "${tmp_dir}/stable.md" '是否预发布' '正式版不出现多余的预发布字段行'
   expect "${tmp_dir}/stable.md" '✅ 正式发布版本 (Stable)' '正式版标记'
   expect "${tmp_dir}/stable.md" '| 构建时间 |' '构建时间行'
-  expect "${tmp_dir}/stable.md" '| Linux | x86_64 | [ikuai-linux-amd64.tar.gz](https://example.com/dl/v1.2.3/ikuai-linux-amd64.tar.gz) |' 'Linux x86_64 下载行'
-  expect "${tmp_dir}/stable.md" '| Windows | x86_64 | [ikuai-windows-amd64.exe.zip]' 'Windows 下载行'
-  expect "${tmp_dir}/stable.md" '| macOS | ARM64 | [ikuai-darwin-arm64.tar.gz]' 'macOS 下载行'
+  expect "${tmp_dir}/stable.md" '| Linux | x86_64 | [ikuai-linux-amd64.tar.gz](https://example.com/dl/v1.2.3/ikuai-linux-amd64.tar.gz) | 0B | Debian/Ubuntu 等 Linux 通用包（tar.gz，解压即用） |' 'Linux x86_64 下载行'
+  expect "${tmp_dir}/stable.md" '| Windows | x86_64 | [ikuai-windows-amd64.exe.zip](https://example.com/dl/v1.2.3/ikuai-windows-amd64.exe.zip) | 0B | Windows 可执行程序包（zip，解压运行 .exe） |' 'Windows 下载行'
+  expect "${tmp_dir}/stable.md" '| macOS | ARM64 | [ikuai-darwin-arm64.tar.gz](https://example.com/dl/v1.2.3/ikuai-darwin-arm64.tar.gz) | 0B | macOS 通用包（tar.gz，解压即用） |' 'macOS 下载行'
   expect "${tmp_dir}/stable.md" '- 修复 A' '更新内容保留'
   expect "${tmp_dir}/stable.md" '## 校验' '有 SHA256SUMS 时写校验节'
   expect "${tmp_dir}/stable.md" 'sha256sum -c SHA256SUMS' 'Linux 校验命令'
@@ -342,8 +360,8 @@ if [ "${1:-}" = '--self-test' ]; then
   expect "${tmp_dir}/stable.md" 'certutil -hashfile' 'certutil 备选命令'
   reject "${tmp_dir}/stable.md" '## ⚠️ 预发布版本' '正式版不出现预发布警示'
   reject "${tmp_dir}/stable.md" 'SHA256SUMS |' '校验文件不进下载表格'
-  reject "${tmp_dir}/stable.md" '| 说明 |' '下载表格不出现说明列'
-  expect "${tmp_dir}/stable.md" '| 平台 | 架构 | 文件 | 大小 |' '下载表头四列'
+  expect "${tmp_dir}/stable.md" '| 平台 | 架构 | 文件 | 大小 | 说明 |' '下载表头'
+  reject "${tmp_dir}/stable.md" '| 平台 | 架构 | 说明 |' '说明列不夹在架构与文件之间'
 
   echo '── 预发布 ──'
   # CHANGELOG 显式置空：上一条用例给 render_body 传过 CHANGELOG，
@@ -379,10 +397,11 @@ if [ "${1:-}" = '--self-test' ]; then
     ARTIFACT_DIR="${tmp_dir}/triplet" OUT_FILE="${tmp_dir}/triplet.md" CHANGELOG='- x' \
     ARTIFACT_LAYOUT='triplet' \
     render_body >/dev/null
-  expect "${tmp_dir}/triplet.md" '| 组件 | 平台 | 架构 | 文件 | 大小 |' 'triplet 表头含组件列'
-  expect "${tmp_dir}/triplet.md" '| backend | Linux | x86_64 | [backend-linux-amd64.tar.gz]' 'triplet 组件列=backend'
-  expect "${tmp_dir}/triplet.md" '| reporter | Linux | x86_64 | [reporter-linux-amd64.tar.gz]' 'triplet 组件列=reporter'
-  expect "${tmp_dir}/triplet.md" '| forwarder | macOS | ARM64 | [forwarder-darwin-arm64.tar.gz]' 'triplet 组件列=forwarder'
+  expect "${tmp_dir}/triplet.md" '| 组件 | 平台 | 架构 | 文件 | 大小 | 说明 |' 'triplet 表头'
+  expect "${tmp_dir}/triplet.md" '| backend | Linux | x86_64 | [backend-linux-amd64.tar.gz](https://example.com/dl/v1.2.3/backend-linux-amd64.tar.gz) | 0B | Debian/Ubuntu 等 Linux 通用包（tar.gz，解压即用） |' 'triplet 组件列=backend'
+  expect "${tmp_dir}/triplet.md" '| reporter | Linux | x86_64 | [reporter-linux-amd64.tar.gz](https://example.com/dl/v1.2.3/reporter-linux-amd64.tar.gz) | 0B | Debian/Ubuntu 等 Linux 通用包（tar.gz，解压即用） |' 'triplet 组件列=reporter'
+  expect "${tmp_dir}/triplet.md" '| forwarder | macOS | ARM64 | [forwarder-darwin-arm64.tar.gz](https://example.com/dl/v1.2.3/forwarder-darwin-arm64.tar.gz) | 0B | macOS 通用包（tar.gz，解压即用） |' 'triplet 组件列=forwarder'
+  expect "${tmp_dir}/triplet.md" '| backend | Windows | x86_64 | [backend-windows-amd64.exe.zip](https://example.com/dl/v1.2.3/backend-windows-amd64.exe.zip) | 0B | Windows 可执行程序包（zip，解压运行 .exe） |' 'Windows 下载行'
   # 排序：组件字典序 backend < forwarder < reporter，且 Linux 排在 Windows 前
   first_row="$(grep -E '^\| [a-z]+ \|' "${tmp_dir}/triplet.md" | head -n 1)"
   case "${first_row}" in
@@ -402,7 +421,7 @@ if [ "${1:-}" = '--self-test' ]; then
   VERSION='v1.2.3' PRERELEASE='false' DL_BASE='https://example.com/dl/v1.2.3' \
     ARTIFACT_DIR="${tmp_dir}/bin" OUT_FILE="${tmp_dir}/default.md" CHANGELOG='- x' \
     render_body >/dev/null
-  reject "${tmp_dir}/default.md" '| 组件 |' '默认布局仍是 4 列（不含组件列）'
+  reject "${tmp_dir}/default.md" '| 组件 |' '默认布局仍是 5 列（不含组件列）'
 
   echo '── 产物目录混入非产物文件 ──'
   # GitHub 侧的 release_body.md 常和附件同目录；只有 .tar.gz/.zip 才算可下载附件
@@ -435,7 +454,7 @@ if [ "${1:-}" = '--self-test' ]; then
     ARTIFACT_DIR="${tmp_dir}/empty" OUT_FILE="${tmp_dir}/empty.md" \
     render_body >/dev/null
   expect "${tmp_dir}/empty.md" '> 本次未产出可下载的附件。' '空目录提示而不是空表格'
-  reject "${tmp_dir}/empty.md" '| 平台 | 架构 |' '空目录不画表头'
+  reject "${tmp_dir}/empty.md" '| 平台 | 架构 | 文件 | 大小 | 说明 |' '空目录不画表头'
 
   if [ "${failures}" -ne 0 ]; then
     printf '\n自检失败: %d 项\n' "${failures}" >&2

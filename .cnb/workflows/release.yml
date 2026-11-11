@@ -150,11 +150,14 @@
             : "${INTERIOR_VERSION:?INTERIOR_VERSION 为空——第一步没跑成功}"
             : "${INTERIOR_PRERELEASE:?INTERIOR_PRERELEASE 为空——第一步没跑成功}"
 
+            # 标题与 GitHub 侧同口径：「IPVibe <版本号>」，预发布再加 (预发布) 后缀；
+            # tag 仍是纯版本号，不要动
+            project_name="IPVibe"
             if [ "${INTERIOR_PRERELEASE}" = "true" ]; then
-              release_title="${INTERIOR_VERSION} (预发布)"
+              release_title="${project_name} ${INTERIOR_VERSION} (预发布)"
               prerelease_json=true
             else
-              release_title="${INTERIOR_VERSION}"
+              release_title="${project_name} ${INTERIOR_VERSION}"
               prerelease_json=false
             fi
 

@@ -94,7 +94,7 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 三个 job 串行：
 
-1. **prepare**（CI 镜像容器）：source `scripts/ci/resolve-prerelease.sh` 归一化版本号，输出 TAG / 是否预发布 / 标题（预发布标题带 `(预发布)` 后缀）。
+1. **prepare**（CI 镜像容器）：source `scripts/ci/resolve-prerelease.sh` 归一化版本号，输出 TAG / 是否预发布 / 标题。GitHub 与 CNB 的标题同口径：`IPVibe <TAG>`（预发布再加 `(预发布)` 后缀）；tag 本身仍是纯版本号。
 2. **build**（CI 镜像容器）：三类缓存（Go module、Go build、pnpm store）→ `make deps` → **先 `make build-frontend`**（前端静态资源由 go:embed 打进 backend 二进制，顺序不能反）→ `make build-all` → `make clean-binaries` 兜底清掉裸二进制 → 生成 `SHA256SUMS` → 上传 artifact。
 3. **release**：`fetch-depth: 0` 拉全量 tag 历史 → **校验版本号与 tag**（§3.4）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → `softprops/action-gh-release` 建 tag、上传 19 个附件。
 
@@ -114,13 +114,13 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 实现：`scripts/ci/release-changelog.sh`，GitHub 与 CNB 共用一份。只看版本号后缀决定**渠道**，同渠道内对比：
 
-| 场景 | 对比基准 | 说明 |
-|---|---|---|
-| 发 `v1.0.44-rc.2` | `v1.0.44-rc.1` | rc 只跟 rc 比 |
-| 发 `v1.0.44-beta.2` | `v1.0.44-beta.1` | beta 只跟 beta 比，**不会跨到 rc** |
-| 发 `v1.0.44-rc.1`（该渠道首次） | 上一个**正式版** `v1.0.43` | 渠道没有历史 tag 时回退 |
-| 发正式版 `v1.0.45` | 第一个**正式版** `v1.0.43` | 不掺预发布，整轮改动都在 |
-| 取不到基准但仓库里有别的 tag | **exit 1 报错** | 不谎报「首次发布」，避免掩盖 clone 缺 tag |
+| 场景                            | 对比基准                   | 说明                                      |
+|---------------------------------|----------------------------|-------------------------------------------|
+| 发 `v1.0.44-rc.2`               | `v1.0.44-rc.1`             | rc 只跟 rc 比                             |
+| 发 `v1.0.44-beta.2`             | `v1.0.44-beta.1`           | beta 只跟 beta 比，**不会跨到 rc**        |
+| 发 `v1.0.44-rc.1`（该渠道首次） | 上一个**正式版** `v1.0.43` | 渠道没有历史 tag 时回退                   |
+| 发正式版 `v1.0.45`              | 第一个**正式版** `v1.0.43` | 不掺预发布，整轮改动都在                  |
+| 取不到基准但仓库里有别的 tag    | **exit 1 报错**            | 不谎报「首次发布」，避免掩盖 clone 缺 tag |
 
 为什么不能用 `git describe --tags --abbrev=0 HEAD^`：它取「最近的可达 tag」，**不区分渠道**。发正式版时会取到刚发的 rc，整轮改动全丢；而且会被 `docker-v1.0.x` 之类的无关 tag 干扰。脚本因此显式按 `^v[0-9]+\.[0-9]+\.[0-9]+(-(rc|beta|alpha)(\.[0-9]+)?)?$` 白名单 + 渠道过滤，并用 `sort -V` 而不是 `--sort=v:refname`（后者对 `rc.2`/`rc.10` 排序不符合直觉）。
 
@@ -138,7 +138,8 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 一份实现供 CNB 与 GitHub 共用，只用环境变量传参。要点：
 
-- **`ARTIFACT_LAYOUT`**：`single`（默认，单二进制项目如 ikuai，下载表 4 列）/ `triplet`（多服务项目如本仓库，多一列「组件」，按 组件→平台→架构 排序）。默认 single 保证与 ikuai 行为一致。
+- **`ARTIFACT_LAYOUT`**：`single`（默认，单二进制项目如 ikuai，下载表 5 列）/ `triplet`（多服务项目如本仓库，多一列「组件」，按 组件→平台→架构 排序）。默认 single 保证与 ikuai 行为一致。
+- **「说明」列**：按平台写包类型（Debian/Ubuntu 等 Linux 通用包 / macOS 通用包 / Windows 可执行程序包），均为解压即用的压缩包，不是 `.deb` / `.rpm` / `.msi` 安装包。
 - **只把 `.tar.gz` / `.zip` 当附件**：产物目录里混进正文 md、日志时不会误列表。
 - **Windows 校验命令按实际产物生成**，不硬编码文件名；PowerShell 输出全大写与 `SHA256SUMS` 的小写等价，正文里显式说明。
 - **一律 `printf %s\n` 而非 `echo`**：dash 的 `echo` 会解释反斜杠，`Get-FileHash .\backend-...` 里的 `\b` 会被吞成退格符，显示成 `.ackend-...`。
