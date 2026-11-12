@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# scripts/format.sh 与 scripts/check.sh 共用的 shell 工具函数。
-# 单独放一个文件，避免两处重复实现计时逻辑。
+# scripts/format.sh 使用的 shell 工具函数。
+# 单独放一个文件，把计时逻辑与格式化实现分开。
 
-# 日志前缀，由使用方设置（如 "[Format]" / "[Check]"），run_step 用它拼装输出。
+# 日志前缀，由使用方设置（如 "[Format]"），run_step 用它拼装输出。
 LOG_PREFIX="${LOG_PREFIX:-}"
 
 # now_ms：返回当前 Unix 毫秒时间戳。
@@ -65,7 +65,7 @@ fmt_duration() {
 #
 # 注意：函数会被放在条件上下文（if 条件）中调用，bash 此时会整体抑制函数体内的
 # set -e —— 所以被调用函数必须用显式的 `|| return 1` 传播错误，不能依赖 errexit。
-# 否则 check 会把「工具缺失」之类的失败静默吞掉、假装通过。
+# 否则调用方会把「工具缺失」之类的失败静默吞掉、假装通过。
 run_step() {
   local label="$1" fn="$2"
   shift 2

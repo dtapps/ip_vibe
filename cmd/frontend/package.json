@@ -1,35 +1,37 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "dev": "sh ./dev.sh",
-    "build": "sh ./build.sh",
-    "lint": "prettier --check \"**/*.{html,js,css,json}\"",
-    "format": "prettier --write \"**/*.{html,js,css,json}\"",
-    "test": "node test/index.test.js",
-    "test:coverage": "cd ../.. && c8 --reporter=lcov --reporter=text --all --include='cmd/backend/static/js/**/*.js' --reports-dir=cmd/frontend/coverage node cmd/frontend/test/index.test.js",
-    "test:junit": "mkdir -p coverage && node --test-reporter=junit test/index.test.js > coverage/junit.xml"
-  },
-  "keywords": [],
   "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@12.18.0",
+  "description": "",
   "devDependencies": {
     "@egoist/tailwindcss-icons": "^1.9.2",
-    "@iconify-json/lucide": "^1.2.152",
+    "@iconify-json/lucide": "^1.2.154",
     "@tailwindcss/cli": "^4.3.5",
-    "c8": "^12.0.0",
+    "@vitest/coverage-v8": "^5.1.0",
     "clipboard": "^2.0.11",
-    "daisyui": "^5.7.50",
+    "daisyui": "^5.8.0",
     "dayjs": "^1.11.23",
     "echarts": "^6.1.0",
+    "happy-dom": "^21.0.4",
     "jquery": "^4.0.0",
+    "knip": "^6.45.1",
     "loadjs": "^4.3.0",
-    "prettier": "^3.9.10",
+    "prettier": "^3.10.1",
     "select2": "4.1.0",
     "select2-tailwindcss-v4-theme": "^1.2.5",
-    "tailwindcss": "^4.3.5"
-  }
+    "tailwindcss": "^4.3.5",
+    "vitest": "^5.1.0"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "name": "backend",
+  "packageManager": "pnpm@12.18.0",
+  "scripts": {
+    "build": "sh ./build.sh",
+    "deps:clean": "knip --fix",
+    "dev": "sh ./dev.sh",
+    "format": "prettier --write \"**/*.{html,js,css}\"",
+    "lint": "prettier --check \"**/*.{html,js,css}\"",
+    "lint:unused": "knip",
+    "test": "vitest run"
+  },
+  "version": "1.0.0"
 }

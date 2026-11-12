@@ -17,6 +17,7 @@
 # 两份一一对应、构建上下文都是仓库根目录，只差基础镜像的 registry：GitHub 拉
 # ghcr.io/dtapps/alpine:latest，CNB 拉 docker.cnb.cool/dtapp/alpine:latest（同一套上游流水线发布）。
 #
+# https://github.com/actions/runner-images
 # https://github.com/actions/checkout
 # https://github.com/actions/cache
 # https://github.com/actions/upload-artifact
@@ -24,6 +25,7 @@
 # https://github.com/docker/setup-buildx-action
 # https://github.com/docker/login-action
 # https://github.com/docker/build-push-action
+# https://github.com/dtapps/golang
 name: Build Image
 
 on:
@@ -33,6 +35,11 @@ on:
         description: '版本号。预发布看后缀：1.2.3-rc.1 / 1.2.3-beta.1 / 1.2.3-alpha.1 / 1.2.3-nightly.20260101；没有后缀就是正式版'
         required: true
         type: string
+      commit:
+        description: '可选：要构建的代码版本（完整 SHA / 分支 / tag）。留空则用触发时的 HEAD'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -51,15 +58,20 @@ concurrency:
 jobs:
   # 先编 amd64 二进制：镜像里只需要 linux/amd64，其它平台由 release.yml 负责打压缩包
   binaries:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     container:
       image: ghcr.io/dtapps/golang:latest
     outputs:
       version: ${{ steps.gen.outputs.version }}
       pre_release: ${{ steps.gen.outputs.pre_release }}
+      commit_full: ${{ steps.gen.outputs.commit_full }}
+      commit_short: ${{ steps.gen.outputs.commit_short }}
     steps:
       - name: 检出代码
         uses: actions/checkout@v7
+        with:
+          # 不填 commit 时用触发时的 SHA，两个 job 落在同一个提交上
+          ref: ${{ inputs.commit || github.sha }}
 
       # go build 默认做 VCS 盖章，会调用 `git status --porcelain`。容器 job 的工作区是
       # runner 挂进来的 bind mount（属主是 runner 用户），容器内进程却是 root，git 会判定
@@ -88,6 +100,11 @@ jobs:
         run: |
           set -euo pipefail
 
+          # 统一以「实际检出的 HEAD」为准：完整 SHA 留作追溯，短 SHA 给构建标记。
+          commit_full="$(git rev-parse HEAD)"
+          commit_short="$(git rev-parse --short HEAD)"
+          echo "构建 commit: ${commit_short} (${commit_full})"
+
           # 归一化 / 格式校验 / 预发布判定只有一份实现，两个 workflow 共用
           # shellcheck source=scripts/ci/resolve-prerelease.sh
           . scripts/ci/resolve-prerelease.sh
@@ -96,6 +113,8 @@ jobs:
           echo "${PRE_NOTE}"
           echo "version=${TAG}" >> "$GITHUB_OUTPUT"
           echo "pre_release=${PRERELEASE}" >> "$GITHUB_OUTPUT"
+          echo "commit_full=${commit_full}" >> "$GITHUB_OUTPUT"
+          echo "commit_short=${commit_short}" >> "$GITHUB_OUTPUT"
 
       - name: 设置 Go 工具链目录
         shell: bash
@@ -147,7 +166,8 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ steps.gen.outputs.version }}
-        run: VERSION="${VERSION}" make build-linux-amd64
+          COMMIT: ${{ steps.gen.outputs.commit_short }}
+        run: VERSION="${VERSION}" COMMIT="${COMMIT}" make build-linux-amd64
 
       - name: 上传二进制产物
         uses: actions/upload-artifact@v7
@@ -160,10 +180,13 @@ jobs:
   # 镜像在普通 runner（非容器 job）上构建：容器 job 里没有 docker daemon
   image:
     needs: binaries
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: 检出代码
         uses: actions/checkout@v7
+        with:
+          # 用 binaries 解析出的完整 SHA，保证两个 job 同一个提交
+          ref: ${{ needs.binaries.outputs.commit_full }}
 
       - name: 下载二进制产物
         uses: actions/download-artifact@v8

@@ -31,8 +31,19 @@
         - name: 输出基本信息
           script: |
             echo "原始 version: $version"
+            echo "原始 commit: ${commit:-<空，使用当前检出>}"
             echo "CNB_DOCKER_REGISTRY: ${CNB_DOCKER_REGISTRY}"
             echo "CNB_REPO_SLUG_LOWERCASE: ${CNB_REPO_SLUG_LOWERCASE}"
+
+            # 指定 commit 时切换工作区（CNB 默认检出触发时的 commit）。
+            # 先补拉历史，避免浅克隆里没有目标对象；切换失败直接让这一步失败。
+            if [ -n "${commit:-}" ]; then
+              git fetch --quiet --force --unshallow origin 2>/dev/null || git fetch --quiet --force origin || true
+              git checkout --detach "${commit}"
+            fi
+            commit_full="$(git rev-parse HEAD)"
+            commit_short="$(git rev-parse --short HEAD)"
+            echo "构建 commit: ${commit_short} (${commit_full})"
 
             # 1. 版本号不能为空，否则会打出 :v 这样的非法镜像标签
             if [ -z "$version" ]; then
@@ -80,6 +91,8 @@
             # 5. 通过 set-output 输出到 result
             echo "##[set-output interior_version=$version]"
             echo "##[set-output interior_is_prerelease=$is_prerelease]"
+            echo "##[set-output interior_commit_full=$commit_full]"
+            echo "##[set-output interior_commit_short=$commit_short]"
             echo "##[set-output interior_backend_image_name=$backend_image_name]"
             echo "##[set-output interior_backend_docker_image_full=$backend_docker_image_full]"
             echo "##[set-output interior_backend_docker_image_latest=$backend_docker_image_latest]"
@@ -92,6 +105,8 @@
           exports:
             interior_version: INTERIOR_VERSION
             interior_is_prerelease: INTERIOR_IS_PRERELEASE
+            interior_commit_full: INTERIOR_COMMIT_FULL
+            interior_commit_short: INTERIOR_COMMIT_SHORT
             interior_backend_image_name: INTERIOR_BACKEND_IMAGE_NAME
             interior_backend_docker_image_full: INTERIOR_BACKEND_DOCKER_IMAGE_FULL
             interior_backend_docker_image_latest: INTERIOR_BACKEND_DOCKER_IMAGE_LATEST
@@ -109,7 +124,7 @@
           script: VERSION=${INTERIOR_VERSION} make build-frontend
 
         - name: 构建后端二进制文件
-          script: VERSION=${INTERIOR_VERSION} make build-linux-amd64
+          script: VERSION=${INTERIOR_VERSION} COMMIT=${INTERIOR_COMMIT_SHORT} make build-linux-amd64
 
         - name: 登录 Docker Registry
           script: |

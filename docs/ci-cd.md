@@ -58,13 +58,13 @@ CNB 的两个发布按钮定义在 `.cnb/web_trigger.yml`（权限 owner / maste
 
 唯一实现是 [scripts/ci/resolve-prerelease.sh](../scripts/ci/resolve-prerelease.sh)：GitHub 的 `release.yml` / `build-image.yml` 与 CNB 的 `release.yml` 都 source 这一份；CNB 的 `build-image.yml` 内联了同口径的正则。规则：
 
-| 输入               | 归一化 TAG       | 类型   | 镜像标签                            | Release         |
-|--------------------|------------------|--------|-------------------------------------|-----------------|
-| `1.2.3` / `v1.2.3` | `v1.2.3`         | 正式版 | 推 `:v1.2.3` 并覆盖 `:latest`       | 不勾 prerelease |
-| `v1.2.3-rc.1`      | `v1.2.3-rc.1`    | 预发布（rc） | 只推 `:v1.2.3-rc.1`，不动 `:latest` | 勾 prerelease   |
-| `v1.2.3-beta.1`    | `v1.2.3-beta.1`  | 预发布（beta） | 同上                                | 勾 prerelease   |
-| `v1.2.3-alpha.1`   | `v1.2.3-alpha.1` | 预发布（alpha） | 同上                                | 勾 prerelease   |
-| `v1.2.3-nightly.20260101` | `v1.2.3-nightly.20260101` | 预发布（nightly） | 同上 | 勾 prerelease |
+| 输入                      | 归一化 TAG                | 类型              | 镜像标签                            | Release         |
+|---------------------------|---------------------------|-------------------|-------------------------------------|-----------------|
+| `1.2.3` / `v1.2.3`        | `v1.2.3`                  | 正式版            | 推 `:v1.2.3` 并覆盖 `:latest`       | 不勾 prerelease |
+| `v1.2.3-rc.1`             | `v1.2.3-rc.1`             | 预发布（rc）      | 只推 `:v1.2.3-rc.1`，不动 `:latest` | 勾 prerelease   |
+| `v1.2.3-beta.1`           | `v1.2.3-beta.1`           | 预发布（beta）    | 同上                                | 勾 prerelease   |
+| `v1.2.3-alpha.1`          | `v1.2.3-alpha.1`          | 预发布（alpha）   | 同上                                | 勾 prerelease   |
+| `v1.2.3-nightly.20260101` | `v1.2.3-nightly.20260101` | 预发布（nightly） | 同上                                | 勾 prerelease   |
 
 判定细则：
 
@@ -180,10 +180,11 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 ## 5. 日常检查（Push / PR）
 
-两侧口径一致：`make deps → make format → make check`（先格式化，再跑 golangci-lint 等静态检查，实现见 `scripts/check.sh`）。
+两侧口径一致：`make deps → make format → make check`（先格式化，再跑 golangci-lint 等静态检查，检查实现在 `Makefile` 的 `check-*` 目标）。
 
 - GitHub `push.yml`：容器 job 统一使用 CI 基础镜像 `ghcr.io/dtapps/golang:latest`，免装工具链；带 Go module、Go build、pnpm store 三类缓存。
 - CNB `push.yml`：流水线统一使用 CI 基础镜像 `docker.cnb.cool/dtapp/golang`（`docker.image`），缓存靠 copy-on-write 卷（Go 构建缓存、pnpm store、Go 模块目录）。
+- 前端「未使用依赖」由 `make check-node` 里的 knip 步骤把关（配置 `cmd/frontend/knip.json`，脚本 `lint:unused`）。本项目页面脚本是「经典脚本 + 全局变量」，运行时库由 `build.sh` / `dev.sh` 从 `node_modules` 复制到 `cmd/backend/static/libs/`，tailwind 工具链则只出现在 `build.sh` / `dev.sh` 的 `pnpm tailwindcss` 调用与 `css/input.css` 的 `@import` / `@plugin` 里——knip 静态分析都看不到，因此这些依赖在配置中显式 `ignoreDependencies`：`clipboard`、`dayjs`、`echarts`、`jquery`、`loadjs`、`select2`、`select2-tailwindcss-v4-theme`、`@egoist/tailwindcss-icons`、`@iconify-json/lucide`、`@tailwindcss/cli`、`daisyui`、`tailwindcss`。新增依赖若既没被源码 import、也没列入忽略清单，`make check` 会失败（清理用 `make deps-clean`，即 `knip --fix`）。
 
 `concurrency` 策略：GitHub 侧工作流统一 `cancel-in-progress: false`（同分支新运行排队，不取消旧运行）——上传类、发布类动作跑到一半被砍会留半成品。
 
@@ -205,18 +206,18 @@ Codecov 侧的配置在 `.github/codecov.yml`：go / node 双 flag 独立统计�
 
 ### 6.2 命令口径唯一在 Makefile
 
-| Makefile 目标   | 产物                                                     | 消费方                               |
-|-----------------|----------------------------------------------------------|--------------------------------------|
-| `cover-go`      | `coverage.out`（golang 格式）                            | CNB testing:coverage、GitHub Codecov |
-| `cover-go-lcov` | `coverage-lcov.info`                                     | Coveralls                            |
-| `cover-node`    | `cmd/frontend/coverage/lcov.info`                        | CNB / Codecov / Coveralls            |
-| `junit-go`      | `go-test-report.xml`（gotestsum，顺带产出 coverage.out） | Codecov Tests 面板                   |
-| `junit-node`    | `cmd/frontend/coverage/junit.xml`                        | Codecov Tests 面板                   |
+| Makefile 目标        | 产物                                                     | 消费方                               |
+|----------------------|----------------------------------------------------------|--------------------------------------|
+| `cover-go`           | `coverage.out`（golang 格式）                            | CNB testing:coverage、GitHub Codecov |
+| `cover-go-cobertura` | `coverage.xml`（Cobertura）                              | Coveralls                            |
+| `cover-node`         | `cmd/frontend/coverage/lcov.info`                        | CNB / Codecov / Coveralls            |
+| `junit-go`           | `go-test-report.xml`（gotestsum，顺带产出 coverage.out） | Codecov Tests 面板                   |
+| `junit-node`         | `cmd/frontend/coverage/junit.xml`                        | Codecov Tests 面板                   |
 
 关键口径（详见 Makefile 注释与两篇 coverage 文档）：
 
 - coverpkg 范围为 `./cmd/... ./internal/... ./pkg/...`，排除 4 处 ent 生成目录（ent 占全树语句约 73%，计入会把业务覆盖率从约 27% 稀释到约 5%）；不用 `./...`（会带上 `tests/` 无 build tag 的集成测试，CI 里跑会挂）。
-- Coveralls 不吃 golang 格式：其 parser 用正则吃掉包前缀，243 个文件会坍缩到同一级，所以先转 lcov（CI 镜像预装的 gcov2lcov）再上传。
+- Coveralls 的 Go 报告必须转成 Cobertura（`gocover-cobertura -by-files -strict`）：golang parser 用正则吃掉包前缀，243 个文件会坍缩到同一级；改走 lcov（`gcov2lcov`）的 `SF:` 仍带模块前缀 `vibe_ip/`，coverage-reporter 按仓库相对路径找不到源文件，解析结果为空并报 `Nothing to report`（exit 1）。cobertura parser 取 `<class filename="...">` 的完整相对路径，与 ikuai 口径一致。
 - 前端是原生 JS（非 Vite/Vue/TS），用 Node 内置 test runner + c8（vitest 对 CJS 经转译会丢失插桩）；c8 必须在仓库根执行，lcov 的 SF 路径才是仓库根相对。
 - Codecov 未启用 Bundle Analysis：前端无打包器、产物无 sourcemap，将来引入打包器后再加。
 

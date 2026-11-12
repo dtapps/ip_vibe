@@ -11,7 +11,7 @@
 | GitHub | `push.yml`、`codecov.yml`、`coveralls.yml`、`release.yml`（prepare / build）、`build-image.yml`（binaries）                 | `container.image: ghcr.io/dtapps/golang:latest` |
 | CNB    | `push.yml`、`push-coverage.yml`（go / node）、`pull-coverage.yml`（go / node）、`build-image.yml`、`release.yml`（共 7 处） | `docker.image: docker.cnb.cool/dtapp/golang`    |
 
-两侧共用同一份 Makefile 目标，因此镜像按同一口径准备：Go / Node / pnpm 与 `make check`、`junit-go`、`cover-go-lcov`（gcov2lcov）等目标所需的工具。工具链版本由上游镜像统一维护，升级时无需改本仓库。
+两侧共用同一份 Makefile 目标，因此镜像按同一口径准备：Go / Node / pnpm 与 `make check`、`junit-go`、`cover-go-cobertura`（gocover-cobertura）等目标所需的工具。工具链版本由上游镜像统一维护，升级时无需改本仓库。
 
 ## 2. 流水线侧假设
 

@@ -236,9 +236,9 @@ make generate          # 重新生成 Swagger 与 gRPC 代码
 make generate_ent      # 重新生成 Ent 代码
 make grpc_generate_all # 重新生成 gRPC 代码
 
-make check-backend     # golangci-lint
-make check-frontend    # pnpm audit / outdated / lint
-make format            # 格式化 Go / YAML / Markdown / Dockerfile
+make check-go          # go vet + golangci-lint
+make check-node        # pnpm audit / outdated / prettier / knip（未使用依赖）
+make format            # 格式化 Go / 前端 / YAML / JSON / SQL / Shell / Markdown / Dockerfile
 ```
 
 构建产物命名：`{backend|reporter|forwarder}-{os}-{arch}[.exe]`，输出到 `bin/`；版本号、Git Commit、构建时间通过 ldflags 注入 `internal/global`。

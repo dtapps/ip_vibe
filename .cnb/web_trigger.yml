@@ -20,6 +20,10 @@ branch:
             description: 请输入打包版本，如 v1.2.3；预发布版本请带 rc/beta/alpha/nightly 后缀，如 v1.2.3-rc.1、v1.2.3-nightly.20260101
             required: true # 是否必填
             type: input
+          commit:
+            description: 可选：要发布的代码版本（完整 SHA / 分支 / tag）；留空则用当前分支 HEAD
+            required: false # 是否必填
+            type: input
 
       - name: 打包 Docker 镜像
         description: 打包 Docker 镜像 然后上传到 制品库（预发布版本不会覆盖 latest 标签）
@@ -40,4 +44,8 @@ branch:
             #   v1.2.3-nightly.20260101 -> 预发布（nightly 渠道），不覆盖 latest
             description: 请输入打包版本，如 v1.2.3；预发布版本请带 rc/beta/alpha/nightly 后缀，如 v1.2.3-rc.1、v1.2.3-nightly.20260101
             required: true # 是否必填
+            type: input
+          commit:
+            description: 可选：要构建的代码版本（完整 SHA / 分支 / tag）；留空则用当前分支 HEAD
+            required: false # 是否必填
             type: input

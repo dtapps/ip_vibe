@@ -1,0 +1,30 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "../backend/static/js/**/*.js",
+    "test/**/*.test.js"
+  ],
+  "ignoreDependencies": [
+    "clipboard",
+    "dayjs",
+    "echarts",
+    "jquery",
+    "loadjs",
+    "select2",
+    "select2-tailwindcss-v4-theme",
+    "@egoist/tailwindcss-icons",
+    "@iconify-json/lucide",
+    "@tailwindcss/cli",
+    "daisyui",
+    "tailwindcss"
+  ],
+  "include": [
+    "dependencies",
+    "devDependencies"
+  ],
+  "project": [
+    "../backend/static/js/**/*.js",
+    "test/**/*.js",
+    "css/input.css"
+  ]
+}

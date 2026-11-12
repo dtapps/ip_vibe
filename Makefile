@@ -65,25 +65,62 @@ verify-tools:
 # 项目目录
 PROJECT_ROOT := $(CURDIR)
 
-# 安装依赖
-deps:
+# 安装全部依赖
+.PHONY: deps
+deps: deps-go deps-node
+	@echo "[Deps] 完成。"
+
+# 安装全部Go依赖
+.PHONY: deps-go
+deps-go:
 	@echo "[Deps] 安装 Go 模块依赖..."
 	go mod tidy
 	go mod download
+
+# 安装全部前端依赖
+# --frozen-lockfile (冻结锁文件)
+# --prefer-offline (优先使用离线缓存)
+.PHONY: deps-node
+deps-node:
 	@echo "[Deps] 安装前端依赖..."
-	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) install --frozen-lockfile --prefer-offline
+	pnpm --dir $(FRONTEND_DIR) install --frozen-lockfile --prefer-offline
+
+# 更新全部依赖
+# --latest (无视版本限制，强制升最新)
+.PHONY: update-deps
+update-deps: update-deps-go update-deps-node
 	@echo "[Deps] 完成。"
 
-# 更新依赖
-update-deps:
+# 更新全部Go依赖
+.PHONY: update-deps-go
+update-deps-go:
 	@echo "[Deps] 更新 Go 模块依赖..."
 	go get -u ./...
 	go mod tidy
+
+# 更新全部前端依赖
+# --latest (无视版本范围，强制升最新，并改写 package.json 的版本范围)
+.PHONY: update-deps-node
+update-deps-node:
 	@echo "[Deps] 更新前端依赖..."
-	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) self-update
-# 	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) update
-	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) update --latest
-	@echo "[Deps] 完成。"
+	pnpm --dir $(FRONTEND_DIR) update --latest
+	pnpm --dir $(FRONTEND_DIR) prune
+
+# 更新 pnpm 自身的版本锁定（package.json 的 packageManager 字段）
+.PHONY: update-deps-pnpm
+update-deps-pnpm:
+	@echo "[Deps] 更新 pnpm 版本锁定..."
+	@latest="$$(npm view pnpm version)"; \
+	echo "[Deps] packageManager → pnpm@$${latest}"; \
+	pnpm --dir $(FRONTEND_DIR) pkg set packageManager=pnpm@$${latest}
+
+# 删除未使用的依赖：knip --fix 把它们从 package.json 摘掉，
+.PHONY: deps-clean
+deps-clean:
+	@echo "[Deps] 删除未使用的依赖..."
+	pnpm --dir $(FRONTEND_DIR) run deps:clean
+	pnpm --dir $(FRONTEND_DIR) install --lockfile-only
+	pnpm --dir $(FRONTEND_DIR) prune
 
 # generate: swag_v1_all swag_v2_all swag2op_all grpc_generate_all thrift_generate
 generate: swag_v1_all swag_v2_all grpc_generate_all
@@ -107,10 +144,10 @@ swag_v1_version:
 	swag_v1 -version
 
 swag_v1_init:
-	swag_v1 init -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal --generatedTime -output internal/docs_2
+	swag_v1 init -generalInfo $(BACKEND_DIR)/main.go --parseDependency --parseInternal --generatedTime -output internal/docs_2
 
 swag_v1_fmt:
-	swag_v1 fmt -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go
+	swag_v1 fmt -generalInfo $(BACKEND_DIR)/main.go
 
 swag_v2_all: swag_v2_version swag_v2_fmt swag_v2_init
 
@@ -118,10 +155,10 @@ swag_v2_version:
 	swag_v2 -version
 
 swag_v2_init:
-	swag_v2 init -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal --generatedTime --v3.1 -output internal/docs_3
+	swag_v2 init -generalInfo $(BACKEND_DIR)/main.go --parseDependency --parseInternal --generatedTime --v3.1 -output internal/docs_3
 
 swag_v2_fmt:
-	swag_v2 fmt -generalInfo cmd/$(BINARY_NAME_BACKEND)/main.go
+	swag_v2 fmt -generalInfo $(BACKEND_DIR)/main.go
 
 swag2op_all: swag2op_version swag2op_init
 
@@ -129,7 +166,7 @@ swag2op_version:
 	swag2op -version
 
 swag2op_init:
-	swag2op init -g cmd/$(BINARY_NAME_BACKEND)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_2_to_3
+	swag2op init -g $(BACKEND_DIR)/main.go --parseDependency --parseInternal -o internal/docs_2 -openapiOutputDir internal/docs_2_to_3
 
 # 	make grpc_generate_connect
 # 	make grpc_generate_openapi
@@ -219,14 +256,30 @@ grpc_generate_old:
 
 # 二进制文件名
 BINARY_NAME = ip_vibe
-# BINARY_NAME_CLI=cli
+BINARY_NAME_CLI=cli
 BINARY_NAME_FRONTEND = frontend
 BINARY_NAME_BACKEND = backend
 BINARY_NAME_REPORTER = reporter
 BINARY_NAME_FORWARDER = forwarder
 
+# 前端项目目录
+FRONTEND_DIR = cmd/frontend
+
+# 后端项目目录
+BACKEND_DIR = cmd/backend
+
+# 上报项目目录
+REPORTER_DIR = cmd/reporter
+
+# 转发项目目录
+FORWARDER_DIR = cmd/forwarder
+
 # 编译输出目录
 BUILD_DIR = bin
+
+#####################
+## 开发 相关
+#####################
 
 # 环境参数
 ENV_DEBUG = true
@@ -253,14 +306,13 @@ ENV_BASIC_AUTH_PASSWORD = 123456
 # pnpm add -D select2 jquery
 # 启动前端服务（css 热更新）
 dev_frontend:
-	cd cmd/$(BINARY_NAME_FRONTEND) && \
-	pnpm dev
+	pnpm --dir $(FRONTEND_DIR) dev
 
 # 启动后端服务
 dev_backend:
 	export DEBUG=$(ENV_DEBUG) && \
 	export SERVER_ADDR=$(ENV_SERVER_ADDR) && \
-	go run cmd/$(BINARY_NAME_BACKEND)/main.go
+	go run $(BACKEND_DIR)/main.go
 
 # 启动后端服务（启用 Basic Auth）
 dev_backend_basic_auth:
@@ -268,13 +320,13 @@ dev_backend_basic_auth:
 	export SERVER_ADDR=$(ENV_SERVER_ADDR) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
-	go run cmd/$(BINARY_NAME_BACKEND)/main.go
+	go run $(BACKEND_DIR)/main.go
 
 # 启动IP上报服务
 dev_reporter:
 	export DEBUG=$(ENV_DEBUG) && \
 	export BACKEND_ENDPOINT=$(ENV_BACKEND_ENDPOINT) && \
-	go run cmd/$(BINARY_NAME_REPORTER)/main.go
+	go run $(REPORTER_DIR)/main.go
 
 # 启动IP上报服务（启用 Basic Auth）
 dev_reporter_basic_auth:
@@ -282,13 +334,13 @@ dev_reporter_basic_auth:
 	export BACKEND_ENDPOINT=$(ENV_BACKEND_ENDPOINT) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
-	go run cmd/$(BINARY_NAME_REPORTER)/main.go
+	go run $(REPORTER_DIR)/main.go
 
 # 启动端口转发服务
 dev_forwarder:
 	export DEBUG=$(ENV_DEBUG) && \
 	export BACKEND_ENDPOINT=$(ENV_BACKEND_ENDPOINT) && \
-	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
+	go run $(FORWARDER_DIR)/main.go
 
 # 启动端口转发服务（启用 Basic Auth）
 dev_forwarder_basic_auth:
@@ -296,117 +348,10 @@ dev_forwarder_basic_auth:
 	export BACKEND_ENDPOINT=$(ENV_BACKEND_ENDPOINT) && \
 	export BASIC_AUTH_USERNAME=$(ENV_BASIC_AUTH_USERNAME) && \
 	export BASIC_AUTH_PASSWORD=$(ENV_BASIC_AUTH_PASSWORD) && \
-	go run cmd/$(BINARY_NAME_FORWARDER)/main.go
+	go run $(FORWARDER_DIR)/main.go
 
 #####################
-## 检查相关
-#####################
-#
-# 统一定义构建命令
-# CGO_ENABLED=0: 禁用 CGO，实现完全静态链接
-# CGO_ENABLED=1: 启用 CGO，实现动态链接
-#
-# Lint 用的 CGO_ENABLED 由 scripts/check.sh 通过环境变量接收（默认 0）。
-
-# 定义 Lint 过程中需要激活的 Go Build Tags
-LINT_TAGS = goolm,stdjson
-
-# Lint 扫描的目标平台，默认当前平台；CI 通过 LINT_PLATFORMS=... 覆盖为全平台
-LINT_PLATFORMS ?= $(shell go env GOOS)/$(shell go env GOARCH)
-
-# 实现放在 scripts/check.sh：Make 的每个 recipe 行是独立 shell，
-# 原来的多平台 for 循环所在行没有 set -e，只有最后一个平台的退出码决定成败，
-# 中间平台 lint 失败会被静默吞掉；放进脚本后 set -euo pipefail 生效，失败即报错。
-.PHONY: check-backend
-check-backend:
-	@LINT_TAGS="$(LINT_TAGS)" LINT_PLATFORMS="$(LINT_PLATFORMS)" \
-		CGO_ENABLED=0 bash scripts/check.sh backend
-
-.PHONY: check-frontend
-check-frontend:
-	@FRONTEND_DIR="cmd/$(BINARY_NAME_FRONTEND)" bash scripts/check.sh frontend
-
-# 检查项目
-.PHONY: check
-check:
-	@LINT_TAGS="$(LINT_TAGS)" LINT_PLATFORMS="$(LINT_PLATFORMS)" \
-		CGO_ENABLED=0 FRONTEND_DIR="cmd/$(BINARY_NAME_FRONTEND)" bash scripts/check.sh all
-
-#####################
-## 测试覆盖率
-#####################
-
-# 覆盖率口径的唯一事实来源：CNB（.cnb/workflows/*-coverage.yml）与 GitHub Actions
-# （.github/workflows/coverage.yml、coveralls.yml）都调用本节目标，命令不再在多处漂移。
-#
-# Go：
-#   - coverpkg 范围为 ./cmd/... ./internal/... ./pkg/...，排除 4 处 ent 生成目录
-#     （internal/ent、internal/ent_log、internal/ent_stat、cmd/ent；
-#      ent 占全树语句约 73%，计入会把业务覆盖率严重稀释）；
-#   - 产出 coverage.out（仓库根）。
-# 前端：
-#   - node:test + c8（CJS 插桩靠 require hook；vitest 对 CJS 经转译会丢失插桩），
-#     c8 命令唯一定义在 cmd/frontend/package.json 的 test:coverage 脚本里，
-#     本目标只做转发——该脚本必须在仓库根执行，lcov 的 SF 路径才是仓库根相对，
-#     Codecov / Coveralls 靠它映射到源码文件；
-#   - 产出 cmd/frontend/coverage/lcov.info。
-GO_COVER_PKGS = ./cmd/... ./internal/... ./pkg/...
-
-.PHONY: cover-go
-cover-go:
-	@echo "[Coverage] 生成 Go 测试覆盖率..."
-	go test -vet=off -coverpkg=$$(go list $(GO_COVER_PKGS) | grep -vE '/(ent|ent_log|ent_stat)(/|$$)' | paste -sd, -) -coverprofile=coverage.out $(GO_COVER_PKGS)
-	go tool cover -func=coverage.out
-	@echo "[Coverage] 完成：coverage.out"
-
-# Coveralls 专用：把 coverage.out 转成 lcov。
-#   - coverage.out 里的路径是 Go 包导入路径（vibe_ip/internal/core/device.go）；
-#   - Coveralls 的 golang parser（coverage-reporter 的 golang_parser.cr）会用正则
-#     硬吃 3 段包前缀，只把 basename（device.go）当文件名 → 243 个文件全坍缩到同一级；
-#   - 而 lcov parser 的 SF: 是原样保留完整路径的，所以走 lcov 格式可避开这个正则。
-# gcov2lcov 转 lcov 时把包导入路径解析回仓库根相对路径（SF:internal/core/device.go），
-# 与前端 c8 产出的 lcov 形态一致，Coveralls 侧就能正确按目录层级展示。
-# gcov2lcov 由统一 CI 基础镜像预装（GOPATH=/go，工具在 /go/bin 且已在 PATH），直接调二进制。
-# 不再吞 stderr：工具缺失或转换失败时，日志里能直接看到原因。
-.PHONY: cover-go-lcov
-cover-go-lcov: cover-go
-	@echo "[Coverage] 转换 Go 覆盖率为 lcov (供 Coveralls)..."
-	gcov2lcov -infile coverage.out -outfile coverage-lcov.info
-	@echo "[Coverage] 完成：coverage-lcov.info"
-
-.PHONY: cover-node
-cover-node:
-	@echo "[Coverage] 生成前端测试覆盖率..."
-	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) test:coverage
-	@echo "[Coverage] 完成：cmd/$(BINARY_NAME_FRONTEND)/coverage/lcov.info"
-
-.PHONY: cover
-cover: cover-go cover-node
-
-# JUnit XML：供 Codecov 的 Tests 面板消费（codecov/test-results-action）。
-#   - 前端：Node 内置 --test-reporter=junit（Node >= 22.8；镜像里是 Node 26），
-#     单进程跑聚合入口 test/index.test.js，不用 node --test（那会把多文件塞进
-#     worker，CJS 源不被 c8 插桩 → 覆盖率归零）；
-#   - Go：gotestsum（镜像第 7 步已预装，v1.13.0 —— v1.12.0 在 Go 1.27 编译失败），
-#     与 cover-go 同一套 coverpkg 口径，顺带产出 coverage.out。
-.PHONY: junit-node
-junit-node:
-	@echo "[JUnit] 生成前端测试报告 (JUnit XML)..."
-	pnpm --dir cmd/$(BINARY_NAME_FRONTEND) test:junit
-	@echo "[JUnit] 完成：cmd/$(BINARY_NAME_FRONTEND)/coverage/junit.xml"
-
-.PHONY: junit-go
-junit-go:
-	@echo "[JUnit] 生成 Go 测试报告 (JUnit XML)..."
-	gotestsum --junitfile go-test-report.xml --format testname --raw-command -- go test -json -vet=off -coverpkg=$$(go list $(GO_COVER_PKGS) | grep -vE '/(ent|ent_log|ent_stat)(/|$$)' | paste -sd, -) -coverprofile=coverage.out $(GO_COVER_PKGS)
-	go tool cover -func=coverage.out
-	@echo "[JUnit] 完成：go-test-report.xml（同时产出 coverage.out）"
-
-.PHONY: junit
-junit: junit-go junit-node
-
-#####################
-## 构建相关
+## 构建 相关
 #####################
 
 # 功能开关（设置为 1 开启，0 关闭）
@@ -554,7 +499,7 @@ build-frontend:
 	@echo "┌────────────────────────────────────────────────────────────"
 	@echo "│ [构建] 前端静态文件..."
 	@echo "└────────────────────────────────────────────────────────────"
-	@cd cmd/$(BINARY_NAME_FRONTEND) && pnpm build
+	pnpm --dir $(FRONTEND_DIR) build
 
 # 定义构建单个二进制文件的通用逻辑
 # 参数: $(1)=GOOS, $(2)=GOARCH, $(3)=描述信息, $(4)=扩展名(.exe 或空)
@@ -563,11 +508,11 @@ define build_binary
 	@echo "┌────────────────────────────────────────────────────────────"
 	@echo "│ [构建] $(3)"
 	@echo "└────────────────────────────────────────────────────────────"
-	@cd cmd/$(BINARY_NAME_BACKEND) && GOOS=$(1) GOARCH=$(2) $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-$(1)-$(2)$(4) .
+	@cd $(BACKEND_DIR) && GOOS=$(1) GOARCH=$(2) $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-$(1)-$(2)$(4) .
 	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-$(1)-$(2)$(4))
-	@cd cmd/$(BINARY_NAME_REPORTER) && GOOS=$(1) GOARCH=$(2) $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-$(1)-$(2)$(4) .
+	@cd $(REPORTER_DIR) && GOOS=$(1) GOARCH=$(2) $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-$(1)-$(2)$(4) .
 	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-$(1)-$(2)$(4))
-	@cd cmd/$(BINARY_NAME_FORWARDER) && GOOS=$(1) GOARCH=$(2) $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-$(1)-$(2)$(4) .
+	@cd $(FORWARDER_DIR) && GOOS=$(1) GOARCH=$(2) $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-$(1)-$(2)$(4) .
 	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-$(1)-$(2)$(4))
 endef
 
@@ -613,13 +558,11 @@ clean-binaries:
 	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64)
 	@echo "✓ 清理完成"
 
-# ==================== 工具 ====================
+#####################
+## 格式化 相关
+#####################
 
-# 格式化（Go + 配置 + 脚本 + 文档 + Docker）
-.PHONY: format
-format: format-go format-yaml format-shell format-markdown format-docker
-
-# 格式化 Go 代码
+# 格式化后端文件
 .PHONY: format-go
 format-go:
 	@echo "[Format] 格式化后端文件 (GO)..."
@@ -627,16 +570,26 @@ format-go:
 	go fmt ./...
 	go fix ./...
 
+# 格式前端文件
+.PHONY: format-node
+format-node:
+	@echo "[Format] 格式化前端文件 (PNPM)..."
+	pnpm --dir $(FRONTEND_DIR) format
+
 # 格式化 YAML 文件
 .PHONY: format-yaml
 format-yaml:
 	@bash scripts/format.sh yaml
 
-# 格式化 Shell 脚本
-# 实现放在 scripts/format.sh：工具缺失即跳过，不误报失败（同 format-yaml 的说明）。
-.PHONY: format-shell
-format-shell:
-	@bash scripts/format.sh shell
+# 格式化 JSON 文件
+.PHONY: format-json
+format-json:
+	@bash scripts/format.sh json
+
+# 格式化 SQL 文件
+.PHONY: format-sql
+format-sql:
+	@bash scripts/format.sh sql
 
 # 格式化 Markdown 文件
 .PHONY: format-markdown
@@ -648,7 +601,87 @@ format-markdown:
 format-docker:
 	@bash scripts/format.sh docker
 
-# ==================== 更新 / 拉取 ====================
+# 格式化 Shell 脚本
+.PHONY: format-shell
+format-shell:
+	@bash scripts/format.sh shell
+
+# 格式化
+.PHONY: format
+format: format-node format-go format-yaml format-json format-sql format-markdown format-docker format-shell
+
+#####################
+## 检查 / 测试 相关
+#####################
+
+# 统一定义构建命令
+# CGO_ENABLED=0: 禁用 CGO，实现完全静态链接
+# CGO_ENABLED=1: 启用 CGO，实现动态链接
+LINT_ENV = CGO_ENABLED=0
+
+# 定义 Lint 过程中需要激活的 Go Build Tags
+LINT_TAGS = goolm,stdjson
+
+# Lint 扫描的目标平台，默认当前平台；CI 通过 LINT_PLATFORMS=... 覆盖为全平台
+LINT_PLATFORMS ?= $(shell go env GOOS)/$(shell go env GOARCH)
+
+# 检查后端代码
+.PHONY: check-go
+check-go:
+	@echo "[Check] 运行 go vet 静态检查..."
+	go vet ./...
+
+	@echo "[Check] 运行 golangci-lint 扫描 (平台: $(LINT_PLATFORMS), Tags: $(LINT_TAGS))..."
+	@for os_arch in $(LINT_PLATFORMS); do \
+		os=$$(echo $$os_arch | cut -d'/' -f1); \
+		arch=$$(echo $$os_arch | cut -d'/' -f2); \
+		echo "  -> $$os 平台 ($$arch)"; \
+		$(LINT_ENV) GOOS=$$os GOARCH=$$arch golangci-lint fmt; \
+		$(LINT_ENV) GOOS=$$os GOARCH=$$arch golangci-lint run --build-tags $(LINT_TAGS); \
+	done
+
+	@echo "[Check] 自动修复代码风格问题..."
+	$(LINT_ENV) golangci-lint run --fix --build-tags $(LINT_TAGS)
+
+	@echo "[Check] 运行 Go 单元测试..."
+	go test $(GO_COVER_TEST_FLAGS) $(GO_COVER_SCAN)
+
+	@echo "[Check] 运行 Go 赖漏洞检查..."
+	govulncheck -show verbose ./...
+
+	@echo "[Check] 完成。"
+
+# 检查前端代码
+.PHONY: check-node
+check-node:
+	@echo "[Check] 检查前端依赖与质量..."
+	@echo "  -> 同步依赖 (确保环境一致)..."
+	pnpm --dir $(FRONTEND_DIR) install --frozen-lockfile --prefer-offline
+
+	@echo "  -> 检查安全漏洞 (仅高危阻断)..."
+	pnpm --dir $(FRONTEND_DIR) audit --production --audit-level high --registry=https://registry.npmjs.org
+
+	@echo "  -> 检查过时依赖..."
+	pnpm --dir $(FRONTEND_DIR) outdated
+
+	@echo "  -> 检查代码风格 (Lint)..."
+	pnpm --dir $(FRONTEND_DIR) run lint
+
+	@echo "  -> 检测未使用的依赖 (knip)..."
+	pnpm --dir $(FRONTEND_DIR) run lint:unused
+
+	@echo "  -> 运行前端单元测试..."
+	pnpm --dir $(FRONTEND_DIR) exec vitest run
+
+	@echo "[Check] 前端检查完成。"
+
+# 检查代码
+.PHONY: check
+check: check-node check-go
+
+#####################
+## 更新 / 拉取 / 推送 相关
+#####################
 
 # 按 GIT_REMOTE 顺序先全部拉取合并，再统一推送（保留本地未提交改动）
 .PHONY: sync
@@ -658,8 +691,6 @@ sync:
 	done
 	@IFS=,; for r in $$GIT_REMOTE; do git push "$$r" HEAD || exit 1; done
 	@echo "同步完成！"
-
-# ==================== 推送 ====================
 
 # 推送到所有远程仓库
 .PHONY: push
@@ -672,3 +703,72 @@ push:
 push-force:
 	@IFS=,; for r in $$GIT_REMOTE; do git push --force "$$r" HEAD || exit 1; done
 	@echo "强制推送完成！"
+
+#####################
+## 测试覆盖率 相关
+#####################
+
+# ── 清单配置：新增目录 / 生成代码只改这里，下面的命令不散落路径 ──────────────
+# Go 扫描范围：业务代码全在 internal/ 下，cmd/ 只是可执行入口，不计入分母。
+GO_COVER_SCAN = ./cmd/... ./internal/... ./pkg/...
+# Go 排除目录（包路径前缀，空格分隔）：ent 生成代码占总语句数 94.6%
+# （实测 225382 条中占 213232 条），计入会把指标压到接近 0。
+# 以前只写 /internal/ent 靠前缀顺带排掉 internal/ent_log，现在显式列全。
+GO_COVER_EXCLUDE = /internal/ent /internal/ent_log /internal/ent_stat /cmd/ent
+# 关闭 vet 检查，加快测试与覆盖率统计速度
+GO_COVER_TEST_FLAGS = -vet=off
+
+# 前端目录与产物（相对仓库根）
+NODE_DIR = $(FRONTEND_DIR)
+NODE_COVER_DIR = $(NODE_DIR)/coverage
+NODE_COVER_LCOV = $(NODE_COVER_DIR)/lcov.info
+NODE_JUNIT_XML = $(NODE_COVER_DIR)/junit.xml
+# 前端扫描 / 排除清单（glob 相对 vitest root=cmd/，由 cmd/frontend/vitest.config.mts 读取）：
+#   NODE_TEST_SCAN      测试用例
+#   NODE_COVER_SCAN     计入覆盖率的源码
+#   NODE_COVER_EXCLUDE  不计入的第三方目录
+# 多个 glob 用空格或逗号分隔；留空则回退到配置文件里的默认值。
+NODE_TEST_SCAN = frontend/test/**/*.test.js
+NODE_COVER_SCAN = backend/static/js/**/*.js
+NODE_COVER_EXCLUDE = backend/static/libs/**
+NODE_VITEST_ENV = VITEST_TEST_INCLUDE="$(NODE_TEST_SCAN)" VITEST_COVER_INCLUDE="$(NODE_COVER_SCAN)" VITEST_COVER_EXCLUDE="$(NODE_COVER_EXCLUDE)"
+
+# -coverpkg 只收「扫描范围内且不在排除列表」的包。用 $$(...) 让 go list 在配方执行时才跑，
+# 避免任何 make 目标都触发一次包扫描；grep 参数由排除列表生成，加目录不用改命令。
+GO_COVER_EXCLUDE_ARGS = $(foreach d,$(GO_COVER_EXCLUDE),-e '$(d)')
+GO_COVER_PKGS = $$(go list $(GO_COVER_SCAN) | grep -v $(GO_COVER_EXCLUDE_ARGS) | paste -sd, -)
+GO_COVER_ARGS = $(GO_COVER_TEST_FLAGS) -coverpkg=$(GO_COVER_PKGS) -coverprofile=coverage.out $(GO_COVER_SCAN)
+
+# Go 覆盖率（golang 格式）→ coverage.out；CNB 的 testing:coverage 与 Codecov 都读这份
+.PHONY: cover-go
+cover-go:
+	@echo "[Coverage] Go 测试覆盖率 → coverage.out"
+	go test $(GO_COVER_ARGS)
+	go tool cover -func=coverage.out
+
+# Go 覆盖率 + JUnit（Codecov Test Analytics 用），依赖 CI 镜像预装的 gotestsum
+.PHONY: junit-go
+junit-go:
+	@echo "[Coverage] Go 测试 → coverage.out + go-test-report.xml"
+	gotestsum --junitfile go-test-report.xml -- $(GO_COVER_ARGS)
+	go tool cover -func=coverage.out
+
+# Coveralls 的 golang parser 会把包前缀压成 basename，改用 Cobertura 保留完整 filename 路径。
+# gocover-cobertura 由统一 CI 镜像预装；-strict 让「包/模块信息缺失被静默跳过」直接失败。
+.PHONY: cover-go-cobertura
+cover-go-cobertura: cover-go
+	@echo "[Coverage] coverage.out → coverage.xml（Cobertura）"
+	gocover-cobertura -by-files -strict < coverage.out > coverage.xml
+
+# 前端覆盖率（Vitest v8）→ cmd/frontend/coverage/lcov.info
+.PHONY: cover-node
+cover-node:
+	@echo "[Coverage] 前端覆盖率 → $(NODE_COVER_LCOV)"
+	cd $(NODE_DIR) && $(NODE_VITEST_ENV) pnpm exec vitest run --coverage
+
+# 前端 JUnit（Codecov Test Analytics 用）；outputFile 用绝对路径避开 vitest root 的相对路径歧义
+.PHONY: junit-node
+junit-node:
+	@echo "[Coverage] 前端 JUnit → $(NODE_JUNIT_XML)"
+	@mkdir -p $(NODE_COVER_DIR)
+	cd $(NODE_DIR) && $(NODE_VITEST_ENV) pnpm exec vitest run --reporter=junit --outputFile=$(CURDIR)/$(NODE_JUNIT_XML)

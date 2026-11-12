@@ -1,4 +1,4 @@
-const test = require("node:test");
+const test = require("./node-test-shim.js");
 const assert = require("node:assert");
 const vm = require("node:vm");
 const fs = require("node:fs");

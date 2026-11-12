@@ -1,6 +1,6 @@
 module vibe_ip
 
-go 1.27.3
+go 1.27.4
 
 ignore ./cmd/backend/static
 
@@ -19,7 +19,7 @@ require (
 	github.com/alibabacloud-go/tea v1.5.4
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/aliyun/credentials-go v1.4.14
-	github.com/baidubce/bce-sdk-go v0.9.277
+	github.com/baidubce/bce-sdk-go v0.9.279
 	github.com/chenyahui/gin-cache v1.10.0
 	github.com/cloudflare/cloudflare-go/v6 v6.10.0
 	github.com/corazawaf/coraza-coreruleset v0.0.0-20240226094324-415b1017abdc
@@ -28,23 +28,23 @@ require (
 	github.com/dromara/carbon/v2 v2.7.1
 	github.com/dustin/go-humanize v1.1.0
 	github.com/envoyproxy/protoc-gen-validate v1.3.3
-	github.com/gin-contrib/cors v1.7.10
-	github.com/gin-contrib/gzip v1.2.9
-	github.com/gin-contrib/multitemplate v1.1.5
-	github.com/gin-contrib/requestid v1.0.9
+	github.com/gin-contrib/cors v1.7.11
+	github.com/gin-contrib/gzip v1.2.10
+	github.com/gin-contrib/multitemplate v1.1.6
+	github.com/gin-contrib/requestid v1.0.10
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-acme/lego/v5 v5.6.0
-	github.com/go-co-op/gocron/v2 v2.23.0
+	github.com/go-co-op/gocron/v2 v2.23.1
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.4
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.33.0
-	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.222
+	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.223
 	github.com/inetaf/tcpproxy v0.0.0-20260515195445-c159a6051109
 	github.com/jdcloud-api/jdcloud-sdk-go v1.68.0
-	github.com/kingsoftcloud/sdk-go/v2 v2.2.129
+	github.com/kingsoftcloud/sdk-go/v2 v2.2.132
 	github.com/miekg/dns v1.1.73
 	github.com/modelcontextprotocol/go-sdk v1.8.0
-	github.com/qiniu/go-sdk/v7 v7.30.0
+	github.com/qiniu/go-sdk/v7 v7.31.0
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/spf13/cast v1.10.0
 	github.com/swaggo/files v1.0.1
@@ -52,11 +52,11 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc6
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.173
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.210
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.212
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.131
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.209
-	github.com/tidwall/gjson v1.20.1
-	github.com/volcengine/volcengine-go-sdk v1.2.62
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.212
+	github.com/tidwall/gjson v1.20.2
+	github.com/volcengine/volcengine-go-sdk v1.2.64
 	github.com/wdcbot/qingfeng v1.6.8
 	go.dtapp.net/library/contrib/http_log v1.0.13
 	go.dtapp.net/library/contrib/resty_log v1.0.18
@@ -76,8 +76,8 @@ require (
 	go.dtapp.net/library/utils/gotime v1.0.19
 	golang.org/x/net v0.62.0
 	golang.org/x/sync v0.25.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20261104224025-d1e00e9f33ab
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20261104224025-d1e00e9f33ab
+	google.golang.org/genproto/googleapis/api v0.0.0-20261110000943-09e21b237f2c
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20261110000943-09e21b237f2c
 	google.golang.org/grpc v1.85.0
 	google.golang.org/protobuf v1.36.12
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -96,6 +96,7 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/MercuryEngineering/CookieMonster v0.0.0-20180304172713-1584578b3403 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
+	github.com/alibabacloud-go/alibabacloud-gateway-pop v0.1.6 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.5 // indirect
 	github.com/alibabacloud-go/debug v1.0.1 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
@@ -114,9 +115,9 @@ require (
 	github.com/corazawaf/libinjection-go v0.3.5 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gabriel-vasile/mimetype v1.4.16 // indirect
-	github.com/gin-contrib/sse v1.2.0 // indirect
+	github.com/gin-contrib/sse v1.2.1 // indirect
 	github.com/go-acme/alidns-20150109/v5 v5.6.1 // indirect
-	github.com/go-acme/esa-20240910/v3 v3.14.0 // indirect
+	github.com/go-acme/esa-20240910/v3 v3.14.2 // indirect
 	github.com/go-acme/tencentclouddnspod v1.3.131 // indirect
 	github.com/go-acme/tencentedgdeone v1.3.186 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.9 // indirect
@@ -173,8 +174,8 @@ require (
 	github.com/shoenig/go-m1cpu v0.2.4 // indirect
 	github.com/sv-tools/openapi v0.4.0 // indirect
 	github.com/tidwall/match v1.2.0 // indirect
-	github.com/tidwall/pretty v1.2.2 // indirect
-	github.com/tidwall/sjson v1.2.7 // indirect
+	github.com/tidwall/pretty v1.3.0 // indirect
+	github.com/tidwall/sjson v1.2.9 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/tklauser/go-sysconf v0.4.0 // indirect
 	github.com/tklauser/numcpus v0.12.0 // indirect
@@ -190,18 +191,18 @@ require (
 	go.mongodb.org/mongo-driver/v2 v2.10.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.5 // indirect
 	go.yaml.in/yaml/v3 v3.0.6 // indirect
-	golang.org/x/arch v0.32.0 // indirect
-	golang.org/x/crypto v0.58.0 // indirect
-	golang.org/x/mod v0.42.0 // indirect
-	golang.org/x/oauth2 v0.37.0 // indirect
-	golang.org/x/sys v0.49.0 // indirect
-	golang.org/x/text v0.43.0 // indirect
+	golang.org/x/arch v0.33.0 // indirect
+	golang.org/x/crypto v0.59.0 // indirect
+	golang.org/x/mod v0.43.0 // indirect
+	golang.org/x/oauth2 v0.38.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
+	golang.org/x/text v0.44.0 // indirect
 	golang.org/x/time v0.16.0 // indirect
 	golang.org/x/tools v0.52.0 // indirect
-	gopkg.in/ini.v1 v1.67.3 // indirect
+	gopkg.in/ini.v1 v1.68.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.80.1 // indirect
+	modernc.org/libc v1.81.0 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.12.1 // indirect
 	rsc.io/binaryregexp v0.2.0 // indirect

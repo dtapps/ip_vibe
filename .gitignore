@@ -7,16 +7,21 @@
 .codebuddy
 .log
 /bin
-/cmd/frontend/node_modules
 /data
 /logs
 /tests
+/sql
 # docker-compose-*.sh
 test-*.yml
+
+# 前端相关
+**/node_modules
+
+# 测试覆盖率
 coverage.out
-coverage.html
-coverage-lcov.info
-/cmd/frontend/coverage
 go-test-report.xml
-junit.xml
+coverage.xml
+cmd/frontend/coverage
+
+# Ai
 AGENTS.md

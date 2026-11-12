@@ -570,7 +570,7 @@ forwarder 统计上报（默认 8-12 分钟，首次延迟 1 分钟）
 - `build_binary` 用 `define` 展开 6 平台矩阵 → `bin/{name}-{os}-{arch}[.exe]` → `archive_binary` 打成 `.tar.gz`（unix）/`.zip`（windows）→ `clean-binaries` 只在存在压缩包时删除裸二进制。
 - `ENABLE_UPX` 与 `compress_file` 已定义，但除 `archive_binary` 的调用外没有实际生效路径，UPX 压缩接近死配置。
 - 常用目标：`deps`、`format`、`check`、`build-*`、`cover-*`、`junit-*`、`generate_ent`、`ent_new` / `ent_new_log`、`archive_binary`、`clean-binaries`。口径与 CI 完全一致，见 [ci-cd.md](ci-cd.md)。
-- `scripts/`：`check.sh`（golangci-lint 多平台 + 前端 audit/lint，工具缺失即失败，不自动安装）、`format.sh`（yaml/shell/markdown/docker 格式化，工具缺失静默跳过）、`lib.sh`（`now_ms`/`run_step` 计时与跨平台降级链）、`ci/resolve-prerelease.sh`（预发布版本标记）。
+- `scripts/`：`format.sh`（yaml/json/sql/shell/markdown/docker 格式化，工具缺失静默跳过）、`lib.sh`（`now_ms`/`run_step` 计时与跨平台降级链）、`ci/resolve-prerelease.sh`（预发布版本标记）；项目检查（golangci-lint 多平台 + 前端 audit/lint）在 `Makefile` 的 `check-*` 目标中直接执行，工具缺失即失败，不自动安装。
 - 没有 `.goreleaser`；发布 = Makefile + GitHub/CNB 的 `release.yml`。没有 self-update 机制，节点升级靠替换二进制并重启。
 
 ### 9.3 代码生成有两条分叉路径（重要）
@@ -721,7 +721,7 @@ forwarder 统计上报（默认 8-12 分钟，首次延迟 1 分钟）
 | `internal/reporter` / `internal/forwarder`                         | 节点侧服务与任务、转发数据面                                            | `service/`、`tasks/`、`forward/`                                |
 | `internal/docs_2` / `docs_3`                                       | Swagger OpenAPI 2 / 3.1 数据                                            | `swagger.json`、`docs.go`                                       |
 | `internal/utils` / `pkg/utils`                                     | DNS/域名/SSL/MCP schema 辅助、文件工具                                  | `mcp_schema.go`、`file.go`                                      |
-| `Makefile` / `scripts`                                             | 构建、格式化、检查、发布打包                                            | `check.sh`、`format.sh`、`lib.sh`                               |
+| `Makefile` / `scripts`                                             | 构建、格式化、检查、发布打包                                            | `format.sh`、`lib.sh`、`ci/*.sh`                                |
 | `sql`                                                              | 手工 DDL 快照与导出夹具（不参与迁移）                                   | `data_ddl.sql`、`log_ddl.sql`                                   |
 | `logs` / `data` / `bin`                                            | 运行期产物（日志、SQLite、构建输出），均在 `.gitignore`                 | —                                                               |
 

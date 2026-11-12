@@ -17,6 +17,7 @@
 # https://github.com/actions/upload-artifact
 # https://github.com/actions/download-artifact
 # https://github.com/softprops/action-gh-release
+# https://github.com/dtapps/golang
 name: Release
 
 on:
@@ -26,6 +27,11 @@ on:
         description: '版本号。预发布看后缀：1.2.3-rc.1 / 1.2.3-beta.1 / 1.2.3-alpha.1 / 1.2.3-nightly.20260101；没有后缀就是正式版'
         required: true
         type: string
+      commit:
+        description: '可选：要发布的代码版本（完整 SHA / 分支 / tag）。留空则用触发时的 HEAD'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -43,7 +49,7 @@ concurrency:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     # 统一使用 dtapps 维护的 CI 基础镜像（含 Go/Node/pnpm + 工具链），
     # 免去每次重装系统库与 go install 工具；本仓库不再自建、推送 CI 镜像。
     container:
@@ -52,9 +58,14 @@ jobs:
       interior_version: ${{ steps.gen.outputs.interior_version }}
       interior_release_title: ${{ steps.gen.outputs.interior_release_title }}
       pre_release: ${{ steps.gen.outputs.pre_release }}
+      commit_full: ${{ steps.gen.outputs.commit_full }}
+      commit_short: ${{ steps.gen.outputs.commit_short }}
     steps:
       - name: 检出代码
         uses: actions/checkout@v7
+        with:
+          # 不填 commit 时用触发时的 SHA，三个 job 落在同一个提交上
+          ref: ${{ inputs.commit || github.sha }}
 
       - name: 解析版本号（预发布看后缀）
         id: gen
@@ -63,6 +74,13 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
+
+          # 容器 job 的工作区属主是 runner，先登记 safe.directory 才能 rev-parse。
+          # 统一以「实际检出的 HEAD」为准：完整 SHA 给正文链接 / tag，短 SHA 给构建标记。
+          git config --global --add safe.directory "$GITHUB_WORKSPACE" 2>/dev/null || true
+          commit_full="$(git rev-parse HEAD)"
+          commit_short="$(git rev-parse --short HEAD)"
+          echo "构建 commit: ${commit_short} (${commit_full})"
 
           # 归一化 / 格式校验 / 预发布判定只有一份实现，release.yml 与 build-image.yml 共用
           # shellcheck source=scripts/ci/resolve-prerelease.sh
@@ -85,17 +103,22 @@ jobs:
             echo "interior_release_title=${RELEASE_TITLE}"
             # 只在本流水线 job 之间传，不再来自用户输入
             echo "pre_release=${PRERELEASE}"
+            echo "commit_full=${commit_full}"
+            echo "commit_short=${commit_short}"
           } >> "$GITHUB_OUTPUT"
 
   # 构建全平台二进制并压缩（linux/windows/darwin × amd64/arm64）
   build:
     needs: prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     container:
       image: ghcr.io/dtapps/golang:latest
     steps:
       - name: 检出代码
         uses: actions/checkout@v7
+        with:
+          # 用 prepare 解析出的完整 SHA，保证与 prepare / release 同一个提交
+          ref: ${{ needs.prepare.outputs.commit_full }}
 
       # go build 默认做 VCS 盖章，会调用 `git status --porcelain`。容器 job 的工作区是
       # runner 挂进来的 bind mount（属主是 runner 用户），容器内进程却是 root，git 会判定
@@ -175,7 +198,8 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ needs.prepare.outputs.interior_version }}
-        run: VERSION="${VERSION}" make build-all
+          COMMIT: ${{ needs.prepare.outputs.commit_short }}
+        run: VERSION="${VERSION}" COMMIT="${COMMIT}" make build-all
 
       # 兜底清理：确保 bin/ 里只剩可发布的压缩包（build-all 里的打包缺失时不会留下裸二进制）
       - name: 清理二进制文件
@@ -205,7 +229,7 @@ jobs:
   # 构建完成后，发布 GitHub Release
   release:
     needs: [prepare, build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -214,6 +238,8 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v7
         with:
+          # 用 prepare 解析出的完整 SHA，保证与 prepare / build 同一个提交
+          ref: ${{ needs.prepare.outputs.commit_full }}
           # 需要完整 tag 历史，才能算出「上一个 tag」并生成 changelog
           fetch-depth: 0
 
@@ -266,7 +292,7 @@ jobs:
           VERSION: ${{ needs.prepare.outputs.interior_version }}
           PRERELEASE: ${{ needs.prepare.outputs.pre_release }}
           REPO_URL: https://github.com/${{ github.repository }}
-          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_SHA: ${{ needs.prepare.outputs.commit_full }}
           ARTIFACT_DIR: release
           ARTIFACT_LAYOUT: triplet # 本仓库是 backend/reporter/forwarder 三服务
           OUT_FILE: release_body.md

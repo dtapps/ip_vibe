@@ -9,7 +9,7 @@ cp -r node_modules/loadjs/dist/ ../backend/static/libs/loadjs/
 echo "Step 3: Copying jQuery..."
 cp -r node_modules/jquery/dist/ ../backend/static/libs/jquery/
 
-echo "Step 4: Copying Clipboard..."  
+echo "Step 4: Copying Clipboard..."
 cp -r node_modules/clipboard/dist/ ../backend/static/libs/clipboard/
 
 echo "Step 5: Copying Select2..."
