@@ -252,8 +252,8 @@ github.com/gin-contrib/cors v1.7.10 h1:psSUzREHu/qjLdH9j/+VYgAxll1/61rEoM5FhFf/2
 github.com/gin-contrib/cors v1.7.10/go.mod h1:VJ2EOJXwnWuloSNs4nRKUPfwpJfqobjWiLaH8ezHM7c=
 github.com/gin-contrib/gzip v1.2.9 h1:MPyIubgLF/o5A4ni90weaQV0Oji7JTQto7QBVqWtmmY=
 github.com/gin-contrib/gzip v1.2.9/go.mod h1:vLBq0o7y73JpE7m1pngAK/BPaVB7EU56R2gQP1yCgbo=
-github.com/gin-contrib/multitemplate v1.1.5 h1:ysskdBwBpEUmgArwJeK+7l6kiTooTERbOwMgvlFOURA=
-github.com/gin-contrib/multitemplate v1.1.5/go.mod h1:/lmewmjvr07Pr4EMyad7qNLCZzWGyHmdWJBZC3wBDsc=
+github.com/gin-contrib/multitemplate v1.1.6 h1:6YKSigaXUVB/yj2uePbbjBAHk5qWtZ0zZE2DXlPnbWM=
+github.com/gin-contrib/multitemplate v1.1.6/go.mod h1:e8JB4D50/wvRltAHiV1cYrVzCowgv/e7aKLKYHF6E3o=
 github.com/gin-contrib/requestid v1.0.9 h1:sgl++Hl71YtG0TMpCqqHwh6bxHS1a4wmJrTjB6a4Vws=
 github.com/gin-contrib/requestid v1.0.9/go.mod h1:oqcOEHmh3YO1A2s0jBpxldYOBNRkFDoDiBDBhO0um6M=
 github.com/gin-contrib/sse v0.1.0/go.mod h1:RHrZQHXnP2xjPF+u1gW/2HnVO7nvIa9PG3Gm+fLHvGI=
