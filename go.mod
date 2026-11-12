@@ -31,7 +31,7 @@ require (
 	github.com/gin-contrib/cors v1.7.10
 	github.com/gin-contrib/gzip v1.2.9
 	github.com/gin-contrib/multitemplate v1.1.5
-	github.com/gin-contrib/requestid v1.0.9
+	github.com/gin-contrib/requestid v1.0.10
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-acme/lego/v5 v5.6.0
 	github.com/go-co-op/gocron/v2 v2.23.0

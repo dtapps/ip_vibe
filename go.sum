@@ -254,8 +254,8 @@ github.com/gin-contrib/gzip v1.2.9 h1:MPyIubgLF/o5A4ni90weaQV0Oji7JTQto7QBVqWtmm
 github.com/gin-contrib/gzip v1.2.9/go.mod h1:vLBq0o7y73JpE7m1pngAK/BPaVB7EU56R2gQP1yCgbo=
 github.com/gin-contrib/multitemplate v1.1.5 h1:ysskdBwBpEUmgArwJeK+7l6kiTooTERbOwMgvlFOURA=
 github.com/gin-contrib/multitemplate v1.1.5/go.mod h1:/lmewmjvr07Pr4EMyad7qNLCZzWGyHmdWJBZC3wBDsc=
-github.com/gin-contrib/requestid v1.0.9 h1:sgl++Hl71YtG0TMpCqqHwh6bxHS1a4wmJrTjB6a4Vws=
-github.com/gin-contrib/requestid v1.0.9/go.mod h1:oqcOEHmh3YO1A2s0jBpxldYOBNRkFDoDiBDBhO0um6M=
+github.com/gin-contrib/requestid v1.0.10 h1:hUdeEkQfczVxxgHNk3gQa84NuajbFAgqMgTvJhs4JP0=
+github.com/gin-contrib/requestid v1.0.10/go.mod h1:JbdgaCqXVhLKvbDtzQwj1nIT8C1QIj8AE0J4bzPrwZI=
 github.com/gin-contrib/sse v0.1.0/go.mod h1:RHrZQHXnP2xjPF+u1gW/2HnVO7nvIa9PG3Gm+fLHvGI=
 github.com/gin-contrib/sse v1.2.0 h1:AeYPE9hukQvAU1y7+eNvTC67PuBLK4BOduG08yv7L28=
 github.com/gin-contrib/sse v1.2.0/go.mod h1:9ivB3pROCxcwnwHvAoYaHLwNQMGmzCjgriA04TuNIAc=
