@@ -2,6 +2,20 @@
 
 IPVibe 是一套面向多机房 / 多设备的 **IP 动态管理与应用交付** 平台：把「设备 IP 上报 → DNS / CDN / TUN 记录同步 → SSL 证书申请续期 → 域名监控 → 端口转发 → 通知告警」串成一条自动化流水线，并提供 Web 控制台、REST API、gRPC、MCP 四种接入方式。
 
+<div align="center">
+
+[![CNB 版本](https://cnb.cool/dtapp/ip_vibe/-/badge/release)](https://cnb.cool/dtapp/ip_vibe/-/badge/release.link) [![CNB Star 数](https://cnb.cool/dtapp/ip_vibe/-/badge/star)](https://cnb.cool/dtapp/ip_vibe) [![CNB Fork 数](https://cnb.cool/dtapp/ip_vibe/-/badge/fork)](https://cnb.cool/dtapp/ip_vibe) [![CNB 构建](https://cnb.cool/dtapp/ip_vibe/-/badge/git/latest/ci/status/push)](https://cnb.cool/dtapp/ip_vibe) [![CNB 覆盖率](https://cnb.cool/dtapp/ip_vibe/-/badge/git/latest/testing/unit/coverage)](https://cnb.cool/dtapp/ip_vibe/-/insights/unit-test) [![CNB PR 覆盖率](https://cnb.cool/dtapp/ip_vibe/-/badge/git/latest/testing/unit/coverage-pr)](https://cnb.cool/dtapp/ip_vibe/-/insights/unit-test) ![CNB 下载请求数](https://img.shields.io/endpoint?label=CNB%20下载请求数&url=https%3A%2F%2Fdl-stats.dtapp.net%2Fshields.json%3Fplatform%3Dcnb.cool%26repository%3D%2Fdtapp%2Fip_vibe)
+
+[![CNB 漏洞](https://cnb.cool/dtapp/ip_vibe/-/badge/security/vulnerability/full/latest)](https://cnb.cool/dtapp/ip_vibe/-/badge/security/vulnerability/full/latest.link) [![CNB 漏洞差异](https://cnb.cool/dtapp/ip_vibe/-/badge/security/vulnerability/diff/latest)](https://cnb.cool/dtapp/ip_vibe/-/badge/security/vulnerability/diff/latest.link) [![CNB 许可证](https://cnb.cool/dtapp/ip_vibe/-/badge/security/license/full/latest)](https://cnb.cool/dtapp/ip_vibe/-/badge/security/license/full/latest.link) [![CNB 许可证差异](https://cnb.cool/dtapp/ip_vibe/-/badge/security/license/diff/latest)](https://cnb.cool/dtapp/ip_vibe/-/badge/security/license/diff/latest.link) [![CNB SBOM](https://cnb.cool/dtapp/ip_vibe/-/badge/security/sbom/full/latest)](https://cnb.cool/dtapp/ip_vibe/-/badge/security/sbom/full/latest.link) [![CNB SBOM 差异](https://cnb.cool/dtapp/ip_vibe/-/badge/security/sbom/diff/latest)](https://cnb.cool/dtapp/ip_vibe/-/badge/security/sbom/diff/latest.link)
+
+[![CNB 访问](https://commit.cool/badge/visit/dtapp/ip_vibe)](https://cnb.cool/dtapp/ip_vibe) [![CNB 发布频率](https://commit.cool/badge/release/frequency/dtapp/ip_vibe)](https://cnb.cool/dtapp/ip_vibe) [![CNB 距离上次发布](https://commit.cool/badge/release/last/dtapp/ip_vibe)](https://cnb.cool/dtapp/ip_vibe) [![CNB 发布总数](https://commit.cool/badge/releases/dtapp/ip_vibe)](https://cnb.cool/dtapp/ip_vibe/-/releases) [![CNB 仓库年龄](https://commit.cool/badge/age/dtapp/ip_vibe)](https://cnb.cool/dtapp/ip_vibe) [![CNB 主要语言](https://commit.cool/badge/language/dtapp/ip_vibe)](https://cnb.cool/dtapp/ip_vibe) [![CNB 仓库许可证](https://commit.cool/badge/license/dtapp/ip_vibe)](https://cnb.cool/dtapp/ip_vibe) [![CNB 存储用量](https://commit.cool/badge/usage/dtapp/ip_vibe)](https://cnb.cool/dtapp/ip_vibe) [![CNB Git 存储](https://commit.cool/badge/usage/git/dtapp/ip_vibe)](https://cnb.cool/dtapp/ip_vibe) [![CNB LFS 存储](https://commit.cool/badge/usage/lfs/dtapp/ip_vibe)](https://cnb.cool/dtapp/ip_vibe)[![CNB Docker 拉取次数](https://commit.cool/badge/package/docker/pulls/dtapp/ip_vibe)](https://docker.cnb.cool/dtapp/ip_vibe)
+
+[![GitHub 版本](https://img.shields.io/github/v/release/dtapps/ip_vibe?style=flat-square)](https://github.com/dtapps/ip_vibe/releases) [![GitHub 下载量](https://img.shields.io/github/downloads/dtapps/ip_vibe/total?style=flat-square)](https://github.com/dtapps/ip_vibe/releases) [![GitHub Star 数](https://img.shields.io/github/stars/dtapps/ip_vibe?style=flat-square)](https://github.com/dtapps/ip_vibe/stargazers) [![GitHub Fork 数](https://img.shields.io/github/forks/dtapps/ip_vibe?style=flat-square)](https://github.com/dtapps/ip_vibe/network/members) [![GitHub 许可证](https://img.shields.io/github/license/dtapps/ip_vibe?style=flat-square)](LICENSE) [![GitHub 支持平台](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-007EC6?style=flat-square)](https://github.com/dtapps/ip_vibe) [![GitHub 构建](https://img.shields.io/github/actions/workflow/status/dtapps/ip_vibe/push.yml?style=flat-square)](https://github.com/dtapps/ip_vibe/actions/workflows/push.yml) [![Codecov](https://img.shields.io/codecov/c/github/dtapps/ip_vibe?style=flat-square&label=Codecov&logo=codecov)](https://codecov.io/gh/dtapps/ip_vibe) [![Coveralls](https://img.shields.io/coveralls/github/dtapps/ip_vibe?style=flat-square&label=Coveralls&logo=coveralls)](https://coveralls.io/github/dtapps/ip_vibe) ![GitHub 下载请求数](https://img.shields.io/endpoint?label=GitHub%20下载请求数&url=https%3A%2F%2Fdl-stats.dtapp.top%2Fshields.json%3Fplatform%3Dgithub.com%26repository%3D%2Fdtapps%2Fip_vibe)
+
+[![GitHub 访问](https://visitor-badge.laobi.icu/badge?page_id=github/dtapps/ip_vibe)](https://github.com/dtapps/ip_vibe) [![GitHub 距离上次发布](https://img.shields.io/github/release-date/dtapps/ip_vibe)](https://github.com/dtapps/ip_vibe) [![GitHub 仓库年龄](https://img.shields.io/github/created-at/dtapps/ip_vibe)](https://github.com/dtapps/ip_vibe) [![GitHub 主要语言](https://img.shields.io/github/languages/top/dtapps/ip_vibe)](https://github.com/dtapps/ip_vibe) [![GitHub 存储用量](https://img.shields.io/github/repo-size/dtapps/ip_vibe)](https://github.com/dtapps/ip_vibe)[![GHCR backend 拉取次数](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fghcr-badge.elias.eu.org%2Fapi%2Fdtapps%2Fip_vibe%252Fbackend&query=downloadCount&label=ghcr%20backend%20pulls&logo=docker&logoColor=white&color=2496ed)](https://github.com/dtapps/ip_vibe/pkgs/container/ip_vibe%2Fbackend) [![GHCR reporter 拉取次数](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fghcr-badge.elias.eu.org%2Fapi%2Fdtapps%2Fip_vibe%252Freporter&query=downloadCount&label=ghcr%20reporter%20pulls&logo=docker&logoColor=white&color=2496ed)](https://github.com/dtapps/ip_vibe/pkgs/container/ip_vibe%2Freporter) [![GHCR forwarder 拉取次数](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fghcr-badge.elias.eu.org%2Fapi%2Fdtapps%2Fip_vibe%252Fforwarder&query=downloadCount&label=ghcr%20forwarder%20pulls&logo=docker&logoColor=white&color=2496ed)](https://github.com/dtapps/ip_vibe/pkgs/container/ip_vibe%2Fforwarder)
+
+</div>
+
 ---
 
 ## 目录
@@ -126,7 +140,7 @@ docker compose up -d
 
 > 镜像：`docker.cnb.cool/dtapp/ip_vibe/{backend,reporter,forwarder}:latest`，均使用 `network_mode: host`。 `reporter` / `forwarder` 通过 `BACKEND_ENDPOINT` 指向 backend 地址。
 >
-> 版本号规则：`v1.2.3` 为正式版（推送 `:v1.2.3` 与 `:latest`，Release 不勾选 prerelease）；`v1.2.3-rc.1`、`v1.2.3-beta.1`、`v1.2.3-alpha.1`、`v1.2.3-nightly.20260101` 为预发布（只推送对应版本标签，不覆盖 `:latest`，Release 勾选 prerelease）。
+> 版本号规则：`v1.2.3` 为正式版（推送 `:v1.2.3` 与 `:latest`，Release 不勾选 prerelease）；`v1.2.3-rc.1`、`v1.2.3-beta.1`、`v1.2.3-alpha.1`、`v1.2.3-nightly.20260101` 为预发布（只推送对应版本标签，不覆盖 `:latest`，Release 勾选 prerelease）；填 `nightly` 会自动推导成 `<最近正式版 +1 补丁>-nightly.<UTC 日期>`（定时任务每天 UTC 00:00 用它，各平台只保留最近 3 个 nightly Release）。
 >
 > GitHub Actions 侧同一套规则：`Release` 工作流产出全平台压缩包并发布 Release，`Build Image` 工作流把镜像推到 `ghcr.io/dtapps/ip_vibe/{backend,reporter,forwarder}`。
 
@@ -259,6 +273,41 @@ make format            # 格式化 Go / 前端 / YAML / JSON / SQL / Shell / Mar
 
 ---
 
+## 仓库
+
+| 平台    | 地址                              |
+|---------|-----------------------------------|
+| CNB     | https://cnb.cool/dtapp/ip_vibe    |
+| GitHub  | https://github.com/dtapps/ip_vibe |
+| Gitea   | https://gitea.com/dtapps/ip_vibe  |
+| GitLab  | https://gitlab.com/dtapps/ip_vibe |
+| Gitee   | https://gitee.com/dtapps/ip_vibe  |
+| GitCode | https://gitcode.com/dtapp/ip_vibe |
+
 ## 许可证
 
 见 [LICENSE](LICENSE) 文件。
+
+## Star 走势
+
+<details>
+<summary><b>点击展开查看图表</b></summary>
+
+**CNB**
+
+[![CNB Star 走势](https://commit.cool/stars/dtapp/ip_vibe)](https://cnb.cool/dtapp/ip_vibe)
+
+**GitHub**
+
+[![Star 走势](https://api.star-history.com/chart?repos=dtapps/ip_vibe&type=date&legend=top-left)](https://www.star-history.com/?repos=dtapps%2Fip_vibe&type=date&legend=top-left)
+
+</details>
+
+## 下载量统计图
+
+<details>
+<summary><b>点击展开查看图表</b></summary>
+
+[![下载量统计图](https://release-monitor.com/chart/dtapps/ip_vibe.svg?stable=5)](https://release-monitor.com/#/dtapps/ip_vibe)
+
+</details>

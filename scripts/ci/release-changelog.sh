@@ -11,6 +11,9 @@
 #       发 v1.0.45 → 对比 v1.0.43（中间那些 -rc.1/-rc.2 不算基准）
 #   - 该渠道还没有过 tag 时，回退到上一个正式版
 #       首次发 v1.0.44-rc.1 → 对比 v1.0.43
+#   - 连正式版 tag 都没有时，回退到任意渠道里比当前版本旧的 tag
+#       仓库只有 v0.0.75-rc.3，发 v0.0.76-nightly.xxx → 对比 v0.0.75-rc.3
+#       所有其它 tag 都比当前版本新（补发历史版本）时打警告并取最新那个，不中断发布
 #
 # 为什么不用 `git describe --tags --abbrev=0 'HEAD^'`：
 #   1) 它取的是「最近的可达 tag」，不区分渠道。发正式版时会取到刚发的 rc，
@@ -21,18 +24,28 @@
 #
 # 用法：
 #   sh scripts/ci/release-changelog.sh <版本号>
-#   # 输出（多行 Markdown）到 stdout；挑不出基准时 exit 1，由工作流中断发布
+#   # 输出（多行 Markdown）到 stdout；基准/backfill 的异常会打警告到 stderr，不中断发布
 #
 # 环境变量：
 #   COMMIT_URL  选填，提交链接前缀。拼成 ${COMMIT_URL}/<sha>。
 #               GitHub 是 ${REPO_URL}/commit，CNB 是 ${REPO_URL}/-/commit。
 #               两个平台的 Web 路径不同，不能只靠 REPO_URL 猜。
 #   REPO_URL    选填，仓库地址；只在截断提示的「提交历史」链接里用。
+#   CHANGELOG_TEST_TAGS  选填，仅用于自检/复现：替代 `git tag -l 'v*'` 的换行分隔 tag 列表。
 #
 # ⚠️ 必须保持 POSIX sh 语法：CNB 的 stage 默认用 sh（dash/ash）执行。
 #   不要用 [[ ]]、数组、$'...'、BASH_SOURCE。
 
 set -eu
+
+# tag 列表单独包一层，便于用固定输入复现 CI 上的取数（CI 不设置这个变量）。
+version_tag_list() {
+  if [ -n "${CHANGELOG_TEST_TAGS+x}" ]; then
+    printf '%s\n' "${CHANGELOG_TEST_TAGS}"
+  else
+    git tag -l 'v*' 2>/dev/null || true
+  fi
+}
 
 version="${1:-}"
 if [ -z "${version}" ]; then
@@ -58,7 +71,7 @@ esac
 # v1.0.44.rc1 之类就会变成对比基准，把 diff 算到错误的区间上。
 # 拉取 tag 是调用方的责任：GitHub 用 fetch-depth: 0，CNB 用 git fetch --tags，
 # 工作流里都有独立一步校验，这里不做兜底 fetch。
-all_tags="$(git tag -l 'v*' 2>/dev/null \
+all_tags="$(version_tag_list \
   | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+(-(rc|beta|alpha|nightly)(\.[0-9]+)?)?$' \
   || true)"
 
@@ -121,24 +134,39 @@ if [ -z "${base}" ]; then
   fi
 fi
 
-# ── 输出 ────────────────────────────────────────────────────────────────────
-# 只有仓库里一个版本 tag 都没有时，才是真的「首次发布」。
-# 有 tag 但挑不出基准，说明是取数出了问题（比如 clone 时没拉 tag），
-# 这时报「首次发布」会盖住真正的故障，必须显式报错让人去看。
+# 同渠道 / 正式版都没有更旧的 tag（例如仓库里只有 rc，本次发的是 nightly）→
+# 再退一步：任意渠道里比当前版本旧的 tag，取最大的那个。
 if [ -z "${base}" ]; then
-  # 排掉「当前版本自己」之后还剩几个 tag
-  others="$(printf '%s\n' "${all_tags}" | sed '/^$/d' | grep -vxF "${version}" || true)"
+  any_tags=''
+  for t in ${all_tags}; do
+    [ "${t}" = "${version}" ] && continue
+    any_tags="${any_tags}${any_tags:+
+}${t}"
+  done
+  if [ -n "${any_tags}" ]; then
+    base="$(pick_latest "$(older_than_version "${any_tags}")")"
+  fi
+fi
+
+# ── 输出 ────────────────────────────────────────────────────────────────────
+# 排掉「当前版本自己」之后还剩几个 tag
+others="$(printf '%s\n' "${all_tags}" | sed '/^$/d' | grep -vxF "${version}" || true)"
+if [ -z "${base}" ]; then
   # 一个 tag 都没有，或只有当前版本自己 → 这就是这个仓库/渠道的第一次发布
   if [ -z "${others}" ]; then
     printf '首次发布\n'
     exit 0
   fi
-  # 有别的 tag 却挑不出基准，说明取数有问题，不能拿「首次发布」把故障盖住
-  printf '错误: 仓库里有 %d 个其它版本 tag，但挑不出 %s 渠道的对比基准。\n' \
-    "$(printf '%s\n' "${others}" | sed '/^$/d' | wc -l | tr -d ' ')" "${channel}" >&2
-  printf '常见原因：clone 时没拉取 tag（GitHub 需要 fetch-depth: 0），或 tag 命名不符合预期。\n' >&2
-  exit 1
+  # 其它 tag 全都比当前版本新（补发历史版本，或 nightly 基版本低于已有 tag）。
+  # 拿其中最新的做基准，diff 仍是 base..HEAD 不会反向；打警告而不是中断发布。
+  base="$(pick_latest "${others}")"
+  printf '警告: 仓库里 %d 个其它 tag 都比 %s 新，回退用 %s 做对比基准。\n' \
+    "$(printf '%s\n' "${others}" | sed '/^$/d' | wc -l | tr -d ' ')" "${version}" "${base}" >&2
+  printf '       若这是补发历史版本可忽略；若 nightly 版本倒挂，检查 resolve-prerelease.sh 的基版本推导。\n' >&2
 fi
+
+# 基准打到 CI 日志：以后正文不对时一眼能看出是从哪个 tag 算的
+printf 'changelog 渠道=%s 基准=%s 当前=%s\n' "${channel}" "${base}" "${version}" >&2
 
 # 基准就是当前版本（重跑同一次发布）→ 没有可对比的提交
 if [ "${base}" = "${version}" ]; then

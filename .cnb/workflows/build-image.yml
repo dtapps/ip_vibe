@@ -36,9 +36,20 @@
             echo "CNB_REPO_SLUG_LOWERCASE: ${CNB_REPO_SLUG_LOWERCASE}"
 
             # 指定 commit 时切换工作区（CNB 默认检出触发时的 commit）。
-            # 先补拉历史，避免浅克隆里没有目标对象；切换失败直接让这一步失败。
+            # 先补拉历史，避免浅克隆里没有目标对象。
             if [ -n "${commit:-}" ]; then
               git fetch --quiet --force --unshallow origin 2>/dev/null || git fetch --quiet --force origin || true
+              # 该 commit 可能只推到了 GitHub 镜像（CNB 与 GitHub 是两个仓库），按 SHA 再拉一次；
+              # 仍然拿不到就明确失败 —— 悄悄退回 HEAD 会构建出「与发布版本不同的代码」。
+              if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
+                git fetch --quiet --force origin "${commit}" 2>/dev/null || true
+              fi
+              if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
+                echo "❌ commit ${commit} 在本仓库不存在"
+                echo "   （CNB 与 GitHub 是两个仓库，该 commit 可能只推到了 GitHub 镜像）"
+                echo "   先把它推到 CNB 仓库，或不要传 commit（用当前检出的 HEAD）"
+                exit 1
+              fi
               git checkout --detach "${commit}"
             fi
             commit_full="$(git rev-parse HEAD)"

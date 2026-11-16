@@ -69,8 +69,12 @@ YAMLFMT_ARGS=()
 YAML_TARGETS=(
   ".cnb"
   ".github"
+  ".gitcode"
+  ".gitlab"
+  ".workflow"
   "cmd"
   ".cnb.yml"
+  ".gitlab-ci.yml"
   ".golangci.yml"
 )
 YAML_EXCLUDES=(

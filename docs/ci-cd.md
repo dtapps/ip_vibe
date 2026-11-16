@@ -58,19 +58,21 @@ CNB 的两个发布按钮定义在 `.cnb/web_trigger.yml`（权限 owner / maste
 
 唯一实现是 [scripts/ci/resolve-prerelease.sh](../scripts/ci/resolve-prerelease.sh)：GitHub 的 `release.yml` / `build-image.yml` 与 CNB 的 `release.yml` 都 source 这一份；CNB 的 `build-image.yml` 内联了同口径的正则。规则：
 
-| 输入                      | 归一化 TAG                | 类型              | 镜像标签                            | Release         |
-|---------------------------|---------------------------|-------------------|-------------------------------------|-----------------|
-| `1.2.3` / `v1.2.3`        | `v1.2.3`                  | 正式版            | 推 `:v1.2.3` 并覆盖 `:latest`       | 不勾 prerelease |
-| `v1.2.3-rc.1`             | `v1.2.3-rc.1`             | 预发布（rc）      | 只推 `:v1.2.3-rc.1`，不动 `:latest` | 勾 prerelease   |
-| `v1.2.3-beta.1`           | `v1.2.3-beta.1`           | 预发布（beta）    | 同上                                | 勾 prerelease   |
-| `v1.2.3-alpha.1`          | `v1.2.3-alpha.1`          | 预发布（alpha）   | 同上                                | 勾 prerelease   |
-| `v1.2.3-nightly.20260101` | `v1.2.3-nightly.20260101` | 预发布（nightly） | 同上                                | 勾 prerelease   |
+| 输入                      | 归一化 TAG                | 类型              | 镜像标签                              | Release         |
+|---------------------------|---------------------------|-------------------|---------------------------------------|-----------------|
+| `1.2.3` / `v1.2.3`        | `v1.2.3`                  | 正式版            | 推 `:v1.2.3` 并覆盖 `:latest`         | 不勾 prerelease |
+| `v1.2.3-rc.1`             | `v1.2.3-rc.1`             | 预发布（rc）      | 只推 `:v1.2.3-rc.1`，不动 `:latest`   | 勾 prerelease   |
+| `v1.2.3-beta.1`           | `v1.2.3-beta.1`           | 预发布（beta）    | 同上                                  | 勾 prerelease   |
+| `v1.2.3-alpha.1`          | `v1.2.3-alpha.1`          | 预发布（alpha）   | 同上                                  | 勾 prerelease   |
+| `v1.2.3-nightly.20260101` | `v1.2.3-nightly.20260101` | 预发布（nightly） | 同上                                  | 勾 prerelease   |
+| `nightly`                 | `v1.2.4-nightly.20260101` | 预发布（nightly） | 只推该 nightly 标签，不覆盖 `:latest` | 勾 prerelease   |
 
 判定细则：
 
 - 后缀 `-rc` / `-beta` / `-alpha` / `-nightly` 才算预发布，大小写不敏感；`rc1`、`rc.1`、裸 `rc`、`nightly.20260101` 都能识别（正则 `-(rc|beta|alpha|nightly)([.-]?[0-9A-Za-z.-]*)$`）。
 - 不带这四种后缀的一律按正式版处理：`v1.2.3-hotfix`、`v2.0.0-core` 不会被误判。
 - `nightly` 是独立渠道：`v1.2.3-nightly.20260101` 勾 prerelease、不覆盖 `:latest`，changelog 只跟 nightly 的 tag 对比，不会跨到 rc / beta / alpha。
+- **`nightly` 关键字不是版本号**（定时任务的默认值，手动填也可）：自动展开成 `<最近版本 tag + 1 个补丁>-nightly.<UTC 日期>`，例如最近正式版 `v0.2.7` → `v0.2.8-nightly.20261114`。基版本必须**高于**已发布的 tag：semver 里 `1.2.3-nightly.X < 1.2.3`，拿原版本号做基版本会让更新器误提示「升级到旧正式版」。优先取正式版；没有正式版时取已有预发布 tag 的基版本（只有 `v0.0.75-rc.3` → `v0.0.76-nightly.<日期>`），一个 tag 都没有才回退 `0.0.0`。每天一个 tag，各平台只保留最近 3 个 nightly Release。
 - 输入自动补 `v` 前缀、去空白字符；空输入直接报错（历史上空输入会打出 `:v` 这种非法标签）。
 - 预发布的核心目的：镜像不覆盖 `:latest`、Release 标记 prerelease，未经充分验证的版本不会推给线上用户。
 
@@ -92,19 +94,61 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 命名 `{service}-{os}-{arch}[.exe]`。版本号、Git Commit、构建时间通过 ldflags 注入 `vibe_ip/internal/global`；编译走 `make build-all`（`CGO_ENABLED=0` 静态链接、`-trimpath`、`-buildvcs=false`）。
 
-### 3.1 GitHub（`release.yml`，手动 workflow_dispatch）
+### 3.1 GitHub（`release.yml`：手动 workflow_dispatch + 每天定时）
 
-三个 job 串行：
+**两种触发**：手动填版本号；或每天 UTC 00:00（北京时间 08:00）定时跑（`schedule: cron '0 0 * * *'`），定时触发等价于手动填 `nightly`，版本号由 prepare job 推导。
 
-1. **prepare**（CI 镜像容器）：source `scripts/ci/resolve-prerelease.sh` 归一化版本号，输出 TAG / 是否预发布 / 标题。GitHub 与 CNB 的标题同口径：`IPVibe <TAG>`（预发布再加 `(预发布)` 后缀）；tag 本身仍是纯版本号。
+job 分三段：
+
+1. **prepare**（CI 镜像容器）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ 输出 TAG / 是否预发布 / 标题 / commit / 构建时间。GitHub 与 CNB 的标题同口径：`IPVibe <TAG>`（预发布再加 `(预发布)` 后缀）；tag 本身仍是纯版本号。
 2. **build**（CI 镜像容器）：三类缓存（Go module、Go build、pnpm store）→ `make deps` → **先 `make build-frontend`**（前端静态资源由 go:embed 打进 backend 二进制，顺序不能反）→ `make build-all` → `make clean-binaries` 兜底清掉裸二进制 → 生成 `SHA256SUMS` → 上传 artifact。
-3. **release**：`fetch-depth: 0` 拉全量 tag 历史 → **校验版本号与 tag**（§3.4）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → `softprops/action-gh-release` 建 tag、上传 19 个附件。
+3. **release**：`fetch-depth: 0` 拉全量 tag 历史 → **校验版本号与 tag**（§3.4）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → 删除同名旧 Release（仅 nightly 同日重跑会命中）→ `softprops/action-gh-release` 建 tag、上传 19 个附件 → **清理旧 nightly Release（只保留最近 3 个）**。
+
+发布成功后还有 5 个 job：
+
+| job            | 做什么                                                                                   | 触发方式                                                                      |
+|----------------|------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| `sync-cnb`     | 调 CNB Open API 触发 `dtapp/ip_vibe` 的 `api_trigger_release`（env 传 version + commit） | `POST /-/build/start`，需 secret `SYNC_CNB_TOKEN`                             |
+| `sync-gitee`   | POST Gitee Go 的 Webhook，触发 `.workflow/release.yml` 搬运资产                          | eventType `ip-vibe-release`，需 `SYNC_GITEE_WEBHOOK_URL` + `SYNC_GITEE_TOKEN` |
+| `sync-gitlab`  | 触发 GitLab 的 `release` job（`CI_PIPELINE_SOURCE == "trigger"`）                        | `POST /projects/:id/trigger/pipeline`，需 `SYNC_GITLAB_TRIGGER_TOKEN`         |
+| `sync-gitcode` | dispatch GitCode 的 `release.yml`（`.gitcode/workflows/release.yml`）                    | `POST /actions/workflows/release.yml/dispatches`，需 `SYNC_GITCODE_TOKEN`     |
+| `notify`       | ServerChan3（方糖）推送「构建完成」通知，含各平台同步状态                                | 需 secret `SERVERCHAN_SENDKEY`                                                |
+
+四个同步 job 都是**未配置 secret 就跳过**（`if: env.XXX != ''`，token 放 job 级 env —— 放 step 级会在 `if` 求值时尚未生效，导致步骤被永远跳过），并各自输出 `triggered` / `skipped` / `failed` 三态给 `notify` 展示。清理旧 nightly 是**旁路**：失败只告警，不让已成功的发布变红。
+
+#### Gitee 镜像：`DOWNLOAD_SOURCE` 决定唯一来源
+
+`.workflow/release.yml` 不现场编译，只从 CNB 或 GitHub 搬附件并发到 Gitee Release。全局参数 `DOWNLOAD_SOURCE` 取 `cnb`（默认）或 `github`，**同一次发布只用一个来源，绝不混用**：包里注入了 `RepoSource`，客户端据此选升级通道，混源等于给用户随机分配通道。shell 层归一化（`cnb|github` 原样、空→`cnb`、其它报错）后 export；`VERSION` 为空时先跑 `node scripts/ci/gitee-release-download.js --resolve-tag` 查最新 tag，再 source `scripts/ci/resolve-prerelease.sh`，预发布只按版本号后缀（rc/beta/alpha/nightly）判定，不读上游的布尔字段。
+
+| 来源     | 清单 / 大小 / 正文                                                                                                                                                              | 附件                                                                                                     |
+|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| `cnb`    | 附件名固定（3 服务 × 6 平台 + `SHA256SUMS`）；大小用 `Range: bytes=1-` 从 `Content-Range` 现探，不能复用 GitHub 的 `asset.size`（两边各自编译，同版本字节数不同）；正文本地生成 | `https://cnb.cool/dtapp/ip_vibe/-/releases/download/<tag>/<文件名>`，不碰 GitHub API（CNB API 匿名 401） |
+| `github` | GitHub Release 元数据（`browser_download_url` / `asset.size` / `body`）                                                                                                         | daocloud → ghfast.top → gh-proxy.com → 直连依次回退                                                      |
+
+下载器只用 Node 内置模块（Gitee 容器没有 python3 / jq）：Range 断点续传且重定向时保留 Range；每 5 秒采样速度，连续 15 秒低于 30KB/s 主动断开换源；普通失败每两次换源，累计最多 8 次、间隔 1.5 秒、3 路并发；落盘后验文件头（`.deb` 为 `!<arch>\n`，`.fpk` / `.tar.gz` 为 `1f 8b`，`.zip` 为 `PK`，`SHA256SUMS` 不能是 HTML），防反代 200 回错误页。正文 HTML 优先用 `marked`，装不上时退回内置极简渲染器，不为 npm 失败卡住发版。
+
+#### commit 的语义：按指定提交检出，不是拉最新代码
+
+`workflow_dispatch` 的 `commit` 输入（完整 SHA / 分支 / tag）决定**构建哪份代码**，整条链路都跟着它走：
+
+1. **prepare**：`actions/checkout` 的 `ref` 用 `inputs.commit || github.sha`（定时触发没有输入，取触发时点的 HEAD）；
+2. **build / release**：一律用 prepare 解析出的 `commit_full` 检出，三个 job 必然落在同一个提交上；
+3. **同步到各平台**：版本号与 commit 一起传下去 —— CNB 走 `api_trigger_release` 的 `env.commit`，GitLab 走 `variables[COMMIT]`，GitCode 走 `inputs.commit`，Gitee 走 webhook 的 `params.COMMIT`。各镜像平台建 Release 时，tag 指向这个 commit（**不是**默认分支的最新代码）；镜像仓库是 pull mirror，同步有延迟，探测不到该 commit 时退回默认分支并打告警，不会让发布失败。
+
+⚠️ CNB 与 GitHub 是**两个仓库**：commit 只推到了 GitHub 时，CNB 侧 `git cat-file -e` 探测不到，会明确失败并提示「先推到 CNB 仓库」——不会悄悄退回 HEAD 构建出另一份代码。
 
 > 正文与 changelog 都**不再内联在工作流里**，统一走 `scripts/ci/` 下的两个脚本，CNB 那份调用同一组脚本，避免两边各写一遍表格/标题/下载链接。
 
-### 3.2 CNB（`release.yml`，分支按钮「打包 Go 项目」）
+### 3.2 CNB（`release.yml`：分支按钮「打包 Go 项目」+ API 触发）
 
-一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps / build-frontend / build-all / clean-binaries` → 生成 `bin/SHA256SUMS` → 校验版本号与 tag（§3.4）→ 调用 `scripts/ci/*.sh` 生成正文 → 生成 `./.cnb-release-options.json` → 内置 `git:release`（`optionsFrom`）建 Release → `cnbcool/attachments` 上传 `bin/*`。
+同一套 stage 通过 YAML 锚点复用于两个事件：
+
+| 事件                  | 触发方                           | 参数                                    |
+|-----------------------|----------------------------------|-----------------------------------------|
+| `web_trigger_release` | master 分支按钮「打包 Go 项目」  | 表单字段 `version` / `commit`           |
+| `api_trigger_release` | GitHub Actions 的 `sync-cnb` job | Open API 的 `env`：`version` / `commit` |
+
+一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps / build-frontend / build-all / clean-binaries` → 生成 `bin/SHA256SUMS` → 校验版本号与 tag（§3.4）→ 调用 `scripts/ci/*.sh` 生成正文 → **删除已存在的 Release 与 Tag**（仅 nightly 同日重跑命中，用 CNB Open API 分别删 Release 与 tag —— 两个对象不会连带删除）→ 生成 `./.cnb-release-options.json` → 内置 `git:release`（`optionsFrom`）建 Release → `cnbcool/attachments` 上传 `bin/*` → **清理旧 nightly（只保留最近 3 个）**。
 
 ⚠️ **`preRelease` 用 `optionsFrom` 传真布尔值，不用 `${...}` 插值**：`preRelease` 的类型是严格 Boolean，插值产出字符串 `"false"`，字符串在布尔位置上容易被当成真值，正式版会被误勾预发布；`descriptionFromFile` 同理，正文里有反引号/管道符/换行，插值容易被转义毁掉。
 
@@ -116,14 +160,15 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 实现：`scripts/ci/release-changelog.sh`，GitHub 与 CNB 共用一份。只看版本号后缀决定**渠道**，同渠道内对比：
 
-| 场景                            | 对比基准                   | 说明                                      |
-|---------------------------------|----------------------------|-------------------------------------------|
-| 发 `v1.0.44-rc.2`               | `v1.0.44-rc.1`             | rc 只跟 rc 比                             |
-| 发 `v1.0.44-beta.2`             | `v1.0.44-beta.1`           | beta 只跟 beta 比，**不会跨到 rc**        |
-| 发 `v1.0.44-nightly.20260102`   | `v1.0.44-nightly.20260101` | nightly 按日期只跟 nightly 比             |
-| 发 `v1.0.44-rc.1`（该渠道首次） | 上一个**正式版** `v1.0.43` | 渠道没有历史 tag 时回退                   |
-| 发正式版 `v1.0.45`              | 第一个**正式版** `v1.0.43` | 不掺预发布，整轮改动都在                  |
-| 取不到基准但仓库里有别的 tag    | **exit 1 报错**            | 不谎报「首次发布」，避免掩盖 clone 缺 tag |
+| 场景                            | 对比基准                   | 说明                               |
+|---------------------------------|----------------------------|------------------------------------|
+| 发 `v1.0.44-rc.2`               | `v1.0.44-rc.1`             | rc 只跟 rc 比                      |
+| 发 `v1.0.44-beta.2`             | `v1.0.44-beta.1`           | beta 只跟 beta 比，**不会跨到 rc** |
+| 发 `v1.0.44-nightly.20260102`   | `v1.0.44-nightly.20260101` | nightly 按日期只跟 nightly 比      |
+| 发 `v1.0.44-rc.1`（该渠道首次） | 上一个**正式版** `v1.0.43` | 渠道没有历史 tag 时回退            |
+| 发正式版 `v1.0.45`              | 上一个**正式版** `v1.0.43` | 不掺预发布，整轮改动都在           |
+| 仓库只有预发布 tag              | 任意渠道里更旧的最大 tag   | 如只有 `v0.0.75-rc.3` 时发 nightly |
+| 其它 tag 全比当前版本新         | 警告 + 取其中最新的 tag    | 补发历史版本不中断发布             |
 
 为什么不能用 `git describe --tags --abbrev=0 HEAD^`：它取「最近的可达 tag」，**不区分渠道**。发正式版时会取到刚发的 rc，整轮改动全丢；而且会被 `docker-v1.0.x` 之类的无关 tag 干扰。脚本因此显式按 `^v[0-9]+\.[0-9]+\.[0-9]+(-(rc|beta|alpha|nightly)(\.[0-9]+)?)?$` 白名单 + 渠道过滤，并用 `sort -V` 而不是 `--sort=v:refname`（后者对 `rc.2`/`rc.10` 排序不符合直觉）。
 
@@ -133,9 +178,11 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 两条流水线都有「校验版本号与 tag」这一步。这三件事出错都**不会让构建失败**，但会发出一个「看起来成功、内容是错的」Release：
 
-1. **tag 没拉全** → changelog 算不出基准，正文退化成「首次发布」→ 直接失败；
+1. **一个 tag 都没拉到**（`git tag -l 'v*'` 计数为 0）→ 直接失败；changelog 只负责在可见 tag 里选基准，不会把「取不到基准」谎报成首次发布；
 2. **tag 已存在** → 重跑会把 tag 挪到新提交上，历史 Release 的对比基准跟着变 → 直接失败；
 3. **正式版比已有正式版旧** → 正文里的 diff 是反的 → 直接失败。
+
+**nightly 是唯一例外**：夜间构建按天发布同一个 tag，同一天重跑/补发必须能覆盖，所以 `*-nightly.*` 放行「tag 已存在」，改为在发布前删掉同名 Release + tag 再重建（GitHub 用 `gh release delete --cleanup-tag`，CNB 用 Open API 分别删 Release 与 tag）。正式版 / rc / beta / alpha 仍然一律拒绝重发。
 
 ### 3.5 正文渲染：`render-release-body.sh`
 

@@ -11,19 +11,42 @@
 #   v1.2.3-beta.1         -> TAG=v1.2.3-beta.1 PRERELEASE=true    预发布（beta 渠道）
 #   v1.2.3-alpha.1        -> TAG=v1.2.3-alpha.1 PRERELEASE=true   预发布（alpha 渠道）
 #   v1.2.3-nightly.20260101 -> TAG=v1.2.3-nightly.20260101 PRERELEASE=true 预发布（nightly 渠道）
+#   nightly               -> 自动展开为 v<最近正式版+1补丁>-nightly.<YYYYMMDD>
 #
 # 只用版本号后缀判定，不接受「是不是预发布」这种布尔输入：布尔输入会和版本号打架。
+#
+# nightly 的两种写法，最终都落到带日期的合法 semver 上，不用固定滚动 tag：
+#   - 输入写 `nightly`（定时任务的默认值，手动填也可）：取最近版本 tag +1 补丁做基版本
+#     （1.2.3 -> 1.2.4），日期取 UTC 当天，生成 v1.2.4-nightly.20260101。
+#     每天一个 tag；发布流水线发布后只保留最近 3 个 nightly Release。
+#     基版本必须比已发布的 tag 高，否则 semver 会把 1.2.3 判成比 1.2.3-nightly.X 新，
+#     更新器会误提示「升级到旧正式版」。没有正式版时取已有预发布 tag 的基版本
+#     （只有 v0.0.75-rc.3 -> 0.0.76），一个 tag 都没有才回退 0.0.0。
+#   - 输入直接写日期版本（v1.2.4-nightly.20260101）：按普通预发布处理。
 #
 # 用法（被 source）：
 #   . scripts/ci/resolve-prerelease.sh
 #   resolve_version "${VERSION}"
 #   printf '%s %s\n' "${TAG}" "${PRERELEASE}"
 #
+# 自检可用环境变量固定 nightly 的展开结果（CI 不需要设置）：
+#   NIGHTLY_BASE_VERSION  基版本（X.Y.Z），替代自动探测的最近版本 tag
+#   NIGHTLY_DATE          日期（YYYYMMDD），替代 UTC 当天
+#
 # 直接执行可以跑内置用例自检（改了正则以后先跑它）：
 #   bash scripts/ci/resolve-prerelease.sh --self-test
 #
 # ⚠️ 本文件必须保持 POSIX sh 语法：CNB 的 stage 默认用 `sh`（可能是 dash/ash）执行，
 # GitHub Actions 用 bash。不要引入 [[ ]]、数组、BASH_SOURCE、$'...' 这类 bash 专有写法。
+
+# nightly 基版本要读的 tag 列表，单独包一层便于自检注入固定输入（见文件末尾）。
+nightly_tag_list() {
+  if [ -n "${NIGHTLY_TEST_TAGS+x}" ]; then
+    printf '%s\n' "${NIGHTLY_TEST_TAGS}"
+  else
+    git tag -l 'v*' 2>/dev/null || true
+  fi
+}
 
 # resolve_version <版本号>
 #   归一化版本号（补 v 前缀）并判定是否预发布；
@@ -39,6 +62,57 @@ resolve_version() {
     printf '错误: 版本号不能为空。示例: v1.2.3 / v1.2.3-rc.1 / v1.2.3-beta.1 / v1.2.3-alpha.1 / v1.2.3-nightly.20260101\n' >&2
     return 1
   fi
+
+  # 滚动预发布（nightly）：展开成带日期的合法 semver，不用固定滚动 tag。
+  #   基版本 = 最近版本 tag +1 补丁（1.2.3 -> 1.2.4），日期 = UTC 当天（YYYYMMDD）。
+  # 基版本必须高于已发布的 tag：semver 里 1.2.3-nightly.X < 1.2.3，
+  # 用原版本号做基版本会让更新器误提示「升级到旧正式版」。
+  #   优先取正式版；没有正式版时取预发布 tag 的基版本；一个 tag 都没有才回退 0.0.0。
+  case "${input}" in
+    nightly | NIGHTLY)
+      local base date_part major rest minor patch next
+
+      base="${NIGHTLY_BASE_VERSION:-}"
+      if [ -z "${base}" ]; then
+        # 排除所有预发布后缀，只留正式版 tag，取版本最大的那个
+        base="$(nightly_tag_list \
+          | grep -Ev -- '-(rc|beta|alpha|nightly)' \
+          | sed 's/^[vV]//' | sort -V | tail -n 1 || true)"
+      fi
+      # 仓库只有预发布 tag 时（例如刚起步只有 v0.0.75-rc.3），不能回退到 0.0.0：
+      # 那样会算出 v0.0.1-nightly，比已有 tag 还旧，changelog 也挑不出基准。
+      # 剥掉 -rc.N / -beta.N / -alpha.N / -nightly.YYYYMMDD 取最大基版本。
+      if [ -z "${base}" ]; then
+        base="$(nightly_tag_list \
+          | sed -nE 's/^[vV]([0-9]+\.[0-9]+\.[0-9]+)(-(rc|beta|alpha|nightly)([.-][0-9A-Za-z.-]*)?)?$/\1/p' \
+          | sort -V | tail -n 1 || true)"
+      fi
+      base="${base:-0.0.0}"
+      if ! printf '%s' "${base}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+        printf '错误: nightly 基版本不是 X.Y.Z: %s\n' "${base}" >&2
+        return 1
+      fi
+
+      major="${base%%.*}"
+      rest="${base#*.}"
+      minor="${rest%%.*}"
+      patch="${rest#*.}"
+      next="${major}.${minor}.$((patch + 1))"
+
+      date_part="${NIGHTLY_DATE:-$(date -u +%Y%m%d)}"
+      if ! printf '%s' "${date_part}" | grep -Eq '^[0-9]{8}$'; then
+        printf '错误: nightly 日期不是 YYYYMMDD: %s\n' "${date_part}" >&2
+        return 1
+      fi
+
+      TAG="v${next}-nightly.${date_part}"
+      PRERELEASE="true"
+      VERSION_TYPE="预发布"
+      PRE_NOTE="版本号: ${TAG}（${VERSION_TYPE}，prerelease=${PRERELEASE}，nightly 基版本 ${next}）"
+      export TAG PRERELEASE VERSION_TYPE PRE_NOTE
+      return 0
+      ;;
+  esac
 
   # 字符白名单：版本号最终会变成 git tag、Docker tag 和 JSON 字段值。
   # 含引号/反斜杠/换行的输入既不是合法版本号，拼进 JSON 时还会破坏结构（甚至注入字段），
@@ -123,9 +197,37 @@ check_version 'v1.2.3-rc' 'v1.2.3-rc' 'true'
 check_version 'V1.2.3-RC.1' 'V1.2.3-RC.1' 'true'
 check_version 'v1.2.3-alpha.1.2' 'v1.2.3-alpha.1.2' 'true'
 check_version ' v1.2.3 ' 'v1.2.3' 'false'
+# nightly：输入 nightly 展开为「最近正式版 +1 补丁 -nightly.UTC日期」。
+# 用环境变量固定基版本与日期，避免自检依赖仓库 tag 和当天日期。
+NIGHTLY_BASE_VERSION='1.2.3'
+NIGHTLY_DATE='20260101'
+export NIGHTLY_BASE_VERSION NIGHTLY_DATE
+check_version 'nightly' 'v1.2.4-nightly.20260101' 'true'
+check_version 'NIGHTLY' 'v1.2.4-nightly.20260101' 'true'
+# 补丁号进位：1.2.9 -> 1.2.10
+NIGHTLY_BASE_VERSION='1.2.9'
+check_version 'nightly' 'v1.2.10-nightly.20260101' 'true'
+NIGHTLY_BASE_VERSION='1.2.3'
 # 不带 rc/beta/alpha/nightly 后缀的一律是正式版
 check_version 'v1.2.3-hotfix' 'v1.2.3-hotfix' 'false'
 check_version 'v2.0.0-core' 'v2.0.0-core' 'false'
+# -night 不是合法后缀（别和 -nightly 混淆）
+check_version 'v1.2.3-night' 'v1.2.3-night' 'false'
+unset NIGHTLY_BASE_VERSION NIGHTLY_DATE
+
+# 没有正式版 tag 时从预发布 tag 取基版本，不能倒挂成 v0.0.1-nightly。
+# NIGHTLY_TEST_TAGS 只被 nightly_tag_list 读取，CI 不设置。
+NIGHTLY_DATE='20260101'
+export NIGHTLY_DATE
+NIGHTLY_TEST_TAGS='v0.0.75-rc.1
+v0.0.75-rc.2
+v0.0.75-rc.3'
+check_version 'nightly' 'v0.0.76-nightly.20260101' 'true'
+# 有正式版时仍以正式版为准，不能被更高的预发布基版本带偏
+NIGHTLY_TEST_TAGS='v1.0.70
+v1.0.71-rc.1'
+check_version 'nightly' 'v1.0.71-nightly.20260101' 'true'
+unset NIGHTLY_TEST_TAGS NIGHTLY_DATE
 
 # 非法输入必须被拒绝，不能漏到 git tag / Docker tag / JSON 里：
 # 空版本号历史上会打出 :v 这种非法标签；引号/分号会破坏 optionsFrom 的 JSON 结构。
