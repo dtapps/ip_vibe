@@ -2,7 +2,7 @@
 # 与 CNB 的 .cnb/docker/Dockerfile.reporter 一一对应，唯一差异是基础镜像的 registry：
 # GitHub 拉 ghcr.io/dtapps/alpine:latest，CNB 拉 docker.cnb.cool/dtapp/alpine:latest。
 
-FROM ghcr.io/dtapps/alpine:latest
+FROM ghcr.io/dtapps/alpine:3.24.4
 
 # tzdata：让 TZ=Asia/Shanghai 生效；ca-certificates：HTTPS 请求需要根证书
 RUN apk add --no-cache tzdata ca-certificates

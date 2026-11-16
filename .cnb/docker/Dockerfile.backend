@@ -10,7 +10,7 @@
 # 历史：这份原先放在 cmd/backend/Dockerfile（已删除），其 COPY 写的是 `../../bin/...`，
 # 以仓库根目录为构建上下文时属于「路径超出上下文」，Docker 会直接拒绝；搬家时一并修正为 bin/。
 
-FROM docker.cnb.cool/dtapp/alpine:latest
+FROM docker.cnb.cool/dtapp/alpine:3.24.4
 
 # tzdata：Go 程序要靠系统时区库才能让 TZ=Asia/Shanghai 真正生效
 # ca-certificates：上报/通知走 HTTPS 时需要根证书

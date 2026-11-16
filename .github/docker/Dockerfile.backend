@@ -7,7 +7,7 @@
 # 两份 Dockerfile 都只负责「把静态编译好的二进制装进最小运行镜像」，
 # 应用的启动参数、目录结构保持完全一致。
 
-FROM ghcr.io/dtapps/alpine:latest
+FROM ghcr.io/dtapps/alpine:3.24.4
 
 # tzdata：Go 程序要靠系统时区库才能让 TZ=Asia/Shanghai 真正生效
 # ca-certificates：上报/通知走 HTTPS 时需要根证书
