@@ -24,6 +24,9 @@
 #   POST /api/v4/projects/:id/trigger/pipeline  variables[VERSION]=v1.2.3
 #   （PRERELEASE 已废弃：是否预发布只看版本号后缀，传了也不采信）
 #
+# 镜像同步流水线（.gitlab/workflows/build-image.yml）也走 trigger，用 IMAGE_SYNC=1 区分：
+# 本 job 的 rules 要求 IMAGE_SYNC != "1"，两条流水线互不误触发。
+#
 # 附件存放：GitLab 没有「Release 二进制附件」API，所以走 **Generic Package Registry**，
 # Release 的 assets link 指向 package 地址，并用 direct_asset_path 生成直链
 # （/-/releases/<tag>/downloads/<file>），对外表现与 GitHub 的 release 资产一致。
@@ -40,10 +43,13 @@ release:
   timeout: 30m
   rules:
     # 主路径：GitHub Actions 用 trigger token 自动触发（VERSION + COMMIT 一起传）
-    - if: $CI_PIPELINE_SOURCE == "trigger"
+    # IMAGE_SYNC != "1"：镜像同步流水线（.gitlab/workflows/build-image.yml）也走 trigger，
+    # 用这个变量把两类流水线区分开，避免镜像那次触发顺带把本 job 也跑起来
+    # （镜像同步时 GitHub Release 可能还没发布，本 job 会因取不到附件而失败）。
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $IMAGE_SYNC != "1"
     # 手动路径：CI/CD → Pipelines → Run pipeline，在「变量」区填 VERSION（预发布看版本号后缀）
     # 要求 VERSION 非空，没填就不创建这个 job，避免空跑一次必然失败的发布
-    - if: $CI_PIPELINE_SOURCE == "web" && $VERSION
+    - if: $CI_PIPELINE_SOURCE == "web" && $VERSION && $IMAGE_SYNC != "1"
   script:
     - |
       set -euo pipefail

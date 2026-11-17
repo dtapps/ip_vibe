@@ -25,13 +25,13 @@
 
 ### 1.1 GitHub Actions（`.github/workflows/`）
 
-| 工作流      | 文件              | 触发                  | 作用                                             |
-|-------------|-------------------|-----------------------|--------------------------------------------------|
-| PushRequest | `push.yml`        | push / PR（所有分支） | `make deps → format → check`，质量门禁           |
-| Coverage    | `coverage.yml`    | push / PR             | Go + Node 覆盖率与 JUnit 测试报告上传 Codecov    |
-| Coveralls   | `coveralls.yml`   | push / PR             | 同口径覆盖率以 lcov 上传 Coveralls（独立工作流） |
-| Build Image | `build-image.yml` | 手动（输入版本号）    | linux/amd64 二进制 → 三服务运行镜像推 GHCR       |
-| Release     | `release.yml`     | 手动（输入版本号）    | 全平台压缩包并发布 GitHub Release                |
+| 工作流      | 文件              | 触发                         | 作用                                                                  |
+|-------------|-------------------|------------------------------|-----------------------------------------------------------------------|
+| PushRequest | `push.yml`        | push / PR（所有分支）        | `make deps → format → check`，质量门禁                                |
+| Coverage    | `coverage.yml`    | push / PR                    | Go + Node 覆盖率与 JUnit 测试报告上传 Codecov                         |
+| Coveralls   | `coveralls.yml`   | push / PR                    | 同口径覆盖率以 lcov 上传 Coveralls（独立工作流）                      |
+| Build Image | `build-image.yml` | 手动（输入版本号）+ 每天定时 | linux/amd64 二进制 → 三服务运行镜像推 GHCR → 同步 CNB / GitLab → 通知 |
+| Release     | `release.yml`     | 手动（输入版本号）+ 每天定时 | 全平台压缩包并发布 GitHub Release                                     |
 
 另有 Dependabot（配置在 `.github/dependabot.yml`，不在 workflows 目录）：每日检查三类依赖并自动提升级 PR（label `dependencies`）——Go 模块（根 `go.mod`）、前端 npm（`cmd/frontend`）、GitHub Actions 用到的第三方 action 版本。
 
@@ -45,18 +45,20 @@
 | `code-review.yml`    | pull_request                              | AI 代码评审，结果评论到 PR             |
 | `cnb-sechook.yml`    | pull_request                              | 敏感信息 / 代码扫描统计                |
 | `sca.yml`            | push（全量）、pull_request.target（增量） | 组件漏洞扫描、License 扫描、SBOM       |
-| `build-image.yml`    | 分支按钮「打包 Docker 镜像」              | 三服务镜像推 CNB 制品库                |
-| `release.yml`        | 分支按钮「打包 Go 项目」                  | 全平台压缩包 + CNB Release + 附件      |
+| `build-image.yml`    | 分支按钮「打包 Docker 镜像」+ API 触发    | 三服务镜像推 CNB 制品库                |
+| `release.yml`        | 分支按钮「打包 Go 项目」+ API 触发        | 全平台压缩包 + CNB Release + 附件      |
 | `codewiki.yml`       | tag_push                                  | 生成 Code Wiki                         |
 | `knowledge-base.yml` | push、issue.open、issue.comment           | `docs/**.md` 索引入知识库 + Issue 同步 |
 
 CNB 的两个发布按钮定义在 `.cnb/web_trigger.yml`（权限 owner / master / developer，输入版本号）。
 
+CNB 侧的 `build-image.yml` / `release.yml` 各有两个事件：页面按钮触发（`web_trigger_*`）与 GitHub Actions 通过 Open API 触发（`api_trigger_*`）。两套事件共用同一份 stage（YAML 锚点），API 触发时通过 `env` 传 `version` / `commit`。
+
 ---
 
 ## 2. 版本号规则
 
-唯一实现是 [scripts/ci/resolve-prerelease.sh](../scripts/ci/resolve-prerelease.sh)：GitHub 的 `release.yml` / `build-image.yml` 与 CNB 的 `release.yml` 都 source 这一份；CNB 的 `build-image.yml` 内联了同口径的正则。规则：
+唯一实现是 [scripts/ci/resolve-prerelease.sh](../scripts/ci/resolve-prerelease.sh)：GitHub 的 `release.yml` / `build-image.yml` 与 CNB 的 `release.yml` / `build-image.yml` 都 source 这一份。规则：
 
 | 输入                      | 归一化 TAG                | 类型              | 镜像标签                              | Release         |
 |---------------------------|---------------------------|-------------------|---------------------------------------|-----------------|
@@ -207,13 +209,23 @@ job 分三段：
 |--------|----------------------------------------------------------------------------------------------------------------------------|-------------------------------|
 | GitHub | `ghcr.io/<owner>/<repo>/{backend,reporter,forwarder}`                                                                      | `.github/docker/Dockerfile.*` |
 | CNB    | `${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/{backend,reporter,forwarder}`（即 `docker.cnb.cool/dtapp/ip_vibe/...`） | `.cnb/docker/Dockerfile.*`    |
+| GitLab | `registry.gitlab.com/dtapps/ip_vibe/{backend,reporter,forwarder}`                                                          | 复用 GitHub 的镜像（复制）    |
 
 两份 Dockerfile 一一对应，构建上下文都是仓库根目录，唯一差异是基础镜像的 registry（GitHub 拉 `ghcr.io/dtapps/alpine:latest`，CNB 拉 `docker.cnb.cool/dtapp/alpine:latest`；两者由 [dtapps/alpine](https://github.com/dtapps/alpine) 同一套流水线发布、标签契约一致）：装 tzdata + ca-certificates，把 `bin/{service}-linux-amd64` 放到 `/app/ip_vibe`，建 `/app/data`、`/app/logs` 目录。
 
+GitLab 侧没有自己的 Dockerfile：它**复制** GitHub 已推到 GHCR 的镜像（见 §4.3）。Gitee 没有容器镜像仓库（Gitee Go 的 docker 步骤只能推向外部 registry），GitCode 的制品库是否提供 OCI 端点尚未确认，所以这两个平台的镜像同步暂未接入。
+
 ### 4.1 GitHub（`build-image.yml`）
 
-- **binaries**（容器 job）：解析版本号 → 缓存 → deps → build-frontend → `make build-linux-amd64` → 上传 artifact。
-- **image**（普通 runner——容器 job 里没有 docker daemon）：下载 artifact、校验三个二进制都在 → 三个服务的镜像标签一次性算好写入 `$GITHUB_ENV`（避免三个 build 步骤各写一遍「有后缀就不推 latest」的条件表达式，三处写不一致）→ buildx 构建推送（gha cache 按服务分 scope）。
+**两种触发**：手动填版本号；或每天 UTC 00:00（北京时间 08:00）定时跑（`schedule: cron '0 0 * * *'`，与 `release.yml` 完全同一时刻），定时触发等价于手动填 `nightly`，版本号由 binaries job 推导。
+
+job 分五段：
+
+1. **binaries**（容器 job）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ 输出 TAG / 是否预发布 / commit / 构建时间 → 三类缓存 → `make deps` → **先 `make build-frontend`**（前端静态资源由 go:embed 打进 backend 二进制，顺序不能反）→ `make build-linux-amd64` → 上传 artifact。
+2. **image**（普通 runner——容器 job 里没有 docker daemon）：下载 artifact、校验三个二进制都在 → 三个服务的镜像标签一次性算好写入 `$GITHUB_ENV`（避免三个 build 步骤各写一遍「有后缀就不推 latest」的条件表达式，三处写不一致）→ buildx 构建推送（gha cache 按服务分 scope）。标签同时写入 `$GITHUB_OUTPUT` 供 `notify` job 展示。
+3. **sync-cnb**：GHCR 推送成功后调 CNB Open API 触发 `dtapp/ip_vibe` 的 `api_trigger_build_docker_image`（`env` 传 version + commit），把同一批镜像推到 CNB 制品库；需 secret `SYNC_CNB_TOKEN`（`repo-cnb-trigger:rw`），未配置则跳过。
+4. **sync-gitlab**：GHCR 推送成功后用 trigger token 触发 GitLab 的镜像流水线（`variables[VERSION]` / `variables[COMMIT]` / `variables[IMAGE_SYNC]=1`），由 GitLab 侧把镜像复制进 Container Registry；需 secret `SYNC_GITLAB_TRIGGER_TOKEN`（与 `release.yml` 的 sync-gitlab 共用同一个），未配置则跳过。
+5. **notify**：ServerChan3（方糖）推送「镜像构建完成」通知，含 GHCR / CNB / GitLab 镜像地址与各平台同步状态；需 secret `SERVERCHAN_SENDKEY`。
 
 标签规则：正式版推 `:{TAG}` + `:latest`；预发布只推 `:{TAG}`。GHCR 要求镜像名全小写，代码里用 `tr '[:upper:]' '[:lower:]'` 处理。
 
@@ -221,7 +233,28 @@ job 分三段：
 
 ### 4.2 CNB（`build-image.yml`）
 
-按钮触发后单条流水线完成：deps → build-frontend → build-linux-amd64 → `docker login`（CNB 内置 token）→ 三个 `docker build` + `docker push`；预发布版本跳过 latest 标签推送。
+同一套 stage 通过 YAML 锚点复用于两个事件：
+
+| 事件                             | 触发方                              | 参数                                    |
+|----------------------------------|-------------------------------------|-----------------------------------------|
+| `web_trigger_build_docker_image` | master 分支按钮「打包 Docker 镜像」 | 表单字段 `version` / `commit`           |
+| `api_trigger_build_docker_image` | GitHub Actions 的 `sync-cnb` job    | Open API 的 `env`：`version` / `commit` |
+
+一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps / build-frontend / build-linux-amd64` → `docker login`（CNB 内置 token）→ 三个 `docker build` + `docker push`；预发布版本跳过 latest 标签推送。
+
+### 4.3 GitLab（`build-image.yml`）
+
+GitLab 有内建 Container Registry（`registry.gitlab.com/<项目>/<镜像名>`），但**不在 GitLab 重新构建**，而是用 `skopeo` 把 GHCR 上的镜像**复制**过去：
+
+- **单一事实来源**：复制过去的是同一份镜像 digest，不会出现两边构建结果不一致；
+- **不受 mirror 延迟影响**：本仓库在 GitLab 上是 GitHub 的 pull mirror，同步有延迟，现场构建可能构建出「与该版本号对不应的代码」；
+- **不装工具链**：不用 Go / Node / pnpm，也不用 `docker:dind`（skopeo 无 daemon，runner 不必 privileged）。
+
+job 在 `image` stage（`.gitlab-ci.yml` 的 `stages` 里新增），只跑两种情况：`CI_PIPELINE_SOURCE == "trigger" && $IMAGE_SYNC == "1"`（GitHub 触发）与手动 Run pipeline（填 `VERSION` + `IMAGE_SYNC=1`）。`IMAGE_SYNC` 是与 Release 流水线的分流开关——同项目里 Release job 的 rules 要求 `IMAGE_SYNC != "1"`，两条流水线不会互相误触发（镜像同步时 GitHub Release 可能还没发布，Release job 取不到附件必然失败）。
+
+认证（目标仓库 GitLab Registry，按优先级）：`CI_REGISTRY_USER` + `CI_REGISTRY_PASSWORD`（配 Registry Deploy Token 后 GitLab 自动注入）→ `GL_REGISTRY_USER` + `GL_REGISTRY_TOKEN`（PAT，write_registry 作用域）→ `CI_JOB_TOKEN` + 用户名 `gitlab-ci-token`（兜底，需在项目设置里允许 job token 推送镜像）。源仓库 GHCR 公开镜像匿名拉即可，私有时配 `GHCR_TOKEN`（PAT，read:packages）。
+
+**清理**：nightly 每天一个标签（3 个服务 × 几十 MB），gitlab.com 免费版容器镜像有 per-project namespace 配额，所以每个服务只保留最近 3 个 nightly 标签，其余用 Registry API 删掉（`DELETE /projects/:id/registry/repositories/:repo_id/tags/:tag`）。清理是旁路：无权限 / 网络错误只打警告，不让已经成功的同步变红。
 
 ---
 
@@ -296,14 +329,20 @@ CNB 侧另用 `docker.volumes` 保留 copy-on-write 缓存（`/root/.cache/go-bu
 
 ## 9. 凭证与外部依赖
 
-| 项                                  | 说明                                                                                  |
-|-------------------------------------|---------------------------------------------------------------------------------------|
-| `GITHUB_TOKEN`                      | GitHub 内置；Build Image 需 `packages: write` 推 GHCR，Release 需 `contents: write`   |
-| `CODECOV_TOKEN`                     | `coverage.yml` 上传 Codecov                                                           |
-| `COVERALLS_REPO_TOKEN`              | `coveralls.yml`；缺失时自动跳过上传（`continue-on-error`），不影响其它步骤            |
-| `CNB_TOKEN` / `CNB_TOKEN_USER_NAME` | CNB 内置，用于 `docker login` 制品库                                                  |
-| CNB imports                         | 多条流水线 `imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml` 引入环境变量 |
-| GitLab                              | `.gitlab/` 仅为预留目录，仓库暂无 `.gitlab-ci.yml`                                    |
+| 项                                              | 说明                                                                                          |
+|-------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `GITHUB_TOKEN`                                  | GitHub 内置；Build Image 需 `packages: write` 推 GHCR，Release 需 `contents: write`           |
+| `CODECOV_TOKEN`                                 | `coverage.yml` 上传 Codecov                                                                   |
+| `COVERALLS_REPO_TOKEN`                          | `coveralls.yml`；缺失时自动跳过上传（`continue-on-error`），不影响其它步骤                    |
+| `CNB_TOKEN` / `CNB_TOKEN_USER_NAME`             | CNB 内置，用于 `docker login` 制品库                                                          |
+| CNB imports                                     | 多条流水线 `imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml` 引入环境变量         |
+| `SYNC_CNB_TOKEN`                                | GitHub → CNB 触发同步流水线（`repo-cnb-trigger:rw`）；Release 与 Build Image 共用             |
+| `CNB_API_ENDPOINT`                              | CNB Open API 地址，默认 `https://api.cnb.cool`；私有化部署时覆盖                              |
+| `SYNC_GITLAB_TRIGGER_TOKEN`                     | GitLab 项目级流水线触发令牌（`glptt-xxx`）；Release 与 Build Image 共用同一个                 |
+| `SERVERCHAN_SENDKEY`                            | ServerChan3（方糖）推送密钥；Release 与 Build Image 的完成通知共用                            |
+| GitLab `GL_REGISTRY_USER` / `GL_REGISTRY_TOKEN` | GitLab 侧变量：PAT（write_registry 作用域），推镜像 / 删镜像标签用；不配则退到 `CI_JOB_TOKEN` |
+| GitLab `GHCR_TOKEN`                             | GitLab 侧变量：GHCR 为私有镜像时用于拉取（PAT，read:packages）；公开镜像不需要                |
+| GitLab                                          | `.gitlab/` 仅为预留目录，仓库暂无 `.gitlab-ci.yml`                                            |
 
 ---
 
@@ -320,3 +359,6 @@ CNB 侧另用 `docker.volumes` 保留 copy-on-write 缓存（`/root/.cache/go-bu
 9. **`scripts/ci/*.sh` 必须保持 POSIX sh**：CNB 的 stage 用 `sh`（可能是 dash/ash）执行，不要引入 `[[ ]]`、数组、`BASH_SOURCE`、`pipefail`、进程替换。判定「是否被 source」用 `$0` 的 basename，不能用 `${BASH_SOURCE[0]}`（dash 会 Bad substitution）。
 10. **`render-release-body.sh` 只把 `.tar.gz`/`.zip` 当附件**：GitHub 侧的 `release_body.md` 常和附件同放一个目录，不筛会把它当成可下载文件列进表格。
 11. **镜像推送 / Release 发布的 concurrency 不设 cancel-in-progress**：宁可排队，不要半路砍——取消留下的「只有部分服务更新」的镜像组合或只有两三个附件的 Release，比排队慢更贵。
+12. **两个定时任务同一时刻起跑**：`release.yml` 与 `build-image.yml` 都是 `cron '0 0 * * *'`，两条流水线并行执行（concurrency group 不同，互相不排队）。两者各自 source `resolve-prerelease.sh`，读的是同一份 tag 历史、同一 UTC 日期，因此推导出**同一个** nightly 版本号；但它们互不感知对方的结果——镜像推送失败不会挡住 Release 发布，反之亦然。定时触发时 `inputs` 为空，版本号必须靠 `github.event_name == 'schedule' && 'nightly' || inputs.version` 兜底成 `nightly`，否则会拿空版本号去构建。
+13. **GitLab 侧两类流水线靠 `IMAGE_SYNC` 分流**：同一个项目里的 `release` job 与 `build-image` job 都可能被 trigger 唤醒，靠 `variables[IMAGE_SYNC]=1` 区分——镜像流水线带 `IMAGE_SYNC=1`，Release job 的 rules 要求 `IMAGE_SYNC != "1"`。改任一侧的 rules 时必须成对改，否则会出现「镜像触发顺带跑 Release（此时 GitHub Release 还没发布，必然失败）」或「Release 触发顺带跑镜像」。
+14. **GitLab 容器镜像有 per-project namespace 配额**（gitlab.com 免费版量级在几百 MB）：nightly 每天一个标签 × 3 个服务，不清旧标签很快撑爆。清理逻辑在 `.gitlab/workflows/build-image.yml` 里（每个服务只保留最近 3 个 nightly 标签），且是**旁路**——删不掉只告警。GHCR / CNB 侧不做清理（那里每个标签都对应一个可被用户拉取的正式/预发布版本）。

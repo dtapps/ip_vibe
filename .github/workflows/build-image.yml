@@ -1,7 +1,11 @@
 # 构建镜像工作流
 #
-# 手动触发，输入版本号后：编译 linux/amd64 二进制 → 构建 backend / reporter / forwarder
-# 三个运行镜像 → 推送到 GitHub Container Registry（GHCR）。
+# 两种触发：手动触发（输入版本号）；每天 UTC 00:00（北京时间 08:00）定时构建 nightly 预发布
+# 镜像（cron 与 release.yml 完全一致，同一时刻起跑）。
+# 手动触发时：编译 linux/amd64 二进制 → 构建 backend / reporter / forwarder
+# 三个运行镜像 → 推送到 GitHub Container Registry（GHCR）→ 触发 CNB / GitLab 侧同步
+# 同一批镜像 → 通过 ServerChan3（方糖）推一条构建完成通知。
+# 定时触发等价于手动填 `nightly`，版本号由 binaries job 推导。
 #
 # 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 release.yml、CNB 的
 # .cnb/workflows/build-image.yml 同口径）：
@@ -30,6 +34,9 @@
 name: Build Image
 
 on:
+  # 每天 UTC 00:00（北京时间 08:00），与 release.yml 的定时任务同一时刻。
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
     inputs:
       version:
@@ -67,10 +74,13 @@ jobs:
       pre_release: ${{ steps.gen.outputs.pre_release }}
       commit_full: ${{ steps.gen.outputs.commit_full }}
       commit_short: ${{ steps.gen.outputs.commit_short }}
+      build_time: ${{ steps.gen.outputs.build_time }}
     steps:
       - name: 检出代码
         uses: actions/checkout@v7
         with:
+          # nightly 推导要取「最近正式版」tag，浅克隆里看不到 tag，必须拉全量历史
+          fetch-depth: 0
           # 不填 commit 时用触发时的 SHA，两个 job 落在同一个提交上
           ref: ${{ inputs.commit || github.sha }}
 
@@ -97,7 +107,8 @@ jobs:
         id: gen
         shell: bash
         env:
-          VERSION: ${{ inputs.version }}
+          # 定时触发没有 inputs，等价于手动填 `nightly`；手动触发仍以输入为准。
+          VERSION: ${{ github.event_name == 'schedule' && 'nightly' || inputs.version }}
         run: |
           set -euo pipefail
 
@@ -109,6 +120,8 @@ jobs:
           # 归一化 / 格式校验 / 预发布判定只有一份实现，两个 workflow 共用
           # shellcheck source=scripts/ci/resolve-prerelease.sh
           . scripts/ci/resolve-prerelease.sh
+          # `nightly` 不是版本号，脚本内部会展开成
+          # v<最近正式版 +1 补丁>-nightly.<UTC 日期>（读的是本地 tag 历史）。
           resolve_version "${VERSION}"
 
           echo "${PRE_NOTE}"
@@ -116,6 +129,12 @@ jobs:
           echo "pre_release=${PRERELEASE}" >> "$GITHUB_OUTPUT"
           echo "commit_full=${commit_full}" >> "$GITHUB_OUTPUT"
           echo "commit_short=${commit_short}" >> "$GITHUB_OUTPUT"
+
+          # 统一构建时间：nightly 版本号里的日期、通知里展示的时间都用它
+          BUILD_TIME="$(bash scripts/get-build-time.sh)"
+          [ -n "${BUILD_TIME}" ] || BUILD_TIME="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          echo "构建时间: ${BUILD_TIME}"
+          echo "build_time=${BUILD_TIME}" >> "$GITHUB_OUTPUT"
 
       - name: 设置 Go 工具链目录
         shell: bash
@@ -182,6 +201,11 @@ jobs:
   image:
     needs: binaries
     runs-on: ubuntu-26.04
+    # 供 notify job 在通知里展示镜像地址
+    outputs:
+      backend_tags: ${{ steps.tags.outputs.backend_tags }}
+      reporter_tags: ${{ steps.tags.outputs.reporter_tags }}
+      forwarder_tags: ${{ steps.tags.outputs.forwarder_tags }}
     steps:
       - name: 检出代码
         uses: actions/checkout@v7
@@ -209,7 +233,9 @@ jobs:
 
       # 标签在这里一次性算好写入 $GITHUB_ENV，避免在三个 build 步骤里各写一遍
       # 「有后缀就不推 latest」这种条件表达式（容易三处写不一致）。
+      # 同时写到 $GITHUB_OUTPUT：notify job 需要拿到镜像地址写进通知。
       - name: 计算镜像标签
+        id: tags
         shell: bash
         env:
           TAG: ${{ needs.binaries.outputs.version }}
@@ -237,6 +263,7 @@ jobs:
 
             env_name="$(printf '%s' "${svc}" | tr '[:lower:]' '[:upper:]')_TAGS"
             printf '%s=%s\n' "${env_name}" "${tags}" >> "$GITHUB_ENV"
+            printf '%s=%s\n' "${svc}_tags" "${tags}" >> "$GITHUB_OUTPUT"
             printf '| %s | %s |\n' "${svc}" "${tags//,/ <br> }" >> "$GITHUB_STEP_SUMMARY"
           done
 
@@ -286,3 +313,228 @@ jobs:
     # 刻意不做旧版本清理：这里的每个标签都对应一个正式/预发布版本，
     # 删掉会让仍在使用旧版本的用户无法重新拉取。GHCR 存储配额确实需要时，
     # 再按 actions/delete-package-versions 只清理 untagged 版本。
+
+  # GHCR 镜像推送成功后，触发 CNB 侧构建同一批镜像（推 CNB 制品库）。
+  # 独立成 job：便于在其后追加 webhook 通知（notify job），也让「同步」与「构建」解耦。
+  # 注意：使用独立的 SYNC_CNB_TOKEN（仅 repo-cnb-trigger:rw 权限），
+  # 与给软件升级下载用的 CNB_TOKEN（repo-release:rw）区分，互不干扰。
+  # 其它平台（Gitee / GitLab / GitCode）的镜像同步暂未接入，后续再加。
+  sync-cnb:
+    needs: [binaries, image]
+    runs-on: ubuntu-26.04
+    # 供 notify job 在通知里展示同步状态
+    outputs:
+      status: ${{ steps.status.outputs.status }}
+    # token 必须放 job 级 env：step 自己的 env 在同一步骤的 if 求值时还读不到，
+    # 放 step 级会让 if 恒为假、同步步骤被永远跳过。
+    env:
+      SYNC_CNB_TOKEN: ${{ secrets.SYNC_CNB_TOKEN }}
+    steps:
+      - name: 触发 CNB 镜像同步构建
+        id: trigger
+        if: ${{ env.SYNC_CNB_TOKEN != '' }}
+        env:
+          CNB_API_ENDPOINT: ${{ secrets.CNB_API_ENDPOINT || 'https://api.cnb.cool' }}
+        shell: bash
+        run: |
+          API="${CNB_API_ENDPOINT%/}"
+          REPO="dtapp/ip_vibe"
+          EVENT="api_trigger_build_docker_image"
+          PRERELEASE="${{ needs.binaries.outputs.pre_release }}"
+          if [ "$PRERELEASE" = "true" ]; then
+            TITLE="同步预发布镜像 ${{ needs.binaries.outputs.version }}"
+          else
+            TITLE="同步正式版镜像 ${{ needs.binaries.outputs.version }}"
+          fi
+
+          echo "触发 CNB 同步构建: ${API}/${REPO}/-/build/start (event=${EVENT})"
+          HTTP=$(curl -s -o /tmp/cnb_start.json -w "%{http_code}" -X POST \
+            -H "Authorization: Bearer ${SYNC_CNB_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/vnd.cnb.api+json" \
+            -d "$(jq -n \
+              --arg branch "master" \
+              --arg event "$EVENT" \
+              --arg title "$TITLE" \
+              --arg version "${{ needs.binaries.outputs.version }}" \
+              --arg commit "${{ needs.binaries.outputs.commit_full }}" \
+              '{branch: $branch, event: $event, title: $title, env: {version: $version, commit: $commit}}')" \
+            "${API}/${REPO}/-/build/start")
+
+          echo "CNB build/start 响应 HTTP=${HTTP}"
+          cat /tmp/cnb_start.json
+          if [ "$HTTP" != "200" ] && [ "$HTTP" != "201" ]; then
+            echo "::warning::触发 CNB 镜像同步构建失败（HTTP=${HTTP}），不影响 GHCR 镜像"
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+          else
+            echo "✓ 已成功请求 CNB 执行镜像同步构建"
+            echo "status=triggered" >> "$GITHUB_OUTPUT"
+          fi
+
+      # 触发步骤被跳过（未配置 secret）或中途失败时，也要给出一个确定的状态，
+      # 否则 notify 里只能显示「未知」，分不清「没触发」和「触发了但失败」。
+      - name: 记录同步状态
+        id: status
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ steps.trigger.outcome }}" = "skipped" ]; then
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ steps.trigger.outputs.status }}" ]; then
+            echo "status=${{ steps.trigger.outputs.status }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+          fi
+
+  # GHCR 镜像推送成功后，触发 GitLab 侧同步同一批镜像（推 GitLab Container Registry）。
+  # 独立成 job：便于在其后追加 webhook 通知（notify job），也让「同步」与「构建」解耦。
+  # 令牌：GitLab 项目 → Settings → CI/CD → Pipeline trigger tokens → Add new token（形如 glptt-xxx），
+  # 与 release.yml 的 sync-gitlab 共用同一个 secret（同一项目的流水线触发器）。
+  # 传 IMAGE_SYNC=1：GitLab 侧用它把「镜像流水线」与「Release 流水线」区分开
+  # （Release job 的 rules 要求 IMAGE_SYNC != "1"），两条流水线互不误触发。
+  # GitLab 侧做的事：从 GHCR 复制镜像 → 推 registry.gitlab.com/dtapps/ip_vibe/{backend,reporter,forwarder}，
+  # 并清理旧 nightly 镜像标签（免费版容器镜像有 per-project namespace 配额）。
+  sync-gitlab:
+    needs: [binaries, image]
+    runs-on: ubuntu-26.04
+    # 供 notify job 在通知里展示同步状态
+    outputs:
+      status: ${{ steps.status.outputs.status }}
+    # token 放 job 级 env（step 自己的 env 在 if 求值时还读不到）。
+    env:
+      GITLAB_TRIGGER_TOKEN: ${{ secrets.SYNC_GITLAB_TRIGGER_TOKEN }}
+    steps:
+      - name: 触发 GitLab 镜像同步流水线
+        id: trigger
+        if: ${{ env.GITLAB_TRIGGER_TOKEN != '' }}
+        shell: bash
+        run: |
+          API="https://gitlab.com/api/v4"   # 自建 GitLab 实例改这里
+          PROJECT="dtapps/ip_vibe"         # dtapps 带 s；GitCode / CNB 那边是 dtapp，别抄错
+          REF="master"                     # 镜像仓库的默认分支
+          # 路径形式必须 URL 编码（/ → %2F）。
+          PROJ=$(printf '%s' "$PROJECT" | jq -sRr @uri)
+
+          echo "触发 GitLab 流水线: ${API}/projects/${PROJ}/trigger/pipeline (ref=${REF})"
+          HTTP=$(curl -s -o /tmp/gitlab_trigger.json -w "%{http_code}" -X POST \
+            --form "token=${GITLAB_TRIGGER_TOKEN}" \
+            --form "ref=${REF}" \
+            --form "variables[VERSION]=${{ needs.binaries.outputs.version }}" \
+            --form "variables[COMMIT]=${{ needs.binaries.outputs.commit_full }}" \
+            --form "variables[IMAGE_SYNC]=1" \
+            "${API}/projects/${PROJ}/trigger/pipeline")
+
+          echo "GitLab trigger/pipeline 响应 HTTP=${HTTP}"
+          cat /tmp/gitlab_trigger.json
+          if [ "$HTTP" != "200" ] && [ "$HTTP" != "201" ]; then
+            echo "::warning::触发 GitLab 镜像同步流水线失败（HTTP=${HTTP}），不影响 GHCR 镜像"
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+          else
+            echo "✓ 已成功请求 GitLab 执行镜像同步流水线"
+            echo "status=triggered" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 记录同步状态
+        id: status
+        if: always()
+        shell: bash
+        run: |
+          if [ "${{ steps.trigger.outcome }}" = "skipped" ]; then
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ steps.trigger.outputs.status }}" ]; then
+            echo "status=${{ steps.trigger.outputs.status }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+          fi
+
+  # 镜像构建 + 各平台同步全部完成后，通过 ServerChan3（方糖）推送 webhook 通知。
+  # 需配置 secret SERVERCHAN_SENDKEY（形如 SCTxxxx 或 sctp{uid}t...）；未配置则跳过通知。
+  # API 文档：https://doc.sc3.ft07.com/zh/serverchan3/server/api
+  # 推送地址：SCT 转发 key → https://sctapi.ftqq.com/<sendkey>.send
+  #          带 uid 的 sendkey（sctp 开头）→ https://<uid>.push.ft07.com/send/<sendkey>.send
+  notify:
+    # 等镜像同步 job 结束（未配置 secret 时它只是跳过，不影响 success 判定）。
+    needs: [binaries, image, sync-cnb, sync-gitlab]
+    runs-on: ubuntu-26.04
+    if: ${{ needs.image.result == 'success' }}
+    env:
+      SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+    steps:
+      - name: 发送 ServerChan3 通知
+        if: ${{ env.SERVERCHAN_SENDKEY != '' }}
+        env:
+          SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+        shell: bash
+        run: |
+          # 支持两种 ServerChan3 key：
+          #   - 以 sctp 开头（带 uid 的 sendkey）→ https://<uid>.push.ft07.com/send/<key>.send
+          #   - 其他（SCT 转发 key）            → https://sctapi.ftqq.com/<key>.send
+          SENDKEY_VAL="$SENDKEY"
+          if [[ "$SENDKEY_VAL" =~ ^sctp([0-9]+)t ]]; then
+            URL="https://${BASH_REMATCH[1]}.push.ft07.com/send/${SENDKEY_VAL}.send"
+          else
+            URL="https://sctapi.ftqq.com/${SENDKEY_VAL}.send"
+          fi
+          # 注意：URL 含 sendkey（密钥），禁止整体打印，仅打印域名避免日志泄露密钥
+          echo "推送 ServerChan3 通知: ${URL%%/*}"
+
+          TAG="${{ needs.binaries.outputs.version }}"
+          BUILD_TIME="${{ needs.binaries.outputs.build_time }}"
+          # 构建时间是 UTC ISO8601，转成北京时间展示更直观
+          BUILD_TIME_CN=$(date -d "${BUILD_TIME}" -u +'%Y-%m-%d %H:%M:%S' 2>/dev/null)
+          BUILD_TIME_CN="${BUILD_TIME_CN} (UTC+8)"
+          REPO="${{ github.repository }}"
+
+          # 镜像地址：GHCR 由 image job 算出（仓库名已转小写），CNB / GitLab 侧固定前缀
+          BACKEND_TAGS="${{ needs.image.outputs.backend_tags }}"
+          REPORTER_TAGS="${{ needs.image.outputs.reporter_tags }}"
+          FORWARDER_TAGS="${{ needs.image.outputs.forwarder_tags }}"
+          CNB_IMAGE_BASE="docker.cnb.cool/dtapp/ip_vibe"
+          GITLAB_IMAGE_BASE="registry.gitlab.com/dtapps/ip_vibe"
+
+          # 同步状态 → 中文标签。状态来自 sync job 的 outputs：
+          #   triggered=已触发（异步执行，进度看平台页面）/ skipped=未配置 secret / failed=触发失败
+          sync_state() {
+            case "$1" in
+              triggered) printf '✅ 已触发' ;;
+              skipped) printf '⏭ 未配置（跳过）' ;;
+              failed) printf '❌ 触发失败' ;;
+              *) printf '❓ 未知' ;;
+            esac
+          }
+
+          TITLE="IPVibe ${TAG} 镜像构建完成"
+          TAGS="IPVibe|stable"
+          if [ "${{ needs.binaries.outputs.pre_release }}" = "true" ]; then
+            TITLE="IPVibe ${TAG} (预发布) 镜像构建完成"
+            TAGS="IPVibe|prerelease"
+          fi
+
+          DESP="**版本**: \`${TAG}\`  "$'\n'
+          DESP="${DESP}**构建时间**: ${BUILD_TIME_CN}  "$'\n'
+          DESP="${DESP}**Git 提交**: ${{ needs.binaries.outputs.commit_short }}  "$'\n'
+          DESP="${DESP}**GHCR 镜像**:  "$'\n'
+          DESP="${DESP}- backend: \`${BACKEND_TAGS//,/, }\`  "$'\n'
+          DESP="${DESP}- reporter: \`${REPORTER_TAGS//,/, }\`  "$'\n'
+          DESP="${DESP}- forwarder: \`${FORWARDER_TAGS//,/, }\`  "$'\n'
+          DESP="${DESP}**CNB 镜像地址**: \`${CNB_IMAGE_BASE}/{backend,reporter,forwarder}:${TAG}\`  "$'\n'
+          DESP="${DESP}**GitLab 镜像地址**: \`${GITLAB_IMAGE_BASE}/{backend,reporter,forwarder}:${TAG}\`  "$'\n'
+          DESP="${DESP}**镜像同步**: CNB $(sync_state "${{ needs['sync-cnb'].outputs.status }}") · GitLab $(sync_state "${{ needs['sync-gitlab'].outputs.status }}")"
+
+          echo "推送 ServerChan3 通知: ${TITLE}"
+          HTTP=$(curl -s -o /tmp/sc3.json -w "%{http_code}" -X POST \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n \
+              --arg title "$TITLE" \
+              --arg desp "$DESP" \
+              --arg tags "$TAGS" \
+              '{title: $title, desp: $desp, tags: $tags}')" \
+            "$URL")
+
+          echo "ServerChan3 响应 HTTP=${HTTP}"
+          cat /tmp/sc3.json
+          if [ "$HTTP" != "200" ]; then
+            echo "::warning::ServerChan3 通知发送失败（HTTP=${HTTP}）"
+          else
+            echo "✓ 已发送 ServerChan3 通知"
+          fi

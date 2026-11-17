@@ -1,193 +1,199 @@
-# 构建镜像工作流（CNB 分支按钮「打包 Docker 镜像」）：三服务镜像推 CNB 制品库
+# 构建镜像工作流（CNB）：三服务镜像推 CNB 制品库
 #
-# 版本号规则（与 GitHub 的 .github/workflows/build-image.yml 同口径）：
+# 两个触发事件共用同一套 stage（YAML 锚点）：
+#   - web_trigger_build_docker_image：分支按钮「打包 Docker 镜像」手动触发，
+#     表单输入 version / commit。
+#   - api_trigger_build_docker_image：GitHub Actions 的 build-image.yml 把镜像推到
+#     GHCR 成功后，由 Open API 触发
+#     （POST https://api.cnb.cool/dtapp/ip_vibe/-/build/start，
+#     event=api_trigger_build_docker_image，env 传 version / commit），
+#     把同一批镜像再推到 CNB 制品库。
+#
+# 三个服务镜像的 Dockerfile 统一放在 .cnb/docker/Dockerfile.{backend,reporter,forwarder}
+# （构建上下文 = 仓库根目录，Dockerfile 里 COPY bin/<服务>-linux-amd64）。
+# 与 GitHub 的 .github/docker/Dockerfile.* 结构一致，只差基础镜像的 registry：
+# CNB 拉 docker.cnb.cool/dtapp/alpine:latest，GitHub 拉 ghcr.io/dtapps/alpine:latest
+# （同一套上游流水线发布，标签契约一致）。
+#
+# 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 GitHub 的
+# .github/workflows/build-image.yml 同口径）：
 #   v1.2.3                  -> 正式版，推 :v1.2.3 与 :latest
 #   v1.2.3-rc.1             -> 预发布（rc 渠道），只推 :v1.2.3-rc.1，不覆盖 :latest
 #   v1.2.3-beta.1           -> 预发布（beta 渠道），只推 :v1.2.3-beta.1，不覆盖 :latest
 #   v1.2.3-alpha.1          -> 预发布（alpha 渠道），只推 :v1.2.3-alpha.1，不覆盖 :latest
 #   v1.2.3-nightly.20260101 -> 预发布（nightly 渠道），只推 :v1.2.3-nightly.20260101，不覆盖 :latest
+#   nightly                 -> 自动展开成 v<最近正式版 +1 补丁>-nightly.<UTC 日期>
+
+# 顶层伪键：仅用于定义作业锚点，不会被当成分支事件执行。
+.build_docker_image: &build_docker_image
+  runner:
+    tags: cnb:arch:amd64 # 指定 Runner 必须有这个标签
+  services:
+    - docker # 启用 Docker 服务（用于 docker build/push）
+  docker:
+    image: docker.cnb.cool/dtapp/golang:latest # 统一使用 CNB 内部 CI 基础镜像
+    volumes:
+      - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
+      - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
+      - /go/pkg/mod:copy-on-write # 仅缓存 Go 模块下载，避免覆盖镜像内预装的 /go/bin 工具
+  imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml # 导入外部环境变量/配置
+  stages:
+    - name: 输出基本信息
+      script: |
+        echo "原始 version: $version"
+        echo "原始 commit: ${commit:-<空，使用当前检出>}"
+        echo "CNB_DOCKER_REGISTRY: ${CNB_DOCKER_REGISTRY}"
+        echo "CNB_REPO_SLUG_LOWERCASE: ${CNB_REPO_SLUG_LOWERCASE}"
+
+        # 指定 commit 时切换工作区（CNB 默认检出触发时的 commit）。
+        # 先补拉历史，避免浅克隆里没有目标对象。
+        if [ -n "${commit:-}" ]; then
+          git fetch --quiet --force --unshallow origin 2>/dev/null || git fetch --quiet --force origin || true
+          # 该 commit 可能只推到了 GitHub 镜像（CNB 与 GitHub 是两个仓库），按 SHA 再拉一次；
+          # 仍然拿不到就明确失败 —— 悄悄退回 HEAD 会构建出「与发布版本不同的代码」。
+          if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
+            git fetch --quiet --force origin "${commit}" 2>/dev/null || true
+          fi
+          if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
+            echo "❌ commit ${commit} 在本仓库不存在"
+            echo "   （CNB 与 GitHub 是两个仓库，该 commit 可能只推到了 GitHub 镜像）"
+            echo "   先把它推到 CNB 仓库，或不要传 commit（用当前检出的 HEAD）"
+            exit 1
+          fi
+          git checkout --detach "${commit}"
+        fi
+        commit_full="$(git rev-parse HEAD)"
+        commit_short="$(git rev-parse --short HEAD)"
+        echo "构建 commit: ${commit_short} (${commit_full})"
+
+        # 归一化（补 v 前缀）与预发布判定只有一份实现，CNB 与 GitHub 都 source 它，
+        # 避免两边各写一套 grep 正则、判断口径慢慢跑偏。
+        # 结果：TAG（带 v 前缀）/ PRERELEASE（true|false）/ VERSION_TYPE / PRE_NOTE
+        # 版本号为空或含非法字符时 resolve_version 返回 1，这里直接让 stage 失败，
+        # 而不是打出 :v 这种非法 tag。
+        # `nightly` 会在这里展开成 v<最近正式版+1 补丁>-nightly.<UTC 日期>；
+        # GitHub 侧同步时传的是展开好的版本号，这里传什么就构建什么。
+        . scripts/ci/resolve-prerelease.sh
+        resolve_version "$version" || exit 1
+        echo "$PRE_NOTE"
+        version="$TAG"
+
+        # 1. 计算各镜像的名称与地址（构建/推送阶段共用）
+        backend_image_name="${CNB_REPO_SLUG_LOWERCASE}/backend"
+        reporter_image_name="${CNB_REPO_SLUG_LOWERCASE}/reporter"
+        forwarder_image_name="${CNB_REPO_SLUG_LOWERCASE}/forwarder"
+
+        backend_docker_image_full="${CNB_DOCKER_REGISTRY}/${backend_image_name}:${version}"
+        backend_docker_image_latest="${CNB_DOCKER_REGISTRY}/${backend_image_name}:latest"
+
+        reporter_docker_image_full="${CNB_DOCKER_REGISTRY}/${reporter_image_name}:${version}"
+        reporter_docker_image_latest="${CNB_DOCKER_REGISTRY}/${reporter_image_name}:latest"
+
+        forwarder_docker_image_full="${CNB_DOCKER_REGISTRY}/${forwarder_image_name}:${version}"
+        forwarder_docker_image_latest="${CNB_DOCKER_REGISTRY}/${forwarder_image_name}:latest"
+
+        # 2. 通过 set-output 输出到 result
+        echo "##[set-output interior_version=$version]"
+        echo "##[set-output interior_is_prerelease=$PRERELEASE]"
+        echo "##[set-output interior_commit_full=$commit_full]"
+        echo "##[set-output interior_commit_short=$commit_short]"
+        echo "##[set-output interior_backend_image_name=$backend_image_name]"
+        echo "##[set-output interior_backend_docker_image_full=$backend_docker_image_full]"
+        echo "##[set-output interior_backend_docker_image_latest=$backend_docker_image_latest]"
+        echo "##[set-output interior_reporter_image_name=$reporter_image_name]"
+        echo "##[set-output interior_reporter_docker_image_full=$reporter_docker_image_full]"
+        echo "##[set-output interior_reporter_docker_image_latest=$reporter_docker_image_latest]"
+        echo "##[set-output interior_forwarder_image_name=$forwarder_image_name]"
+        echo "##[set-output interior_forwarder_docker_image_full=$forwarder_docker_image_full]"
+        echo "##[set-output interior_forwarder_docker_image_latest=$forwarder_docker_image_latest]"
+      exports:
+        interior_version: INTERIOR_VERSION
+        interior_is_prerelease: INTERIOR_IS_PRERELEASE
+        interior_commit_full: INTERIOR_COMMIT_FULL
+        interior_commit_short: INTERIOR_COMMIT_SHORT
+        interior_backend_image_name: INTERIOR_BACKEND_IMAGE_NAME
+        interior_backend_docker_image_full: INTERIOR_BACKEND_DOCKER_IMAGE_FULL
+        interior_backend_docker_image_latest: INTERIOR_BACKEND_DOCKER_IMAGE_LATEST
+        interior_reporter_image_name: INTERIOR_REPORTER_IMAGE_NAME
+        interior_reporter_docker_image_full: INTERIOR_REPORTER_DOCKER_IMAGE_FULL
+        interior_reporter_docker_image_latest: INTERIOR_REPORTER_DOCKER_IMAGE_LATEST
+        interior_forwarder_image_name: INTERIOR_FORWARDER_IMAGE_NAME
+        interior_forwarder_docker_image_full: INTERIOR_FORWARDER_DOCKER_IMAGE_FULL
+        interior_forwarder_docker_image_latest: INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST
+
+    - name: 安装所有依赖
+      script: make deps
+
+    - name: 构建前端静态文件
+      script: VERSION=${INTERIOR_VERSION} make build-frontend
+
+    - name: 构建后端二进制文件
+      script: VERSION=${INTERIOR_VERSION} COMMIT=${INTERIOR_COMMIT_SHORT} make build-linux-amd64
+
+    - name: 登录 Docker Registry
+      script: |
+        docker login -u "${CNB_TOKEN_USER_NAME}" -p "${CNB_TOKEN}" "${CNB_DOCKER_REGISTRY}"
+
+    - name: 构建 Docker Backend 镜像
+      script: |
+        docker build \
+          -f "./.cnb/docker/Dockerfile.backend" \
+          -t "${INTERIOR_BACKEND_DOCKER_IMAGE_FULL}" \
+          -t "${INTERIOR_BACKEND_DOCKER_IMAGE_LATEST}" .
+
+    - name: 构建 Docker Reporter 镜像
+      script: |
+        docker build \
+          -f "./.cnb/docker/Dockerfile.reporter" \
+          -t "${INTERIOR_REPORTER_DOCKER_IMAGE_FULL}" \
+          -t "${INTERIOR_REPORTER_DOCKER_IMAGE_LATEST}" .
+
+    - name: 构建 Docker Forwarder 镜像
+      script: |
+        docker build \
+          -f "./.cnb/docker/Dockerfile.forwarder" \
+          -t "${INTERIOR_FORWARDER_DOCKER_IMAGE_FULL}" \
+          -t "${INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST}" .
+
+    - name: 推送 Docker Backend 镜像
+      script: |
+        docker push "${INTERIOR_BACKEND_DOCKER_IMAGE_FULL}"
+        # 预发布版本不覆盖 latest 标签，避免把未正式发布的版本推给线上用户
+        if [ "${INTERIOR_IS_PRERELEASE}" = "true" ]; then
+          echo "预发布版本，跳过 latest 标签推送: ${INTERIOR_BACKEND_DOCKER_IMAGE_LATEST}"
+        else
+          docker push "${INTERIOR_BACKEND_DOCKER_IMAGE_LATEST}"
+        fi
+
+    - name: 推送 Docker Reporter 镜像
+      script: |
+        docker push "${INTERIOR_REPORTER_DOCKER_IMAGE_FULL}"
+        # 预发布版本不覆盖 latest 标签，避免把未正式发布的版本推给线上用户
+        if [ "${INTERIOR_IS_PRERELEASE}" = "true" ]; then
+          echo "预发布版本，跳过 latest 标签推送: ${INTERIOR_REPORTER_DOCKER_IMAGE_LATEST}"
+        else
+          docker push "${INTERIOR_REPORTER_DOCKER_IMAGE_LATEST}"
+        fi
+
+    - name: 推送 Docker Forwarder 镜像
+      script: |
+        docker push "${INTERIOR_FORWARDER_DOCKER_IMAGE_FULL}"
+        # 预发布版本不覆盖 latest 标签，避免把未正式发布的版本推给线上用户
+        if [ "${INTERIOR_IS_PRERELEASE}" = "true" ]; then
+          echo "预发布版本，跳过 latest 标签推送: ${INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST}"
+        else
+          docker push "${INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST}"
+        fi
 
 '**':
-  # 自定义按钮可触发的事件：web_trigger_build_docker_image
-  #
-  # 三个服务镜像的 Dockerfile 统一放在 .cnb/docker/Dockerfile.{backend,reporter,forwarder}
-  # （构建上下文 = 仓库根目录，Dockerfile 里 COPY bin/<服务>-linux-amd64）。
-  # 与 GitHub 的 .github/docker/Dockerfile.* 结构一致，只差基础镜像的 registry：
-  # CNB 拉 docker.cnb.cool/dtapp/alpine:latest，GitHub 拉 ghcr.io/dtapps/alpine:latest
-  # （同一套上游流水线发布，标签契约一致）。
+  # 手动触发：页面自定义按钮「打包 Docker 镜像」（预发布看版本号后缀，页面不再有勾选框）
   web_trigger_build_docker_image:
-    - runner:
-        tags: cnb:arch:amd64 # 指定 Runner 必须有这个标签
-      services:
-        - docker # 启用 Docker 服务（用于 docker build/push）
-      docker:
-        image: docker.cnb.cool/dtapp/golang:latest # 统一使用 CNB 内部 CI 基础镜像
-        volumes:
-          - /root/.cache/go-build:copy-on-write # Go 构建缓存 - 加速编译
-          - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
-          - /go/pkg/mod:copy-on-write # 仅缓存 Go 模块下载，避免覆盖镜像内预装的 /go/bin 工具
-      imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml # 导入外部环境变量/配置
-      stages:
-        - name: 输出基本信息
-          script: |
-            echo "原始 version: $version"
-            echo "原始 commit: ${commit:-<空，使用当前检出>}"
-            echo "CNB_DOCKER_REGISTRY: ${CNB_DOCKER_REGISTRY}"
-            echo "CNB_REPO_SLUG_LOWERCASE: ${CNB_REPO_SLUG_LOWERCASE}"
+    - *build_docker_image
 
-            # 指定 commit 时切换工作区（CNB 默认检出触发时的 commit）。
-            # 先补拉历史，避免浅克隆里没有目标对象。
-            if [ -n "${commit:-}" ]; then
-              git fetch --quiet --force --unshallow origin 2>/dev/null || git fetch --quiet --force origin || true
-              # 该 commit 可能只推到了 GitHub 镜像（CNB 与 GitHub 是两个仓库），按 SHA 再拉一次；
-              # 仍然拿不到就明确失败 —— 悄悄退回 HEAD 会构建出「与发布版本不同的代码」。
-              if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
-                git fetch --quiet --force origin "${commit}" 2>/dev/null || true
-              fi
-              if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
-                echo "❌ commit ${commit} 在本仓库不存在"
-                echo "   （CNB 与 GitHub 是两个仓库，该 commit 可能只推到了 GitHub 镜像）"
-                echo "   先把它推到 CNB 仓库，或不要传 commit（用当前检出的 HEAD）"
-                exit 1
-              fi
-              git checkout --detach "${commit}"
-            fi
-            commit_full="$(git rev-parse HEAD)"
-            commit_short="$(git rev-parse --short HEAD)"
-            echo "构建 commit: ${commit_short} (${commit_full})"
-
-            # 1. 版本号不能为空，否则会打出 :v 这样的非法镜像标签
-            if [ -z "$version" ]; then
-              echo "错误: 版本号不能为空。示例: v1.2.3 / v1.2.3-rc.1 / v1.2.3-beta.1 / v1.2.3-alpha.1 / v1.2.3-nightly.20260101" >&2
-              exit 1
-            fi
-
-            # 2. 如果输入没有 v 前缀，自动加上
-            case "$version" in
-              v*) ;;
-              *) version="v${version}" ;;
-            esac
-
-            # 3. 判断是否为预发布版本（版本号后缀带 rc / beta / alpha / nightly）
-            #    v1.2.3                  -> 正式版   （推送 :v1.2.3 与 :latest）
-            #    v1.2.3-rc.1             -> 预发布   （只推送 :v1.2.3-rc.1，不覆盖 :latest）
-            #    v1.2.3-beta.1           -> 预发布   （只推送 :v1.2.3-beta.1，不覆盖 :latest）
-            #    v1.2.3-alpha.1          -> 预发布   （只推送 :v1.2.3-alpha.1，不覆盖 :latest）
-            #    v1.2.3-nightly.20260101 -> 预发布   （只推送 :v1.2.3-nightly.20260101，不覆盖 :latest）
-            if echo "$version" | grep -qiE -- '-(rc|beta|alpha|nightly)([.-]?[0-9A-Za-z.-]*)$'; then
-              is_prerelease="true"
-              version_type="预发布"
-            else
-              is_prerelease="false"
-              version_type="正式版"
-            fi
-
-            echo "处理 version: $version"
-            echo "版本类型: ${version_type} (is_prerelease=${is_prerelease})"
-
-            # 4. 计算各镜像的名称与地址（构建/推送阶段共用）
-            backend_image_name="${CNB_REPO_SLUG_LOWERCASE}/backend"
-            reporter_image_name="${CNB_REPO_SLUG_LOWERCASE}/reporter"
-            forwarder_image_name="${CNB_REPO_SLUG_LOWERCASE}/forwarder"
-
-            backend_docker_image_full="${CNB_DOCKER_REGISTRY}/${backend_image_name}:${version}"
-            backend_docker_image_latest="${CNB_DOCKER_REGISTRY}/${backend_image_name}:latest"
-
-            reporter_docker_image_full="${CNB_DOCKER_REGISTRY}/${reporter_image_name}:${version}"
-            reporter_docker_image_latest="${CNB_DOCKER_REGISTRY}/${reporter_image_name}:latest"
-
-            forwarder_docker_image_full="${CNB_DOCKER_REGISTRY}/${forwarder_image_name}:${version}"
-            forwarder_docker_image_latest="${CNB_DOCKER_REGISTRY}/${forwarder_image_name}:latest"
-
-            # 5. 通过 set-output 输出到 result
-            echo "##[set-output interior_version=$version]"
-            echo "##[set-output interior_is_prerelease=$is_prerelease]"
-            echo "##[set-output interior_commit_full=$commit_full]"
-            echo "##[set-output interior_commit_short=$commit_short]"
-            echo "##[set-output interior_backend_image_name=$backend_image_name]"
-            echo "##[set-output interior_backend_docker_image_full=$backend_docker_image_full]"
-            echo "##[set-output interior_backend_docker_image_latest=$backend_docker_image_latest]"
-            echo "##[set-output interior_reporter_image_name=$reporter_image_name]"
-            echo "##[set-output interior_reporter_docker_image_full=$reporter_docker_image_full]"
-            echo "##[set-output interior_reporter_docker_image_latest=$reporter_docker_image_latest]"
-            echo "##[set-output interior_forwarder_image_name=$forwarder_image_name]"
-            echo "##[set-output interior_forwarder_docker_image_full=$forwarder_docker_image_full]"
-            echo "##[set-output interior_forwarder_docker_image_latest=$forwarder_docker_image_latest]"
-          exports:
-            interior_version: INTERIOR_VERSION
-            interior_is_prerelease: INTERIOR_IS_PRERELEASE
-            interior_commit_full: INTERIOR_COMMIT_FULL
-            interior_commit_short: INTERIOR_COMMIT_SHORT
-            interior_backend_image_name: INTERIOR_BACKEND_IMAGE_NAME
-            interior_backend_docker_image_full: INTERIOR_BACKEND_DOCKER_IMAGE_FULL
-            interior_backend_docker_image_latest: INTERIOR_BACKEND_DOCKER_IMAGE_LATEST
-            interior_reporter_image_name: INTERIOR_REPORTER_IMAGE_NAME
-            interior_reporter_docker_image_full: INTERIOR_REPORTER_DOCKER_IMAGE_FULL
-            interior_reporter_docker_image_latest: INTERIOR_REPORTER_DOCKER_IMAGE_LATEST
-            interior_forwarder_image_name: INTERIOR_FORWARDER_IMAGE_NAME
-            interior_forwarder_docker_image_full: INTERIOR_FORWARDER_DOCKER_IMAGE_FULL
-            interior_forwarder_docker_image_latest: INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST
-
-        - name: 安装所有依赖
-          script: make deps
-
-        - name: 构建前端静态文件
-          script: VERSION=${INTERIOR_VERSION} make build-frontend
-
-        - name: 构建后端二进制文件
-          script: VERSION=${INTERIOR_VERSION} COMMIT=${INTERIOR_COMMIT_SHORT} make build-linux-amd64
-
-        - name: 登录 Docker Registry
-          script: |
-            docker login -u "${CNB_TOKEN_USER_NAME}" -p "${CNB_TOKEN}" "${CNB_DOCKER_REGISTRY}"
-
-        - name: 构建 Docker Backend 镜像
-          script: |
-            docker build \
-              -f "./.cnb/docker/Dockerfile.backend" \
-              -t "${INTERIOR_BACKEND_DOCKER_IMAGE_FULL}" \
-              -t "${INTERIOR_BACKEND_DOCKER_IMAGE_LATEST}" .
-
-        - name: 构建 Docker Reporter 镜像
-          script: |
-            docker build \
-              -f "./.cnb/docker/Dockerfile.reporter" \
-              -t "${INTERIOR_REPORTER_DOCKER_IMAGE_FULL}" \
-              -t "${INTERIOR_REPORTER_DOCKER_IMAGE_LATEST}" .
-
-        - name: 构建 Docker Forwarder 镜像
-          script: |
-            docker build \
-              -f "./.cnb/docker/Dockerfile.forwarder" \
-              -t "${INTERIOR_FORWARDER_DOCKER_IMAGE_FULL}" \
-              -t "${INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST}" .
-
-        - name: 推送 Docker Backend 镜像
-          script: |
-            docker push "${INTERIOR_BACKEND_DOCKER_IMAGE_FULL}"
-            # 预发布版本不覆盖 latest 标签，避免把未正式发布的版本推给线上用户
-            if [ "${INTERIOR_IS_PRERELEASE}" = "true" ]; then
-              echo "预发布版本，跳过 latest 标签推送: ${INTERIOR_BACKEND_DOCKER_IMAGE_LATEST}"
-            else
-              docker push "${INTERIOR_BACKEND_DOCKER_IMAGE_LATEST}"
-            fi
-
-        - name: 推送 Docker Reporter 镜像
-          script: |
-            docker push "${INTERIOR_REPORTER_DOCKER_IMAGE_FULL}"
-            # 预发布版本不覆盖 latest 标签，避免把未正式发布的版本推给线上用户
-            if [ "${INTERIOR_IS_PRERELEASE}" = "true" ]; then
-              echo "预发布版本，跳过 latest 标签推送: ${INTERIOR_REPORTER_DOCKER_IMAGE_LATEST}"
-            else
-              docker push "${INTERIOR_REPORTER_DOCKER_IMAGE_LATEST}"
-            fi
-
-        - name: 推送 Docker Forwarder 镜像
-          script: |
-            docker push "${INTERIOR_FORWARDER_DOCKER_IMAGE_FULL}"
-            # 预发布版本不覆盖 latest 标签，避免把未正式发布的版本推给线上用户
-            if [ "${INTERIOR_IS_PRERELEASE}" = "true" ]; then
-              echo "预发布版本，跳过 latest 标签推送: ${INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST}"
-            else
-              docker push "${INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST}"
-            fi
+  # API 触发：由 GitHub Actions 的 build-image.yml 在镜像推送成功后调用 CNB Open API
+  # 触发（event=api_trigger_build_docker_image）。
+  # 需通过 env 传入 version 变量（如 {"version":"v1.2.3"} / {"version":"v1.2.3-rc.1"} /
+  # {"version":"v1.2.4-nightly.20260101"}）与可选的 commit。
+  # 预发布标记由 version 后缀推导，env 里的 pre_release 已废弃（传了也不看，避免两套口径打架）。
+  api_trigger_build_docker_image:
+    - *build_docker_image

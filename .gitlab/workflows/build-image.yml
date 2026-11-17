@@ -1,0 +1,172 @@
+# 镜像同步：把 GitHub 侧已经推到 GHCR 的三个运行镜像，搬到 GitLab Container Registry。
+#
+# 与 release.yml 的分工：
+#   - release.yml：从 GitHub Release 下载二进制附件 → 发 GitLab Release（走 Generic Package Registry）
+#   - 本文件：从 GHCR 复制镜像 → 推 GitLab Container Registry（registry.gitlab.com/<项目>/<镜像名>）
+#
+# 为什么是「复制」而不是「在 GitLab 重新构建」：
+#   1. 单一事实来源：GitHub 的 build-image.yml 已经构建并推过一遍，复制过去的是同一份镜像
+#      digest，不会出现「两边构建结果不一致」；
+#   2. 本仓库在 GitLab 上是 GitHub 的 pull mirror，同步有延迟，在 GitLab 现场构建可能构建出
+#      「与该版本号对不应的代码」（release.yml 里已有同样的提醒）；
+#   3. 不用在 runner 上装 Go / Node / pnpm 工具链，job 几分钟跑完。
+#   搬运工具用 skopeo（无 daemon，不需要 runner 具备 privileged 模式），不用 docker:dind。
+#
+# 触发：
+#   - GitHub Actions 的 build-image.yml 的 sync-gitlab job 用 trigger token 触发：
+#       POST /api/v4/projects/:id/trigger/pipeline
+#         token=<SYNC_GITLAB_TRIGGER_TOKEN>  ref=master
+#         variables[VERSION]=v1.2.3  variables[COMMIT]=<sha>  variables[IMAGE_SYNC]=1
+#     IMAGE_SYNC=1 是「只跑镜像 job」的开关：同项目的 release job 规则带 IMAGE_SYNC != "1"，
+#     两条流水线不会互相误触发（release.yml 里已同步加了这个条件）。
+#   - 手动：CI/CD → Pipelines → Run pipeline，填 VERSION=<版本号> 与 IMAGE_SYNC=1。
+#
+# 认证：
+#   - 目标仓库（GitLab Registry），按优先级取：
+#       1. CI_REGISTRY_USER + CI_REGISTRY_PASSWORD（项目配置 Registry Deploy Token 后
+#          GitLab 自动注入，最标准的一种）
+#       2. GL_REGISTRY_USER + GL_REGISTRY_TOKEN（项目自定义变量，PAT 需 write_registry 作用域）
+#       3. CI_JOB_TOKEN + 用户名 gitlab-ci-token（兜底：需在项目设置里允许 job token 推送镜像）
+#   - 源仓库（GHCR）：公开镜像匿名拉取即可；GHCR 包设为私有时配 GHCR_TOKEN（PAT，read:packages）。
+#
+# 标签规则（与 GitHub / CNB 同口径）：正式版推 :<TAG> 与 :latest；预发布只推 :<TAG>，
+# 不覆盖 latest，避免把未正式发布的版本推给线上用户。
+#
+# 清理：nightly 每天一个标签（3 个服务 × 几十 MB），GitLab 免费版容器镜像有 per-project
+# namespace 配额，所以每个服务只保留最近 3 个 nightly 标签，其余删掉（清理是旁路，失败只告警）。
+#
+# 本文件由根目录的 .gitlab-ci.yml 通过 include: local 引入（`stages` / `default` 留在根文件）。
+build-image:
+  stage: image
+  variables:
+    GIT_STRATEGY: none # 只搬镜像，不需要检出代码
+  timeout: 40m
+  rules:
+    # 主路径：GitHub Actions 的 sync-gitlab job 触发（带 IMAGE_SYNC=1）
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $IMAGE_SYNC == "1"
+    # 手动路径：Run pipeline 时填 VERSION 与 IMAGE_SYNC=1
+    - if: $CI_PIPELINE_SOURCE == "web" && $VERSION && $IMAGE_SYNC == "1"
+  # skopeo 单独装在本 job 里，不进根 .gitlab-ci.yml 的 default：
+  # 万一这个包拉不下来，不该把 release job 一起拖挂。
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends curl jq ca-certificates skopeo && rm -rf /var/lib/apt/lists/*
+  script:
+    - |
+      set -euo pipefail
+
+      TAG="${VERSION:?未传入 VERSION —— 网页手动执行时请在 Run pipeline 的变量区填写（如 VERSION=v1.2.3）}"
+      case "$TAG" in v* | V*) ;; *) TAG="v${TAG}" ;; esac
+      # 是否预发布只看版本号后缀（与 GitHub / CNB 同口径），不采信人工传入的 PRERELEASE
+      TAG_LC="$(printf '%s' "$TAG" | tr '[:upper:]' '[:lower:]')"
+      case "$TAG_LC" in
+        *-rc* | *-beta* | *-alpha* | *-nightly*) PRE="true" ;;
+        *) PRE="false" ;;
+      esac
+      echo "版本号: ${TAG}  预发布: ${PRE}"
+
+      # 源：GHCR（GitHub 侧 build-image.yml 推的）；目标：GitLab 容器镜像仓库
+      SRC_BASE="${GHCR_REGISTRY:-ghcr.io}/${GHCR_REPO:-dtapps/ip_vibe}"
+      DST_BASE="${CI_REGISTRY_IMAGE:?CI_REGISTRY_IMAGE 为空——项目可能没启用容器镜像仓库}"
+      echo "源: ${SRC_BASE}  目标: ${DST_BASE}"
+
+      # 目标仓库认证：Deploy Token > 自定义 PAT > job token
+      if [ -n "${CI_REGISTRY_USER:-}" ] && [ -n "${CI_REGISTRY_PASSWORD:-}" ]; then
+        DEST_USER="${CI_REGISTRY_USER}"
+        DEST_PASS="${CI_REGISTRY_PASSWORD}"
+      elif [ -n "${GL_REGISTRY_USER:-}" ] && [ -n "${GL_REGISTRY_TOKEN:-}" ]; then
+        DEST_USER="${GL_REGISTRY_USER}"
+        DEST_PASS="${GL_REGISTRY_TOKEN}"
+      else
+        DEST_USER="gitlab-ci-token"
+        DEST_PASS="${CI_JOB_TOKEN}"
+      fi
+
+      COPY_ARGS=(--retry-times 3)
+      # GHCR 公开镜像匿名拉；私有包才需要令牌
+      if [ -n "${GHCR_TOKEN:-}" ]; then
+        COPY_ARGS+=(--src-creds "dtapps:${GHCR_TOKEN}")
+      fi
+      COPY_ARGS+=(--dest-creds "${DEST_USER}:${DEST_PASS}")
+
+      for svc in backend reporter forwarder; do
+        src="${SRC_BASE}/${svc}:${TAG}"
+        echo "复制 ${src} → ${DST_BASE}/${svc}:${TAG}"
+        skopeo copy "${COPY_ARGS[@]}" "docker://${src}" "docker://${DST_BASE}/${svc}:${TAG}"
+        # 正式版额外推 :latest；预发布不推
+        if [ "${PRE}" = "false" ]; then
+          echo "  推 latest 标签"
+          skopeo copy "${COPY_ARGS[@]}" "docker://${src}" "docker://${DST_BASE}/${svc}:latest"
+        fi
+      done
+
+      echo ""
+      echo "完成：${DST_BASE}/{backend,reporter,forwarder}:${TAG}"
+
+      # ---- 清理旧 nightly 镜像标签（每个服务只保留最近 3 个）----
+      # 只在本平台同步的是 nightly 时才清理：正式版 / rc / beta / alpha 不动夜间构建历史。
+      # 清理是旁路：整段包在子 shell 里、关掉 errexit，任何一步失败都只打警告，
+      # 绝不让一次成功的镜像同步变红。
+      if printf '%s' "$TAG" | grep -q -- '-nightly\.'; then
+        (
+          set +eu
+          KEEP=3
+          API="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/registry/repositories"
+
+          # Registry API 的权限与推镜像不完全一样：删 tag 需要更高的权限，
+          # 有 PAT 就用 PAT，只有 job token 时删不掉也不影响同步结果。
+          if [ -n "${GL_REGISTRY_TOKEN:-}" ] && [ -n "${GL_REGISTRY_USER:-}" ]; then
+            AUTH=(-H "PRIVATE-TOKEN: ${GL_REGISTRY_TOKEN}")
+          else
+            AUTH=(-H "JOB-TOKEN: ${CI_JOB_TOKEN}")
+          fi
+
+          REPOS=$(curl -sS "${AUTH[@]}" "${API}?per_page=100") || {
+            echo "⚠ 查询镜像仓库列表失败（网络错误），跳过清理"; exit 0; }
+          # 认证失败时返回的是对象不是数组，长度 1 会误判成「有数据」
+          if ! printf '%s' "$REPOS" | jq -e 'type == "array"' >/dev/null 2>&1; then
+            echo "⚠ 镜像仓库列表不是数组（可能是认证失败）：$(printf '%s' "$REPOS" | head -c 200)"
+            exit 0
+          fi
+
+          for svc in backend reporter forwarder; do
+            # 仓库 name 是项目内的相对路径（backend），path 是全路径（dtapps/ip_vibe/backend），
+            # 两个字段都匹配一下，避免不同 GitLab 版本字段差异导致找不到
+            REPO_ID=$(printf '%s' "$REPOS" | jq -r --arg svc "$svc" '
+              (if type == "array" then . else [] end)
+              | .[]
+              | select((.name // "") == $svc or ((.path // "") | endswith("/" + $svc)))
+              | .id' 2>/dev/null | head -n 1)
+            if [ -z "$REPO_ID" ] || [ "$REPO_ID" = "null" ]; then
+              echo "⚠ 未找到 ${svc} 的镜像仓库，跳过清理"
+              continue
+            fi
+
+            TAGS=$(curl -sS "${AUTH[@]}" "${API}/${REPO_ID}/tags?per_page=100") || {
+              echo "⚠ 查询 ${svc} 的标签列表失败，跳过清理"; continue; }
+            STALE=$(printf '%s' "$TAGS" | jq -r --arg re '-nightly\.[0-9]{8}$' '
+              (if type == "array" then . else [] end)
+              | map(select(.name | test($re)))
+              | sort_by(.created_at // "")
+              | reverse
+              | .[3:] | .[].name' 2>/dev/null || true)
+            if [ -z "$STALE" ]; then
+              echo "${svc}: nightly 标签不足 ${KEEP} 个，无需清理"
+              continue
+            fi
+
+            printf '%s\n' "$STALE" | while IFS= read -r OLD; do
+              [ -n "$OLD" ] || continue
+              ENC=$(printf '%s' "$OLD" | jq -sRr @uri)
+              CODE=$(curl -sS -o /dev/null -w "%{http_code}" -X DELETE \
+                "${AUTH[@]}" "${API}/${REPO_ID}/tags/${ENC}") || CODE="000"
+              case "$CODE" in
+                200|202|204) echo "  ✓ 已删除 ${svc}:${OLD}" ;;
+                404) echo "  - ${svc}:${OLD} 不存在（跳过）" ;;
+                401|403) echo "  ⚠ 无权限删除 ${svc}:${OLD}（HTTP=${CODE}）：配 GL_REGISTRY_TOKEN / GL_REGISTRY_USER 后重跑可清理" ;;
+                000) echo "  ⚠ 删除 ${svc}:${OLD} 失败（网络错误）" ;;
+                *) echo "  ⚠ 删除 ${svc}:${OLD} 失败 HTTP=${CODE}" ;;
+              esac
+            done
+          done
+        ) || echo "⚠ nightly 镜像清理异常（已忽略，不影响镜像同步）"
+      fi
