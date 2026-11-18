@@ -345,10 +345,10 @@ jobs:
           REPO="dtapp/ip_vibe"
           EVENT="api_trigger_build_docker_image"
           PRERELEASE="${{ needs.binaries.outputs.pre_release }}"
-          if [ "$PRERELEASE" = "true" ]; then
-            TITLE="同步预发布镜像 ${{ needs.binaries.outputs.version }}"
+          if [ "${PRERELEASE}" = "true" ]; then
+            TITLE="GitHub 预发布同步 ${{ needs.binaries.outputs.version }}"
           else
-            TITLE="同步正式版镜像 ${{ needs.binaries.outputs.version }}"
+            TITLE="GitHub 正式发版同步 ${{ needs.binaries.outputs.version }}"
           fi
 
           echo "触发 CNB 同步构建: ${API}/${REPO}/-/build/start (event=${EVENT})"
