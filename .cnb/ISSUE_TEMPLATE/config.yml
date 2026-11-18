@@ -1,0 +1,21 @@
+# Issue 模板选择页配置
+#
+# 规则：本仓库 Issue 仅用于发版公告，所以关闭空白 Issue（blank_issues_enabled: false），
+# 用户必须走「发版公告」模板提交，保证每条 Issue 都带版本号、变更摘要与下载地址。
+#
+# 代价：关闭空白 Issue 后，用户想找文档 / 历史版本时会找不到入口，
+# 所以下面用 contact_links 把文档、发布记录与流水线说明显式放到选择页上。
+blank_issues_enabled: false
+
+contact_links:
+  - name: 使用帮助与文档
+    url: https://cnb.cool/dtapp/ip_vibe/-/blob/master/README.md
+    about: 功能说明、环境变量、常用命令与 docs/ 下的专题文档索引
+
+  - name: 历史发布记录
+    url: https://cnb.cool/dtapp/ip_vibe/-/releases
+    about: 查看已发布版本的 Release 正文、下载附件与 SHA256SUMS
+
+  - name: 构建与发布流程
+    url: https://cnb.cool/dtapp/ip_vibe/-/blob/master/docs/ci-cd.md
+    about: 版本号规则、多平台矩阵、发布平台与镜像同步的说明
