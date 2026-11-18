@@ -102,9 +102,9 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 job 分三段：
 
-1. **prepare**（CI 镜像容器）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ 输出 TAG / 是否预发布 / 标题 / commit / 构建时间。GitHub 与 CNB 的标题同口径：`IPVibe <TAG>`（预发布再加 `(预发布)` 后缀）；tag 本身仍是纯版本号。
+1. **prepare**（CI 镜像容器）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ **校验版本号与 tag（§3.4，前移到 build 之前，避免无效版本白跑全平台编译）** → 输出 TAG / 是否预发布 / 标题 / commit / 构建时间。GitHub 与 CNB 的标题同口径：`IPVibe <TAG>`（预发布再加 `(预发布)` 后缀）；tag 本身仍是纯版本号。
 2. **build**（CI 镜像容器）：三类缓存（Go module、Go build、pnpm store）→ `make deps` → **先 `make build-frontend`**（前端静态资源由 go:embed 打进 backend 二进制，顺序不能反）→ `make build-all` → `make clean-binaries` 兜底清掉裸二进制 → 生成 `SHA256SUMS` → 上传 artifact。
-3. **release**：`fetch-depth: 0` 拉全量 tag 历史 → **校验版本号与 tag**（§3.4）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → 删除同名旧 Release（仅 nightly 同日重跑会命中）→ `softprops/action-gh-release` 建 tag、上传 19 个附件 → **清理旧 nightly Release（只保留最近 3 个）**。
+3. **release**：`fetch-depth: 0` 拉全量 tag 历史（changelog 要按 tag 算对比基准）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → 删除同名旧 Release（仅 nightly 同日重跑会命中）→ `softprops/action-gh-release` 建 tag、上传 19 个附件 → **清理旧 nightly Release（只保留最近 3 个）**。
 
 发布成功后还有 5 个 job：
 
@@ -120,7 +120,7 @@ job 分三段：
 
 #### Gitee 镜像：`DOWNLOAD_SOURCE` 决定唯一来源
 
-`.workflow/release.yml` 不现场编译，只从 CNB 或 GitHub 搬附件并发到 Gitee Release。全局参数 `DOWNLOAD_SOURCE` 取 `cnb`（默认）或 `github`，**同一次发布只用一个来源，绝不混用**：包里注入了 `RepoSource`，客户端据此选升级通道，混源等于给用户随机分配通道。shell 层归一化（`cnb|github` 原样、空→`cnb`、其它报错）后 export；`VERSION` 为空时先跑 `node scripts/ci/gitee-release-download.js --resolve-tag` 查最新 tag，再 source `scripts/ci/resolve-prerelease.sh`，预发布只按版本号后缀（rc/beta/alpha/nightly）判定，不读上游的布尔字段。
+`.workflow/release.yml` 不现场编译，只从 CNB 或 GitHub 搬附件并发到 Gitee Release。全局参数 `DOWNLOAD_SOURCE` 取 `cnb`（默认）或 `github`，**同一次发布只用一个来源，绝不混用**：包里注入了 `RepoSource`，客户端据此选升级通道，混源等于给用户随机分配通道。GitHub 的 `sync-gitee` 在 Release 发布成功后才触发，webhook 的 `payload.params` 会显式传 `DOWNLOAD_SOURCE=github`（附件已就绪；用默认 `cnb` 会和 `sync-cnb` 并行抢跑、可能搬到上一版资产），Gitee 页面手动点执行时仍用平台全局参数的默认值 `cnb`。shell 层归一化（`cnb|github` 原样、空→`cnb`、其它报错）后 export；`VERSION` 为空时先跑 `node scripts/ci/gitee-release-download.js --resolve-tag` 查最新 tag，再 source `scripts/ci/resolve-prerelease.sh`，预发布只按版本号后缀（rc/beta/alpha/nightly）判定，不读上游的布尔字段。下载前先跑 `node scripts/ci/gitee-release-publish.js --check-exists` 查 Gitee 是否已有同 tag Release：已存在就直接退出（GitHub / CNB 双触发只认先成功的一个，不再下载附件、也不删掉重建），不存在才继续；查询失败必须报错，不能当成不存在。要强制重发先手工删掉 Gitee 上的同名 Release。
 
 | 来源     | 清单 / 大小 / 正文                                                                                                                                                              | 附件                                                                                                     |
 |----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
@@ -135,7 +135,7 @@ job 分三段：
 
 1. **prepare**：`actions/checkout` 的 `ref` 用 `inputs.commit || github.sha`（定时触发没有输入，取触发时点的 HEAD）；
 2. **build / release**：一律用 prepare 解析出的 `commit_full` 检出，三个 job 必然落在同一个提交上；
-3. **同步到各平台**：版本号与 commit 一起传下去 —— CNB 走 `api_trigger_release` 的 `env.commit`，GitLab 走 `variables[COMMIT]`，GitCode 走 `inputs.commit`，Gitee 走 webhook 的 `params.COMMIT`。各镜像平台建 Release 时，tag 指向这个 commit（**不是**默认分支的最新代码）；镜像仓库是 pull mirror，同步有延迟，探测不到该 commit 时退回默认分支并打告警，不会让发布失败。
+3. **同步到各平台**：版本号与 commit 一起传下去 —— CNB 走 `api_trigger_release` 的 `env.commit`，GitLab 走 `variables[COMMIT]`，GitCode 走 `inputs.commit`，Gitee 走 webhook 的 `params.COMMIT`，并固定 `params.DOWNLOAD_SOURCE=github`。各镜像平台建 Release 时，tag 指向这个 commit（**不是**默认分支的最新代码）；镜像仓库是 pull mirror，同步有延迟，探测不到该 commit 时退回默认分支并打告警，不会让发布失败。
 
 ⚠️ CNB 与 GitHub 是**两个仓库**：commit 只推到了 GitHub 时，CNB 侧 `git cat-file -e` 探测不到，会明确失败并提示「先推到 CNB 仓库」——不会悄悄退回 HEAD 构建出另一份代码。
 
@@ -178,7 +178,7 @@ job 分三段：
 
 ### 3.4 发版前的三道校验
 
-两条流水线都有「校验版本号与 tag」这一步。这三件事出错都**不会让构建失败**，但会发出一个「看起来成功、内容是错的」Release：
+两条流水线都有「校验版本号与 tag」这一步：GitHub 放在 **prepare**（build 之前，无效版本不浪费编译时间），CNB 是单流水线，仍在打包之后。这三件事出错都**不会让构建失败**，但会发出一个「看起来成功、内容是错的」Release：
 
 1. **一个 tag 都没拉到**（`git tag -l 'v*'` 计数为 0）→ 直接失败；changelog 只负责在可见 tag 里选基准，不会把「取不到基准」谎报成首次发布；
 2. **tag 已存在** → 重跑会把 tag 挪到新提交上，历史 Release 的对比基准跟着变 → 直接失败；
@@ -221,8 +221,8 @@ GitLab 侧没有自己的 Dockerfile：它**复制** GitHub 已推到 GHCR 的�
 
 job 分五段：
 
-1. **binaries**（容器 job）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ 输出 TAG / 是否预发布 / commit / 构建时间 → 三类缓存 → `make deps` → **先 `make build-frontend`**（前端静态资源由 go:embed 打进 backend 二进制，顺序不能反）→ `make build-linux-amd64` → 上传 artifact。
-2. **image**（普通 runner——容器 job 里没有 docker daemon）：下载 artifact、校验三个二进制都在 → 三个服务的镜像标签一次性算好写入 `$GITHUB_ENV`（避免三个 build 步骤各写一遍「有后缀就不推 latest」的条件表达式，三处写不一致）→ buildx 构建推送（gha cache 按服务分 scope）。标签同时写入 `$GITHUB_OUTPUT` 供 `notify` job 展示。
+1. **binaries**（容器 job）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ 输出 TAG / 是否预发布 / commit / 构建时间 → 三类缓存 → `make deps` → **先 `make build-frontend`**（前端静态资源由 go:embed 打进 backend 二进制，顺序不能反）→ `make build-linux-amd64` → **校验三个镜像二进制都在**（前移到上传 artifact 之前，缺文件就地失败）→ 上传 artifact。
+2. **image**（普通 runner——容器 job 里没有 docker daemon）：下载 artifact → 三个服务的镜像标签一次性算好写入 `$GITHUB_ENV`（避免三个 build 步骤各写一遍「有后缀就不推 latest」的条件表达式，三处写不一致）→ buildx 构建推送（gha cache 按服务分 scope）。标签同时写入 `$GITHUB_OUTPUT` 供 `notify` job 展示。
 3. **sync-cnb**：GHCR 推送成功后调 CNB Open API 触发 `dtapp/ip_vibe` 的 `api_trigger_build_docker_image`（`env` 传 version + commit），把同一批镜像推到 CNB 制品库；需 secret `SYNC_CNB_TOKEN`（`repo-cnb-trigger:rw`），未配置则跳过。
 4. **sync-gitlab**：GHCR 推送成功后用 trigger token 触发 GitLab 的镜像流水线（`variables[VERSION]` / `variables[COMMIT]` / `variables[IMAGE_SYNC]=1`），由 GitLab 侧把镜像复制进 Container Registry；需 secret `SYNC_GITLAB_TRIGGER_TOKEN`（与 `release.yml` 的 sync-gitlab 共用同一个），未配置则跳过。
 5. **notify**：ServerChan3（方糖）推送「镜像构建完成」通知，含 GHCR / CNB / GitLab 镜像地址与各平台同步状态；需 secret `SERVERCHAN_SENDKEY`。

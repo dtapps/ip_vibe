@@ -127,6 +127,21 @@ stages:
               exit 1
             fi
 
+            # GitHub 与 CNB 都会触发这条 Gitee 流水线、传同一个 VERSION：谁先在 Gitee
+            # 建出 Release 就算发布成功，后到的直接跳过，不再下载 18 个附件、也不把
+            # 已发布的内容删掉重建。用 $CHECK_RC（不加花括号）避免被平台的文本插值吃掉。
+            # 退出码 0=已存在 1=不存在 2=查询失败（查询失败必须报错，不能当成不存在）。
+            echo "======== 0/2 检查 Gitee 是否已有 ${VERSION} ========"
+            set +e
+            node scripts/ci/gitee-release-publish.js --check-exists
+            CHECK_RC=$?
+            set -e
+            case "$CHECK_RC" in
+              0) echo "Gitee 已有 ${VERSION}，跳过本次同步"; exit 0 ;;
+              1) echo "Gitee 尚无 ${VERSION}，继续下载发布" ;;
+              *) echo "错误：查询 Gitee Release 失败（退出码 $CHECK_RC）" >&2; exit 1 ;;
+            esac
+
             # 正文 markdown → HTML 有 marked 时用它（Gitee 前端是 markdown-it({html:true})），
             # 装不上时下载脚本自带极简渲染器兜底，不让 Gitee 发版卡在 npm 上。
             export npm_config_registry=https://registry.npmmirror.com

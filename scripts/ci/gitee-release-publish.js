@@ -37,6 +37,35 @@ async function gt(method, path, options) {
   return { status: res.status, text };
 }
 
+// ── 下载前的「已发布就跳过」判断 ──
+// GitHub 与 CNB 都会触发同一条 Gitee 流水线、传同一个 VERSION：谁先在 Gitee 建出
+// Release 就算成功，后到的直接跳过，不再下载附件、也不删掉已发布的内容重建。
+// GET /releases/tags/{tag} 在「没有这个 Release」时返回 200 + body `null`，不是 404；
+// 所以既看状态码也看解析结果，必须拿到 id 才算已存在。
+// 退出码：0=已存在（调用方跳过） 1=不存在（调用方继续） 2=查询失败（调用方报错）。
+async function checkReleaseExists(tag) {
+  let res;
+  try {
+    res = await gt('GET', '/releases/tags/' + encodeURIComponent(tag));
+  } catch (err) {
+    console.error('查询 Gitee Release 异常：' + (err && err.message ? err.message : String(err)));
+    return 2;
+  }
+  let existing = null;
+  if (res.status === 200) {
+    try { existing = JSON.parse(res.text); } catch (e) { existing = null; }
+  } else if (res.status !== 404) {
+    console.error('查询 Gitee Release 失败（HTTP ' + res.status + '）：' + res.text.slice(0, 300));
+    return 2;
+  }
+  if (existing && existing.id) {
+    console.log('Gitee 已存在 Release ' + tag + '（id=' + existing.id + '），本次同步跳过');
+    return 0;
+  }
+  console.log('Gitee 尚不存在 Release ' + tag + '，继续发布');
+  return 1;
+}
+
 // ── 清理过期 nightly（保留最近 3 个，与 GitHub 侧同口径）──
 // 只在本次发布的是 nightly 时执行：正式版 / rc / beta / alpha 不动夜间构建历史。
 // Gitee 仓库附件总量只有 1GB，nightly 会持续堆积，所以清理是必需项而不是洁癖；
@@ -124,6 +153,17 @@ async function main() {
   if (!TOKEN) {
     fail('未配置 IPVIBE_GITEE_TOKEN（Gitee 个人令牌，repo 读写）');
   }
+
+  // 下载前的存在性判断由流水线在下载脚本之前调用（见 .workflow/release.yml）。
+  if (process.argv.indexOf('--check-exists') !== -1) {
+    const tag = (process.env.VERSION || process.env.RELEASE_VERSION || '').trim();
+    if (!tag) {
+      console.error('错误：--check-exists 需要 VERSION（归一化后的 tag）');
+      process.exit(2);
+    }
+    process.exit(await checkReleaseExists(tag));
+  }
+
   if (!fs.existsSync(MANIFEST)) {
     fail('找不到清单 ' + MANIFEST + '：请先跑 gitee-release-download.js');
   }

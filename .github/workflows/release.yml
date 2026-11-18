@@ -133,6 +133,58 @@ jobs:
             echo "build_time=${BUILD_TIME}"
           } >> "$GITHUB_OUTPUT"
 
+      # 打包前先把版本号这件事验干净：这三件事出错都不会让构建本身失败，
+      # 但会发出一个「看起来成功、内容是错的」Release。放在 prepare 而不是 release，
+      # 是为了让无效版本在 build（全平台编译）之前就失败，不浪费打包时间。
+      - name: 校验版本号与 tag
+        shell: bash
+        env:
+          VERSION: ${{ steps.gen.outputs.interior_version }}
+          PRERELEASE: ${{ steps.gen.outputs.pre_release }}
+        run: |
+          set -euo pipefail
+          echo "版本号: ${VERSION}"
+
+          # checkout 已带 fetch-depth: 0，这里再补一次兜底
+          git fetch --tags --quiet --force || true
+          count=$(git tag -l 'v*' | wc -l | tr -d ' ')
+          echo "本地版本 tag: ${count} 个"
+          if [ "$count" -eq 0 ]; then
+            echo "::error::一个版本 tag 都没有，changelog 会退化成「首次发布」"
+            echo "   检查 checkout 是否带 tag（fetch-depth: 0），或手动 git fetch --tags"
+            exit 1
+          fi
+
+          case "${VERSION}" in
+            *-nightly.*)
+              # 夜间构建按天发布同一个 tag（同一天重跑/补发要能覆盖），
+              # 允许 tag 已存在：发布前会先删掉同名 Release + tag 再重建。
+              echo "✅ ${VERSION} 是夜间构建，允许覆盖同名 Release"
+              ;;
+            *)
+              # 版本 tag 不能已存在：重跑同一次发布会把 tag 挪到新提交上，
+              # 历史 Release 的对比基准跟着变。确需补发先手动删掉旧 Release + tag。
+              if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null; then
+                echo "::error::tag ${VERSION} 已存在，不能重复发布"
+                echo "   已有指向: $(git rev-parse --short "${VERSION}")"
+                echo "   当前 HEAD: $(git rev-parse --short HEAD)"
+                echo "   确需重发：gh release delete ${VERSION} --yes --cleanup-tag，再重跑本工作流"
+                exit 1
+              fi
+              echo "✅ tag ${VERSION} 不存在，可以发布"
+
+              # 新版本必须比已有的正式版更新，否则正文里的 diff 是反的
+              if [ "${PRERELEASE}" = "false" ]; then
+                latest=$(git tag -l 'v*' | grep -Ev -- '-(rc|beta|alpha|nightly)' | grep -v '\.rc' | sort -V | tail -n 1 || true)
+                if [ -n "$latest" ] && [ "$(printf '%s\n%s\n' "$latest" "${VERSION}" | sort -V | tail -n 1)" != "${VERSION}" ]; then
+                  echo "::error::版本号 ${VERSION} 比已有的正式版 ${latest} 旧"
+                  exit 1
+                fi
+                echo "✅ 比上一个正式版 ${latest:-（无）} 新"
+              fi
+              ;;
+          esac
+
   # 构建全平台二进制并压缩（linux/windows/darwin × amd64/arm64）
   build:
     needs: prepare
@@ -274,57 +326,6 @@ jobs:
         with:
           name: ip_vibe-release
           path: release
-
-      # 发版前先把版本号这件事验干净。这几件事出错都不会让构建失败，
-      # 但会发出一个「看起来成功、内容是错的」Release。
-      - name: 校验版本号与 tag
-        shell: bash
-        env:
-          VERSION: ${{ needs.prepare.outputs.interior_version }}
-          PRERELEASE: ${{ needs.prepare.outputs.pre_release }}
-        run: |
-          set -euo pipefail
-          echo "版本号: ${VERSION}"
-
-          # checkout 已带 fetch-depth: 0，这里再补一次兜底
-          git fetch --tags --quiet --force || true
-          count=$(git tag -l 'v*' | wc -l | tr -d ' ')
-          echo "本地版本 tag: ${count} 个"
-          if [ "$count" -eq 0 ]; then
-            echo "::error::一个版本 tag 都没有，changelog 会退化成「首次发布」"
-            echo "   检查 checkout 是否带 tag（fetch-depth: 0），或手动 git fetch --tags"
-            exit 1
-          fi
-
-          case "${VERSION}" in
-            *-nightly.*)
-              # 夜间构建按天发布同一个 tag（同一天重跑/补发要能覆盖），
-              # 允许 tag 已存在：发布前会先删掉同名 Release + tag 再重建。
-              echo "✅ ${VERSION} 是夜间构建，允许覆盖同名 Release"
-              ;;
-            *)
-              # 版本 tag 不能已存在：重跑同一次发布会把 tag 挪到新提交上，
-              # 历史 Release 的对比基准跟着变。确需补发先手动删掉旧 Release + tag。
-              if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null; then
-                echo "::error::tag ${VERSION} 已存在，不能重复发布"
-                echo "   已有指向: $(git rev-parse --short "${VERSION}")"
-                echo "   当前 HEAD: $(git rev-parse --short HEAD)"
-                echo "   确需重发：gh release delete ${VERSION} --yes --cleanup-tag，再重跑本工作流"
-                exit 1
-              fi
-              echo "✅ tag ${VERSION} 不存在，可以发布"
-
-              # 新版本必须比已有的正式版更新，否则正文里的 diff 是反的
-              if [ "${PRERELEASE}" = "false" ]; then
-                latest=$(git tag -l 'v*' | grep -Ev -- '-(rc|beta|alpha|nightly)' | grep -v '\.rc' | sort -V | tail -n 1 || true)
-                if [ -n "$latest" ] && [ "$(printf '%s\n%s\n' "$latest" "${VERSION}" | sort -V | tail -n 1)" != "${VERSION}" ]; then
-                  echo "::error::版本号 ${VERSION} 比已有的正式版 ${latest} 旧"
-                  exit 1
-                fi
-                echo "✅ 比上一个正式版 ${latest:-（无）} 新"
-              fi
-              ;;
-          esac
 
       # 下载表「说明」列由 scripts/ci/describe-artifact.sh 统一生成；发版前先把
       # 每个压缩包对应的文案打到日志，便于核对（正文里由 render-release-body.sh 渲染）。
@@ -742,15 +743,17 @@ jobs:
           # COMMIT 一起传：镜像出来的 Release 要指向「被发布的那个 commit」，
           # 而不是默认分支的最新代码（镜像仓库是 pull mirror，同步有延迟，
           # 那边探测不到这个 commit 时会退回默认分支）。
-          # 只传 VERSION：是否预发布由版本号后缀判定（Gitee 侧的全局参数 PRERELEASE 已移除）。
+          # DOWNLOAD_SOURCE 固定传 github：这一步在 GitHub Release 发布后才跑，附件已就绪；
+          # Gitee 若用默认的 cnb，会和 sync-cnb 并行抢跑，可能搬到上一版资产。
+          # 是否预发布由版本号后缀判定（Gitee 侧的全局参数 PRERELEASE 已移除）。
           VERSION="${{ needs.prepare.outputs.interior_version }}"
           COMMIT="${{ needs.prepare.outputs.commit_full }}"
-          echo "触发 Gitee 流水线: ${VERSION} (commit=${COMMIT})"
+          echo "触发 Gitee 流水线: ${VERSION} (commit=${COMMIT}, source=github)"
 
           HTTP=$(curl -s -o /tmp/gitee.json -w "%{http_code}" -X POST \
             -H "Authorization: Bearer ${GITEE_TOKEN}" \
             -H "Content-Type: application/json" \
-            -d "{\"eventType\":\"ip-vibe-release\",\"payload\":{\"params\":{\"VERSION\":\"${VERSION}\",\"COMMIT\":\"${COMMIT}\"}}}" \
+            -d "{\"eventType\":\"ip-vibe-release\",\"payload\":{\"params\":{\"VERSION\":\"${VERSION}\",\"COMMIT\":\"${COMMIT}\",\"DOWNLOAD_SOURCE\":\"github\"}}}" \
             "${GITEE_WEBHOOK_URL}")
 
           echo "Gitee webhook 响应 HTTP=${HTTP}"

@@ -189,6 +189,20 @@ jobs:
           COMMIT: ${{ steps.gen.outputs.commit_short }}
         run: VERSION="${VERSION}" COMMIT="${COMMIT}" make build-linux-amd64
 
+      # 镜像要用的三个二进制在这里就验齐：缺文件不必等 artifact 上传/下载、
+      # image job 起来之后再失败。原来的位置在 image job 下载产物之后，白跑一趟。
+      - name: 校验构建产物
+        shell: bash
+        run: |
+          set -euo pipefail
+          for svc in backend reporter forwarder; do
+            if [ ! -f "bin/${svc}-linux-amd64" ]; then
+              echo "::error::缺少 bin/${svc}-linux-amd64"
+              exit 1
+            fi
+            echo "✓ bin/${svc}-linux-amd64 $(du -h "bin/${svc}-linux-amd64" | cut -f1)"
+          done
+
       - name: 上传二进制产物
         uses: actions/upload-artifact@v7
         with:
@@ -219,18 +233,8 @@ jobs:
           name: ip_vibe-linux-amd64
           path: bin
 
-      - name: 校验构建产物
-        shell: bash
-        run: |
-          set -euo pipefail
-          for svc in backend reporter forwarder; do
-            if [ ! -f "bin/${svc}-linux-amd64" ]; then
-              echo "❌ 缺少 bin/${svc}-linux-amd64" >&2
-              exit 1
-            fi
-            echo "✓ bin/${svc}-linux-amd64 $(du -h "bin/${svc}-linux-amd64" | cut -f1)"
-          done
-
+      # 构建产物校验已前移到 binaries（上传 artifact 之前），缺文件那里就失败；
+      # 这里的 download-artifact 本身也保证三个文件到位。
       # 标签在这里一次性算好写入 $GITHUB_ENV，避免在三个 build 步骤里各写一遍
       # 「有后缀就不推 latest」这种条件表达式（容易三处写不一致）。
       # 同时写到 $GITHUB_OUTPUT：notify job 需要拿到镜像地址写进通知。
