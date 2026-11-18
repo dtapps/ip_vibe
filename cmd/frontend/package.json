@@ -3,11 +3,11 @@
   "description": "",
   "devDependencies": {
     "@egoist/tailwindcss-icons": "^1.9.2",
-    "@iconify-json/lucide": "^1.2.154",
+    "@iconify-json/lucide": "^1.2.156",
     "@tailwindcss/cli": "^4.3.5",
     "@vitest/coverage-v8": "^5.1.0",
     "clipboard": "^2.0.11",
-    "daisyui": "^5.8.0",
+    "daisyui": "^5.8.1",
     "dayjs": "^1.11.23",
     "echarts": "^6.1.0",
     "happy-dom": "^21.0.4",
@@ -23,7 +23,7 @@
   "keywords": [],
   "license": "ISC",
   "name": "backend",
-  "packageManager": "pnpm@12.18.0",
+  "packageManager": "pnpm@12.21.0",
   "scripts": {
     "build": "sh ./build.sh",
     "deps:clean": "knip --fix",
