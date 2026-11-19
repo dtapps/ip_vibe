@@ -160,7 +160,7 @@ job 分三段：
 
 ### 3.3 更新内容：按渠道选对比基准（rc / beta / alpha / nightly 的关键）
 
-实现：`scripts/ci/release-changelog.sh`，GitHub 与 CNB 共用一份。只看版本号后缀决定**渠道**，同渠道内对比：
+**基准只有一份判定**：`scripts/ci/resolve-prev-tag.sh`。`scripts/ci/release-changelog.sh`（生成正文）和 CNB 发版公告的评论都调它，避免两处各写一套渠道过滤后区间对不上。它只看版本号后缀决定**渠道**，同渠道内对比：
 
 | 场景                            | 对比基准                   | 说明                               |
 |---------------------------------|----------------------------|------------------------------------|
@@ -169,10 +169,10 @@ job 分三段：
 | 发 `v1.0.44-nightly.20260102`   | `v1.0.44-nightly.20260101` | nightly 按日期只跟 nightly 比      |
 | 发 `v1.0.44-rc.1`（该渠道首次） | 上一个**正式版** `v1.0.43` | 渠道没有历史 tag 时回退            |
 | 发正式版 `v1.0.45`              | 上一个**正式版** `v1.0.43` | 不掺预发布，整轮改动都在           |
-| 仓库只有预发布 tag              | 任意渠道里更旧的最大 tag   | 如只有 `v0.0.75-rc.3` 时发 nightly |
-| 其它 tag 全比当前版本新         | 警告 + 取其中最新的 tag    | 补发历史版本不中断发布             |
+| 仓库一个版本 tag 都没有         | 空（stdout 无输出）        | 视为首次发布，由调用方兜底         |
+| 有 tag 但挑不出对应渠道的基准   | 报错退出 1                 | 不能把取数故障伪装成「首次发布」   |
 
-为什么不能用 `git describe --tags --abbrev=0 HEAD^`：它取「最近的可达 tag」，**不区分渠道**。发正式版时会取到刚发的 rc，整轮改动全丢；而且会被 `docker-v1.0.x` 之类的无关 tag 干扰。脚本因此显式按 `^v[0-9]+\.[0-9]+\.[0-9]+(-(rc|beta|alpha|nightly)(\.[0-9]+)?)?$` 白名单 + 渠道过滤，并用 `sort -V` 而不是 `--sort=v:refname`（后者对 `rc.2`/`rc.10` 排序不符合直觉）。
+为什么不能用 `git describe --tags --abbrev=0 HEAD^`：它取「最近的可达 tag」，**不区分渠道**。发正式版时会取到刚发的 rc，整轮改动全丢；而且会被 `docker-v1.0.x` 之类的无关 tag 干扰。`resolve-prev-tag.sh` 因此显式按 `^v[0-9]+\.[0-9]+\.[0-9]+(-(rc|beta|alpha|nightly)(\.[0-9]+)?)?$` 白名单 + 渠道过滤，并用 `sort -V` 而不是 `--sort=v:refname`（后者对 `rc.2`/`rc.10` 排序不符合直觉）。
 
 输出格式对齐 `cnbcool/changelog` 插件：按 Conventional Commits type 分组（Features / Bug Fixes / CI / Build System…），行内 `[短号](完整SHA链接) - scope: subject (作者)`，`--no-merges` 去掉 dependabot 的重复合并记录，每组最多 50 条并附溢出提示。
 
@@ -197,7 +197,7 @@ job 分三段：
 - **一律 `printf %s\n` 而非 `echo`**：dash 的 `echo` 会解释反斜杠，`Get-FileHash .\backend-...` 里的 `\b` 会被吞成退格符，显示成 `.ackend-...`。
 - 提交号**显示短号、链接用完整 SHA**（缩写长度随仓库规模变化，链接里用缩写部分平台会 404）。
 
-> 脚本自带自检：`sh scripts/ci/render-release-body.sh --self-test`、`sh scripts/ci/resolve-prerelease.sh --self-test`；`sh scripts/ci/release-changelog.sh` 无参数时打印用法。改格式/改判定先跑它们。
+> 脚本自带自检：`sh scripts/ci/render-release-body.sh --self-test`、`sh scripts/ci/resolve-prerelease.sh --self-test`；`sh scripts/ci/release-changelog.sh`、`sh scripts/ci/resolve-prev-tag.sh` 无参数时打印用法。改格式/改判定先跑它们。
 
 ---
 
