@@ -351,212 +351,53 @@ dev_forwarder_basic_auth:
 	go run $(FORWARDER_DIR)/main.go
 
 #####################
-## 构建 相关
+## 构建 / 打包 相关
 #####################
 
-# 功能开关（设置为 1 开启，0 关闭）
-ENABLE_UPX ?= 1
-ENABLE_ARCHIVE ?= 1
+# goreleaser 版本（所有流水线与本地共用，升级时只改这里）
+GORELEASER_VERSION ?= v2.20.2
 
-# 检测是否存在 upx 压缩工具
-UPX = $(shell command -v upx 2> /dev/null)
-# 检测是否存在 tar 和 zip
-TAR = $(shell command -v tar 2> /dev/null)
-ZIP = $(shell command -v zip 2> /dev/null)
+# goreleaser 可执行文件（不在 PATH 时回退到 $HOME/go/bin）
+GORELEASER ?= $(shell command -v goreleaser 2>/dev/null || echo $(HOME)/go/bin/goreleaser)
 
-# 定义压缩逻辑：参数 $(1) 为文件路径
-define compress_file
-	@if [ "$(ENABLE_UPX)" = "1" ] && [ "$(UPX)" ]; then \
-		FILE_SIZE=$$(stat -c%s "$(1)" 2>/dev/null || stat -f%z "$(1)"); \
-		ORIG_SIZE_H=$$(du -h "$(1)" | cut -f1); \
-		\
-		if [ $$FILE_SIZE -lt 10485760 ]; then \
-			LEVEL="--best"; \
-			DESC="小文件-极限压缩"; \
-		elif [ $$FILE_SIZE -lt 52428800 ]; then \
-			LEVEL="-6"; \
-			DESC="中等文件-平衡模式"; \
-		else \
-			LEVEL="-1"; \
-			DESC="大文件-极速模式"; \
-		fi; \
- \
-		echo "  📦 正在以 [$$DESC ($$LEVEL)] 压缩..."; \
-		ERR_MSG=$$($(UPX) $$LEVEL "$(1)" 2>&1); \
- \
-		if [ $$? -eq 0 ]; then \
-			NEW_SIZE_H=$$(du -h "$(1)" | cut -f1); \
-			echo "  ⚡ UPX 压缩完成: $(1) [ $${ORIG_SIZE_H} -> $${NEW_SIZE_H} ]"; \
-		else \
-			echo "  ⚠️  UPX 压缩跳过: $(1) ($$ERR_MSG)"; \
-		fi \
-	elif [ "$(ENABLE_UPX)" = "1" ] && [ ! "$(UPX)" ]; then \
-		echo "  ⏭️  UPX 未安装，跳过压缩"; \
-	elif [ "$(ENABLE_UPX)" = "0" ]; then \
-		echo "  ⏭️  UPX 已禁用"; \
-	fi
-endef
+# 同时编译/链接的目标数。默认按 CPU 数并发，CI 容器内存有限时容易在链接阶段被
+# OOM Killer 杀掉（`link: signal: killed`）。本地默认 1，CI 环境（CI=true）默认 2，
+# 两者都可显式覆盖：make goreleaser-snapshot GORELEASER_PARALLELISM=4
+GORELEASER_PARALLELISM ?= $(if $(filter true,$(CI)),2,1)
 
-# 定义打包压缩逻辑：参数 $(1) 为源文件路径
-# 源文件命名规范: {binary-name}-{os}-{arch}[.exe]，例如: backend-linux-amd64, reporter-windows-amd64.exe
-# Linux/macOS 使用 tar.gz, Windows 使用 zip
-define archive_binary
-	@if [ "$(ENABLE_ARCHIVE)" = "1" ]; then \
-		SOURCE_FILE=$(1); \
-		BIN_NAME=$$(basename "$${SOURCE_FILE}"); \
-		ARCHIVE_NAME="$(BUILD_DIR)/$${BIN_NAME}"; \
-		\
-		if echo "$${BIN_NAME}" | grep -q "\.exe$$"; then \
-			if [ "$(ZIP)" ]; then \
-				ARCHIVE_NAME="$${ARCHIVE_NAME}.zip"; \
-				echo "  📦 正在打包 Windows 压缩包: $${ARCHIVE_NAME}..."; \
-				cd $(BUILD_DIR) && zip -q "$$(basename $${ARCHIVE_NAME})" "$$(basename $${SOURCE_FILE})"; \
-				cd ..; \
-				ARCHIVE_SIZE=$$(du -h "$${ARCHIVE_NAME}" | cut -f1); \
-				BIN_SIZE=$$(du -h "$${SOURCE_FILE}" | cut -f1); \
-				echo "  ✓ 打包完成: $${ARCHIVE_NAME} [ 二进制: $${BIN_SIZE} -> 压缩包: $${ARCHIVE_SIZE} ]"; \
-			else \
-				echo "  ⚠️  zip 未安装，无法打包 Windows 压缩包"; \
-			fi \
-		else \
-			if [ "$(TAR)" ]; then \
-				ARCHIVE_NAME="$${ARCHIVE_NAME}.tar.gz"; \
-				echo "  📦 正在打包 Unix 压缩包: $${ARCHIVE_NAME}..."; \
-				tar -czf "$${ARCHIVE_NAME}" -C $(BUILD_DIR) "$$(basename $${SOURCE_FILE})"; \
-				ARCHIVE_SIZE=$$(du -h "$${ARCHIVE_NAME}" | cut -f1); \
-				BIN_SIZE=$$(du -h "$${SOURCE_FILE}" | cut -f1); \
-				echo "  ✓ 打包完成: $${ARCHIVE_NAME} [ 二进制: $${BIN_SIZE} -> 压缩包: $${ARCHIVE_SIZE} ]"; \
-			else \
-				echo "  ⚠️  tar 未安装，无法打包 Unix 压缩包"; \
-			fi \
-		fi; \
-	elif [ "$(ENABLE_ARCHIVE)" = "0" ]; then \
-		echo "  ⏭️  压缩包已禁用"; \
-	fi
-endef
-
-# 定义清理二进制文件逻辑：如果存在对应压缩包则删除二进制
-# 参数 $(1) 为二进制文件路径
-# 源文件命名规范: {binary-name}-{os}-{arch}[.exe]，例如: backend-linux-amd64, reporter-windows-amd64.exe
-define clean_binary
-	@SOURCE_FILE=$(1); \
-	BIN_NAME=$$(basename "$${SOURCE_FILE}"); \
-	if echo "$${BIN_NAME}" | grep -q "\.exe$$"; then \
-		ARCHIVE_NAME="$(BUILD_DIR)/$${BIN_NAME}.zip"; \
-	else \
-		ARCHIVE_NAME="$(BUILD_DIR)/$${BIN_NAME}.tar.gz"; \
-	fi; \
-	if [ -f "$${ARCHIVE_NAME}" ] && [ -f "$${SOURCE_FILE}" ]; then \
-		rm -f "$${SOURCE_FILE}"; \
-		echo "  🗑️  已清理二进制: $${SOURCE_FILE} (存在 $${ARCHIVE_NAME})"; \
-	else \
-		echo "  ⏭️  未找到压缩包或二进制，跳过: $${SOURCE_FILE}"; \
-	fi
-endef
-
-# 版本信息（支持外部传入）
-VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
-COMMIT ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-BUILDTIME ?= $(shell date -u '+%Y-%m-%d %H:%M:%S UTC')
-
-# 路径
-PKG_PATH = vibe_ip/internal/global
-
-# ldflags 模板
-# -s -w: 移除符号表和调试信息，减小体积
-# -buildid=: 移除构建指纹
-LDFLAGS = -s -w \
-	-X '$(PKG_PATH).Version=$(VERSION)' \
-	-X '$(PKG_PATH).GitCommit=$(COMMIT)' \
-	-X '$(PKG_PATH).BuildTime=$(BUILDTIME)'
-
-# 统一定义构建命令
-# CGO_ENABLED=0: 禁用 CGO，实现完全静态链接
-# CGO_ENABLED=1: 启用 CGO，实现动态链接
-# -trimpath: 移除本地路径，保护隐私
-# -buildvcs=false: 不把 git 状态盖章进二进制
-#   版本/提交号本来就走上面的 LDFLAGS 注入，VCS 盖章信息用不上；而它会调用
-#   `git status --porcelain`，git 一旦不可用就报 `error obtaining VCS status: exit status 128`
-#   把构建打断（go test 不做盖章，所以覆盖率流水线一直是绿的）。
-BUILD_CMD = CGO_ENABLED=0 go build -trimpath -buildvcs=false -ldflags="$(LDFLAGS)"
-
-# 构建所有平台
-build-all: clean \
-	build-linux-amd64 \
-	build-linux-arm64 \
-	build-windows-amd64 \
-	build-windows-arm64 \
-	build-darwin-amd64 \
-	build-darwin-arm64
-
-clean:
-	@echo "[Clean] 清理构建目录..."
-	@rm -rf $(BUILD_DIR)
-	@mkdir -p $(BUILD_DIR)
+# 非 CI（本地）快照只编当前平台：`--single-target` 是 `goreleaser build` 的参数，
+# `goreleaser release` 没有（传了会直接报 unknown flag），所以本地走 build，只产出
+# 当前平台的三个二进制，不生成压缩包 / Linux 系统包；CI 走 release 出全平台产物。
+# 本地要全平台产物（含系统包）：CI=true make goreleaser-snapshot
+GORELEASER_SNAPSHOT_CMD ?= $(if $(filter true,$(CI)),release --snapshot,build --snapshot --single-target)
 
 build-frontend:
-	@echo ""
-	@echo "┌────────────────────────────────────────────────────────────"
-	@echo "│ [构建] 前端静态文件..."
-	@echo "└────────────────────────────────────────────────────────────"
+	@echo "[构建] 打包前端"
 	pnpm --dir $(FRONTEND_DIR) build
+	@echo "[构建] 打包完成。"
 
-# 定义构建单个二进制文件的通用逻辑
-# 参数: $(1)=GOOS, $(2)=GOARCH, $(3)=描述信息, $(4)=扩展名(.exe 或空)
-define build_binary
-	@echo ""
-	@echo "┌────────────────────────────────────────────────────────────"
-	@echo "│ [构建] $(3)"
-	@echo "└────────────────────────────────────────────────────────────"
-	@cd $(BACKEND_DIR) && GOOS=$(1) GOARCH=$(2) $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-$(1)-$(2)$(4) .
-	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-$(1)-$(2)$(4))
-	@cd $(REPORTER_DIR) && GOOS=$(1) GOARCH=$(2) $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-$(1)-$(2)$(4) .
-	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-$(1)-$(2)$(4))
-	@cd $(FORWARDER_DIR) && GOOS=$(1) GOARCH=$(2) $(BUILD_CMD) -o ../../$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-$(1)-$(2)$(4) .
-	$(call archive_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-$(1)-$(2)$(4))
-endef
+# 安装固定版本的 goreleaser（已存在则跳过）
+.PHONY: goreleaser-install
+goreleaser-install:
+	@if ! $(GORELEASER) --version >/dev/null 2>&1; then \
+		echo "安装 goreleaser $(GORELEASER_VERSION) → $(dir $(GORELEASER))"; \
+		GOBIN=$(dir $(GORELEASER)) go install github.com/goreleaser/goreleaser/v2@$(GORELEASER_VERSION); \
+	fi
 
-build-linux-amd64:
-	$(call build_binary,linux,amd64,Linux x86_64,)
+# 校验 .goreleaser.yaml
+.PHONY: goreleaser-check
+goreleaser-check: goreleaser-install
+	$(GORELEASER) check
 
-build-linux-arm64:
-	$(call build_binary,linux,arm64,Linux ARM64,)
+# 快照构建（无需 tag）：产物在 dist/。本地非 CI 只编当前平台。
+.PHONY: goreleaser-snapshot
+goreleaser-snapshot: goreleaser-install
+	$(GORELEASER) $(GORELEASER_SNAPSHOT_CMD) --clean --parallelism $(GORELEASER_PARALLELISM)
 
-build-windows-amd64:
-	$(call build_binary,windows,amd64,Windows x86_64,.exe)
-
-build-windows-arm64:
-	$(call build_binary,windows,arm64,Windows ARM64,.exe)
-
-build-darwin-amd64:
-	$(call build_binary,darwin,amd64,macOS x86_64,)
-
-build-darwin-arm64:
-	$(call build_binary,darwin,arm64,macOS Apple Silicon,)
-
-# 清理所有已压缩的二进制文件（上传前执行）
-.PHONY: clean-binaries
-clean-binaries:
-	@echo "[清理] 删除已压缩的二进制文件..."
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-amd64)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-amd64)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-amd64)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-linux-arm64)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-linux-arm64)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-linux-arm64)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-amd64.exe)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-amd64.exe)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-amd64.exe)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-windows-arm64.exe)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-windows-arm64.exe)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-windows-arm64.exe)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-amd64)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-amd64)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-amd64)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_BACKEND)-darwin-arm64)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_REPORTER)-darwin-arm64)
-	$(call clean_binary,./$(BUILD_DIR)/$(BINARY_NAME_FORWARDER)-darwin-arm64)
-	@echo "✓ 清理完成"
+# 发布构建：产物在 dist/。
+.PHONY: goreleaser-release
+goreleaser-release: goreleaser-install
+	$(GORELEASER) release --clean --skip=validate --parallelism $(GORELEASER_PARALLELISM)
 
 #####################
 ## 格式化 相关
@@ -669,7 +510,7 @@ check-go: check-go-vet check-go-lint check-go-fix check-go-test check-go-vuln
 # 「过时依赖」是否严格把关：
 #   1 = 严格（本地默认）：pnpm outdated 发现过时依赖就让 make 失败
 #   0 = 宽松（流水线默认）：只提示，不阻塞流水线
-# 流水线（GitHub Actions / CNB）会设置 CI=true，此时默认走宽松；
+# 流水线（.github/workflows / .cnb/workflows）都会显式传 CI=true，此时默认走宽松；
 # 需要在流水线里也严格时显式传参：make check STRICT_CHECKS=1
 STRICT_CHECKS ?= $(if $(filter true,$(CI)),0,1)
 

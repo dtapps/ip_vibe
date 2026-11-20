@@ -21,34 +21,34 @@
 
 ## 1. 总览
 
-两套平台共用同一份 Makefile 目标（`deps` / `format` / `check` / `build-*` / `cover-*` / `junit-*`），本地、CNB、GitHub 三处命令口径一致，不会各写一套慢慢漂移。
+两套平台共用同一份 Makefile 目标（`deps` / `format` / `check` / `build-*` / `goreleaser-*` / `cover-*` / `junit-*`），本地、CNB、GitHub 三处命令口径一致，不会各写一套慢慢漂移。发布包统一由 GoReleaser（`.goreleaser.yaml`）构建，产物落在 `dist/`。
 
 ### 1.1 GitHub Actions（`.github/workflows/`）
 
-| 工作流      | 文件              | 触发                         | 作用                                                                  |
-|-------------|-------------------|------------------------------|-----------------------------------------------------------------------|
-| PushRequest | `push.yml`        | push / PR（所有分支）        | `make deps → format → check`，质量门禁                                |
-| Coverage    | `coverage.yml`    | push / PR                    | Go + Node 覆盖率与 JUnit 测试报告上传 Codecov                         |
-| Coveralls   | `coveralls.yml`   | push / PR                    | 同口径覆盖率以 lcov 上传 Coveralls（独立工作流）                      |
-| Build Image | `build-image.yml` | 手动（输入版本号）+ 每天定时 | linux/amd64 二进制 → 三服务运行镜像推 GHCR → 同步 CNB / GitLab → 通知 |
-| Release     | `release.yml`     | 手动（输入版本号）+ 每天定时 | 全平台压缩包并发布 GitHub Release                                     |
+| 工作流      | 文件              | 触发                         | 作用                                                         |
+|-------------|-------------------|------------------------------|--------------------------------------------------------------|
+| PushRequest | `push.yml`        | push / PR（所有分支）        | `make deps → format → check`，质量门禁                       |
+| Coverage    | `coverage.yml`    | push / PR                    | Go + Node 覆盖率与 JUnit 测试报告上传 Codecov                |
+| Coveralls   | `coveralls.yml`   | push / PR                    | 同口径覆盖率以 lcov 上传 Coveralls（独立工作流）             |
+| Build Image | `build-image.yml` | 手动（输入版本号）+ 每天定时 | linux/amd64 二进制 → 三服务运行镜像推 GHCR → 同步 CNB → 通知 |
+| Release     | `release.yml`     | 手动（输入版本号）+ 每天定时 | GoReleaser 全平台压缩包 + Linux 系统包并发布 GitHub Release  |
 
 另有 Dependabot（配置在 `.github/dependabot.yml`，不在 workflows 目录）：每日检查三类依赖并自动提升级 PR（label `dependencies`）——Go 模块（根 `go.mod`）、前端 npm（`cmd/frontend`）、GitHub Actions 用到的第三方 action 版本。
 
 ### 1.2 CNB（`.cnb/workflows/`，经根目录 `.cnb.yml` include）
 
-| 工作流               | 触发                                      | 作用                                   |
-|----------------------|-------------------------------------------|----------------------------------------|
-| `push.yml`           | push                                      | deps → format → check                  |
-| `push-coverage.yml`  | push                                      | Go + Node 覆盖率上报（全量红线）       |
-| `pull-coverage.yml`  | pull_request                              | 覆盖率增量红线（diffLines）            |
-| `code-review.yml`    | pull_request                              | AI 代码评审，结果评论到 PR             |
-| `cnb-sechook.yml`    | pull_request                              | 敏感信息 / 代码扫描统计                |
-| `sca.yml`            | push（全量）、pull_request.target（增量） | 组件漏洞扫描、License 扫描、SBOM       |
-| `build-image.yml`    | 分支按钮「打包 Docker 镜像」+ API 触发    | 三服务镜像推 CNB 制品库                |
-| `release.yml`        | 分支按钮「打包 Go 项目」+ API 触发        | 全平台压缩包 + CNB Release + 附件      |
-| `codewiki.yml`       | tag_push                                  | 生成 Code Wiki                         |
-| `knowledge-base.yml` | push、issue.open、issue.comment           | `docs/**.md` 索引入知识库 + Issue 同步 |
+| 工作流               | 触发                                      | 作用                                                        |
+|----------------------|-------------------------------------------|-------------------------------------------------------------|
+| `push.yml`           | push                                      | deps → format → check                                       |
+| `push-coverage.yml`  | push                                      | Go + Node 覆盖率上报（全量红线）                            |
+| `pull-coverage.yml`  | pull_request                              | 覆盖率增量红线（diffLines）                                 |
+| `code-review.yml`    | pull_request                              | AI 代码评审，结果评论到 PR                                  |
+| `cnb-sechook.yml`    | pull_request                              | 敏感信息 / 代码扫描统计                                     |
+| `sca.yml`            | push（全量）、pull_request.target（增量） | 组件漏洞扫描、License 扫描、SBOM                            |
+| `build-image.yml`    | 分支按钮「打包 Docker 镜像」+ API 触发    | 三服务镜像推 CNB 制品库                                     |
+| `release.yml`        | 分支按钮「打包 Go 项目」+ API 触发        | GoReleaser 全平台压缩包 + Linux 系统包 + CNB Release + 附件 |
+| `codewiki.yml`       | tag_push                                  | 生成 Code Wiki                                              |
+| `knowledge-base.yml` | push、issue.open、issue.comment           | `docs/**.md` 索引入知识库 + Issue 同步                      |
 
 CNB 的两个发布按钮定义在 `.cnb/web_trigger.yml`（权限 owner / master / developer，输入版本号）。
 
@@ -88,13 +88,19 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 ## 3. 发布二进制包（Release）
 
-产物：3 个服务 × 6 个平台 = 18 个压缩包，GitHub 侧额外带 `SHA256SUMS`。
+产物分两类，都落在 `dist/`：
+
+- **压缩包**：3 个服务 × 6 个平台 = 18 个（linux/windows/darwin × amd64/arm64）；
+- **Linux 系统包**：3 个服务 × 2 个架构（amd64/arm64）× 4 种格式（deb/rpm/apk/pkg.tar.zst）= 24 个；
+- `SHA256SUMS` 覆盖全部 42 个文件，GitHub 与 CNB 的 Release 都带它。
 
 | 服务                           | 平台                                                                               | 压缩格式                    |
 |--------------------------------|------------------------------------------------------------------------------------|-----------------------------|
 | backend / reporter / forwarder | linux/amd64、linux/arm64、windows/amd64、windows/arm64、darwin/amd64、darwin/arm64 | Windows 为 zip，其余 tar.gz |
 
-命名 `{service}-{os}-{arch}[.exe]`。版本号、Git Commit、构建时间通过 ldflags 注入 `vibe_ip/internal/global`；编译走 `make build-all`（`CGO_ENABLED=0` 静态链接、`-trimpath`、`-buildvcs=false`）。
+系统包（由 nFPM 生成）只覆盖 linux/amd64 与 linux/arm64：`.deb`（Debian/Ubuntu）、`.rpm`（Fedora/RHEL/openSUSE）、`.apk`（Alpine）、`.pkg.tar.zst`（Arch Linux）。包名与二进制名一致（`backend` / `reporter` / `forwarder`），直接装在 `/usr/bin`；预发布版本的 `-rc/-beta/-nightly` 后缀由 nFPM 拆成 pre-release（deb/rpm 用 `~`、apk 用 `_`）。
+
+命名 `{service}-{os}-{arch}[.exe]`。版本号、Git Commit、构建时间通过 ldflags 注入 `vibe_ip/internal/global`；构建走 GoReleaser（`.goreleaser.yaml`，`CGO_ENABLED=0` 静态链接、`-trimpath`、`-buildvcs=false`），`make goreleaser-release` 产出 `dist/`；本地无 tag 时用 `make goreleaser-snapshot`。本地（非 `CI=true`）快照走 `goreleaser build --single-target`（该参数只有 `build` 有，`release` 不支持），只编当前平台、不出压缩包与系统包；要本地出全平台产物用 `CI=true make goreleaser-snapshot`。前置的前端构建由 GoReleaser 的 `before` hook 调用 `make build-frontend` 完成（go:embed 顺序不能反）。
 
 ### 3.1 GitHub（`release.yml`：手动 workflow_dispatch + 每天定时）
 
@@ -103,31 +109,29 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 job 分三段：
 
 1. **prepare**（CI 镜像容器）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ **校验版本号与 tag（§3.4，前移到 build 之前，避免无效版本白跑全平台编译）** → 输出 TAG / 是否预发布 / 标题 / commit / 构建时间。GitHub 与 CNB 的标题同口径：`IPVibe <TAG>`（预发布再加 `(预发布)` 后缀）；tag 本身仍是纯版本号。
-2. **build**（CI 镜像容器）：三类缓存（Go module、Go build、pnpm store）→ `make deps` → **先 `make build-frontend`**（前端静态资源由 go:embed 打进 backend 二进制，顺序不能反）→ `make build-all` → `make clean-binaries` 兜底清掉裸二进制 → 生成 `SHA256SUMS` → 上传 artifact。
-3. **release**：`fetch-depth: 0` 拉全量 tag 历史（changelog 要按 tag 算对比基准）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → 删除同名旧 Release（仅 nightly 同日重跑会命中）→ `softprops/action-gh-release` 建 tag、上传 19 个附件 → **清理旧 nightly Release（只保留最近 3 个）**。
+2. **build**（CI 镜像容器）：三类缓存（Go module、Go build、pnpm store）→ `make deps` → `make goreleaser-release`（GoReleaser 的 `before` hook 先 `make build-frontend`，再编译三服务 × 六平台、产出 24 个 Linux 系统包并生成 `dist/SHA256SUMS`）→ 校验 `SHA256SUMS` 非空且覆盖全部实际产物（不比对数量，产物矩阵调整不会卡发版）→ 上传 artifact。
+3. **release**：`fetch-depth: 0` 拉全量 tag 历史（changelog 要按 tag 算对比基准）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → 删除同名旧 Release（仅 nightly 同日重跑会命中）→ `softprops/action-gh-release` 建 tag、上传 43 个附件（18 压缩包 + 24 系统包 + `SHA256SUMS`）→ **清理旧 nightly Release（只保留最近 3 个）**。
 
-发布成功后还有 5 个 job：
+发布成功后还有 3 个 job：
 
-| job            | 做什么                                                                                   | 触发方式                                                                      |
-|----------------|------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
-| `sync-cnb`     | 调 CNB Open API 触发 `dtapp/ip_vibe` 的 `api_trigger_release`（env 传 version + commit） | `POST /-/build/start`，需 secret `SYNC_CNB_TOKEN`                             |
-| `sync-gitee`   | POST Gitee Go 的 Webhook，触发 `.workflow/release.yml` 搬运资产                          | eventType `ip-vibe-release`，需 `SYNC_GITEE_WEBHOOK_URL` + `SYNC_GITEE_TOKEN` |
-| `sync-gitlab`  | 触发 GitLab 的 `release` job（`CI_PIPELINE_SOURCE == "trigger"`）                        | `POST /projects/:id/trigger/pipeline`，需 `SYNC_GITLAB_TRIGGER_TOKEN`         |
-| `sync-gitcode` | dispatch GitCode 的 `release.yml`（`.gitcode/workflows/release.yml`）                    | `POST /actions/workflows/release.yml/dispatches`，需 `SYNC_GITCODE_TOKEN`     |
-| `notify`       | ServerChan3（方糖）推送「构建完成」通知，含各平台同步状态                                | 需 secret `SERVERCHAN_SENDKEY`                                                |
+| job          | 做什么                                                                                   | 触发方式                                                                      |
+|--------------|------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| `sync-cnb`   | 调 CNB Open API 触发 `dtapp/ip_vibe` 的 `api_trigger_release`（env 传 version + commit） | `POST /-/build/start`，需 secret `SYNC_CNB_TOKEN`                             |
+| `sync-gitee` | POST Gitee Go 的 Webhook，触发 `.workflow/release.yml` 搬运资产                          | eventType `ip-vibe-release`，需 `SYNC_GITEE_WEBHOOK_URL` + `SYNC_GITEE_TOKEN` |
+| `notify`     | ServerChan3（方糖）推送「构建完成」通知，含各平台同步状态                                | 需 secret `SERVERCHAN_SENDKEY`                                                |
 
-四个同步 job 都是**未配置 secret 就跳过**（`if: env.XXX != ''`，token 放 job 级 env —— 放 step 级会在 `if` 求值时尚未生效，导致步骤被永远跳过），并各自输出 `triggered` / `skipped` / `failed` 三态给 `notify` 展示。清理旧 nightly 是**旁路**：失败只告警，不让已成功的发布变红。
+两个同步 job 都是**未配置 secret 就跳过**（`if: env.XXX != ''`，token 放 job 级 env —— 放 step 级会在 `if` 求值时尚未生效，导致步骤被永远跳过），并各自输出 `triggered` / `skipped` / `failed` 三态给 `notify` 展示。清理旧 nightly 是**旁路**：失败只告警，不让已成功的发布变红。
 
 #### Gitee 镜像：`DOWNLOAD_SOURCE` 决定唯一来源
 
 `.workflow/release.yml` 不现场编译，只从 CNB 或 GitHub 搬附件并发到 Gitee Release。全局参数 `DOWNLOAD_SOURCE` 取 `cnb`（默认）或 `github`，**同一次发布只用一个来源，绝不混用**：包里注入了 `RepoSource`，客户端据此选升级通道，混源等于给用户随机分配通道。GitHub 的 `sync-gitee` 在 Release 发布成功后才触发，webhook 的 `payload.params` 会显式传 `DOWNLOAD_SOURCE=github`（附件已就绪；用默认 `cnb` 会和 `sync-cnb` 并行抢跑、可能搬到上一版资产），Gitee 页面手动点执行时仍用平台全局参数的默认值 `cnb`。shell 层归一化（`cnb|github` 原样、空→`cnb`、其它报错）后 export；`VERSION` 为空时先跑 `node scripts/ci/gitee-release-download.js --resolve-tag` 查最新 tag，再 source `scripts/ci/resolve-prerelease.sh`，预发布只按版本号后缀（rc/beta/alpha/nightly）判定，不读上游的布尔字段。下载前先跑 `node scripts/ci/gitee-release-publish.js --check-exists` 查 Gitee 是否已有同 tag Release：已存在就直接退出（GitHub / CNB 双触发只认先成功的一个，不再下载附件、也不删掉重建），不存在才继续；查询失败必须报错，不能当成不存在。要强制重发先手工删掉 Gitee 上的同名 Release。
 
-| 来源     | 清单 / 大小 / 正文                                                                                                                                                              | 附件                                                                                                     |
-|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
-| `cnb`    | 附件名固定（3 服务 × 6 平台 + `SHA256SUMS`）；大小用 `Range: bytes=1-` 从 `Content-Range` 现探，不能复用 GitHub 的 `asset.size`（两边各自编译，同版本字节数不同）；正文本地生成 | `https://cnb.cool/dtapp/ip_vibe/-/releases/download/<tag>/<文件名>`，不碰 GitHub API（CNB API 匿名 401） |
-| `github` | GitHub Release 元数据（`browser_download_url` / `asset.size` / `body`）                                                                                                         | daocloud → ghfast.top → gh-proxy.com → 直连依次回退                                                      |
+| 来源     | 清单 / 大小 / 正文                                                                                                                                                                                                                                    | 附件                                                                                                     |
+|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| `cnb`    | 附件清单取 CNB 上的 `SHA256SUMS`（18 压缩包 + 24 系统包 + 校验文件，新增产物不用改下载器；`CNB_FILES` 可强制覆盖）；大小用 `Range: bytes=1-` 从 `Content-Range` 现探，不能复用 GitHub 的 `asset.size`（两边各自编译，同版本字节数不同）；正文本地生成 | `https://cnb.cool/dtapp/ip_vibe/-/releases/download/<tag>/<文件名>`，不碰 GitHub API（CNB API 匿名 401） |
+| `github` | GitHub Release 元数据（`browser_download_url` / `asset.size` / `body`）                                                                                                                                                                               | daocloud → ghfast.top → gh-proxy.com → 直连依次回退                                                      |
 
-下载器只用 Node 内置模块（Gitee 容器没有 python3 / jq）：Range 断点续传且重定向时保留 Range；每 5 秒采样速度，连续 15 秒低于 30KB/s 主动断开换源；普通失败每两次换源，累计最多 8 次、间隔 1.5 秒、3 路并发；落盘后验文件头（`.deb` 为 `!<arch>\n`，`.fpk` / `.tar.gz` 为 `1f 8b`，`.zip` 为 `PK`，`SHA256SUMS` 不能是 HTML），防反代 200 回错误页。正文 HTML 优先用 `marked`，装不上时退回内置极简渲染器，不为 npm 失败卡住发版。
+下载器只用 Node 内置模块（Gitee 容器没有 python3 / jq）：Range 断点续传且重定向时保留 Range；每 5 秒采样速度，连续 15 秒低于 30KB/s 主动断开换源；普通失败每两次换源，累计最多 8 次、间隔 1.5 秒、3 路并发；落盘后验文件头（`.deb` 为 `!<arch>\n`，`.rpm` 为 `ed ab ee db`，`.apk` / `.fpk` / `.tar.gz` 为 `1f 8b`，`.pkg.tar.zst` 为 `28 b5 2f fd`，`.zip` 为 `PK`，`SHA256SUMS` 不能是 HTML），防反代 200 回错误页。正文 HTML 优先用 `marked`，装不上时退回内置极简渲染器，不为 npm 失败卡住发版。
 
 #### commit 的语义：按指定提交检出，不是拉最新代码
 
@@ -135,7 +139,7 @@ job 分三段：
 
 1. **prepare**：`actions/checkout` 的 `ref` 用 `inputs.commit || github.sha`（定时触发没有输入，取触发时点的 HEAD）；
 2. **build / release**：一律用 prepare 解析出的 `commit_full` 检出，三个 job 必然落在同一个提交上；
-3. **同步到各平台**：版本号与 commit 一起传下去 —— CNB 走 `api_trigger_release` 的 `env.commit`，GitLab 走 `variables[COMMIT]`，GitCode 走 `inputs.commit`，Gitee 走 webhook 的 `params.COMMIT`，并固定 `params.DOWNLOAD_SOURCE=github`。各镜像平台建 Release 时，tag 指向这个 commit（**不是**默认分支的最新代码）；镜像仓库是 pull mirror，同步有延迟，探测不到该 commit 时退回默认分支并打告警，不会让发布失败。
+3. **同步到各平台**：版本号与 commit 一起传下去 —— CNB 走 `api_trigger_release` 的 `env.commit`，Gitee 走 webhook 的 `params.COMMIT`，并固定 `params.DOWNLOAD_SOURCE=github`。各镜像平台建 Release 时，tag 指向这个 commit（**不是**默认分支的最新代码）；镜像仓库是 pull mirror，同步有延迟，探测不到该 commit 时退回默认分支并打告警，不会让发布失败。
 
 ⚠️ CNB 与 GitHub 是**两个仓库**：commit 只推到了 GitHub 时，CNB 侧 `git cat-file -e` 探测不到，会明确失败并提示「先推到 CNB 仓库」——不会悄悄退回 HEAD 构建出另一份代码。
 
@@ -150,7 +154,7 @@ job 分三段：
 | `web_trigger_release` | master 分支按钮「打包 Go 项目」  | 表单字段 `version` / `commit`           |
 | `api_trigger_release` | GitHub Actions 的 `sync-cnb` job | Open API 的 `env`：`version` / `commit` |
 
-一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps / build-frontend / build-all / clean-binaries` → 生成 `bin/SHA256SUMS` → 校验版本号与 tag（§3.4）→ 调用 `scripts/ci/*.sh` 生成正文 → **删除已存在的 Release 与 Tag**（仅 nightly 同日重跑命中，用 CNB Open API 分别删 Release 与 tag —— 两个对象不会连带删除）→ 生成 `./.cnb-release-options.json` → 内置 `git:release`（`optionsFrom`）建 Release → `cnbcool/attachments` 上传 `bin/*` → **清理旧 nightly（只保留最近 3 个）**。
+一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps` → `make goreleaser-release`（before hook 内含 `make build-frontend`，产物在 `dist/`，含 `dist/SHA256SUMS`）→ 校验版本号与 tag（§3.4）→ 调用 `scripts/ci/*.sh` 生成正文（`ARTIFACT_DIR=dist`）→ **删除已存在的 Release 与 Tag**（仅 nightly 同日重跑命中，用 CNB Open API 分别删 Release 与 tag —— 两个对象不会连带删除）→ 生成 `./.cnb-release-options.json` → 内置 `git:release`（`optionsFrom`）建 Release → `cnbcool/attachments` 上传 `dist/*.tar.gz`、`dist/*.zip`、`dist/*.deb`、`dist/*.rpm`、`dist/*.apk`、`dist/*.pkg.tar.zst`、`dist/SHA256SUMS`（不整目录上传，`dist/` 里还有 GoReleaser 的 `artifacts.json` / `metadata.json` / `config.yaml`） → **清理旧 nightly（只保留最近 3 个）**。
 
 ⚠️ **`preRelease` 用 `optionsFrom` 传真布尔值，不用 `${...}` 插值**：`preRelease` 的类型是严格 Boolean，插值产出字符串 `"false"`，字符串在布尔位置上容易被当成真值，正式版会被误勾预发布；`descriptionFromFile` 同理，正文里有反引号/管道符/换行，插值容易被转义毁掉。
 
@@ -191,8 +195,8 @@ job 分三段：
 一份实现供 CNB 与 GitHub 共用，只用环境变量传参。要点：
 
 - **`ARTIFACT_LAYOUT`**：`single`（默认，单二进制项目如 ikuai，下载表 5 列）/ `triplet`（多服务项目如本仓库，多一列「组件」，按 组件→平台→架构 排序）。默认 single 保证与 ikuai 行为一致。
-- **「说明」列**：按平台写包类型（Debian/Ubuntu 等 Linux 通用包 / macOS 通用包 / Windows 可执行程序包），均为解压即用的压缩包，不是 `.deb` / `.rpm` / `.msi` 安装包。
-- **只把 `.tar.gz` / `.zip` 当附件**：产物目录里混进正文 md、日志时不会误列表。
+- **「说明」列**：按平台与扩展名写包类型（Debian/Ubuntu、Fedora/RHEL、Alpine、Arch Linux 的系统包，或各平台的通用压缩包），文案来自 `describe-artifact.sh`。
+- **附件白名单**：只把 `.tar.gz` / `.zip` / `.deb` / `.rpm` / `.apk` / `.pkg.tar.zst` 当附件，产物目录里混进正文 md、日志时不会误列表。
 - **Windows 校验命令按实际产物生成**，不硬编码文件名；PowerShell 输出全大写与 `SHA256SUMS` 的小写等价，正文里显式说明。
 - **一律 `printf %s\n` 而非 `echo`**：dash 的 `echo` 会解释反斜杠，`Get-FileHash .\backend-...` 里的 `\b` 会被吞成退格符，显示成 `.ackend-...`。
 - 提交号**显示短号、链接用完整 SHA**（缩写长度随仓库规模变化，链接里用缩写部分平台会 404）。
@@ -209,23 +213,21 @@ job 分三段：
 |--------|----------------------------------------------------------------------------------------------------------------------------|-------------------------------|
 | GitHub | `ghcr.io/<owner>/<repo>/{backend,reporter,forwarder}`                                                                      | `.github/docker/Dockerfile.*` |
 | CNB    | `${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}/{backend,reporter,forwarder}`（即 `docker.cnb.cool/dtapp/ip_vibe/...`） | `.cnb/docker/Dockerfile.*`    |
-| GitLab | `registry.gitlab.com/dtapps/ip_vibe/{backend,reporter,forwarder}`                                                          | 复用 GitHub 的镜像（复制）    |
 
-两份 Dockerfile 一一对应，构建上下文都是仓库根目录，唯一差异是基础镜像的 registry（GitHub 拉 `ghcr.io/dtapps/alpine:latest`，CNB 拉 `docker.cnb.cool/dtapp/alpine:latest`；两者由 [dtapps/alpine](https://github.com/dtapps/alpine) 同一套流水线发布、标签契约一致）：装 tzdata + ca-certificates，把 `bin/{service}-linux-amd64` 放到 `/app/ip_vibe`，建 `/app/data`、`/app/logs` 目录。
+两份 Dockerfile 一一对应，构建上下文都是仓库根目录，唯一差异是基础镜像的 registry（GitHub 拉 `ghcr.io/dtapps/alpine:latest`，CNB 拉 `docker.cnb.cool/dtapp/alpine:latest`；两者由 [dtapps/alpine](https://github.com/dtapps/alpine) 同一套流水线发布、标签契约一致）：装 tzdata + ca-certificates，把 `dist/{service}_linux_amd64_v1/{service}` 放到 `/app/ip_vibe`，建 `/app/data`、`/app/logs` 目录。
 
-GitLab 侧没有自己的 Dockerfile：它**复制** GitHub 已推到 GHCR 的镜像（见 §4.3）。Gitee 没有容器镜像仓库（Gitee Go 的 docker 步骤只能推向外部 registry），GitCode 的制品库是否提供 OCI 端点尚未确认，所以这两个平台的镜像同步暂未接入。
+Gitee 没有容器镜像仓库（Gitee Go 的 docker 步骤只能推向外部 registry），GitCode 的制品库是否提供 OCI 端点尚未确认，所以这两个平台的镜像同步暂未接入。
 
 ### 4.1 GitHub（`build-image.yml`）
 
 **两种触发**：手动填版本号；或每天 UTC 00:00（北京时间 08:00）定时跑（`schedule: cron '0 0 * * *'`，与 `release.yml` 完全同一时刻），定时触发等价于手动填 `nightly`，版本号由 binaries job 推导。
 
-job 分五段：
+job 分四段：
 
-1. **binaries**（容器 job）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ 输出 TAG / 是否预发布 / commit / 构建时间 → 三类缓存 → `make deps` → **先 `make build-frontend`**（前端静态资源由 go:embed 打进 backend 二进制，顺序不能反）→ `make build-linux-amd64` → **校验三个镜像二进制都在**（前移到上传 artifact 之前，缺文件就地失败）→ 上传 artifact。
+1. **binaries**（容器 job）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ 输出 TAG / 是否预发布 / commit / 构建时间 → 三类缓存 → `make deps-go` / `make deps-node` → **`make goreleaser-release`**（GoReleaser 的 before hook 先 `make build-frontend`；镜像只取 `dist/<服务>_linux_amd64_v1/` 下的 linux/amd64 二进制）→ **校验三个镜像二进制都在**（前移到上传 artifact 之前，缺文件就地失败）→ 上传 artifact。
 2. **image**（普通 runner——容器 job 里没有 docker daemon）：下载 artifact → 三个服务的镜像标签一次性算好写入 `$GITHUB_ENV`（避免三个 build 步骤各写一遍「有后缀就不推 latest」的条件表达式，三处写不一致）→ buildx 构建推送（gha cache 按服务分 scope）。标签同时写入 `$GITHUB_OUTPUT` 供 `notify` job 展示。
 3. **sync-cnb**：GHCR 推送成功后调 CNB Open API 触发 `dtapp/ip_vibe` 的 `api_trigger_build_docker_image`（`env` 传 version + commit），把同一批镜像推到 CNB 制品库；需 secret `SYNC_CNB_TOKEN`（`repo-cnb-trigger:rw`），未配置则跳过。
-4. **sync-gitlab**：GHCR 推送成功后用 trigger token 触发 GitLab 的镜像流水线（`variables[VERSION]` / `variables[COMMIT]` / `variables[IMAGE_SYNC]=1`），由 GitLab 侧把镜像复制进 Container Registry；需 secret `SYNC_GITLAB_TRIGGER_TOKEN`（与 `release.yml` 的 sync-gitlab 共用同一个），未配置则跳过。
-5. **notify**：ServerChan3（方糖）推送「镜像构建完成」通知，含 GHCR / CNB / GitLab 镜像地址与各平台同步状态；需 secret `SERVERCHAN_SENDKEY`。
+4. **notify**：ServerChan3（方糖）推送「镜像构建完成」通知，含 GHCR / CNB 镜像地址与同步状态；需 secret `SERVERCHAN_SENDKEY`。
 
 标签规则：正式版推 `:{TAG}` + `:latest`；预发布只推 `:{TAG}`。GHCR 要求镜像名全小写，代码里用 `tr '[:upper:]' '[:lower:]'` 处理。
 
@@ -240,21 +242,7 @@ job 分五段：
 | `web_trigger_build_docker_image` | master 分支按钮「打包 Docker 镜像」 | 表单字段 `version` / `commit`           |
 | `api_trigger_build_docker_image` | GitHub Actions 的 `sync-cnb` job    | Open API 的 `env`：`version` / `commit` |
 
-一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps / build-frontend / build-linux-amd64` → `docker login`（CNB 内置 token）→ 三个 `docker build` + `docker push`；预发布版本跳过 latest 标签推送。
-
-### 4.3 GitLab（`build-image.yml`）
-
-GitLab 有内建 Container Registry（`registry.gitlab.com/<项目>/<镜像名>`），但**不在 GitLab 重新构建**，而是用 `skopeo` 把 GHCR 上的镜像**复制**过去：
-
-- **单一事实来源**：复制过去的是同一份镜像 digest，不会出现两边构建结果不一致；
-- **不受 mirror 延迟影响**：本仓库在 GitLab 上是 GitHub 的 pull mirror，同步有延迟，现场构建可能构建出「与该版本号对不应的代码」；
-- **不装工具链**：不用 Go / Node / pnpm，也不用 `docker:dind`（skopeo 无 daemon，runner 不必 privileged）。
-
-job 在 `image` stage（`.gitlab-ci.yml` 的 `stages` 里新增），只跑两种情况：`CI_PIPELINE_SOURCE == "trigger" && $IMAGE_SYNC == "1"`（GitHub 触发）与手动 Run pipeline（填 `VERSION` + `IMAGE_SYNC=1`）。`IMAGE_SYNC` 是与 Release 流水线的分流开关——同项目里 Release job 的 rules 要求 `IMAGE_SYNC != "1"`，两条流水线不会互相误触发（镜像同步时 GitHub Release 可能还没发布，Release job 取不到附件必然失败）。
-
-认证（目标仓库 GitLab Registry，按优先级）：`CI_REGISTRY_USER` + `CI_REGISTRY_PASSWORD`（配 Registry Deploy Token 后 GitLab 自动注入）→ `GL_REGISTRY_USER` + `GL_REGISTRY_TOKEN`（PAT，write_registry 作用域）→ `CI_JOB_TOKEN` + 用户名 `gitlab-ci-token`（兜底，需在项目设置里允许 job token 推送镜像）。源仓库 GHCR 公开镜像匿名拉即可，私有时配 `GHCR_TOKEN`（PAT，read:packages）。
-
-**清理**：nightly 每天一个标签（3 个服务 × 几十 MB），gitlab.com 免费版容器镜像有 per-project namespace 配额，所以每个服务只保留最近 3 个 nightly 标签，其余用 Registry API 删掉（`DELETE /projects/:id/registry/repositories/:repo_id/tags/:tag`）。清理是旁路：无权限 / 网络错误只打警告，不让已经成功的同步变红。
+一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps-go` / `deps-node` / `goreleaser-release`（before hook 负责 `build-frontend`，镜像取 `dist/<服务>_linux_amd64_v1/` 的 linux/amd64 二进制）→ `docker login`（CNB 内置 token）→ 三个 `docker build` + `docker push`；预发布版本跳过 latest 标签推送。
 
 ---
 
@@ -329,20 +317,16 @@ CNB 侧另用 `docker.volumes` 保留 copy-on-write 缓存（`/root/.cache/go-bu
 
 ## 9. 凭证与外部依赖
 
-| 项                                              | 说明                                                                                          |
-|-------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| `GITHUB_TOKEN`                                  | GitHub 内置；Build Image 需 `packages: write` 推 GHCR，Release 需 `contents: write`           |
-| `CODECOV_TOKEN`                                 | `coverage.yml` 上传 Codecov                                                                   |
-| `COVERALLS_REPO_TOKEN`                          | `coveralls.yml`；缺失时自动跳过上传（`continue-on-error`），不影响其它步骤                    |
-| `CNB_TOKEN` / `CNB_TOKEN_USER_NAME`             | CNB 内置，用于 `docker login` 制品库                                                          |
-| CNB imports                                     | 多条流水线 `imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml` 引入环境变量         |
-| `SYNC_CNB_TOKEN`                                | GitHub → CNB 触发同步流水线（`repo-cnb-trigger:rw`）；Release 与 Build Image 共用             |
-| `CNB_API_ENDPOINT`                              | CNB Open API 地址，默认 `https://api.cnb.cool`；私有化部署时覆盖                              |
-| `SYNC_GITLAB_TRIGGER_TOKEN`                     | GitLab 项目级流水线触发令牌（`glptt-xxx`）；Release 与 Build Image 共用同一个                 |
-| `SERVERCHAN_SENDKEY`                            | ServerChan3（方糖）推送密钥；Release 与 Build Image 的完成通知共用                            |
-| GitLab `GL_REGISTRY_USER` / `GL_REGISTRY_TOKEN` | GitLab 侧变量：PAT（write_registry 作用域），推镜像 / 删镜像标签用；不配则退到 `CI_JOB_TOKEN` |
-| GitLab `GHCR_TOKEN`                             | GitLab 侧变量：GHCR 为私有镜像时用于拉取（PAT，read:packages）；公开镜像不需要                |
-| GitLab                                          | `.gitlab/` 仅为预留目录，仓库暂无 `.gitlab-ci.yml`                                            |
+| 项                                  | 说明                                                                                  |
+|-------------------------------------|---------------------------------------------------------------------------------------|
+| `GITHUB_TOKEN`                      | GitHub 内置；Build Image 需 `packages: write` 推 GHCR，Release 需 `contents: write`   |
+| `CODECOV_TOKEN`                     | `coverage.yml` 上传 Codecov                                                           |
+| `COVERALLS_REPO_TOKEN`              | `coveralls.yml`；缺失时自动跳过上传（`continue-on-error`），不影响其它步骤            |
+| `CNB_TOKEN` / `CNB_TOKEN_USER_NAME` | CNB 内置，用于 `docker login` 制品库                                                  |
+| CNB imports                         | 多条流水线 `imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml` 引入环境变量 |
+| `SYNC_CNB_TOKEN`                    | GitHub → CNB 触发同步流水线（`repo-cnb-trigger:rw`）；Release 与 Build Image 共用     |
+| `CNB_API_ENDPOINT`                  | CNB Open API 地址，默认 `https://api.cnb.cool`；私有化部署时覆盖                      |
+| `SERVERCHAN_SENDKEY`                | ServerChan3（方糖）推送密钥；Release 与 Build Image 的完成通知共用                    |
 
 ---
 
@@ -357,8 +341,9 @@ CNB 侧另用 `docker.volumes` 保留 copy-on-write 缓存（`/root/.cache/go-bu
 7. **CNB 多份覆盖率报告必须用 key/name 区分**（go / node），否则写入同一 meta map 互相覆盖，徽章与数据残缺。
 8. **CNB 的 `git:release` 参数名是驼峰 `preRelease`**，写成小写 `prerelease` 会被**静默忽略**，Release 不会打上预发布标记；且 `preRelease` 是严格 Boolean，必须用 `optionsFrom` 传 JSON 里的真布尔值，不要用 `${...}` 插值（字符串 "false" 易被当真理）。改 `options`/`settings` 时务必对着文档核参数名与大小写。
 9. **`scripts/ci/*.sh` 必须保持 POSIX sh**：CNB 的 stage 用 `sh`（可能是 dash/ash）执行，不要引入 `[[ ]]`、数组、`BASH_SOURCE`、`pipefail`、进程替换。判定「是否被 source」用 `$0` 的 basename，不能用 `${BASH_SOURCE[0]}`（dash 会 Bad substitution）。
-10. **`render-release-body.sh` 只把 `.tar.gz`/`.zip` 当附件**：GitHub 侧的 `release_body.md` 常和附件同放一个目录，不筛会把它当成可下载文件列进表格。
+10. **`render-release-body.sh` 的附件白名单**：只认 `.tar.gz`/`.zip`/`.deb`/`.rpm`/`.apk`/`.pkg.tar.zst`。GitHub 侧的 `release_body.md` 常和附件同放一个目录，不筛会把它当成可下载文件列进表格；新增产物格式时，白名单与 `describe-artifact.sh` 要一起改。
 11. **镜像推送 / Release 发布的 concurrency 不设 cancel-in-progress**：宁可排队，不要半路砍——取消留下的「只有部分服务更新」的镜像组合或只有两三个附件的 Release，比排队慢更贵。
 12. **两个定时任务同一时刻起跑**：`release.yml` 与 `build-image.yml` 都是 `cron '0 0 * * *'`，两条流水线并行执行（concurrency group 不同，互相不排队）。两者各自 source `resolve-prerelease.sh`，读的是同一份 tag 历史、同一 UTC 日期，因此推导出**同一个** nightly 版本号；但它们互不感知对方的结果——镜像推送失败不会挡住 Release 发布，反之亦然。定时触发时 `inputs` 为空，版本号必须靠 `github.event_name == 'schedule' && 'nightly' || inputs.version` 兜底成 `nightly`，否则会拿空版本号去构建。
-13. **GitLab 侧两类流水线靠 `IMAGE_SYNC` 分流**：同一个项目里的 `release` job 与 `build-image` job 都可能被 trigger 唤醒，靠 `variables[IMAGE_SYNC]=1` 区分——镜像流水线带 `IMAGE_SYNC=1`，Release job 的 rules 要求 `IMAGE_SYNC != "1"`。改任一侧的 rules 时必须成对改，否则会出现「镜像触发顺带跑 Release（此时 GitHub Release 还没发布，必然失败）」或「Release 触发顺带跑镜像」。
-14. **GitLab 容器镜像有 per-project namespace 配额**（gitlab.com 免费版量级在几百 MB）：nightly 每天一个标签 × 3 个服务，不清旧标签很快撑爆。清理逻辑在 `.gitlab/workflows/build-image.yml` 里（每个服务只保留最近 3 个 nightly 标签），且是**旁路**——删不掉只告警。GHCR / CNB 侧不做清理（那里每个标签都对应一个可被用户拉取的正式/预发布版本）。
+13. **GoReleaser 需要 tag 名但 tag 在发布后才创建**：CI 构建阶段用 `GORELEASER_CURRENT_TAG` 提供版本名，并通过 `make goreleaser-release` 的 `--skip=validate` 跳过「tag 必须指向当前提交」的校验；直接跑 `goreleaser release` 会在校验阶段失败。产物固定落在 `dist/`，正文渲染与附件上传都从这里取。
+14. **GoReleaser 默认并发数 = CPU 数，CI 内存不够会在链接阶段被 OOM Killer 杀掉**：`backend` 内嵌 52M 前端资源，单次链接峰值高，多个目标同时链接时表现为 `build failed: exit status 1: ... link: signal: killed`（不是编译错误，不用查代码）。Makefile 的 `GORELEASER_PARALLELISM` 专门压这个峰值：本地默认 `1`（串行），`CI=true` 时默认 `2`，两者都可显式覆盖（如 `make goreleaser-snapshot GORELEASER_PARALLELISM=4`）。如果 CI 里设到 `2` 仍被杀，改回 `GORELEASER_PARALLELISM=1`；串行也扛不住说明构建容器内存不足，需要换更大规格的 runner，而不是继续调这个值。
+15. **`CI=true` 决定构建范围，CNB 必须显式传**：GoReleaser 那一步在非 `CI=true` 环境下走 `goreleaser build --single-target`（只编当前平台，本地开发提速；`release` 没有该参数），`CI=true` 才走 `goreleaser release` 出全平台产物。GitHub Actions 自动注入 `CI=true`；**CNB 不会**，所以 CNB 发版 stage 写成 `CI=true ... make goreleaser-release`——漏掉的话 Release 只有 linux/amd64 一套附件。

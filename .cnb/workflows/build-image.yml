@@ -10,7 +10,7 @@
 #     把同一批镜像再推到 CNB 制品库。
 #
 # 三个服务镜像的 Dockerfile 统一放在 .cnb/docker/Dockerfile.{backend,reporter,forwarder}
-# （构建上下文 = 仓库根目录，Dockerfile 里 COPY bin/<服务>-linux-amd64）。
+# （构建上下文 = 仓库根目录，Dockerfile 里 COPY dist/<服务>_linux_amd64_v1/<服务>）。
 # 与 GitHub 的 .github/docker/Dockerfile.* 结构一致，只差基础镜像的 registry：
 # CNB 拉 docker.cnb.cool/dtapp/alpine:latest，GitHub 拉 ghcr.io/dtapps/alpine:latest
 # （同一套上游流水线发布，标签契约一致）。
@@ -37,6 +37,9 @@
       - /root/.local/share/pnpm/store:copy-on-write # pnpm 全局存储 - 加速前端依赖安装
       - /go/pkg/mod:copy-on-write # 仅缓存 Go 模块下载，避免覆盖镜像内预装的 /go/bin 工具
   imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml # 导入外部环境变量/配置
+  # 显式声明流水线环境：CNB 不会自动注入 CI=true，Makefile 靠它判断是否在 CI 内。
+  env:
+    CI: 'true'
   stages:
     - name: 输出基本信息
       script: |
@@ -65,6 +68,10 @@
         commit_full="$(git rev-parse HEAD)"
         commit_short="$(git rev-parse --short HEAD)"
         echo "构建 commit: ${commit_short} (${commit_full})"
+
+        # nightly 的基版本要靠 tag 推算（最近正式版 +1 补丁），而 CNB 的默认检出不一定
+        # 带 tag。必须在 resolve_version 之前补拉，否则会算出 v0.0.1-nightly 这类旧版本。
+        git fetch --tags --quiet --force || true
 
         # 归一化（补 v 前缀）与预发布判定只有一份实现，CNB 与 GitHub 都 source 它，
         # 避免两边各写一套 grep 正则、判断口径慢慢跑偏。
@@ -121,14 +128,17 @@
         interior_forwarder_docker_image_full: INTERIOR_FORWARDER_DOCKER_IMAGE_FULL
         interior_forwarder_docker_image_latest: INTERIOR_FORWARDER_DOCKER_IMAGE_LATEST
 
-    - name: 安装所有依赖
-      script: make deps
+    - name: 安装全部 Go 依赖
+      script: make deps-go
 
-    - name: 构建前端静态文件
-      script: VERSION=${INTERIOR_VERSION} make build-frontend
+    - name: 安装全部前端依赖
+      script: make deps-node
 
-    - name: 构建后端二进制文件
-      script: VERSION=${INTERIOR_VERSION} COMMIT=${INTERIOR_COMMIT_SHORT} make build-linux-amd64
+    # goreleaser 的 before hook 会先执行 make build-frontend（go:embed 顺序不能反），
+    # 再按 .goreleaser.yaml 编译全矩阵；镜像只取其中的 linux/amd64 二进制。
+    # GOOS=linux 仅作显式声明：GoReleaser 的编译矩阵由配置文件决定，不读 GOOS。
+    - name: 构建产物（goreleaser）
+      script: GOOS=linux VERSION=${INTERIOR_VERSION} GORELEASER_CURRENT_TAG=${INTERIOR_VERSION} make goreleaser-release
 
     - name: 登录 Docker Registry
       script: |

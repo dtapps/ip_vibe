@@ -9,8 +9,8 @@ RUN apk add --no-cache tzdata ca-certificates
 
 WORKDIR /app
 
-# CGO_ENABLED=0 静态编译产物，由 build-image.yml 中的 make build-linux-amd64 生成
-COPY bin/forwarder-linux-amd64 /app/ip_vibe
+# CGO_ENABLED=0 静态编译产物，由 build-image.yml 中的 make goreleaser-release 生成
+COPY dist/forwarder_linux_amd64_v1/forwarder /app/ip_vibe
 
 RUN mkdir -p /app/logs/ \
     && chmod +x /app/ip_vibe

@@ -142,7 +142,7 @@ docker compose up -d
 >
 > 版本号规则：`v1.2.3` 为正式版（推送 `:v1.2.3` 与 `:latest`，Release 不勾选 prerelease）；`v1.2.3-rc.1`、`v1.2.3-beta.1`、`v1.2.3-alpha.1`、`v1.2.3-nightly.20260101` 为预发布（只推送对应版本标签，不覆盖 `:latest`，Release 勾选 prerelease）；填 `nightly` 会自动推导成 `<最近正式版 +1 补丁>-nightly.<UTC 日期>`（定时任务每天 UTC 00:00 用它，各平台只保留最近 3 个 nightly Release）。
 >
-> GitHub Actions 侧同一套规则：`Release` 工作流产出全平台压缩包并发布 Release，`Build Image` 工作流把镜像推到 `ghcr.io/dtapps/ip_vibe/{backend,reporter,forwarder}`，再同步一份到 CNB 制品库与 GitLab Container Registry（`registry.gitlab.com/dtapps/ip_vibe/...`）。两者都支持手动触发与每天 UTC 00:00（北京时间 08:00）的定时触发（定时等价于填 `nightly`），完成后会通过 ServerChan3（方糖）推一条通知。
+> GitHub Actions 侧同一套规则：`Release` 工作流用 GoReleaser 产出全平台压缩包并发布 Release，`Build Image` 工作流把镜像推到 `ghcr.io/dtapps/ip_vibe/{backend,reporter,forwarder}`，再同步一份到 CNB 制品库。两者都支持手动触发与每天 UTC 00:00（北京时间 08:00）的定时触发（定时等价于填 `nightly`），完成后会通过 ServerChan3（方糖）推一条通知。
 
 ### 本地开发
 
@@ -256,6 +256,8 @@ make format            # 格式化 Go / 前端 / YAML / JSON / SQL / Shell / Mar
 ```
 
 构建产物命名：`{backend|reporter|forwarder}-{os}-{arch}[.exe]`，输出到 `bin/`；版本号、Git Commit、构建时间通过 ldflags 注入 `internal/global`。
+
+发布用的全平台产物由 GoReleaser 生成在 `dist/`（`make goreleaser-snapshot` / `make goreleaser-release`）：压缩包命名同上，另带 Linux 系统包 `deb` / `rpm` / `apk` / `pkg.tar.zst`（包名 `backend` / `reporter` / `forwarder`，二进制装在 `/usr/bin`），以及 `SHA256SUMS`。本地非 CI 环境跑 `make goreleaser-snapshot` 只编当前平台（`goreleaser build --single-target`，不生成压缩包与系统包）；要本地出全平台产物用 `CI=true make goreleaser-snapshot`。
 
 ---
 

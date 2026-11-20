@@ -2,8 +2,8 @@
 #
 # 两种触发：手动触发（输入版本号）；每天 UTC 00:00（北京时间 08:00）定时构建 nightly 预发布
 # 镜像（cron 与 release.yml 完全一致，同一时刻起跑）。
-# 手动触发时：编译 linux/amd64 二进制 → 构建 backend / reporter / forwarder
-# 三个运行镜像 → 推送到 GitHub Container Registry（GHCR）→ 触发 CNB / GitLab 侧同步
+# 手动触发时：GoReleaser 构建（镜像只取 linux/amd64 二进制）→ 构建 backend / reporter / forwarder
+# 三个运行镜像 → 推送到 GitHub Container Registry（GHCR）→ 触发 CNB 侧同步
 # 同一批镜像 → 通过 ServerChan3（方糖）推一条构建完成通知。
 # 定时触发等价于手动填 `nightly`，版本号由 binaries job 推导。
 #
@@ -63,8 +63,13 @@ concurrency:
   cancel-in-progress: false
   queue: max
 
+# 显式声明流水线环境（Actions 本来也会注入 CI=true）：Makefile 和脚本靠它判断
+# 是否在 CI 内，不依赖 runner 默认行为。
+env:
+  CI: 'true'
+
 jobs:
-  # 先编 amd64 二进制：镜像里只需要 linux/amd64，其它平台由 release.yml 负责打压缩包
+  # 用 GoReleaser 构建（与发版同一份配置）；镜像只取 dist/ 下 linux/amd64 的二进制
   binaries:
     runs-on: ubuntu-26.04
     container:
@@ -171,23 +176,21 @@ jobs:
           restore-keys: |
             pnpm-${{ runner.os }}-
 
-      - name: 安装所有依赖
-        shell: bash
-        run: make deps
+      - name: 安装全部 Go 依赖
+        run: make deps-go
 
-      # 前端静态文件会被 backend 二进制 go:embed 进去，必须先于后端编译执行
-      - name: 构建前端静态文件
+      - name: 安装全部前端依赖
+        run: make deps-node
+
+      # goreleaser 的 before hook 会先执行 make build-frontend（go:embed 顺序不能反），
+      # 再按 .goreleaser.yaml 编译全矩阵；镜像只取其中的 linux/amd64 二进制。
+      # GOOS=linux 仅作显式声明：GoReleaser 的编译矩阵由配置文件决定，不读 GOOS。
+      - name: 构建产物（goreleaser）
         shell: bash
         env:
+          GOOS: linux
           VERSION: ${{ steps.gen.outputs.version }}
-        run: VERSION="${VERSION}" make build-frontend
-
-      - name: 构建后端二进制文件（linux/amd64）
-        shell: bash
-        env:
-          VERSION: ${{ steps.gen.outputs.version }}
-          COMMIT: ${{ steps.gen.outputs.commit_short }}
-        run: VERSION="${VERSION}" COMMIT="${COMMIT}" make build-linux-amd64
+        run: VERSION="${VERSION}" GORELEASER_CURRENT_TAG="${VERSION}" make goreleaser-release
 
       # 镜像要用的三个二进制在这里就验齐：缺文件不必等 artifact 上传/下载、
       # image job 起来之后再失败。原来的位置在 image job 下载产物之后，白跑一趟。
@@ -196,18 +199,24 @@ jobs:
         run: |
           set -euo pipefail
           for svc in backend reporter forwarder; do
-            if [ ! -f "bin/${svc}-linux-amd64" ]; then
-              echo "::error::缺少 bin/${svc}-linux-amd64"
+            f="dist/${svc}_linux_amd64_v1/${svc}"
+            if [ ! -f "${f}" ]; then
+              echo "::error::缺少 ${f}"
               exit 1
             fi
-            echo "✓ bin/${svc}-linux-amd64 $(du -h "bin/${svc}-linux-amd64" | cut -f1)"
+            echo "✓ ${f} $(du -h "${f}" | cut -f1)"
           done
 
       - name: 上传二进制产物
         uses: actions/upload-artifact@v7
         with:
           name: ip_vibe-linux-amd64
-          path: bin/*
+          # 三个文件的最小公共父目录是 dist，下载后会还原成
+          # dist/<id>_linux_amd64_v1/<二进制>，与 Dockerfile 的 COPY 路径一致。
+          path: |
+            dist/backend_linux_amd64_v1/backend
+            dist/reporter_linux_amd64_v1/reporter
+            dist/forwarder_linux_amd64_v1/forwarder
           if-no-files-found: error
           retention-days: 1
 
@@ -226,15 +235,16 @@ jobs:
         with:
           # 用 binaries 解析出的完整 SHA，保证两个 job 同一个提交
           ref: ${{ needs.binaries.outputs.commit_full }}
+          fetch-depth: 0
 
       - name: 下载二进制产物
         uses: actions/download-artifact@v8
         with:
           name: ip_vibe-linux-amd64
-          path: bin
+          path: dist
 
       # 构建产物校验已前移到 binaries（上传 artifact 之前），缺文件那里就失败；
-      # 这里的 download-artifact 本身也保证三个文件到位。
+      # 这里的 download-artifact 本身也保证三个文件按 dist/<id>_linux_amd64_v1/ 还原。
       # 标签在这里一次性算好写入 $GITHUB_ENV，避免在三个 build 步骤里各写一遍
       # 「有后缀就不推 latest」这种条件表达式（容易三处写不一致）。
       # 同时写到 $GITHUB_OUTPUT：notify job 需要拿到镜像地址写进通知。
@@ -322,7 +332,7 @@ jobs:
   # 独立成 job：便于在其后追加 webhook 通知（notify job），也让「同步」与「构建」解耦。
   # 注意：使用独立的 SYNC_CNB_TOKEN（仅 repo-cnb-trigger:rw 权限），
   # 与给软件升级下载用的 CNB_TOKEN（repo-release:rw）区分，互不干扰。
-  # 其它平台（Gitee / GitLab / GitCode）的镜像同步暂未接入，后续再加。
+  # 其它平台（Gitee / GitCode）的镜像同步暂未接入，后续再加。
   sync-cnb:
     needs: [binaries, image]
     runs-on: ubuntu-26.04
@@ -390,67 +400,6 @@ jobs:
             echo "status=failed" >> "$GITHUB_OUTPUT"
           fi
 
-  # GHCR 镜像推送成功后，触发 GitLab 侧同步同一批镜像（推 GitLab Container Registry）。
-  # 独立成 job：便于在其后追加 webhook 通知（notify job），也让「同步」与「构建」解耦。
-  # 令牌：GitLab 项目 → Settings → CI/CD → Pipeline trigger tokens → Add new token（形如 glptt-xxx），
-  # 与 release.yml 的 sync-gitlab 共用同一个 secret（同一项目的流水线触发器）。
-  # 传 IMAGE_SYNC=1：GitLab 侧用它把「镜像流水线」与「Release 流水线」区分开
-  # （Release job 的 rules 要求 IMAGE_SYNC != "1"），两条流水线互不误触发。
-  # GitLab 侧做的事：从 GHCR 复制镜像 → 推 registry.gitlab.com/dtapps/ip_vibe/{backend,reporter,forwarder}，
-  # 并清理旧 nightly 镜像标签（免费版容器镜像有 per-project namespace 配额）。
-  sync-gitlab:
-    needs: [binaries, image]
-    runs-on: ubuntu-26.04
-    # 供 notify job 在通知里展示同步状态
-    outputs:
-      status: ${{ steps.status.outputs.status }}
-    # token 放 job 级 env（step 自己的 env 在 if 求值时还读不到）。
-    env:
-      GITLAB_TRIGGER_TOKEN: ${{ secrets.SYNC_GITLAB_TRIGGER_TOKEN }}
-    steps:
-      - name: 触发 GitLab 镜像同步流水线
-        id: trigger
-        if: ${{ env.GITLAB_TRIGGER_TOKEN != '' }}
-        shell: bash
-        run: |
-          API="https://gitlab.com/api/v4"   # 自建 GitLab 实例改这里
-          PROJECT="dtapps/ip_vibe"         # dtapps 带 s；GitCode / CNB 那边是 dtapp，别抄错
-          REF="master"                     # 镜像仓库的默认分支
-          # 路径形式必须 URL 编码（/ → %2F）。
-          PROJ=$(printf '%s' "$PROJECT" | jq -sRr @uri)
-
-          echo "触发 GitLab 流水线: ${API}/projects/${PROJ}/trigger/pipeline (ref=${REF})"
-          HTTP=$(curl -s -o /tmp/gitlab_trigger.json -w "%{http_code}" -X POST \
-            --form "token=${GITLAB_TRIGGER_TOKEN}" \
-            --form "ref=${REF}" \
-            --form "variables[VERSION]=${{ needs.binaries.outputs.version }}" \
-            --form "variables[COMMIT]=${{ needs.binaries.outputs.commit_full }}" \
-            --form "variables[IMAGE_SYNC]=1" \
-            "${API}/projects/${PROJ}/trigger/pipeline")
-
-          echo "GitLab trigger/pipeline 响应 HTTP=${HTTP}"
-          cat /tmp/gitlab_trigger.json
-          if [ "$HTTP" != "200" ] && [ "$HTTP" != "201" ]; then
-            echo "::warning::触发 GitLab 镜像同步流水线失败（HTTP=${HTTP}），不影响 GHCR 镜像"
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          else
-            echo "✓ 已成功请求 GitLab 执行镜像同步流水线"
-            echo "status=triggered" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: 记录同步状态
-        id: status
-        if: always()
-        shell: bash
-        run: |
-          if [ "${{ steps.trigger.outcome }}" = "skipped" ]; then
-            echo "status=skipped" >> "$GITHUB_OUTPUT"
-          elif [ -n "${{ steps.trigger.outputs.status }}" ]; then
-            echo "status=${{ steps.trigger.outputs.status }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          fi
-
   # 镜像构建 + 各平台同步全部完成后，通过 ServerChan3（方糖）推送 webhook 通知。
   # 需配置 secret SERVERCHAN_SENDKEY（形如 SCTxxxx 或 sctp{uid}t...）；未配置则跳过通知。
   # API 文档：https://doc.sc3.ft07.com/zh/serverchan3/server/api
@@ -458,7 +407,7 @@ jobs:
   #          带 uid 的 sendkey（sctp 开头）→ https://<uid>.push.ft07.com/send/<sendkey>.send
   notify:
     # 等镜像同步 job 结束（未配置 secret 时它只是跳过，不影响 success 判定）。
-    needs: [binaries, image, sync-cnb, sync-gitlab]
+    needs: [binaries, image, sync-cnb]
     runs-on: ubuntu-26.04
     if: ${{ needs.image.result == 'success' }}
     env:
@@ -489,12 +438,11 @@ jobs:
           BUILD_TIME_CN="${BUILD_TIME_CN} (UTC+8)"
           REPO="${{ github.repository }}"
 
-          # 镜像地址：GHCR 由 image job 算出（仓库名已转小写），CNB / GitLab 侧固定前缀
+          # 镜像地址：GHCR 由 image job 算出（仓库名已转小写），CNB 侧固定前缀
           BACKEND_TAGS="${{ needs.image.outputs.backend_tags }}"
           REPORTER_TAGS="${{ needs.image.outputs.reporter_tags }}"
           FORWARDER_TAGS="${{ needs.image.outputs.forwarder_tags }}"
           CNB_IMAGE_BASE="docker.cnb.cool/dtapp/ip_vibe"
-          GITLAB_IMAGE_BASE="registry.gitlab.com/dtapps/ip_vibe"
 
           # 同步状态 → 中文标签。状态来自 sync job 的 outputs：
           #   triggered=已触发（异步执行，进度看平台页面）/ skipped=未配置 secret / failed=触发失败
@@ -522,8 +470,7 @@ jobs:
           DESP="${DESP}- reporter: \`${REPORTER_TAGS//,/, }\`  "$'\n'
           DESP="${DESP}- forwarder: \`${FORWARDER_TAGS//,/, }\`  "$'\n'
           DESP="${DESP}**CNB 镜像地址**: \`${CNB_IMAGE_BASE}/{backend,reporter,forwarder}:${TAG}\`  "$'\n'
-          DESP="${DESP}**GitLab 镜像地址**: \`${GITLAB_IMAGE_BASE}/{backend,reporter,forwarder}:${TAG}\`  "$'\n'
-          DESP="${DESP}**镜像同步**: CNB $(sync_state "${{ needs['sync-cnb'].outputs.status }}") · GitLab $(sync_state "${{ needs['sync-gitlab'].outputs.status }}")"
+          DESP="${DESP}**镜像同步**: CNB $(sync_state "${{ needs['sync-cnb'].outputs.status }}")"
 
           echo "推送 ServerChan3 通知: ${TITLE}"
           HTTP=$(curl -s -o /tmp/sc3.json -w "%{http_code}" -X POST \

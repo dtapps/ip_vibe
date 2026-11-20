@@ -1,8 +1,8 @@
 # 发布工作流
 #
 # 两种触发：手动填版本号；每天 UTC 00:00（北京时间 08:00）定时构建 nightly 预发布。
-# 手动触发时构建全平台二进制包（zip / tar.gz）并发布 GitHub Release，
-# 随后触发 CNB / Gitee / GitLab / GitCode 四个平台的发布同步（各自 secret 未配置则跳过），
+# 手动触发时用 GoReleaser 构建全平台二进制包（zip / tar.gz）并发布 GitHub Release，
+# 随后触发 CNB / Gitee 两个平台的发布同步（各自 secret 未配置则跳过），
 # 最后通过 ServerChan3（方糖）推一条构建完成通知。
 #
 # 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 CNB 的 .cnb/workflows/release.yml 同口径）：
@@ -59,6 +59,11 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
   queue: max
+
+# 显式声明流水线环境（Actions 本来也会注入 CI=true）：Makefile 靠它区分本地快照
+# （build --single-target）和流水线构建（release，全平台），所有 job 共用。
+env:
+  CI: 'true'
 
 jobs:
   prepare:
@@ -211,6 +216,8 @@ jobs:
         with:
           # 用 prepare 解析出的完整 SHA，保证与 prepare / release 同一个提交
           ref: ${{ needs.prepare.outputs.commit_full }}
+          # GoReleaser 需要 git 历史与 tag 推导版本
+          fetch-depth: 0
 
       # 容器工作区是 runner 挂进来的 bind mount（属主是 runner 用户），容器内进程却是 root，
       - name: 让容器内的 git 可用
@@ -269,47 +276,51 @@ jobs:
           restore-keys: |
             pnpm-${{ runner.os }}-
 
-      - name: 安装所有依赖
-        shell: bash
-        run: make deps
+      - name: 安装全部 Go 依赖
+        run: make deps-go
 
-      - name: 构建前端静态文件
-        shell: bash
-        env:
-          VERSION: ${{ needs.prepare.outputs.interior_version }}
-        run: VERSION="${VERSION}" make build-frontend
+      - name: 安装全部前端依赖
+        run: make deps-node
 
-      # build-all 会先 clean（清空 bin/），再逐个平台编译 backend/reporter/forwarder，
-      # 每编完一个就打包成 tar.gz（Windows 为 zip）并删掉未压缩的二进制。
-      - name: 构建所有平台二进制文件
+      # goreleaser 的 before hook 会先执行 make build-frontend（go:embed 顺序不能反），
+      # 再按 .goreleaser.yaml 编译 3 服务 × 6 平台并生成 SHA256SUMS。
+      # tag 在发布阶段才创建，这里只传 GORELEASER_CURRENT_TAG 提供版本名。
+      - name: 构建全平台产物（goreleaser）
         shell: bash
         env:
           VERSION: ${{ needs.prepare.outputs.interior_version }}
-          COMMIT: ${{ needs.prepare.outputs.commit_short }}
-        run: VERSION="${VERSION}" COMMIT="${COMMIT}" make build-all
+        run: VERSION="${VERSION}" GORELEASER_CURRENT_TAG="${VERSION}" make goreleaser-release
 
-      # 兜底清理：确保 bin/ 里只剩可发布的压缩包（build-all 里的打包缺失时不会留下裸二进制）
-      - name: 清理二进制文件
-        shell: bash
-        run: make clean-binaries
-
-      - name: 生成校验文件
+      # 不校验产物数量：格式/平台矩阵调整时不该让发版失败；
+      # 只确认 SHA256SUMS 非空且覆盖了每一个实际产物（正文的校验节依赖它）。
+      - name: 校验校验文件（SHA256SUMS）
         shell: bash
         run: |
           set -euo pipefail
-          cd bin
-          : > SHA256SUMS
-          for f in *.tar.gz *.zip; do
+          test -s dist/SHA256SUMS
+
+          # 未匹配到文件的 glob 保持字面量，跳过即可：某个格式没产出不算失败
+          for f in dist/*.tar.gz dist/*.zip dist/*.deb dist/*.rpm dist/*.apk dist/*.pkg.tar.zst; do
             [ -e "${f}" ] || continue
-            sha256sum "${f}" >> SHA256SUMS
+            grep -qF "  ${f##*/}" dist/SHA256SUMS || {
+              echo "::error::SHA256SUMS 缺少 ${f##*/}"
+              exit 1
+            }
           done
-          cat SHA256SUMS
+          cat dist/SHA256SUMS
 
       - name: 上传产物
         uses: actions/upload-artifact@v7
         with:
           name: ip_vibe-release
-          path: bin/*
+          path: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/*.deb
+            dist/*.rpm
+            dist/*.apk
+            dist/*.pkg.tar.zst
+            dist/SHA256SUMS
           if-no-files-found: error
           retention-days: 1
 
@@ -337,7 +348,7 @@ jobs:
           path: release
 
       # 下载表「说明」列由 scripts/ci/describe-artifact.sh 统一生成；发版前先把
-      # 每个压缩包对应的文案打到日志，便于核对（正文里由 render-release-body.sh 渲染）。
+      # 每个安装包对应的文案打到日志，便于核对（正文里由 render-release-body.sh 渲染）。
       - name: 核对附件说明
         shell: bash
         run: |
@@ -345,7 +356,9 @@ jobs:
           for f in release/*; do
             [ -f "${f}" ] || continue
             case "${f}" in
-              *.tar.gz | *.zip) sh scripts/ci/describe-artifact.sh "$(basename "${f}")" ;;
+              *.tar.gz | *.zip | *.deb | *.rpm | *.apk | *.pkg.tar.zst)
+                sh scripts/ci/describe-artifact.sh "$(basename "${f}")"
+                ;;
             esac
           done
 
@@ -404,7 +417,7 @@ jobs:
       # 夜间构建每天一个 tag，只保留最近 3 个 Release（含 tag），更早的删掉：
       # 更新器只用最新一个，旧 nightly 没有升级价值（回滚应装正式版），
       # 留着只会让 Release 列表和存储无限增长。只清理 *-nightly.*，不碰正式版 / rc / beta / alpha。
-      # 镜像平台（CNB / Gitee / GitLab / GitCode）的同步流水线在发布成功后各自做同样清理：
+      # 镜像平台（CNB / Gitee）的同步流水线在发布成功后各自做同样清理：
       # GitHub 这边的删除不会传播过去，各平台只能按自己的 Release 列表收敛到 3 个。
       # 清理是旁路：列表取不到、某个 Release 删不掉都只打警告，绝不让本 job 变红——
       # 发布本身已经成功，清理失败只是存储多一点，下一轮 nightly 还会再试。
@@ -483,6 +496,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: ${{ inputs.commit || github.sha }}
+          fetch-depth: 0
 
       - name: 生成公告正文
         shell: bash
@@ -664,7 +678,7 @@ jobs:
     outputs:
       status: ${{ steps.status.outputs.status }}
     # token 必须放 job 级 env：step 自己的 env 在同一步骤的 if 求值时还读不到，
-    # 放 step 级会让 if 恒为假、同步步骤被永远跳过（与 sync-gitlab / sync-gitcode 同口径）。
+    # 放 step 级会让 if 恒为假、同步步骤被永远跳过（与 sync-gitee 同口径）。
     env:
       SYNC_CNB_TOKEN: ${{ secrets.SYNC_CNB_TOKEN }}
     steps:
@@ -797,129 +811,6 @@ jobs:
             echo "status=failed" >> "$GITHUB_OUTPUT"
           fi
 
-  # Release 发布成功后触发 GitLab 的 release job（.gitlab/workflows/release.yml，由 .gitlab-ci.yml
-  # include；只在 CI_PIPELINE_SOURCE == "trigger" 时跑：下载 GitHub 资产 → 传 Generic Package → 建 GitLab Release）。
-  # 用项目级 trigger token，只触发流水线、不绑用户。
-  # 令牌：GitLab 项目 → Settings → CI/CD → Pipeline trigger tokens → Add new token（形如 glptt-xxx），
-  # 创建后填到 GitHub 仓库 secret SYNC_GITLAB_TRIGGER_TOKEN。
-  # 只传 VERSION：该 job 的 rules 只看 CI_PIPELINE_SOURCE 与 VERSION，
-  # 预发布由版本号后缀判定，不再传 PRERELEASE。
-  sync-gitlab:
-    needs: [release, prepare]
-    runs-on: ubuntu-26.04
-    # 供 notify job 在通知里展示同步状态
-    outputs:
-      status: ${{ steps.status.outputs.status }}
-    # token 放 job 级 env（step 自己的 env 在 if 求值时还读不到）。
-    env:
-      GITLAB_TRIGGER_TOKEN: ${{ secrets.SYNC_GITLAB_TRIGGER_TOKEN }}
-    steps:
-      - name: 触发 GitLab 同步流水线
-        id: trigger
-        if: ${{ env.GITLAB_TRIGGER_TOKEN != '' }}
-        shell: bash
-        run: |
-          echo "等待 8 秒，确保 GitHub Release 附件已同步到 CDN ..."
-          sleep 8
-
-          API="https://gitlab.com/api/v4"   # 自建 GitLab 实例改这里
-          PROJECT="dtapps/ip_vibe"        # dtapps 带 s；GitCode / CNB 那边是 dtapp，别抄错
-          REF="master"                      # 镜像仓库要构建的分支
-          # 路径形式必须 URL 编码（/ → %2F）。
-          PROJ=$(printf '%s' "$PROJECT" | jq -sRr @uri)
-
-          echo "触发 GitLab 流水线: ${API}/projects/${PROJ}/trigger/pipeline (ref=${REF})"
-          HTTP=$(curl -s -o /tmp/gitlab_trigger.json -w "%{http_code}" -X POST \
-            --form "token=${GITLAB_TRIGGER_TOKEN}" \
-            --form "ref=${REF}" \
-            --form "variables[VERSION]=${{ needs.prepare.outputs.interior_version }}" \
-            --form "variables[COMMIT]=${{ needs.prepare.outputs.commit_full }}" \
-            "${API}/projects/${PROJ}/trigger/pipeline")
-
-          echo "GitLab trigger/pipeline 响应 HTTP=${HTTP}"
-          cat /tmp/gitlab_trigger.json
-          if [ "$HTTP" != "200" ] && [ "$HTTP" != "201" ]; then
-            echo "::warning::触发 GitLab 同步流水线失败（HTTP=${HTTP}），不影响 GitHub Release"
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          else
-            echo "✓ 已成功请求 GitLab 执行同步流水线"
-            echo "status=triggered" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: 记录同步状态
-        id: status
-        if: always()
-        shell: bash
-        run: |
-          if [ "${{ steps.trigger.outcome }}" = "skipped" ]; then
-            echo "status=skipped" >> "$GITHUB_OUTPUT"
-          elif [ -n "${{ steps.trigger.outputs.status }}" ]; then
-            echo "status=${{ steps.trigger.outputs.status }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          fi
-
-  # Release 发布成功后 dispatch GitCode 的 release.yml（.gitcode/workflows/release.yml，
-  # 逻辑：下载 GitHub 资产 → 建 GitCode Release → 逐个上传附件），须声明 on: workflow_dispatch。
-  # 令牌：GitCode → 头像 → 个人设置 → 访问令牌 → 新建访问令牌（勾 repo 读写，令牌只显示一次），
-  # 创建后填到 GitHub 仓库 secret SYNC_GITCODE_TOKEN（GitCode 侧的仓库密钥是另一份配置，
-  # 与本 secret 值相同但要各填一次）。
-  # access_token 按官方要求走 query，故日志不打印完整 URL。
-  sync-gitcode:
-    needs: [release, prepare]
-    runs-on: ubuntu-26.04
-    # 供 notify job 在通知里展示同步状态
-    outputs:
-      status: ${{ steps.status.outputs.status }}
-    # token 放 job 级 env（step 自己的 env 在 if 求值时还读不到）。
-    env:
-      GITCODE_TOKEN: ${{ secrets.SYNC_GITCODE_TOKEN }}
-    steps:
-      - name: 触发 GitCode 同步流水线
-        id: trigger
-        if: ${{ env.GITCODE_TOKEN != '' }}
-        shell: bash
-        run: |
-          echo "等待 8 秒，确保 GitHub Release 附件已同步到 CDN ..."
-          sleep 8
-
-          API="https://api.gitcode.com/api/v8"  # 私有化部署改这里
-          REPO="dtapp/ip_vibe"                 # dtapp 不带 s，GitLab / Gitee 那边是 dtapps
-          WORKFLOW="release.yml"               # .gitcode/workflows/ 下的文件名，也可填 workflow id
-          REF="master"                         # 镜像仓库主分支（不是 main）
-          echo "触发 GitCode workflow: ${REPO} / ${WORKFLOW} (ref=${REF})"
-          HTTP=$(curl -s -o /tmp/gitcode_dispatch.json -w "%{http_code}" -X POST \
-            -H "Content-Type: application/json" \
-            -d "$(jq -n \
-              --arg ref "$REF" \
-              --arg version "${{ needs.prepare.outputs.interior_version }}" \
-              --arg commit "${{ needs.prepare.outputs.commit_full }}" \
-              '{ref: $ref, inputs: {version: $version, commit: $commit}}')" \
-            "${API}/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches?access_token=${GITCODE_TOKEN}")
-
-          echo "GitCode dispatches 响应 HTTP=${HTTP}"
-          cat /tmp/gitcode_dispatch.json
-          if [ "$HTTP" != "200" ] && [ "$HTTP" != "201" ]; then
-            echo "::warning::触发 GitCode 同步流水线失败（HTTP=${HTTP}），不影响 GitHub Release"
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          else
-            echo "✓ 已成功请求 GitCode 执行同步流水线"
-            echo "status=triggered" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: 记录同步状态
-        id: status
-        if: always()
-        shell: bash
-        run: |
-          if [ "${{ steps.trigger.outcome }}" = "skipped" ]; then
-            echo "status=skipped" >> "$GITHUB_OUTPUT"
-          elif [ -n "${{ steps.trigger.outputs.status }}" ]; then
-            echo "status=${{ steps.trigger.outputs.status }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          fi
-
   # 构建 / 发布 / 各镜像平台同步全部完成后，通过 ServerChan3（方糖）推送 webhook 通知。
   # 需配置 secret SERVERCHAN_SENDKEY（形如 SCTxxxx 或 sctp{uid}t...）；未配置则跳过通知。
   # API 文档：https://doc.sc3.ft07.com/zh/serverchan3/server/api
@@ -927,7 +818,7 @@ jobs:
   #          带 uid 的 sendkey（sctp 开头）→ https://<uid>.push.ft07.com/send/<sendkey>.send
   notify:
     # 等所有镜像同步 job 结束（未配置对应 secret 时它们只是跳过，不影响 success 判定）。
-    needs: [sync-cnb, sync-gitee, sync-gitlab, sync-gitcode, release, prepare]
+    needs: [sync-cnb, sync-gitee, release, prepare]
     runs-on: ubuntu-26.04
     if: ${{ needs.release.result == 'success' }}
     env:
@@ -960,13 +851,9 @@ jobs:
           RELEASE_URL="https://github.com/${REPO}/releases/tag/${TAG}"
 
           # 各镜像平台的 Release 页面（仓库路径各平台不同，别抄错）：
-          #   CNB / GitCode → dtapp（不带 s）；Gitee / GitLab → dtapps（带 s）
-          # URL 格式按各平台同步脚本的输出对齐：
-          #   GitLab 是 /-/releases/<tag>（没有 /tag 这一段），其余是 /releases/tag/<tag>
+          #   CNB → dtapp（不带 s）；Gitee → dtapps（带 s）
           CNB_RELEASE_URL="https://cnb.cool/dtapp/ip_vibe/-/releases/tag/${TAG}"
           GITEE_RELEASE_URL="https://gitee.com/dtapps/ip_vibe/releases/tag/${TAG}"
-          GITLAB_RELEASE_URL="https://gitlab.com/dtapps/ip_vibe/-/releases/${TAG}"
-          GITCODE_RELEASE_URL="https://gitcode.com/dtapp/ip_vibe/releases/tag/${TAG}"
 
           # 同步状态 → 中文标签。状态来自各 sync job 的 outputs：
           #   triggered=已触发（异步执行，进度看平台页面）/ skipped=未配置 secret / failed=触发失败
@@ -991,9 +878,7 @@ jobs:
           DESP="${DESP}**GitHub Release**: [${TAG}](${RELEASE_URL})  "$'\n'
           DESP="${DESP}**CNB Release**: [${TAG}](${CNB_RELEASE_URL})  "$'\n'
           DESP="${DESP}**Gitee Release**: [${TAG}](${GITEE_RELEASE_URL})  "$'\n'
-          DESP="${DESP}**GitLab Release**: [${TAG}](${GITLAB_RELEASE_URL})  "$'\n'
-          DESP="${DESP}**GitCode Release**: [${TAG}](${GITCODE_RELEASE_URL})  "$'\n'
-          DESP="${DESP}**镜像同步**: CNB $(sync_state "${{ needs['sync-cnb'].outputs.status }}") · Gitee $(sync_state "${{ needs['sync-gitee'].outputs.status }}") · GitLab $(sync_state "${{ needs['sync-gitlab'].outputs.status }}") · GitCode $(sync_state "${{ needs['sync-gitcode'].outputs.status }}")"
+          DESP="${DESP}**镜像同步**: CNB $(sync_state "${{ needs['sync-cnb'].outputs.status }}") · Gitee $(sync_state "${{ needs['sync-gitee'].outputs.status }}")"
 
           echo "推送 ServerChan3 通知: ${TITLE}"
           HTTP=$(curl -s -o /tmp/sc3.json -w "%{http_code}" -X POST \

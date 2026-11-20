@@ -8,7 +8,7 @@
 # 应用的启动参数、目录结构保持完全一致。
 #
 # 历史：这份原先放在 cmd/backend/Dockerfile（已删除），其 COPY 写的是 `../../bin/...`，
-# 以仓库根目录为构建上下文时属于「路径超出上下文」，Docker 会直接拒绝；搬家时一并修正为 bin/。
+# 以仓库根目录为构建上下文时属于「路径超出上下文」，Docker 会直接拒绝；搬家时一并修正为仓库内路径。
 
 FROM docker.cnb.cool/dtapp/alpine:3.24.4
 
@@ -18,8 +18,8 @@ RUN apk add --no-cache tzdata ca-certificates
 
 WORKDIR /app
 
-# CGO_ENABLED=0 静态编译产物，由 build-image.yml 中的 make build-linux-amd64 生成
-COPY bin/backend-linux-amd64 /app/ip_vibe
+# CGO_ENABLED=0 静态编译产物，由 build-image.yml 中的 make goreleaser-release 生成
+COPY dist/backend_linux_amd64_v1/backend /app/ip_vibe
 
 RUN mkdir -p /app/data/ /app/logs/ \
     && chmod +x /app/ip_vibe
