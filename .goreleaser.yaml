@@ -1,0 +1,221 @@
+# GoReleaser 配置：backend / reporter / forwarder 三服务、六平台（linux/windows/darwin × amd64/arm64）构建入口。
+#
+# 流水线只负责构建：产物写到 dist/，Release 仍由各平台自己的发布步骤创建（见 release.disable）。
+#
+# 用法：
+#   make goreleaser-check      # 校验本文件
+#   make goreleaser-snapshot   # 快照构建（无需 tag）
+#   make goreleaser-release    # 发布构建（CI 需传 GORELEASER_CURRENT_TAG）
+#
+# 产物（dist/）：
+#   {backend,reporter,forwarder}-{os}-{arch}.tar.gz
+#   {backend,reporter,forwarder}-windows-{arch}.exe.zip
+#   SHA256SUMS（18 个压缩包 + 24 个 Linux 系统包）
+version: 2
+
+project_name: ip_vibe
+
+# 版本号来自 tag；快照构建没有 tag，这里固定成干净的 semver，避免污染产物文件名。
+snapshot:
+  version_template: '0.0.0-SNAPSHOT-{{ .ShortCommit }}'
+
+# 前端静态资源由 go:embed 打进 backend 二进制，必须先构建再编译。
+before:
+  hooks:
+    - make build-frontend
+
+builds:
+  - id: backend
+    main: ./cmd/backend
+    binary: backend
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+      - -buildvcs=false
+    ldflags: &ldflags
+      - -s -w
+      - -X 'vibe_ip/internal/global.Version={{ if .IsSnapshot }}v{{ .Version }}{{ else }}{{ trimprefix .Tag "refs/tags/" }}{{
+        end }}'
+      - -X 'vibe_ip/internal/global.GitCommit={{ .ShortCommit }}'
+      - -X 'vibe_ip/internal/global.BuildTime={{ time "2006-01-02 15:04:05 UTC" }}'
+
+  - id: reporter
+    main: ./cmd/reporter
+    binary: reporter
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+      - -buildvcs=false
+    ldflags: *ldflags
+
+  - id: forwarder
+    main: ./cmd/forwarder
+    binary: forwarder
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+      - -buildvcs=false
+    ldflags: *ldflags
+
+# 更新内容由 scripts/ci/release-changelog.sh 按渠道（正式版 / rc / beta / alpha / nightly）生成，
+# 不走 GoReleaser：流水线在 tag 创建前构建，当前 tag 还不是 git ref，内置 changelog 的
+# `<prev>..<当前 tag>` 区间算不出来，会退化成整段仓库历史；它也不支持按渠道选基准。
+# changelog:
+#   disable: true
+
+archives:
+  # 与 Makefile build-all / clean-binaries 的命名保持一致：
+  #   {service}-{os}-{arch}.tar.gz
+  #   {service}-windows-{arch}.exe.zip
+  # 压缩包里只放二进制（GoReleaser 默认会附带 LICENSE / README）。
+  - id: backend
+    ids:
+      - backend
+    formats:
+      - tar.gz
+    name_template: '{{ .Binary }}-{{ .Os }}-{{ .Arch }}{{ if eq .Os "windows" }}.exe{{ end }}'
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - none*
+
+  - id: reporter
+    ids:
+      - reporter
+    formats:
+      - tar.gz
+    name_template: '{{ .Binary }}-{{ .Os }}-{{ .Arch }}{{ if eq .Os "windows" }}.exe{{ end }}'
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - none*
+
+  - id: forwarder
+    ids:
+      - forwarder
+    formats:
+      - tar.gz
+    name_template: '{{ .Binary }}-{{ .Os }}-{{ .Arch }}{{ if eq .Os "windows" }}.exe{{ end }}'
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    files:
+      - none*
+
+# Linux 系统包：deb（Debian/Ubuntu）、rpm（Fedora/RHEL/openSUSE）、apk（Alpine）、
+# pkg.tar.zst（Arch Linux）。每个服务一套，覆盖 linux/amd64 与 linux/arm64。
+# 二进制装在 /usr/lib/ipvibe/，另在 /usr/bin 建 ipvibe-<service> 符号链接：
+# 直接把 backend / reporter / forwarder 这种通用名装进 /usr/bin 容易和别的包撞文件。
+# 版本号带 rc / beta / nightly 时由 nfpm 拆成 pre-release（deb 用 ~、rpm 用 ~、apk 用 _）。
+nfpms:
+  - id: ipvibe-backend
+    ids:
+      - backend
+    package_name: ipvibe-backend
+    formats:
+      - deb
+      - rpm
+      - apk
+      - archlinux
+    vendor: dtapp
+    homepage: https://cnb.cool/dtapp/ip_vibe
+    maintainer: liguangchun <13553695467@139.com>
+    description: IPVibe 控制端：设备管理、IP 监控与定时任务调度，HTTP + gRPC 同端口服务
+    license: ISC
+    section: default
+    priority: optional
+    release: '1'
+    bindir: /usr/lib/ipvibe
+    contents:
+      - src: /usr/lib/ipvibe/backend
+        dst: /usr/bin/ipvibe-backend
+        type: symlink
+    deb:
+      compression: xz
+
+  - id: ipvibe-reporter
+    ids:
+      - reporter
+    package_name: ipvibe-reporter
+    formats:
+      - deb
+      - rpm
+      - apk
+      - archlinux
+    vendor: dtapp
+    homepage: https://cnb.cool/dtapp/ip_vibe
+    maintainer: liguangchun <13553695467@139.com>
+    description: IPVibe 上报端：部署在被管设备上，周期性上报本机 IP 并保持设备长连接
+    license: ISC
+    section: default
+    priority: optional
+    release: '1'
+    bindir: /usr/lib/ipvibe
+    contents:
+      - src: /usr/lib/ipvibe/reporter
+        dst: /usr/bin/ipvibe-reporter
+        type: symlink
+    deb:
+      compression: xz
+
+  - id: ipvibe-forwarder
+    ids:
+      - forwarder
+    package_name: ipvibe-forwarder
+    formats:
+      - deb
+      - rpm
+      - apk
+      - archlinux
+    vendor: dtapp
+    homepage: https://cnb.cool/dtapp/ip_vibe
+    maintainer: liguangchun <13553695467@139.com>
+    description: IPVibe 转发端：部署在被管设备上，执行端口转发并上报流量统计
+    license: ISC
+    section: default
+    priority: optional
+    release: '1'
+    bindir: /usr/lib/ipvibe
+    contents:
+      - src: /usr/lib/ipvibe/forwarder
+        dst: /usr/bin/ipvibe-forwarder
+        type: symlink
+    deb:
+      compression: xz
+
+# 默认文件名是 ip_vibe_<version>_checksums.txt，统一成发布约定用的 SHA256SUMS。
+checksum:
+  name_template: SHA256SUMS
+
+# 发布仍由现有流水线负责（自定义正文 / 各平台同步），这里只产出 dist/ 下的构建产物。
+release:
+  disable: true

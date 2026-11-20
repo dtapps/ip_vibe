@@ -534,6 +534,42 @@ build-darwin-amd64:
 build-darwin-arm64:
 	$(call build_binary,darwin,arm64,macOS Apple Silicon,)
 
+#####################
+## GoReleaser 相关
+#####################
+
+# goreleaser 版本（所有流水线与本地共用，升级时只改这里）
+GORELEASER_VERSION ?= v2.20.2
+
+# goreleaser 可执行文件（不在 PATH 时回退到 $HOME/go/bin）
+GORELEASER ?= $(shell command -v goreleaser 2>/dev/null || echo $(HOME)/go/bin/goreleaser)
+
+# 安装固定版本的 goreleaser（已存在则跳过）
+.PHONY: goreleaser-install
+goreleaser-install:
+	@if ! $(GORELEASER) --version >/dev/null 2>&1; then \
+		echo "安装 goreleaser $(GORELEASER_VERSION) → $(dir $(GORELEASER))"; \
+		GOBIN=$(dir $(GORELEASER)) go install github.com/goreleaser/goreleaser/v2@$(GORELEASER_VERSION); \
+	fi
+
+# 校验 .goreleaser.yaml
+.PHONY: goreleaser-check
+goreleaser-check: goreleaser-install
+	$(GORELEASER) check
+
+# 快照构建（无需 tag）：产物在 dist/
+.PHONY: goreleaser-snapshot
+goreleaser-snapshot: goreleaser-install
+	$(GORELEASER) release --snapshot --clean
+
+# 发布构建：产物在 dist/。.goreleaser.yaml 设置了 release.disable，不会创建 Release。
+# CI 里 tag 要等发布阶段才创建，构建时本地还不存在这个 tag；
+# GORELEASER_CURRENT_TAG 只提供版本名，validate 仍要求 tag 指向当前提交，
+# 因此必须跳过 validate，否则会报 "git tag ... was not made against commit"。
+.PHONY: goreleaser-release
+goreleaser-release: goreleaser-install
+	$(GORELEASER) release --clean --skip=validate
+
 # 清理所有已压缩的二进制文件（上传前执行）
 .PHONY: clean-binaries
 clean-binaries:

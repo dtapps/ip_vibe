@@ -3,7 +3,7 @@
 # 两种触发：手动触发（输入版本号）；每天 UTC 00:00（北京时间 08:00）定时构建 nightly 预发布
 # 镜像（cron 与 release.yml 完全一致，同一时刻起跑）。
 # 手动触发时：编译 linux/amd64 二进制 → 构建 backend / reporter / forwarder
-# 三个运行镜像 → 推送到 GitHub Container Registry（GHCR）→ 触发 CNB / GitLab 侧同步
+# 三个运行镜像 → 推送到 GitHub Container Registry（GHCR）→ 触发 CNB 侧同步
 # 同一批镜像 → 通过 ServerChan3（方糖）推一条构建完成通知。
 # 定时触发等价于手动填 `nightly`，版本号由 binaries job 推导。
 #
@@ -226,6 +226,7 @@ jobs:
         with:
           # 用 binaries 解析出的完整 SHA，保证两个 job 同一个提交
           ref: ${{ needs.binaries.outputs.commit_full }}
+          fetch-depth: 0
 
       - name: 下载二进制产物
         uses: actions/download-artifact@v8
@@ -322,7 +323,7 @@ jobs:
   # 独立成 job：便于在其后追加 webhook 通知（notify job），也让「同步」与「构建」解耦。
   # 注意：使用独立的 SYNC_CNB_TOKEN（仅 repo-cnb-trigger:rw 权限），
   # 与给软件升级下载用的 CNB_TOKEN（repo-release:rw）区分，互不干扰。
-  # 其它平台（Gitee / GitLab / GitCode）的镜像同步暂未接入，后续再加。
+  # 其它平台（Gitee / GitCode）的镜像同步暂未接入，后续再加。
   sync-cnb:
     needs: [binaries, image]
     runs-on: ubuntu-26.04
@@ -390,67 +391,6 @@ jobs:
             echo "status=failed" >> "$GITHUB_OUTPUT"
           fi
 
-  # GHCR 镜像推送成功后，触发 GitLab 侧同步同一批镜像（推 GitLab Container Registry）。
-  # 独立成 job：便于在其后追加 webhook 通知（notify job），也让「同步」与「构建」解耦。
-  # 令牌：GitLab 项目 → Settings → CI/CD → Pipeline trigger tokens → Add new token（形如 glptt-xxx），
-  # 与 release.yml 的 sync-gitlab 共用同一个 secret（同一项目的流水线触发器）。
-  # 传 IMAGE_SYNC=1：GitLab 侧用它把「镜像流水线」与「Release 流水线」区分开
-  # （Release job 的 rules 要求 IMAGE_SYNC != "1"），两条流水线互不误触发。
-  # GitLab 侧做的事：从 GHCR 复制镜像 → 推 registry.gitlab.com/dtapps/ip_vibe/{backend,reporter,forwarder}，
-  # 并清理旧 nightly 镜像标签（免费版容器镜像有 per-project namespace 配额）。
-  sync-gitlab:
-    needs: [binaries, image]
-    runs-on: ubuntu-26.04
-    # 供 notify job 在通知里展示同步状态
-    outputs:
-      status: ${{ steps.status.outputs.status }}
-    # token 放 job 级 env（step 自己的 env 在 if 求值时还读不到）。
-    env:
-      GITLAB_TRIGGER_TOKEN: ${{ secrets.SYNC_GITLAB_TRIGGER_TOKEN }}
-    steps:
-      - name: 触发 GitLab 镜像同步流水线
-        id: trigger
-        if: ${{ env.GITLAB_TRIGGER_TOKEN != '' }}
-        shell: bash
-        run: |
-          API="https://gitlab.com/api/v4"   # 自建 GitLab 实例改这里
-          PROJECT="dtapps/ip_vibe"         # dtapps 带 s；GitCode / CNB 那边是 dtapp，别抄错
-          REF="master"                     # 镜像仓库的默认分支
-          # 路径形式必须 URL 编码（/ → %2F）。
-          PROJ=$(printf '%s' "$PROJECT" | jq -sRr @uri)
-
-          echo "触发 GitLab 流水线: ${API}/projects/${PROJ}/trigger/pipeline (ref=${REF})"
-          HTTP=$(curl -s -o /tmp/gitlab_trigger.json -w "%{http_code}" -X POST \
-            --form "token=${GITLAB_TRIGGER_TOKEN}" \
-            --form "ref=${REF}" \
-            --form "variables[VERSION]=${{ needs.binaries.outputs.version }}" \
-            --form "variables[COMMIT]=${{ needs.binaries.outputs.commit_full }}" \
-            --form "variables[IMAGE_SYNC]=1" \
-            "${API}/projects/${PROJ}/trigger/pipeline")
-
-          echo "GitLab trigger/pipeline 响应 HTTP=${HTTP}"
-          cat /tmp/gitlab_trigger.json
-          if [ "$HTTP" != "200" ] && [ "$HTTP" != "201" ]; then
-            echo "::warning::触发 GitLab 镜像同步流水线失败（HTTP=${HTTP}），不影响 GHCR 镜像"
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          else
-            echo "✓ 已成功请求 GitLab 执行镜像同步流水线"
-            echo "status=triggered" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: 记录同步状态
-        id: status
-        if: always()
-        shell: bash
-        run: |
-          if [ "${{ steps.trigger.outcome }}" = "skipped" ]; then
-            echo "status=skipped" >> "$GITHUB_OUTPUT"
-          elif [ -n "${{ steps.trigger.outputs.status }}" ]; then
-            echo "status=${{ steps.trigger.outputs.status }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          fi
-
   # 镜像构建 + 各平台同步全部完成后，通过 ServerChan3（方糖）推送 webhook 通知。
   # 需配置 secret SERVERCHAN_SENDKEY（形如 SCTxxxx 或 sctp{uid}t...）；未配置则跳过通知。
   # API 文档：https://doc.sc3.ft07.com/zh/serverchan3/server/api
@@ -458,7 +398,7 @@ jobs:
   #          带 uid 的 sendkey（sctp 开头）→ https://<uid>.push.ft07.com/send/<sendkey>.send
   notify:
     # 等镜像同步 job 结束（未配置 secret 时它只是跳过，不影响 success 判定）。
-    needs: [binaries, image, sync-cnb, sync-gitlab]
+    needs: [binaries, image, sync-cnb]
     runs-on: ubuntu-26.04
     if: ${{ needs.image.result == 'success' }}
     env:
@@ -489,12 +429,11 @@ jobs:
           BUILD_TIME_CN="${BUILD_TIME_CN} (UTC+8)"
           REPO="${{ github.repository }}"
 
-          # 镜像地址：GHCR 由 image job 算出（仓库名已转小写），CNB / GitLab 侧固定前缀
+          # 镜像地址：GHCR 由 image job 算出（仓库名已转小写），CNB 侧固定前缀
           BACKEND_TAGS="${{ needs.image.outputs.backend_tags }}"
           REPORTER_TAGS="${{ needs.image.outputs.reporter_tags }}"
           FORWARDER_TAGS="${{ needs.image.outputs.forwarder_tags }}"
           CNB_IMAGE_BASE="docker.cnb.cool/dtapp/ip_vibe"
-          GITLAB_IMAGE_BASE="registry.gitlab.com/dtapps/ip_vibe"
 
           # 同步状态 → 中文标签。状态来自 sync job 的 outputs：
           #   triggered=已触发（异步执行，进度看平台页面）/ skipped=未配置 secret / failed=触发失败
@@ -522,8 +461,7 @@ jobs:
           DESP="${DESP}- reporter: \`${REPORTER_TAGS//,/, }\`  "$'\n'
           DESP="${DESP}- forwarder: \`${FORWARDER_TAGS//,/, }\`  "$'\n'
           DESP="${DESP}**CNB 镜像地址**: \`${CNB_IMAGE_BASE}/{backend,reporter,forwarder}:${TAG}\`  "$'\n'
-          DESP="${DESP}**GitLab 镜像地址**: \`${GITLAB_IMAGE_BASE}/{backend,reporter,forwarder}:${TAG}\`  "$'\n'
-          DESP="${DESP}**镜像同步**: CNB $(sync_state "${{ needs['sync-cnb'].outputs.status }}") · GitLab $(sync_state "${{ needs['sync-gitlab'].outputs.status }}")"
+          DESP="${DESP}**镜像同步**: CNB $(sync_state "${{ needs['sync-cnb'].outputs.status }}")"
 
           echo "推送 ServerChan3 通知: ${TITLE}"
           HTTP=$(curl -s -o /tmp/sc3.json -w "%{http_code}" -X POST \

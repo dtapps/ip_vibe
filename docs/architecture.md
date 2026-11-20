@@ -58,7 +58,7 @@ IPVibe 由三个可执行程序组成，共用一套 `internal/` 业务代码：
 5. **厂商适配器**：DNS/CDN/TUN 通过统一接口屏蔽厂商差异，业务任务只依赖接口，不直接调用云 SDK。
 6. **单端口多协议**：Gin、gRPC、MCP 共用一个 h2c 端口，节点侧只需配置一个 `BACKEND_ENDPOINT`。
 7. **拉模型同步**：IP 上报不直接改 DNS/CDN，而是更新设备表；DNS/CDN 任务周期性读取“心跳窗口内”的设备 IP 再同步，解耦上报与厂商 API。
-8. **无框架依赖**：配置只用环境变量，前端不用任何 SPA 框架（原生 JS + jQuery + DaisyUI/Tailwind），后端不引 Ent 的 privacy feature，部署不引 goreleaser。选型偏“可控、可单二进制交付”。
+8. **无框架依赖**：配置只用环境变量，前端不用任何 SPA 框架（原生 JS + jQuery + DaisyUI/Tailwind），后端不引 Ent 的 privacy feature；发布打包用 GoReleaser（`.goreleaser.yaml`），不引入运行时依赖。选型偏“可控、可单二进制交付”。
 
 ---
 
@@ -571,7 +571,7 @@ forwarder 统计上报（默认 8-12 分钟，首次延迟 1 分钟）
 - `ENABLE_UPX` 与 `compress_file` 已定义，但除 `archive_binary` 的调用外没有实际生效路径，UPX 压缩接近死配置。
 - 常用目标：`deps`、`format`、`check`、`build-*`、`cover-*`、`junit-*`、`generate_ent`、`ent_new` / `ent_new_log`、`archive_binary`、`clean-binaries`。口径与 CI 完全一致，见 [ci-cd.md](ci-cd.md)。
 - `scripts/`：`format.sh`（yaml/json/sql/shell/markdown/docker 格式化，工具缺失静默跳过）、`lib.sh`（`now_ms`/`run_step` 计时与跨平台降级链）、`ci/resolve-prerelease.sh`（预发布版本标记）；项目检查（golangci-lint 多平台 + 前端 audit/lint）在 `Makefile` 的 `check-*` 目标中直接执行，工具缺失即失败，不自动安装。
-- 没有 `.goreleaser`；发布 = Makefile + GitHub/CNB 的 `release.yml`。没有 self-update 机制，节点升级靠替换二进制并重启。
+- 发布构建走 `.goreleaser.yaml`（`make goreleaser-release`，产物在 `dist/`），Release 创建仍由 GitHub/CNB 的 `release.yml` 负责。没有 self-update 机制，节点升级靠替换二进制并重启。
 
 ### 9.3 代码生成有两条分叉路径（重要）
 
@@ -586,7 +586,7 @@ forwarder 统计上报（默认 8-12 分钟，首次延迟 1 分钟）
 
 - `sql/`：手工 DDL 快照 + 导出 JSON 夹具，无代码引用，不参与迁移（见 5.6）。
 - 根 `tests/`：被 `.gitignore` 忽略（`.gitignore:13`），是本地手工探针，**不在仓库里也不参与 CI**；真正的测试是 `internal/**/*_test.go` 与 `cmd/frontend/test/`，见 [coverage-go.md](coverage-go.md)、[coverage-node.md](coverage-node.md)。
-- `.cnb/`（主 CI + `docker/Dockerfile.{backend,reporter,forwarder}`；CI 环境统一用 `docker.cnb.cool/dtapp/golang`）、`.github/`（等价流水线 + codecov/dependabot/release）、`.gitlab/`（预留目录，无流水线文件）。
+- `.cnb/`（主 CI + `docker/Dockerfile.{backend,reporter,forwarder}`；CI 环境统一用 `docker.cnb.cool/dtapp/golang`）、`.github/`（等价流水线 + codecov/dependabot/release）。
 
 ### 9.5 部署形态与设备码链路
 

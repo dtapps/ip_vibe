@@ -106,25 +106,28 @@
     - name: 安装所有依赖
       script: make deps
 
-    - name: 构建前端静态文件
-      script: VERSION=${INTERIOR_VERSION} make build-frontend
+    # goreleaser 的 before hook 会先执行 make build-frontend（go:embed 顺序不能反），
+    # 再按 .goreleaser.yaml 编译 3 服务 × 6 平台并生成 SHA256SUMS。
+    # tag 在发布阶段才创建，这里只传 GORELEASER_CURRENT_TAG 提供版本名。
+    - name: 构建全平台产物（goreleaser）
+      script: VERSION=${INTERIOR_VERSION} GORELEASER_CURRENT_TAG=${INTERIOR_VERSION} make goreleaser-release
 
-    - name: 构建所有平台二进制文件
-      script: VERSION=${INTERIOR_VERSION} COMMIT=${INTERIOR_COMMIT_SHORT} make build-all
-
-    - name: 清理二进制文件
-      script: make clean-binaries
-
-    - name: 生成校验文件
+    # 不校验产物数量：格式/平台矩阵调整时不该让发版失败；
+    # 只确认 SHA256SUMS 非空且覆盖了每一个实际产物（正文的校验节依赖它）。
+    - name: 校验校验文件（SHA256SUMS）
       script: |
         set -eu
-        cd bin
-        : > SHA256SUMS
-        for f in *.tar.gz *.zip; do
+        test -s dist/SHA256SUMS
+
+        # 未匹配到文件的 glob 保持字面量，跳过即可：某个格式没产出不算失败
+        for f in dist/*.tar.gz dist/*.zip dist/*.deb dist/*.rpm dist/*.apk dist/*.pkg.tar.zst; do
           [ -e "${f}" ] || continue
-          sha256sum "${f}" >> SHA256SUMS
+          grep -qF "  ${f##*/}" dist/SHA256SUMS || {
+            echo "❌ SHA256SUMS 缺少 ${f##*/}"
+            exit 1
+          }
         done
-        cat SHA256SUMS
+        cat dist/SHA256SUMS
 
     # 发版前先把版本号这件事验干净。这三件事出错都不会让构建失败，
     # 但会发出一个「看起来成功、内容是错的」Release：
@@ -181,9 +184,9 @@
         set -eu
         # 打包没出产物就别往下走：否则会发出一个零附件的 Release，正文表格是空的，
         # 看起来「成功」，用户点开什么都下不到。
-        count=$(find bin -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' \) | wc -l)
+        count=$(find dist -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' \) | wc -l)
         if [ "$count" -eq 0 ]; then
-          echo "❌ 打包没有产出任何压缩包，先看 make build-all 的日志"
+          echo "❌ 打包没有产出任何压缩包，先看 make goreleaser-release 的日志"
           exit 1
         fi
         echo "产物 ${count} 个"
@@ -209,7 +212,7 @@
           COMMIT_URL="${CNB_BASE}/-/commit" \
           COMMIT_SHA="${INTERIOR_COMMIT_FULL}" \
           BUILD_TIME="$(date -u '+%Y-%m-%d %H:%M:%S UTC')" \
-          ARTIFACT_DIR=bin \
+          ARTIFACT_DIR=dist \
           ARTIFACT_LAYOUT=triplet \
           OUT_FILE=release_body.md \
           CHANGELOG="${LATEST_CHANGE_LOG}" \
@@ -319,8 +322,15 @@
       settings:
         type: UPLOAD
         tag: ${INTERIOR_VERSION}
+        # 只传发布产物：dist/ 里还有 artifacts.json / metadata.json / config.yaml，不能整目录上传。
         attachments:
-          - 'bin/*'
+          - 'dist/*.tar.gz'
+          - 'dist/*.zip'
+          - 'dist/*.deb'
+          - 'dist/*.rpm'
+          - 'dist/*.apk'
+          - 'dist/*.pkg.tar.zst'
+          - 'dist/SHA256SUMS'
       exports:
         FILES: FILES
 

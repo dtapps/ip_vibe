@@ -1,6 +1,6 @@
 # 从单一来源（DOWNLOAD_SOURCE=cnb|github）搬产物到 Gitee Release
 #
-# 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，GitHub / CNB / GitLab / GitCode 同口径）：
+# 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，GitHub / CNB / Gitee 同口径）：
 #   1.2.3                    -> 正式版，Release 不勾选 prerelease
 #   v1.2.3                   -> 同上（v 前缀可有可无，统一归一成 v1.2.3）
 #   1.2.3-rc.1               -> 预发布（rc 渠道）
@@ -128,7 +128,7 @@ stages:
             fi
 
             # GitHub 与 CNB 都会触发这条 Gitee 流水线、传同一个 VERSION：谁先在 Gitee
-            # 建出 Release 就算发布成功，后到的直接跳过，不再下载 18 个附件、也不把
+            # 建出 Release 就算发布成功，后到的直接跳过，不再下载全部附件、也不把
             # 已发布的内容删掉重建。用 $CHECK_RC（不加花括号）避免被平台的文本插值吃掉。
             # 退出码 0=已存在 1=不存在 2=查询失败（查询失败必须报错，不能当成不存在）。
             echo "======== 0/2 检查 Gitee 是否已有 ${VERSION} ========"

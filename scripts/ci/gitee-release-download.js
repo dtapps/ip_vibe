@@ -7,7 +7,8 @@
 // DOWNLOAD_SOURCE=cnb（默认）/ github 决定这一次发布的唯一来源，绝不混用：
 // 包里注入了 RepoSource，客户端据此选升级通道；同一个 Release 里混入两个平台的
 // 附件，等于按用户下载到哪个包随机分配升级通道。
-//   - cnb：附件名是固定的（见 CNB_FILES），URL 按仓库 + tag + 文件名拼出来；
+//   - cnb：附件清单取自 CNB 上的 SHA256SUMS（CNB_FILES 可强制覆盖），
+//     URL 按仓库 + tag + 文件名拼出来；
 //     大小不能用 GitHub 的 asset.size（两个平台各自编译，同版本字节数不同），
 //     改用 Range: bytes=1- 从 Content-Range 读真实总长；正文在本地生成，
 //     全程不碰 GitHub 的 API（CNB API 匿名 401，GitHub 元数据一律不读）。
@@ -92,8 +93,9 @@ function prereleaseBySuffix(tag) {
   return /[-.](rc|beta|alpha|nightly)\d*(\.|\b)/i.test(tag || '');
 }
 
-// cnb 源：附件名固定（与另外四个平台逐字一致）。可通过 CNB_FILES 覆盖，
-// 默认 3 个服务 × 6 个平台 = 18 个压缩包 + SHA256SUMS。
+// cnb 源：真正的附件清单取 SHA256SUMS（压缩包 18 个 + Linux 系统包 24 个 + 校验文件），
+// 这里只保留固定清单做两件事：取不到 SHA256SUMS 时的退路，以及压缩包在表格里的文案。
+// 可通过 CNB_FILES 强制指定附件名。
 const TARGETS = [
   ['linux', 'amd64', 'tar.gz', 'Linux x86_64'],
   ['linux', 'arm64', 'tar.gz', 'Linux ARM64'],
@@ -120,6 +122,43 @@ function cnbFiles() {
   }
   out.push({ name: 'SHA256SUMS', desc: 'SHA256 校验和' });
   return out;
+}
+
+// SHA256SUMS 的标准格式：「64 位十六进制 + 两个空格（二进制模式多一个 *）+ 文件名」
+function parseSums(txt) {
+  const names = [];
+  String(txt || '').split('\n').forEach((line) => {
+    const m = /^[0-9a-fA-F]{64}\s+\*?(\S+)\s*$/.exec(line.trim());
+    if (m) names.push(m[1]);
+  });
+  return names;
+}
+
+// 表格里的「平台 / 架构 / 说明」：压缩包直接用固定清单里的文案；系统包按扩展名判，
+// 架构只看文件名末尾的 arm64 / aarch64，不复刻 nFPM 那套版本号命名规则。
+function cnbItem(name, fixed) {
+  const known = fixed.find((f) => f.name === name);
+  if (known) return known;
+  const arch = /(^|[_.-])(arm64|aarch64)([_.-]|$)/i.test(name) ? 'ARM64' : 'x86_64';
+  let desc = '安装包';
+  if (/\.deb$/i.test(name)) desc = 'Debian/Ubuntu 安装包（dpkg -i）';
+  else if (/\.rpm$/i.test(name)) desc = 'Fedora/RHEL 安装包（rpm -i）';
+  else if (/\.apk$/i.test(name)) desc = 'Alpine Linux 安装包（apk add）';
+  else if (/\.pkg\.tar\.zst$/i.test(name)) desc = 'Arch Linux 安装包（pacman -U）';
+  else if (/sha256sums/i.test(name)) desc = 'SHA256 校验和';
+  return { name, os: 'Linux', arch, desc };
+}
+
+// 附件顺序：固定清单里有的按原顺序（压缩包在前），系统包按文件名排序，SHA256SUMS 收尾。
+function cnbItems(names) {
+  const fixed = cnbFiles();
+  const fixedNames = fixed.map((f) => f.name);
+  const sums = fixedNames.filter((n) => /sha256sums/i.test(n));
+  const ordered = fixedNames.filter((n) => names.indexOf(n) !== -1)
+    .concat(names.filter((n) => fixedNames.indexOf(n) === -1).sort())
+    .filter((n) => sums.indexOf(n) === -1)
+    .concat(sums.filter((n) => names.indexOf(n) !== -1));
+  return ordered.map((n) => cnbItem(n, fixed));
 }
 
 function urlFor(name) {
@@ -157,8 +196,8 @@ function request(url, redirects, withAuth, rangeFrom) {
   });
 }
 
-function readText(url) {
-  return request(url, 5, true).then((res) => new Promise((resolve, reject) => {
+function readText(url, withAuth) {
+  return request(url, 5, withAuth !== false).then((res) => new Promise((resolve, reject) => {
     let body = '';
     res.setEncoding('utf8');
     res.on('data', (c) => { body += c; });
@@ -236,8 +275,9 @@ function probeSize(url) {
 }
 
 // 落盘后验文件头：反代拿 200 回一个 HTML 错误页时，大小可能对得上，内容却全是文本。
-// .deb 必须是 ar 归档（!<arch>\n），.fpk / .tar.gz 必须是 gzip（1f 8b），
-// .zip 必须是 PK 头；SHA256SUMS 是文本，至少不能是 HTML 错误页。
+// .deb 必须是 ar 归档（!<arch>\n），.fpk / .tar.gz / .apk 必须是 gzip（1f 8b），
+// .zip 必须是 PK 头，.rpm 是 lead 魔数 ed ab ee db，.pkg.tar.zst 是 zstd 魔数；
+// SHA256SUMS 是文本，至少不能是 HTML 错误页。
 function looksRight(dest, name) {
   let fd;
   try {
@@ -246,6 +286,13 @@ function looksRight(dest, name) {
     const got = fs.readSync(fd, buf, 0, 8, 0);
     if (got < 2) return false;
     if (/\.deb$/i.test(name)) return buf.slice(0, 8).toString('ascii') === '!<arch>\n';
+    if (/\.rpm$/i.test(name)) {
+      return buf[0] === 0xed && buf[1] === 0xab && buf[2] === 0xee && buf[3] === 0xdb;
+    }
+    if (/\.pkg\.tar\.zst$/i.test(name)) {
+      return buf[0] === 0x28 && buf[1] === 0xb5 && buf[2] === 0x2f && buf[3] === 0xfd;
+    }
+    if (/\.apk$/i.test(name)) return buf[0] === 0x1f && buf[1] === 0x8b;
     if (/\.(fpk|tgz)$/i.test(name) || /\.tar\.gz$/i.test(name)) return buf[0] === 0x1f && buf[1] === 0x8b;
     if (/\.zip$/i.test(name)) {
       const sig = buf.slice(0, 4).toString('latin1');
@@ -436,9 +483,9 @@ function renderBody(md) {
   return html;
 }
 
-// cnb 源本地生成的兜底正文：工作流随后会用五平台共用的 render-release-body.sh
-// 覆盖 release_body.md；只有那个脚本在 Gitee 环境跑不起来时才会用到这里。
-function localBody(sizes) {
+// cnb 源的正文在本地生成（Gitee Release 正文就是这份）：附件清单来自 SHA256SUMS，
+// 这里按 cnbItem 补平台 / 架构 / 说明，压缩包文案与固定清单完全一致。
+function localBody(sizes, items) {
   const pre = (process.env.PRERELEASE || '').trim() === 'true' || prereleaseBySuffix(TAG);
   const dl = 'https://gitee.com/dtapps/ip_vibe/releases/download/' + TAG;
   const now = new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
@@ -451,11 +498,11 @@ function localBody(sizes) {
   lines.push('| 发布类型 | ' + (pre ? '🚧 预发布版本 (Pre-release)' : '✅ 正式发布版本 (Stable)') + ' |');
   lines.push('| 构建时间 | ' + now + ' |');
   lines.push('', '## 下载', '', '| 平台 | 架构 | 文件 | 大小 | 说明 |', '| --- | --- | --- | --- | --- |');
-  for (const f of cnbFiles()) {
+  for (const f of items) {
     lines.push('| ' + (f.os || 'Linux') + ' | ' + (f.arch || 'x86_64') + ' | [' + f.name +
       '](' + dl + '/' + f.name + ') | ' + mb(sizes[f.name] || 0) + ' | ' + f.desc + ' |');
   }
-  lines.push('', '## 校验', '', '把 `SHA256SUMS` 和压缩包下载到同一目录，然后按平台执行：', '',
+  lines.push('', '## 校验', '', '把 `SHA256SUMS` 和安装包下载到同一目录，然后按平台执行：', '',
     '- **Linux**：`sha256sum -c SHA256SUMS`', '- **macOS**：`shasum -a 256 -c SHA256SUMS`',
     '', '## 更新内容', '', '- 详见 [CHANGELOG.md](https://gitee.com/dtapps/ip_vibe/blob/' + TAG + '/CHANGELOG.md)', '');
   return lines.join('\n');
@@ -463,11 +510,26 @@ function localBody(sizes) {
 
 async function runCnb() {
   console.log('附件来源：CNB（固定，不混用；正文也在本地生成，不查 GitHub）');
-  console.log('Release ' + TAG + '：' + cnbFiles().length + ' 个固定产物');
+
+  // 这次发布到底有哪些附件，以 SHA256SUMS 为准：压缩包和 Linux 系统包
+  // （deb/rpm/apk/pkg.tar.zst）都在里面，加产物不用同步改这里。
+  let items;
+  if (process.env.CNB_FILES) {
+    items = cnbFiles();
+  } else {
+    const names = parseSums(await readText(urlFor('SHA256SUMS'), false).catch(() => ''));
+    if (names.length) {
+      items = cnbItems(names);
+    } else {
+      console.log('  警告：读不到 SHA256SUMS，退回固定清单（18 个压缩包 + 校验文件），系统包不会出现在 Gitee');
+      items = cnbFiles();
+    }
+  }
+  console.log('Release ' + TAG + '：' + items.length + ' 个附件');
 
   const sizes = {};
   let seq = 0;
-  const queue = cnbFiles().slice();
+  const queue = items.slice();
 
   async function downloadOne(item) {
     const n = ++seq;
@@ -475,11 +537,11 @@ async function runCnb() {
     const url = urlFor(item.name);
     const expected = await probeSize(url).catch(() => 0);
     if (expected > MAX_FILE) {
-      console.log('[' + n + '/' + cnbFiles().length + '] ' + item.name +
+      console.log('[' + n + '/' + items.length + '] ' + item.name +
         '（' + mb(expected) + ' 超过 Gitee 单附件 ' + mb(MAX_FILE) + '，跳过该文件）');
       return;
     }
-    console.log('[' + n + '/' + cnbFiles().length + '] ' + item.name + '（' + mb(expected) + '）');
+    console.log('[' + n + '/' + items.length + '] ' + item.name + '（' + mb(expected) + '）');
     await downloadFile(item.name, url, dest, expected);
     sizes[item.name] = fs.statSync(dest).size;
   }
@@ -495,7 +557,7 @@ async function runCnb() {
   const files = Object.keys(sizes).sort().map((name) => ({
     name, size: sizes[name], path: path.join(OUT_DIR, name)
   }));
-  return { files, body: localBody(sizes), targetCommitish: 'master' };
+  return { files, body: localBody(sizes, items), targetCommitish: 'master' };
 }
 
 async function runGithub() {
@@ -563,18 +625,57 @@ function selfTest() {
     ['rc 判预发布', () => assert.strictEqual(prereleaseBySuffix('v1.2.3-rc.1'), true)],
     ['nightly 判预发布', () => assert.strictEqual(prereleaseBySuffix('v1.2.4-nightly.20261116'), true)],
     ['正式版不误判', () => assert.strictEqual(prereleaseBySuffix('v1.2.3-hotfix'), false)],
-    ['固定附件 18 包 + SHA256SUMS', () => assert.strictEqual(cnbFiles().length, 19)]
+    ['固定附件 18 包 + SHA256SUMS', () => assert.strictEqual(cnbFiles().length, 19)],
+    ['SHA256SUMS 解析', () => assert.deepStrictEqual(parseSums([
+      'a'.repeat(64) + '  backend-linux-amd64.tar.gz',
+      'b'.repeat(64) + ' *ipvibe-backend_0.0.75_amd64.deb',
+      'c'.repeat(64) + '  SHA256SUMS',
+      '',
+      'not-a-checksum  junk.txt'
+    ].join('\n')), ['backend-linux-amd64.tar.gz', 'ipvibe-backend_0.0.75_amd64.deb', 'SHA256SUMS'])],
+    ['系统包进附件清单', () => {
+      const items = cnbItems([
+        'reporter-linux-arm64.tar.gz',
+        'ipvibe-backend_0.0.75_amd64.deb',
+        'ipvibe-backend-0.0.75-1.aarch64.rpm',
+        'ipvibe-backend_0.0.75_x86_64.apk',
+        'ipvibe-backend-0.0.75-1-x86_64.pkg.tar.zst',
+        'SHA256SUMS'
+      ]);
+      assert.strictEqual(items.length, 6);
+      assert.strictEqual(items[items.length - 1].name, 'SHA256SUMS');
+      const debItem = items.find((i) => i.name.endsWith('.deb'));
+      const rpmItem = items.find((i) => i.name.endsWith('.rpm'));
+      const apkItem = items.find((i) => i.name.endsWith('.apk'));
+      const zstItem = items.find((i) => i.name.endsWith('.pkg.tar.zst'));
+      assert.strictEqual(debItem.os, 'Linux');
+      assert.strictEqual(debItem.arch, 'x86_64');
+      assert.ok(debItem.desc.indexOf('dpkg') !== -1);
+      assert.strictEqual(rpmItem.arch, 'ARM64');
+      assert.ok(rpmItem.desc.indexOf('rpm') !== -1);
+      assert.ok(apkItem.desc.indexOf('apk') !== -1);
+      assert.ok(zstItem.desc.indexOf('pacman') !== -1);
+      const tarItem = items.find((i) => i.name === 'reporter-linux-arm64.tar.gz');
+      assert.strictEqual(tarItem.os, 'Linux');
+      assert.strictEqual(tarItem.arch, 'ARM64');
+    }]
   ];
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ipvibe-dl-'));
   try {
     const deb = path.join(dir, 'a.deb');
     const fpk = path.join(dir, 'a.fpk');
     const html = path.join(dir, 'a.zip');
+    const rpm = path.join(dir, 'a.rpm');
+    const zst = path.join(dir, 'a.pkg.tar.zst');
     fs.writeFileSync(deb, '!<arch>\n0123456789');
     fs.writeFileSync(fpk, Buffer.from([0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00]));
     fs.writeFileSync(html, '<!DOCTYPE html><html>error</html>');
+    fs.writeFileSync(rpm, Buffer.from([0xed, 0xab, 0xee, 0xdb, 0x03, 0x00, 0x00, 0x00]));
+    fs.writeFileSync(zst, Buffer.from([0x28, 0xb5, 0x2f, 0xfd, 0x00, 0x00, 0x00, 0x00]));
     checks.push(['.deb 文件头', () => assert.strictEqual(looksRight(deb, 'a.deb'), true)]);
     checks.push(['.fpk 文件头', () => assert.strictEqual(looksRight(fpk, 'a.fpk'), true)]);
+    checks.push(['.rpm 文件头', () => assert.strictEqual(looksRight(rpm, 'a.rpm'), true)]);
+    checks.push(['.pkg.tar.zst 文件头', () => assert.strictEqual(looksRight(zst, 'a.pkg.tar.zst'), true)]);
     checks.push(['HTML 错误页被拒', () => assert.strictEqual(looksRight(html, 'a.zip'), false)]);
     for (const [name, fn] of checks) {
       fn();

@@ -91,7 +91,7 @@ render_body() {
     [ -d "${f}" ] && continue
     # 与下方下载表保持同一套过滤规则，否则「有附件」的判断会和表格内容打架
     case "$(basename "${f}")" in
-      *.tar.gz | *.zip) ;;
+      *.tar.gz | *.zip | *.deb | *.rpm | *.apk | *.pkg.tar.zst) ;;
       *) continue ;;
     esac
     artifact_count=$((artifact_count + 1))
@@ -143,7 +143,7 @@ render_body() {
         # 只收发布产物：产物目录里可能混进正文 md、日志、临时文件（GitHub 侧的
         # OUT_FILE 就常常和附件同放一个目录），不筛会把它们当成可下载附件列出去。
         case "${fname}" in
-          *.tar.gz | *.zip) ;;
+          *.tar.gz | *.zip | *.deb | *.rpm | *.apk | *.pkg.tar.zst) ;;
           *) continue ;;
         esac
         # 用 wc -c 取字节数再换算，避免 ls 在非 ASCII 文件名下的解析问题（SC2012）
