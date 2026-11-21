@@ -187,7 +187,7 @@ jobs:
                 echo "::error::tag ${VERSION} 已存在，不能重复发布"
                 echo "   已有指向: $(git rev-parse --short "${VERSION}")"
                 echo "   当前 HEAD: $(git rev-parse --short HEAD)"
-                echo "   确需重发：gh release delete ${VERSION} --yes --cleanup-tag，再重跑本工作流"
+                echo "   确需重发：sh scripts/ci/delete-release.sh --platform github --tag ${VERSION}，再重跑本工作流"
                 exit 1
               fi
               echo "✅ tag ${VERSION} 不存在，可以发布"
@@ -396,12 +396,15 @@ jobs:
       # 一是旧附件会一直堆在 Release 上，二是重建会刷新 published_at。
       # 正式版 / rc / beta / alpha 的 tag 不存在同名 Release（tag 已存在校验挡住），
       # 这一步是空操作。
+      # 删除逻辑统一由 scripts/ci/delete-release.sh 实现（Release 与 tag 分别删、删后复查）；
+      # --tag 模式在该 Release 本就不存在时正常返回，删除失败会退出 1，
+      # 这里沿用原来的容错语义：不阻塞后续重建。
       - name: 删除同名旧 Release（如果存在）
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ needs.prepare.outputs.interior_version }}
         shell: bash
-        run: gh release delete "${VERSION}" --yes --cleanup-tag 2>/dev/null || true
+        run: sh scripts/ci/delete-release.sh --platform github --tag "${VERSION}" || true
 
       - name: 发布 Release
         uses: softprops/action-gh-release@v3
@@ -421,40 +424,14 @@ jobs:
       # GitHub 这边的删除不会传播过去，各平台只能按自己的 Release 列表收敛到 3 个。
       # 清理是旁路：列表取不到、某个 Release 删不掉都只打警告，绝不让本 job 变红——
       # 发布本身已经成功，清理失败只是存储多一点，下一轮 nightly 还会再试。
+      # 具体实现（筛选 *-nightly.YYYYMMDD、按日期保留最新 N 个、逐个删 Release + tag）
+      # 统一由 scripts/ci/delete-release.sh 负责，脚本始终退出 0。
       - name: 清理旧 nightly Release（只保留最近 3 个）
         if: ${{ contains(needs.prepare.outputs.interior_version, '-nightly.') }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
-        run: |
-          # 故意不用 set -e：清理里任何一步失败都只告警
-          set -uo pipefail
-          keep=3
-
-          # gh release list 默认按创建时间倒序；只处理日期 nightly（tag 以 -nightly.YYYYMMDD 结尾），
-          # rc / beta / alpha 不动。
-          if ! list=$(gh release list --limit 100 --json tagName,isPrerelease \
-                --jq '.[] | select(.isPrerelease) | .tagName | select(test("-nightly\\.[0-9]{8}$"))' 2>&1); then
-            echo "⚠ 获取 Release 列表失败，跳过清理（不影响发布）："
-            echo "$list"
-            exit 0
-          fi
-          if [ -z "$list" ]; then
-            echo "没有需要清理的旧 nightly Release"
-            exit 0
-          fi
-
-          # 跳过最新 keep 个，其余逐个删除（连 tag 一起）；单个失败不影响其余
-          printf '%s\n' "$list" | tail -n "+$((keep + 1))" | while IFS= read -r tag; do
-            [ -n "$tag" ] || continue
-            echo "删除旧 nightly Release: ${tag}"
-            if gh release delete "${tag}" --yes --cleanup-tag; then
-              echo "  ✓ 已删除 ${tag}"
-            else
-              echo "  ⚠ 删除失败（忽略）: ${tag}"
-            fi
-          done
-          exit 0
+        run: sh scripts/ci/delete-release.sh --platform github --keep 3
 
   # GitHub 侧的发版公告：Release 发布成功后，在仓库 Discussions 里开一条讨论。
   #

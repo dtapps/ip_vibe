@@ -17,11 +17,11 @@
 # 来源平台的最新 tag，再 source scripts/ci/resolve-prerelease.sh 按版本号后缀判预发布；
 # 上游（GitHub Actions 的 prepare job）已把 nightly 展开成带日期的 tag，这里直接沿用。
 #
-# 实现拆成两个脚本（都在 scripts/ci/，可本地单独跑）：
+# 实现拆成三个脚本（都在 scripts/ci/，可本地单独跑）：
 #   1) gitee-release-download.js —— 按跳过规则下载产物到 assets/，写出清单 gitee-release.json
 #      （清单里含 tag / 预发布 / 正文 HTML / 待上传文件列表）
-#   2) gitee-release-publish.js  —— 读清单，建 Release 并逐个上传附件；
-#      发布成功后清理过期 nightly（保留最近 3 个，与 GitHub 同口径）
+#   2) gitee-release-publish.js  —— 读清单，建 Release 并逐个上传附件
+#   3) delete-release.sh         —— 发布成功后清理过期 nightly（保留最近 3 个，与 GitHub 同口径）
 #
 # 为什么不用 release@gitee 插件：
 #   - assertFiles 是静态清单，做不到「某个文件超 100MB 就跳过它」；
@@ -153,3 +153,16 @@ stages:
 
             echo "======== 2/2 发布（建 Release + 逐个上传）========"
             node scripts/ci/gitee-release-publish.js
+
+            # 发布成功后清理过期 nightly：删除逻辑统一交给 scripts/ci/delete-release.sh，
+            # 与 GitHub / CNB 侧同一份实现（keep 模式始终退出 0，清理失败只告警）。
+            # Gitee 流水线的自定义参数不能以 GITEE_ 开头，这里用 RELEASE_GITEE_* 显式传令牌与仓库。
+            case "${VERSION}" in
+              *-nightly.*)
+                echo "======== 清理过期 nightly（只保留最近 3 个）========"
+                RELEASE_GITEE_TOKEN="${IPVIBE_GITEE_TOKEN}" \
+                  RELEASE_GITEE_REPO=dtapps/ip_vibe \
+                  sh scripts/ci/delete-release.sh --platform gitee --keep 3
+                ;;
+              *) echo "非 nightly 发布（${VERSION}），跳过 nightly 清理" ;;
+            esac

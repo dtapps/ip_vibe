@@ -110,7 +110,7 @@ job 分三段：
 
 1. **prepare**（CI 镜像容器）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ **校验版本号与 tag（§3.4，前移到 build 之前，避免无效版本白跑全平台编译）** → 输出 TAG / 是否预发布 / 标题 / commit / 构建时间。GitHub 与 CNB 的标题同口径：`IPVibe <TAG>`（预发布再加 `(预发布)` 后缀）；tag 本身仍是纯版本号。
 2. **build**（CI 镜像容器）：三类缓存（Go module、Go build、pnpm store）→ `make deps` → `make goreleaser-release`（GoReleaser 的 `before` hook 先 `make build-frontend`，再编译三服务 × 六平台、产出 24 个 Linux 系统包并生成 `dist/SHA256SUMS`）→ 校验 `SHA256SUMS` 非空且覆盖全部实际产物（不比对数量，产物矩阵调整不会卡发版）→ 上传 artifact。
-3. **release**：`fetch-depth: 0` 拉全量 tag 历史（changelog 要按 tag 算对比基准）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → 删除同名旧 Release（仅 nightly 同日重跑会命中）→ `softprops/action-gh-release` 建 tag、上传 43 个附件（18 压缩包 + 24 系统包 + `SHA256SUMS`）→ **清理旧 nightly Release（只保留最近 3 个）**。
+3. **release**：`fetch-depth: 0` 拉全量 tag 历史（changelog 要按 tag 算对比基准）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → 删除同名旧 Release（仅 nightly 同日重跑会命中，调用 `scripts/ci/delete-release.sh --platform github --tag`）→ `softprops/action-gh-release` 建 tag、上传 43 个附件（18 压缩包 + 24 系统包 + `SHA256SUMS`）→ **清理旧 nightly Release（只保留最近 3 个，同样走 `delete-release.sh --keep 3`）**。
 
 发布成功后还有 3 个 job：
 
@@ -131,7 +131,7 @@ job 分三段：
 | `cnb`    | 附件清单取 CNB 上的 `SHA256SUMS`（18 压缩包 + 24 系统包 + 校验文件，新增产物不用改下载器；`CNB_FILES` 可强制覆盖）；大小用 `Range: bytes=1-` 从 `Content-Range` 现探，不能复用 GitHub 的 `asset.size`（两边各自编译，同版本字节数不同）；正文本地生成 | `https://cnb.cool/dtapp/ip_vibe/-/releases/download/<tag>/<文件名>`，不碰 GitHub API（CNB API 匿名 401） |
 | `github` | GitHub Release 元数据（`browser_download_url` / `asset.size` / `body`）                                                                                                                                                                               | daocloud → ghfast.top → gh-proxy.com → 直连依次回退                                                      |
 
-下载器只用 Node 内置模块（Gitee 容器没有 python3 / jq）：Range 断点续传且重定向时保留 Range；每 5 秒采样速度，连续 15 秒低于 30KB/s 主动断开换源；普通失败每两次换源，累计最多 8 次、间隔 1.5 秒、3 路并发；落盘后验文件头（`.deb` 为 `!<arch>\n`，`.rpm` 为 `ed ab ee db`，`.apk` / `.fpk` / `.tar.gz` 为 `1f 8b`，`.pkg.tar.zst` 为 `28 b5 2f fd`，`.zip` 为 `PK`，`SHA256SUMS` 不能是 HTML），防反代 200 回错误页。正文 HTML 优先用 `marked`，装不上时退回内置极简渲染器，不为 npm 失败卡住发版。
+下载器只用 Node 内置模块（Gitee 容器没有 python3 / jq）：Range 断点续传且重定向时保留 Range；每 5 秒采样速度，连续 15 秒低于 30KB/s 主动断开换源；普通失败每两次换源，累计最多 8 次、间隔 1.5 秒、3 路并发；落盘后验文件头（`.deb` 为 `!<arch>\n`，`.rpm` 为 `ed ab ee db`，`.apk` / `.fpk` / `.tar.gz` 为 `1f 8b`，`.pkg.tar.zst` 为 `28 b5 2f fd`，`.zip` 为 `PK`，`SHA256SUMS` 不能是 HTML），防反代 200 回错误页。正文 HTML 优先用 `marked`，装不上时退回内置极简渲染器，不为 npm 失败卡住发版。nightly 发布成功后的清理调用 `scripts/ci/delete-release.sh --platform gitee --keep 3`（依赖 `curl` + `jq`）；容器若缺 `jq`，Release 列表解析为空、清理会被跳过，需要在该环境补上 `jq` 才能生效。
 
 #### commit 的语义：按指定提交检出，不是拉最新代码
 
@@ -154,7 +154,7 @@ job 分三段：
 | `web_trigger_release` | master 分支按钮「打包 Go 项目」  | 表单字段 `version` / `commit`           |
 | `api_trigger_release` | GitHub Actions 的 `sync-cnb` job | Open API 的 `env`：`version` / `commit` |
 
-一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps` → `make goreleaser-release`（before hook 内含 `make build-frontend`，产物在 `dist/`，含 `dist/SHA256SUMS`）→ 校验版本号与 tag（§3.4）→ 调用 `scripts/ci/*.sh` 生成正文（`ARTIFACT_DIR=dist`）→ **删除已存在的 Release 与 Tag**（仅 nightly 同日重跑命中，用 CNB Open API 分别删 Release 与 tag —— 两个对象不会连带删除）→ 生成 `./.cnb-release-options.json` → 内置 `git:release`（`optionsFrom`）建 Release → `cnbcool/attachments` 上传 `dist/*.tar.gz`、`dist/*.zip`、`dist/*.deb`、`dist/*.rpm`、`dist/*.apk`、`dist/*.pkg.tar.zst`、`dist/SHA256SUMS`（不整目录上传，`dist/` 里还有 GoReleaser 的 `artifacts.json` / `metadata.json` / `config.yaml`） → **清理旧 nightly（只保留最近 3 个）**。
+一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps` → `make goreleaser-release`（before hook 内含 `make build-frontend`，产物在 `dist/`，含 `dist/SHA256SUMS`）→ 校验版本号与 tag（§3.4）→ 调用 `scripts/ci/*.sh` 生成正文（`ARTIFACT_DIR=dist`）→ **删除已存在的 Release 与 Tag**（仅 nightly 同日重跑命中，调用 `scripts/ci/delete-release.sh --platform cnb --tag`，分别删 Release 与 tag 并复查 —— 两个对象不会连带删除）→ 生成 `./.cnb-release-options.json` → 内置 `git:release`（`optionsFrom`）建 Release → `cnbcool/attachments` 上传 `dist/*.tar.gz`、`dist/*.zip`、`dist/*.deb`、`dist/*.rpm`、`dist/*.apk`、`dist/*.pkg.tar.zst`、`dist/SHA256SUMS`（不整目录上传，`dist/` 里还有 GoReleaser 的 `artifacts.json` / `metadata.json` / `config.yaml`） → **清理旧 nightly（只保留最近 3 个，调用 `delete-release.sh --platform cnb --keep 3`）**。
 
 ⚠️ **`preRelease` 用 `optionsFrom` 传真布尔值，不用 `${...}` 插值**：`preRelease` 的类型是严格 Boolean，插值产出字符串 `"false"`，字符串在布尔位置上容易被当成真值，正式版会被误勾预发布；`descriptionFromFile` 同理，正文里有反引号/管道符/换行，插值容易被转义毁掉。
 
