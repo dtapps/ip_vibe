@@ -33,12 +33,16 @@
       - /go/pkg/mod:copy-on-write # 仅缓存 Go 模块下载，避免覆盖镜像内预装的 /go/bin 工具
   # 导入外部环境变量/配置。多文件必须用 YAML 数组（逗号分隔字符串不生效）；
   # 同名变量后面的覆盖前面的，故项目专属的 ip_vibe.yml 放在通用 github.yml 之后。
+  # npc.yml 提供 NPC_ENABLED 总开关：关闭时不发布会触发 NPC 的公告评论（@CodeBuddy）。
   imports:
     - https://cnb.cool/dtapp/envs/-/blob/main/github.yml
     - https://cnb.cool/dtapp/envs/-/blob/main/ip_vibe.yml
-  # 公告评论的两个开关/内容（job 级 env，所有 stage 都能读到）：
-  # - ANNOUNCEMENT_COMMENT_ENABLED：是否在公告 Issue 上追加评论（true / false）；
-  # - ANNOUNCEMENT_COMMENT_TEXT：评论内容，默认让仓库里的 NPC（CodeBuddy）按「对比哪两个
+    - https://cnb.cool/dtapp/envs/-/blob/main/npc.yml
+  # 公告评论的开关/内容：
+  # - NPC_ENABLED（从 npc.yml 导入）：NPC 功能总开关（true / false），关闭后整条公告链路
+  #   （准备 / 创建 / 发评论）都跳过，不会因为发 @CodeBuddy 评论而触发 NPC；
+  # - ANNOUNCEMENT_COMMENT_TEXT（job 级 env，所有 stage 都能读到）：评论内容，默认让仓库里的
+  #   NPC（CodeBuddy）按「对比哪两个
   #   tag」整理一份用户友好的更新日志，并以评论形式发回。
   #
   # ⚠️ {{PREVIOUSTAG}} / {{CURRENTTAG}} 不是 CNB 的模板语法：env 里的值就是字面量，
@@ -50,7 +54,6 @@
     # 显式声明流水线环境：CNB 不会自动注入 CI=true，Makefile 靠它区分本地快照
     # （build --single-target）和流水线构建（release，全平台）。
     CI: 'true'
-    ANNOUNCEMENT_COMMENT_ENABLED: 'true'
     ANNOUNCEMENT_COMMENT_TEXT: |-
       @CodeBuddy 请对比标签 {{PREVIOUSTAG}} 和 {{CURRENTTAG}} 的差异（git log / git diff {{PREVIOUSTAG}}...{{CURRENTTAG}}），整理一份用户友好的更新日志，并作为评论发布在这里。
       要求：
@@ -381,12 +384,18 @@
     # 为什么失败不阻断：这一步跑在 Release 与附件都上传完之后，发布已经完成；
     # 这里红掉只会被 GitHub 侧 sync-cnb 记成「同步失败」，反而误导。所以只告警。
     - name: 准备发版公告
-      # 只在非 nightly 版本执行：CNB 的 if 是一段 shell 脚本，退出码 0 才跑这个 stage。
-      # nightly 每天一个 tag，每天开一条公告会把 Issue 列表刷成日报。
-      if: &not_nightly |
+      # CNB 的 if 是一段 shell 脚本，退出码 0 才跑这个 stage。
+      # 三个公告 stage（准备 / 创建 / 发评论）共用这道门：
+      # ① 非 nightly（nightly 每天一个 tag，天天开公告会把 Issue 列表刷成日报）；
+      # ② NPC 总开关开启（npc.yml 的 NPC_ENABLED）——关闭时整条公告链路都不跑。
+      # 未导入 NPC_ENABLED 时默认开启；仅显式 false/off/no/0 才跳过。
+      if: &announcement_gate |
         case "${INTERIOR_VERSION}" in
           *-nightly.*) exit 1 ;;
-          *) exit 0 ;;
+        esac
+        case "$(printf '%s' "${NPC_ENABLED:-true}" | tr '[:upper:]' '[:lower:]')" in
+          1 | true | yes | on) exit 0 ;;
+          *) exit 1 ;;
         esac
       script: |
         set -eu
@@ -441,7 +450,7 @@
     # 按标题找出所有同版本的公告，第一个更新、其余（历史重复）关掉。
     - name: 创建发版公告
       image: cnbcool/cnb-cli
-      if: *not_nightly
+      if: *announcement_gate
       script: |
         set -eu
 
@@ -565,10 +574,9 @@
     # 在公告 Issue 上追加一条评论：把「整理一份用户友好的更新日志」交给仓库里的 NPC
     # （.cnb/settings.yml 里导入的 npc/CodeBuddy）去做，它会把整理好的日志作为评论发回来。
     #
-    # 两个开关/内容在 job 级 env 里（见 .trigger_release 的 env 段）：
-    # - ANNOUNCEMENT_COMMENT_ENABLED：是否发评论；
-    # - ANNOUNCEMENT_COMMENT_TEXT：评论内容（只放提示语本身，不夹带更新内容——
-    #   NPC 自己会读上面那条公告）。
+    # 开关/内容：NPC_ENABLED 从 npc.yml 导入（总开关，关闭则整条公告链路跳过）；
+    # ANNOUNCEMENT_COMMENT_TEXT 在 job 级 env 里（见 .trigger_release 的 env 段）：
+    # 评论内容（只放提示语本身，不夹带更新内容——NPC 自己会读上面那条公告）。
     #
     # 提示语里的 {{PREVIOUSTAG}} / {{CURRENTTAG}} 由本 stage 替换成真实 tag：
     #   - CURRENTTAG 就是本次发布的 tag（INTERIOR_VERSION）；
@@ -577,20 +585,13 @@
     #     NPC 那边会退回「按公告正文改写」，不会拿着假 tag 去 diff。
     - name: 发布公告评论
       image: cnbcool/cnb-cli
-      if: *not_nightly
+      # 沿用 announcement_gate 同一道门：非 nightly + NPC 总开关开启（npc.yml 导入）。
+      # CNB 的 if 是一段 shell，退出码 0 才执行本 stage。
+      if: *announcement_gate
       script: |
         set -eu
 
         REPO="${CNB_REPO_SLUG}"
-        ENABLED="${ANNOUNCEMENT_COMMENT_ENABLED:-true}"
-
-        case "$(printf '%s' "${ENABLED}" | tr '[:upper:]' '[:lower:]')" in
-          1 | true | yes | on) ;;
-          *)
-            echo "发版公告评论已关闭（ANNOUNCEMENT_COMMENT_ENABLED=${ENABLED}）"
-            exit 0
-            ;;
-        esac
 
         # 公告 Issue 的编号由「创建发版公告」落盘；没有编号说明公告没建成。
         NUMBER="$(cat announcement-number.txt 2>/dev/null || echo '')"

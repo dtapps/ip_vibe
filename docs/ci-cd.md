@@ -317,16 +317,17 @@ CNB 侧另用 `docker.volumes` 保留 copy-on-write 缓存（`/root/.cache/go-bu
 
 ## 9. 凭证与外部依赖
 
-| 项                                  | 说明                                                                                  |
-|-------------------------------------|---------------------------------------------------------------------------------------|
-| `GITHUB_TOKEN`                      | GitHub 内置；Build Image 需 `packages: write` 推 GHCR，Release 需 `contents: write`   |
-| `CODECOV_TOKEN`                     | `coverage.yml` 上传 Codecov                                                           |
-| `COVERALLS_REPO_TOKEN`              | `coveralls.yml`；缺失时自动跳过上传（`continue-on-error`），不影响其它步骤            |
-| `CNB_TOKEN` / `CNB_TOKEN_USER_NAME` | CNB 内置，用于 `docker login` 制品库                                                  |
-| CNB imports                         | 多条流水线 `imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml` 引入环境变量 |
-| `SYNC_CNB_TOKEN`                    | GitHub → CNB 触发同步流水线（`repo-cnb-trigger:rw`）；Release 与 Build Image 共用     |
-| `CNB_API_ENDPOINT`                  | CNB Open API 地址，默认 `https://api.cnb.cool`；私有化部署时覆盖                      |
-| `SERVERCHAN_SENDKEY`                | ServerChan3（方糖）推送密钥；Release 与 Build Image 的完成通知共用                    |
+| 项                                  | 说明                                                                                                                                            |
+|-------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `GITHUB_TOKEN`                      | GitHub 内置；Build Image 需 `packages: write` 推 GHCR，Release 需 `contents: write`                                                             |
+| `CODECOV_TOKEN`                     | `coverage.yml` 上传 Codecov                                                                                                                     |
+| `COVERALLS_REPO_TOKEN`              | `coveralls.yml`；缺失时自动跳过上传（`continue-on-error`），不影响其它步骤                                                                      |
+| `CNB_TOKEN` / `CNB_TOKEN_USER_NAME` | CNB 内置，用于 `docker login` 制品库                                                                                                            |
+| CNB imports                         | 多条流水线 `imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml` 引入环境变量                                                           |
+| `NPC_ENABLED`（npc.yml 导入）       | Release 的 NPC 总开关：关闭后「准备 / 创建发版公告」和「发布公告评论」三个 stage 全部跳过，不发 `@CodeBuddy` 评论、不触发 NPC；未导入时默认开启 |
+| `SYNC_CNB_TOKEN`                    | GitHub → CNB 触发同步流水线（`repo-cnb-trigger:rw`）；Release 与 Build Image 共用                                                               |
+| `CNB_API_ENDPOINT`                  | CNB Open API 地址，默认 `https://api.cnb.cool`；私有化部署时覆盖                                                                                |
+| `SERVERCHAN_SENDKEY`                | ServerChan3（方糖）推送密钥；Release 与 Build Image 的完成通知共用                                                                              |
 
 ---
 
