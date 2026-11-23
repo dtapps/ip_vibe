@@ -34,7 +34,7 @@ require (
 	github.com/gin-contrib/requestid v1.0.10
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-acme/lego/v5 v5.6.0
-	github.com/go-co-op/gocron/v2 v2.23.1
+	github.com/go-co-op/gocron/v2 v2.23.2
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.4
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.34.0
