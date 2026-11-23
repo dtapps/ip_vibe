@@ -55,7 +55,7 @@ require (
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.213
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.131
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.212
-	github.com/tidwall/gjson v1.20.4
+	github.com/tidwall/gjson v1.20.5
 	github.com/volcengine/volcengine-go-sdk v1.2.64
 	github.com/wdcbot/qingfeng v1.6.8
 	go.dtapp.net/library/contrib/http_log v1.0.13
