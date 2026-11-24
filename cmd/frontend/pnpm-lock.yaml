@@ -196,7 +196,7 @@ importers:
         version: 2.0.11
       daisyui:
         specifier: ^5.8.1
-        version: 5.8.1
+        version: 5.8.2
       dayjs:
         specifier: ^1.11.23
         version: 1.11.23
@@ -895,8 +895,8 @@ packages:
   clipboard@2.0.11:
     resolution: {integrity: sha512-C+0bbOqkezLIsmWSvlsXS0Q0bmkugu7jcfMIACB+RDEntIzQIkdr148we28AfSloQLRdZlYL/QYyrq05j/3Faw==}
 
-  daisyui@5.8.1:
-    resolution: {integrity: sha512-ptP4WHOJ6WltNnA5zwkg3GypOLhsyUM2FHuXCckWVEpWviioInFKsjnShCWYGYHsQ5P9bUCOH1tn45cKLeTUpg==}
+  daisyui@5.8.2:
+    resolution: {integrity: sha512-InScsDXX0pbfgvWyPQ8iTHV4rNMZdfbMo85KqlQUn62/PCIjwczViw5lbotzoXy/nPrn4qjDMmx/fspuUnjBtA==}
 
   dayjs@1.11.23:
     resolution: {integrity: sha512-QDTCU0M0MxR3hQfnlDJfwekQiaanm1ubOD231u73WBckQ/fsamwRLiE2GBz6D3a/xF1NgfiDLJjXBa1hYOYTtQ==}
@@ -1782,7 +1782,7 @@ snapshots:
       select: 1.1.2
       tiny-emitter: 2.1.0
 
-  daisyui@5.8.1: {}
+  daisyui@5.8.2: {}
 
   dayjs@1.11.23: {}
 
