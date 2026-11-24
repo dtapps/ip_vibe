@@ -1,7 +1,14 @@
 version: 2
 
-updates:
+# 私有 registry 凭据（CNB 制品库需要认证后才能列出镜像标签）
+registries:
+  cnb-docker:
+    type: 'docker-registry'
+    url: 'https://docker.cnb.cool'
+    username: 'cnb'
+    password: ${{secrets.CNB_DOCKER_TOKEN}}
 
+updates:
   # Go 依赖
   - package-ecosystem: 'gomod'
     directory: '/'
@@ -41,9 +48,10 @@ updates:
   # CNB 镜像构建的 Dockerfile 基础镜像
   - package-ecosystem: 'docker'
     directory: '/.cnb/docker'
+    registries:
+      - 'cnb-docker'
     schedule:
       interval: 'daily'
     labels:
       - 'dependencies'
       - 'docker'
-
