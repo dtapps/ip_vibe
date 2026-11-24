@@ -497,11 +497,11 @@ check-go-test:
 	@echo "[Check] -> 运行 Go 单元测试 (Tags: $(LINT_TAGS))..."
 	$(LINT_ENV) go test -tags=$(LINT_TAGS) $(GO_COVER_TEST_FLAGS) $(GO_COVER_SCAN)
 
-# 运行 Go 赖漏洞检查
+# 运行 Go 依赖漏洞检查
 .PHONY: check-go-vuln
 check-go-vuln:
-	@echo "[Check] -> 运行 Go 赖漏洞检查..."
-	govulncheck -show verbose ./...
+	@echo "[Check] -> 运行 Go 依赖漏洞检查 (Tags: $(LINT_TAGS))..."
+	$(LINT_ENV) govulncheck -tags=$(LINT_TAGS) -scan=package -show verbose ./...
 
 # 检查后端项目
 .PHONY: check-go
