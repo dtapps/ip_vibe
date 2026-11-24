@@ -17,7 +17,7 @@ require (
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.2.5
 	github.com/alibabacloud-go/esa-20240910/v2 v2.48.0
 	github.com/alibabacloud-go/tea v1.5.4
-	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
+	github.com/alibabacloud-go/tea-utils/v2 v2.0.10
 	github.com/aliyun/credentials-go v1.4.14
 	github.com/baidubce/bce-sdk-go v0.9.279
 	github.com/chenyahui/gin-cache v1.10.0
@@ -33,14 +33,14 @@ require (
 	github.com/gin-contrib/multitemplate v1.1.6
 	github.com/gin-contrib/requestid v1.0.10
 	github.com/gin-gonic/gin v1.12.0
-	github.com/go-acme/lego/v5 v5.6.0
+	github.com/go-acme/lego/v5 v5.7.0
 	github.com/go-co-op/gocron/v2 v2.23.2
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.4
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.34.0
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.224
 	github.com/inetaf/tcpproxy v0.0.0-20260515195445-c159a6051109
-	github.com/jdcloud-api/jdcloud-sdk-go v1.68.0
+	github.com/jdcloud-api/jdcloud-sdk-go v1.69.1
 	github.com/kingsoftcloud/sdk-go/v2 v2.2.132
 	github.com/miekg/dns v1.1.73
 	github.com/modelcontextprotocol/go-sdk v1.8.0
@@ -52,11 +52,11 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/swaggo/swag/v2 v2.0.0-rc6
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/cdn v1.3.173
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.217
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.219
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.131
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.212
-	github.com/tidwall/gjson v1.20.5
-	github.com/volcengine/volcengine-go-sdk v1.2.65
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/teo v1.3.219
+	github.com/tidwall/gjson v1.20.6
+	github.com/volcengine/volcengine-go-sdk v1.2.66
 	github.com/wdcbot/qingfeng v1.6.8
 	go.dtapp.net/library/contrib/http_log v1.0.13
 	go.dtapp.net/library/contrib/resty_log v1.0.18
@@ -76,12 +76,12 @@ require (
 	go.dtapp.net/library/utils/gotime v1.0.19
 	golang.org/x/net v0.63.0
 	golang.org/x/sync v0.25.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20261116203732-fd2c7689a808
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20261116203732-fd2c7689a808
+	google.golang.org/genproto/googleapis/api v0.0.0-20261123191846-1e707ab9fbc2
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20261123191846-1e707ab9fbc2
 	google.golang.org/grpc v1.85.0
 	google.golang.org/protobuf v1.36.12
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
-	modernc.org/sqlite v1.62.0
+	modernc.org/sqlite v1.63.0
 	resty.dev/v3 v3.0.0-rc.4
 )
 
@@ -112,7 +112,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
 	github.com/cloudwego/base64x v0.1.7 // indirect
-	github.com/corazawaf/libinjection-go v0.3.6 // indirect
+	github.com/corazawaf/libinjection-go v0.3.7 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/gabriel-vasile/mimetype v1.4.16 // indirect
 	github.com/gin-contrib/sse v1.2.1 // indirect
@@ -166,7 +166,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/power-devops/perfstat v0.0.0-20260916203055-22a1a467d9f0 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
-	github.com/quic-go/quic-go v0.65.0 // indirect
+	github.com/quic-go/quic-go v0.66.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
@@ -174,8 +174,8 @@ require (
 	github.com/shoenig/go-m1cpu v0.2.4 // indirect
 	github.com/sv-tools/openapi v0.4.0 // indirect
 	github.com/tidwall/match v1.2.0 // indirect
-	github.com/tidwall/pretty v1.3.0 // indirect
-	github.com/tidwall/sjson v1.2.10 // indirect
+	github.com/tidwall/pretty v1.3.1 // indirect
+	github.com/tidwall/sjson v1.2.11 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/tklauser/go-sysconf v0.4.0 // indirect
 	github.com/tklauser/numcpus v0.12.0 // indirect
@@ -188,7 +188,7 @@ require (
 	github.com/zclconf/go-cty v1.20.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.2.0 // indirect
 	go.mongodb.org/mongo-driver v1.17.10 // indirect
-	go.mongodb.org/mongo-driver/v2 v2.10.0 // indirect
+	go.mongodb.org/mongo-driver/v2 v2.10.1 // indirect
 	go.yaml.in/yaml/v2 v2.4.5 // indirect
 	go.yaml.in/yaml/v3 v3.0.6 // indirect
 	golang.org/x/arch v0.33.0 // indirect
@@ -202,7 +202,7 @@ require (
 	gopkg.in/ini.v1 v1.68.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.82.0 // indirect
+	modernc.org/libc v1.82.13 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.13.0 // indirect
 	rsc.io/binaryregexp v0.2.0 // indirect
@@ -211,3 +211,5 @@ require (
 )
 
 replace github.com/wdcbot/qingfeng => gitee.com/xiaowan1997/qingfeng v1.6.7
+
+replace github.com/gorilla/websocket => github.com/gorilla/websocket v1.5.4-0.20240701034025-d67f41855da4
