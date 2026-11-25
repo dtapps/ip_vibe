@@ -2,10 +2,10 @@ name: 同步依赖更新机器人标签
 
 on:
   push:
-    branches: ["**"]
+    branches: ['**']
     paths:
-      - ".github/dependabot.yml"
-      - ".github/renovate.json5"
+      - '.github/dependabot.yml'
+      - '.github/renovate.json5'
   workflow_dispatch:
 
 permissions:

@@ -63,11 +63,6 @@ concurrency:
   cancel-in-progress: false
   queue: max
 
-# 显式声明流水线环境（Actions 本来也会注入 CI=true）：Makefile 和脚本靠它判断
-# 是否在 CI 内，不依赖 runner 默认行为。
-env:
-  CI: 'true'
-
 jobs:
   # 用 GoReleaser 构建（与发版同一份配置）；镜像只取 dist/ 下 linux/amd64 的二进制
   binaries:
@@ -88,6 +83,18 @@ jobs:
           fetch-depth: 0
           # 不填 commit 时用触发时的 SHA，两个 job 落在同一个提交上
           ref: ${{ inputs.commit || github.sha }}
+
+      # 缓存同步下来的模板脚本；key 绑定仓库内脚本内容，脚本一改就换新缓存，
+      # 避免旧缓存把已跟踪脚本（如 resolve-prerelease.sh）恢复成旧版本。
+      - name: 缓存脚本
+        uses: actions/cache@v6
+        with:
+          path: scripts/ci
+          key: ci-scripts-${{ hashFiles('scripts/ci/**') }}
+
+      - name: 同步脚本
+        shell: bash
+        run: make fetch-scripts
 
       # go build 默认做 VCS 盖章，会调用 `git status --porcelain`。容器 job 的工作区是
       # runner 挂进来的 bind mount（属主是 runner 用户），容器内进程却是 root，git 会判定
@@ -236,6 +243,18 @@ jobs:
           # 用 binaries 解析出的完整 SHA，保证两个 job 同一个提交
           ref: ${{ needs.binaries.outputs.commit_full }}
           fetch-depth: 0
+
+      # 缓存同步下来的模板脚本；key 绑定仓库内脚本内容，脚本一改就换新缓存，
+      # 避免旧缓存把已跟踪脚本（如 resolve-prerelease.sh）恢复成旧版本。
+      - name: 缓存脚本
+        uses: actions/cache@v6
+        with:
+          path: scripts/ci
+          key: ci-scripts-${{ hashFiles('scripts/ci/**') }}
+
+      - name: 同步脚本
+        shell: bash
+        run: make fetch-scripts
 
       - name: 下载二进制产物
         uses: actions/download-artifact@v8

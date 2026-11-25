@@ -40,6 +40,7 @@ on:
           版本；无后缀即正式版'
         required: true
         type: string
+        default: 'nightly'
       commit:
         description: '要构建的提交（留空则使用默认分支最新提交）'
         required: false
@@ -59,11 +60,6 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
   queue: max
-
-# 显式声明流水线环境（Actions 本来也会注入 CI=true）：Makefile 靠它区分本地快照
-# （build --single-target）和流水线构建（release，全平台），所有 job 共用。
-env:
-  CI: 'true'
 
 jobs:
   prepare:
@@ -88,6 +84,18 @@ jobs:
           fetch-depth: 0
           # 不填 commit 时用触发时的 SHA，三个 job 落在同一个提交上
           ref: ${{ inputs.commit || github.sha }}
+
+      # 缓存同步下来的模板脚本；key 绑定仓库内脚本内容，脚本一改就换新缓存，
+      # 避免旧缓存把已跟踪脚本（如 resolve-prerelease.sh）恢复成旧版本。
+      - name: 缓存脚本
+        uses: actions/cache@v6
+        with:
+          path: scripts/ci
+          key: ci-scripts-${{ hashFiles('scripts/ci/**') }}
+
+      - name: 同步脚本
+        shell: bash
+        run: make fetch-scripts
 
       # 容器工作区是 runner 挂进来的 bind mount（属主是 runner 用户），容器内进程却是 root，
       - name: 让容器内的 git 可用
@@ -168,11 +176,6 @@ jobs:
           git fetch --tags --quiet --force || true
           count=$(git tag -l 'v*' | wc -l | tr -d ' ')
           echo "本地版本 tag: ${count} 个"
-          if [ "$count" -eq 0 ]; then
-            echo "::error::一个版本 tag 都没有，changelog 会退化成「首次发布」"
-            echo "   检查 checkout 是否带 tag（fetch-depth: 0），或手动 git fetch --tags"
-            exit 1
-          fi
 
           case "${VERSION}" in
             *-nightly.*)
@@ -218,6 +221,18 @@ jobs:
           ref: ${{ needs.prepare.outputs.commit_full }}
           # GoReleaser 需要 git 历史与 tag 推导版本
           fetch-depth: 0
+
+      # 缓存同步下来的模板脚本；key 绑定仓库内脚本内容，脚本一改就换新缓存，
+      # 避免旧缓存把已跟踪脚本（如 resolve-prerelease.sh）恢复成旧版本。
+      - name: 缓存脚本
+        uses: actions/cache@v6
+        with:
+          path: scripts/ci
+          key: ci-scripts-${{ hashFiles('scripts/ci/**') }}
+
+      - name: 同步脚本
+        shell: bash
+        run: make fetch-scripts
 
       # 容器工作区是 runner 挂进来的 bind mount（属主是 runner 用户），容器内进程却是 root，
       - name: 让容器内的 git 可用
@@ -340,6 +355,18 @@ jobs:
           ref: ${{ needs.prepare.outputs.commit_full }}
           # 需要完整 tag 历史，才能算出「上一个 tag」并生成 changelog
           fetch-depth: 0
+
+      # 缓存同步下来的模板脚本；key 绑定仓库内脚本内容，脚本一改就换新缓存，
+      # 避免旧缓存把已跟踪脚本（如 resolve-prerelease.sh）恢复成旧版本。
+      - name: 缓存脚本
+        uses: actions/cache@v6
+        with:
+          path: scripts/ci
+          key: ci-scripts-${{ hashFiles('scripts/ci/**') }}
+
+      - name: 同步脚本
+        shell: bash
+        run: make fetch-scripts
 
       - name: 下载所有产物
         uses: actions/download-artifact@v8
@@ -474,6 +501,18 @@ jobs:
         with:
           ref: ${{ inputs.commit || github.sha }}
           fetch-depth: 0
+
+      # 缓存同步下来的模板脚本；key 绑定仓库内脚本内容，脚本一改就换新缓存，
+      # 避免旧缓存把已跟踪脚本（如 resolve-prerelease.sh）恢复成旧版本。
+      - name: 缓存脚本
+        uses: actions/cache@v6
+        with:
+          path: scripts/ci
+          key: ci-scripts-${{ hashFiles('scripts/ci/**') }}
+
+      - name: 同步脚本
+        shell: bash
+        run: make fetch-scripts
 
       - name: 生成公告正文
         shell: bash
