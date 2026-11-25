@@ -422,10 +422,15 @@ format-node:
 format-yaml:
 	@bash scripts/format.sh yaml
 
-# 格式化 JSON 文件
+# 格式化严格 JSON 文件（gojq）
 .PHONY: format-json
 format-json:
 	@bash scripts/format.sh json
+
+# 格式化 JSON5 文件（jsonfmt，保留注释 / 无引号 key / 尾逗号）
+.PHONY: format-json5
+format-json5:
+	@bash scripts/format.sh json5
 
 # 格式化 SQL 文件
 .PHONY: format-sql
@@ -449,7 +454,7 @@ format-shell:
 
 # 格式化/修复项目
 .PHONY: format
-format: format-node format-go format-yaml format-json format-sql format-markdown format-docker format-shell
+format: format-node format-go format-yaml format-json format-json5 format-sql format-markdown format-docker format-shell
 
 #####################
 ## 检查 / 测试 相关
