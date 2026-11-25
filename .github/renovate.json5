@@ -1,0 +1,149 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+
+  // IPVibe：Dependabot 为主，Renovate 为备用。
+  // .github/dependabot.yml 每日扫描：根 go.mod、cmd/frontend npm、GitHub Actions、
+  // .github/docker 与 .cnb/docker 的 Dockerfile；.github/workflows/renovate.yml
+  // 每天 00:00 UTC 定时运行 Renovate，也可在 Actions 页面手动触发。
+  // 备用策略：dependencyDashboardApproval=true，定时运行只刷新 Dependency Dashboard，
+  //           不自动开 PR；Dependabot 失效时人工在 Dashboard 勾选需要的更新再创建 PR。
+  //           按 Renovate 默认行为，漏洞修复更新无需勾选即可建 PR。
+  //           两套机器人因此不会重复提 PR，也无需停用 dependabot.yml。
+  extends: ["config:recommended"],
+
+  // 频率由 workflow 的 cron 控制（每天 00:00 UTC）；这里不额外限制时段。
+  // 备用模式下实际创建 PR 需人工在 Dashboard 批准。
+  timezone: "Asia/Shanghai",
+  schedule: ["at any time"],
+
+  // go.mod 依赖数量多（云厂商 SDK 密集），限速避免一次性刷屏。
+  prConcurrentLimit: 5,
+  prHourlyLimit: 2,
+
+  // 与 Dependabot 默认提交风格保持一致：build(deps): bump xxx。
+  // config:recommended 默认开启语义化提交（fix/chore），这里显式关闭并覆盖前缀。
+  semanticCommits: "disabled",
+  commitMessagePrefix: "build(deps):",
+  commitMessageAction: "bump",
+
+  // major 单独 PR 便于人工评估破坏性变更；minor/patch 按包合并（默认行为，显式声明）。
+  separateMajorMinor: true,
+  separateMinorPatch: false,
+
+  // 新版本发布 3 天后再跟进，降低供应链投毒风险。
+  minimumReleaseAge: "3 days",
+
+  // 集中查看待处理更新；只扫描项目实际使用的四类依赖。
+  dependencyDashboard: true,
+  // 备用模式关键开关：只在 Dashboard 列出更新，人工勾选后才创建 PR，避免与 Dependabot 重复。
+  dependencyDashboardApproval: true,
+  // Dashboard 的标题与头尾说明可自定义为中文；正文勾选项列表由 Renovate 生成，保持默认英文。
+  dependencyDashboardTitle: "依赖更新面板（Renovate 备用）",
+  dependencyDashboardHeader: "Dependabot 是主依赖更新方案；本面板仅作备用。普通更新请勾选后再让 Renovate 创建 PR，漏洞修复更新无需勾选会直接建 PR。",
+  dependencyDashboardFooter: "勾选后 Renovate 会在下一次运行时创建 PR；发布未满 3 天的新版本不会显示。",
+  enabledManagers: ["gomod", "npm", "github-actions", "dockerfile"],
+  labels: ["dependencies"],
+
+  // 所有更新 PR 必须人工确认后再合并，不自动合并。
+  automerge: false,
+
+  packageRules: [
+    // ---------- Go（根 go.mod） ----------
+    {
+      matchManagers: ["gomod"],
+      postUpdateOptions: ["gomodTidy"],
+      addLabels: ["go"],
+    },
+    {
+      matchManagers: ["gomod"],
+      matchUpdateTypes: ["minor", "patch"],
+      groupName: "Go 依赖（非 major）",
+    },
+    // 云厂商 SDK 发版极频繁，非 major 更新合并为一个 PR；列表与 go.mod 实际依赖对齐。
+    // 包括阿里云、百度智能云、Cloudflare、go-acme DNS 插件、华为云、京东云、
+    // 金山云、七牛云、腾讯云、火山引擎；需要按厂商拆分时复制本规则。
+    {
+      matchManagers: ["gomod"],
+      matchPackageNames: [
+        "github.com/alibabacloud-go/**",
+        "github.com/aliyun/**",
+        "github.com/baidubce/**",
+        "github.com/cloudflare/**",
+        "github.com/go-acme/**",
+        "github.com/huaweicloud/**",
+        "github.com/jdcloud-api/**",
+        "github.com/kingsoftcloud/**",
+        "github.com/qiniu/**",
+        "github.com/tencentcloud/**",
+        "github.com/volcengine/**",
+      ],
+      matchUpdateTypes: ["minor", "patch"],
+      groupName: "Go 云厂商 SDK（非 major）",
+    },
+    // go.dtapp.net 自有库发版同样密集（utils/*、service/*、contrib/*），单独合并。
+    {
+      matchManagers: ["gomod"],
+      matchPackageNames: ["go.dtapp.net/**"],
+      matchUpdateTypes: ["minor", "patch"],
+      groupName: "go.dtapp.net 自有库（非 major）",
+    },
+    // Go 版本由统一 CI 镜像（docker.cnb.cool/dtapp/golang:latest）提供，
+    // go.mod 的 go/toolchain 指令需人工评估后修改；toolchain 默认会被 Renovate 跟进，显式关闭。
+    {
+      matchManagers: ["gomod"],
+      matchDepTypes: ["golang", "toolchain"],
+      enabled: false,
+    },
+
+    // ---------- 前端（pnpm，cmd/frontend） ----------
+    {
+      matchManagers: ["npm"],
+      postUpdateOptions: ["pnpmDedupe"],
+      addLabels: ["frontend"],
+    },
+    {
+      matchManagers: ["npm"],
+      matchUpdateTypes: ["minor", "patch", "digest"],
+      groupName: "前端依赖（非 major）",
+    },
+    // pnpm 版本由统一 CI 镜像提供，package.json 的 packageManager 字段需人工评估后修改。
+    {
+      matchManagers: ["npm"],
+      matchDepTypes: ["packageManager"],
+      enabled: false,
+    },
+
+    // ---------- GitHub Actions ----------
+    {
+      matchManagers: ["github-actions"],
+      addLabels: ["github-actions"],
+    },
+    {
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["minor", "patch", "digest"],
+      groupName: "GitHub Actions（非 major）",
+    },
+
+    // ---------- Docker ----------
+    // GitHub 侧 Dockerfile 的基础镜像来自公开 GHCR，Renovate 可直接跟进。
+    {
+      matchManagers: ["dockerfile"],
+      matchFileNames: [".github/docker/**"],
+      addLabels: ["docker"],
+    },
+    {
+      matchManagers: ["dockerfile"],
+      matchFileNames: [".github/docker/**"],
+      matchUpdateTypes: ["minor", "patch", "digest"],
+      groupName: "Docker 基础镜像（非 major）",
+    },
+    // CNB 侧基础镜像来自私有仓库 docker.cnb.cool，需要 CNB_DOCKER_TOKEN 才能列出标签；
+    // 凭据由 dependabot.yml 的 registries 提供，仓库级 Renovate 配置不存放凭据，
+    // 因此这部分交给 Dependabot 更新，Renovate 跳过以避免拉取失败刷错误。
+    {
+      matchManagers: ["dockerfile"],
+      matchFileNames: [".cnb/docker/**"],
+      enabled: false,
+    },
+  ],
+}
