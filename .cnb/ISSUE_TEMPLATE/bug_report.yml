@@ -1,0 +1,96 @@
+# CNB Issue 模板：提交缺陷
+name: 提交缺陷
+description: 报告可复现的异常、崩溃、数据错误或功能不符合预期。
+title: '[Bug] '
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提交前请先搜索现有 Issue，避免重复反馈。
+        请勿在 Issue 中粘贴 Token、私钥、Cookie、完整配置或未脱敏日志。
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 受影响组件
+      description: 选择最接近问题的组件。
+      options:
+        - backend 控制端
+        - reporter 上报端
+        - forwarder 转发端
+        - Web 控制台
+        - API / gRPC / MCP
+        - Docker 或部署
+        - 其他
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 版本号
+      description: 填写页面、启动日志或 Release 中显示的完整版本号；自定义构建请注明 commit。
+      placeholder: v1.2.3 或 v1.2.3-rc.1
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: 运行环境
+      description: 填写操作系统及版本、CPU 架构、部署方式或 Docker 环境。
+      placeholder: Debian 13 amd64，直接部署；Windows 11 arm64；Docker Compose
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际现象
+      description: 说明发生了什么，以及影响范围。
+      placeholder: 执行什么操作后出现什么错误，哪些功能或数据受到影响。
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期行为
+      description: 说明你原本希望发生什么。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 按顺序列出最小复现步骤；偶发问题请说明出现频率。
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 错误日志
+      description: 可选。请保留堆栈、HTTP 状态码或 gRPC 错误信息，并先脱敏。
+
+  - type: textarea
+    id: references
+    attributes:
+      label: 截图或相关链接
+      description: 可选。可附截图、录屏、相关 Issue、PR 或最小示例链接。
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 提交前检查
+      options:
+        - label: 我已搜索现有 Issue，确认这不是重复反馈
+          required: true
+        - label: 我已移除 Token、私钥、Cookie、真实内网地址等敏感信息
+          required: true

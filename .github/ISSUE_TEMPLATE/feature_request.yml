@@ -1,0 +1,72 @@
+name: 提交建议
+description: 提出新功能、体验改进或工作流优化建议。
+title: '[建议] '
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提交前请先搜索现有 Issue，确认没有相同或相近的建议。
+        建议应说明使用场景和预期收益，避免只描述实现细节。
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 相关组件
+      description: 选择建议主要涉及的组件。
+      options:
+        - backend 控制端
+        - reporter 上报端
+        - forwarder 转发端
+        - Web 控制台
+        - API / gRPC / MCP
+        - Docker 或部署
+        - 文档或其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: scenario
+    attributes:
+      label: 使用场景或当前问题
+      description: 你在什么场景下遇到什么问题？当前方案有什么不足？
+    validations:
+      required: true
+
+  - type: textarea
+    id: desired
+    attributes:
+      label: 期望行为
+      description: 如果建议被采纳，你希望使用流程或结果发生什么变化？
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+      description: 描述你认为可行的方案；不确定实现方式时可以说明目标与约束。
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 备选方案
+      description: 可选。说明你考虑过的其他做法，以及为什么没有采用。
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: 兼容性或迁移影响
+      description: 可选。是否会改变配置、API、数据格式、部署方式或现有用户习惯？
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 提交前检查
+      options:
+        - label: 我已搜索现有 Issue，确认没有相同或相近的建议
+          required: true
+        - label: 我没有在建议中填写 Token、私钥、Cookie 或真实内网地址等敏感信息
+          required: true

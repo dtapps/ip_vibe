@@ -2,9 +2,9 @@
 #
 # 两种触发：手动触发（输入版本号）；每天 UTC 00:00（北京时间 08:00）定时构建 nightly 预发布
 # 镜像（cron 与 release.yml 完全一致，同一时刻起跑）。
-# 手动触发时：GoReleaser 构建（镜像只取 linux/amd64 二进制）→ 构建 backend / reporter / forwarder
-# 三个运行镜像 → 推送到 GitHub Container Registry（GHCR）→ 触发 CNB 侧同步
-# 同一批镜像 → 通过 ServerChan3（方糖）推一条构建完成通知。
+# 手动或定时触发时：GoReleaser 构建（镜像只取 linux/amd64 二进制）→ 构建 backend / reporter / forwarder
+# 三个运行镜像 → 推送到 GitHub Container Registry（GHCR）→ 通过 ServerChan3（方糖）推一条构建完成通知。
+# CNB 制品库由 CNB 自己的工作流独立构建，不再由 GitHub API 触发。
 # 定时触发等价于手动填 `nightly`，版本号由 binaries job 推导。
 #
 # 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 release.yml、CNB 的
@@ -330,86 +330,13 @@ jobs:
     # 删掉会让仍在使用旧版本的用户无法重新拉取。GHCR 存储配额确实需要时，
     # 再按 actions/delete-package-versions 只清理 untagged 版本。
 
-  # GHCR 镜像推送成功后，触发 CNB 侧构建同一批镜像（推 CNB 制品库）。
-  # 独立成 job：便于在其后追加 webhook 通知（notify job），也让「同步」与「构建」解耦。
-  # 注意：使用独立的 SYNC_CNB_TOKEN（仅 repo-cnb-trigger:rw 权限），
-  # 与给软件升级下载用的 CNB_TOKEN（repo-release:rw）区分，互不干扰。
-  # 其它平台（Gitee / GitCode）的镜像同步暂未接入，后续再加。
-  sync-cnb:
-    needs: [binaries, image]
-    runs-on: ubuntu-26.04
-    # 供 notify job 在通知里展示同步状态
-    outputs:
-      status: ${{ steps.status.outputs.status }}
-    # token 必须放 job 级 env：step 自己的 env 在同一步骤的 if 求值时还读不到，
-    # 放 step 级会让 if 恒为假、同步步骤被永远跳过。
-    env:
-      SYNC_CNB_TOKEN: ${{ secrets.SYNC_CNB_TOKEN }}
-    steps:
-      - name: 触发 CNB 镜像同步构建
-        id: trigger
-        if: ${{ env.SYNC_CNB_TOKEN != '' }}
-        env:
-          CNB_API_ENDPOINT: ${{ secrets.CNB_API_ENDPOINT || 'https://api.cnb.cool' }}
-        shell: bash
-        run: |
-          API="${CNB_API_ENDPOINT%/}"
-          REPO="dtapp/ip_vibe"
-          EVENT="api_trigger_build_docker_image"
-          PRERELEASE="${{ needs.binaries.outputs.pre_release }}"
-          if [ "${PRERELEASE}" = "true" ]; then
-            TITLE="GitHub 预发布镜像同步 ${{ needs.binaries.outputs.version }}"
-          else
-            TITLE="GitHub 正式发版镜像同步 ${{ needs.binaries.outputs.version }}"
-          fi
-
-          echo "触发 CNB 同步构建: ${API}/${REPO}/-/build/start (event=${EVENT})"
-          HTTP=$(curl -s -o /tmp/cnb_start.json -w "%{http_code}" -X POST \
-            -H "Authorization: Bearer ${SYNC_CNB_TOKEN}" \
-            -H "Content-Type: application/json" \
-            -H "Accept: application/vnd.cnb.api+json" \
-            -d "$(jq -n \
-              --arg branch "master" \
-              --arg event "$EVENT" \
-              --arg title "$TITLE" \
-              --arg version "${{ needs.binaries.outputs.version }}" \
-              --arg commit "${{ needs.binaries.outputs.commit_full }}" \
-              '{branch: $branch, event: $event, title: $title, env: {version: $version, commit: $commit}}')" \
-            "${API}/${REPO}/-/build/start")
-
-          echo "CNB build/start 响应 HTTP=${HTTP}"
-          cat /tmp/cnb_start.json
-          if [ "$HTTP" != "200" ] && [ "$HTTP" != "201" ]; then
-            echo "::warning::触发 CNB 镜像同步构建失败（HTTP=${HTTP}），不影响 GHCR 镜像"
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          else
-            echo "✓ 已成功请求 CNB 执行镜像同步构建"
-            echo "status=triggered" >> "$GITHUB_OUTPUT"
-          fi
-
-      # 触发步骤被跳过（未配置 secret）或中途失败时，也要给出一个确定的状态，
-      # 否则 notify 里只能显示「未知」，分不清「没触发」和「触发了但失败」。
-      - name: 记录同步状态
-        id: status
-        if: always()
-        shell: bash
-        run: |
-          if [ "${{ steps.trigger.outcome }}" = "skipped" ]; then
-            echo "status=skipped" >> "$GITHUB_OUTPUT"
-          elif [ -n "${{ steps.trigger.outputs.status }}" ]; then
-            echo "status=${{ steps.trigger.outputs.status }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "status=failed" >> "$GITHUB_OUTPUT"
-          fi
-
-  # 镜像构建 + 各平台同步全部完成后，通过 ServerChan3（方糖）推送 webhook 通知。
+  # 镜像构建完成后，通过 ServerChan3（方糖）推送 webhook 通知。
   # 需配置 secret SERVERCHAN_SENDKEY（形如 SCTxxxx 或 sctp{uid}t...）；未配置则跳过通知。
   # API 文档：https://doc.sc3.ft07.com/zh/serverchan3/server/api
   # 推送地址：SCT 转发 key → https://sctapi.ftqq.com/<sendkey>.send
   #          带 uid 的 sendkey（sctp 开头）→ https://<uid>.push.ft07.com/send/<sendkey>.send
   notify:
-    # 等镜像同步 job 结束（未配置 secret 时它只是跳过，不影响 success 判定）。
-    needs: [binaries, image, sync-cnb]
+    needs: [binaries, image]
     runs-on: ubuntu-26.04
     if: ${{ needs.image.result == 'success' }}
     env:
@@ -438,24 +365,12 @@ jobs:
           # 构建时间是 UTC ISO8601，转成北京时间展示更直观
           BUILD_TIME_CN=$(date -d "${BUILD_TIME}" -u +'%Y-%m-%d %H:%M:%S' 2>/dev/null)
           BUILD_TIME_CN="${BUILD_TIME_CN} (UTC+8)"
-          REPO="${{ github.repository }}"
 
-          # 镜像地址：GHCR 由 image job 算出（仓库名已转小写），CNB 侧固定前缀
+          # GHCR 镜像标签由 image job 算出（仓库名已转小写）。
           BACKEND_TAGS="${{ needs.image.outputs.backend_tags }}"
           REPORTER_TAGS="${{ needs.image.outputs.reporter_tags }}"
           FORWARDER_TAGS="${{ needs.image.outputs.forwarder_tags }}"
           CNB_IMAGE_BASE="docker.cnb.cool/dtapp/ip_vibe"
-
-          # 同步状态 → 中文标签。状态来自 sync job 的 outputs：
-          #   triggered=已触发（异步执行，进度看平台页面）/ skipped=未配置 secret / failed=触发失败
-          sync_state() {
-            case "$1" in
-              triggered) printf '✅ 已触发' ;;
-              skipped) printf '⏭ 未配置（跳过）' ;;
-              failed) printf '❌ 触发失败' ;;
-              *) printf '❓ 未知' ;;
-            esac
-          }
 
           TITLE="IPVibe ${TAG} 镜像构建完成"
           TAGS="IPVibe|stable"
@@ -472,7 +387,6 @@ jobs:
           DESP="${DESP}- reporter: \`${REPORTER_TAGS//,/, }\`  "$'\n'
           DESP="${DESP}- forwarder: \`${FORWARDER_TAGS//,/, }\`  "$'\n'
           DESP="${DESP}**CNB 镜像地址**: \`${CNB_IMAGE_BASE}/{backend,reporter,forwarder}:${TAG}\`  "$'\n'
-          DESP="${DESP}**镜像同步**: CNB $(sync_state "${{ needs['sync-cnb'].outputs.status }}")"
 
           echo "推送 ServerChan3 通知: ${TITLE}"
           HTTP=$(curl -s -o /tmp/sc3.json -w "%{http_code}" -X POST \
