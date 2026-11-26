@@ -3,13 +3,13 @@
   // IPVibe：Dependabot 为主，Renovate 为备用。
   // .github/dependabot.yml 每日扫描：根 go.mod、cmd/frontend npm、GitHub Actions、
   // .github/docker 与 .cnb/docker 的 Dockerfile；.github/workflows/renovate.yml
-  // 每天 00:00 UTC 定时运行 Renovate，也可在 Actions 页面手动触发。
+  // 每天 00:30 UTC 定时运行 Renovate，也可在 Actions 页面手动触发。
   // 备用策略：dependencyDashboardApproval=true，定时运行只刷新 Dependency Dashboard，
   //           不自动开 PR；Dependabot 失效时人工在 Dashboard 勾选需要的更新再创建 PR。
   //           按 Renovate 默认行为，漏洞修复更新无需勾选即可建 PR。
   //           两套机器人因此不会重复提 PR，也无需停用 dependabot.yml。
   extends: ["config:recommended"],
-  // 频率由 workflow 的 cron 控制（每天 00:00 UTC）；这里不额外限制时段。
+  // 频率由 workflow 的 cron 控制（每天 00:30 UTC）；这里不额外限制时段。
   // 备用模式下实际创建 PR 需人工在 Dashboard 批准。
   timezone: "Asia/Shanghai",
   schedule: ["at any time"],

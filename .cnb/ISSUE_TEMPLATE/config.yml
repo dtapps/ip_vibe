@@ -1,10 +1,9 @@
 # Issue 模板选择页配置
 #
-# 规则：本仓库 Issue 仅用于发版公告，所以关闭空白 Issue（blank_issues_enabled: false），
-# 用户必须走「发版公告」模板提交，保证每条 Issue 都带版本号、变更摘要与下载地址。
+# 关闭空白 Issue，引导用户使用「提交缺陷」「提交建议」或「发版公告」模板，
+# 保证反馈包含复现信息或建议场景，公告包含版本号、变更摘要与下载地址。
 #
-# 代价：关闭空白 Issue 后，用户想找文档 / 历史版本时会找不到入口，
-# 所以下面用 contact_links 把文档、发布记录与流水线说明显式放到选择页上。
+# 文档、发布记录与流水线说明通过 contact_links 放在模板选择页上。
 blank_issues_enabled: false
 
 contact_links:

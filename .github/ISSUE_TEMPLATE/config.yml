@@ -1,0 +1,11 @@
+name: Issue 模板配置
+
+blank_issues_enabled: false
+
+contact_links:
+  - name: 使用帮助与文档
+    url: https://github.com/dtapps/ip_vibe#readme
+    about: 查看功能说明、环境变量、常用命令与专题文档索引
+  - name: 历史发布记录
+    url: https://github.com/dtapps/ip_vibe/releases
+    about: 查看已发布版本、下载附件与 SHA256SUMS
