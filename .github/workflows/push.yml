@@ -33,6 +33,8 @@ jobs:
     # 免去每次重装系统库与 go install 工具；本仓库不再自建、推送 CI 镜像。
     container:
       image: ghcr.io/dtapps/golang:latest
+      env:
+        GIT_SHIM_SAFE_DIRECTORY: 'true'
     # env:
     #     LINT_PLATFORMS: linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64
     steps:

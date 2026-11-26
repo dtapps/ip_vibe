@@ -32,20 +32,21 @@ name: Release
 on:
   # 每天 UTC 00:00（北京时间 08:00）。
   schedule:
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
   workflow_dispatch:
     inputs:
       version:
-        description: '版本号。预发布看后缀：1.2.3-rc.1 / 1.2.3-beta.1 / 1.2.3-alpha.1 / 1.2.3-nightly.20260101；填 nightly 自动生成带日期的 nightly
-          版本；无后缀即正式版'
+        description:
+          "版本号。预发布看后缀：1.2.3-rc.1 / 1.2.3-beta.1 / 1.2.3-alpha.1 / 1.2.3-nightly.20260101；填 nightly 自动生成带日期的 nightly
+          版本；无后缀即正式版"
         required: true
         type: string
-        default: 'nightly'
+        default: "nightly"
       commit:
-        description: '要构建的提交（留空则使用默认分支最新提交）'
+        description: "要构建的提交（留空则使用默认分支最新提交）"
         required: false
         type: string
-        default: ''
+        default: ""
 
 permissions:
   contents: write
@@ -68,6 +69,8 @@ jobs:
     # 免去每次重装系统库与 go install 工具；本仓库不再自建、推送 CI 镜像。
     container:
       image: ghcr.io/dtapps/golang:latest
+      env:
+        GIT_SHIM_SAFE_DIRECTORY: 'true'
     outputs:
       interior_version: ${{ steps.gen.outputs.interior_version }}
       interior_release_title: ${{ steps.gen.outputs.interior_release_title }}
@@ -97,20 +100,6 @@ jobs:
         shell: bash
         run: make fetch-scripts
 
-      # 容器工作区是 runner 挂进来的 bind mount（属主是 runner 用户），容器内进程却是 root，
-      - name: 让容器内的 git 可用
-        shell: bash
-        run: |
-          git config --system --add safe.directory '*' 2>/dev/null || true
-          git config --global --add safe.directory "$GITHUB_WORKSPACE" 2>/dev/null || true
-
-          # 结果打进日志：以后一眼能看出这条登记有没有生效
-          if git status --porcelain > /dev/null 2>&1; then
-            echo "✓ 容器内 git 可用，COMMIT=$(git rev-parse --short HEAD)"
-          else
-            echo "⚠️ 容器内 git 仍不可用。"
-          fi
-
       - name: 解析版本号（预发布看后缀）
         id: gen
         shell: bash
@@ -122,7 +111,6 @@ jobs:
 
           # 容器 job 的工作区属主是 runner，先登记 safe.directory 才能 rev-parse。
           # 统一以「实际检出的 HEAD」为准：完整 SHA 给正文链接 / tag，短 SHA 给构建标记。
-          git config --global --add safe.directory "$GITHUB_WORKSPACE" 2>/dev/null || true
           commit_full="$(git rev-parse HEAD)"
           commit_short="$(git rev-parse --short HEAD)"
           echo "构建 commit: ${commit_short} (${commit_full})"
@@ -213,6 +201,8 @@ jobs:
     runs-on: ubuntu-26.04
     container:
       image: ghcr.io/dtapps/golang:latest
+      env:
+        GIT_SHIM_SAFE_DIRECTORY: 'true'
     steps:
       - name: 检出代码
         uses: actions/checkout@v7
@@ -233,20 +223,6 @@ jobs:
       - name: 同步脚本
         shell: bash
         run: make fetch-scripts
-
-      # 容器工作区是 runner 挂进来的 bind mount（属主是 runner 用户），容器内进程却是 root，
-      - name: 让容器内的 git 可用
-        shell: bash
-        run: |
-          git config --system --add safe.directory '*' 2>/dev/null || true
-          git config --global --add safe.directory "$GITHUB_WORKSPACE" 2>/dev/null || true
-
-          # 结果打进日志：以后一眼能看出这条登记有没有生效
-          if git status --porcelain > /dev/null 2>&1; then
-            echo "✓ 容器内 git 可用，COMMIT=$(git rev-parse --short HEAD)"
-          else
-            echo "⚠️ 容器内 git 仍不可用。"
-          fi
 
       # 容器镜像已预装 Go 工具链（GOPATH=/go，工具在 /go/bin 且已在 PATH），
       # 这里把路径常量写入 $GITHUB_ENV，供后续 make 步骤的 GOPATH/GOBIN 引用。
@@ -486,10 +462,10 @@ jobs:
       REPO_URL: https://github.com/${{ github.repository }}
       COMMIT_SHA: ${{ needs.prepare.outputs.commit_full }}
       # 是否发公告 + 讨论分类（和 CNB 侧一样放 job 级 env）
-      ANNOUNCEMENT_ENABLED: 'true'
-      ANNOUNCEMENT_DISCUSSION_CATEGORY: 'General'
+      ANNOUNCEMENT_ENABLED: "true"
+      ANNOUNCEMENT_DISCUSSION_CATEGORY: "General"
       # 分类 id：填了就直接用，跳过「列分类」接口（GITHUB_TOKEN 读不到 Discussions 时用它绕开）
-      ANNOUNCEMENT_DISCUSSION_CATEGORY_ID: ''
+      ANNOUNCEMENT_DISCUSSION_CATEGORY_ID: ""
       # 发公告用的令牌：GITHUB_TOKEN 在部分仓库 / 组织策略下读不到 Discussions（接口 404，
       # 看着像「没开启 Discussions」）。配一个带 repo 权限的 PAT（经典 PAT 勾 repo；
       # fine-grained 勾 Discussions: read & write）覆盖它；没配就退回 GITHUB_TOKEN。
