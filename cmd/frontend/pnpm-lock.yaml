@@ -229,8 +229,8 @@ importers:
         specifier: ^3.10.1
         version: 3.10.1
       select2:
-        specifier: 4.1.1
-        version: 4.1.1
+        specifier: 4.2.0
+        version: 4.2.0
       select2-tailwindcss-v4-theme:
         specifier: ^1.2.5
         version: 1.2.5
@@ -1136,8 +1136,8 @@ packages:
   select2-tailwindcss-v4-theme@1.2.5:
     resolution: {integrity: sha512-EqXspn4gsmkwSpIJpsrgqqCDVRcRcAjkSg63ehRD9ftbvQq3jA7CHaVz6r26RKThrUntINcTMEJyNJO6/Ub9rQ==}
 
-  select2@4.1.1:
-    resolution: {integrity: sha512-kufep72db0ibLV8V/BI7uLT4vb1LPn29tYFtH2Y0TIqgimYwbj9NBw5nzTa9j1spBoABio6MlVcupxfWvoGMPA==}
+  select2@4.2.0:
+    resolution: {integrity: sha512-wptq1br36O1UHPyXR2QTyqzyCcLUhYy90c+iFNMaotP7raeVAsUQdbHObikYOwC+mHU1hoVFIJwJTagly115TQ==}
 
   select@1.1.2:
     resolution: {integrity: sha512-OwpTSOfy6xSs1+pwcNrv0RBMOzI39Lp3qQKUTPVVPRjCdNa5JH/oPRiqsesIskK8TVgmRiHwO4KXlV2Li9dANA==}
@@ -2041,7 +2041,7 @@ snapshots:
 
   select2-tailwindcss-v4-theme@1.2.5: {}
 
-  select2@4.1.1: {}
+  select2@4.2.0: {}
 
   select@1.1.2: {}
 
