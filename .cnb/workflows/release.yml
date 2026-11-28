@@ -1,11 +1,15 @@
 # 发布工作流（CNB）
 #
-# 两种触发共用同一份作业：顶层 .trigger_release 定义锚点，两个事件各引用一次。
+# 两种触发各起两条流水线：顶层 .version_gate / .trigger_release 定义锚点，两个事件各引用一次。
 #   - crontab: 0 0 * * *：每天北京时间 00:00（Asia/Shanghai）定时发布 nightly。
 #   - web_trigger_release：master 分支按钮「打包 Go 项目」手动触发，
 #     全平台压缩包 + Release + 附件（从源码构建）。
 #
-# 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 GitHub 的
+# 门禁：版本门禁流水线用 release-version 插件 parse + validate；通过后用 cnb:resolve
+# 发通知，发布流水线用 cnb:await 等同一个 key，收到后才开始构建、打包与发布。
+# await / resolve 只能写在 stages 中，不能放在 endStages / failStages。
+#
+# 版本号规则（本流水线由 release-version 插件实现，与 GitHub 的
 # .github/workflows/release.yml 同口径）：
 #   v1.2.3                  -> 正式版，Release 不勾选 prerelease
 #   v1.2.3-rc.1             -> 预发布（rc 渠道），Release 勾选 prerelease
@@ -18,6 +22,47 @@
 # Release 标题：IPVibe <版本号>，预发布再加 "(预发布)" 后缀；tag 始终是纯版本号。
 
 # 顶层伪键：仅用于定义作业锚点，不会被当成分支事件执行。
+# 版本门禁流水线：解析并校验版本号，通过后用 cnb:resolve 通知发布流水线。
+.version_gate: &version_gate
+  name: 版本门禁
+  runner:
+    tags: cnb:arch:amd64 # 指定 Runner 必须有这个标签
+  stages:
+    - name: 解析版本号
+      image: docker.cnb.cool/dtapp/plugins/release-version:latest
+      settings:
+        mode: parse
+        version: ${version}
+        default_nightly: true
+        fetch_tags: true
+        nightly_fallback: prerelease_bump
+      exports:
+        tag: INTERIOR_VERSION
+        prerelease: INTERIOR_PRERELEASE
+
+    - name: 校验版本号与 tag
+      image: docker.cnb.cool/dtapp/plugins/release-version:latest
+      settings:
+        mode: validate
+        version: ${INTERIOR_VERSION}
+        fetch_tags: true
+        allow_existing_nightly: true
+      exports:
+        validated: VERSION_VALIDATED
+        latest_stable: LATEST_STABLE
+
+    # data 经 await 的 exports 映射成发布流水线里的环境变量；
+    # 不传 commit：发布源码固定为当前检出的触发提交。
+    - name: 通知版本门禁通过
+      type: cnb:resolve
+      options:
+        key: release-version-gate
+        data:
+          tag: $INTERIOR_VERSION
+          prerelease: $INTERIOR_PRERELEASE
+          validated: $VERSION_VALIDATED
+          latest_stable: $LATEST_STABLE
+
 .trigger_release: &trigger_release
   name: 发布
   runner:
@@ -56,66 +101,22 @@
     ANNOUNCEMENT_COMMENT_TEXT: |-
       @{{REPOSLUG}}(发版日志助手) 请对比标签 {{PREVIOUSTAG}} 和 {{CURRENTTAG}} 的差异。
   stages:
+    # 门禁未通过时 resolve 不会执行，await 会因 key 无通知而失败，后续 stage 全部不跑。
+    - name: 等待版本门禁
+      type: cnb:await
+      options:
+        key: release-version-gate
+      exports:
+        tag: INTERIOR_VERSION
+        prerelease: INTERIOR_PRERELEASE
+        validated: VERSION_VALIDATED
+        latest_stable: LATEST_STABLE
+
     - name: 同步脚本
       script: |
         # 卷会整体挂载 scripts/ci，先把本次提交里跟踪的脚本还原（未跟踪的模板脚本由缓存/下载提供）
         git checkout -- scripts/ci
         make fetch-scripts
-
-    - name: 输出基本信息
-      script: |
-        echo "原始 version: $version"
-        echo "原始 commit: ${commit:-<空，使用当前检出>}"
-
-        # 指定 commit 时切换工作区（CNB 默认检出触发时的 commit）。
-        # 先补拉历史，避免浅克隆里没有目标对象。
-        if [ -n "${commit:-}" ]; then
-          git fetch --quiet --force --unshallow origin 2>/dev/null || git fetch --quiet --force origin || true
-          # 该 commit 可能只推到了 GitHub 镜像（CNB 与 GitHub 是两个仓库），按 SHA 再拉一次；
-          # 仍然拿不到就明确失败 —— 悄悄退回 HEAD 会构建出「与发布版本不同的代码」，
-          # 那比直接失败更难发现。
-          if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
-            git fetch --quiet --force origin "${commit}" 2>/dev/null || true
-          fi
-          if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
-            echo "❌ commit ${commit} 在本仓库不存在"
-            echo "   （CNB 与 GitHub 是两个仓库，该 commit 可能只推到了 GitHub 镜像）"
-            echo "   先把它推到 CNB 仓库，或不要传 commit（用当前检出的 HEAD）"
-            exit 1
-          fi
-          git checkout --detach "${commit}"
-        fi
-        commit_full="$(git rev-parse HEAD)"
-        commit_short="$(git rev-parse --short HEAD)"
-        echo "构建 commit: ${commit_short} (${commit_full})"
-
-        # nightly 的基版本要靠 tag 推算（最近正式版 +1 补丁），而 CNB 的默认检出不一定
-        # 带 tag（GitHub 侧是 fetch-depth: 0）。必须在 resolve_version 之前补拉：否则
-        # git tag -l 为空，基版本退化成 0.0.0，算出 v0.0.1-nightly，后面 changelog
-        # 又因为仓库里其实有 tag、却都「比当前版本新」而挑不出对比基准。
-        git fetch --tags --quiet --force || true
-
-        # 归一化（补 v 前缀）与预发布判定只有一份实现，CNB 与 GitHub 都 source 它，
-        # 避免两边各写一套 grep 正则、判断口径慢慢跑偏。
-        # 结果：TAG（带 v 前缀）/ PRERELEASE（true|false）/ VERSION_TYPE / PRE_NOTE
-        # 定时触发没有表单 version，默认发布 nightly；手动触发仍按传入版本处理。
-        # 版本号为空或含非法字符时 resolve_version 返回 1，这里直接让 stage 失败，
-        # 而不是打出 :v 这种非法 tag，或把引号带进后面 optionsFrom 的 JSON。
-        # `nightly` 会在这里展开成 v<最近正式版+1 补丁>-nightly.<UTC 日期>。
-        . scripts/ci/resolve-prerelease.sh
-        resolve_version "${version:-nightly}" || exit 1
-        echo "$PRE_NOTE"
-
-        # 通过 set-output 输出到 result，由下方 exports 映射成后续 stage 的环境变量。
-        echo "##[set-output interior_version=$TAG]"
-        echo "##[set-output interior_prerelease=$PRERELEASE]"
-        echo "##[set-output interior_commit_full=$commit_full]"
-        echo "##[set-output interior_commit_short=$commit_short]"
-      exports:
-        interior_version: INTERIOR_VERSION
-        interior_prerelease: INTERIOR_PRERELEASE
-        interior_commit_full: INTERIOR_COMMIT_FULL
-        interior_commit_short: INTERIOR_COMMIT_SHORT
 
     - name: 安装全部 Go 依赖
       script: make deps-go
@@ -146,104 +147,31 @@
         done
         cat dist/SHA256SUMS
 
-    # 发版前先把版本号这件事验干净。这三件事出错都不会让构建失败，
-    # 但会发出一个「看起来成功、内容是错的」Release：
-    #   1) tag 没拉全 → changelog 算不出基准，正文变成「首次发布」
-    #   2) tag 已经存在 → 覆盖已有 tag，历史 Release 的对比基准跟着变
-    #   3) 版本号比已有的还旧 → 正文里 diff 是反的
-    - name: 校验版本号与 tag
+    # 版本号与 tag 的解析、校验已前移到「版本门禁」流水线；本流水线拿到
+    # cnb:await 的结果后才开始下面的安装 / 构建 / 打包 / 发布（§3.4）。
+
+    - name: 检查版本门禁
       script: |
         set -eu
-        echo "版本号: ${INTERIOR_VERSION}"
-
-        # tag 拉全（CNB 的 checkout 不一定带 tag，缺了就没法算基准）
-        git fetch --tags --quiet --force || true
-        count=$(git tag -l 'v*' | wc -l | tr -d ' ')
-        echo "本地版本 tag: ${count} 个"
-
-        case "${INTERIOR_VERSION}" in
-          *-nightly.*)
-            # 夜间构建按天发布同一个 tag（同一天重跑/补发要能覆盖）：
-            # 允许 tag 已存在，后面「删除已存在的 Release 与 Tag」会先清掉再重建。
-            echo "✅ ${INTERIOR_VERSION} 是夜间构建，允许覆盖同名 Release"
-            ;;
-          *)
-            # tag 不能已经存在：重跑同一次发布会把 tag 挪到新提交上
-            if git rev-parse -q --verify "refs/tags/${INTERIOR_VERSION}" >/dev/null; then
-              echo "❌ tag ${INTERIOR_VERSION} 已存在，不能重复发布"
-              echo "   已有指向: $(git rev-parse --short "${INTERIOR_VERSION}")"
-              echo "   当前 HEAD: $(git rev-parse --short HEAD)"
-              exit 1
-            fi
-            echo "✅ tag ${INTERIOR_VERSION} 不存在，可以发布"
-
-            # 新版本必须比已有的正式版更新，否则正文里的 diff 是反的
-            if [ "${INTERIOR_PRERELEASE}" = "false" ]; then
-              latest=$(git tag -l 'v*' | grep -Ev -- '-(rc|beta|alpha|nightly)' | grep -v '\.rc' | sort -V | tail -n 1 || true)
-              if [ -n "$latest" ] && [ "$(printf '%s\n%s\n' "$latest" "${INTERIOR_VERSION}" | sort -V | tail -n 1)" != "${INTERIOR_VERSION}" ]; then
-                echo "❌ 版本号 ${INTERIOR_VERSION} 比已有的正式版 ${latest} 旧"
-                exit 1
-              fi
-              echo "✅ 比上一个正式版 ${latest:-（无）} 新"
-            fi
-            ;;
+        [ "${VERSION_VALIDATED:-}" = "true" ] || {
+          echo "❌ 版本门禁未通过（VERSION_VALIDATED=${VERSION_VALIDATED:-<空>}）"
+          exit 1
+        }
+        case "${INTERIOR_VERSION:-}" in
+          v*) ;;
+          *) echo "❌ 门禁未回传有效版本号: ${INTERIOR_VERSION:-<空>}" ; exit 1 ;;
         esac
 
-    # 正文与更新内容只有一份实现（scripts/ci/*.sh），GitHub 那份也调用同样的脚本，
-    # 避免两边各写一遍表格/标题/下载链接，改一处忘一处。
     - name: 生成 Release 正文
-      script: |
-        set -eu
-        # 打包没出产物就别往下走：否则会发出一个零附件的 Release，正文表格是空的，
-        # 看起来「成功」，用户点开什么都下不到。
-        count=$(find dist -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' \) | wc -l)
-        if [ "$count" -eq 0 ]; then
-          echo "❌ 打包没有产出任何压缩包，先看 make goreleaser-release 的日志"
-          exit 1
-        fi
-        echo "产物 ${count} 个"
-
-        CNB_BASE="${CNB_REPO_URL_HTTPS%/}"
-        # changelog：按渠道选对比基准（rc 对 rc、beta 对 beta、nightly 对 nightly、
-        # 正式版对正式版；首次发某渠道则回退到上一个正式版）。实现见 scripts/ci/release-changelog.sh。
-        # 脚本挑不出基准时会 exit 1（而不是谎报「首次发布」），这里显式接住，
-        # 免得 CNB 不传播退出码、正文带着错误提示发出去。
-        # CNB 的 Web 路径统一带 /-/ 前缀（releases 是 /-/releases，提交是 /-/commit），
-        # 和 GitHub 的 /commit 不同，所以前缀由调用方传，脚本里不猜。
-        if ! LATEST_CHANGE_LOG="$(REPO_URL="${CNB_BASE}" \
-          COMMIT_URL="${CNB_BASE}/-/commit" \
-          sh scripts/ci/release-changelog.sh "${INTERIOR_VERSION}")"; then
-          echo "❌ 生成更新内容失败，见上面的错误信息"
-          exit 1
-        fi
-        VERSION="${INTERIOR_VERSION}" \
-          PRERELEASE="${INTERIOR_PRERELEASE}" \
-          DL_BASE="${CNB_BASE}/-/releases/download/${INTERIOR_VERSION}" \
-          STABLE_URL="${CNB_BASE}/-/releases" \
-          REPO_URL="${CNB_BASE}" \
-          COMMIT_URL="${CNB_BASE}/-/commit" \
-          COMMIT_SHA="${INTERIOR_COMMIT_FULL}" \
-          BUILD_TIME="$(date -u '+%Y-%m-%d %H:%M:%S UTC')" \
-          ARTIFACT_DIR=dist \
-          ARTIFACT_LAYOUT=triplet \
-          OUT_FILE=release_body.md \
-          CHANGELOG="${LATEST_CHANGE_LOG}" \
-          sh scripts/ci/render-release-body.sh
-
-    # 删除已存在的 Release 与 Tag，再重建，避免旧附件堆积。
-    # 只在 nightly 同日重跑时才会命中（正式版 / rc / beta / alpha 的 tag 已存在会被上一道校验挡住）。
-    # 删除逻辑统一由 scripts/ci/delete-release.sh 实现：CNB 的 tag 删除路径必须带 /-/git/ 段，
-    # 删 Release 也不会连带删 tag，脚本会分别删除并复查。CNB_TOKEN / CNB_API_ENDPOINT /
-    # CNB_REPO_SLUG 由流水线自动注入。
-    - name: 删除已存在的 Release 与 Tag
-      script: |
-        set -eu
-        case "${INTERIOR_VERSION}" in
-          *-nightly.*) ;;
-          *) echo "非 nightly 发布（${INTERIOR_VERSION}），无需删除同名 Release / Tag" ; exit 0 ;;
-        esac
-
-        sh scripts/ci/delete-release.sh --platform cnb --tag "${INTERIOR_VERSION}"
+      image: docker.cnb.cool/dtapp/plugins/release-changelog:latest
+      settings:
+        mode: release
+        version: ${INTERIOR_VERSION}
+        artifact_dir: dist
+        artifact_layout: triplet
+        out_file: release_body.md
+        fetch_tags: true
+        fetch_history: true
 
     # 生成 Release 选项文件，供 git:release 的 optionsFrom 读取。
     #
@@ -374,16 +302,15 @@
         export CNB_WEB_BASE="${WEB_BASE}"
         export GITHUB_WEB="https://github.com/dtapps/ip_vibe"
         export STABLE_URL="${WEB_BASE}/releases/latest"
-        # stage 1 已切到本次发布的提交，HEAD 即发布提交。
+        # 当前检出的 HEAD 即本次发布提交。
         export COMMIT_SHA="$(git rev-parse HEAD 2>/dev/null || true)"
 
         # 公告评论要指明「对比哪两个 tag」。基准必须和 Release 正文同口径（正式版对比
         # 上一个正式版，不掺 rc/beta），所以直接调 resolve-prev-tag.sh —— 它是正文
         # （release-changelog.sh）与这里共用的唯一一份判定，别另写一套 tag 排序。
         #
-        # 补一次 tag 拉取：stage 1 用 `git fetch --depth 1 <commit>` 只取单个提交，
-        # 不保证带 tag。加 --force 是为了覆盖被改动过的旧 tag；失败不阻断
-        # （取不到就退回「按公告正文改写」）。
+        # CNB 默认浅克隆不保证带 tag，发布前补拉；加 --force 是为了覆盖被改动过的旧 tag。
+        # 失败不阻断（取不到就退回「按公告正文改写」）。
         # 故意不加 --depth：给一个完整克隆的仓库加 --depth 反而会把它变浅、截掉历史。
         git fetch --tags --quiet --force >/dev/null 2>&1 || true
         PREV_TAG="$(sh scripts/ci/resolve-prev-tag.sh "${VERSION}" 2>/dev/null || true)"
@@ -609,9 +536,12 @@
 
 master:
   # 每天北京时间 00:00 定时发布 nightly；CNB crontab 使用 Asia/Shanghai。
+  # 同一事件下两条流水线：门禁先解析校验并 resolve，发布流水线 await 后才构建。
   'crontab: 0 0 * * *':
+    - *version_gate
     - *trigger_release
 
   # 手动触发：通过页面自定义按钮执行（预发布看版本号后缀，页面不再有勾选框）。
   web_trigger_release:
+    - *version_gate
     - *trigger_release

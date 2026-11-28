@@ -1,9 +1,13 @@
 # 构建镜像工作流（CNB）：三服务镜像推 CNB 制品库
 #
-# 两个触发事件共用同一套 stage（YAML 锚点）：
+# 两个触发事件各起两条流水线（版本门禁 + 打包），两套 stage 通过 YAML 锚点复用：
 #   - crontab: 0 0 * * *：每天北京时间 00:00（Asia/Shanghai）定时构建 nightly 镜像。
 #   - web_trigger_build_docker_image：分支按钮「打包 Docker 镜像」手动触发，
-#     表单输入 version / commit。
+#     表单输入 version。
+#
+# 门禁：版本门禁流水线用 release-version 插件 parse + validate；通过后 cnb:resolve
+# 发通知，打包流水线用 cnb:await 等同一个 key，收到后才计算镜像标签并构建推送。
+# await / resolve 只能写在 stages 中，不能放在 endStages / failStages。
 #
 # 三个服务镜像的 Dockerfile 统一放在 .cnb/docker/Dockerfile.{backend,reporter,forwarder}
 # （构建上下文 = 仓库根目录，Dockerfile 里 COPY dist/<服务>_linux_amd64_v1/<服务>）。
@@ -11,8 +15,8 @@
 # CNB 拉 docker.cnb.cool/dtapp/alpine:latest，GitHub 拉 ghcr.io/dtapps/alpine:latest
 # （同一套上游流水线发布，标签契约一致）。
 #
-# 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 GitHub 的
-# .github/workflows/build-image.yml 同口径）：
+# 版本号规则（本流水线由 release-version 插件实现，与 GitHub 的
+# .github/workflows/build-image.yml 及 CNB / GitHub 的 release.yml 同口径）：
 #   v1.2.3                  -> 正式版，推 :v1.2.3 与 :latest
 #   v1.2.3-rc.1             -> 预发布（rc 渠道），只推 :v1.2.3-rc.1，不覆盖 :latest
 #   v1.2.3-beta.1           -> 预发布（beta 渠道），只推 :v1.2.3-beta.1，不覆盖 :latest
@@ -21,6 +25,43 @@
 #   nightly                 -> 自动展开成 v<最近正式版 +1 补丁>-nightly.<UTC 日期>
 
 # 顶层伪键：仅用于定义作业锚点，不会被当成分支事件执行。
+# 版本门禁流水线：解析并校验版本号，通过后用 cnb:resolve 通知打包流水线。
+.version_gate: &version_gate
+  name: 版本门禁
+  runner:
+    tags: cnb:arch:amd64 # 指定 Runner 必须有这个标签
+  stages:
+    - name: 解析版本号
+      image: docker.cnb.cool/dtapp/plugins/release-version:latest
+      settings:
+        mode: parse
+        version: ${version}
+        default_nightly: true
+        fetch_tags: true
+        nightly_fallback: prerelease_bump
+      exports:
+        tag: INTERIOR_VERSION
+        prerelease: INTERIOR_PRERELEASE
+
+    - name: 校验版本号与 tag
+      image: docker.cnb.cool/dtapp/plugins/release-version:latest
+      settings:
+        mode: validate
+        version: ${INTERIOR_VERSION}
+        fetch_tags: true
+        allow_existing_nightly: true
+      exports:
+        validated: VERSION_VALIDATED
+
+    - name: 通知版本门禁通过
+      type: cnb:resolve
+      options:
+        key: build-image-version-gate
+        data:
+          tag: $INTERIOR_VERSION
+          prerelease: $INTERIOR_PRERELEASE
+          validated: $VERSION_VALIDATED
+
 .build_docker_image: &build_docker_image
   name: 打包
   runner:
@@ -38,55 +79,41 @@
     GIT_SHIM_SAFE_DIRECTORY: 'true'
   imports: https://cnb.cool/dtapp/envs/-/blob/main/docker.yml # 导入外部环境变量/配置
   stages:
+    # 门禁未通过时 resolve 不会执行，await 会因 key 无通知而失败，后续 stage 全部不跑。
+    - name: 等待版本门禁
+      type: cnb:await
+      options:
+        key: build-image-version-gate
+      exports:
+        tag: INTERIOR_VERSION
+        prerelease: INTERIOR_IS_PRERELEASE
+        validated: VERSION_VALIDATED
+
     - name: 同步脚本
       script: |
         # 卷会整体挂载 scripts/ci，先把本次提交里跟踪的脚本还原（未跟踪的模板脚本由缓存/下载提供）
         git checkout -- scripts/ci
         make fetch-scripts
 
-    - name: 输出基本信息
+    - name: 准备镜像参数
       script: |
-        echo "原始 version: $version"
-        echo "原始 commit: ${commit:-<空，使用当前检出>}"
+        set -eu
+        # 门禁只在校验通过时 resolve；await 没拿到数据或变量未替换时这里直接失败。
+        [ "${VERSION_VALIDATED:-}" = "true" ] || {
+          echo "❌ 版本门禁未通过（VERSION_VALIDATED=${VERSION_VALIDATED:-<空>}）"
+          exit 1
+        }
+        case "${INTERIOR_VERSION:-}" in
+          v*) ;;
+          *) echo "❌ 门禁未回传有效版本号: ${INTERIOR_VERSION:-<空>}" ; exit 1 ;;
+        esac
+
+        echo "门禁版本: ${INTERIOR_VERSION}"
         echo "CNB_DOCKER_REGISTRY: ${CNB_DOCKER_REGISTRY}"
         echo "CNB_REPO_SLUG_LOWERCASE: ${CNB_REPO_SLUG_LOWERCASE}"
 
-        # 指定 commit 时切换工作区（CNB 默认检出触发时的 commit）。
-        # 先补拉历史，避免浅克隆里没有目标对象。
-        if [ -n "${commit:-}" ]; then
-          git fetch --quiet --force --unshallow origin 2>/dev/null || git fetch --quiet --force origin || true
-          # 该 commit 可能只推到了 GitHub 镜像（CNB 与 GitHub 是两个仓库），按 SHA 再拉一次；
-          # 仍然拿不到就明确失败 —— 悄悄退回 HEAD 会构建出「与发布版本不同的代码」。
-          if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
-            git fetch --quiet --force origin "${commit}" 2>/dev/null || true
-          fi
-          if ! git cat-file -e "${commit}^{commit}" 2>/dev/null; then
-            echo "❌ commit ${commit} 在本仓库不存在"
-            echo "   （CNB 与 GitHub 是两个仓库，该 commit 可能只推到了 GitHub 镜像）"
-            echo "   先把它推到 CNB 仓库，或不要传 commit（用当前检出的 HEAD）"
-            exit 1
-          fi
-          git checkout --detach "${commit}"
-        fi
-        commit_full="$(git rev-parse HEAD)"
-        commit_short="$(git rev-parse --short HEAD)"
-        echo "构建 commit: ${commit_short} (${commit_full})"
-
-        # nightly 的基版本要靠 tag 推算（最近正式版 +1 补丁），而 CNB 的默认检出不一定
-        # 带 tag。必须在 resolve_version 之前补拉，否则会算出 v0.0.1-nightly 这类旧版本。
-        git fetch --tags --quiet --force || true
-
-        # 归一化（补 v 前缀）与预发布判定只有一份实现，CNB 与 GitHub 都 source 它，
-        # 避免两边各写一套 grep 正则、判断口径慢慢跑偏。
-        # 结果：TAG（带 v 前缀）/ PRERELEASE（true|false）/ VERSION_TYPE / PRE_NOTE
-        # 定时触发没有表单 version，默认构建 nightly；手动触发仍按传入版本处理。
-        # 版本号为空或含非法字符时 resolve_version 返回 1，这里直接让 stage 失败，
-        # 而不是打出 :v 这种非法 tag。
-        # `nightly` 会在这里展开成 v<最近正式版+1 补丁>-nightly.<UTC 日期>。
-        . scripts/ci/resolve-prerelease.sh
-        resolve_version "${version:-nightly}" || exit 1
-        echo "$PRE_NOTE"
-        version="$TAG"
+        # 镜像固定使用当前检出的触发提交，不提供切换 commit 的入口。
+        version="${INTERIOR_VERSION}"
 
         # 1. 计算各镜像的名称与地址（构建/推送阶段共用）
         backend_image_name="${CNB_REPO_SLUG_LOWERCASE}/backend"
@@ -104,9 +131,7 @@
 
         # 2. 通过 set-output 输出到 result
         echo "##[set-output interior_version=$version]"
-        echo "##[set-output interior_is_prerelease=$PRERELEASE]"
-        echo "##[set-output interior_commit_full=$commit_full]"
-        echo "##[set-output interior_commit_short=$commit_short]"
+        echo "##[set-output interior_is_prerelease=$INTERIOR_IS_PRERELEASE]"
         echo "##[set-output interior_backend_image_name=$backend_image_name]"
         echo "##[set-output interior_backend_docker_image_full=$backend_docker_image_full]"
         echo "##[set-output interior_backend_docker_image_latest=$backend_docker_image_latest]"
@@ -119,8 +144,6 @@
       exports:
         interior_version: INTERIOR_VERSION
         interior_is_prerelease: INTERIOR_IS_PRERELEASE
-        interior_commit_full: INTERIOR_COMMIT_FULL
-        interior_commit_short: INTERIOR_COMMIT_SHORT
         interior_backend_image_name: INTERIOR_BACKEND_IMAGE_NAME
         interior_backend_docker_image_full: INTERIOR_BACKEND_DOCKER_IMAGE_FULL
         interior_backend_docker_image_latest: INTERIOR_BACKEND_DOCKER_IMAGE_LATEST
@@ -200,10 +223,13 @@
 
 master:
   # 与 CNB Release 同时运行：每天北京时间 00:00，定时事件默认构建 nightly。
+  # 同一事件下两条流水线：门禁先解析校验并 resolve，打包流水线 await 后才构建。
   'crontab: 0 0 * * *':
+    - *version_gate
     - *build_docker_image
 
 '**':
   # 手动触发：页面自定义按钮「打包 Docker 镜像」（预发布看版本号后缀，页面不再有勾选框）
   web_trigger_build_docker_image:
+    - *version_gate
     - *build_docker_image

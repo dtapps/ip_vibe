@@ -4,7 +4,7 @@
 # 触发时用 GoReleaser 构建全平台二进制包（zip / tar.gz）并发布 GitHub Release，
 # 最后通过 ServerChan3（方糖）推一条构建完成通知。
 #
-# 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 CNB 的 .cnb/workflows/release.yml 同口径）：
+# GitHub 侧版本号由 dtapps/release-version-action 解析与校验，规则如下：
 #   1.2.3                    -> 正式版，Release 不勾选 prerelease
 #   1.2.3-rc.1               -> 预发布（rc 渠道）
 #   1.2.3-beta.1             -> 预发布（beta 渠道）
@@ -40,11 +40,6 @@ on:
         required: true
         type: string
         default: 'nightly'
-      commit:
-        description: '要构建的提交（留空则使用默认分支最新提交）'
-        required: false
-        type: string
-        default: ''
 
 permissions:
   contents: write
@@ -61,7 +56,43 @@ concurrency:
   queue: max
 
 jobs:
+  # 独立版本门禁：解析版本号并校验 Tag，通过后其他 job 才运行。
+  # 容器 job 内没有 Docker daemon，Docker Action 单独放在宿主机 job 执行。
+  version-gate:
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read # 门禁只读仓库与 Tag，不授予写权限
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: 解析版本号
+        id: version
+        uses: dtapps/release-version-action@main
+        env:
+          TZ: UTC
+        with:
+          mode: parse
+          version: ${{ github.event_name == 'schedule' && 'nightly' || inputs.version }}
+          fetch_tags: false
+          nightly_fallback: prerelease_bump
+
+      - name: 校验版本号与 tag
+        uses: dtapps/release-version-action@main
+        with:
+          mode: validate
+          version: ${{ steps.version.outputs.tag }}
+          fetch_tags: true
+          allow_existing_nightly: true
+
   prepare:
+    needs: version-gate
     runs-on: ubuntu-26.04
     # 统一使用 dtapps 维护的 CI 基础镜像（含 Go/Node/pnpm + 工具链），
     # 免去每次重装系统库与 go install 工具；本仓库不再自建、推送 CI 镜像。
@@ -83,8 +114,8 @@ jobs:
           # nightly 推导要取「最近正式版」tag，changelog 也要按 tag 算对比基准，
           # 所以必须带完整 tag 历史（浅克隆里看不到 tag）。
           fetch-depth: 0
-          # 不填 commit 时用触发时的 SHA，三个 job 落在同一个提交上
-          ref: ${{ inputs.commit || github.sha }}
+          # 发布固定使用触发时的 SHA，所有 job 落在同一个提交上
+          ref: ${{ github.sha }}
 
       # 缓存同步下来的模板脚本；key 绑定仓库内脚本内容，脚本一改就换新缓存，
       # 避免旧缓存把已跟踪脚本（如 resolve-prerelease.sh）恢复成旧版本。
@@ -98,37 +129,23 @@ jobs:
         shell: bash
         run: make fetch-scripts
 
-      - name: 解析版本号（预发布看后缀）
+      - name: 生成构建与发布参数
         id: gen
         shell: bash
         env:
-          # 定时触发没有 inputs，等价于手动填 `nightly`；手动触发仍以输入为准。
-          VERSION: ${{ github.event_name == 'schedule' && 'nightly' || inputs.version }}
+          TAG: ${{ needs['version-gate'].outputs.tag }}
+          PRERELEASE: ${{ needs['version-gate'].outputs.prerelease }}
         run: |
           set -euo pipefail
 
-          # 容器 job 的工作区属主是 runner，先登记 safe.directory 才能 rev-parse。
-          # 统一以「实际检出的 HEAD」为准：完整 SHA 给正文链接 / tag，短 SHA 给构建标记。
           commit_full="$(git rev-parse HEAD)"
           commit_short="$(git rev-parse --short HEAD)"
           echo "构建 commit: ${commit_short} (${commit_full})"
 
-          # 归一化 / 格式校验 / 预发布判定只有一份实现，release.yml 与 build-image.yml 共用
-          # shellcheck source=scripts/ci/resolve-prerelease.sh
-          . scripts/ci/resolve-prerelease.sh
-          # `nightly` 不是版本号，脚本内部会展开成
-          # v<最近正式版 +1 补丁>-nightly.<UTC 日期>（读的是本地 tag 历史）。
-          resolve_version "${VERSION}"
-
-          echo "${PRE_NOTE}"
-
-          # 统一构建时间：nightly 版本号里的日期、通知里展示的时间都用它
           BUILD_TIME="$(bash scripts/get-build-time.sh)"
           [ -n "${BUILD_TIME}" ] || BUILD_TIME="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
           echo "构建时间: ${BUILD_TIME}"
 
-          # 标题统一带项目名（tag 仍是纯版本号），便于在 Release 列表里一眼认出是哪个项目；
-          # 预发布再加后缀，和正式版区分开
           PROJECT_NAME="IPVibe"
           if [ "${PRERELEASE}" = "true" ]; then
             RELEASE_TITLE="${PROJECT_NAME} ${TAG} (预发布)"
@@ -139,63 +156,15 @@ jobs:
           {
             echo "interior_version=${TAG}"
             echo "interior_release_title=${RELEASE_TITLE}"
-            # 只在本流水线 job 之间传，不再来自用户输入
             echo "pre_release=${PRERELEASE}"
             echo "commit_full=${commit_full}"
             echo "commit_short=${commit_short}"
             echo "build_time=${BUILD_TIME}"
           } >> "$GITHUB_OUTPUT"
 
-      # 打包前先把版本号这件事验干净：这三件事出错都不会让构建本身失败，
-      # 但会发出一个「看起来成功、内容是错的」Release。放在 prepare 而不是 release，
-      # 是为了让无效版本在 build（全平台编译）之前就失败，不浪费打包时间。
-      - name: 校验版本号与 tag
-        shell: bash
-        env:
-          VERSION: ${{ steps.gen.outputs.interior_version }}
-          PRERELEASE: ${{ steps.gen.outputs.pre_release }}
-        run: |
-          set -euo pipefail
-          echo "版本号: ${VERSION}"
-
-          # checkout 已带 fetch-depth: 0，这里再补一次兜底
-          git fetch --tags --quiet --force || true
-          count=$(git tag -l 'v*' | wc -l | tr -d ' ')
-          echo "本地版本 tag: ${count} 个"
-
-          case "${VERSION}" in
-            *-nightly.*)
-              # 夜间构建按天发布同一个 tag（同一天重跑/补发要能覆盖），
-              # 允许 tag 已存在：发布前会先删掉同名 Release + tag 再重建。
-              echo "✅ ${VERSION} 是夜间构建，允许覆盖同名 Release"
-              ;;
-            *)
-              # 版本 tag 不能已存在：重跑同一次发布会把 tag 挪到新提交上，
-              # 历史 Release 的对比基准跟着变。确需补发先手动删掉旧 Release + tag。
-              if git rev-parse -q --verify "refs/tags/${VERSION}" >/dev/null; then
-                echo "::error::tag ${VERSION} 已存在，不能重复发布"
-                echo "   已有指向: $(git rev-parse --short "${VERSION}")"
-                echo "   当前 HEAD: $(git rev-parse --short HEAD)"
-                echo "   确需重发：sh scripts/ci/delete-release.sh --platform github --tag ${VERSION}，再重跑本工作流"
-                exit 1
-              fi
-              echo "✅ tag ${VERSION} 不存在，可以发布"
-
-              # 新版本必须比已有的正式版更新，否则正文里的 diff 是反的
-              if [ "${PRERELEASE}" = "false" ]; then
-                latest=$(git tag -l 'v*' | grep -Ev -- '-(rc|beta|alpha|nightly)' | grep -v '\.rc' | sort -V | tail -n 1 || true)
-                if [ -n "$latest" ] && [ "$(printf '%s\n%s\n' "$latest" "${VERSION}" | sort -V | tail -n 1)" != "${VERSION}" ]; then
-                  echo "::error::版本号 ${VERSION} 比已有的正式版 ${latest} 旧"
-                  exit 1
-                fi
-                echo "✅ 比上一个正式版 ${latest:-（无）} 新"
-              fi
-              ;;
-          esac
-
   # 构建全平台二进制并压缩（linux/windows/darwin × amd64/arm64）
   build:
-    needs: prepare
+    needs: [version-gate, prepare]
     runs-on: ubuntu-26.04
     container:
       image: ghcr.io/dtapps/golang:latest
@@ -315,7 +284,7 @@ jobs:
 
   # 构建完成后，发布 GitHub Release
   release:
-    needs: [prepare, build]
+    needs: [version-gate, prepare, build]
     runs-on: ubuntu-26.04
 
     env:
@@ -348,74 +317,31 @@ jobs:
           name: ip_vibe-release
           path: release
 
-      # 下载表「说明」列由 scripts/ci/describe-artifact.sh 统一生成；发版前先把
-      # 每个安装包对应的文案打到日志，便于核对（正文里由 render-release-body.sh 渲染）。
-      - name: 核对附件说明
-        shell: bash
-        run: |
-          set -euo pipefail
-          for f in release/*; do
-            [ -f "${f}" ] || continue
-            case "${f}" in
-              *.tar.gz | *.zip | *.deb | *.rpm | *.apk | *.pkg.tar.zst)
-                sh scripts/ci/describe-artifact.sh "$(basename "${f}")"
-                ;;
-            esac
-          done
-
-      # 正文与更新内容只有一份实现（scripts/ci/*.sh），CNB 那份也调用同样的脚本，
-      # 避免两边各写一遍表格/标题/下载链接，改一处忘一处。
       - name: 生成 Release 正文
-        shell: bash
-        env:
-          VERSION: ${{ needs.prepare.outputs.interior_version }}
-          PRERELEASE: ${{ needs.prepare.outputs.pre_release }}
-          REPO_URL: https://github.com/${{ github.repository }}
-          COMMIT_SHA: ${{ needs.prepare.outputs.commit_full }}
-          ARTIFACT_DIR: release
-          ARTIFACT_LAYOUT: triplet # 本仓库是 backend/reporter/forwarder 三服务
-          OUT_FILE: release_body.md
-        run: |
-          set -euo pipefail
-
-          # 下载基址在脚本里拼，不写进 env：整条 URL 太长，yamlfmt 会把表达式折行
-          DL_BASE="${REPO_URL}/releases/download/${VERSION}"
-          STABLE_URL="${REPO_URL}/releases/latest"
-          export DL_BASE STABLE_URL
-
-          # changelog：按渠道选对比基准（rc 对 rc、beta 对 beta、nightly 对 nightly、
-          # 正式版对正式版；首次发某渠道则回退到上一个正式版）。实现见 scripts/ci/release-changelog.sh。
-          # GitHub 的提交路径是 /commit/<sha>，和 CNB 的 /-/commit 不同，前缀显式传
-          CHANGELOG=$(COMMIT_URL="${REPO_URL}/commit" sh scripts/ci/release-changelog.sh "${VERSION}")
-          # 直接 export 给同一步的脚本：写 $GITHUB_ENV 只对**后续** step 生效，
-          # 本 step 里读不到，之前那样写 CHANGELOG 会是空的。
-          export CHANGELOG
-
-          sh scripts/ci/render-release-body.sh
-
-      # 夜间构建同一天重跑/补发必须删掉同名 Release + tag 再重建：
-      # 一是旧附件会一直堆在 Release 上，二是重建会刷新 published_at。
-      # 正式版 / rc / beta / alpha 的 tag 不存在同名 Release（tag 已存在校验挡住），
-      # 这一步是空操作。
-      # 删除逻辑统一由 scripts/ci/delete-release.sh 实现（Release 与 tag 分别删、删后复查）；
-      # --tag 模式在该 Release 本就不存在时正常返回，删除失败会退出 1，
-      # 这里沿用原来的容错语义：不阻塞后续重建。
-      - name: 删除同名旧 Release（如果存在）
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ needs.prepare.outputs.interior_version }}
-        shell: bash
-        run: sh scripts/ci/delete-release.sh --platform github --tag "${VERSION}" || true
+        id: changelog
+        uses: dtapps/release-changelog-action@main
+        with:
+          mode: release
+          version: ${{ needs.prepare.outputs.interior_version }}
+          commit: ${{ needs.prepare.outputs.commit_full }}
+          build_time: ${{ needs.prepare.outputs.build_time }}
+          stable_url: https://github.com/${{ github.repository }}/releases/latest
+          artifact_dir: release
+          artifact_layout: triplet
+          fetch_tags: false
+          fetch_history: false
 
       - name: 发布 Release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.prepare.outputs.interior_version }}
+          # 避免发布期间默认分支前进，导致 tag 与本次产物不是同一个提交
+          target_commitish: ${{ needs.prepare.outputs.commit_full }}
           name: ${{ needs.prepare.outputs.interior_release_title }}
           draft: false
           # 版本号带 rc/beta/alpha/nightly 才勾选预发布，正式版不勾
           prerelease: ${{ needs.prepare.outputs.pre_release }}
-          body_path: release_body.md
+          body_path: ${{ steps.changelog.outputs.body_file }}
           files: release/*
 
       # protect 保住正式版、latest/stable 与 rc/beta/alpha，避免 by_count 误删非 nightly 版本；
@@ -440,7 +366,7 @@ jobs:
   # 令牌：GITHUB_TOKEN 需要 discussions: write（下面 permissions 显式声明）。
   # 仓库还要在 Settings → General 里打开 Discussions，否则接口 404 —— 只告警跳过，不影响发布。
   announce:
-    needs: [release, prepare]
+    needs: [version-gate, release, prepare]
     runs-on: ubuntu-26.04
     # nightly 每天一个 tag：每天都开一条讨论会把讨论区刷成日报。
     # 直接在 job 级跳过——job 不跑，两个 step 都不会执行，也就不存在「跳过了一半」的问题。
@@ -469,7 +395,7 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v7
         with:
-          ref: ${{ inputs.commit || github.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
       # 缓存同步下来的模板脚本；key 绑定仓库内脚本内容，脚本一改就换新缓存，
@@ -489,8 +415,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          # 正文与 Release 正文同源：直接取已发布 Release 的正文，不重新渲染
-          # （发布用的提交可能还没进分支头，正文脚本未必是同一份）。
+          # 公告直接复用已发布 Release 的正文，避免两边渲染结果漂移。
           gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${VERSION}" --jq '.body // ""' > release_body.md
           if [ ! -s release_body.md ]; then
             echo "::warning::取不到 Release 正文，跳过发版公告"
@@ -658,7 +583,7 @@ jobs:
   # 推送地址：SCT 转发 key → https://sctapi.ftqq.com/<sendkey>.send
   #          带 uid 的 sendkey（sctp 开头）→ https://<uid>.push.ft07.com/send/<sendkey>.send
   notify:
-    needs: [release, prepare]
+    needs: [version-gate, release, prepare]
     runs-on: ubuntu-26.04
     if: ${{ needs.release.result == 'success' }}
     env:

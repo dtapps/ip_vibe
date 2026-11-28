@@ -1,7 +1,7 @@
 branch:
   - buttons:
       - name: 打包 Go 项目
-        description: 打包 Go 项目 然后上传到附件（版本号带 rc/beta/alpha/nightly 时自动标记为预发布）
+        description: 按输入的版本号 ${version} 打包 Go 项目并发布 Release，然后上传到附件（版本号带 rc/beta/alpha/nightly 时自动标记为预发布）
         event: web_trigger_release # 触发的 CI 事件名
         permissions:
           roles:
@@ -16,14 +16,9 @@ branch:
             required: true # 是否必填
             type: input
             default: nightly
-          commit:
-            name: 构建提交
-            description: 可选：要发布的代码版本（完整 SHA / 分支 / tag）；留空则用当前分支 HEAD
-            required: false
-            type: input
 
       - name: 打包 Docker 镜像
-        description: 打包 Docker 镜像 然后上传到 制品库（预发布版本不会覆盖 latest 标签）
+        description: 按输入的版本号 ${version} 打包 Docker 镜像并上传到制品库（预发布版本不会覆盖 latest 标签）
         event: web_trigger_build_docker_image # 触发的 CI 事件名
         permissions:
           roles:
@@ -38,11 +33,6 @@ branch:
             required: true # 是否必填
             type: input
             default: nightly
-          commit:
-            name: 构建提交
-            description: 可选：要发布的代码版本（完整 SHA / 分支 / tag）；留空则用当前分支 HEAD
-            required: false
-            type: input
 
       - name: 生成 Code Wiki
         description: 重新分析仓库并生成 Code Wiki 文档

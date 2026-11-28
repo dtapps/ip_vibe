@@ -58,7 +58,7 @@ CNB 侧的 `build-image.yml` 有两个事件：页面按钮触发（`web_trigger
 
 ## 2. 版本号规则
 
-唯一实现是 [scripts/ci/resolve-prerelease.sh](../scripts/ci/resolve-prerelease.sh)：GitHub 的 `release.yml` / `build-image.yml` 与 CNB 的 `release.yml` / `build-image.yml` 都 source 这一份。规则：
+四条发布 / 打包流水线（`release.yml` 与 `build-image.yml`）都在构建前完成版本门禁：GitHub 用 `dtapps/release-version-action@main` 在独立 `version-gate` job 解析版本并校验 Tag，CNB 用 `docker.cnb.cool/dtapp/plugins/release-version:latest` 在独立门禁流水线做同样的事，并通过 `cnb:resolve` / `cnb:await` 放行后续构建。[scripts/ci/resolve-prerelease.sh](../scripts/ci/resolve-prerelease.sh) 仅供本地自检与历史兼容，流水线不再 source。规则：
 
 | 输入                      | 归一化 TAG                | 类型              | 镜像标签                              | Release         |
 |---------------------------|---------------------------|-------------------|---------------------------------------|-----------------|
@@ -78,7 +78,7 @@ CNB 侧的 `build-image.yml` 有两个事件：页面按钮触发（`web_trigger
 - 输入自动补 `v` 前缀、去空白字符；空输入直接报错（历史上空输入会打出 `:v` 这种非法标签）。
 - 预发布的核心目的：镜像不覆盖 `:latest`、Release 标记 prerelease，未经充分验证的版本不会推给线上用户。
 
-改了脚本里的正则先跑自检：
+脚本仍带自检（流水线已不再 source，改动后单独验证即可）：
 
 ```bash
 bash scripts/ci/resolve-prerelease.sh --self-test
@@ -104,13 +104,14 @@ bash scripts/ci/resolve-prerelease.sh --self-test
 
 ### 3.1 GitHub（`release.yml`：手动 workflow_dispatch + 每天定时）
 
-**两种触发**：手动填版本号；或每天 UTC 00:00（北京时间 08:00）定时跑（`schedule: cron '0 0 * * *'`），定时触发等价于手动填 `nightly`，版本号由 prepare job 推导。
+**两种触发**：手动填版本号；或每天 UTC 00:00（北京时间 08:00）定时跑（`schedule: cron '0 0 * * *'`），定时触发等价于手动填 `nightly`，版本号由宿主机 `version-gate` job 推导。
 
-job 分三段：
+job 分四段，其余 job 均显式 `needs: version-gate`：
 
-1. **prepare**（CI 镜像容器）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ **校验版本号与 tag（§3.4，前移到 build 之前，避免无效版本白跑全平台编译）** → 输出 TAG / 是否预发布 / 标题 / commit / 构建时间。GitHub 与 CNB 的标题同口径：`IPVibe <TAG>`（预发布再加 `(预发布)` 后缀）；tag 本身仍是纯版本号。
-2. **build**（CI 镜像容器）：三类缓存（Go module、Go build、pnpm store）→ `make deps` → `make goreleaser-release`（GoReleaser 的 `before` hook 先 `make build-frontend`，再编译三服务 × 六平台、产出 24 个 Linux 系统包并生成 `dist/SHA256SUMS`）→ 校验 `SHA256SUMS` 非空且覆盖全部实际产物（不比对数量，产物矩阵调整不会卡发版）→ 上传 artifact。
-3. **release**：`fetch-depth: 0` 拉全量 tag 历史（changelog 要按 tag 算对比基准）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → 删除同名旧 Release（仅 nightly 同日重跑会命中，调用 `scripts/ci/delete-release.sh --platform github --tag`）→ `softprops/action-gh-release` 建 tag、上传 43 个附件（18 压缩包 + 24 系统包 + `SHA256SUMS`）→ **清理旧 nightly Release（只保留最近 3 个，同样走 `delete-release.sh --keep 3`）**。
+1. **version-gate**（宿主机，`runs-on: ubuntu-26.04`，`permissions: contents: read`）：`fetch-depth: 0` 拉全量 tag 历史 → `dtapps/release-version-action@main` 归一化版本号、推导 nightly 并校验 Tag；`nightly_fallback: prerelease_bump`，即无正式版时取最大预发布基版本再加一。Docker Action 不放在容器 job 内，因为容器 job 没有 Docker daemon。门禁失败时 build / release / announce / notify 全部不运行。
+2. **prepare**（CI 镜像容器）：读取 `version-gate` job 输出，生成 TAG / 是否预发布 / 标题 / commit / 构建时间。GitHub 与 CNB 的标题同口径：`IPVibe <TAG>`（预发布再加 `(预发布)` 后缀）；tag 本身仍是纯版本号。
+3. **build**（CI 镜像容器）：三类缓存（Go module、Go build、pnpm store）→ `make deps` → `make goreleaser-release`（GoReleaser 的 `before` hook 先 `make build-frontend`，再编译三服务 × 六平台、产出 24 个 Linux 系统包并生成 `dist/SHA256SUMS`）→ 校验 `SHA256SUMS` 非空且覆盖全部实际产物（不比对数量，产物矩阵调整不会卡发版）→ 上传 artifact。
+4. **release**：`fetch-depth: 0` 拉全量 tag 历史（changelog 要按 tag 算对比基准）→ `scripts/ci/release-changelog.sh` 生成更新内容（§3.3）→ `scripts/ci/render-release-body.sh` 渲染正文 → 删除同名旧 Release（仅 nightly 同日重跑会命中，调用 `scripts/ci/delete-release.sh --platform github --tag`）→ `softprops/action-gh-release` 建 tag、上传 43 个附件（18 压缩包 + 24 系统包 + `SHA256SUMS`）→ **清理旧 nightly Release（只保留最近 3 个，同样走 `delete-release.sh --keep 3`）**。
 
 发布成功后还有 1 个 job：
 
@@ -120,30 +121,30 @@ job 分三段：
 
 GitHub 清理旧 nightly 是**旁路**：脚本失败只告警，不让已成功的发布变红；CNB 改用 `release-cleaner` 插件，仅在日期 nightly 发布时执行。CNB Release 与 GitHub Release 独立触发，不再通过 API 或 webhook 互相同步。
 
-#### commit 的语义：按指定提交检出，不是拉最新代码
+#### commit 的语义：固定发布触发提交，只用于追踪
 
-`workflow_dispatch` 的 `commit` 输入（完整 SHA / 分支 / tag）决定**构建哪份代码**，整条链路都跟着它走：
+Release 不再提供 `commit` 输入，版本、tag 和源码固定对应**触发时的 HEAD**：
 
-1. **prepare**：`actions/checkout` 的 `ref` 用 `inputs.commit || github.sha`（定时触发没有输入，取触发时点的 HEAD）；
-2. **build / release**：一律用 prepare 解析出的 `commit_full` 检出，三个 job 必然落在同一个提交上。
-3. **CNB 手动触发**：`web_trigger_release` 仍可用表单 `commit` 指定提交；GitHub 不再把 commit 传给 CNB Release。
+1. **GitHub prepare**：`actions/checkout` 固定用 `github.sha`，定时触发同样取触发时点的 HEAD；
+2. **GitHub build / release / announce**：一律用 prepare 解析出的 `commit_full` 检出；Release 的 `target_commitish` 也传该 SHA，避免发布期间默认分支前进导致 tag 与产物不一致；
+3. **CNB 手动触发**：`web_trigger_release` 只提供 `version`，构建当前检出的触发提交。
 
-⚠️ CNB 与 GitHub 是**两个仓库**：commit 只推到了 GitHub 时，CNB 侧 `git cat-file -e` 探测不到，会明确失败并提示「先推到 CNB 仓库」——不会悄悄退回 HEAD 构建出另一份代码。
+`commit_full` / `commit_short` 仍用于构建标记、Release 正文和公告中的提交链接，不再作为发布流程的输入。需要补发历史版本时，应单独确认目标分支 / tag 的发布流程，不能从发布表单指定任意 commit。
 
 > 正文与 changelog 都**不再内联在工作流里**，统一走 `scripts/ci/` 下的两个脚本，CNB 那份调用同一组脚本，避免两边各写一遍表格/标题/下载链接。
 
 ### 3.2 CNB（`release.yml`：分支按钮「打包 Go 项目」+ 每天北京时间 00:00 定时）
 
-同一套 stage 通过 YAML 锚点复用于两个事件：
+两个事件各起两条流水线（版本门禁 + 发布），两套 stage 通过 YAML 锚点复用：
 
 | 事件                  | 触发方                              | 参数                                   |
 |-----------------------|-------------------------------------|----------------------------------------|
-| `web_trigger_release` | master 分支按钮「打包 Go 项目」     | 表单字段 `version` / `commit`          |
+| `web_trigger_release` | master 分支按钮「打包 Go 项目」     | 表单字段 `version`                     |
 | `crontab: 0 0 * * *`  | 每天北京时间 00:00（Asia/Shanghai） | 无表单参数；`version` 缺省为 `nightly` |
 
 CNB 的 crontab 使用 Asia/Shanghai，因此 `0 0 * * *` 就是北京时间 00:00。定时配置位于 `.cnb/workflows/release.yml`，通过 `.cnb.yml` include 引入；修改后需同时变更 `.cnb.yml`，CNB 才会重新同步该 include 文件的定时配置。
 
-一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps` → `make goreleaser-release`（before hook 内含 `make build-frontend`，产物在 `dist/`，含 `dist/SHA256SUMS`）→ 校验版本号与 tag（§3.4）→ 调用 `scripts/ci/*.sh` 生成正文（`ARTIFACT_DIR=dist`）→ **删除已存在的 Release 与 Tag**（仅 nightly 同日重跑命中，调用 `scripts/ci/delete-release.sh --platform cnb --tag`，分别删 Release 与 tag 并复查 —— 两个对象不会连带删除）→ 生成 `./.cnb-release-options.json` → 内置 `git:release`（`optionsFrom`）建 Release → `cnbcool/attachments` 上传 `dist/*.tar.gz`、`dist/*.zip`、`dist/*.deb`、`dist/*.rpm`、`dist/*.apk`、`dist/*.pkg.tar.zst`、`dist/SHA256SUMS`（不整目录上传，`dist/` 里还有 GoReleaser 的 `artifacts.json` / `metadata.json` / `config.yaml`）→ **用 `docker.cnb.cool/dtapp/plugins/release-cleaner:latest` 清理旧 nightly**（仅日期 nightly 发布时执行；`mode: by_count`、`keep: 3`、`delete_git_tag: true`、`dry_run: false`，并用 `protect` 保留正式版与 rc/beta/alpha）。
+版本门禁流水线先用 `release-version` 插件 `parse` + `validate` 归一化版本号并校验 Tag（§3.4），通过后用 `type: cnb:resolve`（key `release-version-gate`，`data` 传 tag / prerelease / validated / latest_stable）通知；发布流水线第一个 stage 用 `type: cnb:await` 等同一个 key，并把 `data` 映射回环境变量。await / resolve 只能写在 `stages` 中。门禁放行后依次：`make deps` → `make goreleaser-release`（before hook 内含 `make build-frontend`，产物在 `dist/`，含 `dist/SHA256SUMS`）→ 调用 `scripts/ci/*.sh` 生成正文（`ARTIFACT_DIR=dist`）→ **删除已存在的 Release 与 Tag**（仅 nightly 同日重跑命中，调用 `scripts/ci/delete-release.sh --platform cnb --tag`，分别删 Release 与 tag 并复查 —— 两个对象不会连带删除）→ 生成 `./.cnb-release-options.json` → 内置 `git:release`（`optionsFrom`）建 Release → `cnbcool/attachments` 上传 `dist/*.tar.gz`、`dist/*.zip`、`dist/*.deb`、`dist/*.rpm`、`dist/*.apk`、`dist/*.pkg.tar.zst`、`dist/SHA256SUMS`（不整目录上传，`dist/` 里还有 GoReleaser 的 `artifacts.json` / `metadata.json` / `config.yaml`）→ **用 `docker.cnb.cool/dtapp/plugins/release-cleaner:latest` 清理旧 nightly**（仅日期 nightly 发布时执行；`mode: by_count`、`keep: 3`、`delete_git_tag: true`、`dry_run: false`，并用 `protect` 保留正式版与 rc/beta/alpha）。
 
 ⚠️ **`preRelease` 用 `optionsFrom` 传真布尔值，不用 `${...}` 插值**：`preRelease` 的类型是严格 Boolean，插值产出字符串 `"false"`，字符串在布尔位置上容易被当成真值，正式版会被误勾预发布；`descriptionFromFile` 同理，正文里有反引号/管道符/换行，插值容易被转义毁掉。
 
@@ -171,9 +172,9 @@ CNB 的 crontab 使用 Asia/Shanghai，因此 `0 0 * * *` 就是北京时间 00:
 
 ### 3.4 发版前的三道校验
 
-两条流水线都有「校验版本号与 tag」这一步：GitHub 放在 **prepare**（build 之前，无效版本不浪费编译时间），CNB 是单流水线，仍在打包之后。这三件事出错都**不会让构建失败**，但会发出一个「看起来成功、内容是错的」Release：
+四条发布 / 打包流水线都在**构建之前**完成校验：GitHub 的 `release.yml` / `build-image.yml` 在宿主机 **version-gate** job 中由 Action 执行；CNB 的 `release.yml` / `build-image.yml` 在独立的「版本门禁」流水线中由插件执行，校验通过后 `cnb:resolve` 通知，业务流水线 `cnb:await` 收到才继续。门禁失败时后续构建 / 打包 / 部署全部不运行。以下问题会让发布失败：
 
-1. **一个 tag 都没拉到**（`git tag -l 'v*'` 计数为 0）→ 直接失败；changelog 只负责在可见 tag 里选基准，不会把「取不到基准」谎报成首次发布；
+1. **本地 Git 状态读取失败** → 无法可靠判断 Tag 与 HEAD → 直接失败；
 2. **tag 已存在** → 重跑会把 tag 挪到新提交上，历史 Release 的对比基准跟着变 → 直接失败；
 3. **正式版比已有正式版旧** → 正文里的 diff 是反的 → 直接失败。
 
@@ -190,7 +191,7 @@ CNB 的 crontab 使用 Asia/Shanghai，因此 `0 0 * * *` 就是北京时间 00:
 - **一律 `printf %s\n` 而非 `echo`**：dash 的 `echo` 会解释反斜杠，`Get-FileHash .\backend-...` 里的 `\b` 会被吞成退格符，显示成 `.ackend-...`。
 - 提交号**显示短号、链接用完整 SHA**（缩写长度随仓库规模变化，链接里用缩写部分平台会 404）。
 
-> 脚本自带自检：`sh scripts/ci/render-release-body.sh --self-test`、`sh scripts/ci/resolve-prerelease.sh --self-test`；`sh scripts/ci/release-changelog.sh`、`sh scripts/ci/resolve-prev-tag.sh` 无参数时打印用法。改格式/改判定先跑它们。
+> 脚本自带自检：`sh scripts/ci/render-release-body.sh --self-test`、`sh scripts/ci/resolve-prerelease.sh --self-test`；`sh scripts/ci/release-changelog.sh`、`sh scripts/ci/resolve-prev-tag.sh` 无参数时打印用法。GitHub Release 的版本判定改在 `dtapps/release-version-action` 仓库，修改后先跑该仓库的 `go test ./...`。
 
 ---
 
@@ -207,15 +208,18 @@ CNB 的 crontab 使用 Asia/Shanghai，因此 `0 0 * * *` 就是北京时间 00:
 
 Gitee 没有容器镜像仓库（Gitee Go 的 docker 步骤只能推向外部 registry），GitCode 的制品库是否提供 OCI 端点尚未确认，所以这两个平台的镜像同步暂未接入。
 
+GitHub 与 CNB 的镜像构建都不提供 `commit` 输入，固定使用触发提交；GitHub 侧的 `commit_full` / `commit_short` 仅用于通知。
+
 ### 4.1 GitHub（`build-image.yml`）
 
-**两种触发**：手动填版本号；或每天 UTC 00:00（北京时间 08:00）定时跑（`schedule: cron '0 0 * * *'`，与 `release.yml` 完全同一时刻），定时触发等价于手动填 `nightly`，版本号由 binaries job 推导。
+**两种触发**：手动填版本号；或每天 UTC 00:00（北京时间 08:00）定时跑（`schedule: cron '0 0 * * *'`，与 `release.yml` 完全同一时刻），定时触发等价于手动填 `nightly`，版本号由独立 `version-gate` job 推导并校验 Tag，通过后 binaries / image / notify 才运行。
 
-job 分三段：
+job 分四段，其余 job 均显式 `needs: version-gate`：
 
-1. **binaries**（容器 job）：`fetch-depth: 0` 拉全量 tag 历史（nightly 推导要取「最近正式版」tag）→ source `scripts/ci/resolve-prerelease.sh` 归一化版本号（`nightly` 在这里展开）→ 输出 TAG / 是否预发布 / commit / 构建时间 → 三类缓存 → `make deps-go` / `make deps-node` → **`make goreleaser-release`**（GoReleaser 的 before hook 先 `make build-frontend`；镜像只取 `dist/<服务>_linux_amd64_v1/` 下的 linux/amd64 二进制）→ **校验三个镜像二进制都在**（前移到上传 artifact 之前，缺文件就地失败）→ 上传 artifact。
-2. **image**（普通 runner——容器 job 里没有 docker daemon）：下载 artifact → 三个服务的镜像标签一次性算好写入 `$GITHUB_ENV`（避免三个 build 步骤各写一遍「有后缀就不推 latest」的条件表达式，三处写不一致）→ buildx 构建推送（gha cache 按服务分 scope）。标签同时写入 `$GITHUB_OUTPUT` 供 `notify` job 展示。
-3. **notify**：ServerChan3（方糖）推送「镜像构建完成」通知，含 GHCR 镜像标签与 CNB 镜像地址；需 secret `SERVERCHAN_SENDKEY`。
+1. **version-gate**（宿主机，`runs-on: ubuntu-26.04`，`permissions: contents: read`）：`fetch-depth: 0` 拉全量 tag 历史 → `dtapps/release-version-action@main` 归一化版本号、推导 nightly 并校验 Tag；`nightly_fallback: prerelease_bump`。
+2. **binaries**（容器 job）：读取 `version-gate` 输出 → 输出 TAG / 是否预发布 / commit / 构建时间 → 三类缓存 → `make deps-go` / `make deps-node` → **`make goreleaser-release`**（GoReleaser 的 before hook 先 `make build-frontend`；镜像只取 `dist/<服务>_linux_amd64_v1/` 下的 linux/amd64 二进制）→ **校验三个镜像二进制都在**（前移到上传 artifact 之前，缺文件就地失败）→ 上传 artifact。
+3. **image**（普通 runner——容器 job 里没有 docker daemon）：下载 artifact → 三个服务的镜像标签一次性算好写入 `$GITHUB_ENV`（避免三个 build 步骤各写一遍「有后缀就不推 latest」的条件表达式，三处写不一致）→ buildx 构建推送（gha cache 按服务分 scope）。标签同时写入 `$GITHUB_OUTPUT` 供 `notify` job 展示。
+4. **notify**：ServerChan3（方糖）推送「镜像构建完成」通知，含 GHCR 镜像标签与 CNB 镜像地址；需 secret `SERVERCHAN_SENDKEY`。
 
 标签规则：正式版推 `:{TAG}` + `:latest`；预发布只推 `:{TAG}`。GHCR 要求镜像名全小写，代码里用 `tr '[:upper:]' '[:lower:]'` 处理。
 
@@ -223,16 +227,16 @@ job 分三段：
 
 ### 4.2 CNB（`build-image.yml`）
 
-同一套 stage 通过 YAML 锚点复用于两个事件：
+两个事件各起两条流水线（版本门禁 + 打包），两套 stage 通过 YAML 锚点复用：
 
 | 事件                             | 触发方                              | 参数                                   |
 |----------------------------------|-------------------------------------|----------------------------------------|
-| `web_trigger_build_docker_image` | master 分支按钮「打包 Docker 镜像」 | 表单字段 `version` / `commit`          |
+| `web_trigger_build_docker_image` | master 分支按钮「打包 Docker 镜像」 | 表单字段 `version`                     |
 | `crontab: 0 0 * * *`             | 每天北京时间 00:00（Asia/Shanghai） | 无表单参数；`version` 缺省为 `nightly` |
 
 CNB 的镜像构建与 Release 发布都在北京时间 00:00 触发，使用同一个 nightly 版本号；两条流水线互不等待，构建结果分别收敛。
 
-一条流水线完成：source `resolve-prerelease.sh` 归一化版本号 → `make deps-go` / `deps-node` / `goreleaser-release`（before hook 负责 `build-frontend`，镜像取 `dist/<服务>_linux_amd64_v1/` 的 linux/amd64 二进制）→ `docker login`（CNB 内置 token）→ 三个 `docker build` + `docker push`；预发布版本跳过 latest 标签推送。
+版本门禁流水线用 `release-version` 插件 `parse` + `validate`，通过后 `cnb:resolve`（key `build-image-version-gate`，data 传 tag / prerelease / validated）通知；打包流水线用 `cnb:await` 等同一个 key 并把 data 映射回环境变量，随后计算镜像标签 → `make deps-go` / `deps-node` / `goreleaser-release`（before hook 负责 `build-frontend`，镜像取 `dist/<服务>_linux_amd64_v1/` 的 linux/amd64 二进制）→ `docker login`（CNB 内置 token）→ 三个 `docker build` + `docker push`；预发布版本跳过 latest 标签推送。
 
 ---
 

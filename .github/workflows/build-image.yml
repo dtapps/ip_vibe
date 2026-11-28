@@ -5,9 +5,10 @@
 # 手动或定时触发时：GoReleaser 构建（镜像只取 linux/amd64 二进制）→ 构建 backend / reporter / forwarder
 # 三个运行镜像 → 推送到 GitHub Container Registry（GHCR）→ 通过 ServerChan3（方糖）推一条构建完成通知。
 # CNB 制品库由 CNB 自己的工作流独立构建，不再由 GitHub API 触发。
-# 定时触发等价于手动填 `nightly`，版本号由 binaries job 推导。
+# 定时触发等价于手动填 `nightly`，版本号由独立 version-gate job 推导并校验 Tag；
+# 门禁通过后 binaries / image / notify 才运行。
 #
-# 版本号规则（实现见 scripts/ci/resolve-prerelease.sh，与 release.yml、CNB 的
+# 版本号规则（由 dtapps/release-version-action@main 实现，与 release.yml、CNB 的
 # .cnb/workflows/build-image.yml 同口径）：
 #   v1.2.3                  -> 正式版，推 :v1.2.3 与 :latest
 #   v1.2.3-rc.1             -> 预发布（rc 渠道），只推 :v1.2.3-rc.1，不覆盖 :latest
@@ -43,11 +44,6 @@ on:
         description: '版本号。预发布看后缀：1.2.3-rc.1 / 1.2.3-beta.1 / 1.2.3-alpha.1 / 1.2.3-nightly.20260101；填 nightly 自动推导当天夜间构建版本；没有后缀就是正式版'
         required: true
         type: string
-      commit:
-        description: '可选：要构建的代码版本（完整 SHA / 分支 / tag）。留空则用触发时的 HEAD'
-        required: false
-        type: string
-        default: ''
 
 permissions:
   contents: write
@@ -64,8 +60,43 @@ concurrency:
   queue: max
 
 jobs:
+  # 独立版本门禁：解析版本号并校验 Tag，通过后其他 job 才运行。
+  version-gate:
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read # 门禁只读仓库与 Tag，不授予写权限
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: 解析版本号
+        id: version
+        uses: dtapps/release-version-action@main
+        env:
+          TZ: UTC
+        with:
+          mode: parse
+          version: ${{ github.event_name == 'schedule' && 'nightly' || inputs.version }}
+          fetch_tags: false
+          nightly_fallback: prerelease_bump
+
+      - name: 校验版本号与 tag
+        uses: dtapps/release-version-action@main
+        with:
+          mode: validate
+          version: ${{ steps.version.outputs.tag }}
+          fetch_tags: true
+          allow_existing_nightly: true
+
   # 用 GoReleaser 构建（与发版同一份配置）；镜像只取 dist/ 下 linux/amd64 的二进制
   binaries:
+    needs: version-gate
     runs-on: ubuntu-26.04
     container:
       image: ghcr.io/dtapps/golang:latest
@@ -83,8 +114,8 @@ jobs:
         with:
           # nightly 推导要取「最近正式版」tag，浅克隆里看不到 tag，必须拉全量历史
           fetch-depth: 0
-          # 不填 commit 时用触发时的 SHA，两个 job 落在同一个提交上
-          ref: ${{ inputs.commit || github.sha }}
+          # 镜像固定使用触发时的 SHA，两个 job 落在同一个提交上
+          ref: ${{ github.sha }}
 
       # 缓存同步下来的模板脚本；key 绑定仓库内脚本内容，脚本一改就换新缓存，
       # 避免旧缓存把已跟踪脚本（如 resolve-prerelease.sh）恢复成旧版本。
@@ -98,12 +129,12 @@ jobs:
         shell: bash
         run: make fetch-scripts
 
-      - name: 解析版本号（预发布看后缀）
+      - name: 生成构建参数
         id: gen
         shell: bash
         env:
-          # 定时触发没有 inputs，等价于手动填 `nightly`；手动触发仍以输入为准。
-          VERSION: ${{ github.event_name == 'schedule' && 'nightly' || inputs.version }}
+          TAG: ${{ needs['version-gate'].outputs.tag }}
+          PRERELEASE: ${{ needs['version-gate'].outputs.prerelease }}
         run: |
           set -euo pipefail
 
@@ -111,15 +142,8 @@ jobs:
           commit_full="$(git rev-parse HEAD)"
           commit_short="$(git rev-parse --short HEAD)"
           echo "构建 commit: ${commit_short} (${commit_full})"
+          echo "门禁版本: ${TAG}"
 
-          # 归一化 / 格式校验 / 预发布判定只有一份实现，两个 workflow 共用
-          # shellcheck source=scripts/ci/resolve-prerelease.sh
-          . scripts/ci/resolve-prerelease.sh
-          # `nightly` 不是版本号，脚本内部会展开成
-          # v<最近正式版 +1 补丁>-nightly.<UTC 日期>（读的是本地 tag 历史）。
-          resolve_version "${VERSION}"
-
-          echo "${PRE_NOTE}"
           echo "version=${TAG}" >> "$GITHUB_OUTPUT"
           echo "pre_release=${PRERELEASE}" >> "$GITHUB_OUTPUT"
           echo "commit_full=${commit_full}" >> "$GITHUB_OUTPUT"
@@ -212,7 +236,7 @@ jobs:
 
   # 镜像在普通 runner（非容器 job）上构建：容器 job 里没有 docker daemon
   image:
-    needs: binaries
+    needs: [version-gate, binaries]
     runs-on: ubuntu-26.04
     # 供 notify job 在通知里展示镜像地址
     outputs:
@@ -336,7 +360,7 @@ jobs:
   # 推送地址：SCT 转发 key → https://sctapi.ftqq.com/<sendkey>.send
   #          带 uid 的 sendkey（sctp 开头）→ https://<uid>.push.ft07.com/send/<sendkey>.send
   notify:
-    needs: [binaries, image]
+    needs: [version-gate, binaries, image]
     runs-on: ubuntu-26.04
     if: ${{ needs.image.result == 'success' }}
     env:
